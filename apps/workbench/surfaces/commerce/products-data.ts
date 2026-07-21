@@ -353,6 +353,35 @@ export interface BulkPriceTier {
 }
 
 /**
+ * One trade price: what a particular price list charges for one variant of this
+ * product.
+ *
+ * A price list is a named set of prices for a channel or a trade account (a
+ * wholesale sheet, a distributor's rates). A shopper on that list pays these
+ * instead of the shelf price. The Pricing tab reads them ONLY to show them —
+ * entries are authored on the price list itself, which is where the currency,
+ * targeting and status live too. `priceListStatus` is `draft` (not live yet) or
+ * `active`; archived lists are not returned.
+ *
+ * Priced EITHER as a flat `fixedPriceCents` or as `percentOffList` (a discount
+ * off the variant's own price) — exactly one is set, mirroring how the entry was
+ * written. `minQuantity` is the count at which the price starts applying.
+ */
+export interface ProductPriceListEntry {
+  id: string;
+  priceListId: string;
+  priceListName: string;
+  priceListStatus: string;
+  currency: string;
+  variantId: string;
+  variantSku: string;
+  fixedPriceCents: number | null;
+  percentOffList: number | null;
+  minQuantity: number;
+  maxQuantity: number | null;
+}
+
+/**
  * A rule that WORKS OUT a price from what a variant cost, so nobody types it.
  *
  * The full server row is much larger (bands, rounding, floors, ceilings, scope,
@@ -416,6 +445,8 @@ export type ProductFacetKey =
   | 'media'
   /** Quantity-break tiers for every variant of this product, in one read. */
   | 'bulk-tiers'
+  /** Trade (price-list) prices for this product, across every list, in one read. */
+  | 'price-list-entries'
   | 'translations'
   | 'inventory'
   | 'fitment'
@@ -643,6 +674,31 @@ export function useProductBulkTiers(productId: string) {
   return useQuery({
     queryKey: productKeys.facet(productId, 'bulk-tiers'),
     queryFn: () => api.get<BulkPriceTier[]>('/v1/commerce/bulk-tiers', { product_id: productId }),
+    enabled: productId !== 'new',
+  });
+}
+
+/**
+ * Every trade (price-list) price for this product, across ALL its price lists,
+ * in ONE read.
+ *
+ * The batching rule again. There is no per-list loop here: reading these by
+ * asking each price list for its entries and keeping the ones that match this
+ * product is the exact N+1 this data layer exists to prevent, and on a business
+ * with many trade lists it is a request per list. So the server answers
+ * per-product in one call (`/products/:id/price-list-entries`, pricing-service
+ * `listEntriesForProduct`), joining entries up to their product.
+ *
+ * Read-only on this tab — entries are authored on the price-list surface, not
+ * here — so this hook has no paired mutation. It still nests under the product's
+ * facet namespace, so a coarse `invalidateProduct(id)` refreshes it like any
+ * other facet.
+ */
+export function useProductPriceListEntries(productId: string) {
+  return useQuery({
+    queryKey: productKeys.facet(productId, 'price-list-entries'),
+    queryFn: () =>
+      api.get<ProductPriceListEntry[]>(`/v1/commerce/products/${productId}/price-list-entries`),
     enabled: productId !== 'new',
   });
 }

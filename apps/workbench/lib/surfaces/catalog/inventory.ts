@@ -18,7 +18,25 @@ import {
 import type { SurfaceDefinition } from '../registry';
 import { StockItemSurface } from '../../../surfaces/inventory/stock-item';
 import { StockListSurface } from '../../../surfaces/inventory/stock-list';
-import { stub } from './stub';
+import { LocationsListSurface } from '../../../surfaces/inventory/locations-list';
+import { LocationDetailSurface } from '../../../surfaces/inventory/location-detail';
+import { TransfersListSurface } from '../../../surfaces/inventory/transfers-list';
+import { TransferDetailSurface } from '../../../surfaces/inventory/transfer-detail';
+import { CountsListSurface } from '../../../surfaces/inventory/counts-list';
+import { CountDetailSurface } from '../../../surfaces/inventory/count-detail';
+import { MovementsListSurface } from '../../../surfaces/inventory/movements-list';
+import { LotsListSurface } from '../../../surfaces/inventory/lots-list';
+import { LotDetailSurface } from '../../../surfaces/inventory/lot-detail';
+import { SuppliersListSurface } from '../../../surfaces/inventory/suppliers-list';
+import { SupplierDetailSurface } from '../../../surfaces/inventory/supplier-detail';
+import { PurchaseOrdersListSurface } from '../../../surfaces/inventory/purchase-orders-list';
+import { PurchaseOrderDetailSurface } from '../../../surfaces/inventory/purchase-order-detail';
+import { ReceivingListSurface } from '../../../surfaces/inventory/receiving-list';
+import { ReceiptDetailSurface } from '../../../surfaces/inventory/receipt-detail';
+import { ReorderListSurface } from '../../../surfaces/inventory/reorder-list';
+import { ReportsSurface } from '../../../surfaces/inventory/reports';
+import { SourcesListSurface } from '../../../surfaces/inventory/sources-list';
+import { SourceDetailSurface } from '../../../surfaces/inventory/source-detail';
 
 export const INVENTORY_SURFACES: SurfaceDefinition[] = [
   {
@@ -50,7 +68,7 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
   },
 
   /* ── Where it lives ────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'inventory.warehouses.list',
     title: 'Locations',
     module: 'inventory',
@@ -58,9 +76,20 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Where it lives',
     order: 10,
     keywords: ['warehouses', 'shops', 'sites', 'storage'],
-    body: 'Every place you hold stock — a warehouse, a shop floor, a van.',
-  }),
-  stub({
+    component: LocationsListSurface,
+    createSurface: 'inventory.warehouses.detail',
+    createLabel: 'New location',
+  },
+  {
+    key: 'inventory.warehouses.detail',
+    title: (params) => (params.id === 'new' ? 'New location' : 'Location'),
+    module: 'inventory',
+    icon: Warehouse,
+    component: LocationDetailSurface,
+    listed: false,
+    besideWidth: 0.45,
+  },
+  {
     key: 'inventory.transfers.list',
     title: 'Transfers',
     module: 'inventory',
@@ -68,9 +97,20 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Where it lives',
     order: 11,
     keywords: ['move', 'between locations'],
-    body: 'Stock on its way from one of your locations to another.',
-  }),
-  stub({
+    component: TransfersListSurface,
+    createSurface: 'inventory.transfers.detail',
+    createLabel: 'New transfer',
+  },
+  {
+    key: 'inventory.transfers.detail',
+    title: (params) => (params.id === 'new' ? 'New transfer' : 'Transfer'),
+    module: 'inventory',
+    icon: ArrowLeftRight,
+    component: TransferDetailSurface,
+    listed: false,
+    besideWidth: 0.5,
+  },
+  {
     key: 'inventory.counts.list',
     title: 'Stock counts',
     module: 'inventory',
@@ -78,9 +118,20 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Where it lives',
     order: 12,
     keywords: ['stocktake', 'audit', 'physical count'],
-    body: 'Counting what is actually on the shelf and correcting the numbers when they disagree.',
-  }),
-  stub({
+    component: CountsListSurface,
+    createSurface: 'inventory.counts.detail',
+    createLabel: 'New count',
+  },
+  {
+    key: 'inventory.counts.detail',
+    title: (params) => (params.id === 'new' ? 'New count' : 'Stock count'),
+    module: 'inventory',
+    icon: ClipboardCheck,
+    component: CountDetailSurface,
+    listed: false,
+    besideWidth: 0.5,
+  },
+  {
     key: 'inventory.movements.list',
     title: 'Movements',
     module: 'inventory',
@@ -88,21 +139,30 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Where it lives',
     order: 13,
     keywords: ['history', 'ledger', 'changes', 'why'],
-    body: 'Every change to a stock number and what caused it — a sale, a delivery, a correction.',
-  }),
-  stub({
+    component: MovementsListSurface,
+  },
+  {
     key: 'inventory.lots.list',
     title: 'Lots & serials',
     module: 'inventory',
     icon: Layers,
     section: 'Where it lives',
     order: 14,
-    keywords: ['batch', 'serial number', 'expiry', 'traceability'],
-    body: 'Tracking individual batches or serial numbers, so you can trace exactly which one a customer got.',
-  }),
+    keywords: ['batch', 'serial number', 'expiry', 'traceability', 'recall', 'lot'],
+    component: LotsListSurface,
+  },
+  {
+    key: 'inventory.lots.detail',
+    title: 'Batch',
+    module: 'inventory',
+    icon: Layers,
+    component: LotDetailSurface,
+    listed: false,
+    besideWidth: 0.45,
+  },
 
   /* ── Buying ────────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'inventory.suppliers.list',
     title: 'Suppliers',
     module: 'inventory',
@@ -110,9 +170,20 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Buying',
     order: 20,
     keywords: ['vendors', 'wholesalers'],
-    body: 'The businesses you buy from, and what you buy from each one.',
-  }),
-  stub({
+    component: SuppliersListSurface,
+    createSurface: 'inventory.suppliers.detail',
+    createLabel: 'New supplier',
+  },
+  {
+    key: 'inventory.suppliers.detail',
+    title: (params) => (params.id === 'new' ? 'New supplier' : 'Supplier'),
+    module: 'inventory',
+    icon: Truck,
+    component: SupplierDetailSurface,
+    listed: false,
+    besideWidth: 0.45,
+  },
+  {
     key: 'inventory.purchase-orders.list',
     title: 'Purchase orders',
     module: 'inventory',
@@ -120,9 +191,20 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Buying',
     order: 21,
     keywords: ['po', 'ordering', 'restock'],
-    body: 'Orders you have placed with a supplier, and what is still outstanding.',
-  }),
-  stub({
+    component: PurchaseOrdersListSurface,
+    createSurface: 'inventory.purchase-orders.detail',
+    createLabel: 'New purchase order',
+  },
+  {
+    key: 'inventory.purchase-orders.detail',
+    title: (params) => (params.id === 'new' ? 'New purchase order' : 'Purchase order'),
+    module: 'inventory',
+    icon: ClipboardList,
+    component: PurchaseOrderDetailSurface,
+    listed: false,
+    besideWidth: 0.5,
+  },
+  {
     key: 'inventory.receiving.list',
     title: 'Receiving',
     module: 'inventory',
@@ -130,9 +212,20 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Buying',
     order: 22,
     keywords: ['delivery', 'goods in', 'check in'],
-    body: 'Booking in a delivery when it arrives, including when what turned up is not what you ordered.',
-  }),
-  stub({
+    component: ReceivingListSurface,
+    createSurface: 'inventory.receiving.detail',
+    createLabel: 'Receive a delivery',
+  },
+  {
+    key: 'inventory.receiving.detail',
+    title: (params) => (params.id === 'new' ? 'Receive a delivery' : 'Delivery'),
+    module: 'inventory',
+    icon: PackageCheck,
+    component: ReceiptDetailSurface,
+    listed: false,
+    besideWidth: 0.5,
+  },
+  {
     key: 'inventory.reorder',
     title: 'Reorder',
     module: 'inventory',
@@ -140,11 +233,11 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Buying',
     order: 23,
     keywords: ['low stock', 'replenish', 'buy more'],
-    body: 'What is running low and needs buying again, worked out from how fast it sells.',
-  }),
+    component: ReorderListSurface,
+  },
 
   /* ── Reporting / Setup ─────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'inventory.reports',
     title: 'Reports',
     module: 'inventory',
@@ -152,9 +245,9 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Reporting',
     order: 30,
     keywords: ['analytics', 'value', 'ageing', 'turnover'],
-    body: 'What your stock is worth, what is sitting still, and what moves fastest.',
-  }),
-  stub({
+    component: ReportsSurface,
+  },
+  {
     key: 'inventory.sources',
     title: 'Stock sources',
     module: 'inventory',
@@ -162,6 +255,17 @@ export const INVENTORY_SURFACES: SurfaceDefinition[] = [
     section: 'Setup',
     order: 40,
     keywords: ['feeds', 'sync', 'external'],
-    body: 'Where stock numbers come from when something outside sparx is the one keeping count.',
-  }),
+    component: SourcesListSurface,
+    createSurface: 'inventory.sources.detail',
+    createLabel: 'Add a source',
+  },
+  {
+    key: 'inventory.sources.detail',
+    title: (params) => (params.id === 'new' ? 'Add a source' : 'Stock source'),
+    module: 'inventory',
+    icon: Link2,
+    component: SourceDetailSurface,
+    listed: false,
+    besideWidth: 0.45,
+  },
 ];

@@ -17,7 +17,7 @@
 // rides the SECURITY DEFINER function, while per-row work runs under
 // withTenant({tenantId}) so every read + the status UPDATE pass tenant_isolation.
 
-import { ADVISORY_LOCKS } from '@sparx/db';
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import {
@@ -208,15 +208,8 @@ async function dispatch(
 export async function runBookingNotificationTick(
   logger: FastifyBaseLogger
 ): Promise<SchedulingTickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${SCHEDULING_NOTIFICATION_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    logger.debug('scheduling-notifications: lock held by another pod, skipping');
-    return { acquired: false, processed: 0, errors: 0 };
-  }
-
-  try {
+  const SKIPPED: SchedulingTickResult = { acquired: false, processed: 0, errors: 0 };
+  return withAdvisoryTickLock(SCHEDULING_NOTIFICATION_LOCK_KEY, SKIPPED, async () => {
     const due = await prisma.$queryRaw<DueNotification[]>`
       SELECT id, tenant_id, booking_id, type, channel FROM find_due_booking_notifications(100)
     `;
@@ -251,9 +244,7 @@ export async function runBookingNotificationTick(
     }
 
     return { acquired: true, processed, errors };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${SCHEDULING_NOTIFICATION_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startBookingNotificationLoop(

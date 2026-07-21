@@ -15,7 +15,7 @@
 // scheduleService.processDueSchedule, which runs inside withTenant({tenantId})
 // so writes still go through tenant_isolation.
 
-import { ADVISORY_LOCKS } from '@sparx/db';
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma } from '@sparx/db';
 import { scheduleService } from '@sparx/sitebuilder';
@@ -36,15 +36,8 @@ export interface TickResult {
 }
 
 export async function runSitebuilderPublishTick(logger: FastifyBaseLogger): Promise<TickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${SITEBUILDER_PUBLISH_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    logger.debug('sitebuilder-publish: lock held by another pod, skipping');
-    return { acquired: false, processed: 0, errors: 0 };
-  }
-
-  try {
+  const SKIPPED: TickResult = { acquired: false, processed: 0, errors: 0 };
+  return withAdvisoryTickLock(SITEBUILDER_PUBLISH_LOCK_KEY, SKIPPED, async () => {
     const due = await prisma.$queryRaw<DueSchedule[]>`
       SELECT id, tenant_id, scheduled_at
       FROM find_due_site_publishes(100)
@@ -78,9 +71,7 @@ export async function runSitebuilderPublishTick(logger: FastifyBaseLogger): Prom
     }
 
     return { acquired: true, processed, errors };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${SITEBUILDER_PUBLISH_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startSitebuilderPublishLoop(

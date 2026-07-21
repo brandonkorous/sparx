@@ -10,6 +10,7 @@ import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-
 const PathId = z.object({ id: z.string().uuid() });
 const EntryParam = z.object({ entryId: z.string().uuid() });
 const TierParam = z.object({ tierId: z.string().uuid() });
+const ProductIdParam = z.object({ productId: z.string().uuid() });
 
 const ListDiscountsQuery = z.object({
   status: z.string().optional(),
@@ -84,6 +85,16 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const { id } = PathId.parse(request.params);
     return ok(await pricingService.listEntries(toCommerceContext(request), id));
+  });
+
+  // Every price-list entry for ONE product, across all its lists — the inverse
+  // of :id/entries, for the Product → Pricing tab. Answered in one query so the
+  // client never loops price lists (the workbench data layer forbids the N+1).
+  app.get('/v1/commerce/products/:productId/price-list-entries', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { productId } = ProductIdParam.parse(request.params);
+    return ok(await pricingService.listEntriesForProduct(toCommerceContext(request), productId));
   });
 
   app.post('/v1/commerce/price-list-entries', async (request) => {

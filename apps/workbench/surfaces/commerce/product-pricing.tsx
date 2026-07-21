@@ -70,6 +70,7 @@ import {
   useMarkupRules,
   useProductBulkTiers,
   useProductOptions,
+  useProductPriceListEntries,
   useProductVariants,
   useUnbindVariantMarkup,
   useUpdateVariant,
@@ -78,6 +79,7 @@ import {
   type MarkupRule,
   type Product,
   type ProductOption,
+  type ProductPriceListEntry,
   type Variant,
 } from './products-data';
 
@@ -417,20 +419,187 @@ export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: P
         }}
       />
 
-      {/* Where the rest of pricing lives. Said once, plainly, rather than
-          duplicating a trade-pricing editor that belongs to another surface —
-          and the API has no way to read "price-list entries for this product"
-          in one call, so building it here would mean a request per price list.
-          On a CARD, not loose on the pane: a line of text sitting directly on
-          the recessed surface belongs to neither the card above nor anything
-          below it. */}
-      <div className="card bg-base-100 p-4">
-        <Text className="text-sm">
-          Special prices for particular trade customers are set on the price list itself, not here —
-          anything you put on a price list overrides the prices above for the customers it covers.
-        </Text>
-      </div>
+      <TradePriceLists productId={product.id} variants={variants} options={options} />
     </div>
+  );
+}
+
+/* ── Trade price lists ──────────────────────────────────────────────────── */
+
+/**
+ * What this product costs on each of your trade price lists.
+ *
+ * READ-ONLY, and that is deliberate. A price-list entry is authored on the
+ * price list itself — the list decides its currency, who it covers and when it
+ * is live, none of which belongs on one product's tab. So this shows the prices
+ * and says where they are changed rather than duplicating a list editor here,
+ * exactly as the trade-pricing pane keeps the account-override create path on
+ * the account side.
+ *
+ * The read is ONE request for the whole product
+ * (`useProductPriceListEntries`), never a loop over price lists — the N+1 the
+ * shared data layer exists to prevent.
+ */
+function tradePriceLine(
+  entry: ProductPriceListEntry,
+  variant: Variant | undefined
+): { price: string; note: string | null } {
+  const currency = entry.currency;
+  const normal = variant?.priceCents ?? null;
+
+  if (entry.fixedPriceCents != null) {
+    return {
+      price: formatCents(entry.fixedPriceCents, currency),
+      note:
+        normal != null && normal !== entry.fixedPriceCents
+          ? `usually ${formatCents(normal, currency)}`
+          : null,
+    };
+  }
+  if (entry.percentOffList != null) {
+    const off = `${String(entry.percentOffList)}% off`;
+    if (normal == null) return { price: off, note: null };
+    const effective = Math.round(normal * (1 - entry.percentOffList / 100));
+    return {
+      price: formatCents(effective, currency),
+      note: `${off} the usual ${formatCents(normal, currency)}`,
+    };
+  }
+  return { price: '—', note: null };
+}
+
+/** The buy-this-many condition on an entry, in words, or null when it applies
+ *  to any quantity. */
+function quantityCondition(entry: ProductPriceListEntry): string | null {
+  if (entry.maxQuantity != null) {
+    return `buying ${String(entry.minQuantity)}–${String(entry.maxQuantity)}`;
+  }
+  if (entry.minQuantity > 1) return `buying ${String(entry.minQuantity)} or more`;
+  return null;
+}
+
+interface TradePriceList {
+  id: string;
+  name: string;
+  status: string;
+  currency: string;
+  entries: ProductPriceListEntry[];
+}
+
+function TradePriceLists({
+  productId,
+  variants,
+  options,
+}: {
+  productId: string;
+  variants: Variant[];
+  options: ProductOption[];
+}) {
+  const query = useProductPriceListEntries(productId);
+  const entries = useMemo(() => query.data ?? [], [query.data]);
+
+  const variantById = useMemo(
+    () => new Map(variants.map((variant) => [variant.id, variant])),
+    [variants]
+  );
+
+  // Group the flat entry list into one card per price list, preserving the
+  // server's order (priority desc, then SKU, then quantity).
+  const lists = useMemo<TradePriceList[]>(() => {
+    const map = new Map<string, TradePriceList>();
+    for (const entry of entries) {
+      const existing = map.get(entry.priceListId);
+      if (existing) {
+        existing.entries.push(entry);
+      } else {
+        map.set(entry.priceListId, {
+          id: entry.priceListId,
+          name: entry.priceListName,
+          status: entry.priceListStatus,
+          currency: entry.currency,
+          entries: [entry],
+        });
+      }
+    }
+    return [...map.values()];
+  }, [entries]);
+
+  return (
+    <FormSection
+      title="Prices for your trade customers"
+      description="A price list is a set of prices for particular customers — a wholesale sheet, a distributor's rates. These are set up on the price list itself, and shown here so you can see what this product costs on each. Anything on a list overrides the prices above for the customers it covers."
+    >
+      {query.isError ? (
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <Text className="text-sm">
+            Your trade price lists could not be read just now. Nothing about them has changed.
+          </Text>
+          <Button
+            size="sm"
+            variant="outline"
+            color="neutral"
+            onClick={() => {
+              void query.refetch();
+            }}
+          >
+            Try again
+          </Button>
+        </div>
+      ) : query.isPending ? (
+        <p className="text-sm" role="status">
+          Loading…
+        </p>
+      ) : lists.length === 0 ? (
+        <Text className="text-sm">
+          This product is not on any trade price list yet. Every customer pays the prices above
+          until you add it to one.
+        </Text>
+      ) : (
+        <div className="flex flex-col gap-4">
+          {lists.map((list) => (
+            <div key={list.id} className="flex flex-col gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <Heading level={3} className="text-base font-semibold">
+                  {list.name}
+                </Heading>
+                <Badge
+                  color={list.status === 'active' ? 'success' : 'warning'}
+                  variant="soft"
+                  size="sm"
+                >
+                  {list.status === 'active' ? 'Live' : 'Not live yet'}
+                </Badge>
+              </div>
+              <ul className="flex flex-col gap-1">
+                {list.entries.map((entry) => {
+                  const variant = variantById.get(entry.variantId);
+                  const name = variant ? variantLabel(variant, options) : entry.variantSku;
+                  const condition = quantityCondition(entry);
+                  const line = tradePriceLine(entry, variant);
+                  return (
+                    <li
+                      key={entry.id}
+                      className="border-base-300 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 border-b pb-2 last:border-b-0 last:pb-0"
+                    >
+                      <Text as="span" className="min-w-0 flex-1 text-sm">
+                        {name}
+                        {condition ? ` · ${condition}` : ''}
+                      </Text>
+                      <div className="text-right">
+                        <Text as="span" className="font-semibold tabular-nums">
+                          {line.price}
+                        </Text>
+                        {line.note ? <Text className="text-sm">{line.note}</Text> : null}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </FormSection>
   );
 }
 

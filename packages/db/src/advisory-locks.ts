@@ -30,36 +30,28 @@
 //   · Keep the list contiguous and append at the end.
 //
 // ─────────────────────────────────────────────────────────────────────────
-// KNOWN BUG — these locks LEAK. Not fixed here; see below before relying on
-// them.
+// Use these keys ONLY through `withAdvisoryTickLock` (./advisory-tick-lock).
 //
-// Every tick does roughly:
+// The original acquire/release pattern LEAKED:
 //
 //     await prisma.$queryRaw`SELECT pg_try_advisory_lock(${KEY}::int)`
 //     ...work...
 //     await prisma.$queryRaw`SELECT pg_advisory_unlock(${KEY}::int)`
 //
 // `pg_advisory_lock` is SESSION-scoped, but `prisma.$queryRaw` runs on whatever
-// connection the pool hands it. So the acquire can land on connection A and the
-// release on connection B — where the unlock returns false (it is not the
-// holder) and is discarded, leaving the lock held on A for as long as that
-// connection lives.
+// pooled connection is free — so the acquire could land on connection A and the
+// release on connection B, where the unlock returns false (B is not the holder)
+// and is discarded, leaving the lock held on A. A tick could thus permanently
+// lose its own lock: every later run saw `acquired: false`, logged "held by
+// another pod, skipping", and never ran again until the pod restarted (scheduled
+// publishes / queued email silently stopping, no error). Observed directly in
+// pg_locks against idle sessions, and it made the tick suites flaky (pass in
+// isolation, fail in a full run).
 //
-// Consequence in production: a tick can permanently lose its own lock. Every
-// subsequent run sees `acquired: false`, logs the benign-looking "held by
-// another pod, skipping", and NEVER RUNS AGAIN until the pod restarts. Scheduled
-// publishes stop; queued email stops; nothing errors.
-//
-// Observed directly: after one api-rest suite run, `pg_locks` held 42424244
-// (EMAIL_DISPATCH) and 42424245 (SCHEDULING_NOTIFICATIONS) against sessions in
-// state 'idle'. It also makes the tick suites flaky — they pass in isolation and
-// fail in a full run, which is what surfaced it.
-//
-// The fix is `pg_try_advisory_xact_lock` inside a transaction (auto-released at
-// commit/rollback, so it cannot outlive its holder), or pinning acquire+release
-// to one connection. Both change tick control flow in twelve places and deserve
-// their own change rather than a tail-end patch — hence this note instead of a
-// rushed edit.
+// `withAdvisoryTickLock` fixes it with `pg_try_advisory_xact_lock` — a
+// transaction-scoped lock Postgres releases automatically at commit/rollback on
+// the SAME connection, so acquire and release can no longer split. All twelve
+// ticks were migrated to it. Do not reintroduce a raw session lock here.
 // ─────────────────────────────────────────────────────────────────────────
 
 export const ADVISORY_LOCKS = {

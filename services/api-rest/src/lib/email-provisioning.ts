@@ -15,7 +15,7 @@
 // the missing keys are created — so a re-activation or duplicate event is a safe
 // no-op.
 
-import { ADVISORY_LOCKS } from '@sparx/db';
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import { emailService } from '@sparx/builder';
 import { getPlatformBus, type PlatformEvent } from '@sparx/crm';
 import { prisma } from '@sparx/db';
@@ -67,15 +67,8 @@ export interface EmailProvisioningReconcileResult {
 export async function reconcileEmailProvisioning(
   logger: FastifyBaseLogger
 ): Promise<EmailProvisioningReconcileResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${EMAIL_PROVISIONING_RECONCILE_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    logger.debug('email-provisioning-reconcile: lock held by another pod, skipping');
-    return { acquired: false, tenants: 0, provisioned: 0 };
-  }
-
-  try {
+  const SKIPPED: EmailProvisioningReconcileResult = { acquired: false, tenants: 0, provisioned: 0 };
+  return withAdvisoryTickLock(EMAIL_PROVISIONING_RECONCILE_LOCK_KEY, SKIPPED, async () => {
     const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
       SELECT tenant_id FROM find_tenants_with_active_module('email')
     `;
@@ -99,9 +92,7 @@ export async function reconcileEmailProvisioning(
       );
     }
     return { acquired: true, tenants: rows.length, provisioned };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${EMAIL_PROVISIONING_RECONCILE_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 /** Drive reconcileEmailProvisioning on an interval. Mirrors startEmailDispatchLoop

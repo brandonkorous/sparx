@@ -1,6 +1,6 @@
 # 131 — Site Scoping: the operational layer
 
-Version: 1.3.0
+Version: 1.4.0
 Author: Brandon Korous
 Last Updated: 2026-07-20
 
@@ -128,14 +128,28 @@ delete their words or empty their list. Operator-authored content (quick replies
 letterhead templates, redirects) Cascades, because it belongs to the business.
 `ProductAnswer` gets no column — it exists only under its question and inherits.
 
-**Known gap, deliberately left open.** `Product.averageRating` / `reviewCount`
-are denormalized columns on `products`, so they remain TENANT-WIDE while the
-review list is now per-site. On a product listed on two storefronts the PDP can
-show a star rating computed from 12 reviews above a list containing 3. The honest
-fix is a per-`(product, site)` aggregate — most naturally on the ProductProperty
-junction — which is a schema change plus a recompute path, not a filter. Scoping
-the list without it is still a strict improvement: the reviews a shopper READS
-are the right ones. Recorded at `review-service.ts` `recomputeProductRating`.
+**The rating aggregate is now per-site too (closed — migrations 20270103 +
+20270104).** `Product.averageRating` / `reviewCount` are denormalized columns on
+`products`, so on their own they stay TENANT-WIDE — a product listed on two
+storefronts would show a star rating computed from 12 reviews above a list of 3.
+The fix is a dedicated `ProductReviewRollup` (`commerce_product_review_rollups`):
+one row per `(product, site the reviews were written on)` holding the SUM of
+ratings and the count — **sums, not averages, because averages cannot be averaged**
+and a storefront's figure combines two buckets (its own reviews + the shared/legacy
+`null` bucket every site counts). `recomputeProductRating` maintains it in the same
+transaction as the tenant-wide columns (group by `propertyId`, `deleteMany` +
+`createMany` so a site that loses its last review drops its row), and the storefront
+reads combine `sum(sumRating)/sum(reviewCount)` over the `[site, null]` rows —
+`reviewRollupsSelect` in `public/commerce.ts`, threaded through the PLP, search
+hydrate, collection/category grids, and the PDP. A junction-column aggregate was
+rejected: the review's site is the site it was WRITTEN on, which the ProductProperty
+junction (where a product is VISIBLE) cannot express. `null` is nullable for the
+pre-multi-site bucket, `NULLS NOT DISTINCT` keeps it one row per product, and the
+20270104 backfill primes existing products (per-tenant loop, FORCE-RLS). Proven
+non-inert by the `product-reviews.test.ts` per-site test (disable-verified: with
+the rollup read off, the PDP reverts to the tenant-wide blend and the test fails).
+The non-scoped `by-ids` hydrate keeps the tenant-wide columns — it has no site
+context. Recorded at `review-service.ts` `recomputeProductRating`.
 
 `Author`, `Taxonomy`, `TaxonomyTerm` are **done** (migration 20261227). Three
 models that scope three different ways, which is the point rather than an

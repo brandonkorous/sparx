@@ -8,6 +8,7 @@
 //   • the public list endpoint returns only APPROVED reviews + the live summary.
 
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
+import crypto from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { invalidateModuleCache } from '@sparx/auth';
 import { reviewService } from '@sparx/commerce';
@@ -48,6 +49,69 @@ function productAggregate(t: TestTenant, productId: string) {
       select: { reviewCount: true, averageRating: true },
     })
   );
+}
+
+/** A second site under the tenant (`properties` is FORCE RLS, so tenant-scoped). */
+async function createSite(t: TestTenant, name: string): Promise<{ id: string; slug: string }> {
+  return withTenant({ tenantId: t.tenantId }, async (tx) => {
+    const slug = `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${crypto.randomBytes(3).toString('hex')}`;
+    const row = await tx.property.create({
+      data: { tenantId: t.tenantId, slug, name, isPrimary: false },
+      select: { id: true, slug: true },
+    });
+    return row;
+  });
+}
+
+async function propertySlug(t: TestTenant, propertyId: string): Promise<string> {
+  const row = await withTenant({ tenantId: t.tenantId }, (tx) =>
+    tx.property.findUniqueOrThrow({ where: { id: propertyId }, select: { slug: true } })
+  );
+  return row.slug;
+}
+
+/** Seed a review already stamped to a site (or the null shared bucket), pending.
+ *  Created directly so the propertyId is exactly what the test dictates rather
+ *  than whatever the public form resolves — the site attribution IS the thing
+ *  under test. */
+async function seedReview(
+  t: TestTenant,
+  productId: string,
+  propertyId: string | null,
+  rating: number
+): Promise<string> {
+  return withTenant({ tenantId: t.tenantId }, async (tx) => {
+    const r = await tx.productReview.create({
+      data: {
+        tenantId: t.tenantId,
+        productId,
+        propertyId,
+        rating,
+        title: '',
+        body: 'A review body.',
+        status: 'pending',
+      },
+      select: { id: true },
+    });
+    return r.id;
+  });
+}
+
+/** The public PDP's rating fields for one site (docs/131 §4). */
+async function pdpRating(
+  app: FastifyInstance,
+  handle: string,
+  tenantSlugValue: string,
+  siteSlug?: string
+): Promise<{ averageRating: number | null; reviewCount: number }> {
+  const q = `tenant=${tenantSlugValue}${siteSlug ? `&property=${siteSlug}` : ''}`;
+  const res = await app.inject({
+    method: 'GET',
+    url: `/v1/public/commerce/products/${handle}?${q}`,
+  });
+  expect(res.statusCode).toBe(200);
+  const data = res.json().data;
+  return { averageRating: data.averageRating, reviewCount: data.reviewCount };
 }
 
 describe('product reviews — submit, moderate, aggregate, public list', () => {
@@ -233,6 +297,73 @@ describe('product reviews — submit, moderate, aggregate, public list', () => {
       expect(data[0].answers).toHaveLength(1);
       expect(data[0].answers[0]).toMatchObject({ isOfficial: true });
       expect(productId).toBeTruthy();
+    } finally {
+      await dropTestTenant(t.tenantId);
+    }
+  });
+
+  // docs/131 §4 — the per-site rating rollup. One product listed on TWO of a
+  // tenant's businesses, reviewed differently on each. The PDP star average must
+  // be the average of THAT site's reviews (plus the shared/legacy null bucket),
+  // never the tenant-wide blend across sibling businesses — the exact leak the
+  // ProductReviewRollup table closes. The tenant-wide product.average_rating is
+  // deliberately the "wrong answer" here (3), so an assertion of the per-site
+  // figure fails the moment the read path reverts to reading the column.
+  it('PDP shows each site its own rating, shared null bucket counts on both', async () => {
+    const t = await createTestTenant('owner');
+    try {
+      await enableCommerce(t.tenantId);
+      const tSlug = await tenantSlug(t.tenantId);
+      const handle = `widget-${Date.now()}-persite`;
+      const productId = await createActiveProduct(t, handle);
+      const ctx = { tenantId: t.tenantId, userId: t.userId };
+
+      // Primary = Bob's Parts (seeded by createTestTenant); add Savory Donuts.
+      const partsSlug = await propertySlug(t, t.propertyId);
+      const donuts = await createSite(t, 'Savory Donuts');
+
+      // 5★ on Parts, 1★ on Donuts, and a 3★ legacy review with no site (the
+      // shared bucket every storefront counts). Tenant-wide blend = (5+1+3)/3 = 3.
+      const idParts = await seedReview(t, productId, t.propertyId, 5);
+      const idDonuts = await seedReview(t, productId, donuts.id, 1);
+      const idLegacy = await seedReview(t, productId, null, 3);
+      await reviewService.moderate(ctx, { reviewId: idParts, status: 'approved' });
+      await reviewService.moderate(ctx, { reviewId: idDonuts, status: 'approved' });
+      await reviewService.moderate(ctx, { reviewId: idLegacy, status: 'approved' });
+
+      // Tenant-wide column is the blend — the value the PDP must NOT show per-site.
+      expect(await productAggregate(t, productId)).toMatchObject({
+        reviewCount: 3,
+        averageRating: 3,
+      });
+
+      // Parts sees its own 5★ + the shared 3★ → (5+3)/2 = 4 over 2 reviews.
+      expect(await pdpRating(app, handle, tSlug, partsSlug)).toEqual({
+        averageRating: 4,
+        reviewCount: 2,
+      });
+      // The primary-site default (no ?property) resolves to Parts — same figure.
+      expect(await pdpRating(app, handle, tSlug)).toEqual({
+        averageRating: 4,
+        reviewCount: 2,
+      });
+      // Donuts sees its own 1★ + the shared 3★ → (1+3)/2 = 2 over 2 reviews.
+      expect(await pdpRating(app, handle, tSlug, donuts.slug)).toEqual({
+        averageRating: 2,
+        reviewCount: 2,
+      });
+
+      // Deleting the Donuts review drops Donuts to just the shared 3★; Parts is
+      // untouched — the rollup is rewritten per (product, site), not globally.
+      await reviewService.deleteReview(ctx, idDonuts);
+      expect(await pdpRating(app, handle, tSlug, donuts.slug)).toEqual({
+        averageRating: 3,
+        reviewCount: 1,
+      });
+      expect(await pdpRating(app, handle, tSlug, partsSlug)).toEqual({
+        averageRating: 4,
+        reviewCount: 2,
+      });
     } finally {
       await dropTestTenant(t.tenantId);
     }

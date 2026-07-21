@@ -10,6 +10,7 @@
 
 import { doc, h2, ol, p, ul } from '../engine/prose';
 import type { SampleDataPack } from '../types';
+import { APPAREL_SCALE_COLLECTION, apparelScaleProducts } from './apparel-scale';
 
 export const apparelPack: SampleDataPack = {
   industry: 'apparel',
@@ -59,6 +60,9 @@ export const apparelPack: SampleDataPack = {
     { key: 'new-arrivals', name: 'New Arrivals', handle: 'new-arrivals', featured: true },
     { key: 'sale', name: 'Sale', handle: 'sale' },
     { key: 'summer-edit', name: 'Summer Edit', handle: 'summer-edit' },
+    // The broad, multi-page line (see ./apparel-scale) — the products below spread in
+    // its ~90 members so a collection detail page spans real pagination.
+    APPAREL_SCALE_COLLECTION,
   ],
 
   personas: [
@@ -1265,6 +1269,10 @@ export const apparelPack: SampleDataPack = {
         },
       ],
     },
+    // Breadth for catalog-scale surfaces (pagination/deep-offset — docs/127 §8): ~90
+    // lean single-variant products in the "Full Line" collection. Generated, so they
+    // stay prose-free here; the authored products above carry the reviews/bundle story.
+    ...apparelScaleProducts(),
   ],
 
   bundles: [

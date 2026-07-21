@@ -10,7 +10,7 @@
 // CMS/sitebuilder ticks). Per-row work rides withTenant({tenantId}) so the
 // UPDATE still goes through tenant_isolation; the cross-tenant scan does not.
 
-import { ADVISORY_LOCKS } from '@sparx/db';
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
@@ -75,15 +75,8 @@ async function markSendFailed(tenantId: string, sendId: string, reason: string):
 }
 
 export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<TickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${EMAIL_DISPATCH_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    logger.debug('email-dispatch: lock held by another pod, skipping');
-    return { acquired: false, processed: 0, errors: 0 };
-  }
-
-  try {
+  const SKIPPED: TickResult = { acquired: false, processed: 0, errors: 0 };
+  return withAdvisoryTickLock(EMAIL_DISPATCH_LOCK_KEY, SKIPPED, async () => {
     const due = await prisma.$queryRaw<DueSend[]>`
       SELECT id, tenant_id, due_at FROM find_due_scheduled_sends(100)
     `;
@@ -250,9 +243,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
     }
 
     return { acquired: true, processed, errors };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${EMAIL_DISPATCH_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startEmailDispatchLoop(

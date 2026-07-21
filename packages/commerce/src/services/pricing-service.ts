@@ -266,6 +266,71 @@ export async function listEntries(
   });
 }
 
+/**
+ * Every price-list entry that touches ONE product, across ALL its lists —
+ * the inverse of `listEntries` (which is scoped to one list).
+ *
+ * This is the Product → Pricing tab view: "which trade price lists is this
+ * product on, and at what price per variant?". Reading it by looping
+ * `listEntries` over every price list is the N+1 the workbench data layer
+ * forbids, so it is answered in one indexed query (`@@index([tenantId,
+ * variantId])` on the entry, joined up to its product) instead.
+ *
+ * Each row carries enough context to NAME its list without a second read:
+ * the list's id, name, currency and status travel with the entry. Soft-deleted
+ * (archived) lists are excluded, matching `listPriceLists` / `listEntries`.
+ */
+export interface ProductPriceListEntryRow {
+  id: string;
+  priceListId: string;
+  priceListName: string;
+  priceListStatus: string;
+  currency: string;
+  variantId: string;
+  variantSku: string;
+  fixedPriceCents: number | null;
+  percentOffList: number | null;
+  minQuantity: number;
+  maxQuantity: number | null;
+}
+
+export async function listEntriesForProduct(
+  ctx: ServiceContext,
+  productId: string
+): Promise<ProductPriceListEntryRow[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.priceListEntry.findMany({
+      where: {
+        variant: { productId },
+        priceList: { deletedAt: null },
+      },
+      include: {
+        priceList: { select: { name: true, currency: true, status: true, priority: true } },
+        variant: { select: { sku: true } },
+      },
+      orderBy: [
+        { priceList: { priority: 'desc' } },
+        { variant: { sku: 'asc' } },
+        { minQuantity: 'asc' },
+      ],
+      take: 1000,
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      priceListId: r.priceListId,
+      priceListName: r.priceList.name,
+      priceListStatus: r.priceList.status,
+      currency: r.priceList.currency,
+      variantId: r.variantId,
+      variantSku: r.variant.sku,
+      fixedPriceCents: r.fixedPriceCents,
+      percentOffList: r.percentOffList,
+      minQuantity: r.minQuantity,
+      maxQuantity: r.maxQuantity,
+    }));
+  });
+}
+
 export async function setPriceListEntry(
   ctx: ServiceContext,
   rawInput: unknown

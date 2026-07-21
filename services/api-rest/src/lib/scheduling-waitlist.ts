@@ -7,7 +7,7 @@
 // the BookingNotification ledger, which is bookingId-keyed) — a direct transactional
 // send, since there's no booking yet.
 
-import { ADVISORY_LOCKS } from '@sparx/db';
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import {
@@ -134,12 +134,8 @@ async function processTenant(logger: FastifyBaseLogger, tenantId: string): Promi
 }
 
 export async function runWaitlistTick(logger: FastifyBaseLogger): Promise<WaitlistTickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${WAITLIST_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) return { acquired: false, tenants: 0, offered: 0 };
-
-  try {
+  const SKIPPED: WaitlistTickResult = { acquired: false, tenants: 0, offered: 0 };
+  return withAdvisoryTickLock(WAITLIST_LOCK_KEY, SKIPPED, async () => {
     const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
       SELECT tenant_id FROM find_tenants_with_waitlist_work(${SCAN_LIMIT}::int)
     `;
@@ -154,9 +150,7 @@ export async function runWaitlistTick(logger: FastifyBaseLogger): Promise<Waitli
       }
     }
     return { acquired: true, tenants: rows.length, offered };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${WAITLIST_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startWaitlistLoop(

@@ -229,6 +229,27 @@ async function withYourPrices(
   }));
 }
 
+// Combine a product's per-site rollup buckets ([site] + the null legacy/shared
+// bucket) into the one star average + count a storefront shows (docs/131 §4).
+// Averages can't be averaged, so this sums the raw rating sums and counts across
+// the buckets: sum(sumRating)/sum(reviewCount). `rollups` is present ONLY on the
+// site-scoped selects (productSelect(propertyId) / fullProductSelect) — when it is,
+// it is AUTHORITATIVE (an empty array means "no reviews on this site", NOT a
+// fallback), because recomputeProductRating + the priming backfill keep a rollup
+// row for every (product, site) that has any approved review. The tenant-wide
+// product.average_rating / review_count columns are the fallback only for the
+// non-site-scoped by-ids path, which passes no rollup.
+function siteRating(
+  rollups: { sumRating: number; reviewCount: number }[] | undefined,
+  fallbackAverage: number | null,
+  fallbackCount: number
+): { averageRating: number | null; reviewCount: number } {
+  if (!rollups) return { averageRating: fallbackAverage, reviewCount: fallbackCount };
+  const reviewCount = rollups.reduce((sum, r) => sum + r.reviewCount, 0);
+  const ratingSum = rollups.reduce((sum, r) => sum + r.sumRating, 0);
+  return { averageRating: reviewCount > 0 ? ratingSum / reviewCount : null, reviewCount };
+}
+
 function publicProduct(row: {
   id: string;
   title: string;
@@ -247,7 +268,9 @@ function publicProduct(row: {
   updatedAt: Date;
   images?: { mediaAssetId: string }[];
   variants?: { id: string }[];
+  reviewRollups?: { sumRating: number; reviewCount: number }[];
 }) {
+  const rating = siteRating(row.reviewRollups, row.averageRating, row.reviewCount);
   return {
     id: row.id,
     title: row.title,
@@ -259,8 +282,8 @@ function publicProduct(row: {
     priceMinCents: row.priceMinCents,
     priceMaxCents: row.priceMaxCents,
     inStock: row.inStock,
-    averageRating: row.averageRating,
-    reviewCount: row.reviewCount,
+    averageRating: rating.averageRating,
+    reviewCount: rating.reviewCount,
     seoTitle: row.seoTitle,
     seoDescription: row.seoDescription,
     // Hero thumbnail asset id (primary, else first product-level by position —
@@ -375,7 +398,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           orderBy: { updatedAt: 'desc' },
           take: q.perPage,
           skip: (q.page - 1) * q.perPage,
-          select: productSelect(),
+          select: productSelect(propertyId),
         }),
         tx.product.count({ where }),
       ]);
@@ -447,7 +470,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           orderBy: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
           take: q.perPage,
           skip: (q.page - 1) * q.perPage,
-          select: productSelect(),
+          select: productSelect(propertyId),
         }),
         tx.product.count({ where }),
       ]);
@@ -519,7 +542,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
             deletedAt: null,
             ...productSiteVisibilityWhere(propertyId),
           },
-          select: productSelect(),
+          select: productSelect(propertyId),
         })
       );
       const byId = new Map(rows.map((r) => [r.id, r]));
@@ -620,7 +643,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           orderBy: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
           // An id pin returns every requested product; a source is capped.
           take: ids ? undefined : q.limit,
-          select: FULL_PRODUCT_SELECT,
+          select: fullProductSelect(propertyId),
         })
       ),
       isModuleEnabled(tenantId, 'inventory'),
@@ -658,7 +681,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
               ? {}
               : { status: 'active', ...productSiteVisibilityWhere(propertyId) }),
           },
-          select: FULL_PRODUCT_SELECT,
+          select: fullProductSelect(propertyId),
         })
       ),
       isModuleEnabled(tenantId, 'inventory'),
@@ -813,7 +836,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           orderBy: { updatedAt: 'desc' },
           take: q.perPage,
           skip: (q.page - 1) * q.perPage,
-          select: productSelect(),
+          select: productSelect(propertyId),
         }),
         tx.product.count({ where }),
       ]);
@@ -910,7 +933,19 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
   return Promise.resolve();
 };
 
-function productSelect() {
+// The per-site rating rollup fragment (docs/131 §4): the product's [site] + null
+// buckets, which `siteRating` combines into the storefront star average. Included
+// on every SITE-SCOPED select so a product listed on two businesses shows each its
+// own average instead of the tenant-wide blend. Omitted from the non-scoped by-ids
+// path, which has no site context and keeps the tenant-wide columns.
+function reviewRollupsSelect(propertyId: string) {
+  return {
+    where: { OR: [{ propertyId }, { propertyId: null }] },
+    select: { sumRating: true, reviewCount: true },
+  } satisfies Prisma.Product$reviewRollupsArgs;
+}
+
+function productSelect(propertyId?: string) {
   return {
     id: true,
     title: true,
@@ -945,89 +980,98 @@ function productSelect() {
       take: 1,
       select: { id: true },
     },
+    // Per-site rating (only when the read is scoped to a site).
+    ...(propertyId ? { reviewRollups: reviewRollupsSelect(propertyId) } : {}),
   };
 }
 
 // The FULL product shape (options + variants + every image + fitments) — the PDP
 // payload, shared by GET …/products/:handle and the Builder's …/products/full so a
 // pinned/looped product hydrates the same interactive buy-box (docs/98 Pillar 7).
-const FULL_PRODUCT_SELECT = {
-  id: true,
-  title: true,
-  handle: true,
-  description: true,
-  vendor: true,
-  productType: true,
-  tags: true,
-  priceMinCents: true,
-  priceMaxCents: true,
-  inStock: true,
-  averageRating: true,
-  reviewCount: true,
-  seoTitle: true,
-  seoDescription: true,
-  updatedAt: true,
-  fulfillmentType: true,
-  weightGrams: true,
-  lengthMm: true,
-  widthMm: true,
-  heightMm: true,
-  options: {
-    orderBy: { position: 'asc' },
-    select: {
-      id: true,
-      name: true,
-      displayType: true,
-      position: true,
-      values: {
-        orderBy: { position: 'asc' },
-        select: { id: true, value: true, swatchHex: true, position: true },
+// A function (not a const) so the per-site rating rollup (docs/131 §4) is scoped to
+// the active site — the PDP star average must be this business's, not the blend.
+function fullProductSelect(propertyId: string) {
+  return {
+    id: true,
+    title: true,
+    handle: true,
+    description: true,
+    vendor: true,
+    productType: true,
+    tags: true,
+    priceMinCents: true,
+    priceMaxCents: true,
+    inStock: true,
+    averageRating: true,
+    reviewCount: true,
+    seoTitle: true,
+    seoDescription: true,
+    updatedAt: true,
+    reviewRollups: reviewRollupsSelect(propertyId),
+    fulfillmentType: true,
+    weightGrams: true,
+    lengthMm: true,
+    widthMm: true,
+    heightMm: true,
+    options: {
+      orderBy: { position: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        displayType: true,
+        position: true,
+        values: {
+          orderBy: { position: 'asc' },
+          select: { id: true, value: true, swatchHex: true, position: true },
+        },
       },
     },
-  },
-  variants: {
-    where: { deletedAt: null },
-    // Default first, then position — same order as productSelect, so this row's
-    // `variants[0]` is the same variant `publicProduct` reports as
-    // `defaultVariantId` (mapFullProduct spreads it). `isDefault` alone leaves
-    // ties nondeterministic.
-    orderBy: [{ isDefault: 'desc' as const }, { position: 'asc' as const }],
-    select: {
-      id: true,
-      sku: true,
-      title: true,
-      priceCents: true,
-      compareAtPriceCents: true,
-      currency: true,
-      isDefault: true,
-      inventoryPolicy: true,
-      optionAssignments: { select: { optionValueId: true } },
-      inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
+    variants: {
+      where: { deletedAt: null },
+      // Default first, then position — same order as productSelect, so this row's
+      // `variants[0]` is the same variant `publicProduct` reports as
+      // `defaultVariantId` (mapFullProduct spreads it). `isDefault` alone leaves
+      // ties nondeterministic.
+      orderBy: [{ isDefault: 'desc' as const }, { position: 'asc' as const }],
+      select: {
+        id: true,
+        sku: true,
+        title: true,
+        priceCents: true,
+        compareAtPriceCents: true,
+        currency: true,
+        isDefault: true,
+        inventoryPolicy: true,
+        optionAssignments: { select: { optionValueId: true } },
+        inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
+      },
     },
-  },
-  images: {
-    orderBy: { position: 'asc' },
-    select: {
-      id: true,
-      mediaAssetId: true,
-      variantId: true,
-      alt: true,
-      position: true,
-      optionValueLinks: { select: { optionValueId: true } },
+    images: {
+      orderBy: { position: 'asc' },
+      select: {
+        id: true,
+        mediaAssetId: true,
+        variantId: true,
+        alt: true,
+        position: true,
+        optionValueLinks: { select: { optionValueId: true } },
+      },
     },
-  },
-  fitments: {
-    select: {
-      id: true,
-      notes: true,
-      node: { select: { name: true, pathNames: true } },
-      ranges: { select: { dimensionKey: true, min: true, max: true } },
-      domain: { select: { slug: true, displayName: true, dimensions: true } },
+    fitments: {
+      select: {
+        id: true,
+        notes: true,
+        node: { select: { name: true, pathNames: true } },
+        ranges: { select: { dimensionKey: true, min: true, max: true } },
+        domain: { select: { slug: true, displayName: true, dimensions: true } },
+      },
     },
-  },
-} satisfies Prisma.ProductSelect;
+  } satisfies Prisma.ProductSelect;
+}
 
-type FullProductRow = Prisma.ProductGetPayload<{ select: typeof FULL_PRODUCT_SELECT }>;
+type FullProductRow = Prisma.ProductGetPayload<{
+  select: ReturnType<typeof fullProductSelect>;
+}>;
 
 /** Map a full product row to the PUBLIC PDP shape (the storefront's PublicProduct).
  *  `inventoryActive` flows through to the availability rule: when the inventory

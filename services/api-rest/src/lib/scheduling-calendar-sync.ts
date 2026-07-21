@@ -7,7 +7,7 @@
 // error`, raises `calendar.sync_failed`, and the resource simply falls back to
 // sparx-only data — a stale feed never weakens the DB-level no-overlap guard (§8.4).
 
-import { ADVISORY_LOCKS } from '@sparx/db';
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma } from '@sparx/db';
 import {
@@ -225,12 +225,8 @@ export interface CalendarSyncTickResult {
 export async function runCalendarSyncTick(
   logger: FastifyBaseLogger
 ): Promise<CalendarSyncTickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${CALENDAR_SYNC_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) return { acquired: false, processed: 0, errors: 0 };
-
-  try {
+  const SKIPPED: CalendarSyncTickResult = { acquired: false, processed: 0, errors: 0 };
+  return withAdvisoryTickLock(CALENDAR_SYNC_LOCK_KEY, SKIPPED, async () => {
     const due = await prisma.$queryRaw<DueConnection[]>`
       SELECT id, tenant_id, resource_id, provider, connection_kind
       FROM find_due_calendar_connections(${STALE_SECONDS}::int, 100)
@@ -257,9 +253,7 @@ export async function runCalendarSyncTick(
       else errors += 1;
     }
     return { acquired: true, processed, errors };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${CALENDAR_SYNC_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startCalendarSyncLoop(

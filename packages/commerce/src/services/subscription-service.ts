@@ -38,6 +38,24 @@ export interface SubscriptionSummary {
   providerSlug: string;
 }
 
+export interface SubscriptionEventRow {
+  id: string;
+  event: string;
+  payload: unknown;
+  actorUserId: string | null;
+  occurredAt: string;
+}
+
+export interface DunningAttemptRow {
+  id: string;
+  paymentRef: string | null;
+  attemptNumber: number;
+  outcome: string;
+  failureReason: string | null;
+  attemptedAt: string;
+  nextRetryAt: string | null;
+}
+
 export interface SubscriptionDetail extends SubscriptionSummary {
   intervalUnit: string;
   intervalCount: number;
@@ -60,6 +78,12 @@ export interface SubscriptionDetail extends SubscriptionSummary {
     addonOfId: string | null;
     addonOfName: string | null;
   }[];
+  /** The lifecycle stream — created, renewed, paused, cancelled, … — newest
+   *  first. What actually happened to this repeat order and when. */
+  events: SubscriptionEventRow[];
+  /** Failed / retried payment attempts, newest first. Empty unless a charge has
+   *  ever failed; the tail of it is why a subscription is `past_due`. */
+  dunningAttempts: DunningAttemptRow[];
 }
 
 // ─── Reads ───────────────────────────────────────────────────────────
@@ -102,6 +126,8 @@ export async function get(
       include: {
         items: { include: { variant: { include: { product: { select: { title: true } } } } } },
         customer: { select: CUSTOMER_NAME_SELECT },
+        events: { orderBy: { occurredAt: 'desc' }, take: 50 },
+        dunningAttempts: { orderBy: { attemptedAt: 'desc' }, take: 20 },
       },
     })
   );
@@ -131,6 +157,22 @@ export async function get(
       unitPriceCents: it.unitPriceCents,
       addonOfId: it.addonOfId,
       addonOfName: it.addonOfId ? (itemNameById.get(it.addonOfId) ?? null) : null,
+    })),
+    events: row.events.map((ev) => ({
+      id: ev.id,
+      event: ev.event,
+      payload: ev.payload,
+      actorUserId: ev.actorUserId,
+      occurredAt: ev.occurredAt.toISOString(),
+    })),
+    dunningAttempts: row.dunningAttempts.map((att) => ({
+      id: att.id,
+      paymentRef: att.paymentRef,
+      attemptNumber: att.attemptNumber,
+      outcome: att.outcome,
+      failureReason: att.failureReason,
+      attemptedAt: att.attemptedAt.toISOString(),
+      nextRetryAt: att.nextRetryAt?.toISOString() ?? null,
     })),
   };
 }

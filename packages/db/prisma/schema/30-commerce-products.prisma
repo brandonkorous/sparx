@@ -90,6 +90,7 @@ model Product {
   bundleComponents       BundleComponent[]
   configurationTemplates ConfigurationTemplate[]
   reviews                ProductReview[]
+  reviewRollups          ProductReviewRollup[]
   questions              ProductQuestion[]
   translations           ProductTranslation[]
   orderItems             OrderItem[]

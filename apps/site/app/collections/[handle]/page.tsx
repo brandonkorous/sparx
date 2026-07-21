@@ -7,6 +7,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
+import { Pagination } from '@/components/pagination';
 import { SectionRenderer } from '@/components/section-renderer';
 import { SilicaBody } from '@/components/silica-chrome';
 import { getCollection, listCollectionProducts } from '@/lib/commerce';
@@ -31,6 +32,11 @@ interface PageProps {
 }
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v);
+
+// Products per page on a collection detail (docs/127 §8). Matches the category-detail
+// core so the two record surfaces page identically; a real pager makes the whole
+// collection reachable rather than truncating at a single generous page.
+const COLLECTION_PER_PAGE = 24;
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const site = await resolveSite();
@@ -91,9 +97,20 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
       collection.id
     );
     if (silicaTemplate) {
-      // Render the collection's products in one grid (page 1, a generous cap).
-      // Paginated collection templates are a follow-up — the composite has no pager.
-      const { items } = await listCollectionProducts(site.slug, handle, 1, 48);
+      // The collection's products, paged from the URL (docs/127 §8). The template's grid
+      // repeats over `collection.products` (a scope-relative list), so binding it ONLY the
+      // current page's items is what makes the grid page. The bind-based template can't
+      // express a working SSR pager itself (the Pagination atom is presentational), so the
+      // route renders a real link-based pager beneath the authored body — the same seam the
+      // category-detail core uses. `?page=` varies this `force-dynamic` route, and each
+      // page caches independently under the commerce product tag (not the builder tag).
+      const { items, total, perPage } = await listCollectionProducts(
+        site.slug,
+        handle,
+        page,
+        COLLECTION_PER_PAGE
+      );
+      const totalPages = Math.max(1, Math.ceil(total / perPage));
       const host = await buildSilicaHost(site.slug, silicaTemplate.root, {
         record: {
           key: 'collection',
@@ -102,7 +119,21 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
         currency: site.commerce.defaultCurrency,
         locale: site.commerce.defaultLocale,
       });
-      return <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={host} />;
+      return (
+        <>
+          <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={host} />
+          {totalPages > 1 ? (
+            <div className="st-container">
+              <Pagination
+                basePath={`/collections/${handle}`}
+                currentParams={sp}
+                page={page}
+                totalPages={totalPages}
+              />
+            </div>
+          ) : null}
+        </>
+      );
     }
   }
 

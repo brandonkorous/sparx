@@ -271,6 +271,7 @@ model Tenant {
   productQuestions    ProductQuestion[]
   productAnswers      ProductAnswer[]
   wishlists           Wishlist[]
+  productReviewRollups ProductReviewRollup[]
   wishlistItems       WishlistItem[]
 
   // Commerce module — returns

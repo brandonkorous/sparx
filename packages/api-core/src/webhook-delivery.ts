@@ -19,7 +19,7 @@
 //      and schedules next_attempt_at with exponential backoff up to 8
 //      attempts (matches plan §4.1 "24h retry window").
 
-import { ADVISORY_LOCKS } from '@sparx/db';
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import { createHmac } from 'node:crypto';
 import type { FastifyBaseLogger } from 'fastify';
 import type { Prisma, TxClient } from '@sparx/db';
@@ -84,15 +84,8 @@ export async function enqueueWebhookDeliveries(
 // outbound POST shouldn't slow the next, and 100 × 10s timeout would
 // pin the worker for ages; we trust the next tick to pick up the rest.
 export async function runWebhookDeliveryTick(logger: FastifyBaseLogger): Promise<TickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${WEBHOOK_DELIVERY_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    logger.debug('webhook-delivery: lock held by another pod, skipping');
-    return { acquired: false, attempted: 0, delivered: 0, failed: 0 };
-  }
-
-  try {
+  const SKIPPED: TickResult = { acquired: false, attempted: 0, delivered: 0, failed: 0 };
+  return withAdvisoryTickLock(WEBHOOK_DELIVERY_LOCK_KEY, SKIPPED, async () => {
     const pending = await prisma.$queryRaw<PendingDelivery[]>`
       SELECT delivery_id, tenant_id, subscription_id, event_type, payload,
              attempt_count, subscription_url, signing_secret
@@ -125,9 +118,7 @@ export async function runWebhookDeliveryTick(logger: FastifyBaseLogger): Promise
     }
 
     return { acquired: true, attempted: pending.length, delivered, failed };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${WEBHOOK_DELIVERY_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 type Outcome =

@@ -144,22 +144,18 @@ export async function getReview(ctx: ServiceContext, reviewId: string): Promise<
 // defaults (null / 0) and the PDP shows "no reviews yet" no matter how many
 // reviews are approved.
 //
-// KNOWN GAP (docs/131 §4): this aggregate is TENANT-WIDE while the review LIST
-// is now per-site. On a product listed on two storefronts, the PDP can show a
-// star rating computed from 12 reviews above a list containing only the 3
-// written on that site — a discrepancy a shopper can count.
-//
-// Not fixed here because the honest fix is structural: `average_rating` /
-// `review_count` are columns on `products`, so a per-site figure needs a
-// per-(product, site) row — most naturally on the ProductProperty junction that
-// already models the relationship. That is a schema change plus a recompute
-// path, not a filter, and it deserves its own slice rather than being smuggled
-// into this one. Scoping the list without this is still a strict improvement:
-// the reviews a shopper READS are the right ones.
+// Maintains BOTH the all-sites figure (products.average_rating / review_count,
+// for tenant-wide contexts and back-compat) AND the per-(product, site) rollup
+// rows (commerce_product_review_rollups, docs/131 §4) that per-site grids read so
+// a product listed on two storefronts shows each its own star average. The rollup
+// stores SUM + count per site bucket — see the model note on why sums, not
+// averages.
 async function recomputeProductRating(
   tx: Prisma.TransactionClient,
+  tenantId: string,
   productId: string
 ): Promise<void> {
+  // All-sites total for the denormalized product columns.
   const agg = await tx.productReview.aggregate({
     where: { productId, status: 'approved', deletedAt: null },
     _avg: { rating: true },
@@ -173,6 +169,29 @@ async function recomputeProductRating(
       averageRating: count > 0 ? (agg._avg.rating ?? null) : null,
     },
   });
+
+  // Per-site rollup: sum + count of approved ratings grouped by the site each
+  // review was WRITTEN on (null = the shared/legacy bucket). Replace the product's
+  // rows wholesale so a site that lost its last review drops to no row (→ the read
+  // falls back correctly) rather than a stale one.
+  const buckets = await tx.productReview.groupBy({
+    by: ['propertyId'],
+    where: { productId, status: 'approved', deletedAt: null },
+    _sum: { rating: true },
+    _count: { _all: true },
+  });
+  await tx.productReviewRollup.deleteMany({ where: { productId } });
+  if (buckets.length > 0) {
+    await tx.productReviewRollup.createMany({
+      data: buckets.map((b) => ({
+        tenantId,
+        productId,
+        propertyId: b.propertyId,
+        sumRating: b._sum.rating ?? 0,
+        reviewCount: b._count._all,
+      })),
+    });
+  }
 }
 
 export async function submit(
@@ -249,7 +268,7 @@ export async function submit(
     // Verified-purchase reviews land approved, so the product's rating rolls up
     // immediately. Pending reviews don't count until a moderator approves them.
     if (initialStatus === 'approved') {
-      await recomputeProductRating(tx, input.productId);
+      await recomputeProductRating(tx, ctx.tenantId, input.productId);
     }
 
     return created;
@@ -327,7 +346,7 @@ export async function moderate(ctx: ServiceContext, rawInput: unknown): Promise<
       input.status !== previousStatus &&
       (input.status === 'approved' || previousStatus === 'approved')
     ) {
-      await recomputeProductRating(tx, existing.productId);
+      await recomputeProductRating(tx, ctx.tenantId, existing.productId);
     }
 
     return { previousStatus, productId: existing.productId, rating: existing.rating };
@@ -471,7 +490,7 @@ export async function deleteReview(ctx: ServiceContext, reviewId: string): Promi
 
     // Deleting an approved review drops it from the rating rollup.
     if (existing.status === 'approved') {
-      await recomputeProductRating(tx, existing.productId);
+      await recomputeProductRating(tx, ctx.tenantId, existing.productId);
     }
   });
 }

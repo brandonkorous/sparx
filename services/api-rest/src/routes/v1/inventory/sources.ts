@@ -97,6 +97,10 @@ const UpdateSourceBody = z.object({
 
 const ListQuery = z.object({
   status: z.string().optional(),
+  // Free-text narrow on the source's name — the operator surface has a search
+  // box, and a handful of sources is still faster to find by typing part of a
+  // name than by reading a list.
+  q: z.string().trim().min(1).max(255).optional(),
   take: z.coerce.number().int().min(1).max(250).default(50),
   skip: z.coerce.number().int().min(0).default(0),
 });
@@ -114,6 +118,7 @@ const inventorySourceRoutes: FastifyPluginAsync = async (app) => {
     const [sources, total] = await withTenant({ tenantId }, async (tx) => {
       const where: Prisma.InventorySourceWhereInput = { tenantId, deletedAt: null };
       if (q.status) where.status = q.status;
+      if (q.q) where.name = { contains: q.q, mode: 'insensitive' };
       return Promise.all([
         tx.inventorySource.findMany({
           where,

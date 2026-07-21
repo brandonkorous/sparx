@@ -1,12 +1,15 @@
 # 127 — Site read-path remediation
 
-Version: 1.1.0
+Version: 1.2.0
 Author: Brandon Korous
 Last Updated: 2026-07-20
 
-> **1.1.0 — §1–§7 and §9–§11 are SHIPPED.** §8 is partly shipped: the silent half is
-> fixed (truncation is now detectable, bindable, and logged), the pagination half is
-> still open and is the largest remaining item in this document. §2's fix deviates from
+> **1.2.0 — §1–§7 and §9–§11 are SHIPPED, and §8's shopper-facing pagination now is too.**
+> The silent half was fixed first (truncation detectable, bindable, logged); the
+> pagination half is now shipped for the navigable collection surface — the collection
+> detail page pages from the URL with a real link-based pager, matching the category and
+> PLP surfaces that already did. The ONE remaining item is narrowed to a scale-gated
+> query-path swap (deep offset → Typesense), triggered-not-built. §2's fix deviates from
 > what was proposed here — see the note in that section.
 
 > **What this is.** The independently-shippable fixes to the storefront read path,
@@ -169,6 +172,19 @@ At the catalog sizes we are targeting this is the difference between a working s
 - **Author-facing** — the collection source inspector must surface the cap and let it be set, and the canvas must indicate truncation. Silent is the bug.
 - **Shopper-facing** — real pagination or infinite scroll on collection-bound grids. Large catalogs are a Typesense query, not a `findMany`.
 
+> **Shopper-facing pagination: SHIPPED.** The collection detail page
+> ([apps/site/app/collections/[handle]/page.tsx](../apps/site/app/collections/[handle]/page.tsx))
+> now reads `?page=`, fetches that page at 24/page, binds only that window to the
+> template's `collection.products` grid, and renders the proven link-based SSR pager
+> ([apps/site/components/pagination.tsx](../apps/site/components/pagination.tsx)) beneath
+> the authored body — the same seam the category-detail core and the PLP already use. It
+> was the one navigable collection surface still stuck on a single page (the silica
+> composite is a bind-based grid, so it can't express a working pager itself — the route
+> owns it, exactly as the category core does). `?page=` varies this `force-dynamic` route
+> and each page caches independently under the commerce product tag, NOT the `builder:<slug>`
+> tag (§6) — the two concerns never collide. What's left is purely the **scale query
+> path** below.
+
 ---
 
 ## 9. Parallelise the root layout
@@ -207,36 +223,50 @@ This is an internal inconsistency worth naming: `resolvePathEx` ([runtime.ts:102
 
 ## 12. Status
 
-| #   | Item                                                      | Status                                           |
-| --- | --------------------------------------------------------- | ------------------------------------------------ |
-| §2  | `select` + slug in `where` on the silica published reads  | **shipped** (via dual-form `IN`, not a backfill) |
-| §3  | `BuilderPageSummaryDto` for list views                    | **shipped**                                      |
-| §4  | Cache checked before the tree read + publish invalidation | **shipped**                                      |
-| §5  | Shared TTL-cached tenant-slug resolver                    | **shipped** (misses deliberately uncached)       |
-| §6  | Publish → Pub/Sub → worker → tag purge → cached reads     | **shipped**                                      |
-| §7  | Batched CMS pin fetch (`/entries/by-ids`)                 | **shipped**                                      |
-| §8  | Truncation made visible (bindable + logged)               | **shipped**                                      |
-| §8  | Real pagination on bound collections                      | **OPEN — the largest item left**                 |
-| §9  | Parallelised root-layout reads                            | **shipped**                                      |
-| §10 | Unknown node types surfaced                               | **shipped**                                      |
-| §11 | Preview on collection + silica readers                    | **shipped**                                      |
+| #   | Item                                                       | Status                                           |
+| --- | ---------------------------------------------------------- | ------------------------------------------------ |
+| §2  | `select` + slug in `where` on the silica published reads   | **shipped** (via dual-form `IN`, not a backfill) |
+| §3  | `BuilderPageSummaryDto` for list views                     | **shipped**                                      |
+| §4  | Cache checked before the tree read + publish invalidation  | **shipped**                                      |
+| §5  | Shared TTL-cached tenant-slug resolver                     | **shipped** (misses deliberately uncached)       |
+| §6  | Publish → Pub/Sub → worker → tag purge → cached reads      | **shipped**                                      |
+| §7  | Batched CMS pin fetch (`/entries/by-ids`)                  | **shipped**                                      |
+| §8  | Truncation made visible (bindable + logged)                | **shipped**                                      |
+| §8  | Real pagination on the collection detail (URL + SSR pager) | **shipped**                                      |
+| §8  | Deep-offset query path at catalog scale (→ Typesense)      | **specified — scale-gated, not built**           |
+| §9  | Parallelised root-layout reads                             | **shipped**                                      |
+| §10 | Unknown node types surfaced                                | **shipped**                                      |
+| §11 | Preview on collection + silica readers                     | **shipped**                                      |
 
 ### What §8 still needs
 
-The silent half is fixed: a truncated list now publishes `commerce.productTotal` /
+The silent half was fixed first: a truncated list publishes `commerce.productTotal` /
 `commerce.productHasMore` (exact, since the products endpoint reports a total) and
 `cms.<type>HasMore` (a boolean, via an n+1 fetch — the entries endpoint returns a bare
 array with no total), and logs a warning server-side either way. So a template CAN say
 "Showing 24 of 137" and an operator CAN find the truncation in logs.
 
-What it cannot yet do is show record 25. That needs three things this pass deliberately
-did not invent:
+The pagination half is now shipped for the surface that needed it — the collection
+detail page shows record 25. Of the three things the earlier pass named:
 
-1. **A pagination control in the tree** — a silica component with page state, which is
-   an authoring + engine decision, not a data-layer one.
-2. **URL state** — `?page=` on a `force-dynamic` route, and how that interacts with the
-   `builder:<slug>` cache tag now that these reads are cached again (§6).
-3. **A query path for large catalogs** — at the target scale the answer is Typesense
-   ([22](22-typesense-search-spec.md)), not a deeper `findMany`.
+1. **A pagination control** — resolved via the route, not a new in-tree engine control.
+   The bind-based composite can't express a working SSR pager (its `Pagination` atom is
+   presentational — dead numbers with no href), so the route renders the link-based
+   `components/pagination.tsx` beneath the authored body, exactly as the category-detail
+   core does. A truly in-tree, author-placeable functional pager remains a possible
+   future authoring nicety, but it is not what "show record 25" required.
+2. **URL state** — done. `?page=` on the `force-dynamic` route; each page caches under
+   the commerce product tag, independent of the `builder:<slug>` publish tag (§6), so the
+   two never collide.
+3. **A query path for large catalogs** — **the one genuinely open item.** The collection
+   products endpoint pages with `skip`/`take` + `count`, which is correct and cheap into
+   the low thousands but degrades at deep offsets on a very large single collection. At
+   the target scale the answer is Typesense ([22](22-typesense-search-spec.md)), not a
+   deeper `findMany`. This is an api-rest query-path swap behind a real scale trigger — it
+   changes nothing the storefront already does, so it stays specified-not-built until a
+   tenant's largest collection actually warrants it (the same discipline as the artifact
+   pruner in [126 §5.3.1](126-builder-op-protocol.md)).
 
-Until then the cap is honest rather than hidden, which was the actual bug.
+So the cap is no longer honest-but-hidden nor honest-but-capped: the whole collection is
+reachable, and only the deep-page performance of a hypothetical huge collection is
+deferred.

@@ -33,6 +33,9 @@ export interface MovementRow {
 }
 
 export interface ListMovementsFilter {
+  /** Free-text over the moving item: its variant SKU, variant name, or product
+   *  title. Case-insensitive `contains`. */
+  q?: string;
   variantId?: string;
   /**
    * Every movement for ONE product, across all of its variants, in a single
@@ -100,11 +103,26 @@ function buildWhere(filter: ListMovementsFilter): Prisma.InventoryMovementWhereI
           ...(filter.to ? { lte: new Date(filter.to) } : {}),
         }
       : undefined;
+  // Both `productId` and free-text `q` narrow through the same `variant`
+  // relation (the ledger row carries a variant, and the variant carries the
+  // product), so they are composed into ONE `variant` filter — two separate
+  // `variant:` keys on the object would have the second silently overwrite the
+  // first.
+  const variant: Prisma.ProductVariantWhereInput = {
+    ...(filter.productId ? { productId: filter.productId } : {}),
+    ...(filter.q
+      ? {
+          OR: [
+            { sku: { contains: filter.q, mode: 'insensitive' } },
+            { title: { contains: filter.q, mode: 'insensitive' } },
+            { product: { title: { contains: filter.q, mode: 'insensitive' } } },
+          ],
+        }
+      : {}),
+  };
   return {
     ...(filter.variantId ? { variantId: filter.variantId } : {}),
-    // Through the relation rather than a denormalized column — the ledger row
-    // carries a variant, and the variant carries the product.
-    ...(filter.productId ? { variant: { productId: filter.productId } } : {}),
+    ...(Object.keys(variant).length > 0 ? { variant } : {}),
     ...(filter.warehouseId ? { warehouseId: filter.warehouseId } : {}),
     ...(filter.reason ? { reason: filter.reason } : {}),
     ...(filter.actorType ? { actorType: filter.actorType } : {}),

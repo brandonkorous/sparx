@@ -159,6 +159,18 @@ model Property {
   // through junctions and can appear on several while having one score.
   seoAudits SeoAudit[]
 
+  // Per-site product rating aggregate (docs/131 §4) — the cheap per-(product,
+  // site) rating lookup product-card grids read, so a storefront never shows a
+  // star average blended across sibling businesses.
+  productReviewRollups ProductReviewRollup[]
+
+  // Per-site analytics rollups (docs/131 §6). Inventory valuation is deliberately
+  // absent — it stays tenant-only (one stock pool serves every site).
+  rollupCommerceDailyRevenue    RollupCommerceDailyRevenue[]
+  rollupInvoicingDailyCollected RollupInvoicingDailyCollected[]
+  rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
+  rollupAutomationDailyRuns     RollupAutomationDailyRuns[]
+
   // Shopper-authored content (docs/131 §4), stamped with WHERE IT WAS WRITTEN
   // rather than inferred from the product — a product reaches sites through a
   // junction and can be listed on several, so the act of writing is the only
