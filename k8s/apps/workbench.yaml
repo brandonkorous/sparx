@@ -79,20 +79,32 @@ spec:
             limits:
               cpu: '500m'
               memory: '512Mi'
+          # Probe /health, NOT a rendered page. /sign-in is a full RSC render that
+          # hits the event loop under load; with the k8s-default 1s timeout it
+          # returned "context deadline exceeded" and SIGKILLed the pod (exit 137)
+          # on the app-env roll (2026-07-22) — the exact 1s-timeout footgun that
+          # CrashLooped api-rest for 30h. /health is a static, dependency-free
+          # handler (app/health/route.ts) that answers even when the DB/auth are
+          # down, so a downstream outage never rolls this pod. Tolerances mirror
+          # api-rest: 5s timeout absorbs event-loop stalls on the 50m-CPU floor,
+          # and a 30s boot delay + failureThreshold 5 tolerate a cold Next.js
+          # standalone start (early probes saw "connection refused" at 20s).
           livenessProbe:
             httpGet:
-              path: /sign-in
+              path: /health
               port: 3000
-            initialDelaySeconds: 20
+            initialDelaySeconds: 30
             periodSeconds: 30
-            failureThreshold: 3
+            timeoutSeconds: 5
+            failureThreshold: 5
           readinessProbe:
             httpGet:
-              path: /sign-in
+              path: /health
               port: 3000
             initialDelaySeconds: 5
             periodSeconds: 10
-            failureThreshold: 2
+            timeoutSeconds: 5
+            failureThreshold: 3
           lifecycle:
             preStop:
               exec:
