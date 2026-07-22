@@ -113,7 +113,7 @@ export function Toolbar({
       });
       if (!ok) return;
     }
-    switchSite(controller, siteKey, nextSiteId);
+    await switchSite(controller, siteKey, nextSiteId);
   };
 
   // The focused pane, live — the star and feedback context follow it.

@@ -127,19 +127,45 @@ const ACTIVE_PROPERTY_COOKIE = 'sparx_active_property';
  * The unsaved-work conversation belongs to the CALLER (it owns a styled
  * dialog in the right window); this function assumes consent and executes.
  */
-export function switchSite(
+export async function switchSite(
   controller: WorkbenchController,
   currentSiteKey: string,
   nextSiteId: string
-): void {
+): Promise<void> {
   // Flush the CURRENT arrangement under the current site before leaving —
   // the debounced auto-save may not have fired yet.
   const grid = controller.serializeGrid();
   if (grid) saveLayout(currentSiteKey, grid, controller.snapshotDescriptors());
 
-  // api-rest validates the value under RLS and fails closed to the tenant's
-  // primary property, so this cookie is a preference, not a control.
-  document.cookie = `${ACTIVE_PROPERTY_COOKIE}=${nextSiteId}; path=/; max-age=31536000; SameSite=Lax`;
+  // Persist the active site SERVER-SIDE (httpOnly Set-Cookie) rather than with
+  // document.cookie. A privacy-hardened browser can silently drop a JS cookie
+  // write while still honoring server-set cookies (the session cookie proves it
+  // does), and a dropped write left the switch half-applied — the page reloaded,
+  // found no cookie, and fell back to the primary, so the switcher never moved.
+  // api-rest still re-resolves the value under RLS and fails closed, so it stays
+  // a preference, not a control. See app/api/active-site/route.ts.
+  const persisted = await fetch('/api/active-site', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    credentials: 'same-origin',
+    body: JSON.stringify({ siteId: nextSiteId }),
+  })
+    .then((response) => response.ok)
+    .catch(() => false);
+
+  // Belt-and-braces: if our own origin was unreachable, fall back to a client
+  // write so a switch still has a chance rather than silently doing nothing. In
+  // a browser that blocks JS cookies this no-ops — but then the server write
+  // above already succeeded, so the fallback only runs where document.cookie works.
+  if (!persisted) {
+    document.cookie = `${ACTIVE_PROPERTY_COOKIE}=${nextSiteId}; path=/; max-age=31536000; SameSite=Lax`;
+  }
+
+  // This reload IS the switch — the server re-reads the cookie on boot. Tell the
+  // controller the teardown is deliberate so the dock/stack `beforeunload` guard
+  // stands down: with unsaved work open, the native prompt would otherwise cancel
+  // the reload and leave the cookie moved but the window (and switcher) unchanged.
+  controller.markIntentionalUnload();
   window.location.reload();
 }
 

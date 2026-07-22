@@ -53,6 +53,13 @@ export class WorkbenchController {
   /** Cached snapshot — getSnapshot callbacks must return a STABLE reference
    *  between emits or useSyncExternalStore re-renders forever. */
   private snapshotCache: Record<string, PaneDescriptor> | null = null;
+  /** Set the instant we DELIBERATELY tear the window down — a site switch, which
+   *  reloads on purpose (see shell-data switchSite). The `beforeunload` guards
+   *  read this so an intentional reload the operator already consented to isn't
+   *  second-guessed by the browser's native "Leave site?" prompt, which would
+   *  eat the reload and leave the switch half-applied (cookie moved, page not).
+   *  One-way: the page is on its way out, so there is nothing to reset it for. */
+  private intentionalUnload = false;
 
   /** Called by whichever presentation mounted — the dock, or the mobile stack. */
   attach(host: PaneHost): void {
@@ -286,6 +293,19 @@ export class WorkbenchController {
   hasUnsavedWork(): boolean {
     for (const paneId of this.guards.keys()) if (this.isPaneDirty(paneId)) return true;
     return false;
+  }
+
+  /** Announce that the window is about to be torn down on purpose (a site
+   *  switch), so the `beforeunload` guards stand down for this one reload — the
+   *  operator has already answered the in-app "switch with unsaved changes?"
+   *  confirm, and a second native prompt only serves to cancel the reload. */
+  markIntentionalUnload(): void {
+    this.intentionalUnload = true;
+  }
+
+  /** Whether the imminent unload is a deliberate one (see markIntentionalUnload). */
+  isUnloadIntentional(): boolean {
+    return this.intentionalUnload;
   }
 
   /** Every pane with unsaved work right now — the status bar's count. */
