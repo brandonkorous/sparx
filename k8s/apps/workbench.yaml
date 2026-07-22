@@ -1,0 +1,127 @@
+# apps/workbench — production manifest. Next.js standalone server on port 3000.
+# Serves app.sparx.works (it replaced the dashboard; Caddy reverse-proxies the
+# host here). Shares the sparx-app-env ConfigMap and sparx-app-secrets Secret with
+# api-rest (DATABASE_URL, SPARX_INTERNAL_JWT_SECRET, etc.).
+# Image is substituted at deploy time by the GitHub Actions workflow.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workbench
+  namespace: sparx-prod
+  labels:
+    app: workbench
+    tier: web
+spec:
+  # 1 replica: the workbench is browser-rendered — the pod only serves the
+  # shell, Better Auth, and the /api/token BFF, so per-user load lands on
+  # api-rest, not here. Also: SSD_TOTAL_GB quota is at 235/250GB (see
+  # dashboard.yaml); don't scale this up before that's raised.
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: workbench
+  template:
+    metadata:
+      labels:
+        app: workbench
+        tier: web
+    spec:
+      serviceAccountName: sparx-app
+      containers:
+        - name: workbench
+          image: us-central1-docker.pkg.dev/sparxworks/sparx/workbench:latest
+          # Always — `:latest` is mutable; IfNotPresent risks a stale node-cached
+          # image after a bare restart. Full rationale in api-mcp.yaml.
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: sparx-app-env
+            - secretRef:
+                name: sparx-app-secrets
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: workbench
+            - name: PORT
+              value: '3000'
+            - name: HOSTNAME
+              value: 0.0.0.0
+            # No per-pod BETTER_AUTH_URL override: the workbench now serves
+            # app.sparx.works, so it inherits the ConfigMap's shared
+            # https://app.sparx.works — the same origin Better Auth uses for its
+            # baseURL, callback origins, cookie scope, and the MCP OAuth consent
+            # redirect. (Previously overridden to workbench.sparx.works when it ran
+            # on its own host beside the dashboard.)
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: '50m'
+              memory: '256Mi'
+            limits:
+              cpu: '500m'
+              memory: '512Mi'
+          livenessProbe:
+            httpGet:
+              path: /sign-in
+              port: 3000
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /sign-in
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 2
+          lifecycle:
+            preStop:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 10']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: workbench
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: workbench
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: workbench
+  namespace: sparx-prod
+spec:
+  # With a single replica this can't demand availability during drains —
+  # maxUnavailable keeps node maintenance unblocked (same posture the other
+  # single-replica web apps will adopt until the SSD quota is raised).
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: workbench

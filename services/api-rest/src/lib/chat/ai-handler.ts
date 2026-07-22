@@ -22,11 +22,13 @@ import type { FastifyBaseLogger } from 'fastify';
 import { withTenant, prisma } from '@sparx/db';
 import type { TenantContext } from '@sparx/db';
 import { decryptProviderSecret } from '@sparx/integration-framework';
+import { isModuleEnabled } from '@sparx/auth';
 import type { Message, ToolCall, ToolDefinition, ToolParameter } from 'llm-harness';
 import { SITE_TOOLS, toAnthropicTools, SiteApiClient, SiteApiError } from '@sparx/site-mcp';
 
-import { resolveActivePropertyName } from '../property.js';
+import { resolveActivePropertyName, resolvePrimaryPropertyId } from '../property.js';
 import { getActivePersona } from '../ai/prompt-templates.js';
+import { resolveAiProviderCredential } from '../ai/credentials.js';
 import { createTenantLlmRouter, DEFAULT_MODEL_BY_PROVIDER } from '../ai/llm-router.js';
 import { env } from '../../env.js';
 import { conversationService } from './index.js';
@@ -110,11 +112,32 @@ export async function handleInboundForAI(
   logger: FastifyBaseLogger
 ): Promise<void> {
   try {
+    // The AI first-responder is a capability of the `ai` module, NOT of Live
+    // Chat. Live Chat ($19) buys the widget, routing, and the human inbox; the
+    // intelligence layer — this concierge AND the MCP server — is the one `ai`
+    // module. Without it, chat still works, every conversation just goes to a
+    // person. (This gate was missing: the concierge shipped unlocked by chat
+    // alone, giving away an `ai` module capability at the chat price.)
+    if (!(await isModuleEnabled(ctx.tenantId, 'ai'))) {
+      await escalateToHuman(ctx, conversationId, logger, 'ai_disabled');
+      return;
+    }
+
     const config = await getChatConfig(ctx.tenantId);
 
-    // AI disabled, or the tenant hasn't connected their own provider + key
+    // The provider + key come from the tenant's account-wide AI credential
+    // (Settings → AI connections) first, falling back to a legacy chat-scoped
+    // key for tenants that connected before the credential moved to the
+    // account. Either way sparx holds no key of its own.
+    const platformCredential = await resolveAiProviderCredential(ctx.tenantId);
+    const provider: AiProvider | null = platformCredential?.provider ?? config.aiProvider;
+    const apiKey =
+      platformCredential?.apiKey ??
+      (config.aiApiKeyEncrypted ? decryptProviderSecret(config.aiApiKeyEncrypted) : null);
+
+    // AI enabled, but the tenant hasn't connected their own provider + key
     // yet → a human must handle it. sparx has no fallback credential.
-    if (!config.aiEnabled || !config.aiProvider || !config.aiApiKeyEncrypted) {
+    if (!config.aiEnabled || !provider || !apiKey) {
       await escalateToHuman(ctx, conversationId, logger, 'ai_disabled');
       return;
     }
@@ -141,10 +164,13 @@ export async function handleInboundForAI(
       .find((m) => m.senderType === 'customer');
     if (!lastCustomer) return; // nothing to answer
 
-    const apiKey = decryptProviderSecret(config.aiApiKeyEncrypted);
     const decision = await askAssistant(
       ctx.tenantId,
-      config.aiProvider,
+      // The site this conversation is on decides which business the assistant
+      // believes it works for (docs/131 §3.5 + §3.7). Null only for a
+      // dashboard-sourced thread, where a tenant-wide persona is correct.
+      conversation.propertyId ?? null,
+      provider,
       apiKey,
       conversation.messages,
       logger
@@ -182,7 +208,7 @@ interface GroundingDto {
   pages: string[];
 }
 
-async function buildGrounding(tenantId: string): Promise<GroundingDto> {
+async function buildGrounding(tenantId: string, propertyId: string | null): Promise<GroundingDto> {
   // The assistant introduces itself as the SITE (the tenant's primary site —
   // docs/49), shown to the customer in the chat widget. Never the tenant's
   // legal/org name.
@@ -196,7 +222,15 @@ async function buildGrounding(tenantId: string): Promise<GroundingDto> {
         orderBy: { updatedAt: 'desc' },
       }),
       tx.page.findMany({
-        where: { status: 'published' },
+        // Ground on THIS site's pages plus any tenant-wide ones (docs/131 §4) —
+        // the AI answering on the donut storefront must not cite the machine
+        // shop's pages. (Product grounding above is still tenant-wide; scoping it
+        // needs the ProductProperty visibility join, a broader change tracked
+        // with the product-visibility P1 work.)
+        where: {
+          status: 'published',
+          ...(propertyId ? { OR: [{ propertyId }, { propertyId: null }] } : {}),
+        },
         select: { title: true },
         take: 20,
         orderBy: { updatedAt: 'desc' },
@@ -253,6 +287,7 @@ function buildSystemPrompt(g: GroundingDto, persona: string | null): string {
 
 async function askAssistant(
   tenantId: string,
+  propertyId: string | null,
   provider: AiProvider,
   apiKey: string,
   messages: { senderType: string; body: string }[],
@@ -260,8 +295,14 @@ async function askAssistant(
 ): Promise<AiDecision | null> {
   try {
     const [grounding, persona, tenantSlug] = await Promise.all([
-      buildGrounding(tenantId),
-      getActivePersona(tenantId),
+      buildGrounding(tenantId, propertyId),
+      // A conversation with no site (staff-to-staff in the dashboard) still gets
+      // the tenant-wide persona, which getActivePersona resolves when handed the
+      // primary. A customer-facing thread always has one — the CHECK constraint
+      // on chat_conversations makes the alternative unrepresentable.
+      propertyId
+        ? getActivePersona(tenantId, propertyId)
+        : resolvePrimaryPropertyId(tenantId).then((id) => getActivePersona(tenantId, id)),
       resolveTenantSlug(tenantId),
     ]);
     if (!tenantSlug) return null; // can't scope tool calls without the tenant slug

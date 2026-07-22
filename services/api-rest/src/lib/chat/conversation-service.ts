@@ -35,6 +35,10 @@ export interface ConversationSummaryDto {
   id: string;
   status: ConversationStatus;
   source: ChatSource;
+  /** The site this conversation is on (docs/131 §3.7). Null for a dashboard
+   *  thread, or for a thread whose site was since deleted (the FK is SetNull —
+   *  support history outlives the business). */
+  propertyId: string | null;
   subject: string | null;
   customerId: string | null;
   customerName: string | null;
@@ -52,6 +56,11 @@ export interface ConversationDetailDto extends ConversationSummaryDto {
 }
 
 export interface ListConversationsFilter {
+  /** One site's inbox (docs/131 §3.7) — the normal staff view. */
+  propertyId?: string;
+  /** A restricted member's `?property=all`: the sites they may reach, never the
+   *  whole tenant. Set by resolveListScopeIds at the route. */
+  propertyIds?: string[];
   status?: ConversationStatus;
   assignedToId?: string;
   /** Restrict to conversations assigned to the calling user. */
@@ -112,6 +121,7 @@ function toSummaryDto(row: ConversationRow): ConversationSummaryDto {
     id: row.id,
     status: row.status as ConversationStatus,
     source: row.source as ChatSource,
+    propertyId: row.propertyId,
     subject: row.subject,
     customerId: row.customerId,
     customerName: displayName(row.customer, row.visitorName, row.visitorEmail),
@@ -135,6 +145,12 @@ export async function list(
   filter: ListConversationsFilter = {}
 ): Promise<{ items: ConversationSummaryDto[]; total: number }> {
   const where: Prisma.ChatConversationWhereInput = {
+    // The staff inbox is per-SITE (docs/131 §3.7). Without this every business's
+    // threads shared one queue and one unread badge, so a donut-shop employee
+    // triaged machine-shop conversations. Undefined = across sites, which the
+    // route only passes for a caller entitled to it.
+    ...(filter.propertyId ? { propertyId: filter.propertyId } : {}),
+    ...(filter.propertyIds ? { propertyId: { in: filter.propertyIds } } : {}),
     ...(filter.status ? { status: filter.status } : {}),
     ...(filter.mine && ctx.userId ? { assignedToId: ctx.userId } : {}),
     ...(filter.assignedToId ? { assignedToId: filter.assignedToId } : {}),
@@ -189,6 +205,11 @@ export async function get(
 export interface CreateConversationArgs {
   customerId?: string;
   subject?: string;
+  /** The site this conversation is happening on (docs/131 §3.7). Required in
+   *  practice for every customer-facing source — a DB CHECK rejects a `site` or
+   *  `sparx_market` row without one — and legitimately null only for a
+   *  `dashboard` thread, which is staff talking to staff. */
+  propertyId?: string | null;
   source?: ChatSource;
   visitorName?: string;
   visitorEmail?: string;
@@ -225,6 +246,7 @@ export async function create(
       data: {
         tenantId: ctx.tenantId,
         customerId: args.customerId ?? null,
+        propertyId: args.propertyId ?? null,
         subject: args.subject ?? null,
         source: args.source ?? 'site',
         visitorName: args.visitorName ?? null,

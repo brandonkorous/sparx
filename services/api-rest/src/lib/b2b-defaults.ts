@@ -20,7 +20,7 @@ export async function bootstrapDefaultApprovalRule(
 ): Promise<{ created: boolean }> {
   return withTenant(ctx, async (tx) => {
     const existing = await tx.purchaseApprovalRule.findFirst({
-      where: { tenantId: ctx.tenantId, accountId: null },
+      where: { tenantId: ctx.tenantId, accountId: null, propertyId: null },
       select: { id: true },
     });
     if (existing) return { created: false };
@@ -29,6 +29,11 @@ export async function bootstrapDefaultApprovalRule(
       data: {
         tenantId: ctx.tenantId,
         accountId: null,
+        // The activation default stays tenant-wide (docs/131 §4), and it is safe
+        // to do so precisely because it ships INACTIVE. It is a starting point an
+        // operator opts into, not a control that fires — so it cannot gate a
+        // business nobody configured it for.
+        propertyId: null,
         minAmountCents: DEFAULT_THRESHOLD_CENTS,
         isActive: false,
       },

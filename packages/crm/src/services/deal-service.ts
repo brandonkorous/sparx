@@ -27,11 +27,24 @@ export interface ListDealsFilter {
   assignedRepId?: string | null;
   customerId?: string;
   b2bAccountId?: string;
+  /** The sites this member may reach (docs/131 §3.3 read-scoping); undefined = an
+   *  unrestricted member who sees every site. A restricted member sees deals on
+   *  their granted sites PLUS tenant-wide (null-property) deals — the same
+   *  "site's own + shared" shape every other scoped read uses. */
+  propertyIds?: string[];
   /** "open" excludes deals on won/lost stages; "closed" includes only those. */
   state?: 'open' | 'closed';
   take?: number;
   skip?: number;
 }
+
+// The stage a deal sits on and the customer it is for, pulled alongside so a
+// list can name both without a per-row fetch. Additive — a consumer that ignores
+// the nested objects is unaffected.
+const dealSubjectInclude = {
+  stage: { select: { name: true, stageType: true } },
+  customer: { select: { firstName: true, lastName: true, company: true, email: true } },
+} satisfies Prisma.DealInclude;
 
 export async function list(
   ctx: ServiceContext,
@@ -40,6 +53,9 @@ export async function list(
   return withTenant(ctx, async (tx) => {
     const where: Prisma.DealWhereInput = {
       deletedAt: null,
+      ...(filter.propertyIds
+        ? { OR: [{ propertyId: { in: filter.propertyIds } }, { propertyId: null }] }
+        : {}),
       ...(filter.q ? { title: { contains: filter.q, mode: 'insensitive' } } : {}),
       ...(filter.pipelineId ? { pipelineId: filter.pipelineId } : {}),
       ...(filter.stageId ? { stageId: filter.stageId } : {}),
@@ -55,6 +71,7 @@ export async function list(
     const [items, total] = await Promise.all([
       tx.deal.findMany({
         where,
+        include: dealSubjectInclude,
         orderBy: { updatedAt: 'desc' },
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
@@ -66,7 +83,9 @@ export async function list(
 }
 
 export async function get(ctx: ServiceContext, dealId: string): Promise<Deal> {
-  const deal = await withTenant(ctx, (tx) => tx.deal.findUnique({ where: { id: dealId } }));
+  const deal = await withTenant(ctx, (tx) =>
+    tx.deal.findUnique({ where: { id: dealId }, include: dealSubjectInclude })
+  );
   if (deal?.deletedAt !== null) throw new CrmNotFoundError('Deal', dealId);
   return deal;
 }
@@ -85,9 +104,18 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<De
       ]);
     }
 
+    // The deal inherits its site from the pipeline it lives in (docs/131 §5),
+    // read here and denormalized onto the row — not taken from the request, so a
+    // deal always belongs to the same business as its pipeline.
+    const pipeline = await tx.pipeline.findUnique({
+      where: { id: input.pipelineId },
+      select: { propertyId: true },
+    });
+
     const created = await tx.deal.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: pipeline?.propertyId ?? null,
         pipelineId: input.pipelineId,
         stageId: input.stageId,
         customerId: input.customerId ?? null,
@@ -326,6 +354,48 @@ export async function moveStage(
   }
 
   return deal;
+}
+
+/**
+ * Soft-delete a deal — for a mistake, not the normal close.
+ *
+ * The everyday way a deal leaves the board is `moveStage` to a Won/Lost stage,
+ * which keeps it in the pipeline's history. This is the escape hatch for a deal
+ * that should never have existed: it stamps `deletedAt`, so it drops out of every
+ * list (all reads already filter `deletedAt: null`) while the row and its
+ * activity trail survive. Mirrors `customerService.softDelete`.
+ */
+export async function softDelete(ctx: ServiceContext, dealId: string): Promise<Deal> {
+  const result = await withTenant(ctx, async (tx) => {
+    const before = await tx.deal.findUnique({ where: { id: dealId } });
+    if (before?.deletedAt !== null) throw new CrmNotFoundError('Deal', dealId);
+    const updated = await tx.deal.update({
+      where: { id: dealId },
+      data: { deletedAt: new Date() },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'crm.deal.deleted',
+      entityType: 'Deal',
+      entityId: updated.id,
+      diff: { before: { title: before.title }, after: { deletedAt: updated.deletedAt } },
+    });
+    return updated;
+  });
+
+  // No `crm.deal.deleted` topic exists; the generic updated event carries the
+  // change so consumers (projection, search reindex) drop the row.
+  await publishCrmEvent({
+    tenantId: ctx.tenantId,
+    topic: 'crm.deal.updated',
+    payload: { dealId: result.id, change: 'deleted' },
+    dedupeKey: `crm.deal.deleted:${result.id}`,
+  });
+
+  return result;
 }
 
 // ─────────────────────────────────────────────────────────────────────────

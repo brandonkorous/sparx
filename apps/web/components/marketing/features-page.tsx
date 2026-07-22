@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Button } from '@wizeworks/silicaui-react';
+import { Button, Heading, Text } from '@wizeworks/silicaui-react';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import {
   CAPABILITY_AREAS,
   STATUS_META,
@@ -20,12 +21,11 @@ import { Container, Display, Dot, Section, SectionHeader, Spark } from './primit
  *
  * Deliberately distinct from /platform (which explains how the system works) and
  * the home page (which sells the cost story). This page is a scannable index of
- * sheer surface area. Built on the marketing primitives; module areas reuse their
- * brand color, cross-cutting platform areas carry their own accent.
+ * sheer surface area. Built on the marketing primitives + silicaui typography;
+ * module areas reuse their brand color, cross-cutting platform areas carry their
+ * own accent. Per SILICA-VOCABULARY.md every static value is a utility class —
+ * the only inline `style` left is a genuinely dynamic per-area accent.
  */
-
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 export function FeaturesPage() {
   const counts = capabilityCounts();
@@ -42,11 +42,7 @@ export function FeaturesPage() {
           headline={
             <>
               {counts.modules} modules.{' '}
-              <span
-                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-              >
-                Activate any combination
-              </span>
+              <span className="text-ink-subtle">Activate any combination</span>
             </>
           }
           lede={
@@ -56,7 +52,7 @@ export function FeaturesPage() {
             </>
           }
         />
-        <div style={{ marginTop: '48px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="mt-12 flex flex-col gap-5">
           {modules.map((area) => (
             <AreaBlock key={area.id} area={area} />
           ))}
@@ -69,11 +65,7 @@ export function FeaturesPage() {
           headline={
             <>
               The platform underneath.{' '}
-              <span
-                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-              >
-                Included with every plan
-              </span>
+              <span className="text-ink-subtle">Included with every plan</span>
             </>
           }
           lede={
@@ -83,7 +75,7 @@ export function FeaturesPage() {
             </>
           }
         />
-        <div style={{ marginTop: '48px', display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="mt-12 flex flex-col gap-5">
           {platform.map((area) => (
             <AreaBlock key={area.id} area={area} surface />
           ))}
@@ -106,117 +98,53 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
   ] as const;
 
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <div style={{ maxWidth: '1100px' }}>
+    <section className="bg-base-200 px-page pb-section-lg pt-[clamp(56px,9vw,96px)]">
+      <Container className="flex flex-col gap-10">
+        <div className="max-w-[1100px]">
           <Display as="h1" size={96} lineHeight={90}>
             You don&apos;t buy modules.{' '}
-            <span
-              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-            >
+            <span className="text-ink-subtle">
               You get everything inside them
               <Spark />
             </span>
           </Display>
         </div>
 
-        <div
-          className="mkt-stack-on-tablet mkt-align-end-on-desktop"
-          style={{ justifyContent: 'space-between', gap: '40px', maxWidth: '1280px' }}
-        >
-          <p
-            style={{
-              fontFamily: SANS,
-              fontWeight: 400,
-              fontSize: 'clamp(16px, 1.6vw, 20px)',
-              lineHeight: 1.55,
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              maxWidth: '620px',
-              margin: 0,
-            }}
-          >
+        <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
+          <Text variant="lead" className="text-ink-muted max-w-[620px]">
             The pricing page lists modules. This is what&apos;s actually inside them — {counts.live}{' '}
             shipped capabilities, {counts.building} more in build, and {counts.planned} on the
             roadmap. One platform replaces a stack of six or eight separate tools, and every piece
             reads and writes the same data.
-          </p>
+          </Text>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-3">
+              <Button color="neutral" size="lg">
                 Start free →
               </Button>
-              <a href="/pricing">
-                <Button size="lg" variant="outline">
-                  See pricing
-                </Button>
+              <a href="/pricing" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
+                See pricing
               </a>
             </div>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            <Text className="text-mini text-ink-subtle font-mono">
               No credit card · Live in five minutes
-            </span>
+            </Text>
           </div>
         </div>
 
         {/* metric row */}
-        <div
-          className="mkt-cluster"
-          style={{
-            justifyContent: 'space-between',
-            paddingTop: '32px',
-            marginTop: '8px',
-            borderTop: '1px solid var(--color-base-300)',
-            gap: '32px 56px',
-          }}
-        >
+        <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-x-14 gap-y-8 border-t pt-8">
           {metrics.map((m) => (
-            <div key={m.s} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '26px',
-                  letterSpacing: '-0.02em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+            <div key={m.s} className="flex flex-col gap-1">
+              <span className="text-base-content text-h1 font-medium tracking-[-0.02em]">
                 {m.v}
                 {'suffix' in m && m.suffix ? (
-                  <span
-                    style={{
-                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                    }}
-                  >
-                    {m.suffix}
-                  </span>
+                  <span className="text-ink-subtle text-body font-normal">{m.suffix}</span>
                 ) : null}
                 {'spark' in m && m.spark ? <Spark /> : null}
               </span>
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {m.s}
-              </span>
+              <Text className="text-caption text-ink-muted">{m.s}</Text>
             </div>
           ))}
         </div>
@@ -227,22 +155,20 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
   );
 }
 
+/**
+ * Functional annotation legend — it explains what the coloured dot on every
+ * capability chip means, so it is a key, not an eyebrow.
+ */
 function StatusLegend() {
   const order: CapabilityStatus[] = ['live', 'building', 'planned'];
   return (
-    <div className="mkt-cluster" style={{ gap: '20px' }}>
+    <div className="flex flex-wrap items-center gap-5">
       {order.map((s) => (
-        <span key={s} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+        <span key={s} className="inline-flex items-center gap-2">
           <Dot color={STATUS_META[s].color} size={8} />
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+          <Text as="span" className="text-caption text-ink-muted">
             {STATUS_META[s].label}
-          </span>
+          </Text>
         </span>
       ))}
     </div>
@@ -257,79 +183,36 @@ function AreaBlock({ area, surface }: { area: CapabilityArea; surface?: boolean 
   return (
     <div
       id={area.id}
+      className="border-base-300 scroll-mt-[88px] rounded-xl border p-7"
+      // Legend of capability areas: each block wears a soft 8% wash of its area
+      // hue (a color key, not the retired 3px stripe) — softer than a lead card's
+      // 12% since these are large, stacked surfaces. The hue arrives as a runtime
+      // value from lib/capabilities, so the mix cannot be a static utility.
       style={{
-        // Legend of capability areas: each block wears a soft 8% wash of its
-        // area hue (a color key, not the retired 3px stripe) — softer than a
-        // lead card's 12% since these are large, stacked surfaces.
         backgroundColor: `color-mix(in oklab, ${area.accent} 8%, ${
           surface ? 'var(--color-base-200)' : 'var(--color-base-100)'
         })`,
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '12px',
-        padding: '28px',
-        scrollMarginTop: '88px',
       }}
     >
-      <div className="mkt-stack-on-tablet" style={{ gap: '32px' }}>
+      <div className="flex flex-col gap-8 lg:flex-row">
         {/* header column */}
-        <div style={{ width: '280px', flexShrink: 0 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        <div className="w-[280px] shrink-0">
+          <div className="flex items-center gap-2.5">
             <Dot color={area.accent} size={10} />
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '20px',
-                letterSpacing: '-0.02em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <Heading level={3} size={4}>
               {area.name}
-            </h3>
+            </Heading>
           </div>
-          <p
-            style={{
-              margin: '12px 0 0',
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '21px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
-            {area.summary}
-          </p>
-          <div
-            style={{
-              marginTop: '16px',
-              display: 'inline-flex',
-              alignItems: 'baseline',
-              gap: '6px',
-              fontFamily: MONO,
-              fontSize: '12px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
-            <span style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>{total}</span>
+          <Text className="text-small text-ink-muted mt-3">{area.summary}</Text>
+          <div className="text-mini text-base-content mt-4 inline-flex items-baseline gap-1.5 font-mono">
+            <span className="font-medium">{total}</span>
             capabilities
-            <span
-              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-            >
-              · {liveN} live
-            </span>
+            <span>· {liveN} live</span>
           </div>
         </div>
 
         {/* capability chips */}
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '8px',
-            alignContent: 'flex-start',
-          }}
-        >
+        <div className="flex flex-1 flex-wrap content-start gap-2">
           {area.capabilities.map((cap) => (
             <CapabilityChip key={cap.name} cap={cap} />
           ))}
@@ -339,26 +222,16 @@ function AreaBlock({ area, surface }: { area: CapabilityArea; surface?: boolean 
   );
 }
 
+/**
+ * A capability + its shipping state. The state rides the dot color (decoded by
+ * StatusLegend) — the NAME is always full ink, because every chip here is meant
+ * to be read, planned ones included.
+ */
 function CapabilityChip({ cap }: { cap: Capability }) {
   const meta = STATUS_META[cap.status];
-  const muted = cap.status === 'planned';
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '8px',
-        padding: '7px 13px',
-        borderRadius: '9999px',
-        border: '1px solid var(--color-base-300)',
-        backgroundColor: 'var(--color-base-200)',
-        fontFamily: SANS,
-        fontSize: '13px',
-        fontWeight: 400,
-        color: muted
-          ? 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
-          : 'var(--color-base-content)',
-      }}
+      className="border-base-300 bg-base-200 text-base-content text-caption inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
       title={meta.label}
     >
       <Dot color={meta.color} size={7} />
@@ -370,56 +243,28 @@ function CapabilityChip({ cap }: { cap: Capability }) {
 // ── CTA ──────────────────────────────────────────────────────────────────────
 function FeaturesCta(): ReactNode {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-        borderTop: '1px solid var(--color-base-300)',
-        textAlign: 'center',
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0 }}>
+    <Section padding="xl" className="border-base-300 border-t text-center">
+      <div className="flex flex-col items-center">
         <Display size={64} lineHeight={64}>
           Start with one. The rest is already built
           <Spark />
         </Display>
-        <p
-          style={{
-            margin: '22px 0 34px',
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            maxWidth: '580px',
-          }}
-        >
+        <Text variant="lead" className="text-ink-muted mt-6 mb-9 max-w-[580px]">
           Switch on a single module from $10/mo and get a live site in five minutes. Everything on
           this page is waiting the moment you need it — no migration, no replatform, no goodbyes.
-        </p>
-        <div className="mkt-cluster" style={{ gap: '14px', justifyContent: 'center' }}>
-          <Button size="xl" style={{ backgroundColor: '#0A0A0A' }}>
+        </Text>
+        <div className="flex flex-wrap items-center justify-center gap-3.5">
+          <Button color="neutral" size="xl">
             Start free
           </Button>
-          <a href="/platform">
-            <Button size="xl" variant="outline">
-              How it works
-            </Button>
+          <a href="/platform" className={buttonClasses({ size: 'xl', variant: 'outline' })}>
+            How it works
           </a>
         </div>
-        <span
-          style={{
-            marginTop: '22px',
-            fontFamily: MONO,
-            fontSize: '12px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <Text className="text-mini text-ink-subtle mt-6 font-mono">
           No credit card · Cancel anytime · Your data, always exportable
-        </span>
-      </Container>
-    </section>
+        </Text>
+      </div>
+    </Section>
   );
 }

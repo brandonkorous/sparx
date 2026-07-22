@@ -301,6 +301,8 @@ export interface EmailSendPayload {
     | 'job-application-received'
     | 'job-application-confirmation'
     | 'team-invitation'
+    | 'magic-link'
+    | 'login-otp'
     | 'form-submission-notification'
     | 'form-submission-confirmation';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */

@@ -65,6 +65,11 @@ export const HOST_KEYS = {
    *  (`commerce.category` record type); the route passes the category handle + page via
    *  context. Read-only. */
   commerceCategoryDetail: 'commerce.category-detail',
+  /** The collection DETAIL — one collection's header + its members as a faceted, sortable,
+   *  paginated grid (the same browser the PLP + category detail use, scoped to this
+   *  collection). A per-record functional template (`commerce.collection` record type);
+   *  the route passes the collection handle + search params via context. Read-only. */
+  commerceCollectionDetail: 'commerce.collection-detail',
   /** The bookable-service DETAIL — one service's header + its LIVE time-picker (availability,
    *  slot selection, booking). A per-record functional template (`scheduling.service` record
    *  type); the route passes the service id via context. Interactive (client widget). */
@@ -89,6 +94,19 @@ export const HOST_KEYS = {
    *  has no conditional — the open "silicaui ask" in docs/122's logo-on-wordmark
    *  note). Staleness-immunity comes from `kind:"host"`; `locked` is orthogonal. */
   siteBrand: 'site.brand',
+  /** The ARTICLE BODY of the in-scope CMS entry — the post's rich text, serialized.
+   *
+   *  A host core rather than a bound node because the body is not a string: it is a
+   *  rich-text DOCUMENT (`{type:'doc',content:[…]}`) that only means anything once
+   *  `renderDocToHtml` walks it into sanitized markup with its headings, lists,
+   *  quotes, callouts, code and embeds intact. A value bind would stringify the
+   *  object; there is no binding kind that renders a document. So the one thing a
+   *  blog-post template exists to show had no way to appear on the canvas at all,
+   *  and every tenant fell through to the bare no-template fallback.
+   *
+   *  Per-record: the route hands the entry's doc to the storefront renderer, so the
+   *  core needs no props — the author places it, and the routed post fills it. */
+  cmsArticleBody: 'cms.article-body',
 } as const;
 
 export type HostComponentKey = (typeof HOST_KEYS)[keyof typeof HOST_KEYS];
@@ -200,6 +218,14 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
   },
   {
+    key: HOST_KEYS.commerceCollectionDetail,
+    label: 'Collection detail',
+    category: 'commerce',
+    icon: 'gallery',
+    hint: 'One collection: its header and members as a filterable, sortable, paginated grid. Pinned: style and surround it, but it can’t be removed.',
+    defaultClass: 'mx-auto w-full max-w-6xl px-6 py-6',
+  },
+  {
     key: HOST_KEYS.schedulingServiceDetail,
     label: 'Booking widget',
     category: 'scheduling',
@@ -244,6 +270,17 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     // NOT pinned — the tenant owns where their own brand sits. See HOST_KEYS.siteBrand
     // for why it is a host core anyway.
     pinned: false,
+  },
+  {
+    key: HOST_KEYS.cmsArticleBody,
+    label: 'Article body',
+    category: 'cms',
+    icon: 'article',
+    hint: 'The written body of the post being shown — headings, lists, quotes, and images exactly as they were typed. Pinned: style and surround it, but it can’t be removed.',
+    // Prose measure, not the 6xl page measure the commerce cores use: a line of body
+    // text past ~75 characters is measurably harder to read, and this core is nothing
+    // but body text.
+    defaultClass: 'mx-auto w-full max-w-3xl px-6 py-10',
   },
 ];
 

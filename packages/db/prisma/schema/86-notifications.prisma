@@ -1,0 +1,65 @@
+// In-app notifications — "what needs me?" (docs/124 Phase 3).
+//
+// The ONE new table the awareness layer needs. Jobs and Activity are read-only
+// projections over ledgers that already exist; a notification is different
+// because it carries state nothing else holds: whether a specific person has
+// READ it. That per-user read/unread is the entire reason this table exists.
+//
+// Rows about the TENANT'S OWN BUSINESS are DERIVED, never written inline by
+// feature code: the `platform.notify` automation action consumes the automation
+// fan-in (the whole Pub/Sub firehose in one place), applies the tenant's rules,
+// and writes here — the same discipline as the email pipeline. A service that
+// wants to notify someone about a business event publishes its domain event and
+// stops thinking about it. (Earlier revisions of this comment named a
+// `notification-worker`; that service was dropped — see docs/124.)
+//
+// The ONE exception is correspondence where sparx itself is a party: the account
+// holder wrote to us from the workbench and we answered. That is not a business
+// event, the tenant cannot choose its audience, and nobody would ever author a
+// rule for it — so it is written directly, in the transaction that caused it, via
+// `writePlatformNotice` (api-rest lib/platform-notice.ts, which carries the full
+// reasoning). The test is ownership, not recipient count: a task assigned to one
+// named person is still the tenant's policy and still goes through the engine.
+//
+// Deliberately NO href/route column: where a notification points is a per-app
+// concept, so the consumer maps `kind` (+ entity) to its own surface, exactly
+// as the jobs read-spine does. Baking one app's paths into the table would
+// outlive that app — and apps/dashboard is already being retired.
+//
+// RLS: tenant-scoped → ENABLE + FORCE + tenant_isolation on current_tenant_id().
+
+model Notification {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  /// The staff user this is addressed TO. A notification is always for a
+  /// person — that is what separates it from an activity row.
+  userId   String @map("user_id") @db.Uuid
+
+  /// Namespaced event kind, e.g. `order.payment_failed`, `job.failed`.
+  /// The consumer maps this to a surface and an icon.
+  kind     String  @db.VarChar(100)
+  title    String  @db.VarChar(255)
+  body     String? @db.Text
+  /// Module slug for the row's hue, e.g. `commerce`. Null for account-level.
+  module   String? @db.VarChar(30)
+  /// info | success | warning | danger — the semantic colour axis.
+  severity String  @default("info") @db.VarChar(20)
+
+  /// What it concerns, so the consumer can deep-link without a stored route.
+  entityType String? @map("entity_type") @db.VarChar(100)
+  entityId   String? @map("entity_id") @db.Uuid
+
+  /// Null until the addressee reads it. Nullable-timestamp rather than a
+  /// boolean because WHEN it was read is a question that gets asked, and a
+  /// boolean can never answer it later.
+  readAt    DateTime? @map("read_at") @db.Timestamptz
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The inbox query and the unread badge both filter (tenant, user, readAt).
+  @@index([tenantId, userId, readAt])
+  @@index([tenantId, createdAt(sort: Desc)])
+  @@map("notifications")
+}

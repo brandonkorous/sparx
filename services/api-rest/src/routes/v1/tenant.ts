@@ -32,6 +32,9 @@ import {
   requiredModules,
   blockingDependents,
   deriveModuleStates,
+  memberCanReachModule,
+  parseModuleAccessMode,
+  type MemberModuleAccessInput,
   type ModuleSlug,
 } from '@sparx/auth';
 import {
@@ -43,6 +46,7 @@ import {
   moduleBlockedMessage,
 } from '../../lib/module-toggle.js';
 import { computeBannerEnabled } from '../../lib/consent.js';
+import { resolvePropertyId } from '../../lib/property.js';
 import { env } from '../../env.js';
 import Stripe from 'stripe';
 import { SignJWT, jwtVerify } from 'jose';
@@ -85,13 +89,17 @@ function serializeConsent(
 // can lock + label a bundled/required toggle instead of letting it be flipped.
 function moduleRow(
   slug: ModuleSlug,
-  states: ReturnType<typeof deriveModuleStates>
+  states: ReturnType<typeof deriveModuleStates>,
+  // Optional so the PUT/PATCH responses (which answer "what is the tenant's
+  // configuration now?", not "what may you personally open?") can omit it.
+  access?: MemberModuleAccessInput
 ): {
   slug: ModuleSlug;
   enabled: boolean;
   source: string;
   includedBy: ModuleSlug[];
   requiredBy: ModuleSlug[];
+  reachable?: boolean;
 } {
   return {
     slug,
@@ -99,6 +107,16 @@ function moduleRow(
     source: states[slug].source,
     includedBy: states[slug].includedBy,
     requiredBy: blockingDependents(slug, (m) => states[m].enabled),
+    // Whether THIS CALLER may open the module, which is a different question
+    // from whether the tenant has bought it. `enabled` is about the account;
+    // `reachable` is about the person holding the token.
+    //
+    // Additive and separate on purpose. This endpoint is shared with the
+    // dashboard's Settings → Modules screen, its onboarding, and its order
+    // lens; narrowing `enabled` here would quietly change what those screens
+    // show. A new field leaves every existing consumer reading exactly what it
+    // read before, and lets the workbench opt in.
+    ...(access ? { reachable: memberCanReachModule(access, slug) } : {}),
   };
 }
 
@@ -420,12 +438,19 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     return ok({ ...row, socials: readSocials(row.socials) });
   });
 
-  // Cookie-consent config (docs/42 §4). Read by any staff; edited by admins.
+  // Cookie-consent config (docs/42 §4), PER SITE (docs/131 §3.9). The route
+  // keeps its `/v1/tenant/consent` path for now, but the row it reads and writes
+  // belongs to the site in the switcher — two businesses under one tenant run
+  // their own banner, regime, and policy version.
   app.get('/v1/tenant/consent', async (request) => {
-    requireAuth(request);
+    const auth = requireAuth(request);
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
     const row = await withRequestTenant(request, (tx) =>
       tx.consentSettings.findUnique({
-        where: { tenantId: requireAuth(request).tenantId },
+        where: { tenantId_propertyId: { tenantId: auth.tenantId, propertyId } },
       })
     );
     return ok(serializeConsent(row));
@@ -434,11 +459,16 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/tenant/consent', async (request) => {
     const auth = requireRole(request, 'admin');
     const input = PatchConsent.parse(request.body);
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
     const row = await withRequestTenant(request, (tx) =>
       tx.consentSettings.upsert({
-        where: { tenantId: auth.tenantId },
+        where: { tenantId_propertyId: { tenantId: auth.tenantId, propertyId } },
         create: {
           tenantId: auth.tenantId,
+          propertyId,
           mode: input.mode ?? 'off',
           activeCategories: input.activeCategories ?? [],
           bannerTitle: input.bannerTitle ?? null,
@@ -528,12 +558,36 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       where: { id: auth.tenantId },
       select: { settings: true },
     });
+
+    // The caller's own membership, for the per-person `reachable` flag.
+    //
+    // Wrapped in the tenant context because `members` carries an RLS policy
+    // keyed on current_tenant_id() — an unwrapped read as `sparx_app` returns
+    // no row at all, which would look exactly like "this person has no
+    // membership" and silently mean something completely different.
+    //
+    // A genuinely missing member row (a token minted before the org backfill,
+    // or a service-to-service actor) falls back to UNRESTRICTED. This flag
+    // exists to hide doors that would 403 anyway; inventing a restriction out
+    // of absent data would blank someone's navigation over a data gap rather
+    // than a decision anybody made. The API gates stay the real enforcement.
+    const membership = await withRequestTenant(request, (tx) =>
+      tx.member.findUnique({
+        where: { organizationId_userId: { organizationId: auth.tenantId, userId: auth.actorId } },
+        select: { role: true, moduleAccessMode: true, moduleAccess: { select: { module: true } } },
+      })
+    );
+    const access: MemberModuleAccessInput = {
+      role: membership?.role ?? auth.role,
+      mode: parseModuleAccessMode(membership?.moduleAccessMode),
+      granted: membership?.moduleAccess.map((grant) => grant.module) ?? [],
+    };
     // Enriched rows: `enabled` honors the BUNDLED_FREE graph (invoicing is on for
     // any B2B/Commerce tenant), and `source`/`includedBy`/`requiredBy` let the UI
     // lock + label a bundled or required toggle. Extra fields are additive — older
     // `{ slug, enabled }` consumers keep working.
     const states = deriveModuleStates(row?.settings);
-    return ok(MODULE_SLUGS.map((slug) => moduleRow(slug, states)));
+    return ok(MODULE_SLUGS.map((slug) => moduleRow(slug, states, access)));
   });
 
   app.patch('/v1/tenant/modules/:slug', async (request) => {

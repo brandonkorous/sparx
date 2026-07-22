@@ -25,7 +25,7 @@ import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
-import { resolvePropertyId } from '../../../lib/property.js';
+import { resolveListScope, resolvePropertyId } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -33,8 +33,10 @@ const ListQuery = z.object({
   type: z.enum(['prospect', 'retail', 'b2b']).optional(),
   assigned_rep_id: z.string().uuid().nullable().optional(),
   b2b_account_id: z.string().uuid().nullable().optional(),
-  // Membership site filter (docs/58 D2) — the dashboard Customers Site filter.
-  property: z.string().uuid().optional(),
+  // Membership site filter (docs/58 D2). Omitted → the site the caller is
+  // working in; `all` → every site. A null-property customer is a tenant-level
+  // contact and stays visible from every site either way.
+  property: z.string().min(1).optional(),
   tag: z.string().max(64).optional(),
   q: z.string().max(255).optional(),
   include_deleted: z.coerce.boolean().optional(),
@@ -55,15 +57,20 @@ const InactiveQuery = z.object({
 
 const customerRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/customers', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
     const ctx = toCrmContext(request);
+    const propertyId = await resolveListScope(
+      auth,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
     const { items, total } = await customerService.list(ctx, {
       type: q.type,
       assignedRepId: q.assigned_rep_id ?? undefined,
       b2bAccountId: q.b2b_account_id ?? undefined,
-      propertyId: q.property,
+      propertyId,
       tag: q.tag,
       q: q.q,
       includeDeleted: q.include_deleted,
@@ -119,10 +126,7 @@ const customerRoutes: FastifyPluginAsync = (app) => {
       const siteCount = await withRequestTenant(request, (tx) => tx.property.count());
       if (siteCount > 1) {
         const header = request.headers['x-sparx-property-id'];
-        body.propertyId = await resolvePropertyId(
-          auth.tenantId,
-          typeof header === 'string' ? header : null
-        );
+        body.propertyId = await resolvePropertyId(auth, typeof header === 'string' ? header : null);
       }
     }
     const customer = await customerService.create(toCrmContext(request), body);
@@ -165,6 +169,14 @@ const customerRoutes: FastifyPluginAsync = (app) => {
     await requireCrmModule(request);
     const result = await customerService.merge(toCrmContext(request), request.body);
     return ok(result);
+  });
+
+  app.get('/v1/crm/customers/:id/addresses', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const items = await customerService.listAddresses(toCrmContext(request), id);
+    return paged(items, { total: items.length, per_page: items.length || 1 });
   });
 
   app.post('/v1/crm/customers/:id/addresses', async (request, reply) => {

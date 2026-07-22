@@ -19,8 +19,8 @@ const inputVariants = cva(
       variant: {
         default:
           'border-base-300 hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
-        error: 'border-[var(--color-danger)] focus-visible:ring-[var(--color-danger)]',
-        success: 'border-[var(--color-success)] focus-visible:ring-[var(--color-success)]',
+        error: 'border-danger focus-visible:ring-[var(--color-danger)]',
+        success: 'border-success focus-visible:ring-[var(--color-success)]',
       },
       size: {
         sm: 'h-8 px-2.5 py-1.5 text-xs',

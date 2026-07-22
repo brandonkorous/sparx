@@ -35,6 +35,27 @@ describe('planRevalidation', () => {
     expect(planRevalidation('sitebuilder.rolled_back')).toBe('site');
   });
 
+  it('maps Builder / silica publish events to their own builder scope', () => {
+    for (const type of [
+      'builder.page.published',
+      'builder.layout.published',
+      'builder.layout.activated',
+      'builder.email.published',
+    ]) {
+      expect(planRevalidation(type)).toBe('builder');
+    }
+  });
+
+  it('keeps builder and site as SEPARATE scopes', () => {
+    // They invalidate different reads and fire on different events: `site:` tags the
+    // legacy snapshot + nav menus, `builder:` tags the page/layout/frame/style reads.
+    // A page publish is the most frequent write in the system and must not evict the
+    // snapshot alongside it (docs/127 §6).
+    expect(planRevalidation('builder.page.published')).not.toBe(
+      planRevalidation('sitebuilder.published')
+    );
+  });
+
   it('returns null for events that touch no cached read', () => {
     for (const type of ['cart.updated', 'order.paid', 'email.send', 'media.uploaded']) {
       expect(planRevalidation(type)).toBeNull();

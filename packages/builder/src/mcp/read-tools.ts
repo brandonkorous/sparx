@@ -41,9 +41,9 @@ export const listBuilderPages: McpToolDefinition = {
   input: z.object({ propertyId: propertyIdArg }),
   run: async (ctx, input) => {
     const pctx = await toPropertyContext(ctx, (input as { propertyId?: string }).propertyId);
-    const pages = await pageService.listOrSeed(pctx);
-    // Strip the full draft tree from the list — keep it compact; get_builder_page returns it.
-    return pages.map(({ tree: _tree, ...meta }) => meta);
+    // Already tree-less: `listOrSeed` selects a summary projection (docs/127 §3), so
+    // the trees this tool used to discard are no longer read from the database at all.
+    return pageService.listOrSeed(pctx);
   },
 };
 

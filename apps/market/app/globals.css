@@ -3,6 +3,7 @@
    the standard `--color-{name}` / `--color-{name}-content` palette silicaui reads.
    Now the shared @sparx/brand package — defined once, imported by every app. */
 @import '@sparx/brand/theme.css';
+@import '@sparx/brand/toast.css';
 
 /* silicaui is the component layer — a Tailwind v4 plugin whose semantic classes
    (`.btn`, `.badge`, `.alert`, …) are emitted via addBase and read the theme

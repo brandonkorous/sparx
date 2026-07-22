@@ -19,14 +19,19 @@ export const CreatePriceListInput = z.object({
   name: z.string().min(1).max(127),
   description: z.string().max(2000).optional(),
   currency: Currency,
-  channel: Channel.optional(), // null = applies on all channels
+  // null = applies on all channels. Nullable (not merely optional) so an update
+  // can CLEAR a channel back to "everywhere" — the service already maps null
+  // through to the column.
+  channel: Channel.nullable().optional(),
   // Targeting — at most one of these is set; both null means "default
   // for the channel".
   customerSegmentId: Uuid.nullable().optional(),
   b2bAccountId: Uuid.nullable().optional(),
   priority: z.number().int().nonnegative().default(0),
-  validFrom: z.string().datetime().optional(),
-  validTo: z.string().datetime().optional(),
+  // Nullable so an update can clear a previously-set go-live window. The service
+  // treats a falsy value as "no date" (writes null).
+  validFrom: z.string().datetime().nullable().optional(),
+  validTo: z.string().datetime().nullable().optional(),
   status: PriceListStatus.default('draft'),
 });
 export type CreatePriceListInput = z.infer<typeof CreatePriceListInput>;
@@ -109,6 +114,11 @@ export const PriceResolutionRequest = z.object({
   customerId: Uuid.optional(),
   b2bAccountId: Uuid.optional(),
   customerSegmentIds: z.array(Uuid).default([]),
+  // The site this price is for (docs/131 §4). A price list applies on a site when it
+  // has no site links (all sites) OR is linked to this one; absent = no site filter
+  // (admin/preview contexts see every list). Charge-critical: omitting it on a
+  // storefront read would let a sibling business's price list set the price.
+  propertyId: Uuid.optional(),
   asOf: z.string().datetime().optional(),
 });
 export type PriceResolutionRequest = z.infer<typeof PriceResolutionRequest>;

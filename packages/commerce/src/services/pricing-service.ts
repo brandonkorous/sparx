@@ -266,6 +266,71 @@ export async function listEntries(
   });
 }
 
+/**
+ * Every price-list entry that touches ONE product, across ALL its lists —
+ * the inverse of `listEntries` (which is scoped to one list).
+ *
+ * This is the Product → Pricing tab view: "which trade price lists is this
+ * product on, and at what price per variant?". Reading it by looping
+ * `listEntries` over every price list is the N+1 the workbench data layer
+ * forbids, so it is answered in one indexed query (`@@index([tenantId,
+ * variantId])` on the entry, joined up to its product) instead.
+ *
+ * Each row carries enough context to NAME its list without a second read:
+ * the list's id, name, currency and status travel with the entry. Soft-deleted
+ * (archived) lists are excluded, matching `listPriceLists` / `listEntries`.
+ */
+export interface ProductPriceListEntryRow {
+  id: string;
+  priceListId: string;
+  priceListName: string;
+  priceListStatus: string;
+  currency: string;
+  variantId: string;
+  variantSku: string;
+  fixedPriceCents: number | null;
+  percentOffList: number | null;
+  minQuantity: number;
+  maxQuantity: number | null;
+}
+
+export async function listEntriesForProduct(
+  ctx: ServiceContext,
+  productId: string
+): Promise<ProductPriceListEntryRow[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.priceListEntry.findMany({
+      where: {
+        variant: { productId },
+        priceList: { deletedAt: null },
+      },
+      include: {
+        priceList: { select: { name: true, currency: true, status: true, priority: true } },
+        variant: { select: { sku: true } },
+      },
+      orderBy: [
+        { priceList: { priority: 'desc' } },
+        { variant: { sku: 'asc' } },
+        { minQuantity: 'asc' },
+      ],
+      take: 1000,
+    });
+    return rows.map((r) => ({
+      id: r.id,
+      priceListId: r.priceListId,
+      priceListName: r.priceList.name,
+      priceListStatus: r.priceList.status,
+      currency: r.priceList.currency,
+      variantId: r.variantId,
+      variantSku: r.variant.sku,
+      fixedPriceCents: r.fixedPriceCents,
+      percentOffList: r.percentOffList,
+      minQuantity: r.minQuantity,
+      maxQuantity: r.maxQuantity,
+    }));
+  });
+}
+
 export async function setPriceListEntry(
   ctx: ServiceContext,
   rawInput: unknown
@@ -677,6 +742,7 @@ export async function resolve(ctx: ServiceContext, rawInput: unknown): Promise<P
       currency: input.currency,
       customerSegmentIds: input.customerSegmentIds,
       b2bAccountId: input.b2bAccountId,
+      propertyId: input.propertyId,
       asOf,
     });
     if (priceList) {
@@ -764,6 +830,8 @@ export async function resolveCart(
     customerId?: string;
     b2bAccountId?: string;
     customerSegmentIds?: string[];
+    /** The site the cart is on (docs/131 §4), threaded to every line's price. */
+    propertyId?: string;
     lines: { variantId: string; quantity: number }[];
   }
 ): Promise<PricedLine[]> {
@@ -777,6 +845,7 @@ export async function resolveCart(
         customerId: input.customerId,
         b2bAccountId: input.b2bAccountId,
         customerSegmentIds: input.customerSegmentIds ?? [],
+        ...(input.propertyId ? { propertyId: input.propertyId } : {}),
       })
     );
   }
@@ -792,6 +861,10 @@ async function pickEligiblePriceList(
     currency: string;
     customerSegmentIds: string[];
     b2bAccountId?: string;
+    /** The site this price is for (docs/131 §4). A list is eligible when it has no
+     *  site links (all sites) OR is linked to this one. Undefined = no site filter
+     *  (admin/preview). */
+    propertyId?: string;
     asOf: Date;
   }
 ): Promise<PriceList | null> {
@@ -813,6 +886,17 @@ async function pickEligiblePriceList(
             { customerSegmentId: null, b2bAccountId: null },
           ],
         },
+        // Site scoping (docs/131 §4): empty links = every site, else only this site.
+        ...(filter.propertyId
+          ? [
+              {
+                OR: [
+                  { propertyLinks: { none: {} } },
+                  { propertyLinks: { some: { propertyId: filter.propertyId } } },
+                ],
+              },
+            ]
+          : []),
       ],
     },
     orderBy: [{ priority: 'desc' }, { updatedAt: 'desc' }],

@@ -69,7 +69,7 @@ const NEUTRAL: Tint = {
 };
 
 /** One clause → its chip, plus the boxed value when the clause has an object slot
- *  ("offer dropshipped [branded tote bags]"). */
+ *  ("have a supplier ship [branded swag]"). */
 function clauseTokens(id: string, story: StoryState): Token[] {
   const cl = CLAUSE[id];
   if (!cl) return [];

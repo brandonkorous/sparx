@@ -41,16 +41,98 @@ export async function list(
   );
 }
 
-// Paginated/searchable variant for the dashboard's Workflows list page — kept
-// separate from `list()` above (which several MCP tools + tests depend on
-// returning a bare array) rather than changing that function's shape.
+/** Columns a caller may order by. A whitelist rather than a free-form field
+ *  name: this reaches the database, and `orderBy` is not a place to forward
+ *  user input to. */
+export type ListWorkflowsSortBy = 'name' | 'slug' | 'stages' | 'state' | 'updatedAt' | 'createdAt';
+
+/**
+ * The tenant's OWN arrangement — default workflow first, then the order they
+ * put them in. It is the only ordering that carries meaning rather than just
+ * being a sort, so it stays the answer when no sort is asked for.
+ */
+const DEFAULT_ORDER: Prisma.DocumentWorkflowOrderByWithRelationInput[] = [
+  { isDefault: 'desc' },
+  { sortOrder: 'asc' },
+  { createdAt: 'asc' },
+];
+
+function orderByFor(
+  sortBy: ListWorkflowsSortBy | undefined,
+  order: 'asc' | 'desc'
+): Prisma.DocumentWorkflowOrderByWithRelationInput[] {
+  switch (sortBy) {
+    case 'name':
+      return [{ name: order }, { id: order }];
+    case 'slug':
+      return [{ slug: order }, { id: order }];
+    // How many steps a workflow has, ordered in the database rather than by
+    // counting the included stages in JS — a page of 25 can only sort the 25 it
+    // was given, which puts the shortest workflow on page 4 above the longest
+    // one on page 1.
+    case 'stages':
+      return [{ stages: { _count: order } }, { name: 'asc' }];
+    // Active/archived is a null check, so the nulls decide the grouping:
+    // ascending reads "active first", which is the useful direction.
+    case 'state':
+      return [
+        { archivedAt: { sort: order, nulls: order === 'asc' ? 'first' : 'last' } },
+        { name: 'asc' },
+      ];
+    case 'updatedAt':
+      return [{ updatedAt: order }, { id: order }];
+    case 'createdAt':
+      return [{ createdAt: order }, { id: order }];
+    default:
+      return DEFAULT_ORDER;
+  }
+}
+
+// Paginated/searchable/sortable variant — kept separate from `list()` above
+// (which several MCP tools + tests depend on returning a bare array) rather
+// than changing that function's shape.
+//
+// Paging and sorting are both server-side because the row count is not bounded
+// by anything: a tenant with one brand has three workflows, and a manufacturer
+// running a different document flow per product line, region or dealer tier can
+// have hundreds. Sorting the loaded page in the browser would silently mean
+// "sort these 25", which is a different answer from the one the header claims.
 export async function listPaged(
   ctx: ServiceContext,
-  args: { q?: string; includeArchived?: boolean; take?: number; skip?: number } = {}
+  args: {
+    q?: string;
+    /**
+     * Supersedes `includeArchived`, which can only ever say "active" or
+     * "everything" — there is no way to ask it for the archived ones alone. A
+     * caller that CAN page cannot narrow the result client-side to get them
+     * either: filtering a 25-row window leaves 3 rows on a page that claims 25,
+     * and a total that counts rows the screen is hiding.
+     */
+    state?: 'active' | 'archived' | 'all';
+    /** Legacy two-way flag. Ignored when `state` is given. */
+    includeArchived?: boolean;
+    take?: number;
+    skip?: number;
+    sortBy?: ListWorkflowsSortBy;
+    order?: 'asc' | 'desc';
+  } = {}
 ): Promise<{ items: WorkflowWithStages[]; total: number }> {
   return withTenant(ctx, async (tx) => {
+    const archivedWhere = (): Prisma.DocumentWorkflowWhereInput => {
+      switch (args.state) {
+        case 'archived':
+          return { archivedAt: { not: null } };
+        case 'all':
+          return {};
+        case 'active':
+          return { archivedAt: null };
+        default:
+          return args.includeArchived ? {} : { archivedAt: null };
+      }
+    };
+
     const where: Prisma.DocumentWorkflowWhereInput = {
-      ...(args.includeArchived ? {} : { archivedAt: null }),
+      ...archivedWhere(),
       ...(args.q
         ? {
             OR: [
@@ -63,7 +145,7 @@ export async function listPaged(
     const [items, total] = await Promise.all([
       tx.documentWorkflow.findMany({
         where,
-        orderBy: [{ isDefault: 'desc' }, { sortOrder: 'asc' }, { createdAt: 'asc' }],
+        orderBy: orderByFor(args.sortBy, args.order ?? 'asc'),
         include: { stages: { orderBy: { sortOrder: 'asc' } } },
         take: Math.min(args.take ?? 50, 250),
         skip: args.skip ?? 0,

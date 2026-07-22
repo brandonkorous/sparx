@@ -26,7 +26,7 @@ export function ToolLadder({ tool }: { tool: ToolMeta }) {
   return (
     <Section surface="page" padding="md">
       <div
-        className={`mkt-stack-on-tablet items-center justify-between gap-7 rounded-xl border p-9 ${color.bg} bg-soft`}
+        className={`flex flex-col items-center justify-between gap-7 rounded-xl border p-9 lg:flex-row ${color.bg} bg-soft`}
         // The panel hairline is this tool's module hue — a per-module value, so
         // it cannot be a static utility class (Tailwind can't see an
         // interpolated `border-module-${key}`).

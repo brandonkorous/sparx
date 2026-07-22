@@ -64,7 +64,7 @@ const MODULES: ModuleColor[] = [
     why: 'Serious, industrial, business-grade.',
   },
   {
-    module: 'AI / MCP',
+    module: 'AI',
     colorName: 'Pink',
     hex: '#EC4899',
     token: '--color-module-ai',
@@ -143,7 +143,7 @@ export function ModulesSection() {
           lede="Every module owns a single hue, and it surfaces identically in three places: the module’s marketing site, its nav item in the dashboard, and a soft color-mix wash on its cards. One softly-tinted card per module tells a tenant where they are — quiet wayfinding, no loud stripe and no label required."
         />
 
-        <div className="mkt-grid-4-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {MODULES.map((m) => (
             // Legend exception: a module catalog is the one place a per-card tint
             // reads as a color key rather than the "wall of washes" the rule bans
@@ -173,12 +173,13 @@ export function ModulesSection() {
           ))}
         </div>
 
-        <div className="mkt-grid-2-1">
-          <Callout bg="bg-module-ai" title="The AI / MCP exception">
-            Rose stays reserved for AI / MCP even though the palette has since grown to cover the
-            full spectrum. Every other AI product reached for purple, teal, or blue; rose is unused
-            in B2B SaaS AI branding and signals “different in kind” — the module that thinks, not
-            just functions. Builder Indigo + Rose is near-complementary, so it reads as hierarchy.
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+          <Callout bg="bg-module-ai" title="The AI exception">
+            Pink stays reserved for AI even though the palette has since grown to cover the full
+            spectrum. Every other AI product reached for purple, teal, or blue; pink is unused in
+            B2B SaaS AI branding and signals “different in kind”. Builder Indigo + Pink is
+            near-complementary, so it reads as hierarchy. (Rose is Scheduling’s hue, not AI’s — a
+            neighbouring red that stays distinct because the two never share a surface.)
           </Callout>
           <Callout bg="bg-module-inventory" title="When a module color is also a semantic hue">
             Inventory’s Amber is the warning hue, so inside Inventory, stock alerts use danger/red

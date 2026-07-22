@@ -7,6 +7,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import type { Prisma } from '@prisma/client';
 import { withTenant } from '@sparx/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -25,12 +26,20 @@ const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLo
 const PathId = z.object({ id: z.string().uuid() });
 const PathOrderId = z.object({ orderId: z.string().uuid() });
 
+// Sortable columns are a server-side whitelist — the enum rejects anything off
+// the list rather than interpolating a client string into the orderBy. Sort is
+// server-side because the list pages (a client sort of one page is a wrong
+// answer once there is a page 2).
+const OrderSort = z.enum(['createdAt', 'status', 'supplierId']);
+
 const ListQuery = z.object({
   orderId: z.string().uuid().optional(),
   supplierId: z.string().uuid().optional(),
   status: z
     .enum(['pending', 'submitted', 'shipped', 'delivered', 'failed', 'cancelled'])
     .optional(),
+  sort_by: OrderSort.optional(),
+  order: z.enum(['asc', 'desc']).optional(),
   take: z.coerce.number().int().min(1).max(250).default(50),
   skip: z.coerce.number().int().min(0).default(0),
 });
@@ -50,10 +59,14 @@ function toOrderView(o: {
   deliveredAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
+  // The customer order this was routed from — its human number, so the list can
+  // show "#1043" instead of a raw uuid. Populated by the `order` include.
+  order?: { orderNumber: string | null } | null;
 }) {
   return {
     id: o.id,
     orderId: o.orderId,
+    orderNumber: o.order?.orderNumber ?? null,
     supplierId: o.supplierId,
     supplierOrderId: o.supplierOrderId,
     status: o.status,
@@ -87,10 +100,14 @@ const dropshipOrderRoutes: FastifyPluginAsync = async (app) => {
       if (query.orderId) where.orderId = query.orderId;
       if (query.supplierId) where.supplierId = query.supplierId;
       if (query.status) where.status = query.status;
+      const orderBy: Prisma.DropshipOrderOrderByWithRelationInput = {
+        [query.sort_by ?? 'createdAt']: query.order ?? 'desc',
+      };
       return Promise.all([
         tx.dropshipOrder.findMany({
           where,
-          orderBy: { createdAt: 'desc' },
+          include: { order: { select: { orderNumber: true } } },
+          orderBy,
           take: query.take,
           skip: query.skip,
         }),
@@ -110,7 +127,10 @@ const dropshipOrderRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
 
     const order = await withTenant({ tenantId }, async (tx) => {
-      return tx.dropshipOrder.findFirst({ where: { id, tenantId } });
+      return tx.dropshipOrder.findFirst({
+        where: { id, tenantId },
+        include: { order: { select: { orderNumber: true } } },
+      });
     });
     if (!order) throw notFound('Dropship order not found');
 

@@ -7,11 +7,12 @@
 // (migration 20260918000000); the per-series materialize then runs back under
 // withTenant({tenantId}) inside the engine, so every write still passes RLS.
 
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma } from '@sparx/db';
 import { materializeSeries } from '@sparx/scheduling';
 
-const SERIES_LOCK_KEY = 4242_4247;
+const SERIES_LOCK_KEY = ADVISORY_LOCKS.SCHEDULING_SERIES;
 const DEFAULT_INTERVAL_MS = 600_000; // every 10 min — series roll slowly
 const LEAD_SECONDS = 2_592_000; // top up a series when within 30 days of its horizon
 const SCAN_LIMIT = 50;
@@ -31,12 +32,8 @@ export interface SeriesTickResult {
 export async function runSeriesMaterializationTick(
   logger: FastifyBaseLogger
 ): Promise<SeriesTickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${SERIES_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) return { acquired: false, processed: 0, created: 0, errors: 0 };
-
-  try {
+  const SKIPPED: SeriesTickResult = { acquired: false, processed: 0, created: 0, errors: 0 };
+  return withAdvisoryTickLock(SERIES_LOCK_KEY, SKIPPED, async () => {
     const due = await prisma.$queryRaw<DueSeries[]>`
       SELECT id, tenant_id FROM find_due_booking_series(${LEAD_SECONDS}::int, ${SCAN_LIMIT}::int)
     `;
@@ -60,9 +57,7 @@ export async function runSeriesMaterializationTick(
       }
     }
     return { acquired: true, processed, created, errors };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${SERIES_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startSeriesMaterializationLoop(

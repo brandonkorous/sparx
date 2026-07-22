@@ -1,4 +1,5 @@
-import { Button } from '@wizeworks/silicaui-react';
+import type { ReactNode } from 'react';
+import { Button, Heading } from '@wizeworks/silicaui-react';
 import {
   Container,
   Display,
@@ -9,1176 +10,722 @@ import {
   SectionHeader,
   Spark,
 } from './primitives';
+import { Cycle } from './cycle';
+import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
+import { Faq, type FaqItem } from './faq';
 
 /**
- * The /ai marketing page — the AI · MCP module, told as a positioning story
- * rather than the generic module template. The thesis is the inversion: sparx
- * does NOT ship another chatbot you have to learn; it opens a direct line (the
- * Model Context Protocol) so the assistant you already use can read and write
- * your live business data. "Bring your own AI."
+ * The /ai marketing page — the AI CONCIERGE: the outward half of the one $49 AI
+ * module. Its companion, /agentic, is the inward half (point your OWN AI at your
+ * data over MCP, for your team). This page sells the customer-facing tool: the
+ * Live Chat AI first-responder that greets a tenant's website visitors, answers
+ * from their LIVE catalog + policies, and hands off to a human the moment it's
+ * unsure. Grounded in the real behavior of services/api-rest chat/ai-handler.ts.
  *
- * Built on the marketing primitives + the per-module colors (this module's
- * accent is AI pink). Section backgrounds alternate page → surface for rhythm,
- * with two near-black bands (the safety surface and the close). The single
- * connection endpoint shown is real: services/api-mcp serves Streamable HTTP at
- * mcp.sparx.works/v1, authed by a scoped `sk_live_…` key issued in the
- * dashboard. The literal per-client config deliberately lives in the dashboard
- * connect screen + /docs, never hard-coded here (the key is per-tenant and
- * secret; client configs change).
+ * Honest, load-bearing framing (never soften it): sparx runs ZERO AI on its own
+ * credential — the tenant brings their own Anthropic/OpenAI key (encrypted). No
+ * key → every conversation goes to a human. The concierge does READ-only lookups
+ * (max 4 round-trips), never acts on the customer's behalf, and escalates below a
+ * confidence threshold, outside hours, or on any uncertainty.
+ *
+ * Visual differentiation from /agentic within the same module family: /agentic
+ * owns the one SATURATED magenta flood hero on the marketing site, so the
+ * front-of-house concierge takes the TINTED pink hero (the brand default for
+ * module pages) instead — same AI-pink hue, distinctly softer. AI pink stays a
+ * SIGNAL throughout (the spark, dots, the widget accent), never a wash. Section
+ * backgrounds alternate page → surface for rhythm, with two dark THEME ISLANDS
+ * (`<Section surface="dark">` — the BYOK truth + the close), never a painted
+ * near-black. Example data rotates through EXAMPLE_BUSINESSES via <Cycle> so no
+ * single vertical reads as "what the concierge is for."
+ *
+ * Styling contract: silicaui components + Tailwind utilities only (see
+ * SILICA-VOCABULARY.md). Type comes from the editorial `text-*` scale registered
+ * in app/globals.css; ink from `text-base-content` / `text-ink-muted` /
+ * `text-ink-subtle` (all REAL inks that mix into base-100, never transparent).
+ * The only inline styles left are genuinely dynamic values — a module hue read
+ * from `getModuleColor()`.
  */
 export function AiPage() {
   return (
     <>
-      <AiHero />
-      <TheInversion />
-      <HowItWorks />
-      <AskInPlainEnglish />
-      <ToolSurface />
-      <ScopedAudited />
-      <WorksWithEveryAssistant />
-      <AiPricing />
-      <AiCta />
+      <ConciergeHero />
+      <AnswerLifecycle />
+      <GroundedInData />
+      <RunsOnYourKey />
+      <KnowsWhenToEscalate />
+      <ShapeItYourself />
+      <AgenticCrossLink />
+      <ConciergePricing />
+      <Faq
+        items={CONCIERGE_FAQ}
+        id="faq"
+        accent={AI.color}
+        heading={
+          <>
+            Concierge questions
+            <Spark color={AI.color} />
+          </>
+        }
+        lede="Your own key, where its answers come from, when a human takes over, and what it costs — answered straight. Still weighing it? Read the chat docs or start the 14-day trial."
+      />
+      <ConciergeCta />
     </>
   );
 }
 
 const AI = getModuleColor('ai');
 
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
-
-/** The real MCP transport endpoint — services/api-mcp, behind Caddy. */
-const ENDPOINT = 'mcp.sparx.works/v1';
+// Page-specific FAQ — the real objections a visitor evaluating the customer-
+// facing concierge would raise, answered straight and grounded in the shipped
+// behavior (chat/ai-handler.ts) + billing (docs/17). No tier/plan language. Feeds
+// the FAQPage JSON-LD via <Faq>, so accuracy is load-bearing.
+const CONCIERGE_FAQ: FaqItem[] = [
+  {
+    id: 'concierge-byok',
+    question: 'Do I have to bring my own AI key?',
+    answer:
+      'Yes. sparx never answers your customers on an AI credential of its own — there is no house account to fall back on. You paste your own Anthropic or OpenAI key into your chat settings once, it is encrypted at rest, and every conversation runs on your model and your terms. Haven’t connected a key? The concierge stands down and every chat goes straight to your team, exactly as if AI were switched off.',
+  },
+  {
+    id: 'concierge-hallucinate',
+    question: 'Will it make things up about my products or policies?',
+    answer:
+      'The sparx concierge answers from your live data, not a snapshot of your site crawled weeks ago. Before it replies it can run up to four read-only lookups against your real catalog, prices, availability, published pages, and store details like hours and contact info. Every answer also carries a confidence score, and anything below the bar is handed to a person instead of guessed at.',
+  },
+  {
+    id: 'concierge-handoff',
+    question: 'What happens when it doesn’t know the answer?',
+    answer:
+      'It hands the conversation to your team. The chat drops into your staff inbox and the customer is told a person will follow up shortly. Outside your operating hours it leaves the away message you wrote and still passes the conversation along, and if a teammate has already picked up the chat it stays out of the way entirely. The sparx concierge is fail-safe by design: when it is unsure, it gets a human rather than reaching your customer unchecked.',
+  },
+  {
+    id: 'concierge-actions',
+    question: 'Can it place orders or change things for a customer?',
+    answer:
+      'No. The sparx concierge is strictly read-only. It can look up products, prices, availability, and store details to ground an answer, but it can never place an order, move money, or change a record on a customer’s behalf. Questions about a specific order, account, or refund go to a real person every time.',
+  },
+  {
+    id: 'concierge-livechat',
+    question: 'Do I need the Live Chat module too?',
+    answer:
+      'Yes, and the two are priced separately. Live Chat ($19/mo) gives you the chat widget on your site, the conversation routing, and the staff inbox your team answers from. The concierge that answers first is part of the sparx AI module ($49/mo). With Live Chat on its own, every conversation goes to a person. Add AI and the concierge takes the first pass.',
+  },
+  {
+    id: 'concierge-control',
+    question: 'Can I control its tone, greeting, and look?',
+    answer:
+      'Yes, without writing any code. In sparx you set the opening greeting, the away message, the tone and persona it writes in, the accent color, which corner of the page it sits in, and your operating hours — all from the dashboard, like any other setting. No prompt engineering, no training data, no developer.',
+  },
+  {
+    id: 'concierge-usage-cost',
+    question: 'What does the AI usage cost on top of the $49?',
+    answer:
+      'Because the sparx concierge runs on your own provider key, you pay Anthropic or OpenAI directly for what your conversations use, at their published rates. sparx charges the flat $49/mo for the AI module and never marks up, meters, or resells your messages. Each conversation is also capped at four lookups, so a confused answer cannot spiral into runaway usage.',
+  },
+  {
+    id: 'concierge-vs-agentic',
+    question: 'How is this different from the agentic / MCP tool?',
+    answer:
+      'They are two halves of the same sparx AI module ($49/mo), and turning it on gets you both. The concierge faces outward: it answers your customers in the live chat on your site. The agentic tool faces inward: it points the AI you already use — Claude, ChatGPT, Copilot — at your own business data, so your team can ask questions and get work done from the chat they are already in. One module, one bill, both tools.',
+  },
+];
 
 // ── HERO ────────────────────────────────────────────────────────────────────
-function AiHero() {
-  // This module's own color, full-bleed — the page sells the standout AI/MCP
-  // capability, so it gets the one saturated hero on the marketing site. Near-
-  // black ink on the bright magenta keeps it ~7:1 legible and tonally connected
-  // to the rest of the site (which is built on the same #0A0A0A ink); the spark
-  // flips to white so the brand accent still reads against its own color.
-  const ink = '#0A0A0A';
+function ConciergeHero() {
+  // Tinted (not flooded) AI-pink band — the front-of-house counterpart to
+  // /agentic's saturated hero. `${AI.bg} bg-soft` is silica's theme-aware tint,
+  // so it lands light in light mode and on-brand in dark. The figure is a live
+  // chat widget on a tenant's site, rotating through EXAMPLE_BUSINESSES so the
+  // "works for any business" claim is demonstrated, not asserted.
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: AI.color,
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '1100px' }}>
-          <Display as="h1" size={104} lineHeight={96} color={ink}>
-            Bring your
-          </Display>
-          <Display as="h1" size={104} lineHeight={96} color={ink}>
-            own AI
-            <Spark color="#FFFFFF" />
-          </Display>
-        </div>
-
-        <div
-          className="mkt-stack-on-tablet mkt-align-end-on-desktop"
-          style={{ justifyContent: 'space-between', gap: '40px', maxWidth: '1280px' }}
-        >
-          <p
-            style={{
-              fontFamily: SANS,
-              fontWeight: 400,
-              fontSize: 'clamp(16px, 1.6vw, 20px)',
-              lineHeight: 1.55,
-              color: 'rgba(10,10,10,0.82)',
-              maxWidth: '640px',
-              margin: 0,
-            }}
-          >
-            We didn&rsquo;t build you another AI assistant to learn. We opened a direct line so the
-            AI you <em>already use</em> &mdash; Claude, ChatGPT, Copilot &mdash; can read and write
-            your live business data in plain English, from the same chat you&rsquo;re already in. No
-            new tool. No new tab. No exports.
-          </p>
-
-          <div
-            className="mkt-align-end-on-desktop"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              alignItems: 'flex-start',
-            }}
-          >
-            <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button size="lg" style={{ backgroundColor: ink }}>
-                Connect your AI →
+    <section className={`${AI.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
+      <Container>
+        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
+          <div className="mkt-stack-copy">
+            <div className="flex flex-col gap-1.5">
+              <Display as="h1" size={96} lineHeight={90}>
+                Answer every customer
+              </Display>
+              <Display as="h1" size={96} lineHeight={90}>
+                the moment they ask
+                <Spark color={AI.color} />
+              </Display>
+            </div>
+            <p className="text-lede text-ink-muted m-0 max-w-[560px] font-sans">
+              Your customers arrive with a question. Your concierge greets them, answers from your
+              real catalog and published pages, and hands off to a person the second it&rsquo;s
+              unsure. Instant help at your front door, running on your own AI, never ours.
+            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <Button color="neutral" size="lg">
+                Turn on your concierge →
               </Button>
               <a href="#how">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  style={{
-                    backgroundColor: 'transparent',
-                    borderColor: 'rgba(10,10,10,0.28)',
-                    color: ink,
-                  }}
-                >
-                  See how it works
+                <Button size="lg" variant="outline">
+                  See how it answers
                 </Button>
               </a>
             </div>
-            <span style={{ fontFamily: MONO, fontSize: '12px', color: 'rgba(10,10,10,0.62)' }}>
-              Claude · ChatGPT · Copilot · any MCP client
+            <span className="text-mini text-ink-muted font-mono">
+              Your key · your model · your customers&rsquo; questions
             </span>
           </div>
+
+          <Cycle
+            interval={4600}
+            items={EXAMPLE_BUSINESSES.map((b) => (
+              <ConciergeWidget key={b.name} business={b} />
+            ))}
+          />
         </div>
       </Container>
     </section>
   );
 }
 
-// ── THE INVERSION · the core positioning ────────────────────────────────────
-function TheInversion() {
-  const usual = [
-    'A branded copilot bolted onto the dashboard.',
-    'Another chat box, with its own personality to learn.',
-    'A separate history, walled off from the chats you actually work in.',
-    'One more tool to open, check, and keep in your head.',
-  ];
-  const sparx = [
-    'The assistant you already use — and already trust.',
-    'Your existing threads, context, and habits, untouched.',
-    'An open port (MCP), not a walled garden you log into.',
-    'Your whole business, reachable from where your attention already is.',
-  ];
+/** Derive a believable concierge exchange from a business fixture — real product
+ *  + real shipping line, so the demo is grounded and rotates without a new
+ *  dataset. Kept the same shape (ask + answer + receipt) across every business
+ *  so the rotating widget never reflows. */
+function conciergeScene(b: ExampleBusiness) {
+  // Every fixture ships two products, but the index signature is unchecked —
+  // fall back rather than assert so a future fixture edit can't crash the hero.
+  const product = b.order.products[0]?.name ?? 'that item';
+  const shipTail = b.order.shipping.label.split('· ')[1] ?? 'Standard shipping';
+  const freeShip = b.order.shipping.value === '$0.00';
+  const answer = freeShip
+    ? `Yes! The ${product} is in stock, and ${shipTail.toLowerCase()} is free. Want me to pull up the details?`
+    : `Yes! The ${product} is in stock. Shipping runs ${b.order.shipping.value} via ${shipTail}. Want me to pull up the details?`;
+  return {
+    ask: `Do you have the ${product} in stock, and how does shipping work?`,
+    answer,
+    receipt: `Answered from ${b.name}'s live catalog`,
+  };
+}
 
+function ConciergeWidget({ business }: { business: ExampleBusiness }) {
+  const scene = conciergeScene(business);
   return (
-    <Section surface="surface" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
-        <SectionHeader
-          accent={AI.color}
-          headline={
-            <>
-              sparx inside your AI &mdash;{' '}
-              <span
-                style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-              >
-                not another AI inside sparx
-              </span>
-            </>
-          }
-          lede={
-            <>
-              Every other platform&rsquo;s move is to add a chatbot you have to learn. That&rsquo;s
-              vendor-centric &mdash; it assumes their product deserves your attention. We did the
-              opposite: sparx doesn&rsquo;t ask for your attention, it makes your business{' '}
-              <em>reachable</em> from wherever your attention already is.
-            </>
-          }
-        />
+    <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-2xl">
+      {/* browser chrome — this runs on the tenant's OWN site */}
+      <div className="border-base-300 flex items-center gap-2 border-b px-4 py-3">
+        {[0, 1, 2].map((i) => (
+          <span key={i} aria-hidden className="bg-base-300 h-3 w-3 rounded-full" />
+        ))}
+        <span className="text-mini text-ink-muted ml-2 font-mono">{business.domain}</span>
       </div>
 
-      <div className="mkt-grid-2-1" style={{ marginTop: '56px', gap: '24px' }}>
-        <ContrastCard
-          tone="muted"
-          kicker="The usual way"
-          title="A new bot to babysit"
-          points={usual}
+      {/* the widget sitting on the page, bottom-right like a real launcher */}
+      <div className="bg-base-200 min-h-[340px] p-6">
+        <div className="bg-base-100 border-base-300 ml-auto max-w-[340px] overflow-hidden rounded-2xl border shadow-xl">
+          {/* head — the tenant's site name, on the concierge accent. `bg-*` only
+              sets the fill, so the paired `-content` ink is explicit. */}
+          <WidgetHead title={business.name} />
+
+          {/* transcript */}
+          <div className="bg-base-200 flex flex-col gap-3 p-4">
+            <Bubble who="user">{scene.ask}</Bubble>
+            <Bubble who="ai">{scene.answer}</Bubble>
+            <Receipt dotColor={AI.color}>{scene.receipt}</Receipt>
+          </div>
+
+          {/* input bar */}
+          <div className="border-base-300 bg-base-100 flex items-center gap-2 border-t px-3 py-2.5">
+            {/* Placeholder copy — genuinely not meant to be read, so subtle ink. */}
+            <span className="border-base-300 text-mini text-ink-subtle flex-1 rounded-full border px-3 py-2 font-sans">
+              Type a message…
+            </span>
+            <span
+              aria-hidden
+              className={`${AI.bg} text-module-ai-content text-body-sm grid h-8 w-8 place-items-center rounded-full`}
+            >
+              ↑
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** The concierge widget's title bar — the tenant's site name on the AI accent.
+ *  Shared by the hero widget and the live preview in <ShapeItYourself>. */
+function WidgetHead({ title }: { title: string }) {
+  return (
+    <div className={`${AI.bg} text-module-ai-content flex items-center gap-2.5 px-4 py-3`}>
+      <span
+        aria-hidden
+        className="text-body-sm grid h-8 w-8 place-items-center rounded-full bg-current/20"
+      >
+        ✦
+      </span>
+      <span className="flex flex-col">
+        <span className="text-small font-medium">{title}</span>
+        <span className="text-mini">Ask us anything</span>
+      </span>
+    </div>
+  );
+}
+
+function Bubble({ who, children }: { who: 'user' | 'ai'; children: ReactNode }) {
+  const user = who === 'user';
+  return (
+    <span
+      className={`text-caption max-w-[90%] px-3 py-2.5 font-sans ${
+        user
+          ? 'bg-neutral text-neutral-content self-end rounded-[14px_14px_4px_14px] font-medium'
+          : 'bg-base-100 border-base-300 text-base-content self-start rounded-[14px_14px_14px_4px] border'
+      }`}
+    >
+      {children}
+    </span>
+  );
+}
+
+function Receipt({ children, dotColor }: { children: ReactNode; dotColor: string }) {
+  return (
+    <span className="text-micro text-ink-muted inline-flex items-center gap-2 pl-0.5 font-sans">
+      <Dot color={dotColor} size={6} />
+      {children}
+    </span>
+  );
+}
+
+// ── ANSWER LIFECYCLE · the confidence-gate fork ─────────────────────────────
+function AnswerLifecycle() {
+  const steps = [
+    {
+      title: 'A customer asks',
+      body: 'In plain English, in the chat on your site. No menu to navigate, no ticket to file.',
+    },
+    {
+      title: 'It looks things up',
+      body: 'Up to four quick, read-only lookups against your real catalog, prices, availability, and published pages. The same records your dashboard shows.',
+    },
+    {
+      title: 'It rates its own answer',
+      body: 'Every reply carries a confidence score. High enough, and it sends. Anything less, and it forks to a person.',
+    },
+  ];
+  return (
+    <Section id="how" surface="surface" padding="lg">
+      <SectionHeader
+        accent={AI.color}
+        headline={<>One question, one honest answer</>}
+        lede={
+          <>
+            No scripts to write, no decision trees to wire. It reads the question, checks your real
+            data, and then either answers or gets a human. Every time.
+          </>
+        }
+      />
+
+      <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {steps.map((s) => (
+          <div
+            key={s.title}
+            className="bg-base-100 border-base-300 flex min-h-[190px] flex-col gap-3 rounded-xl border px-6 py-7"
+          >
+            <Dot color={AI.color} size={9} />
+            <Heading level={3}>{s.title}</Heading>
+            <p className="text-small text-ink-muted m-0 font-sans">{s.body}</p>
+          </div>
+        ))}
+      </div>
+
+      {/* the fork — the fail-safe branch made visible */}
+      <div className="mt-4 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <ForkCard
+          tone="confident"
+          title="When it’s sure, it answers on the spot"
+          body="In your customer’s hands in seconds, in your voice, at 2am and at any volume."
         />
-        <ContrastCard
-          tone="accent"
-          kicker="The sparx way"
-          title="A line to the AI you have"
-          points={sparx}
+        <ForkCard
+          tone="human"
+          title="When it isn’t, it fetches a person"
+          body="It tells the customer a person will follow up, then drops the conversation into your staff inbox. It would rather fetch a human than guess."
         />
       </div>
     </Section>
   );
 }
 
-function ContrastCard({
+function ForkCard({
   tone,
-  kicker,
   title,
-  points,
+  body,
 }: {
-  tone: 'muted' | 'accent';
-  kicker: string;
+  tone: 'confident' | 'human';
   title: string;
-  points: string[];
+  body: string;
 }) {
-  const accent = tone === 'accent';
+  const confident = tone === 'confident';
   return (
     <div
-      className={accent ? `${AI.bg} bg-soft` : 'bg-base-200'}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '18px',
-        padding: '32px',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '12px',
-      }}
+      className={`border-base-300 flex flex-col gap-2 rounded-xl border p-7 ${
+        confident ? `${AI.bg} bg-soft` : 'bg-base-100'
+      }`}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-        <span
-          className={accent ? AI.ink : undefined}
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-            color: accent
-              ? undefined
-              : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
-          {kicker}
-        </span>
-        <h3
-          style={{
-            margin: 0,
-            fontFamily: SANS,
-            fontWeight: 500,
-            fontSize: '22px',
-            letterSpacing: '-0.02em',
-            color: 'var(--color-base-content)',
-          }}
-        >
-          {title}
-        </h3>
-      </div>
-      <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '12px' }}>
-        {points.map((p) => (
-          <li key={p} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
-            <span style={{ paddingTop: '7px', flexShrink: 0 }}>
-              <Dot
-                color={
-                  accent
-                    ? AI.color
-                    : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
-                }
-                size={7}
-              />
-            </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '23px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {p}
-            </span>
-          </li>
-        ))}
-      </ul>
+      {/* No label above the heading. The two outcomes ARE the two headings —
+          a kicker here (span OR Badge) is the banned eyebrow slot either way;
+          the tint is what separates the branches. */}
+      <Heading level={3}>{title}</Heading>
+      <p className="text-small text-ink-muted m-0 font-sans">{body}</p>
     </div>
   );
 }
 
-// ── HOW IT WORKS · three steps + the real endpoint ──────────────────────────
-function HowItWorks() {
-  const steps = [
+// ── GROUNDED · live data, not a scraped FAQ ─────────────────────────────────
+function GroundedInData() {
+  const records: { module: MarketingModule; label: string; value: string; sub: string }[] = [
     {
-      n: '01',
-      title: 'Activate',
-      body: 'Turn on the AI module in your dashboard — one click. It gates the MCP server and tracks which modules your AI can reach.',
+      module: 'commerce',
+      label: 'Catalog · live',
+      value: 'Pour-Over Kit — 12 in stock',
+      sub: 'Reads your real inventory count, not a cached page.',
     },
     {
-      n: '02',
-      title: 'Connect',
-      body: 'In Settings → AI Integrations, generate a scoped key. Paste it, with the endpoint below, into your assistant once.',
+      module: 'builder',
+      label: 'Published pages · live',
+      value: 'Returns, shipping, hours, contact',
+      sub: 'Points customers to your own published pages and store details.',
     },
     {
-      n: '03',
-      title: 'Ask',
-      body: 'In the chat you already use: “What were my top customers this quarter?” Your AI does the rest, live.',
+      module: 'crm',
+      label: 'Orders & accounts · off limits',
+      value: 'Goes to a person, every time',
+      sub: 'It never looks up or guesses at someone’s order or account.',
     },
   ];
-
   return (
-    <Section id="how" padding="lg">
+    <Section padding="lg">
       <SectionHeader
         accent={AI.color}
-        headline={<>Connect in three steps</>}
+        headline={<>Live data, not a scraped FAQ</>}
         lede={
           <>
-            No integration project, no consultant. The whole thing is generate a key, paste it once,
-            and start asking.
+            Most chat bots guess from a snapshot of your site crawled weeks ago. Yours reads the
+            same live records your dashboard shows, the moment they change. Change a price at 9:00
+            and the answer is right at 9:01.
+          </>
+        }
+      />
+      <div className="mt-14 grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
+        <div className="bg-base-100 border-base-300 rounded-xl border p-7">
+          <Receipt dotColor="var(--color-neutral)">A customer asks</Receipt>
+          <p className="text-h3 text-base-content mt-3.5 mb-0 font-sans font-medium tracking-[-0.01em]">
+            &ldquo;Is the pour-over kit back in stock, and what&rsquo;s your return window?&rdquo;
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-2.5">
+          {records.map((r) => (
+            <div
+              key={r.value}
+              className="bg-base-100 border-base-300 flex items-start gap-3 rounded-xl border px-4 py-4"
+            >
+              <span className="shrink-0 pt-1.5">
+                <Dot color={getModuleColor(r.module).color} size={9} />
+              </span>
+              <div className="min-w-0">
+                {/* A record label, not an eyebrow: full ink, sentence case, no
+                    uppercase-mono micro-caps introducing the value below it. */}
+                <div className="text-mini text-ink-muted font-sans">{r.label}</div>
+                <div className="text-body-sm text-base-content mt-0.5 font-sans font-medium">
+                  {r.value}
+                </div>
+                <div className="text-caption text-ink-muted mt-0.5 font-sans">{r.sub}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+// ── BYOK · runs on your key (dark theme island) ─────────────────────────────
+function RunsOnYourKey() {
+  const items = [
+    {
+      title: 'Your key, encrypted',
+      body: 'Paste your Anthropic or OpenAI key once. It’s encrypted at rest and only ever decrypted to answer.',
+    },
+    {
+      title: 'Your model, your bill',
+      body: 'You pay your provider directly for usage. sparx charges a flat fee, with no per-message markup.',
+    },
+    {
+      title: 'No key, no guessing',
+      body: 'Haven’t connected one? Every chat goes straight to a person. There is no sparx fallback AI.',
+    },
+  ];
+  return (
+    <Section surface="dark" padding="lg">
+      <div className="max-w-[780px]">
+        <Display size={56} lineHeight={60}>
+          It runs on your AI. Never ours
+          <Spark color={AI.color} />
+        </Display>
+        <p className="text-lede text-ink-muted mt-6 mb-0 max-w-[660px] font-sans">
+          sparx doesn&rsquo;t sell you intelligence. You connect your own provider key, encrypted,
+          and yours to revoke. Every conversation runs on your model, on your terms. This is the
+          floor, not a setting: sparx never answers your customers on a credential of its own.
+        </p>
+      </div>
+
+      <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((it) => (
+          <div
+            key={it.title}
+            className="bg-base-200 border-base-300 flex flex-col gap-2.5 rounded-xl border p-6"
+          >
+            <Heading level={3} size={5} className="flex items-center gap-2.5">
+              <Dot color={AI.color} size={8} />
+              {it.title}
+            </Heading>
+            <p className="text-caption text-ink-muted m-0 font-sans">{it.body}</p>
+          </div>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
+// ── KNOWS WHEN TO ESCALATE · two outcome windows ────────────────────────────
+function KnowsWhenToEscalate() {
+  return (
+    <Section surface="surface" padding="lg">
+      <SectionHeader
+        accent={AI.color}
+        headline={<>It knows when to get a human</>}
+        lede={
+          <>
+            Anything about a specific order, account, or refund goes straight to a person. So does
+            any answer it isn&rsquo;t sure enough about. Outside your hours it leaves your away
+            message and passes the conversation along. Fail-safe by design.
           </>
         }
       />
 
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '56px' }}>
-        {steps.map((s, i) => (
-          <div
-            key={s.n}
-            className={i === 0 ? `${AI.bg} bg-soft` : 'bg-base-100'}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              padding: '30px 26px 34px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '210px',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {s.n}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '22px',
-                letterSpacing: '-0.02em',
-                color: 'var(--color-base-content)',
-              }}
-            >
-              {s.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '23px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {s.body}
-            </p>
-          </div>
-        ))}
+      <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2">
+        <OutcomeCard
+          ask="What’s the difference between the two pour-over kits?"
+          answer="The Classic kit is ceramic; the Pro adds a gooseneck kettle and a scale. Both ship free over $150."
+          receipt="Answered · high confidence"
+          dotColor={AI.color}
+        />
+        <OutcomeCard
+          ask="Can you refund order #1042 and reship it to a new address?"
+          answer="I want to get this exactly right, so I’m bringing in a teammate who can help. They’ll follow up shortly."
+          receipt="Handed to your team · account action"
+          dotColor={getModuleColor('crm').color}
+        />
       </div>
 
-      {/* endpoint callout */}
-      <div
-        // Dark endpoint exhibit. `bg-soft` mixes into `--color-base-100`, so
-        // making this a `data-theme="dark"` island flips that token to the brand
-        // navy and the SAME soft treatment lands on a dark surface — no
-        // hand-mixed hue, and no hardcoded near-black to drift from the theme.
-        data-theme="dark"
-        className={`mkt-stack-on-tablet ${AI.bg} bg-soft`}
-        style={{
-          marginTop: '24px',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '24px',
-          padding: '26px 30px',
-          borderRadius: '14px',
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              letterSpacing: '0.06em',
-              textTransform: 'uppercase',
-              color: '#71717A',
-            }}
-          >
-            One endpoint
-          </span>
-          <code
-            style={{
-              fontFamily: MONO,
-              fontSize: 'clamp(16px, 2.4vw, 22px)',
-              fontWeight: 500,
-              color: '#FFFFFF',
-              wordBreak: 'break-all',
-            }}
-          >
-            {ENDPOINT}
-          </code>
-          <span style={{ fontFamily: MONO, fontSize: '12.5px', color: '#A1A1AA' }}>
-            Authorization: Bearer sk_live_…
-          </span>
-        </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-          {['Streamable HTTP', 'scoped key', 'any MCP client'].map((t) => (
-            <span
-              key={t}
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                padding: '5px 11px',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(255,255,255,0.08)',
-                color: 'rgba(255,255,255,0.78)',
-              }}
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
-      <p
-        style={{
-          marginTop: '16px',
-          fontFamily: SANS,
-          fontSize: '14px',
-          lineHeight: '22px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          maxWidth: '640px',
-        }}
-      >
-        The exact config for each client — Claude, ChatGPT, Copilot — is generated with your real
-        key in the dashboard and spelled out step by step in the{' '}
-        <a href="/docs" className={AI.ink} style={{ fontWeight: 500 }}>
-          connection guide
-        </a>
-        .
+      <p className="text-small text-ink-muted mt-5 max-w-[660px] font-sans">
+        You set your operating hours and your away message. The confidence bar is built in and set
+        high, so anything the concierge can&rsquo;t answer with certainty becomes a conversation
+        waiting in your staff inbox.
       </p>
     </Section>
   );
 }
 
-// ── ASK IN PLAIN ENGLISH · example chat windows ─────────────────────────────
-function AskInPlainEnglish() {
-  // Each example is its OWN chat window — window chrome, the assistant it runs
-  // in, a real transcript, and a live input bar — so it reads as "this happens
-  // inside the AI you already use," not an API console. No code or schema; the
-  // only "tech" is the friendly "Used sparx" line, the same disclosure real MCP
-  // clients surface. Clients + personas are mixed on purpose (a blog post,
-  // customers, a sales check, stock) so every kind of owner sees themselves, in
-  // whichever assistant they already use.
-  const chats: {
-    client: string;
-    ask: string;
-    answer: string;
-    via: string;
-    confirm?: boolean;
-  }[] = [
-    {
-      client: 'Claude',
-      ask: 'Write a short post announcing we’re open Saturdays now, and save it as a draft.',
-      answer:
-        'Done — I’ve saved a draft, “Now Open Saturdays,” to your blog. Want me to publish it, or schedule it for Friday morning?',
-      via: 'Saved a draft to your site',
-    },
-    {
-      client: 'ChatGPT',
-      ask: 'Which customers haven’t bought from me in a while? Send them a friendly note with a discount.',
-      answer:
-        'I found 47 people who haven’t ordered in about 3 months. I’ll send your “Win-Back” email with 10% off — just say the word and it goes out.',
-      via: 'Ready to send — waiting for your OK',
-      confirm: true,
-    },
-    {
-      client: 'Copilot',
-      ask: 'How’s business this month compared to last?',
-      answer:
-        'You’re at $84,200 this month — up 23% from $68,400 last month. Your best seller is the Bosch Injector Set.',
-      via: 'Read from your live data',
-    },
-    {
-      client: 'Cursor',
-      ask: 'Anything I’m about to run out of?',
-      answer:
-        'Five products are running low, including the Bosch Injector Set (3 left). Want me to start a reorder list?',
-      via: 'Read from your live data',
-    },
-  ];
-
-  return (
-    <Section surface="surface" padding="lg">
-      <SectionHeader
-        accent={AI.color}
-        headline={<>Ask in plain English</>}
-        lede={
-          <>
-            No dashboards to learn, no exports, no formulas. You ask the way you&rsquo;d ask a
-            colleague &mdash; in the assistant you already use &mdash; and it works from your live,
-            up-to-the-minute data.
-          </>
-        }
-      />
-
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
-        {chats.map((c) => (
-          <ChatWindow key={c.ask} {...c} />
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function ChatWindow({
-  client,
+function OutcomeCard({
   ask,
   answer,
-  via,
-  confirm,
+  receipt,
+  dotColor,
 }: {
-  client: string;
   ask: string;
   answer: string;
-  via: string;
-  confirm?: boolean;
+  receipt: string;
+  dotColor: string;
 }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        backgroundColor: 'var(--color-base-200)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '16px',
-        overflow: 'hidden',
-        boxShadow: '0 14px 40px rgba(15, 23, 42, 0.06)',
-      }}
-    >
-      {/* window chrome — which assistant this is running in */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '13px 18px',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
-        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '9px' }}>
-          <Dot color={AI.color} size={8} />
-          <span
-            style={{
-              fontFamily: SANS,
-              fontWeight: 500,
-              fontSize: '13px',
-              color: 'var(--color-base-content)',
-            }}
-          >
-            {client}
-          </span>
-        </span>
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '16px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
-          +
-        </span>
-      </div>
-
-      {/* transcript */}
-      <div
-        style={{
-          flex: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '16px',
-          padding: '20px 18px',
-        }}
-      >
-        {/* user turn — right-aligned bubble + the owner's profile avatar */}
-        <div
-          style={{
-            alignSelf: 'flex-end',
-            display: 'flex',
-            gap: '10px',
-            alignItems: 'flex-start',
-            maxWidth: '92%',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: 'var(--color-base-100)',
-              borderRadius: '14px 14px 4px 14px',
-              padding: '10px 14px',
-              fontFamily: SANS,
-              fontSize: '14.5px',
-              lineHeight: '22px',
-              fontWeight: 500,
-              color: 'var(--color-base-content)',
-            }}
-          >
-            {ask}
-          </div>
-          <UserAvatar />
-        </div>
-
-        {/* assistant turn — avatar + bubble + the friendly "Used sparx" receipt */}
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'flex-start' }}>
-          <ChatAvatar label="AI" accent />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', minWidth: 0 }}>
-            <div
-              style={{
-                backgroundColor: 'var(--color-base-200)',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '14px 14px 14px 4px',
-                padding: '10px 14px',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {answer}
-            </div>
-            <span
-              className={confirm ? AI.ink : undefined}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '7px',
-                paddingLeft: '2px',
-                fontFamily: SANS,
-                fontSize: '12px',
-                color: confirm
-                  ? undefined
-                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              <Dot color={AI.color} size={6} />
-              Used sparx · {via}
-            </span>
-          </div>
-        </div>
-      </div>
-
-      {/* input bar — the detail that makes it read as a real chat window */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '12px 14px',
-          borderTop: '1px solid var(--color-base-300)',
-        }}
-      >
-        <span
-          style={{
-            flex: 1,
-            padding: '9px 14px',
-            borderRadius: '9999px',
-            border: '1px solid var(--color-base-300)',
-            backgroundColor: 'var(--color-base-100)',
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            whiteSpace: 'nowrap',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-          }}
-        >
-          Message {client}…
-        </span>
-        <span
-          aria-hidden
-          style={{
-            flexShrink: 0,
-            width: 30,
-            height: 30,
-            borderRadius: '9999px',
-            backgroundColor: AI.color,
-            color: '#FFFFFF',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            fontFamily: SANS,
-            fontSize: '15px',
-          }}
-        >
-          ↑
-        </span>
+    <div className="bg-base-100 border-base-300 rounded-2xl border p-6 shadow-xl">
+      <div className="flex flex-col gap-3">
+        <Bubble who="user">{ask}</Bubble>
+        <Bubble who="ai">{answer}</Bubble>
+        <Receipt dotColor={dotColor}>{receipt}</Receipt>
       </div>
     </div>
   );
 }
 
-/** The owner's profile avatar on the user turn — a neutral circular photo
- *  stand-in (generic person glyph) so the chat reads as a real account, without
- *  implying a specific named person. */
-function UserAvatar() {
-  return (
-    <span
-      aria-hidden
-      style={{
-        flexShrink: 0,
-        width: 30,
-        height: 30,
-        borderRadius: '9999px',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-      }}
-    >
-      <svg viewBox="0 0 24 24" width={17} height={17} fill="currentColor">
-        <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2.2c-4.5 0-8.2 2.3-8.2 5.1V21h16.4v-1.7c0-2.8-3.7-5.1-8.2-5.1Z" />
-      </svg>
-    </span>
-  );
-}
-
-function ChatAvatar({ label, accent }: { label: string; accent?: boolean }) {
-  return (
-    <span
-      style={{
-        flexShrink: 0,
-        width: 30,
-        height: 30,
-        borderRadius: '8px',
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: accent ? AI.color : 'var(--color-base-100)',
-        border: accent ? 'none' : '1px solid var(--color-base-300)',
-        fontFamily: MONO,
-        fontSize: '11px',
-        fontWeight: 500,
-        color: accent
-          ? '#FFFFFF'
-          : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-      }}
-    >
-      {label}
-    </span>
-  );
-}
-
-// ── TOOL SURFACE · what the AI can reach ────────────────────────────────────
-function ToolSurface() {
-  const groups: {
-    module: MarketingModule;
-    label: string;
-    actions: string;
-  }[] = [
+// ── SHAPE IT · no-code configuration + live preview ─────────────────────────
+function ShapeItYourself() {
+  const fields = [
+    { label: 'Greeting', value: 'Hi! Ask us anything about our beans or your order.' },
     {
-      module: 'commerce',
-      label: 'Orders & revenue',
-      actions: 'Orders, order stats, unfulfilled queue, top customers, revenue summaries.',
+      label: 'Away message (outside hours)',
+      value: 'We’re closed right now. Leave a note and we’ll reply first thing.',
     },
-    {
-      module: 'crm',
-      label: 'Customers & CRM',
-      actions: 'Profiles, inactive lists, B2B accounts, pipeline, add a note.',
-    },
-    {
-      module: 'commerce',
-      label: 'Products & inventory',
-      actions: 'Catalog search, low-stock alerts, per-product performance, adjust inventory.',
-    },
-    {
-      module: 'email',
-      label: 'Email & campaigns',
-      actions: 'Delivery and open rates, active automations, send a broadcast to a segment.',
-    },
-    {
-      module: 'builder',
-      label: 'Site & pages',
-      actions: 'Read and update Builder pages, layouts, and published content.',
-    },
-    {
-      module: 'ai',
-      label: 'Automations',
-      actions: 'List, trigger, and inspect platform automations and their runs.',
-    },
-    {
-      module: 'crm',
-      label: 'Invoicing & quotes',
-      actions: 'Draft and read invoices and quotes — when the Invoicing module is on.',
-    },
-    {
-      module: 'scheduling',
-      label: 'Scheduling & bookings',
-      actions: 'Services, availability, and bookings — create, reschedule, or cancel a booking.',
-    },
-    {
-      module: 'cms',
-      label: 'Universal search',
-      actions: 'One query across every record — products, customers, content, more.',
-    },
+    { label: 'Tone', value: 'Warm · concise · first-name' },
   ];
-
+  const swatches = ['ai', 'commerce', 'crm', 'builder'] as const;
   return (
     <Section padding="lg">
       <SectionHeader
         accent={AI.color}
-        headline={<>Everything your AI can reach</>}
+        headline={<>Yours to shape, no code</>}
         lede={
           <>
-            Your assistant can use the tools for the modules you&rsquo;ve turned on &mdash; and only
-            those. Scopes follow your modules, so the surface grows as you do.
+            Set it up like any other setting. Write the greeting in your voice, pick a tone, match
+            your brand color, set your hours. No prompt engineering, no training data, no developer.
           </>
         }
       />
 
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
-        {groups.map((g) => {
-          const c = getModuleColor(g.module);
-          return (
-            <div
-              key={g.label}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                padding: '24px',
-                backgroundColor: 'var(--color-base-100)',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '12px',
-                minHeight: '156px',
-              }}
-            >
-              <span
-                className={`${c.bg} bg-soft`}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: 30,
-                  height: 30,
-                  borderRadius: '8px',
-                }}
-              >
-                <Dot color={c.color} size={9} />
-              </span>
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  letterSpacing: '-0.01em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
-                {g.label}
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '13.5px',
-                  lineHeight: '21px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {g.actions}
-              </p>
+      <div className="mt-14 grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
+        {/* the dashboard settings panel — field labels are legitimate UI mimicry */}
+        <div className="bg-base-100 border-base-300 rounded-2xl border p-6 shadow-xl">
+          {fields.map((f) => (
+            <div key={f.label} className="mb-4">
+              <span className="text-mini text-ink-muted mb-1.5 block font-sans">{f.label}</span>
+              <div className="border-base-300 text-small text-base-content rounded-lg border px-3 py-2.5 font-sans">
+                {f.value}
+              </div>
             </div>
-          );
-        })}
+          ))}
+          <div>
+            <span className="text-mini text-ink-muted mb-2 block font-sans">Accent color</span>
+            <div className="flex gap-2">
+              {swatches.map((m, i) => (
+                <span
+                  key={m}
+                  aria-hidden
+                  className={`h-6 w-6 rounded-full ${i === 0 ? 'outline-2 outline-offset-2' : ''}`}
+                  style={{ backgroundColor: getModuleColor(m).color }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* the live preview it drives */}
+        <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-xl">
+          <WidgetHead title="North Loop Roasters" />
+          <div className="bg-base-200 flex flex-col gap-3 p-4">
+            <Bubble who="ai">Hi! Ask us anything about our beans or your order.</Bubble>
+            <Bubble who="user">When&rsquo;s this month&rsquo;s roast shipping?</Bubble>
+            <Bubble who="ai">
+              This month&rsquo;s washed Colombia ships Friday. Subscribers get it first.
+            </Bubble>
+          </div>
+        </div>
       </div>
     </Section>
   );
 }
 
-// ── SCOPED & AUDITED · trust (dark) ─────────────────────────────────────────
-function ScopedAudited() {
-  const items = [
-    {
-      title: 'Per-agent keys',
-      body: 'Issue a separate scoped key for each assistant or teammate. They never share one credential.',
-    },
-    {
-      title: 'Per-tool permissions',
-      body: 'A key carries exactly the scopes you grant — read-only, a single module, or write where you allow it.',
-    },
-    {
-      title: 'Writes confirm first',
-      body: 'Anything that changes data — an order status, inventory, a send — surfaces a confirmation before it runs.',
-    },
-    {
-      title: 'Every call audited',
-      body: 'Tool name, actor, and result land in the audit log. You can see exactly what your AI did, and when.',
-    },
-    {
-      title: 'Revoke in one click',
-      body: 'Kill a key the moment you want to. The line closes instantly — no propagation delay, no leftover access.',
-    },
-    {
-      title: 'Abuse-capped, not metered',
-      body: 'A flat per-tenant rate limit blunts runaway loops and accidental bulk actions. It’s a guardrail, not a meter.',
-    },
-  ];
-
+// ── CROSS-LINK · the other half of the AI module ────────────────────────────
+function AgenticCrossLink() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-lg)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container>
-        <div style={{ maxWidth: '720px' }}>
-          <Display size={56} lineHeight={60} color="#FFFFFF">
-            Let AI touch your business — safely
-            <Spark color={AI.color} />
-          </Display>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '18px',
-              lineHeight: '30px',
-              color: '#A1A1AA',
-              maxWidth: '640px',
-              margin: '24px 0 0',
-            }}
-          >
-            Opening a line to your data is only worth it if you stay in control of it. Access is
-            scoped, every action is logged, and you can cut it off in a click.
+    <Section surface="surface" padding="lg">
+      {/* The two headings carry the outward/inward contrast themselves — the
+          "This page · outward" / "Its twin · inward" mono kickers that used to
+          sit above them were eyebrows, so they're gone. */}
+      <div
+        className={`flex flex-col gap-8 lg:flex-row ${AI.bg} bg-soft border-base-300 items-center justify-between rounded-2xl border p-10`}
+      >
+        <div className="flex-1">
+          <Heading level={3}>The concierge faces your customers</Heading>
+          <p className="text-small text-ink-muted mt-1.5 mb-0 font-sans">
+            Answers your website visitors, grounded on your live data.
           </p>
         </div>
 
-        <div className="mkt-grid-3-2-1" style={{ marginTop: '56px' }}>
-          {items.map((it) => (
-            <div
-              key={it.title}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px',
-                padding: '24px',
-                backgroundColor: '#141414',
-                border: '1px solid #262626',
-                borderRadius: '12px',
-              }}
-            >
-              <h3
-                style={{
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  letterSpacing: '-0.01em',
-                  color: '#FFFFFF',
-                }}
-              >
-                <Dot color={AI.color} size={8} />
-                {it.title}
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '13.5px',
-                  lineHeight: '21px',
-                  color: '#A1A1AA',
-                }}
-              >
-                {it.body}
-              </p>
-            </div>
-          ))}
+        <span aria-hidden className={`${AI.ink} text-h1 leading-none`}>
+          →
+        </span>
+
+        <div className="flex-1">
+          <Heading level={3}>The agentic line faces your team</Heading>
+          <p className="text-small text-ink-muted mt-1.5 mb-3.5 font-sans">
+            Point the AI you already use at your own data over MCP.
+          </p>
+          <a href="/agentic">
+            <Button color="module-ai" size="md">
+              Meet the agentic side →
+            </Button>
+          </a>
         </div>
-      </Container>
-    </section>
-  );
-}
-
-// ── WORKS WITH EVERY ASSISTANT ──────────────────────────────────────────────
-function WorksWithEveryAssistant() {
-  const clients = [
-    { name: 'Claude', note: 'Anthropic · MCP over SSE' },
-    { name: 'ChatGPT', note: 'OpenAI · MCP over HTTP' },
-    { name: 'Copilot', note: 'Microsoft · MCP over HTTP' },
-    { name: 'Cursor', note: 'In-editor · MCP' },
-    { name: 'Any MCP client', note: 'One endpoint, all of them' },
-  ];
-
-  return (
-    <Section surface="surface" padding="lg">
-      <SectionHeader
-        accent={AI.color}
-        headline={<>Works with every assistant</>}
-        lede={
-          <>
-            MCP is an open standard, so this isn&rsquo;t a one-vendor bet. The same endpoint and key
-            work in whatever you already use — switch assistants and your connection comes with you.
-          </>
-        }
-      />
-
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '48px' }}>
-        {clients.map((c) => (
-          <div
-            key={c.name}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '6px',
-              padding: '22px 24px',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-            }}
-          >
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '17px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-base-content)',
-              }}
-            >
-              {c.name}
-            </span>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {c.note}
-            </span>
-          </div>
-        ))}
       </div>
+      <p className="text-mini text-ink-muted mt-4 text-center font-mono">
+        Both tools · one $49 AI module
+      </p>
     </Section>
   );
 }
 
-// ── PRICING STRIP ───────────────────────────────────────────────────────────
-function AiPricing() {
+// ── PRICING ─────────────────────────────────────────────────────────────────
+function ConciergePricing() {
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${AI.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '12px',
-          gap: '32px',
-        }}
+        className={`flex flex-col gap-8 lg:flex-row ${AI.bg} bg-soft border-base-300 items-center justify-between rounded-xl border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '40px',
-                letterSpacing: '-0.02em',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              +
-            </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <Display as="h3" size={56} lineHeight={56}>
               $49
-            </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              /mo
-            </span>
+            </Display>
+            <span className="text-body text-ink-muted font-sans">/mo</span>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '640px',
-            }}
-          >
-            A flat $49/mo. Connect any MCP client and read or write live data across every module
-            you run — scoped, audited, revocable, all on one bill.
+          <p className="text-small text-ink-muted m-0 max-w-[620px] font-sans">
+            One AI module, both tools: the customer-facing concierge on this page and the agentic
+            MCP line for your own team. Bring your own key and pay your provider for usage. Flat, on
+            one bill, no tiers.
           </p>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-4">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate AI
           </Button>
         </div>
       </div>
+      <p className="text-caption text-ink-muted mt-3.5 font-sans">
+        The concierge needs the Live Chat module too ($19/mo) — that&rsquo;s the chat widget on your
+        site and the staff inbox your team answers from. $68/mo for both, on one bill.
+      </p>
     </Section>
   );
 }
 
-// ── FINAL CTA (dark) ────────────────────────────────────────────────────────
-function AiCta() {
+// ── FINAL CTA (dark theme island) ───────────────────────────────────────────
+function ConciergeCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '40px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
-          Your business, in the chat you already use
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-10">
+        <Display size={84} lineHeight={82}>
+          Put a concierge at your front door
           <Spark color={AI.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
-          No new assistant to learn, no migration, no contract. Generate a key, paste it once, and
-          ask your own AI anything about your business. Turn it off any time — your data stays.
+        <p className="text-lede text-ink-muted m-0 max-w-[640px] font-sans">
+          Connect your key, write a greeting, and your customers get straight answers from your real
+          catalog in seconds, with a person always one step away. Turn it off any time. Your data
+          stays.
         </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <Button size="xl" variant="solid">
-            Connect your AI →
+        <div className="flex flex-wrap items-center gap-4">
+          <Button color="module-ai" size="xl">
+            Turn on your concierge →
           </Button>
           <a href="/docs">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
-              Read the connection guide
+            {/* Inside the dark island `variant="outline"` resolves its own
+                border + ink from the flipped base ramp — no hexes needed. */}
+            <Button size="xl" variant="outline">
+              Read the setup guide
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

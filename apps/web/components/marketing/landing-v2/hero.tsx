@@ -16,11 +16,14 @@ import { BusinessDemoCard } from './hero-device';
 // header); the color itself is set inline, the same trick Hero.tsx uses for
 // the purple homepage band.
 
-const INK = '#0A0A0A';
-const ON_STRONG = 'rgba(255, 255, 255, 0.78)';
-const ON_MUTED = 'rgba(255, 255, 255, 0.5)';
+// The band is a `data-theme="dark"` island rather than a painted `#0A0A0A`:
+// `.mkt-brand` only zeroes the radius (it sets no background), so flipping the
+// whole --color-base-* ramp is safe here and gives every descendant on-brand
+// surface + ink for free. The old rgba(255,255,255,.78/.5) inks are now
+// `text-ink-muted` / `text-ink-subtle`, which are real ink (they mix into
+// base-100, never transparent) and so satisfy the no-faded-text rule.
 
-// Sticky header (packages/web-chrome/src/site-header.tsx) is in normal flow
+// Sticky header (components/marketing/site-header.tsx) is in normal flow
 // (position: sticky, not fixed), so it consumes real height at the top of the
 // page: 20px + 20px padding + a size="sm" button row + a 1px border ≈ 80px.
 // The hero's minHeight subtracts that so hero + header together fill exactly
@@ -30,47 +33,34 @@ const HEADER_HEIGHT = '80px';
 export function LandingV2Hero() {
   return (
     <section
-      className="mkt-brand"
+      className="mkt-brand bg-base-100 px-page flex items-center py-[clamp(48px,8vw,96px)]"
+      data-theme="dark"
       style={{
         minHeight: `calc(100dvh - ${HEADER_HEIGHT})`,
-        display: 'flex',
-        alignItems: 'center',
-        paddingTop: 'clamp(48px, 8vw, 96px)',
-        paddingBottom: 'clamp(48px, 8vw, 96px)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: INK,
+        // Decorative dot texture. Kept inline: it is an inlined SVG data URI
+        // whose quotes/commas Tailwind's arbitrary-value parser cannot carry.
         backgroundImage:
           "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Ccircle cx='1' cy='1' r='1' fill='white' fill-opacity='0.14'/%3E%3C/svg%3E\")",
         backgroundSize: '40px 40px',
       }}
     >
       <Container className="w-full">
-        <div className="mkt-grid-2-1" style={{ gap: '64px', alignItems: 'center' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <Display as="h1" size={132} lineHeight={116} color="#FFFFFF">
+        <div className="grid grid-cols-1 items-center gap-16 md:grid-cols-2">
+          <div className="flex flex-col gap-8">
+            <div className="flex flex-col gap-1">
+              <Display as="h1" size={132} lineHeight={116}>
                 Run the business.
               </Display>
               <Display as="h1" size={132} lineHeight={116} color="var(--color-primary)">
                 Not the software.
               </Display>
             </div>
-            <p
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: 'clamp(18px, 1.9vw, 23px)',
-                lineHeight: 1.6,
-                color: ON_STRONG,
-                maxWidth: '560px',
-                margin: 0,
-              }}
-            >
+            <p className="text-ink-muted m-0 max-w-[560px] text-[clamp(18px,1.9vw,23px)] leading-[1.6]">
               You started a business to make, sell, serve, teach, or finally work for yourself.
               Sparx brings your website, customers, sales, email and AI into one place that grows
               with you.
             </p>
-            <div className="mkt-cluster" style={{ gap: '12px' }}>
+            <div className="flex flex-wrap items-center gap-3">
               <a
                 href={signupHref('landing-v2-hero')}
                 aria-label="Launch your site"
@@ -81,17 +71,12 @@ export function LandingV2Hero() {
               <a
                 href="#day"
                 aria-label="See a day on sparx"
-                className={buttonClasses({ size: 'xl', variant: 'outline' })}
-                style={{
-                  backgroundColor: 'transparent',
-                  color: '#FFFFFF',
-                  borderColor: 'rgba(255, 255, 255, 0.28)',
-                }}
+                className={`${buttonClasses({ size: 'xl', variant: 'outline' })} border-base-content/30 text-base-content bg-transparent`}
               >
                 See a day on sparx &darr;
               </a>
             </div>
-            <span style={{ fontSize: '13px', color: ON_MUTED }}>
+            <span className="text-ink-subtle text-caption">
               No credit card &middot; Live in minutes &middot; Start with only what you need
             </span>
           </div>

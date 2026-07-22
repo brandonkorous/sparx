@@ -4,13 +4,14 @@
 // the read paths + the non-stock fields (reorder policy, cost basis surfacing).
 
 import { SetReorderPolicyInput, SetSafetyBufferInput } from '@sparx/commerce-schemas';
-import { withTenant } from '@sparx/db';
-import type { Prisma, TxClient } from '@sparx/db';
+import { Prisma, withTenant } from '@sparx/db';
+import type { TxClient } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import type { ServiceContext } from '../errors';
 
 import { ensureVariantExists, ensureWarehouseActive } from './internal';
+import { LOW_STOCK_SQL, SELLABLE_SQL } from './low-stock';
 
 export interface InventoryLevelRow {
   variantId: string;
@@ -60,31 +61,59 @@ export async function levelsForWarehouse(
   warehouseId: string,
   filter: { lowStockOnly?: boolean; take?: number; skip?: number } = {}
 ): Promise<{ items: InventoryLevelRow[]; total: number }> {
+  const take = Math.min(filter.take ?? 100, 500);
+  const skip = filter.skip ?? 0;
+
   return withTenant(ctx, async (tx) => {
-    const where: Prisma.InventoryLevelWhereInput = {
-      warehouseId,
-      ...(filter.lowStockOnly
-        ? {
-            reorderPoint: { not: null },
-            // available = onHand - allocated; can't filter on a derived
-            // column directly. Approximate with onHand <= reorderPoint
-            // (slight over-report when there are stale allocations; the
-            // dashboard re-filters after fetch).
-            onHand: { lte: 5 },
-          }
-        : {}),
-    };
-    const [rows, total] = await Promise.all([
-      tx.inventoryLevel.findMany({
-        where,
-        include: { warehouse: { select: { code: true } } },
-        orderBy: { onHand: 'asc' },
-        take: Math.min(filter.take ?? 100, 500),
-        skip: filter.skip ?? 0,
-      }),
-      tx.inventoryLevel.count({ where }),
+    if (!filter.lowStockOnly) {
+      const where: Prisma.InventoryLevelWhereInput = { warehouseId };
+      const [rows, total] = await Promise.all([
+        tx.inventoryLevel.findMany({
+          where,
+          include: { warehouse: { select: { code: true } } },
+          orderBy: { onHand: 'asc' },
+          take,
+          skip,
+        }),
+        tx.inventoryLevel.count({ where }),
+      ]);
+      return { items: rows.map(serializeLevel), total };
+    }
+
+    // Low-stock is sellable-vs-reorder-point (the ONE definition in
+    // ./low-stock) — an expression over three columns Prisma's typed `where`
+    // can't filter on. Select the matching variant ids in raw SQL, then hydrate
+    // that page through Prisma so the row shape stays a typed select. Explicit
+    // tenant scope: the local superuser bypasses RLS, and this is a broad scan.
+    const scope = Prisma.sql`l.warehouse_id = ${warehouseId}::uuid AND l.tenant_id = ${ctx.tenantId}::uuid AND ${LOW_STOCK_SQL}`;
+    const [keys, counted] = await Promise.all([
+      tx.$queryRaw<{ variantId: string }[]>`
+        SELECT l.variant_id AS "variantId"
+        FROM inventory_levels l
+        WHERE ${scope}
+        ORDER BY ${SELLABLE_SQL} ASC, l.variant_id ASC
+        LIMIT ${take} OFFSET ${skip}
+      `,
+      tx.$queryRaw<{ total: bigint }[]>`
+        SELECT COUNT(*)::bigint AS total FROM inventory_levels l WHERE ${scope}
+      `,
     ]);
-    return { items: rows.map(serializeLevel), total };
+
+    const total = Number(counted[0]?.total ?? 0);
+    if (keys.length === 0) return { items: [], total };
+
+    const rows = await tx.inventoryLevel.findMany({
+      where: { warehouseId, variantId: { in: keys.map((k) => k.variantId) } },
+      include: { warehouse: { select: { code: true } } },
+    });
+    // Re-order to the key query's order — `findMany` with an `in` set makes no
+    // promise about row order, so hydrating would otherwise discard the sort.
+    const byId = new Map(rows.map((r) => [r.variantId, r]));
+    const items = keys.flatMap((k) => {
+      const r = byId.get(k.variantId);
+      return r ? [serializeLevel(r)] : [];
+    });
+    return { items, total };
   });
 }
 
@@ -204,8 +233,11 @@ export async function listLowStock(
   filter: { warehouseId?: string; take?: number } = {}
 ): Promise<LowStockRow[]> {
   return withTenant(ctx, async (tx) => {
-    // Postgres can do the available calculation as `onHand - allocated`.
-    // Use a raw query so we filter on the derived value cleanly.
+    // "Running low" is the ONE definition in ./low-stock — sellable stock
+    // (on-hand minus allocations minus buffer) at or below the reorder point.
+    // A raw query so we can filter on that expression. The reported `available`
+    // stays `on_hand - allocated` (physical availability), matching every other
+    // endpoint; only the low-stock PREDICATE and the sort use sellable.
     const take = Math.min(filter.take ?? 100, 500);
     const warehouseFilter = filter.warehouseId ?? null;
     const rows = await tx.$queryRaw<LowStockRow[]>`
@@ -225,13 +257,12 @@ export async function listLowStock(
       JOIN commerce_product_variants v ON v.id = l.variant_id
       JOIN commerce_products p ON p.id = v.product_id
       WHERE l.tenant_id = ${ctx.tenantId}::uuid
-        AND l.reorder_point IS NOT NULL
-        AND l.on_hand - l.allocated <= l.reorder_point
+        AND ${LOW_STOCK_SQL}
         AND (${warehouseFilter}::uuid IS NULL OR l.warehouse_id = ${warehouseFilter}::uuid)
         AND w.deleted_at IS NULL
         AND v.deleted_at IS NULL
         AND p.deleted_at IS NULL
-      ORDER BY (l.on_hand - l.allocated) ASC
+      ORDER BY ${SELLABLE_SQL} ASC, l.variant_id ASC
       LIMIT ${take}
     `;
     return rows;

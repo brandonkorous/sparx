@@ -46,6 +46,7 @@ import {
   type BookingWithRelations,
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
+import { reachableSiteIds, resolveListScopeIds } from '../../../lib/property.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 import { settleBookingPayment } from '../../../lib/scheduling-payments.js';
 
@@ -71,15 +72,25 @@ const CalendarQuery = z.object({
   resourceId: z.string().uuid().optional(),
   serviceId: z.string().uuid().optional(),
   includeReleased: z.coerce.boolean().optional(),
+  // Absent ⇒ the active site (the `x-sparx-property-id` header); `all` ⇒ every
+  // site this member may reach. A shared `?property=` vocabulary with every other
+  // scoped list read (docs/49 §3).
+  property: z.string().optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.
 const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/scheduling/bookings', async (request) => {
     await requireSchedulingModule(request);
+    const auth = requireRole(request, 'viewer');
     const { tenantId } = toSchedulingContext(request);
     const q = ListQuery.parse(request.query);
-    const { rows, total } = await listBookings(tenantId, q);
+    // Bound to the member's reachable sites (docs/131 §3.3) — a restricted member
+    // sees only their businesses' appointments (customer PII).
+    const { rows, total } = await listBookings(tenantId, {
+      ...q,
+      propertyIds: reachableSiteIds(auth),
+    });
     return paged(rows.map(bookingView), {
       page: Math.floor(q.skip / q.take) + 1,
       per_page: q.take,
@@ -90,9 +101,18 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
 
   app.get('/v1/scheduling/bookings/calendar', async (request) => {
     await requireSchedulingModule(request);
+    const auth = requireRole(request, 'viewer');
     const { tenantId } = toSchedulingContext(request);
     const q = CalendarQuery.parse(request.query);
-    return ok(await getCalendar(tenantId, q));
+    // Scope the diary to the site being worked in (docs/131 §3.3) — a multi-site
+    // owner's calendar shows one business at a time, never both merged. Restricted
+    // members are additionally bounded to their reachable sites by the same helper.
+    const propertyIds = await resolveListScopeIds(
+      auth,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
+    return ok(await getCalendar(tenantId, { ...q, propertyIds }));
   });
 
   // Per-customer reliability ("problematic clients") — completed / no-show /
@@ -137,10 +157,10 @@ const schedulingBookingRoutes: FastifyPluginAsync = async (app) => {
   app.patch('/v1/scheduling/bookings/:id', async (request) => {
     await requireSchedulingModule(request);
     requireRole(request, 'editor');
-    const { tenantId } = toSchedulingContext(request);
+    const { tenantId, userId } = toSchedulingContext(request);
     const { id } = PathId.parse(request.params);
     const input = UpdateBookingInput.parse({ ...(request.body as object), id });
-    await updateBooking(tenantId, input);
+    await updateBooking(tenantId, input, userId);
     return ok(bookingView(await getBooking(tenantId, id)));
   });
 

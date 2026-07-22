@@ -144,6 +144,35 @@ export interface SubmissionCounts {
   new: number;
 }
 
+/** One distinct form that has received at least one submission, for the inbox's
+ *  "which form" filter. `formName` is the author's snapshot label (may be null on
+ *  a form whose settings panel was never opened); `count` is how many submissions
+ *  it has, across every status. */
+export interface SubmissionFormRef {
+  formNodeId: string;
+  formName: string | null;
+  count: number;
+}
+
+/** The distinct forms that have received submissions, most-recently-active first.
+ *  Computed across ALL statuses so the filter set stays stable as the operator
+ *  narrows by status — filtering to "spam" must not empty the form picker. */
+export async function submissionForms(ctx: ServiceContext): Promise<SubmissionFormRef[]> {
+  const grouped = await withTenant(ctx, (tx) =>
+    tx.formSubmission.groupBy({
+      by: ['formNodeId'],
+      _count: { _all: true },
+      _max: { formName: true, createdAt: true },
+      orderBy: { _max: { createdAt: 'desc' } },
+    })
+  );
+  return grouped.map((row) => ({
+    formNodeId: row.formNodeId,
+    formName: row._max.formName,
+    count: row._count._all,
+  }));
+}
+
 /** Tenant-wide list (across sites) of form submissions, newest first. */
 export async function listSubmissions(
   ctx: ServiceContext,

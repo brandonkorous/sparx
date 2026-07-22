@@ -149,11 +149,28 @@ function qty(n: number): string {
   return Number.isInteger(n) ? String(n) : String(Number(n.toFixed(3)));
 }
 
+/** Format a document date.
+ *
+ *  `timeZone: 'UTC'` is REQUIRED, not a detail. Issue/due/valid-until dates are
+ *  calendar dates stored as UTC-midnight timestamps, so formatting them in the
+ *  server's local zone renders the PREVIOUS DAY for every zone west of UTC — a
+ *  document issued 2026-07-02 printed as "Jul 1, 2026" and, worse, a due date of
+ *  2026-08-01 printed as "Jul 31, 2026". A due date is the one field on an
+ *  invoice with payment and legal consequences; it must render as the calendar
+ *  date that was stored, identically on every machine that renders it. Rendering
+ *  also has to be deterministic across the API pod, a snapshot re-render, and a
+ *  merchant's browser — a server-local zone makes the same document print
+ *  differently depending on where it ran. */
 export function formatDate(iso: string | null): string {
   if (!iso) return '';
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+  return d.toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    timeZone: 'UTC',
+  });
 }
 
 function pct(rate: number): string {
@@ -327,7 +344,15 @@ export function invoiceStyles(brand: BillingRenderBrand): string {
   .logo-wordmark { font-family: ${b.fontHeading}; font-size: 24px; font-weight: 700; color: ${b.foreground}; }
   .seller { margin-top: 8px; font-size: 12px; color: #6B7280; }
   .doc-head { text-align: right; }
-  .doc-title { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: ${b.accent}; }
+  /* Two brand colours, two jobs. The document title is the tenant's IDENTITY, so
+     it takes the brand PRIMARY. The balance row keeps the ACCENT, because the
+     amount still owed is the one number the reader must not miss — which is what
+     an accent is for.
+     Previously BOTH were on the accent, which left primary resolved from the
+     tenant, threaded through the entire render, and then used nowhere at all: a
+     tenant whose primary was olive got an invoice in their accent crimson, with
+     no way to reach the colour they had actually chosen as their brand. */
+  .doc-title { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: ${b.primary}; }
   .status { display: inline-block; margin-top: 8px; padding: 4px 12px; border-radius: 999px;
     font-size: 12px; font-weight: 600; }
   .status.ok { background: #DCFCE7; color: #166534; }

@@ -15,6 +15,22 @@ model ApiKey {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
 
+  // WHICH BUSINESS this key may read and write (docs/131 §3.2). Null = the whole
+  // tenant, which is a real state for a genuine tenant-wide integration.
+  //
+  // But it must not be the default anyone gets by accident. Keys are issued from
+  // a settings page inside one business, so an operator reasonably assumes the
+  // key belongs to THAT business — and before this column, it did not: a key
+  // issued from the machine shop read the donut shop's customers, orders and
+  // pricing. Anyone handed a "connect your assistant" key got the entire tenant.
+  //
+  // THE DISPATCH CHECK IS THE FIX. This column only records the intent; scope
+  // enforcement at tool dispatch is what makes it true.
+  //
+  // CASCADE: deleting a site revokes its keys rather than widening them to the
+  // tenant, which SetNull would do. A credential must never gain reach.
+  propertyId String? @map("property_id") @db.Uuid
+
   // Human-readable label set by the tenant in the dashboard.
   name String @db.VarChar(120)
 
@@ -55,10 +71,14 @@ model ApiKey {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@unique([keyPrefix]) // collisions vanishingly unlikely (8 random chars) but enforced
   @@index([tenantId])
   @@index([tenantId, revokedAt])
+  // Verification still reads by keyPrefix; this backs the "keys for this site"
+  // listing in settings.
+  @@index([tenantId, propertyId])
   @@map("api_keys")
 }

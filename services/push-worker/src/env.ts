@@ -2,9 +2,11 @@
 //
 // VAPID keys are OPTIONAL so the service is deployable before they're
 // provisioned — without them the worker boots and acks every message as a no-op
-// (logged), exactly like the chat AI no-ops without ANTHROPIC_API_KEY. Generate
-// a pair once with `npx web-push generate-vapid-keys`; the public half is also
-// exposed to the dashboard as NEXT_PUBLIC_VAPID_PUBLIC_KEY.
+// (logged), the same way the chat concierge stands down until a tenant connects
+// their own AI key. (That path used to hang off a platform-level
+// ANTHROPIC_API_KEY; it is tenant-BYOK now — sparx holds no AI credential.)
+// Generate a pair once with `npx web-push generate-vapid-keys`; the public half
+// is also exposed to the dashboard as NEXT_PUBLIC_VAPID_PUBLIC_KEY.
 
 import 'dotenv/config';
 import { z } from 'zod';

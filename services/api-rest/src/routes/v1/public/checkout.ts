@@ -172,6 +172,10 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
         where: { id: cartId },
         select: {
           currency: true,
+          // The site this cart is on (docs/131 §4) — bounds which shipping zones
+          // may quote, so a donut site's local-delivery rates never appear on a
+          // parts cart. Without passing this, the zone scoping was inert here.
+          propertyId: true,
           items: {
             select: {
               quantity: true,
@@ -228,6 +232,7 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
       ...(body.destinationPostal ? { postalCode: body.destinationPostal } : {}),
     };
     const rates = await shippingService.rateShipment(ctx, {
+      ...(cart.propertyId ? { propertyId: cart.propertyId } : {}),
       fromAddress,
       toAddress,
       currency: cart.currency,

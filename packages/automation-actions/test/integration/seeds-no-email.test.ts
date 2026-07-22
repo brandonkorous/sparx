@@ -114,9 +114,12 @@ describe('per-module seed install', () => {
     const { tenantId } = await seedTenant(['crm']);
     const installed = await seedSystemAutomations({ tenantId }, { module: 'crm' });
     // The full CRM catalog — three no-email defaults (tag + tasks) + the two
-    // email-sending defaults (welcome, win-back) that reference Builder templates.
+    // email-sending defaults (welcome, win-back) that reference Builder templates —
+    // PLUS every always-on (`module: null`) seed, which installs on any module pass
+    // by design: form handling isn't owned by a feature module.
     expect(installed.map((a) => a.name).sort()).toEqual([
       'Deal won — create invoice task',
+      'Handle form submissions',
       'New lead follow-up task',
       'Tag VIP customers',
       'Welcome new customers',
@@ -124,9 +127,9 @@ describe('per-module seed install', () => {
     ]);
     // Re-seed is idempotent (upsert by origin+name) — no duplicates.
     const again = await seedSystemAutomations({ tenantId }, { module: 'crm' });
-    expect(again).toHaveLength(5);
+    expect(again).toHaveLength(6);
     const count = await ownerDb.automation.count({ where: { tenantId, origin: 'system' } });
-    expect(count).toBe(5);
+    expect(count).toBe(6);
   });
 
   it('keeps the B2B dunning ladder locked', async () => {

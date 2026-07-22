@@ -17,7 +17,6 @@ import {
   DEFAULT_TLDS,
   RegistrarError,
   buildSparxDnsRecords,
-  generateDkimKeypair,
   type DnsRecord,
   type DomainAvailability,
   type DomainSuggestion,
@@ -26,13 +25,12 @@ import {
 } from '@sparx/registrar';
 
 // Re-export the contract surface so existing `@sparx/godaddy` importers keep
-// working: the shared types, the TLD menu, the neutral DNS/DKIM helpers, and
-// the error.
+// working: the shared types, the TLD menu, the neutral DNS helper, and the
+// error.
 export {
   DEFAULT_TLDS,
   RegistrarError,
   buildSparxDnsRecords,
-  generateDkimKeypair,
   type DnsRecord,
   type DomainAvailability,
   type DomainSuggestion,

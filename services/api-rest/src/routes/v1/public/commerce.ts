@@ -30,8 +30,14 @@ import { isModuleEnabled } from '@sparx/auth';
 import { computeAvailability } from '@sparx/inventory';
 import { pricingService } from '@sparx/commerce';
 import { searchProducts } from '@sparx/search';
-import { resolvePublicPropertyId, productSiteVisibilityWhere } from '../../../lib/property.js';
+import {
+  resolvePublicPropertyId,
+  productSiteVisibilityWhere,
+  collectionSiteVisibilityWhere,
+  categorySiteVisibilityWhere,
+} from '../../../lib/property.js';
 import { tryVerifyProductPreview } from '../../../lib/preview.js';
+import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 import { optionalCustomer } from '../../../lib/customer-session.js';
 
 // `property` (a stable site slug) scopes catalog reads to one web PROPERTY
@@ -57,7 +63,31 @@ const ProductListQuery = PagingQuery.extend({
   tag: z.string().optional(),
   fitmentMake: z.string().optional(),
   fitmentYear: z.coerce.number().int().optional(),
+  inStock: z.coerce.boolean().optional(),
+  minPriceCents: z.coerce.number().int().min(0).optional(),
+  maxPriceCents: z.coerce.number().int().min(0).optional(),
+  // Scope the whole listing to ONE collection (flat membership) or ONE category
+  // (browse-node rollup: self + descendants). This is what lets the collection and
+  // category detail pages reuse the PLP's facets/sort/pagination instead of a bare
+  // grid — the scope is resolved to ids inside the tenant transaction below.
+  collection: z.string().optional(),
+  category: z.string().optional(),
+  sort: z
+    .enum(['relevance', 'price-asc', 'price-desc', 'title-asc', 'title-desc', 'newest'])
+    .default('relevance'),
 });
+
+// The PLP sort vocabulary → a Prisma orderBy. Mirrors `SEARCH_SORT_BY` (the Typesense
+// side) so the Postgres listing and the search index sort identically. `relevance` is
+// the catalog default: in-stock first, then most-recently-updated.
+const PLP_ORDER_BY: Record<string, Prisma.ProductOrderByWithRelationInput[]> = {
+  relevance: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
+  'price-asc': [{ priceMinCents: 'asc' }],
+  'price-desc': [{ priceMaxCents: 'desc' }],
+  'title-asc': [{ title: 'asc' }],
+  'title-desc': [{ title: 'desc' }],
+  newest: [{ createdAt: 'desc' }],
+};
 
 // Typesense-backed storefront search. Typo-tolerant, faceted, fast. Typesense
 // owns ranking/filtering/faceting; Postgres still owns the canonical display
@@ -76,10 +106,24 @@ const SearchQuery = PagingQuery.extend({
   fitmentModels: z.string().optional(),
   fitmentEngines: z.string().optional(),
   fitmentYear: z.coerce.number().int().optional(),
+  // Scope the faceted search to ONE collection/category (browse-as-search): the handle is
+  // resolved to an id and filtered on the indexed collection_ids/category_ids, so a
+  // collection/category page IS a Typesense search with a scope — same facets + counts.
+  collection: z.string().optional(),
+  category: z.string().optional(),
+  // Product-option facet selections as "Name:Value" tokens (repeatable param, e.g.
+  // ?options=Color:Black&options=Size:M). AND-ed across selections.
+  options: z.union([z.string(), z.array(z.string())]).optional(),
   sort: z
     .enum(['relevance', 'price-asc', 'price-desc', 'title-asc', 'title-desc', 'newest'])
     .default('relevance'),
 });
+
+/** Normalize a repeatable query param (single value, array, or absent) to a string list. */
+function toList(v: string | string[] | undefined): string[] {
+  if (v === undefined) return [];
+  return (Array.isArray(v) ? v : [v]).map((s) => s.trim()).filter(Boolean);
+}
 
 const SEARCH_SORT_BY: Record<string, string | undefined> = {
   relevance: undefined, // Typesense default: _text_match,best_seller_rank,updated_at
@@ -138,14 +182,8 @@ const RECORD_SELECT = {
   heroMediaId: true,
 } as const;
 
-async function resolveTenantBySlug(slug: string): Promise<string> {
-  const t = await prisma.tenant.findUnique({
-    where: { slug },
-    select: { id: true },
-  });
-  if (!t) throw notFound('Tenant', slug);
-  return t.id;
-}
+// Cached in lib/tenant-slug.ts (docs/127 §5).
+const resolveTenantBySlug = requireTenantIdBySlug;
 
 /**
  * Product reads are otherwise fully anonymous/cacheable — but a signed-in
@@ -229,6 +267,27 @@ async function withYourPrices(
   }));
 }
 
+// Combine a product's per-site rollup buckets ([site] + the null legacy/shared
+// bucket) into the one star average + count a storefront shows (docs/131 §4).
+// Averages can't be averaged, so this sums the raw rating sums and counts across
+// the buckets: sum(sumRating)/sum(reviewCount). `rollups` is present ONLY on the
+// site-scoped selects (productSelect(propertyId) / fullProductSelect) — when it is,
+// it is AUTHORITATIVE (an empty array means "no reviews on this site", NOT a
+// fallback), because recomputeProductRating + the priming backfill keep a rollup
+// row for every (product, site) that has any approved review. The tenant-wide
+// product.average_rating / review_count columns are the fallback only for the
+// non-site-scoped by-ids path, which passes no rollup.
+function siteRating(
+  rollups: { sumRating: number; reviewCount: number }[] | undefined,
+  fallbackAverage: number | null,
+  fallbackCount: number
+): { averageRating: number | null; reviewCount: number } {
+  if (!rollups) return { averageRating: fallbackAverage, reviewCount: fallbackCount };
+  const reviewCount = rollups.reduce((sum, r) => sum + r.reviewCount, 0);
+  const ratingSum = rollups.reduce((sum, r) => sum + r.sumRating, 0);
+  return { averageRating: reviewCount > 0 ? ratingSum / reviewCount : null, reviewCount };
+}
+
 function publicProduct(row: {
   id: string;
   title: string;
@@ -247,7 +306,9 @@ function publicProduct(row: {
   updatedAt: Date;
   images?: { mediaAssetId: string }[];
   variants?: { id: string }[];
+  reviewRollups?: { sumRating: number; reviewCount: number }[];
 }) {
+  const rating = siteRating(row.reviewRollups, row.averageRating, row.reviewCount);
   return {
     id: row.id,
     title: row.title,
@@ -259,8 +320,8 @@ function publicProduct(row: {
     priceMinCents: row.priceMinCents,
     priceMaxCents: row.priceMaxCents,
     inStock: row.inStock,
-    averageRating: row.averageRating,
-    reviewCount: row.reviewCount,
+    averageRating: rating.averageRating,
+    reviewCount: rating.reviewCount,
     seoTitle: row.seoTitle,
     seoDescription: row.seoDescription,
     // Hero thumbnail asset id (primary, else first product-level by position —
@@ -282,9 +343,12 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/commerce/collections', async (request) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    // Model B: the collection index is scoped to the active site, so a collection
+    // pinned to specific sites never shows on the others (empty pins = all sites).
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const rows = await withTenant({ tenantId }, (tx) =>
       tx.productCollection.findMany({
-        where: { deletedAt: null },
+        where: { deletedAt: null, ...collectionSiteVisibilityWhere(propertyId) },
         orderBy: [{ featured: 'desc' }, { updatedAt: 'desc' }],
         select: {
           id: true,
@@ -323,9 +387,12 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const { handle } = HandleParams.parse(request.params);
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    // A collection hidden on the active site 404s here too, so a stale/shared link
+    // can't reach a site-scoped collection's detail page.
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const row = await withTenant({ tenantId }, (tx) =>
       tx.productCollection.findFirst({
-        where: { handle, deletedAt: null },
+        where: { handle, deletedAt: null, ...collectionSiteVisibilityWhere(propertyId) },
         select: {
           id: true,
           name: true,
@@ -350,7 +417,9 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const result = await withTenant({ tenantId }, async (tx) => {
       const collection = await tx.productCollection.findFirst({
-        where: { handle, deletedAt: null },
+        // A collection hidden on the active site yields no product list (404),
+        // matching its detail endpoint.
+        where: { handle, deletedAt: null, ...collectionSiteVisibilityWhere(propertyId) },
         select: { id: true },
       });
       if (!collection) return null;
@@ -367,7 +436,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           orderBy: { updatedAt: 'desc' },
           take: q.perPage,
           skip: (q.page - 1) * q.perPage,
-          select: productSelect(),
+          select: productSelect(propertyId),
         }),
         tx.product.count({ where }),
       ]);
@@ -391,60 +460,103 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const q = ProductListQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
-    const where = {
-      status: 'active' as const,
-      deletedAt: null,
-      // Model B: only products visible on the active site (global or scoped here).
-      ...productSiteVisibilityWhere(propertyId),
-      ...(q.vendor ? { vendor: q.vendor } : {}),
-      ...(q.productType ? { productType: q.productType } : {}),
-      ...(q.tag ? { tags: { has: q.tag } } : {}),
-      ...(q.q
-        ? {
-            OR: [
-              { title: { contains: q.q, mode: 'insensitive' as const } },
-              { description: { contains: q.q, mode: 'insensitive' as const } },
-            ],
-          }
-        : {}),
-      ...(q.fitmentMake || q.fitmentYear
-        ? {
-            fitments: {
-              some: {
-                // Descendant-by-name: "Ford" matches a product attached at the
-                // Ford node OR any model/engine under it (node.pathNames).
-                ...(q.fitmentMake ? { node: { pathNames: { has: q.fitmentMake } } } : {}),
-                // Numeric narrowing against the rule's range windows.
-                ...(q.fitmentYear
-                  ? {
-                      ranges: {
-                        some: {
-                          AND: [
-                            { OR: [{ min: { lte: q.fitmentYear } }, { min: null }] },
-                            { OR: [{ max: { gte: q.fitmentYear } }, { max: null }] },
-                          ],
-                        },
-                      },
-                    }
-                  : {}),
-              },
-            },
-          }
-        : {}),
-    };
     const result = await withTenant({ tenantId }, async (tx) => {
+      // Optional scope: narrow the whole listing to a collection (flat membership) or a
+      // category (browse-node rollup — self + descendants off the materialized dot-path,
+      // exactly like /categories/:handle/products). Resolved here, inside the tenant tx,
+      // because both lookups are RLS-scoped. A scope handle that doesn't resolve (or is
+      // hidden on this site) returns null → 404, matching the dedicated detail endpoints.
+      let scopeWhere: Prisma.ProductWhereInput = {};
+      if (q.collection) {
+        const collection = await tx.productCollection.findFirst({
+          where: {
+            handle: q.collection,
+            deletedAt: null,
+            ...collectionSiteVisibilityWhere(propertyId),
+          },
+          select: { id: true },
+        });
+        if (!collection) return null;
+        scopeWhere = { collectionLinks: { some: { collectionId: collection.id } } };
+      } else if (q.category) {
+        const category = await tx.productCategory.findFirst({
+          where: {
+            handle: q.category,
+            deletedAt: null,
+            ...categorySiteVisibilityWhere(propertyId),
+          },
+          select: { id: true, path: true },
+        });
+        if (!category) return null;
+        const descendants = await tx.productCategory.findMany({
+          where: { path: { startsWith: `${category.path}.` }, deletedAt: null },
+          select: { id: true },
+        });
+        const categoryIds = [category.id, ...descendants.map((d) => d.id)];
+        scopeWhere = { categoryLinks: { some: { categoryId: { in: categoryIds } } } };
+      }
+
+      const where: Prisma.ProductWhereInput = {
+        status: 'active' as const,
+        deletedAt: null,
+        // Model B: only products visible on the active site (global or scoped here).
+        ...productSiteVisibilityWhere(propertyId),
+        ...scopeWhere,
+        ...(q.vendor ? { vendor: q.vendor } : {}),
+        ...(q.productType ? { productType: q.productType } : {}),
+        ...(q.tag ? { tags: { has: q.tag } } : {}),
+        ...(q.inStock === true ? { inStock: true } : {}),
+        // Price window (cents). Matches the Typesense search semantics: a product's
+        // from-price is at/above the min and its to-price at/below the max.
+        ...(q.minPriceCents !== undefined ? { priceMinCents: { gte: q.minPriceCents } } : {}),
+        ...(q.maxPriceCents !== undefined ? { priceMaxCents: { lte: q.maxPriceCents } } : {}),
+        ...(q.q
+          ? {
+              OR: [
+                { title: { contains: q.q, mode: 'insensitive' as const } },
+                { description: { contains: q.q, mode: 'insensitive' as const } },
+              ],
+            }
+          : {}),
+        ...(q.fitmentMake || q.fitmentYear
+          ? {
+              fitments: {
+                some: {
+                  // Descendant-by-name: "Ford" matches a product attached at the
+                  // Ford node OR any model/engine under it (node.pathNames).
+                  ...(q.fitmentMake ? { node: { pathNames: { has: q.fitmentMake } } } : {}),
+                  // Numeric narrowing against the rule's range windows.
+                  ...(q.fitmentYear
+                    ? {
+                        ranges: {
+                          some: {
+                            AND: [
+                              { OR: [{ min: { lte: q.fitmentYear } }, { min: null }] },
+                              { OR: [{ max: { gte: q.fitmentYear } }, { max: null }] },
+                            ],
+                          },
+                        },
+                      }
+                    : {}),
+                },
+              },
+            }
+          : {}),
+      };
       const [rows, total] = await Promise.all([
         tx.product.findMany({
           where,
-          orderBy: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
+          orderBy: PLP_ORDER_BY[q.sort] ?? PLP_ORDER_BY.relevance,
           take: q.perPage,
           skip: (q.page - 1) * q.perPage,
-          select: productSelect(),
+          select: productSelect(propertyId),
         }),
         tx.product.count({ where }),
       ]);
       return { rows, total };
     });
+    // A scope handle that didn't resolve — surface it as a 404 like the detail routes.
+    if (!result) throw notFound('Collection or category', q.collection ?? q.category ?? '');
     const viewerB2bAccountId = await resolveViewerB2bAccountId(request, tenantId);
     return paged(
       await withYourPrices(tenantId, result.rows.map(publicProduct), viewerB2bAccountId),
@@ -467,15 +579,61 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
 
+    // Browse-as-search scope: resolve a collection/category handle to its id so the
+    // Typesense query filters on the indexed collection_ids/category_ids — a collection or
+    // category page IS this search with a scope, so it gets the same facets + counts. A
+    // handle that doesn't resolve (or is hidden on this site) 404s, like the detail routes.
+    let scopeFilter: string | null = null;
+    if (q.collection || q.category) {
+      const resolved = await withTenant({ tenantId }, async (tx) => {
+        if (q.collection) {
+          const c = await tx.productCollection.findFirst({
+            where: {
+              handle: q.collection,
+              deletedAt: null,
+              ...collectionSiteVisibilityWhere(propertyId),
+            },
+            select: { id: true },
+          });
+          return c ? `collection_ids:=[\`${c.id}\`]` : undefined;
+        }
+        const cat = await tx.productCategory.findFirst({
+          where: {
+            handle: q.category,
+            deletedAt: null,
+            ...categorySiteVisibilityWhere(propertyId),
+          },
+          select: { id: true, path: true },
+        });
+        if (!cat) return undefined;
+        // Browse-node rollup: self + descendants off the materialized dot-path, matching
+        // the Postgres listing's category scope.
+        const descendants = await tx.productCategory.findMany({
+          where: { path: { startsWith: `${cat.path}.` }, deletedAt: null },
+          select: { id: true },
+        });
+        const ids = [cat.id, ...descendants.map((d) => d.id)];
+        return `category_ids:=[${ids.map((id) => `\`${id}\``).join(',')}]`;
+      });
+      if (!resolved) throw notFound('Collection or category', q.collection ?? q.category ?? '');
+      scopeFilter = resolved;
+    }
+
+    // Product-option facet selections → one AND-ed clause per token, so "Color:Black" and
+    // "Size:M" both have to be offered by the product (across groups it's an AND).
+    const optionFilters = toList(q.options).map((t) => `option_facets:=[\`${t}\`]`);
+
     // Build the price filter in Typesense grammar (cents, matching the index).
     const priceParts: string[] = [];
     if (q.minPriceCents !== undefined) priceParts.push(`price_min_cents:>=${q.minPriceCents}`);
     if (q.maxPriceCents !== undefined) priceParts.push(`price_max_cents:<=${q.maxPriceCents}`);
     const filterExtras = [
+      scopeFilter,
       q.vendor ? `vendor:=\`${q.vendor}\`` : null,
       q.productType ? `product_type:=\`${q.productType}\`` : null,
       q.tag ? `tags:=\`${q.tag}\`` : null,
       q.inStock === true ? 'in_stock:=true' : null,
+      ...optionFilters,
       ...priceParts,
     ].filter((p): p is string => p !== null);
 
@@ -511,7 +669,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
             deletedAt: null,
             ...productSiteVisibilityWhere(propertyId),
           },
-          select: productSelect(),
+          select: productSelect(propertyId),
         })
       );
       const byId = new Map(rows.map((r) => [r.id, r]));
@@ -612,7 +770,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           orderBy: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
           // An id pin returns every requested product; a source is capped.
           take: ids ? undefined : q.limit,
-          select: FULL_PRODUCT_SELECT,
+          select: fullProductSelect(propertyId),
         })
       ),
       isModuleEnabled(tenantId, 'inventory'),
@@ -650,7 +808,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
               ? {}
               : { status: 'active', ...productSiteVisibilityWhere(propertyId) }),
           },
-          select: FULL_PRODUCT_SELECT,
+          select: fullProductSelect(propertyId),
         })
       ),
       isModuleEnabled(tenantId, 'inventory'),
@@ -678,6 +836,9 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
               currency: v.currency,
               b2bAccountId: viewerB2bAccountId,
               customerSegmentIds: [],
+              // The active site (docs/131 §4) so the PDP "your price" only applies
+              // this site's price lists, not a sibling business's.
+              propertyId,
             }
           )
         )
@@ -696,9 +857,11 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/commerce/categories', async (request) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    // Model B: the category index is scoped to the active site.
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const rows = await withTenant({ tenantId }, (tx) =>
       tx.productCategory.findMany({
-        where: { deletedAt: null },
+        where: { deletedAt: null, ...categorySiteVisibilityWhere(propertyId) },
         orderBy: [{ path: 'asc' }, { position: 'asc' }],
         select: {
           id: true,
@@ -740,9 +903,11 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const { handle } = HandleParams.parse(request.params);
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
+    // A category hidden on the active site 404s here too.
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const row = await withTenant({ tenantId }, (tx) =>
       tx.productCategory.findFirst({
-        where: { handle, deletedAt: null },
+        where: { handle, deletedAt: null, ...categorySiteVisibilityWhere(propertyId) },
         select: {
           id: true,
           name: true,
@@ -776,7 +941,9 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const result = await withTenant({ tenantId }, async (tx) => {
       const category = await tx.productCategory.findFirst({
-        where: { handle, deletedAt: null },
+        // A category hidden on the active site yields no rollup (its node 404s),
+        // matching its detail endpoint — not just an empty product list.
+        where: { handle, deletedAt: null, ...categorySiteVisibilityWhere(propertyId) },
         select: { id: true, path: true },
       });
       if (!category) return null;
@@ -799,7 +966,7 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
           orderBy: { updatedAt: 'desc' },
           take: q.perPage,
           skip: (q.page - 1) * q.perPage,
-          select: productSelect(),
+          select: productSelect(propertyId),
         }),
         tx.product.count({ where }),
       ]);
@@ -829,18 +996,41 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/commerce/fitment/domains', async (request) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
-    const rows = await prisma.fitmentDomain.findMany({
-      where: { tenantId, deletedAt: null },
-      orderBy: [{ position: 'asc' }, { displayName: 'asc' }],
-      select: {
-        id: true,
-        slug: true,
-        displayName: true,
-        description: true,
-        iconKey: true,
-        dimensions: true,
-      },
-    });
+    // Model B / docs/131: the fitment DOMAIN is a tenant-wide vocabulary (a shared
+    // library, like Taxonomy — it takes no property_id), but the storefront
+    // narrowing filter must only offer domains this SITE's catalog actually uses.
+    // Otherwise a donut site under the same tenant as a machine shop would render a
+    // "Vehicles" filter — a cross-business exposure. So the index is scoped to
+    // domains with at least one fitment on a product VISIBLE on the active site
+    // (the same empty-means-all visibility rule products use). Single-site tenants
+    // are unaffected: their products are visible everywhere, so every used domain
+    // still shows. Runs inside withTenant so the nested product filter is RLS-scoped.
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.fitmentDomain.findMany({
+        where: {
+          deletedAt: null,
+          fitments: {
+            some: {
+              product: {
+                status: 'active',
+                deletedAt: null,
+                ...productSiteVisibilityWhere(propertyId),
+              },
+            },
+          },
+        },
+        orderBy: [{ position: 'asc' }, { displayName: 'asc' }],
+        select: {
+          id: true,
+          slug: true,
+          displayName: true,
+          description: true,
+          iconKey: true,
+          dimensions: true,
+        },
+      })
+    );
     return ok(
       rows.map((r) => ({
         id: r.id,
@@ -896,7 +1086,19 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
   return Promise.resolve();
 };
 
-function productSelect() {
+// The per-site rating rollup fragment (docs/131 §4): the product's [site] + null
+// buckets, which `siteRating` combines into the storefront star average. Included
+// on every SITE-SCOPED select so a product listed on two businesses shows each its
+// own average instead of the tenant-wide blend. Omitted from the non-scoped by-ids
+// path, which has no site context and keeps the tenant-wide columns.
+function reviewRollupsSelect(propertyId: string) {
+  return {
+    where: { OR: [{ propertyId }, { propertyId: null }] },
+    select: { sumRating: true, reviewCount: true },
+  } satisfies Prisma.Product$reviewRollupsArgs;
+}
+
+function productSelect(propertyId?: string) {
   return {
     id: true,
     title: true,
@@ -931,89 +1133,98 @@ function productSelect() {
       take: 1,
       select: { id: true },
     },
+    // Per-site rating (only when the read is scoped to a site).
+    ...(propertyId ? { reviewRollups: reviewRollupsSelect(propertyId) } : {}),
   };
 }
 
 // The FULL product shape (options + variants + every image + fitments) — the PDP
 // payload, shared by GET …/products/:handle and the Builder's …/products/full so a
 // pinned/looped product hydrates the same interactive buy-box (docs/98 Pillar 7).
-const FULL_PRODUCT_SELECT = {
-  id: true,
-  title: true,
-  handle: true,
-  description: true,
-  vendor: true,
-  productType: true,
-  tags: true,
-  priceMinCents: true,
-  priceMaxCents: true,
-  inStock: true,
-  averageRating: true,
-  reviewCount: true,
-  seoTitle: true,
-  seoDescription: true,
-  updatedAt: true,
-  fulfillmentType: true,
-  weightGrams: true,
-  lengthMm: true,
-  widthMm: true,
-  heightMm: true,
-  options: {
-    orderBy: { position: 'asc' },
-    select: {
-      id: true,
-      name: true,
-      displayType: true,
-      position: true,
-      values: {
-        orderBy: { position: 'asc' },
-        select: { id: true, value: true, swatchHex: true, position: true },
+// A function (not a const) so the per-site rating rollup (docs/131 §4) is scoped to
+// the active site — the PDP star average must be this business's, not the blend.
+function fullProductSelect(propertyId: string) {
+  return {
+    id: true,
+    title: true,
+    handle: true,
+    description: true,
+    vendor: true,
+    productType: true,
+    tags: true,
+    priceMinCents: true,
+    priceMaxCents: true,
+    inStock: true,
+    averageRating: true,
+    reviewCount: true,
+    seoTitle: true,
+    seoDescription: true,
+    updatedAt: true,
+    reviewRollups: reviewRollupsSelect(propertyId),
+    fulfillmentType: true,
+    weightGrams: true,
+    lengthMm: true,
+    widthMm: true,
+    heightMm: true,
+    options: {
+      orderBy: { position: 'asc' },
+      select: {
+        id: true,
+        name: true,
+        displayType: true,
+        position: true,
+        values: {
+          orderBy: { position: 'asc' },
+          select: { id: true, value: true, swatchHex: true, position: true },
+        },
       },
     },
-  },
-  variants: {
-    where: { deletedAt: null },
-    // Default first, then position — same order as productSelect, so this row's
-    // `variants[0]` is the same variant `publicProduct` reports as
-    // `defaultVariantId` (mapFullProduct spreads it). `isDefault` alone leaves
-    // ties nondeterministic.
-    orderBy: [{ isDefault: 'desc' as const }, { position: 'asc' as const }],
-    select: {
-      id: true,
-      sku: true,
-      title: true,
-      priceCents: true,
-      compareAtPriceCents: true,
-      currency: true,
-      isDefault: true,
-      inventoryPolicy: true,
-      optionAssignments: { select: { optionValueId: true } },
-      inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
+    variants: {
+      where: { deletedAt: null },
+      // Default first, then position — same order as productSelect, so this row's
+      // `variants[0]` is the same variant `publicProduct` reports as
+      // `defaultVariantId` (mapFullProduct spreads it). `isDefault` alone leaves
+      // ties nondeterministic.
+      orderBy: [{ isDefault: 'desc' as const }, { position: 'asc' as const }],
+      select: {
+        id: true,
+        sku: true,
+        title: true,
+        priceCents: true,
+        compareAtPriceCents: true,
+        currency: true,
+        isDefault: true,
+        inventoryPolicy: true,
+        optionAssignments: { select: { optionValueId: true } },
+        inventoryLevels: { select: { onHand: true, allocated: true, safetyBuffer: true } },
+      },
     },
-  },
-  images: {
-    orderBy: { position: 'asc' },
-    select: {
-      id: true,
-      mediaAssetId: true,
-      variantId: true,
-      alt: true,
-      position: true,
-      optionValueLinks: { select: { optionValueId: true } },
+    images: {
+      orderBy: { position: 'asc' },
+      select: {
+        id: true,
+        mediaAssetId: true,
+        variantId: true,
+        alt: true,
+        position: true,
+        optionValueLinks: { select: { optionValueId: true } },
+      },
     },
-  },
-  fitments: {
-    select: {
-      id: true,
-      notes: true,
-      node: { select: { name: true, pathNames: true } },
-      ranges: { select: { dimensionKey: true, min: true, max: true } },
-      domain: { select: { slug: true, displayName: true, dimensions: true } },
+    fitments: {
+      select: {
+        id: true,
+        notes: true,
+        node: { select: { name: true, pathNames: true } },
+        ranges: { select: { dimensionKey: true, min: true, max: true } },
+        domain: { select: { slug: true, displayName: true, dimensions: true } },
+      },
     },
-  },
-} satisfies Prisma.ProductSelect;
+  } satisfies Prisma.ProductSelect;
+}
 
-type FullProductRow = Prisma.ProductGetPayload<{ select: typeof FULL_PRODUCT_SELECT }>;
+type FullProductRow = Prisma.ProductGetPayload<{
+  select: ReturnType<typeof fullProductSelect>;
+}>;
 
 /** Map a full product row to the PUBLIC PDP shape (the storefront's PublicProduct).
  *  `inventoryActive` flows through to the availability rule: when the inventory

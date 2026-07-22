@@ -13,6 +13,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { FastifyBaseLogger } from 'fastify';
 import crypto from 'node:crypto';
 import { prisma } from '@sparx/db';
+import { DEFAULT_EMAIL_TEMPLATES } from '@sparx/builder-schemas';
 import { reconcileEmailProvisioning } from '../../src/lib/email-provisioning.js';
 
 const noop = (): void => undefined;
@@ -50,6 +51,11 @@ async function makeEmailActiveTenant(): Promise<string> {
   return tenant.id;
 }
 
+// Derived from the catalog, never hardcoded: three templates were added and
+// this suite sat red asserting 18 because the number lived in the test rather
+// than coming from the thing under test.
+const DEFAULT_COUNT = DEFAULT_EMAIL_TEMPLATES.length;
+
 async function defaultKeyCount(tenantId: string): Promise<number> {
   return prisma.$transaction(async (tx) => {
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
@@ -68,7 +74,7 @@ afterAll(async () => {
 });
 
 describe('email provisioning reconcile (backfill)', () => {
-  it('provisions the 18 defaults for an email-active tenant that missed activation', async () => {
+  it('provisions every keyed default for an email-active tenant that missed activation', async () => {
     const tenantId = await makeEmailActiveTenant();
     expect(await defaultKeyCount(tenantId)).toBe(0);
 
@@ -78,15 +84,15 @@ describe('email provisioning reconcile (backfill)', () => {
     // other suites' residue — assert a lower bound, not an exact fleet count).
     expect(result.tenants).toBeGreaterThanOrEqual(1);
 
-    expect(await defaultKeyCount(tenantId)).toBe(18);
+    expect(await defaultKeyCount(tenantId)).toBe(DEFAULT_COUNT);
   });
 
   it('is idempotent — a second pass provisions nothing new', async () => {
     const tenantId = await makeEmailActiveTenant();
     await reconcileEmailProvisioning(logger);
-    expect(await defaultKeyCount(tenantId)).toBe(18);
+    expect(await defaultKeyCount(tenantId)).toBe(DEFAULT_COUNT);
 
     await reconcileEmailProvisioning(logger);
-    expect(await defaultKeyCount(tenantId)).toBe(18);
+    expect(await defaultKeyCount(tenantId)).toBe(DEFAULT_COUNT);
   });
 });

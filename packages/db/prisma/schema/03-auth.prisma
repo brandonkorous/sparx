@@ -34,12 +34,16 @@ model User {
   tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   sessions          Session[]
   accounts          Account[]
+  // WebAuthn passkeys registered from this user's devices (03-auth-passkey.prisma).
+  passkeys          Passkey[]
   // Organizations & Teams (docs/114 Part A) — this user's memberships across
   // orgs (the "client accounts" list) + the invitations they sent as an admin.
   memberships       Member[]
   sentInvitations   Invitation[]
   // Web Push subscriptions registered from this user's browsers (docs/69 A-6).
   pushSubscriptions PushSubscription[]
+  // In-app notifications addressed to this user (docs/124 Phase 3).
+  notifications     Notification[]
 
   // MCP OAuth provider (docs/07 §5) — clients this user registered/connected,
   // tokens issued to them, and recorded consents. See 03-auth-oauth.prisma.

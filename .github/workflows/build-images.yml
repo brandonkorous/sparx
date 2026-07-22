@@ -50,7 +50,9 @@ jobs:
           - api-graphql
           - api-mcp
           - mcp-site # @sparx/mcp-site — shopper-facing MCP (docs/113)
-          - dashboard
+          # dashboard decommissioned 2026-07-22 — the workbench replaced it at
+          # app.sparx.works. Its image is no longer built or deployed.
+          - workbench # @sparx/workbench — the operator app; now serves app.sparx.works (replaced the dashboard)
           - admin # @sparx/admin — WizeWorks operator console (docs/apps/admin/build-plan.md)
           - site
           - market # @sparx/market — the first-party sparx.market storefront (docs/106 §4.7)

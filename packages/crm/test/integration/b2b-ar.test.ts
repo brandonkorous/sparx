@@ -51,6 +51,7 @@ describe('b2b AR — order-derived billing documents', () => {
   it('createOrderArDocument builds a finalised invoice + line, and syncs credit', async () => {
     const doc = await b2bArService.createOrderArDocument(test.ctx, {
       b2bAccountId: accountId,
+      propertyId: test.propertyId,
       orderId: null,
       amount: 1200.5,
       dueAt: future(),
@@ -80,6 +81,7 @@ describe('b2b AR — order-derived billing documents', () => {
   it('ensureNetTermsArWorkflow is idempotent — a 2nd AR doc reuses the workflow', async () => {
     const doc = await b2bArService.createOrderArDocument(test.ctx, {
       b2bAccountId: accountId,
+      propertyId: test.propertyId,
       amount: 100,
       dueAt: future(),
     });
@@ -100,6 +102,7 @@ describe('b2b AR — order-derived billing documents', () => {
   it('a full payment clears the balance and releases credit', async () => {
     const { items } = await billingDocumentService.list(test.ctx, {
       b2bAccountId: accountId,
+      propertyId: test.propertyId,
       status: 'unpaid',
     });
     const doc = items.find((d) => Number(d.total) === 1200.5)!;
@@ -120,6 +123,7 @@ describe('b2b AR — order-derived billing documents', () => {
   it('voiding an open AR document releases its credit', async () => {
     const doc = await b2bArService.createOrderArDocument(test.ctx, {
       b2bAccountId: accountId,
+      propertyId: test.propertyId,
       amount: 777,
       dueAt: future(),
     });

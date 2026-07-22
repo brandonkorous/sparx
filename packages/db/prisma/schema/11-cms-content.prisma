@@ -8,6 +8,13 @@
 model ContentType {
   id          String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId    String   @map("tenant_id") @db.Uuid
+  // null = the type is available to every site (docs/131 §4). Exactly the
+  // Taxonomy split (§4): a ContentType is a SCHEMA — "a blog post has these
+  // fields" — and that structure is generic, so shared is the common case. Its
+  // ENTRIES are the per-site content, and ContentEntry is already scoped via the
+  // ContentEntryProperty junction. So the type stays a mostly-shared vocabulary
+  // and only narrows when a business genuinely wants a type of its own.
+  propertyId  String?  @map("property_id") @db.Uuid
   key         String   @db.VarChar(63)
   name        String   @db.VarChar(120)
   pluralName  String   @map("plural_name") @db.VarChar(120)
@@ -20,10 +27,16 @@ model ContentType {
   createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt   DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a type authored for one business is its editorial structure.
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
+  // Key uniqueness stays per TENANT (not per site): `key` + `urlPattern` route
+  // entries, and one key must mean one thing across the tenant or an entry's
+  // type reference and its URL become ambiguous — the same call as Taxonomy.key.
   @@unique([tenantId, key])
   @@index([tenantId])
+  @@index([tenantId, propertyId])
   @@map("content_types")
 }
 

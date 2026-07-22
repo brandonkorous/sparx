@@ -224,7 +224,11 @@ const b2bPricingTierRoutes: FastifyPluginAsync = (app) => {
         orderBy: { createdAt: 'asc' },
         include: {
           variant: { select: { id: true, sku: true, title: true } },
-          collection: { select: { id: true, title: true } },
+          // `name`, NOT `title` — ProductCollection has no `title` column, and
+          // an invalid select throws at runtime, which made every tier-override
+          // read and write answer 500. The account-override routes next door
+          // already spell it correctly.
+          collection: { select: { id: true, name: true } },
         },
       })
     );
@@ -259,7 +263,11 @@ const b2bPricingTierRoutes: FastifyPluginAsync = (app) => {
         },
         include: {
           variant: { select: { id: true, sku: true, title: true } },
-          collection: { select: { id: true, title: true } },
+          // `name`, NOT `title` — ProductCollection has no `title` column, and
+          // an invalid select throws at runtime, which made every tier-override
+          // read and write answer 500. The account-override routes next door
+          // already spell it correctly.
+          collection: { select: { id: true, name: true } },
         },
       })
     );
@@ -288,7 +296,11 @@ const b2bPricingTierRoutes: FastifyPluginAsync = (app) => {
         data: { ...body, updatedAt: new Date() },
         include: {
           variant: { select: { id: true, sku: true, title: true } },
-          collection: { select: { id: true, title: true } },
+          // `name`, NOT `title` — ProductCollection has no `title` column, and
+          // an invalid select throws at runtime, which made every tier-override
+          // read and write answer 500. The account-override routes next door
+          // already spell it correctly.
+          collection: { select: { id: true, name: true } },
         },
       })
     );

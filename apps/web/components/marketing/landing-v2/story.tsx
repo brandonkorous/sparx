@@ -26,7 +26,7 @@ const PAINS = [
 
 export function LandingV2Story() {
   return (
-    <section className="px-[var(--gutter-page)] py-[var(--section-py-xl)]">
+    <section className="px-page py-section-xl">
       <Container>
         <div className="grid grid-cols-1 gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
           <div className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start">

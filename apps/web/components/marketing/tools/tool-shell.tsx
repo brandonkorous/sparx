@@ -89,7 +89,11 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
                   <Display as="h1" size={46} color="currentColor">
                     {tool.name}.
                   </Display>
-                  <p className="text-lede m-0 max-w-[660px] font-sans">{tool.tagline}</p>
+                  {/* `text-hero-lede` (24px), not `text-lede` (18px): on the
+                      Ember band white measures 4.13:1, so normal-size text
+                      misses WCAG AA. 24px clears the large-text bar. See the
+                      token's note in globals.css. */}
+                  <p className="text-hero-lede m-0 max-w-[660px] font-sans">{tool.tagline}</p>
                   <TrustRow tone="oncolor" />
                 </div>
               </div>

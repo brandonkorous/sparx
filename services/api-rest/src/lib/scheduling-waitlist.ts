@@ -7,6 +7,7 @@
 // the BookingNotification ledger, which is bookingId-keyed) — a direct transactional
 // send, since there's no booking yet.
 
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import {
@@ -22,7 +23,7 @@ import { env } from '../env.js';
 import { resolveActivePropertyName } from './property.js';
 import { sendTenantEmailByKey } from './tenant-email.js';
 
-const WAITLIST_LOCK_KEY = 4242_4248;
+const WAITLIST_LOCK_KEY = ADVISORY_LOCKS.SCHEDULING_WAITLIST;
 const DEFAULT_INTERVAL_MS = 300_000; // every 5 min
 const SCAN_LIMIT = 200;
 const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
@@ -51,7 +52,9 @@ export async function sendWaitlistOffer(
         serviceId: true,
         desiredFrom: true,
         desiredTo: true,
-        service: { select: { name: true } },
+        // The offer goes out under the business that runs the service
+        // (docs/131 §3.4/§4), not the tenant's primary.
+        service: { select: { name: true, propertyId: true } },
       },
     })
   );
@@ -68,6 +71,7 @@ export async function sendWaitlistOffer(
     await sendTenantEmailByKey(logger, tenantId, {
       key: 'waitlist-offer',
       to: customer.email,
+      propertyId: entry.service?.propertyId ?? null,
       ref: { customerId: entry.customerId, waitlistEntryId: entryId },
     }).catch((err: unknown) => {
       logger.warn({ tenantId, entryId, err }, 'waitlist: offer email failed');
@@ -130,12 +134,8 @@ async function processTenant(logger: FastifyBaseLogger, tenantId: string): Promi
 }
 
 export async function runWaitlistTick(logger: FastifyBaseLogger): Promise<WaitlistTickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${WAITLIST_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) return { acquired: false, tenants: 0, offered: 0 };
-
-  try {
+  const SKIPPED: WaitlistTickResult = { acquired: false, tenants: 0, offered: 0 };
+  return withAdvisoryTickLock(WAITLIST_LOCK_KEY, SKIPPED, async () => {
     const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
       SELECT tenant_id FROM find_tenants_with_waitlist_work(${SCAN_LIMIT}::int)
     `;
@@ -150,9 +150,7 @@ export async function runWaitlistTick(logger: FastifyBaseLogger): Promise<Waitli
       }
     }
     return { acquired: true, tenants: rows.length, offered };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${WAITLIST_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startWaitlistLoop(

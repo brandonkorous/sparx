@@ -141,6 +141,12 @@ async function loadPayload(dir: string, payloadFile: string): Promise<unknown> {
   return data;
 }
 
+// A marketplace COMPONENT payload. Still a legacy `BuilderNode` tree, and
+// deliberately so: this category feeds the TENANT COMPONENT LIBRARY
+// (`/builder/components` → `componentService` → `BuilderComponent`), which is a
+// separate surface from the blueprint/site path and is still legacy end to end.
+// Converting the payload here without converting that consumer would just feed
+// silica trees to a legacy renderer. It moves when the component library does.
 const ComponentPayloadSchema = z.object({
   tree: BuilderNodeSchema,
   propSpec: PropSpecListSchema.default([]),
@@ -269,11 +275,10 @@ function blueprintContents(bp: Blueprint): Prisma.InputJsonValue {
     categories: c?.categories.length ?? 0,
     collections: c?.collections.length ?? 0,
     content: bp.content.length,
-    pages: bp.pages.length,
+    pages: bp.site?.pages.length ?? 0,
     emails: bp.emails.length,
-    components: bp.components.length,
     theme: bp.theme.name,
-    hasLayout: Boolean(bp.layout),
+    hasFrame: Boolean(bp.site?.frame),
   };
 }
 

@@ -64,12 +64,28 @@ const REVIEW_INCLUDE = {
 export async function listReviewsForProduct(
   ctx: ServiceContext,
   productId: string,
-  filter: { status?: ReviewModerationStatus; take?: number; skip?: number } = {}
+  filter: {
+    status?: ReviewModerationStatus;
+    /** The storefront asking (docs/131 §4). Undefined = every site, which is
+     *  what the STAFF moderation views want; a public storefront always passes
+     *  its own so it shows only reviews written there. */
+    propertyId?: string;
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: ReviewRow[]; total: number; averageRating: number }> {
   return withTenant(ctx, async (tx) => {
+    // A review written on ANOTHER of the tenant's storefronts must not surface
+    // here — it carries that business's context with it. Legacy rows (null
+    // property) predate multi-site and are shown everywhere, since suppressing
+    // them would silently empty existing product pages.
+    const siteScope: Prisma.ProductReviewWhereInput = filter.propertyId
+      ? { OR: [{ propertyId: filter.propertyId }, { propertyId: null }] }
+      : {};
     const where: Prisma.ProductReviewWhereInput = {
       productId,
       deletedAt: null,
+      ...siteScope,
       ...(filter.status ? { status: filter.status } : {}),
     };
     const [rows, total, agg] = await Promise.all([
@@ -82,7 +98,10 @@ export async function listReviewsForProduct(
       }),
       tx.productReview.count({ where }),
       tx.productReview.aggregate({
-        where: { productId, status: 'approved', deletedAt: null },
+        // The average MUST use the same site scope as the list, or the star
+        // rating summarizes a different set of reviews than the ones shown
+        // underneath it — a discrepancy a shopper can see and count.
+        where: { productId, status: 'approved', deletedAt: null, ...siteScope },
         _avg: { rating: true },
       }),
     ]);
@@ -124,10 +143,19 @@ export async function getReview(ctx: ServiceContext, reviewId: string): Promise<
 // or deleting an approved review. Without this the columns stay at their
 // defaults (null / 0) and the PDP shows "no reviews yet" no matter how many
 // reviews are approved.
+//
+// Maintains BOTH the all-sites figure (products.average_rating / review_count,
+// for tenant-wide contexts and back-compat) AND the per-(product, site) rollup
+// rows (commerce_product_review_rollups, docs/131 §4) that per-site grids read so
+// a product listed on two storefronts shows each its own star average. The rollup
+// stores SUM + count per site bucket — see the model note on why sums, not
+// averages.
 async function recomputeProductRating(
   tx: Prisma.TransactionClient,
+  tenantId: string,
   productId: string
 ): Promise<void> {
+  // All-sites total for the denormalized product columns.
   const agg = await tx.productReview.aggregate({
     where: { productId, status: 'approved', deletedAt: null },
     _avg: { rating: true },
@@ -141,6 +169,29 @@ async function recomputeProductRating(
       averageRating: count > 0 ? (agg._avg.rating ?? null) : null,
     },
   });
+
+  // Per-site rollup: sum + count of approved ratings grouped by the site each
+  // review was WRITTEN on (null = the shared/legacy bucket). Replace the product's
+  // rows wholesale so a site that lost its last review drops to no row (→ the read
+  // falls back correctly) rather than a stale one.
+  const buckets = await tx.productReview.groupBy({
+    by: ['propertyId'],
+    where: { productId, status: 'approved', deletedAt: null },
+    _sum: { rating: true },
+    _count: { _all: true },
+  });
+  await tx.productReviewRollup.deleteMany({ where: { productId } });
+  if (buckets.length > 0) {
+    await tx.productReviewRollup.createMany({
+      data: buckets.map((b) => ({
+        tenantId,
+        productId,
+        propertyId: b.propertyId,
+        sumRating: b._sum.rating ?? 0,
+        reviewCount: b._count._all,
+      })),
+    });
+  }
 }
 
 export async function submit(
@@ -162,6 +213,9 @@ export async function submit(
     const created = await tx.productReview.create({
       data: {
         tenantId: ctx.tenantId,
+        // WHERE this was written (docs/131 §4) — not derivable later, since a
+        // product can be listed on several sites at once.
+        propertyId: input.propertyId ?? null,
         productId: input.productId,
         variantId: input.variantId ?? null,
         customerId: input.customerId ?? null,
@@ -214,7 +268,7 @@ export async function submit(
     // Verified-purchase reviews land approved, so the product's rating rolls up
     // immediately. Pending reviews don't count until a moderator approves them.
     if (initialStatus === 'approved') {
-      await recomputeProductRating(tx, input.productId);
+      await recomputeProductRating(tx, ctx.tenantId, input.productId);
     }
 
     return created;
@@ -292,7 +346,7 @@ export async function moderate(ctx: ServiceContext, rawInput: unknown): Promise<
       input.status !== previousStatus &&
       (input.status === 'approved' || previousStatus === 'approved')
     ) {
-      await recomputeProductRating(tx, existing.productId);
+      await recomputeProductRating(tx, ctx.tenantId, existing.productId);
     }
 
     return { previousStatus, productId: existing.productId, rating: existing.rating };
@@ -436,7 +490,7 @@ export async function deleteReview(ctx: ServiceContext, reviewId: string): Promi
 
     // Deleting an approved review drops it from the rating rollup.
     if (existing.status === 'approved') {
-      await recomputeProductRating(tx, existing.productId);
+      await recomputeProductRating(tx, ctx.tenantId, existing.productId);
     }
   });
 }
@@ -520,12 +574,18 @@ export interface AnswerRow {
 export async function listQuestionsForProduct(
   ctx: ServiceContext,
   productId: string,
-  filter: { status?: string; take?: number } = {}
+  filter: { status?: string; propertyId?: string; take?: number } = {}
 ): Promise<QuestionRow[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.productQuestion.findMany({
       where: {
         productId,
+        // Questions asked on THIS storefront, plus pre-multi-site rows
+        // (docs/131 §4). A question is usually addressed to the seller, so its
+        // answer is true of one business only.
+        ...(filter.propertyId
+          ? { OR: [{ propertyId: filter.propertyId }, { propertyId: null }] }
+          : {}),
         ...(filter.status ? { status: filter.status } : {}),
       },
       include: QUESTION_INCLUDE,
@@ -563,6 +623,8 @@ export async function submitQuestion(
     const created = await tx.productQuestion.create({
       data: {
         tenantId: ctx.tenantId,
+        // WHERE this was asked (docs/131 §4).
+        propertyId: input.propertyId ?? null,
         productId: input.productId,
         customerId: input.customerId ?? null,
         displayName: input.displayName ?? null,
@@ -744,6 +806,8 @@ export async function createWishlist(
     const created = await tx.wishlist.create({
       data: {
         tenantId: ctx.tenantId,
+        // WHERE this list was saved (docs/131 §4).
+        propertyId: input.propertyId ?? null,
         customerId: input.customerId,
         name: input.name,
         isPublic: input.isPublic,

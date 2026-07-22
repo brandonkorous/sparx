@@ -39,11 +39,42 @@ model Discount {
   collection    ProductCollection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
   usages        DiscountUsage[]
   cartDiscounts CartDiscount[]
+  // Which sites this promo runs on (docs/131 §4). EMPTY = every site, matching
+  // the ProductProperty convention — so existing discounts need no backfill and
+  // keep behaving exactly as they do today.
+  siteLinks     DiscountProperty[]
 
+  // NOTE: code uniqueness stays PER TENANT, deliberately, even though the promo
+  // itself is now per-site. Two businesses under one owner each defining SAVE10
+  // with different terms is a support incident waiting to happen — a shopper
+  // quoting "SAVE10" to staff, or an operator reading a report, has no way to
+  // tell which one is meant. One code, one meaning, tenant-wide.
   @@unique([tenantId, code], map: "discounts_tenant_code_unique")
   @@index([tenantId, status])
   @@index([tenantId, startAt, endAt])
   @@map("commerce_discounts")
+}
+
+// Which sites a discount is offered on (docs/131 §4). A promo code is ONE
+// BUSINESS'S OFFER — "20% off donuts" applied at a machine-shop checkout is
+// money given away by a business that never ran the promotion.
+//
+// A junction rather than a nullable column, per §2's third pattern, because a
+// discount genuinely can serve several sites: an owner running a
+// whole-portfolio sale means one promotion across all of them, not N copies to
+// keep in sync. Exact shape copied from ProductProperty — composite PK, no
+// tenant_id (tenant scoping rides the FK parents), and NO ROWS MEANS ALL SITES
+// so existing data needs no backfill.
+model DiscountProperty {
+  propertyId String @map("property_id") @db.Uuid
+  discountId String @map("discount_id") @db.Uuid
+
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  discount Discount @relation(fields: [discountId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, discountId])
+  @@index([discountId])
+  @@map("commerce_discount_properties")
 }
 
 // One row per redemption. Enforces perCustomerLimit + totalUsageLimit at

@@ -19,21 +19,15 @@ import {
 import { rule, rules, useFieldValidation } from '@sparx/forms';
 import { type PartnerTier } from '@/lib/partners';
 import { applyToPartnerProgram, type ApplyState } from '@/app/partners/actions';
-import { Spark } from './primitives';
+import { Display, Spark, Text } from './primitives';
 
 const INITIAL: ApplyState = { status: 'idle' };
-const SANS = 'var(--font-sans)';
-const EMBER = 'var(--color-primary)';
-const EMBER_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
-const EMBER_TEXT = 'var(--color-primary)';
 
 const TIERS: { value: PartnerTier; label: string }[] = [
   { value: 'informal', label: 'Informal' },
   { value: 'registered', label: 'Registered' },
   { value: 'certified', label: 'Certified' },
 ];
-
-const labelStyle: React.CSSProperties = { fontFamily: SANS, fontSize: '13px', fontWeight: 500 };
 
 export function PartnersApplyForm() {
   const [state, action, pending] = useActionState(applyToPartnerProgram, INITIAL);
@@ -60,15 +54,9 @@ export function PartnersApplyForm() {
   }
 
   return (
-    <form
-      action={clientAction}
-      style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
-      noValidate
-    >
+    <form action={clientAction} className="flex flex-col gap-4" noValidate>
       <Field {...v.field('name')}>
-        <FieldLabel required style={labelStyle}>
-          Name
-        </FieldLabel>
+        <FieldLabel required>Name</FieldLabel>
         <FieldControl
           name="name"
           autoComplete="name"
@@ -81,9 +69,7 @@ export function PartnersApplyForm() {
       </Field>
 
       <Field {...v.field('email')}>
-        <FieldLabel required style={labelStyle}>
-          Email
-        </FieldLabel>
+        <FieldLabel required>Email</FieldLabel>
         <FieldControl
           name="email"
           type="email"
@@ -98,16 +84,8 @@ export function PartnersApplyForm() {
       </Field>
 
       <Field>
-        <FieldLabel style={labelStyle}>
-          Website or LinkedIn{' '}
-          <span
-            style={{
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              fontWeight: 400,
-            }}
-          >
-            (optional)
-          </span>
+        <FieldLabel>
+          Website or LinkedIn <span className="text-ink-subtle font-normal">(optional)</span>
         </FieldLabel>
         <FieldControl
           name="websiteUrl"
@@ -118,7 +96,7 @@ export function PartnersApplyForm() {
       </Field>
 
       <Field>
-        <FieldLabel style={labelStyle}>What best describes you?</FieldLabel>
+        <FieldLabel>What best describes you?</FieldLabel>
         <FieldControl
           render={
             <NativeSelect name="kind" defaultValue="freelance">
@@ -132,7 +110,7 @@ export function PartnersApplyForm() {
       </Field>
 
       <Field>
-        <FieldLabel style={labelStyle}>How will you use sparx with clients?</FieldLabel>
+        <FieldLabel>How will you use sparx with clients?</FieldLabel>
         <FieldControl
           render={
             <Textarea name="note" rows={3} placeholder="Two or three sentences…" maxLength={2000} />
@@ -140,53 +118,39 @@ export function PartnersApplyForm() {
         />
       </Field>
 
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
-        <span style={labelStyle}>Tier you&rsquo;re applying for</span>
+      <div className="flex flex-col gap-[7px]">
+        <Text as="span" size={13} weight={500} tone="default">
+          Tier you&rsquo;re applying for
+        </Text>
         <input type="hidden" name="requestedTier" value={tier} />
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+        {/* A real silica toggle group: the selected tier is a `soft` primary
+            Button, the rest are `outline`. No hand-rolled fill/ink pair. */}
+        <div className="grid grid-cols-3 gap-2">
           {TIERS.map((t) => {
             const on = tier === t.value;
             return (
-              <button
+              <Button
                 key={t.value}
                 type="button"
                 aria-pressed={on}
+                color={on ? 'primary' : 'neutral'}
+                variant={on ? 'soft' : 'outline'}
                 onClick={() => setTier(t.value)}
-                style={{
-                  padding: '10px 8px',
-                  borderRadius: '8px',
-                  border: `1px solid ${on ? EMBER : 'var(--color-base-300)'}`,
-                  backgroundColor: on ? EMBER_TINT : 'var(--color-base-100)',
-                  color: on
-                    ? EMBER_TEXT
-                    : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  fontFamily: SANS,
-                  fontSize: '13px',
-                  fontWeight: on ? 500 : 400,
-                  cursor: 'pointer',
-                }}
               >
                 {t.label}
-              </button>
+              </Button>
             );
           })}
         </div>
-        <span
-          style={{
-            fontFamily: SANS,
-            fontSize: '12px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            lineHeight: '17px',
-          }}
-        >
+        <Text as="span" size={12} tone="subtle">
           {tier === 'informal'
             ? 'Approved instantly — activate right after you apply.'
             : 'Reviewed within 3 business days.'}
-        </span>
+        </Text>
       </div>
 
       {/* Honeypot — hidden from people, catnip for bots. */}
-      <div aria-hidden style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}>
+      <div aria-hidden className="absolute -left-[9999px] size-px">
         <label htmlFor="pa-company-url">Company URL</label>
         <input
           id="pa-company-url"
@@ -210,7 +174,7 @@ export function PartnersApplyForm() {
 
 function SubmitButton({ pending }: { pending: boolean }) {
   return (
-    <Button type="submit" size="lg" disabled={pending} style={{ width: '100%' }}>
+    <Button type="submit" size="lg" disabled={pending} className="w-full">
       {pending ? 'Submitting…' : 'Submit application →'}
     </Button>
   );
@@ -218,44 +182,20 @@ function SubmitButton({ pending }: { pending: boolean }) {
 
 function Confirmation() {
   return (
-    <div
-      role="status"
-      style={{ display: 'flex', flexDirection: 'column', gap: '16px', alignItems: 'flex-start' }}
-    >
+    <div role="status" className="flex flex-col items-start gap-4">
       <span
         aria-hidden
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 44,
-          height: 44,
-          borderRadius: 9999,
-          backgroundColor: EMBER_TINT,
-          color: EMBER,
-          fontSize: 22,
-        }}
+        className="bg-primary text-primary text-h3 bg-soft inline-flex size-11 items-center justify-center rounded-full"
       >
         ✓
       </span>
-      <span
-        style={{ fontFamily: SANS, fontWeight: 500, fontSize: '24px', letterSpacing: '-0.02em' }}
-      >
+      <Display as="h3" size={24} lineHeight={30}>
         Application received
         <Spark />
-      </span>
-      <p
-        style={{
-          margin: 0,
-          fontFamily: SANS,
-          fontSize: '15px',
-          lineHeight: '24px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          maxWidth: '380px',
-        }}
-      >
+      </Display>
+      <Text size={15} className="max-w-[380px]">
         Every application is reviewed by the Sparx team — we’ll be in touch within 3 business days.
-      </p>
+      </Text>
     </div>
   );
 }

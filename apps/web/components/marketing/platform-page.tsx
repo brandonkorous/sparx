@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
-import { Button } from '@wizeworks/silicaui-react';
+import { Button, Heading, Text } from '@wizeworks/silicaui-react';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import {
   Container,
   Display,
@@ -24,10 +25,11 @@ const HAS_PAGE = new Set<string>(MODULE_ORDER);
  * the permanence promise); this page explains how the system actually works.
  * No section is lifted from the home page's sections.
  *
- * Ported from mockups/platform.html. Built on the marketing primitives + the
- * eight module colors via getModuleColor(), so accents stay consistent with
- * the rest of the brand. Section backgrounds alternate page → surface for
- * rhythm, with one near-black band (the API surface) before the close.
+ * Ported from mockups/platform.html. Built on the marketing primitives + silicaui
+ * typography, per SILICA-VOCABULARY.md: every static value is a utility class and
+ * the dark bands are `data-theme` islands (`<Section surface="dark">` / the inline
+ * data-layer bar), so no literal hex is painted anywhere. The only inline `style`
+ * left is a genuinely per-instance module hue.
  */
 export function PlatformPage() {
   return (
@@ -61,13 +63,27 @@ const MODS = {
   scheduling: getModuleColor('scheduling'),
 } as const;
 
-const MONO = 'var(--font-mono)';
-const SANS = 'var(--font-sans)';
+/**
+ * Mono metadata chip. Theme-agnostic by construction — inside the dark data-layer
+ * island the same base-200/base-300/ink-muted tokens flip with the island, so
+ * there is one chip, not a light one and a hand-darkened twin.
+ */
+function Tag({ children, className }: { children: ReactNode; className?: string }) {
+  return (
+    <span
+      className={`bg-base-200 border-base-300 text-ink-muted text-mini rounded-full border px-2.5 py-1 font-mono${
+        className ? ` ${className}` : ''
+      }`}
+    >
+      {children}
+    </span>
+  );
+}
 
-// ── HERO ─────────────────────────────────────────────────────────────────
+// ── HERO ─────────────────────────────────────────────────────────────────────
 function PlatformHero() {
   const metrics = [
-    { v: '8', s: 'modules, one platform' },
+    { v: '12', s: 'modules, one platform' },
     { v: '1', s: 'shared data layer' },
     { v: '$10', suffix: '/mo', s: 'starting price' },
     { v: 'MCP', spark: true, s: 'native AI access' },
@@ -75,122 +91,53 @@ function PlatformHero() {
   ] as const;
 
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <div style={{ maxWidth: '1100px' }}>
+    <section className="bg-base-200 px-page pb-section-lg pt-[clamp(56px,9vw,96px)]">
+      <Container className="flex flex-col gap-10">
+        <div className="max-w-[1100px]">
           <Display as="h1" size={104} lineHeight={96}>
             One platform for{' '}
-            <span
-              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-            >
+            <span className="text-ink-subtle">
               content and commerce
               <Spark />
             </span>
           </Display>
         </div>
 
-        <div
-          className="mkt-stack-on-tablet mkt-align-end-on-desktop"
-          style={{ justifyContent: 'space-between', gap: '40px', maxWidth: '1280px' }}
-        >
-          <p
-            style={{
-              fontFamily: SANS,
-              fontWeight: 400,
-              fontSize: 'clamp(16px, 1.6vw, 20px)',
-              lineHeight: 1.55,
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              maxWidth: '600px',
-              margin: 0,
-            }}
-          >
-            sparx is a modular operating system for the web. Builder, Commerce, CMS, CRM, Email,
-            B2B, Dropship, and AI — running on one shared data layer, behind one dashboard, on one
-            bill. A publisher, a shop, a wholesale distributor, and a CRM-only team are all equally
-            first-class. Selling is one capability, never the assumption.
-          </p>
+        <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
+          <Text variant="lead" className="text-ink-muted max-w-[600px]">
+            sparx is a modular operating system for the web. Builder, Commerce, CMS, CRM, Invoicing,
+            Email, B2B, Dropship, Inventory, Live Chat, Scheduling, and AI — plus SEO and
+            Automations free with any of them — running on one shared data layer, behind one
+            dashboard, on one bill. A publisher, a shop, a wholesale distributor, and a CRM-only
+            team are all equally first-class. Selling is one capability, never the assumption.
+          </Text>
 
-          <div
-            className="mkt-align-end-on-desktop"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              alignItems: 'flex-start',
-            }}
-          >
-            <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <div className="flex flex-col items-start gap-3 lg:items-end">
+            <div className="flex flex-wrap items-center gap-3">
+              <Button color="neutral" size="lg">
                 Start free →
               </Button>
               <Button size="lg" variant="outline">
                 Talk to sales
               </Button>
             </div>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            <Text className="text-mini text-ink-subtle font-mono">
               No credit card · Live in five minutes
-            </span>
+            </Text>
           </div>
         </div>
 
-        <div
-          className="mkt-cluster"
-          style={{
-            justifyContent: 'space-between',
-            paddingTop: '32px',
-            marginTop: '8px',
-            borderTop: '1px solid var(--color-base-300)',
-            gap: '32px 56px',
-          }}
-        >
+        <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-x-14 gap-y-8 border-t pt-8">
           {metrics.map((m) => (
-            <div key={m.s} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '26px',
-                  letterSpacing: '-0.02em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+            <div key={m.s} className="flex flex-col gap-1">
+              <span className="text-base-content text-h1 font-medium tracking-[-0.02em]">
                 {m.v}
                 {'suffix' in m && m.suffix ? (
-                  <span
-                    style={{
-                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                      fontWeight: 400,
-                      fontSize: '16px',
-                    }}
-                  >
-                    {m.suffix}
-                  </span>
+                  <span className="text-ink-subtle text-body font-normal">{m.suffix}</span>
                 ) : null}
                 {'spark' in m && m.spark ? <Spark /> : null}
               </span>
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {m.s}
-              </span>
+              <Text className="text-caption text-ink-muted">{m.s}</Text>
             </div>
           ))}
         </div>
@@ -208,14 +155,14 @@ function OneSystem() {
     { label: 'CRM', module: 'crm' },
     { label: 'Email', module: 'email' },
     { label: 'B2B', module: 'b2b' },
-    { label: 'AI / MCP', module: 'ai' },
+    { label: 'AI', module: 'ai' },
     { label: 'Dropship', module: 'dropship' },
     { label: 'Scheduling', module: 'scheduling' },
   ];
 
   return (
     <Section surface="surface" padding="lg">
-      <div style={{ maxWidth: '720px' }}>
+      <div className="max-w-[720px]">
         <SectionHeader
           accent="var(--color-primary)"
           headline={<>Not integrations. One system</>}
@@ -230,39 +177,13 @@ function OneSystem() {
         />
       </div>
 
-      <div
-        style={{
-          marginTop: '56px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
+      <div className="mt-14 flex flex-col items-center">
         {/* module chips */}
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'center',
-            gap: '10px',
-          }}
-        >
+        <div className="flex flex-wrap justify-center gap-2.5">
           {chips.map((c) => (
             <span
               key={c.label}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '9px 15px',
-                backgroundColor: 'var(--color-base-200)',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '9999px',
-                fontFamily: SANS,
-                fontSize: '13px',
-                fontWeight: 500,
-                color: 'var(--color-base-content)',
-              }}
+              className="bg-base-200 border-base-300 text-base-content text-caption inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium"
             >
               <Dot color={getModuleColor(c.module).color} size={8} />
               {c.label}
@@ -271,160 +192,85 @@ function OneSystem() {
         </div>
 
         {/* converging connector */}
-        <div style={{ width: '100%', maxWidth: '760px', height: '44px' }} aria-hidden>
+        <div className="h-11 w-full max-w-[760px]" aria-hidden>
           <svg
             viewBox="0 0 760 44"
             fill="none"
             preserveAspectRatio="none"
-            style={{ width: '100%', height: '100%', display: 'block' }}
+            className="block h-full w-full"
           >
-            <path d="M60 0 V14 Q60 22 110 22 H370" stroke="#d4d4d8" strokeWidth={1.5} />
-            <path d="M180 0 V14 Q180 22 230 22 H380" stroke="#d4d4d8" strokeWidth={1.5} />
-            <path d="M300 0 V22 H380" stroke="#d4d4d8" strokeWidth={1.5} />
-            <path d="M420 0 V22 H380" stroke="#d4d4d8" strokeWidth={1.5} />
-            <path d="M540 0 V14 Q540 22 490 22 H380" stroke="#d4d4d8" strokeWidth={1.5} />
-            <path d="M700 0 V14 Q700 22 650 22 H380" stroke="#d4d4d8" strokeWidth={1.5} />
+            <path
+              d="M60 0 V14 Q60 22 110 22 H370"
+              stroke="var(--color-base-300)"
+              strokeWidth={1.5}
+            />
+            <path
+              d="M180 0 V14 Q180 22 230 22 H380"
+              stroke="var(--color-base-300)"
+              strokeWidth={1.5}
+            />
+            <path d="M300 0 V22 H380" stroke="var(--color-base-300)" strokeWidth={1.5} />
+            <path d="M420 0 V22 H380" stroke="var(--color-base-300)" strokeWidth={1.5} />
+            <path
+              d="M540 0 V14 Q540 22 490 22 H380"
+              stroke="var(--color-base-300)"
+              strokeWidth={1.5}
+            />
+            <path
+              d="M700 0 V14 Q700 22 650 22 H380"
+              stroke="var(--color-base-300)"
+              strokeWidth={1.5}
+            />
             <path d="M380 22 V44" stroke="var(--color-primary)" strokeWidth={2} />
             <circle cx="380" cy="22" r="3.5" fill="var(--color-primary)" />
           </svg>
         </div>
 
-        {/* data layer bar (dark) */}
+        {/* data layer bar — a dark theme island, so every token below it flips */}
         <div
-          style={{
-            width: '100%',
-            maxWidth: '880px',
-            borderRadius: '14px',
-            padding: '22px 28px',
-            backgroundColor: '#0A0A0A',
-            borderTop: '3px solid var(--color-primary)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '16px',
-            flexWrap: 'wrap',
-          }}
+          data-theme="dark"
+          className="bg-base-100 border-t-primary flex w-full max-w-[880px] flex-wrap items-center justify-between gap-4 rounded-2xl border-t-[3px] px-7 py-6"
         >
-          <div style={{ maxWidth: '420px' }}>
-            <div style={{ fontFamily: SANS, fontWeight: 500, fontSize: '18px', color: '#FFFFFF' }}>
+          <div className="max-w-[420px]">
+            <Heading level={3} size={5}>
               One data layer
-            </div>
-            <div
-              style={{
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '20px',
-                color: 'rgba(255,255,255,0.6)',
-                marginTop: '4px',
-              }}
-            >
+            </Heading>
+            <Text className="text-caption text-ink-muted mt-1">
               Postgres with row-level security per tenant. Customers, orders, content, and contacts
               are the same records everywhere.
-            </div>
+            </Text>
           </div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="flex flex-wrap gap-2">
             {['tenant-isolated', 'RLS-enforced', 'event-driven'].map((t) => (
-              <DarkTag key={t}>{t}</DarkTag>
+              <Tag key={t}>{t}</Tag>
             ))}
           </div>
         </div>
 
         {/* surface bar (light) */}
-        <div
-          style={{
-            width: '100%',
-            maxWidth: '880px',
-            marginTop: '14px',
-            borderRadius: '14px',
-            padding: '22px 28px',
-            backgroundColor: 'var(--color-base-100)',
-            border: '1px solid var(--color-base-300)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '16px',
-            flexWrap: 'wrap',
-          }}
-        >
-          <div style={{ maxWidth: '440px' }}>
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '18px',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="bg-base-100 border-base-300 mt-3.5 flex w-full max-w-[880px] flex-wrap items-center justify-between gap-4 rounded-2xl border px-7 py-6">
+          <div className="max-w-[440px]">
+            <Heading level={3} size={5}>
               One surface — API-first &amp; MCP-native
-            </div>
-            <div
-              style={{
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '20px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                marginTop: '4px',
-              }}
-            >
+            </Heading>
+            <Text className="text-caption text-ink-muted mt-1">
               Every feature is an API endpoint first. The dashboard, your site, and your AI are all
               just clients of the same API.
-            </div>
+            </Text>
           </div>
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+          <div className="flex flex-wrap gap-2">
             {['REST + GraphQL', 'MCP server', 'webhooks'].map((t) => (
-              <span
-                key={t}
-                style={{
-                  fontFamily: MONO,
-                  fontSize: '11px',
-                  padding: '4px 10px',
-                  borderRadius: '9999px',
-                  backgroundColor: 'var(--color-base-200)',
-                  border: '1px solid var(--color-base-300)',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {t}
-              </span>
+              <Tag key={t}>{t}</Tag>
             ))}
           </div>
         </div>
 
-        <p
-          style={{
-            marginTop: '36px',
-            textAlign: 'center',
-            fontFamily: SANS,
-            fontSize: '15px',
-            lineHeight: '24px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            maxWidth: '620px',
-          }}
-        >
-          <b style={{ color: 'var(--color-base-content)', fontWeight: 500 }}>
-            Turn a module off and it stops billing
-          </b>{' '}
-          — no migration, no exports, no goodbyes. The data stays where it was; it just goes quiet.
-        </p>
+        <Text className="text-body-sm text-ink-muted mt-9 max-w-[620px] text-center">
+          <b className="text-base-content font-medium">Turn a module off and it stops billing</b> —
+          no migration, no exports, no goodbyes. The data stays where it was; it just goes quiet.
+        </Text>
       </div>
     </Section>
-  );
-}
-
-function DarkTag({ children }: { children: ReactNode }) {
-  return (
-    <span
-      style={{
-        fontFamily: MONO,
-        fontSize: '11px',
-        padding: '4px 10px',
-        borderRadius: '9999px',
-        backgroundColor: 'rgba(255,255,255,0.1)',
-        color: 'rgba(255,255,255,0.78)',
-      }}
-    >
-      {children}
-    </span>
   );
 }
 
@@ -487,150 +333,48 @@ function OneRecord() {
         }
       />
 
-      <div
-        style={{
-          marginTop: '56px',
-          maxWidth: '760px',
-          backgroundColor: 'var(--color-base-100)',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '16px',
-          overflow: 'hidden',
-          boxShadow: '0 18px 50px rgba(15, 23, 42, 0.06)',
-        }}
-      >
+      <div className="bg-base-100 border-base-300 mt-14 max-w-[760px] overflow-hidden rounded-2xl border shadow-lg">
         {/* head */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-            padding: '22px 26px',
-            borderBottom: '1px solid #F1F1F3',
-          }}
-        >
-          <span
-            style={{
-              width: 46,
-              height: 46,
-              borderRadius: 9999,
-              backgroundColor: 'var(--color-primary)',
-              color: '#fff',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontFamily: SANS,
-              fontWeight: 500,
-              fontSize: '16px',
-              flexShrink: 0,
-            }}
-          >
+        <div className="border-base-300 flex items-center gap-4 border-b px-6 py-5">
+          <span className="bg-primary text-primary-content text-body inline-flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full font-medium">
             RT
           </span>
-          <div style={{ flex: 1 }}>
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '17px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+          <div className="flex-1">
+            <Heading level={3} size={5}>
               Ranchero Trucking Co.
-            </div>
-            <div
-              style={{
-                fontFamily: MONO,
-                fontSize: '12.5px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                marginTop: '2px',
-              }}
-            >
+            </Heading>
+            <Text className="text-mini text-ink-subtle mt-0.5 font-mono">
               orders@rancherotrucking.com
-            </div>
+            </Text>
           </div>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-              padding: '5px 11px',
-              borderRadius: '9999px',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            customer · one record
-          </span>
+          <Tag className="whitespace-nowrap">customer · one record</Tag>
         </div>
 
         {/* facets — 2 columns, collapses to 1 on mobile */}
-        <div className="mkt-grid-2-1" style={{ gap: 0 }}>
+        <div className="grid grid-cols-1 gap-0 md:grid-cols-2">
           {facets.map((f, i) => (
             <div
               key={f.label}
-              style={{
-                padding: '18px 26px',
-                borderBottom: '1px solid #F1F1F3',
-                borderRight: i % 2 === 0 ? '1px solid #F1F1F3' : undefined,
-              }}
+              className={`border-base-300 border-b px-6 py-4 ${i % 2 === 0 ? 'border-r' : ''}`}
             >
-              <div
-                style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '9px' }}
-              >
+              <div className="mb-2 flex items-center gap-2">
                 <Dot color={MODS[f.module].color} size={8} />
-                <span
-                  style={{
-                    fontFamily: MONO,
-                    fontSize: '11px',
-                    letterSpacing: '0.05em',
-                    textTransform: 'uppercase',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  }}
-                >
+                <Text as="span" className="text-caption text-ink-muted font-medium">
                   {f.label}
-                </span>
+                </Text>
               </div>
-              <div
-                style={{ fontFamily: SANS, fontSize: '15px', color: 'var(--color-base-content)' }}
-              >
-                {f.val}
-              </div>
-              <div
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  marginTop: '3px',
-                }}
-              >
-                {f.sub}
-              </div>
+              <Text className="text-body-sm text-base-content">{f.val}</Text>
+              <Text className="text-caption text-ink-subtle mt-1">{f.sub}</Text>
             </div>
           ))}
         </div>
 
         {/* foot */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '16px 26px' }}>
-          <span
-            style={{
-              width: 7,
-              height: 7,
-              borderRadius: 9999,
-              backgroundColor: 'var(--color-success)',
-              flexShrink: 0,
-            }}
-          />
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '13.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+        <div className="flex items-center gap-2.5 px-6 py-4">
+          <Dot color="var(--color-success)" size={7} />
+          <Text className="text-caption text-ink-muted">
             One profile, written by four modules — no integration, no copy, no drift.
-          </span>
+          </Text>
         </div>
       </div>
     </Section>
@@ -641,25 +385,21 @@ function OneRecord() {
 function FourCommitments() {
   const items = [
     {
-      n: '01',
       accent: MODS.builder.color,
       title: 'Modular',
       body: 'Activate only what you need. A disabled module runs no workers, stores no rows, and costs nothing. Add the next one when you’re ready — no replatform.',
     },
     {
-      n: '02',
       accent: MODS.crm.color,
       title: 'One data layer',
       body: 'Modules share records, not syncs. A customer is one customer across Commerce, CRM, and Email. Reporting is unified because the data was never split.',
     },
     {
-      n: '03',
       accent: MODS.ai.color,
       title: 'API-first & MCP-native',
       body: 'Every feature ships as an API endpoint before it gets a screen. A first-class MCP server lets your AI read and write live business data — natively, not via export.',
     },
     {
-      n: '04',
       accent: 'var(--color-success)',
       title: 'Permanent',
       body: 'You own the data and the site. Export anytime, edit anything no-code, drop to full code when you want. AI can build it — sparx is what keeps it.',
@@ -672,56 +412,18 @@ function FourCommitments() {
         accent="var(--color-primary)"
         headline={<>Four commitments that hold across every module</>}
       />
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '56px' }}>
+      <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((it) => (
           <div
-            key={it.n}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '30px 26px 34px',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '240px',
-            }}
+            key={it.title}
+            className="bg-base-200 border-base-300 flex min-h-[240px] flex-col gap-3 rounded-xl border px-6 pt-7 pb-8"
           >
-            <span
-              style={{ width: 28, height: 3, borderRadius: 9999, backgroundColor: it.accent }}
-            />
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {it.n}
-            </span>
-            <h3
-              style={{
-                margin: '6px 0 0',
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '20px',
-                letterSpacing: '-0.02em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            {/* The commitment's identity hue — a per-item runtime value. */}
+            <span className="h-[3px] w-7 rounded-full" style={{ backgroundColor: it.accent }} />
+            <Heading level={3} size={4}>
               {it.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '14px',
-                lineHeight: '22px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {it.body}
-            </p>
+            </Heading>
+            <Text className="text-small text-ink-muted">{it.body}</Text>
           </div>
         ))}
       </div>
@@ -733,24 +435,18 @@ function FourCommitments() {
 function GrowsWithYou() {
   const stages = [
     {
-      n: '1',
-      accent: MODS.builder.color,
       when: 'Day one',
       title: 'A live site',
       body: 'Pick a theme, edit blocks, point your domain. Published in minutes.',
       tags: [{ label: 'Builder', module: 'builder' as const }],
     },
     {
-      n: '2',
-      accent: MODS.commerce.color,
       when: 'When you sell',
       title: 'The same site sells',
       body: 'Turn on Commerce. Your existing pages gain cart and checkout — no rebuild.',
       tags: [{ label: '+ Commerce', module: 'commerce' as const }],
     },
     {
-      n: '3',
-      accent: MODS.crm.color,
       when: 'As you grow',
       title: 'Customers, nurtured',
       body: 'Add CRM and Email. They already know every buyer from day one — no import.',
@@ -760,8 +456,6 @@ function GrowsWithYou() {
       ],
     },
     {
-      n: '4',
-      accent: MODS.b2b.color,
       when: 'For wholesale',
       title: 'Net terms & accounts',
       body: 'Switch on B2B. The same accounts gain pricing tiers, POs, and net terms.',
@@ -782,79 +476,20 @@ function GrowsWithYou() {
           </>
         }
       />
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '56px' }}>
+      <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {stages.map((s) => (
-          <div key={s.n} style={{ display: 'flex', flexDirection: 'column' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <span
-                style={{
-                  width: 26,
-                  height: 26,
-                  borderRadius: 9999,
-                  backgroundColor: s.accent,
-                  color: '#fff',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontFamily: MONO,
-                  fontSize: '12px',
-                  flexShrink: 0,
-                }}
-              >
-                {s.n}
-              </span>
-              <span
-                style={{
-                  fontFamily: MONO,
-                  fontSize: '11px',
-                  letterSpacing: '0.04em',
-                  textTransform: 'uppercase',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                {s.when}
-              </span>
-            </div>
-            <h3
-              style={{
-                margin: '18px 0 0',
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '16px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+          <div key={s.title} className="flex flex-col">
+            <Heading level={3} size={5}>
               {s.title}
-            </h3>
-            <p
-              style={{
-                margin: '7px 0 0',
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {s.body}
-            </p>
-            <div style={{ marginTop: '14px', display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+            </Heading>
+            <Text className="text-small text-ink-muted mt-2">
+              {s.when} — {s.body}
+            </Text>
+            <div className="mt-3.5 flex flex-wrap gap-1.5">
               {s.tags.map((t) => (
                 <span
                   key={t.label}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    fontFamily: SANS,
-                    fontSize: '11px',
-                    fontWeight: 500,
-                    padding: '4px 10px',
-                    borderRadius: '9999px',
-                    backgroundColor: 'var(--color-base-100)',
-                    border: '1px solid var(--color-base-300)',
-                    color: 'var(--color-base-content)',
-                  }}
+                  className="bg-base-100 border-base-300 text-base-content text-mini inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium"
                 >
                   <Dot color={MODS[t.module].color} size={6} />
                   {t.label}
@@ -921,7 +556,7 @@ function ModulesStrip() {
     },
     {
       module: 'ai',
-      label: 'AI / MCP',
+      label: 'AI',
       price: '+$49/mo',
       title: 'AI that knows your data',
       body: 'A first-class MCP server for every record.',
@@ -945,14 +580,14 @@ function ModulesStrip() {
       label: 'Invoicing',
       price: '$19/mo',
       title: 'Get paid',
-      body: 'Quotes, invoices, payment links — free with Commerce.',
+      body: 'Quotes, invoices, payment links — free with Commerce or B2B.',
     },
     {
       module: 'inventory',
       label: 'Inventory',
       price: '$29/mo',
       title: 'Track stock',
-      body: 'Locations, reorder points, live sync — free with Commerce.',
+      body: 'Locations, reorder points, live sync — free with Commerce or B2B.',
     },
     {
       module: 'chat',
@@ -969,113 +604,46 @@ function ModulesStrip() {
         accent="var(--color-primary)"
         headline={
           <>
-            Twelve modules.{' '}
-            <span
-              style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-            >
-              Mix any combination
-            </span>
+            Twelve modules. <span className="text-ink-subtle">Mix any combination</span>
           </>
         }
       />
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {mods.map((m) => {
           const c = getModuleColor(m.module);
           return (
             <a
               key={m.module}
               href={HAS_PAGE.has(m.module) ? `/${m.module}` : '/pricing'}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                padding: '22px',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '10px',
-                minHeight: '142px',
-                textDecoration: 'none',
-              }}
               // Module menu: each tile wears its module hue as a color legend,
               // via silica's own `soft` wash — not a hand-rolled percentage.
-              className={`${c.bg} bg-soft`}
+              className={`${c.bg} bg-soft border-base-300 flex min-h-[142px] flex-col gap-2 rounded-lg border p-5 no-underline`}
             >
-              <div
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}
-              >
-                <span
-                  className={`${c.bg} bg-soft ${c.ink}`}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '4px 10px',
-                    borderRadius: '9999px',
-                    fontFamily: SANS,
-                    fontSize: '11px',
-                    fontWeight: 500,
-                    letterSpacing: '0.04em',
-                    textTransform: 'uppercase',
-                  }}
-                >
+              <div className="flex items-center justify-between gap-3">
+                <span className="inline-flex items-center gap-1.5">
                   <Dot color={c.color} size={7} />
-                  {m.label}
+                  <Heading level={3} size={6}>
+                    {m.label}
+                  </Heading>
                 </span>
-                <span
-                  style={{
-                    fontFamily: MONO,
-                    fontSize: '12px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
+                <Text as="span" className="text-mini text-ink-subtle font-mono">
                   {m.price}
-                </span>
+                </Text>
               </div>
-              <h3
-                style={{
-                  margin: '14px 0 0',
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  letterSpacing: '-0.01em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
-                {m.title}
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '13.5px',
-                  lineHeight: '20px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {m.body}
-              </p>
+              <Text className="text-small text-base-content">{m.title}</Text>
+              <Text className="text-caption text-ink-muted">{m.body}</Text>
             </a>
           );
         })}
       </div>
 
-      <div
-        className="mkt-cluster"
-        style={{ marginTop: '32px', justifyContent: 'space-between', gap: '16px' }}
-      >
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '14px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            maxWidth: '520px',
-            margin: 0,
-          }}
-        >
+      <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
+        <Text className="text-small text-ink-muted max-w-[520px]">
           Content-only, commerce-only, or the whole platform — every combination shares the same
           dashboard, the same data, and the same bill.
-        </p>
-        <a href="/modules">
-          <Button variant="outline">Explore all modules →</Button>
+        </Text>
+        <a href="/modules" className={buttonClasses({ variant: 'outline' })}>
+          Explore all modules →
         </a>
       </div>
     </Section>
@@ -1085,243 +653,117 @@ function ModulesStrip() {
 // ── API SURFACE (dark) ─────────────────────────────────────────────────────
 function ApiSurface() {
   const clients = [
-    {
-      ci: 'D',
-      color: MODS.builder.color,
-      name: 'Dashboard',
-      desc: 'The admin UI is just a client',
-    },
-    {
-      ci: 'S',
-      color: MODS.commerce.color,
-      name: 'Your site',
-      desc: 'Site and pages read the same API',
-    },
-    {
-      ci: 'AI',
-      color: MODS.ai.color,
-      name: 'MCP / AI',
-      desc: 'Claude, ChatGPT, Copilot — natively',
-    },
-    { ci: '↯', color: MODS.cms.color, name: 'Webhooks', desc: 'Events push to your own systems' },
+    { ci: 'D', bg: MODS.builder.bg, name: 'Dashboard', desc: 'The admin UI is just a client' },
+    { ci: 'S', bg: MODS.commerce.bg, name: 'Your site', desc: 'Site and pages read the same API' },
+    { ci: 'AI', bg: MODS.ai.bg, name: 'MCP / AI', desc: 'Claude, ChatGPT, Copilot — natively' },
+    { ci: '↯', bg: MODS.cms.bg, name: 'Webhooks', desc: 'Events push to your own systems' },
     {
       ci: '</>',
-      color: MODS.b2b.color,
+      bg: MODS.b2b.bg,
       name: 'Your code',
       desc: 'Build anything on the headless API + SDK',
     },
   ];
 
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-lg)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container>
-        <div style={{ maxWidth: '720px' }}>
-          <Display size={56} lineHeight={60} color="#FFFFFF">
-            Everything is an API. Even the AI
-            <Spark color={MODS.ai.color} />
-          </Display>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '18px',
-              lineHeight: '30px',
-              color: '#A1A1AA',
-              maxWidth: '640px',
-              margin: '24px 0 0',
-            }}
-          >
-            Every feature ships as an endpoint before it ships a screen. The dashboard, your site,
-            your integrations, and your AI assistant are all clients of the same API — nothing is
-            trapped inside the UI.
-          </p>
-        </div>
+    <Section surface="dark" padding="lg">
+      <div className="max-w-[720px]">
+        <Display size={56} lineHeight={60}>
+          Everything is an API. Even the AI
+          <Spark color={MODS.ai.color} />
+        </Display>
+        <Text variant="lead" className="text-ink-muted mt-6 max-w-[640px]">
+          Every feature ships as an endpoint before it ships a screen. The dashboard, your site,
+          your integrations, and your AI assistant are all clients of the same API — nothing is
+          trapped inside the UI.
+        </Text>
+      </div>
 
-        <div
-          className="mkt-stack-on-tablet"
-          style={{ alignItems: 'stretch', gap: '32px', marginTop: '56px' }}
-        >
-          {/* clients */}
-          <div
-            style={{
-              width: '420px',
-              maxWidth: '100%',
-              flexShrink: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-            }}
-          >
-            {clients.map((c) => (
-              <div
-                key={c.name}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '14px',
-                  padding: '14px 18px',
-                  backgroundColor: '#1A1A1A',
-                  border: '1px solid #2A2A2A',
-                  borderRadius: '10px',
-                }}
+      <div className="mt-14 flex flex-col items-stretch gap-8 lg:flex-row">
+        {/* clients */}
+        <div className="flex w-[420px] max-w-full shrink-0 flex-col gap-3">
+          {clients.map((c) => (
+            <div
+              key={c.name}
+              className="bg-base-200 border-base-300 flex items-center gap-3.5 rounded-lg border px-4 py-3.5"
+            >
+              <span
+                className={`${c.bg} soft text-mini inline-flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md font-mono font-medium`}
               >
-                <span
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: '7px',
-                    backgroundColor: c.color,
-                    color: '#fff',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                    fontFamily: MONO,
-                    fontSize: '12px',
-                    fontWeight: 500,
-                  }}
-                >
-                  {c.ci}
-                </span>
-                <div>
-                  <div
-                    style={{
-                      fontFamily: SANS,
-                      fontWeight: 500,
-                      fontSize: '14px',
-                      color: '#FFFFFF',
-                    }}
-                  >
-                    {c.name}
-                  </div>
-                  <div
-                    style={{
-                      fontFamily: SANS,
-                      fontSize: '12.5px',
-                      color: '#A1A1AA',
-                      marginTop: '1px',
-                    }}
-                  >
-                    {c.desc}
-                  </div>
-                </div>
+                {c.ci}
+              </span>
+              <div>
+                <Text className="text-small text-base-content font-medium">{c.name}</Text>
+                <Text className="text-mini text-ink-muted">{c.desc}</Text>
               </div>
-            ))}
-          </div>
-
-          {/* code card */}
-          <div
-            style={{
-              flex: 1,
-              minWidth: '320px',
-              alignSelf: 'flex-start',
-              backgroundColor: '#0F0F0F',
-              border: '1px solid #2A2A2A',
-              borderTop: '3px solid var(--color-primary)',
-              borderRadius: '12px',
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '9px',
-                padding: '14px 18px',
-                borderBottom: '1px solid #2A2A2A',
-                fontFamily: MONO,
-                fontSize: '12.5px',
-                color: '#A1A1AA',
-              }}
-            >
-              <span style={{ fontWeight: 500, color: 'var(--color-success)' }}>GET</span>
-              /v1/customers/cus_4471
             </div>
-            <div
-              style={{
-                padding: '18px 20px',
-                fontFamily: MONO,
-                fontSize: '12.5px',
-                lineHeight: '22px',
-                color: '#D4D4D8',
-                whiteSpace: 'pre',
-                overflowX: 'auto',
-              }}
-            >
-              <div style={{ color: '#52525B' }}>{'// the same record the four modules wrote'}</div>
-              <div>{'{'}</div>
-              <div>
-                {'  '}
-                <K>&quot;id&quot;</K>: <S>&quot;cus_4471&quot;</S>,
-              </div>
-              <div>
-                {'  '}
-                <K>&quot;name&quot;</K>: <S>&quot;Ranchero Trucking Co.&quot;</S>,
-              </div>
-              <div>
-                {'  '}
-                <K>&quot;commerce&quot;</K>: {'{ '}
-                <K>&quot;orders&quot;</K>: <N>14</N>, <K>&quot;ltv&quot;</K>: <N>48200</N> {'}'},
-              </div>
-              <div>
-                {'  '}
-                <K>&quot;crm&quot;</K>: {'{ '}
-                <K>&quot;segment&quot;</K>: <S>&quot;fleet&quot;</S>, <K>&quot;owner&quot;</K>:{' '}
-                <S>&quot;dana&quot;</S> {'}'},
-              </div>
-              <div>
-                {'  '}
-                <K>&quot;email&quot;</K>: {'{ '}
-                <K>&quot;subscribed&quot;</K>: <N>true</N>, <K>&quot;open_rate&quot;</K>:{' '}
-                <N>0.41</N> {'}'},
-              </div>
-              <div>
-                {'  '}
-                <K>&quot;b2b&quot;</K>: {'{ '}
-                <K>&quot;account&quot;</K>: <S>&quot;#4471&quot;</S>, <K>&quot;terms&quot;</K>:{' '}
-                <S>&quot;net_30&quot;</S> {'}'}
-              </div>
-              <div>{'}'}</div>
-            </div>
-          </div>
+          ))}
         </div>
 
-        <p
-          style={{
-            marginTop: '34px',
-            fontFamily: SANS,
-            fontSize: '16px',
-            lineHeight: '26px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-          }}
-        >
-          Connect Claude, ChatGPT, or Copilot through the first-class MCP server.{' '}
-          <a href="/ai" style={{ color: '#818CF8', fontWeight: 500 }}>
-            See it answer questions about your business →
-          </a>
-        </p>
-      </Container>
-    </section>
+        {/* code card */}
+        <div className="bg-base-200 border-base-300 border-t-primary min-w-[320px] flex-1 self-start overflow-hidden rounded-xl border border-t-[3px]">
+          <div className="border-base-300 text-mini text-ink-muted flex items-center gap-2 border-b px-4 py-3.5 font-mono">
+            <span className="text-success font-medium">GET</span>
+            /v1/customers/cus_4471
+          </div>
+          <div className="text-mini text-base-content overflow-x-auto px-5 py-4 font-mono leading-[22px] whitespace-pre">
+            <div className="text-ink-subtle">{'// the same record the four modules wrote'}</div>
+            <div>{'{'}</div>
+            <div>
+              {'  '}
+              <K>&quot;id&quot;</K>: <S>&quot;cus_4471&quot;</S>,
+            </div>
+            <div>
+              {'  '}
+              <K>&quot;name&quot;</K>: <S>&quot;Ranchero Trucking Co.&quot;</S>,
+            </div>
+            <div>
+              {'  '}
+              <K>&quot;commerce&quot;</K>: {'{ '}
+              <K>&quot;orders&quot;</K>: <N>14</N>, <K>&quot;ltv&quot;</K>: <N>48200</N> {'}'},
+            </div>
+            <div>
+              {'  '}
+              <K>&quot;crm&quot;</K>: {'{ '}
+              <K>&quot;segment&quot;</K>: <S>&quot;fleet&quot;</S>, <K>&quot;owner&quot;</K>:{' '}
+              <S>&quot;dana&quot;</S> {'}'},
+            </div>
+            <div>
+              {'  '}
+              <K>&quot;email&quot;</K>: {'{ '}
+              <K>&quot;subscribed&quot;</K>: <N>true</N>, <K>&quot;open_rate&quot;</K>: <N>0.41</N>{' '}
+              {'}'},
+            </div>
+            <div>
+              {'  '}
+              <K>&quot;b2b&quot;</K>: {'{ '}
+              <K>&quot;account&quot;</K>: <S>&quot;#4471&quot;</S>, <K>&quot;terms&quot;</K>:{' '}
+              <S>&quot;net_30&quot;</S> {'}'}
+            </div>
+            <div>{'}'}</div>
+          </div>
+        </div>
+      </div>
+
+      <Text variant="lead" className="text-ink-muted mt-9 max-w-[640px]">
+        Connect Claude, ChatGPT, or Copilot through the first-class MCP server.{' '}
+        <a href="/agentic" className="text-primary font-medium">
+          See it answer questions about your business →
+        </a>
+      </Text>
+    </Section>
   );
 }
 
-// JSON token helpers for the API code card.
+// JSON token helpers for the API code card — semantic + module tokens, no hexes.
 function K({ children }: { children: ReactNode }) {
-  return <span style={{ color: '#818CF8' }}>{children}</span>;
+  return <span className="text-info">{children}</span>;
 }
 function S({ children }: { children: ReactNode }) {
-  return <span style={{ color: 'var(--color-success)' }}>{children}</span>;
+  return <span className="text-success">{children}</span>;
 }
 function N({ children }: { children: ReactNode }) {
-  return <span style={{ color: MODS.commerce.color }}>{children}</span>;
+  return <span className={MODS.commerce.ink}>{children}</span>;
 }
 
 // ── FOUNDATIONS ────────────────────────────────────────────────────────────
@@ -1359,36 +801,14 @@ function Foundations() {
         accent="var(--color-primary)"
         headline={<>Enterprise foundations, on by default</>}
       />
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '32px 56px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-x-14 gap-y-8 md:grid-cols-2">
         {items.map((it) => (
           <div key={it.title}>
-            <h3
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '11px',
-                margin: 0,
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '18px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <Heading level={3} size={5} className="flex items-center gap-3">
               <Dot color="var(--color-primary)" size={9} />
               {it.title}
-            </h3>
-            <p
-              style={{
-                margin: '9px 0 0 20px',
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '24px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {it.body}
-            </p>
+            </Heading>
+            <Text className="text-body-sm text-ink-muted mt-2 ml-5">{it.body}</Text>
           </div>
         ))}
       </div>
@@ -1406,90 +826,38 @@ function PricingTeaser() {
 
   return (
     <Section id="pricing" surface="surface" padding="lg">
-      <div
-        className="mkt-stack-on-tablet"
-        style={{ justifyContent: 'space-between', alignItems: 'center', gap: '40px' }}
-      >
-        <div style={{ flex: 1 }}>
+      <div className="flex flex-col items-center justify-between gap-10 lg:flex-row">
+        <div className="flex-1">
           <Display size={44} lineHeight={46}>
             Pay only for what you use
             <Spark />
           </Display>
-          <p
-            style={{
-              margin: '16px 0 0',
-              maxWidth: '460px',
-              fontFamily: SANS,
-              fontSize: '16px',
-              lineHeight: '25px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+          <Text variant="lead" className="text-ink-muted mt-4 max-w-[460px]">
             Start with one module from $10/mo. Add the next when you need it. No bundles, no seat
             tax, no &ldquo;contact us for content.&rdquo; Turn anything off and it stops billing the
             same day.
-          </p>
-          <div style={{ marginTop: '28px' }}>
-            <a href="/pricing">
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
-                See full pricing →
-              </Button>
+          </Text>
+          <div className="mt-7">
+            <a href="/pricing" className={buttonClasses({ color: 'neutral', size: 'lg' })}>
+              See full pricing →
             </a>
           </div>
         </div>
 
-        <div className="mkt-cluster" style={{ gap: '14px', flexShrink: 0 }}>
+        <div className="flex shrink-0 flex-wrap items-center gap-3.5">
           {tiers.map((t) => (
             <div
               key={t.name}
-              style={{
-                backgroundColor: 'var(--color-base-200)',
-                border: `1px solid ${t.highlight ? 'var(--color-primary)' : 'var(--color-base-300)'}`,
-                borderRadius: '12px',
-                padding: '22px 26px',
-                minWidth: '150px',
-              }}
+              className={`bg-base-200 min-w-[150px] rounded-xl border px-6 py-5 ${
+                t.highlight ? 'border-primary' : 'border-base-300'
+              }`}
             >
-              <div
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {t.name}
-              </div>
-              <div
-                style={{
-                  marginTop: '8px',
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '34px',
-                  letterSpacing: '-0.03em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+              <Text className="text-caption text-ink-muted">{t.name}</Text>
+              <Heading level={3} size={1} className="mt-2">
                 {t.price}
-                <span
-                  style={{
-                    fontSize: '15px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                    fontWeight: 400,
-                  }}
-                >
-                  /mo
-                </span>
-              </div>
-              <div
-                style={{
-                  marginTop: '6px',
-                  fontFamily: SANS,
-                  fontSize: '12px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                {t.note}
-              </div>
+                <span className="text-ink-subtle text-body-sm font-normal">/mo</span>
+              </Heading>
+              <Text className="text-mini text-ink-subtle mt-1.5">{t.note}</Text>
             </div>
           ))}
         </div>
@@ -1501,56 +869,28 @@ function PricingTeaser() {
 // ── FINAL CTA ──────────────────────────────────────────────────────────────
 function PlatformCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-        borderTop: '1px solid var(--color-base-300)',
-        textAlign: 'center',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0' }}
-      >
+    <Section padding="xl" className="border-base-300 border-t text-center">
+      <div className="flex flex-col items-center">
         <Display size={64} lineHeight={64}>
           Put your whole business on one platform
           <Spark />
         </Display>
-        <p
-          style={{
-            margin: '22px 0 34px',
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            maxWidth: '560px',
-          }}
-        >
+        <Text variant="lead" className="text-ink-muted mt-6 mb-9 max-w-[560px]">
           Content, commerce, or both. Start with one module and a live site in five minutes — add
           the rest whenever you&apos;re ready.
-        </p>
-        <div className="mkt-cluster" style={{ gap: '14px', justifyContent: 'center' }}>
-          <Button size="xl" style={{ backgroundColor: '#0A0A0A' }}>
+        </Text>
+        <div className="flex flex-wrap items-center justify-center gap-3.5">
+          <Button color="neutral" size="xl">
             Start free
           </Button>
           <Button size="xl" variant="outline">
             Talk to sales
           </Button>
         </div>
-        <span
-          style={{
-            marginTop: '22px',
-            fontFamily: MONO,
-            fontSize: '12px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <Text className="text-mini text-ink-subtle mt-6 font-mono">
           No credit card · Cancel anytime · Your data, always exportable
-        </span>
-      </Container>
-    </section>
+        </Text>
+      </div>
+    </Section>
   );
 }

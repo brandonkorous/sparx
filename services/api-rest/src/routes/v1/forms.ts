@@ -105,11 +105,12 @@ const formsRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const q = ListQuery.parse(request.query);
     const ctx = await toBuilderContext(request);
-    const [submissions, counts] = await Promise.all([
+    const [submissions, counts, forms] = await Promise.all([
       formService.listSubmissions(ctx, q),
       formService.submissionCounts(ctx),
+      formService.submissionForms(ctx),
     ]);
-    return ok({ submissions: submissions.map(stripAttachmentKeys), counts });
+    return ok({ submissions: submissions.map(stripAttachmentKeys), counts, forms });
   });
 
   app.get('/v1/forms/submissions/:id', async (request) => {

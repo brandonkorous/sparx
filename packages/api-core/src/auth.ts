@@ -77,6 +77,23 @@ export interface AuthContext {
    * `requireScope` on the documented public API surface (docs/06 §7).
    */
   scopes: string[];
+  /**
+   * WHICH SITES this actor may reach (docs/131 §3.2–3.3), as the RAW stored
+   * shape. `null` = no restriction.
+   *
+   * Raw on purpose. api-core is deliberately fastify-only and must not import
+   * `@sparx/auth` (see the note on the role vocabulary below), so it carries the
+   * claim and the POLICY lives in `@sparx/auth/property-access` — the same split
+   * that keeps `role` here and the role hierarchy there.
+   *
+   * Both credential kinds collapse onto one shape, which is the point: a staff
+   * member restricted to two sites and an API key issued for one site become
+   * the same `{ mode: 'selected', granted: [...] }`, so every consumer enforces
+   * one thing rather than two. `mode` is a bare string for the same reason it is
+   * in the policy module — the fail-closed branch there exists to handle a value
+   * neither of us recognises.
+   */
+  propertyAccess: { mode: string; granted: string[] } | null;
 }
 
 interface InternalJwtPayload {
@@ -151,6 +168,12 @@ export function createAuthPlugin(options: AuthPluginOptions): FastifyPluginAsync
           // email-gated (requireVerifiedEmail also short-circuits non-user actors).
           emailVerified: true,
           scopes: apiKey.scopes,
+          // A site-scoped key collapses onto the same shape a restricted member
+          // uses, so downstream enforces ONE rule rather than two. A tenant-wide
+          // key stays null — unrestricted, exactly as before.
+          propertyAccess: apiKey.propertyId
+            ? { mode: 'selected', granted: [apiKey.propertyId] }
+            : null,
         };
         return;
       }
@@ -174,6 +197,10 @@ export function createAuthPlugin(options: AuthPluginOptions): FastifyPluginAsync
         emailVerified: payload.ev ?? false,
         // Staff JWTs carry no per-key scopes — they're gated by `role`.
         scopes: [],
+        // Read from the MEMBERSHIP rather than carried as a token claim. A grant
+        // revoked in Settings → Team must bite without waiting for the token to
+        // expire, and a claim minted at sign-in cannot do that.
+        propertyAccess: await loadMemberPropertyAccess(payload.tid, payload.sub),
       };
     });
   };
@@ -259,6 +286,8 @@ interface VerifiedApiKey {
   tenantId: string;
   actorId: string;
   scopes: string[];
+  /** The one site this key may act on; null = the whole tenant (docs/131 §3.2). */
+  propertyId: string | null;
 }
 
 async function verifyApiKeyToken(token: string): Promise<VerifiedApiKey | null> {
@@ -288,5 +317,62 @@ async function verifyApiKeyToken(token: string): Promise<VerifiedApiKey | null> 
     tenantId: row.tenantId,
     actorId: row.createdByUserId ?? row.id,
     scopes: row.scopes,
+    propertyId: row.propertyId,
   };
+}
+
+// ─── per-member site access (docs/131 §3.3) ────────────────────────────
+//
+// A staff member may be restricted to a subset of the tenant's sites, so the
+// donut shop's order-taker cannot read the machine shop's customers. The
+// restriction lives on the MEMBERSHIP (`members` + `member_property_access`),
+// not the user — the same person can be unrestricted in one tenant and limited
+// in another.
+//
+// Cached because this is a per-request read on a table that changes when
+// somebody edits the team, i.e. approximately never. The TTL is deliberately
+// short: a revoked grant that lingers for a minute is the cost of not opening a
+// transaction on every authenticated request. Keyed by (tenant, user), so it is
+// never a cross-tenant path.
+const MEMBER_ACCESS_TTL_MS = 60_000;
+const memberAccessCache = new Map<string, { at: number; value: AuthContext['propertyAccess'] }>();
+
+async function loadMemberPropertyAccess(
+  tenantId: string,
+  userId: string
+): Promise<AuthContext['propertyAccess']> {
+  const key = `${tenantId}:${userId}`;
+  const hit = memberAccessCache.get(key);
+  if (hit && Date.now() - hit.at < MEMBER_ACCESS_TTL_MS) return hit.value;
+
+  // `members` is ENABLE-but-not-FORCE RLS (an auth-layer table), so this reads
+  // without a tenant GUC — deliberately, and the pair is filtered explicitly.
+  const member = await prisma.member.findFirst({
+    where: { organizationId: tenantId, userId },
+    select: {
+      propertyAccessMode: true,
+      propertyAccess: { select: { propertyId: true } },
+    },
+  });
+
+  // No membership row → no restriction to apply here. This is NOT a grant: the
+  // caller already holds a valid tenant-scoped token, and every read is still
+  // behind RLS plus the role gate. Failing closed on a missing row would lock
+  // out legitimate actors (API keys have no member row at all).
+  const value: AuthContext['propertyAccess'] =
+    member && member.propertyAccessMode !== 'all'
+      ? {
+          mode: member.propertyAccessMode,
+          granted: member.propertyAccess.map((row) => row.propertyId),
+        }
+      : null;
+
+  memberAccessCache.set(key, { at: Date.now(), value });
+  return value;
+}
+
+/** Drop cached site access for one member — call after a team edit so a revoked
+ *  grant takes effect now rather than within the TTL. */
+export function invalidateMemberAccessCache(tenantId: string, userId: string): void {
+  memberAccessCache.delete(`${tenantId}:${userId}`);
 }

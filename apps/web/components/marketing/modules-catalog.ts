@@ -23,19 +23,25 @@ import {
   FileText,
   MessagesSquare,
   ReceiptText,
+  Search,
   Send,
   ShoppingCart,
   Sparkles,
   Truck,
   Users,
   Warehouse,
+  Workflow,
 } from 'lucide-react';
 import type { MarketingModule } from './primitives';
 
 export interface ModuleEntry {
   /** Canonical module slug — also the MODULE_COLORS / route key. */
   id: MarketingModule;
-  /** Display label (matches the dashboard sidebar + Stripe product name). */
+  /** Display label — matches the dashboard sidebar's manifest label. Marketing
+   *  used to widen a few of these ('AI / MCP', 'AI · MCP'), which left the same
+   *  module wearing three names across the site; "MCP" also means nothing to a
+   *  non-technical owner. Keep them identical to the product, and let the
+   *  description carry the vocabulary. */
   label: string;
   /** Editorial one-liner — the headline of the tile. */
   title: string;
@@ -52,6 +58,12 @@ export interface ModuleEntry {
   /** Marketing landing route, when one exists. Omitted ⇒ no "Learn" link yet
    *  (invoicing / inventory / chat pages are not built). */
   href?: string;
+  /** A free platform capability rather than a billable module: `price` is 0 and
+   *  it is never charged, bundled, or required. SEO ships with every tenant;
+   *  Automations unlocks once any one module is active. They are NOT in
+   *  ModuleSlug and have no dashboard manifest — but a visitor reads them as
+   *  modules, so they belong in the menu, the footer, and the switchboard. */
+  free?: boolean;
 }
 
 export const MODULES: ModuleEntry[] = [
@@ -111,9 +123,14 @@ export const MODULES: ModuleEntry[] = [
   {
     id: 'b2b',
     label: 'B2B',
-    title: 'Accounts, net terms, fleet.',
+    // B2B is what we used to call Wholesale, and it also carries fleet
+    // accounts — related but NOT the same thing. A distributor wants wholesale
+    // pricing and never touches fleet; a service shop runs fleet accounts with
+    // no wholesale price list; some do both. Name both, imply neither is
+    // required, and don't let "fleet" make this read as an auto-parts product.
+    title: 'Wholesale accounts, net terms, fleet.',
     description:
-      'Account pricing, RFQ, purchase orders, fleet accounts. Wholesale on the same engine as retail.',
+      'Account pricing, RFQ, quotes, and purchase orders — wholesale on the same engine as retail. Add fleet accounts when your buyers manage equipment.',
     price: 99,
     requires: 'Commerce',
     href: '/b2b',
@@ -140,7 +157,7 @@ export const MODULES: ModuleEntry[] = [
     label: 'Live Chat',
     title: 'Talk to visitors in real time.',
     description:
-      'Live chat on your site, routed to your inbox and tied to the same customer record as the rest.',
+      'Live chat routed to your inbox, on the same customer record as the rest. Connect your own AI to answer first and hand off when it is unsure.',
     price: 19,
   },
   {
@@ -154,14 +171,44 @@ export const MODULES: ModuleEntry[] = [
   },
   {
     id: 'ai',
-    label: 'AI / MCP',
-    title: 'Your AI speaks your data.',
+    label: 'AI',
+    // One module, two AI tools, two documents: an AI concierge for the tenant's
+    // customers (/ai) and agentic MCP access for the tenant's own team
+    // (/agentic). The card is the module's front door → /ai.
+    title: 'An AI for your customers, and one for you.',
     description:
-      'A first-class MCP server. Claude, ChatGPT, and Copilot read live business data — natively.',
+      'A concierge that answers your visitors, plus agentic MCP so your own AI reads live data. Bring your own key — never ours.',
     price: 49,
     href: '/ai',
   },
+  {
+    id: 'seo',
+    label: 'SEO',
+    title: 'Get found, on every page.',
+    description:
+      'Audits every page the platform renders — titles, metadata, redirects, sitemaps. Free with sparx, always on.',
+    price: 0,
+    free: true,
+  },
+  {
+    id: 'automations',
+    label: 'Automations',
+    title: 'Work that runs itself.',
+    description:
+      'Trigger-and-action workflows across your modules — when this happens, do that. Free once any one module is on.',
+    price: 0,
+    free: true,
+  },
 ];
+
+/** The billable modules — everything a tenant actually pays for. Use this,
+ *  never the raw MODULES, anywhere a COUNT or a SUM has to be about money, so
+ *  the free capabilities can't silently inflate either. */
+export const PAID_MODULES = MODULES.filter((m) => !m.free);
+
+/** SEO + Automations — real capabilities at $0. Listed alongside the paid
+ *  modules everywhere a visitor is browsing what the platform DOES. */
+export const FREE_MODULES = MODULES.filter((m) => m.free);
 
 /** Module brand hex — re-exported from @sparx/brand, the single TS source. Only
  *  for contexts where CSS custom properties don't resolve (the module strip also
@@ -182,6 +229,8 @@ export const MODULE_COLOR: Record<MarketingModule, string> = {
   chat: 'module-chat',
   scheduling: 'module-scheduling',
   ai: 'module-ai',
+  seo: 'module-seo',
+  automations: 'module-automations',
 };
 
 export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
@@ -197,6 +246,8 @@ export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
   chat: 'bg-module-chat',
   scheduling: 'bg-module-scheduling',
   ai: 'bg-module-ai',
+  seo: 'bg-module-seo',
+  automations: 'bg-module-automations',
 };
 
 export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
@@ -212,11 +263,15 @@ export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
   chat: 'border-module-chat',
   scheduling: 'border-module-scheduling',
   ai: 'border-module-ai',
+  seo: 'border-module-seo',
+  automations: 'border-module-automations',
 };
 
 /** Module glyphs — the SAME Lucide icons the dashboard sidebar uses (each
  *  module's manifest `icon`). A typed Record so adding a module to the union
- *  forces a matching icon here, rather than silently falling back to a dot. */
+ *  forces a matching icon here, rather than silently falling back to a dot.
+ *  ONE map for every marketing surface: the module tiles, the pricing
+ *  switchboard, the module strip, AND the header megamenu (via ModuleGlyph). */
 export const MODULE_ICON: Record<MarketingModule, LucideIcon> = {
   builder: Boxes,
   commerce: ShoppingCart,
@@ -230,15 +285,6 @@ export const MODULE_ICON: Record<MarketingModule, LucideIcon> = {
   chat: MessagesSquare,
   scheduling: CalendarClock,
   ai: Sparkles,
+  seo: Search,
+  automations: Workflow,
 };
-
-/** Lowest module price, for "from $N/mo" copy. Derived so it never drifts. */
-export const MODULES_PRICE_FLOOR = Math.min(...MODULES.map((m) => m.price));
-
-/** What running EVERYTHING costs per month. Modules that are `includedWith`
- *  another (Invoicing, Inventory) ride along free once you own everything — so
- *  they add $0. Derived: sum of every module that ISN'T bundled-free. */
-export const MODULES_ALL_ON_TOTAL = MODULES.filter((m) => !m.includedWith).reduce(
-  (sum, m) => sum + m.price,
-  0
-);

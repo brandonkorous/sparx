@@ -22,7 +22,11 @@ import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { notFound } from '@sparx/api-core/errors';
 import { assertIfMatch, computeEntryEtag } from '@sparx/api-core/etag';
-import { contentSiteVisibilityWhere, resolvePropertyId } from '../../../lib/property.js';
+import {
+  contentSiteVisibilityWhere,
+  resolveListScope,
+  resolvePropertyId,
+} from '../../../lib/property.js';
 
 const SeoSchema = z
   .object({
@@ -76,9 +80,9 @@ const ListQuery = z.object({
   locale: z.string().max(10).optional(),
   updated_after: z.string().datetime().optional(),
   // Model B (docs/49 §3): scope the back-office list to one site — entries
-  // VISIBLE on it (global + scoped-here), matching that site's storefront. The
-  // dashboard content list defaults this to the active site; omitted → all.
-  property: z.string().uuid().optional(),
+  // VISIBLE on it (global + scoped-here), matching that site's storefront.
+  // Omitted → the site the caller is working in; `all` → every site.
+  property: z.string().min(1).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -91,8 +95,13 @@ const entryRoutes: FastifyPluginAsync = (app) => {
   // ──────────────────────────────────────────────────────────────────────
 
   app.get('/v1/content/entries', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     const q = ListQuery.parse(request.query);
+    const propertyId = await resolveListScope(
+      auth,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
 
     const where: Prisma.ContentEntryWhereInput = {
       deletedAt: null,
@@ -116,7 +125,7 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       // Site scope composes as its own `AND` fragment so it never collides with
       // the search `OR` above (a foreign/stale id just yields global-only rows;
       // tenant_id RLS is the real boundary, not property_id).
-      ...(q.property ? contentSiteVisibilityWhere(q.property) : {}),
+      ...(propertyId ? contentSiteVisibilityWhere(propertyId) : {}),
     };
 
     const take = Math.min(q.take ?? 50, 250);
@@ -177,7 +186,7 @@ const entryRoutes: FastifyPluginAsync = (app) => {
       if (siteCount > 1) {
         const header = request.headers['x-sparx-property-id'];
         const activePropertyId = await resolvePropertyId(
-          auth.tenantId,
+          auth,
           typeof header === 'string' ? header : null
         );
         scopePropertyIds = [activePropertyId];

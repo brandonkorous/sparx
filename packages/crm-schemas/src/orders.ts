@@ -81,6 +81,14 @@ export const ListOrdersInput = z.object({
   paymentStatus: OrderPaymentStatus.optional(),
   channel: OrderChannel.optional(),
   propertyId: Uuid.optional(), // origin-site filter (docs/58 — the dashboard Site filter)
+  // The member's REACHABLE sites (docs/131 §3.3), set by the route from the
+  // caller's site access — undefined for an unrestricted member. Distinct from
+  // `propertyId` above (an explicit user filter): this is the access CEILING a
+  // restricted member cannot exceed. NOTE it does NOT include null-property
+  // orders: a null site here means ORPHANED (the origin site was deleted —
+  // Order.propertyId is SetNull), not "shared", so a restricted member has no
+  // claim to it — unlike a tenant-wide deal or task, where null means shared.
+  propertyIds: z.array(Uuid).optional(),
   // B2B scoping. An Order has no b2bAccountId of its own — the link runs
   // through its customer (Customer.b2bAccountId), so both of these resolve as
   // relation filters. `b2bAccountId` narrows to one account; `b2bOnly` is the
@@ -91,10 +99,18 @@ export const ListOrdersInput = z.object({
   b2bOnly: z.boolean().optional(),
   placedSince: z.string().datetime().optional(),
   placedUntil: z.string().datetime().optional(),
-  q: z.string().max(255).optional(), // matches order_number prefix
+  // Free-text search. Matches the order number OR the buyer — name, company, or
+  // email — because "find Jane's order" is the question an operator actually
+  // asks; nobody memorises order numbers for the customers who phone in.
+  q: z.string().max(255).optional(),
   take: z.number().int().min(1).max(250).default(50),
   skip: z.number().int().min(0).default(0),
   sortBy: z.enum(['placedAt', 'total', 'createdAt', 'updatedAt']).default('placedAt'),
+  // Sort direction. Newest/largest first is the useful default for orders, but
+  // it has to be a real parameter: a client that sorts the loaded page itself
+  // sorts ONE page and presents it as the answer, so "smallest order" hands back
+  // the smallest order on page 3.
+  order: z.enum(['asc', 'desc']).default('desc'),
 });
 export type ListOrdersInput = z.infer<typeof ListOrdersInput>;
 

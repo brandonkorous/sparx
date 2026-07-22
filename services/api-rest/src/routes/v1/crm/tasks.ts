@@ -14,6 +14,7 @@ import { taskService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole, requireAuth } from '@sparx/api-core/auth';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
+import { reachableSiteIds } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -35,7 +36,7 @@ const OverdueQuery = z.object({
 
 const taskRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/crm/tasks', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCrmModule(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await taskService.list(toCrmContext(request), {
@@ -43,6 +44,9 @@ const taskRoutes: FastifyPluginAsync = (app) => {
       assignedToUserId: q.assigned_to_user_id,
       customerId: q.customer_id,
       dealId: q.deal_id,
+      // A site-restricted member sees only their businesses' task queue
+      // (docs/131 §3.3) — the reason Task got a site column in the first place.
+      propertyIds: reachableSiteIds(auth),
       status: q.status,
       dueBefore: q.due_before ? new Date(q.due_before) : undefined,
       take: q.take,

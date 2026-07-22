@@ -172,7 +172,7 @@ function SchedulingStandalone() {
         headline="Complete on its own, better with the rest"
         lede="Scheduling is never bundled and never required by another module — it stands fully on its own. But it lives on the same platform as your customers, your money, and your messaging, so connecting them turns booking into a loop instead of an island."
       />
-      <div className="mkt-grid-2-1 mt-14">
+      <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2">
         {panels.map((p) => (
           <Card key={p.title} className="bg-base-100">
             <CardBody className="flex flex-col gap-4">
@@ -244,7 +244,7 @@ function SchedulingPricing() {
   return (
     <Section padding="lg">
       <Card>
-        <CardBody className="mkt-stack-on-tablet items-center justify-between p-10">
+        <CardBody className="flex flex-col items-center justify-between gap-8 p-10 lg:flex-row">
           <div className="flex flex-1 flex-col gap-3">
             {/* Transparent so the card's module wash reads through the Stats block. */}
             <Stats className="border-0 bg-transparent">
@@ -260,7 +260,7 @@ function SchedulingPricing() {
               volume. Start free for 14 days; no card to begin.
             </Text>
           </div>
-          <div className="mkt-cluster">
+          <div className="flex flex-wrap items-center gap-4">
             <a href="/pricing" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
               See all plans →
             </a>
@@ -288,7 +288,7 @@ function SchedulingCta() {
           customer, holds a deposit, and writes to their record automatically. No per-seat math, no
           migration weekend. Turn Scheduling off the day you stop, and your bookings stay yours.
         </Text>
-        <div className="mkt-cluster">
+        <div className="flex flex-wrap items-center gap-4">
           <Button size="xl" color="module-scheduling">
             Activate Scheduling →
           </Button>

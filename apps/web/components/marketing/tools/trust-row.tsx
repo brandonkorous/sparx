@@ -30,7 +30,10 @@ export function TrustRow({
   const onColor = tone === 'oncolor';
   return (
     <ul
-      className={['mkt-cluster m-0 mt-1.5 list-none gap-x-[18px] gap-y-2.5 p-0', className]
+      className={[
+        'm-0 mt-1.5 flex list-none flex-wrap items-center gap-x-[18px] gap-y-2.5 p-0',
+        className,
+      ]
         .filter(Boolean)
         .join(' ')}
     >

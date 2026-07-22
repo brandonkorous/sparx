@@ -23,6 +23,17 @@ export interface IssueArgs {
   scopes: string[];
   expiresAt?: Date | null;
   createdByUserId?: string | null;
+  /**
+   * Restrict this key to ONE of the tenant's sites (docs/131 §3.2). Null =
+   * the whole tenant, which is what every key was before this existed.
+   *
+   * The issuing UI should default to the site being worked in. Keys are created
+   * from a settings page inside one business, so an operator reasonably assumes
+   * the key belongs to that business — and a "connect your assistant" key handed
+   * to a third party should not reach the tenant's other businesses because
+   * nobody thought about the field.
+   */
+  propertyId?: string | null;
 }
 
 export interface IssuedKey {
@@ -32,6 +43,8 @@ export interface IssuedKey {
   prefix: string;
   id: string;
   scopes: string[];
+  /** The site this key is limited to; null = the whole tenant. */
+  propertyId: string | null;
   createdAt: Date;
   expiresAt: Date | null;
 }
@@ -45,6 +58,7 @@ export async function issueApiKey(args: IssueArgs): Promise<IssuedKey> {
   const row = await prisma.apiKey.create({
     data: {
       tenantId: args.tenantId,
+      propertyId: args.propertyId ?? null,
       name: args.name,
       keyPrefix: prefix,
       keyHash,
@@ -59,6 +73,7 @@ export async function issueApiKey(args: IssueArgs): Promise<IssuedKey> {
     prefix,
     id: row.id,
     scopes: row.scopes,
+    propertyId: row.propertyId,
     createdAt: row.createdAt,
     expiresAt: row.expiresAt,
   };
@@ -68,6 +83,14 @@ export interface VerifiedKey {
   id: string;
   tenantId: string;
   scopes: string[];
+  /**
+   * The site this key may act on; null = the whole tenant (docs/131 §3.2).
+   *
+   * A CEILING, not a target — the caller may not widen past it, and the MCP
+   * dispatch refuses any tool that cannot honour it rather than quietly running
+   * it tenant-wide.
+   */
+  propertyId: string | null;
   /** Identifier used as `actorId` in audit logs — falls back to the issuer
    *  when the key has one, otherwise the key id itself. */
   actorId: string;
@@ -100,6 +123,7 @@ export async function verifyApiKey(candidate: string): Promise<VerifiedKey | nul
     id: row.id,
     tenantId: row.tenantId,
     scopes: row.scopes,
+    propertyId: row.propertyId,
     actorId: row.createdByUserId ?? row.id,
   };
 }
@@ -109,6 +133,10 @@ export interface ApiKeySummary {
   name: string;
   keyPrefix: string;
   scopes: string[];
+  /** The site this key is limited to; null = the whole tenant. Surfaced so the
+   *  keys table can say WHICH business a key reaches — a tenant-wide key in a
+   *  two-business tenant is the thing an operator most needs to notice. */
+  propertyId: string | null;
   lastUsedAt: Date | null;
   expiresAt: Date | null;
   revokedAt: Date | null;
@@ -124,6 +152,7 @@ export async function listApiKeys(tenantId: string): Promise<ApiKeySummary[]> {
       name: true,
       keyPrefix: true,
       scopes: true,
+      propertyId: true,
       lastUsedAt: true,
       expiresAt: true,
       revokedAt: true,

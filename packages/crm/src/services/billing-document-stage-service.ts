@@ -3,9 +3,11 @@
 //
 // Advancing a document to a new stage runs that stage's configured ENTRY
 // EFFECTS, in order:
-//   1. numberOnEnter   → allocate the stable per-tenant sequence once, then
-//      (re)format the visible number with this stage's prefix (EST-… → INV-…).
-//   2. final / void     → stamp finalizedAt / voidedAt + AR status.
+//   1. numberOnEnter   → allocate the stable per-SITE sequence once (docs/131
+//      §3.6), then (re)format the visible number with this stage's prefix
+//      (EST-… → INV-…).
+//   2. final / void     → stamp finalizedAt / voidedAt + AR status, and FREEZE
+//      the issuer identity onto the document.
 //   3. snapshotOnEnter  → freeze an immutable BillingDocumentSnapshot of the
 //      document exactly as it stands (lines + totals + party), AFTER numbering
 //      so the frozen copy carries the right number.
@@ -34,6 +36,48 @@ import { formatBillingNumber, nextBillingDocumentSeq } from './record-numbers';
 // universal invoice prefix. Seeded workflows always set one; this only guards a
 // hand-edited stage.
 const DEFAULT_NUMBER_PREFIX = 'INV-';
+
+/**
+ * The seller block, frozen onto a document at finalize (docs/131 §3.6).
+ *
+ * Carries BOTH names on purpose. `siteName` is the trading name the customer
+ * recognises — the business they think they bought from — while `legalName` and
+ * `taxId` identify the entity that is actually liable, and on a multi-brand
+ * tenant those are different strings. A document that prints only one of them is
+ * either unrecognisable to the customer or unusable to the tax authority.
+ *
+ * `taxId` is included ONLY when the entity is registered: printing a VAT number
+ * a business does not have is a misrepresentation, and `taxRegistered` exists
+ * precisely to gate it.
+ */
+async function snapshotIssuer(
+  tx: Prisma.TransactionClient,
+  tenantId: string,
+  propertyId: string
+): Promise<Prisma.InputJsonValue> {
+  const [site, business, tenant] = await Promise.all([
+    tx.property.findUnique({ where: { id: propertyId }, select: { name: true } }),
+    tx.tenantBusiness.findUnique({ where: { tenantId } }),
+    tx.tenant.findUnique({ where: { id: tenantId }, select: { name: true } }),
+  ]);
+  return {
+    siteName: site?.name ?? business?.businessName ?? tenant?.name ?? '',
+    legalName: business?.businessName ?? tenant?.name ?? '',
+    entityType: business?.entityType ?? null,
+    registrationNumber: business?.registrationNumber ?? null,
+    taxId: business?.taxRegistered ? (business.taxId ?? null) : null,
+    phone: business?.phone ?? null,
+    supportEmail: business?.supportEmail ?? null,
+    address: {
+      line1: business?.addressLine1 ?? null,
+      line2: business?.addressLine2 ?? null,
+      city: business?.city ?? null,
+      region: business?.region ?? null,
+      postalCode: business?.postalCode ?? null,
+      country: business?.country ?? null,
+    },
+  };
+}
 
 interface PendingDocEvent {
   topic: CrmTopic;
@@ -133,7 +177,11 @@ export async function applyStageEntryEffects(
   if (stage.numberOnEnter) {
     let seq = document.numberSeq;
     if (seq === null) {
-      seq = await nextBillingDocumentSeq(tx, ctx.tenantId);
+      // The ISSUING site's sequence (docs/131 §3.6), read off the document
+      // itself — never re-resolved from the request, because a document numbered
+      // while the operator happened to have another site selected would take a
+      // number out of the wrong business's books.
+      seq = await nextBillingDocumentSeq(tx, ctx.tenantId, document.propertyId);
       data.numberSeq = seq;
     }
     data.number = formatBillingNumber(stage.numberPrefix ?? DEFAULT_NUMBER_PREFIX, seq);
@@ -144,6 +192,14 @@ export async function applyStageEntryEffects(
   if (enteringFinal) {
     const finalizedAt = new Date();
     data.finalizedAt = finalizedAt;
+    // Freeze WHO ISSUED this (docs/131 §3.6, docs/130 §2.7). billTo/shipTo were
+    // already snapshotted here and the seller was not, so renaming a site — or
+    // editing the legal entity's address — silently rewrote the letterhead on
+    // invoices already in customers' hands. Finalize is the right moment: it is
+    // the point the document stops being editable.
+    if (document.issuedBy === null) {
+      data.issuedBy = await snapshotIssuer(tx, ctx.tenantId, document.propertyId);
+    }
     // Net-terms B2B documents get a due date from the account's terms on finalize
     // (§8). Retail / already-dated documents keep their dueAt.
     if (document.b2bAccountId && document.dueAt === null) {

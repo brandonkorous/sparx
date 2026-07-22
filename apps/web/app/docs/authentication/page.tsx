@@ -175,8 +175,8 @@ export default function AuthenticationPage() {
         <DocTable>
           <thead>
             <tr>
-              <th style={{ width: '18%' }}>Status</th>
-              <th style={{ width: '26%' }}>Code</th>
+              <th className="w-[18%]">Status</th>
+              <th className="w-[26%]">Code</th>
               <th>Meaning</th>
             </tr>
           </thead>

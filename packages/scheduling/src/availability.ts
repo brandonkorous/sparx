@@ -26,6 +26,19 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 const MINUTE_MS = 60 * 1000;
 const MAX_SLOTS = 2000; // safety cap on a single availability response
 
+/** One `custom_hours` exception, resolved for the engine: its UTC range plus the
+ *  local wall-clock minutes it opens instead of the weekly windows. */
+export interface ResourceOverride {
+  /** UTC epoch ms of the exception's `startAt` — the range the override is active. */
+  start: number;
+  /** UTC epoch ms of the exception's `endAt`. */
+  end: number;
+  /** Local minutes from midnight the resource opens on each day the override touches. */
+  startMinute: number;
+  /** Local minutes from midnight the resource closes on those days. */
+  endMinute: number;
+}
+
 export interface ResourceAvailability {
   resourceId: string;
   timezone: string;
@@ -38,6 +51,59 @@ export interface ResourceAvailability {
   }[];
   /** Already-busy intervals: existing allocations + closures + external calendar. */
   busy: Interval[];
+  /**
+   * `custom_hours` overrides. On each LOCAL day an override's `[start, end]` range
+   * touches, the resource's bookable hours become `[startMinute, endMinute]` local
+   * INSTEAD of its normal weekly windows — intersected with the override's own
+   * `[start, end]`. Outside the override range the weekly windows apply as normal.
+   * Optional: omitted / empty = no overrides = the plain weekly behaviour.
+   */
+  overrides?: ResourceOverride[];
+}
+
+/**
+ * Pull the `{ startMinute, endMinute }` local-minute bounds out of a `custom_hours`
+ * exception's `meta` JSON, or `null` when it is missing / malformed (the caller
+ * skips it — a broken override must never silently open or close a resource).
+ */
+export function parseCustomHoursMeta(
+  meta: unknown
+): { startMinute: number; endMinute: number } | null {
+  if (typeof meta !== 'object' || meta === null) return null;
+  const record = meta as Record<string, unknown>;
+  const { startMinute, endMinute } = record;
+  if (
+    typeof startMinute !== 'number' ||
+    typeof endMinute !== 'number' ||
+    !Number.isFinite(startMinute) ||
+    !Number.isFinite(endMinute) ||
+    startMinute < 0 ||
+    endMinute > 1440 ||
+    endMinute <= startMinute
+  ) {
+    return null;
+  }
+  return { startMinute, endMinute };
+}
+
+/** Resolve loaded `custom_hours` exception rows into engine `ResourceOverride`s,
+ *  dropping any whose `meta` is missing / malformed. Shared by the availability
+ *  engine and the utilisation report so both honour custom hours identically. */
+export function buildResourceOverrides(
+  rows: { startAt: Date; endAt: Date; meta: unknown }[]
+): ResourceOverride[] {
+  const out: ResourceOverride[] = [];
+  for (const row of rows) {
+    const parsed = parseCustomHoursMeta(row.meta);
+    if (!parsed) continue;
+    out.push({
+      start: row.startAt.getTime(),
+      end: row.endAt.getTime(),
+      startMinute: parsed.startMinute,
+      endMinute: parsed.endMinute,
+    });
+  }
+  return out;
 }
 
 export interface SlotComputationInput {
@@ -60,13 +126,34 @@ export interface ComputedSlot {
   candidatesByRole: Record<string, string[]>;
 }
 
-/** Expand a resource's weekly windows into concrete free intervals over the range. */
+/**
+ * Expand a resource's weekly windows into concrete free intervals over the range,
+ * honouring any `custom_hours` overrides.
+ *
+ * Without overrides: `subtractIntervals(mergeIntervals(weeklySpans), busy)` — the
+ * plain weekly behaviour (kept bit-for-bit so existing callers are unaffected).
+ *
+ * With overrides, the weekly windows are SUPPRESSED wherever an override applies
+ * and replaced by the override's custom local hours, then `busy` (closures,
+ * blackouts, existing allocations, external calendar) still subtracts on top:
+ *   • `base`                  — weekly spans expanded over [from, to].
+ *   • `overrideRegions`       — the union of every override's [start, end].
+ *   • `baseOutsideOverrides`  — base minus overrideRegions (normal hours off inside).
+ *   • `customSpans`           — for each override, on each LOCAL day it touches,
+ *                               [dayStart+startMinute, dayStart+endMinute], clamped
+ *                               to the override's own [start, end] AND to [from, to].
+ *   • `available`             — mergeIntervals(baseOutsideOverrides + customSpans).
+ *   • return                    subtractIntervals(available, busy).
+ *
+ * Local minutes go through `localWallToUtc` (never raw UTC minute arithmetic) so a
+ * custom-hours day that straddles a DST boundary lands on the right wall clock.
+ */
 export function resourceFreeIntervals(
   res: ResourceAvailability,
   fromUtc: number,
   toUtc: number
 ): Interval[] {
-  const spans: Interval[] = [];
+  const base: Interval[] = [];
   for (const day of eachLocalDay(fromUtc, toUtc, res.timezone)) {
     for (const w of res.windows) {
       if (w.dayOfWeek !== day.weekday) continue;
@@ -78,10 +165,35 @@ export function resourceFreeIntervals(
       if (end <= start) continue;
       const clampedStart = Math.max(start, fromUtc);
       const clampedEnd = Math.min(end, toUtc);
-      if (clampedEnd > clampedStart) spans.push({ start: clampedStart, end: clampedEnd });
+      if (clampedEnd > clampedStart) base.push({ start: clampedStart, end: clampedEnd });
     }
   }
-  return subtractIntervals(mergeIntervals(spans), res.busy);
+
+  const overrides = res.overrides ?? [];
+  if (overrides.length === 0) {
+    return subtractIntervals(mergeIntervals(base), res.busy);
+  }
+
+  // Suppress the normal weekly hours wherever a custom-hours override is active.
+  const overrideRegions = mergeIntervals(overrides.map((o) => ({ start: o.start, end: o.end })));
+  const baseOutsideOverrides = subtractIntervals(base, overrideRegions);
+
+  // Lay the custom hours down, one local day at a time (DST-correct via localWallToUtc).
+  const customSpans: Interval[] = [];
+  for (const o of overrides) {
+    if (o.end <= o.start) continue;
+    for (const day of eachLocalDay(o.start, o.end, res.timezone)) {
+      const start = localWallToUtc(day.year, day.month1, day.day, o.startMinute, res.timezone);
+      const end = localWallToUtc(day.year, day.month1, day.day, o.endMinute, res.timezone);
+      if (end <= start) continue;
+      const clampedStart = Math.max(start, o.start, fromUtc);
+      const clampedEnd = Math.min(end, o.end, toUtc);
+      if (clampedEnd > clampedStart) customSpans.push({ start: clampedStart, end: clampedEnd });
+    }
+  }
+
+  const available = mergeIntervals([...baseOutsideOverrides, ...customSpans]);
+  return subtractIntervals(available, res.busy);
 }
 
 /** PURE: produce the offered slots. No DB, no clock — `nowUtc` is passed in. */
@@ -199,7 +311,7 @@ export async function getAvailability(
 
       const resourceAvail: ResourceAvailability[] = [];
       for (const res of resources) {
-        const [windows, allocations, exceptions, busyBlocks] = await Promise.all([
+        const [windows, allocations, exceptions, customHours, busyBlocks] = await Promise.all([
           tx.availabilityWindow.findMany({ where: { resourceId: res.id } }),
           tx.bookingResource.findMany({
             where: {
@@ -210,6 +322,7 @@ export async function getAvailability(
             },
             select: { startAt: true, endAt: true },
           }),
+          // Closures / blackouts subtract as busy (they carve time OUT).
           tx.availabilityException.findMany({
             where: {
               kind: { in: ['closed', 'blackout'] },
@@ -218,6 +331,16 @@ export async function getAvailability(
               OR: [{ resourceId: res.id }, { resourceId: null }],
             },
             select: { startAt: true, endAt: true },
+          }),
+          // Custom-hours REPLACE the weekly windows for the days they cover.
+          tx.availabilityException.findMany({
+            where: {
+              kind: 'custom_hours',
+              startAt: { lt: new Date(toUtc) },
+              endAt: { gt: new Date(fromUtc) },
+              OR: [{ resourceId: res.id }, { resourceId: null }],
+            },
+            select: { startAt: true, endAt: true, meta: true },
           }),
           tx.externalBusyBlock.findMany({
             where: {
@@ -243,6 +366,7 @@ export async function getAvailability(
             validTo: w.validTo ? w.validTo.getTime() : null,
           })),
           busy,
+          overrides: buildResourceOverrides(customHours),
         });
       }
       roles.push({ role: req.role, resources: resourceAvail });

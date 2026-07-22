@@ -23,6 +23,7 @@ import { z } from 'zod';
 import { prisma, withTenant, type Prisma } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
 import type { FeedbackRespondedPayload } from '@sparx/events';
+import { writePlatformNotice } from '../../lib/platform-notice.js';
 import type {
   OperatorFeedbackItem,
   OperatorFeedbackListResult,
@@ -415,10 +416,12 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
       const before = await withTenant({ tenantId }, (tx) =>
         tx.feedbackSubmission.findUnique({
           where: { id },
-          select: { id: true, submitterEmail: true },
+          select: { id: true, submitterEmail: true, userId: true },
         })
       );
       if (!before) throw notFound('Feedback not found.');
+
+      const preview = body.length > 140 ? `${body.slice(0, 139)}…` : body;
 
       // Post the staff message + close the loop (lastResponseAt + unread + optional
       // status) atomically under the tenant's GUC.
@@ -432,6 +435,23 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
             authorName: authorName ?? 'sparx Support',
             body,
           },
+        });
+        // `userUnread` only marks the THREAD; it cannot reach the notification
+        // bell, which reads per-user rows.
+        //
+        // Written directly rather than through the automation engine because
+        // this is correspondence between sparx and the account holder, not an
+        // event in the tenant's business — see platform-notice.ts for the full
+        // reasoning. Same transaction as the reply, so a reply cannot land
+        // without the submitter being told.
+        await writePlatformNotice(tx, {
+          tenantId,
+          userId: before.userId,
+          kind: 'feedback.replied',
+          title: 'The sparx team replied to your feedback',
+          body: preview,
+          entityType: 'feedback',
+          entityId: id,
         });
         return tx.feedbackSubmission.update({
           where: { id },
@@ -449,7 +469,7 @@ const operatorFeedbackRoutes: FastifyPluginAsync = async (app) => {
         const payload: FeedbackRespondedPayload = {
           submissionId: id,
           status: row.status,
-          messagePreview: body.length > 140 ? `${body.slice(0, 139)}…` : body,
+          messagePreview: preview,
           recipientEmail: before.submitterEmail,
         };
         await publish(request.log, 'feedback.responded', tenantId, authorId, { ...payload });

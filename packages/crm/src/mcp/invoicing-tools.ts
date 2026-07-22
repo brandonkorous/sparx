@@ -105,7 +105,7 @@ const writeTools: InvoicingMcpTool[] = [
   {
     name: 'add_billing_line',
     description:
-      'Add a charge line to a billing document — a part, labor (rate × hours), a flat fee, or a sublet. Pass a lineTypeKey (e.g. "part", "labor", "fee") and a unitPrice; an optional explicitCostCents records the cost basis so margin is tracked.',
+      "Add a charge line to a billing document — a product, a service (rate × hours), a flat fee, or a pass-through cost. Pass a lineTypeKey (one of the tenant's own line-type slugs — list them if unsure) and a unitPrice; an optional explicitCostCents records the cost basis so margin is tracked.",
     scope: 'write:invoicing',
     confirmation: false,
     input: AddLineInput,

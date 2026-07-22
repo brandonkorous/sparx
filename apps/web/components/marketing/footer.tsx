@@ -1,7 +1,16 @@
 import { Badge, Footer as SilicaFooter, FooterTitle, Link, Text } from '@wizeworks/silicaui-react';
 import { Wordmark } from '@sparx/ui';
 import type { MarketingModule } from './primitives';
-import { MODULE_HEX } from './modules-catalog';
+import { MODULES, MODULE_HEX } from './modules-catalog';
+
+// Search-intent label widening for the footer only. "B2B" is the product name,
+// but wholesale and fleet are what people actually search for — and they are
+// NOT synonyms: a distributor wants wholesale and never touches fleet, a shop
+// runs fleet accounts without a wholesale price list, and plenty do both. One
+// module covers all three, so the footer names them together.
+const FOOTER_LABEL: Partial<Record<MarketingModule, string>> = {
+  b2b: 'B2B / Wholesale',
+};
 
 /**
  * Site footer — rebuilt on silicaui's real `Footer`/`FooterTitle`/`Link`
@@ -43,19 +52,14 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Modules',
     links: [
-      { label: 'Builder', href: '/builder' },
-      { label: 'Commerce', href: '/commerce' },
-      { label: 'CMS', href: '/cms' },
-      { label: 'CRM', href: '/crm' },
-      { label: 'Email', href: '/email' },
-      { label: 'B2B / Wholesale', href: '/b2b' },
-      { label: 'AI / MCP', href: '/ai' },
-      { label: 'Dropship', href: '/dropship' },
-      { label: 'Scheduling', href: '/scheduling' },
-      // No dedicated page yet — point at the pricing switchboard until one ships.
-      { label: 'Invoicing', href: '/pricing' },
-      { label: 'Inventory', href: '/pricing' },
-      { label: 'Live Chat', href: '/pricing' },
+      // Derived from MODULES so the footer can never list a different set than
+      // the header megamenu. Modules with no page yet fall back to /pricing.
+      // FOOTER_LABEL widens a couple of labels for search intent — someone
+      // scanning for "wholesale" should recognise B2B without clicking.
+      ...MODULES.map((m) => ({
+        label: FOOTER_LABEL[m.id] ?? m.label,
+        href: m.href ?? '/pricing',
+      })),
     ],
   },
   {
@@ -86,6 +90,7 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'Documentation', href: '/docs' },
       { label: 'Quickstart', href: '/docs/quickstart' },
       { label: 'API reference', href: '/docs/api/orders/create' },
+      { label: 'Agentic & MCP', href: '/agentic' },
       { label: 'Changelog', href: '/changelog' },
       { label: 'Open source', href: '/open-source' },
     ],

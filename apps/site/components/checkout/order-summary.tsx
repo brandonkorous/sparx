@@ -57,7 +57,7 @@ export function OrderSummary({
         <span>{formatMoney(totals.subtotalCents, currency)}</span>
       </div>
       {totals.discountTotalCents > 0 ? (
-        <div className="st-summary__row" style={{ color: 'var(--color-success)' }}>
+        <div className="st-summary__row text-success">
           <span>Discount</span>
           <span>−{formatMoney(totals.discountTotalCents, currency)}</span>
         </div>

@@ -22,7 +22,7 @@ export const Label = React.forwardRef<
   >
     {children}
     {required && (
-      <span aria-hidden className="ml-0.5 text-[var(--color-danger)]">
+      <span aria-hidden className="text-danger ml-0.5">
         *
       </span>
     )}

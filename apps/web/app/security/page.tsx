@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Container, Eyebrow, Display, Spark } from '@/components/marketing/primitives';
+import { Container, Display, Spark } from '@/components/marketing/primitives';
 import { LegalSection, LegalP, LegalList } from '@/components/marketing/legal-doc';
 
 export const metadata: Metadata = {
@@ -12,50 +12,22 @@ export const metadata: Metadata = {
 export default function SecurityPage() {
   return (
     <>
-      <section
-        style={{
-          paddingTop: 'clamp(96px, 11vw, 150px)',
-          paddingBottom: 'clamp(32px, 5vw, 56px)',
-          paddingLeft: 'var(--gutter-page)',
-          paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
-        <Container style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <Eyebrow color="color-mix(in oklab, var(--color-base-content) 50%, transparent)">
-            Trust
-          </Eyebrow>
+      <section className="bg-base-200 px-page pt-[clamp(96px,11vw,150px)] pb-[clamp(32px,5vw,56px)]">
+        <Container className="flex flex-col gap-5">
           <Display as="h1" size={64} lineHeight={64}>
             Security
             <Spark />
           </Display>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '18px',
-              lineHeight: '30px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              maxWidth: '640px',
-              margin: 0,
-              paddingTop: '8px',
-            }}
-          >
+          <p className="text-lede text-ink-muted m-0 max-w-[640px] pt-2">
             Security is built into sparx&rsquo;s architecture, not bolted on. Here is how we protect
             your data and your customers&rsquo;.
           </p>
         </Container>
       </section>
 
-      <section
-        style={{
-          paddingBottom: 'clamp(80px, 10vw, 140px)',
-          paddingLeft: 'var(--gutter-page)',
-          paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
+      <section className="bg-base-200 px-page pb-[clamp(80px,10vw,140px)]">
         <Container>
-          <div style={{ maxWidth: '760px', display: 'flex', flexDirection: 'column', gap: '40px' }}>
+          <div className="flex max-w-[760px] flex-col gap-10">
             <LegalSection heading="Tenant isolation">
               <LegalP>
                 sparx is multi-tenant, and isolation is enforced at the database layer with

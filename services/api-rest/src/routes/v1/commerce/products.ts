@@ -31,6 +31,7 @@
 //   POST   /v1/commerce/variants/:id/restore                  → restore
 //   POST   /v1/commerce/variants/:id/images                   → add image
 //   PUT    /v1/commerce/variants/:id/image-bindings           → set bindings
+//   PUT    /v1/commerce/products/:productId/image-order       → reorder gallery
 //   DELETE /v1/commerce/variant-images/:imageId               → remove image
 //   POST   /v1/commerce/variant-images/:imageId/primary       → set product hero
 //   POST   /v1/commerce/variants/:id/assign-options           → assign values
@@ -44,14 +45,19 @@ import { bulkPriceService, productService, variantService } from '@sparx/commerc
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { withRequestTenant } from '@sparx/api-core/db';
-import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
-import { resolvePropertyId } from '../../../lib/property.js';
+import {
+  defaultActiveSiteScope,
+  requireCommerceModule,
+  toCommerceContext,
+} from '../../../lib/commerce-context.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
+import { resolveListScope } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
 const BulkPriceRevertBody = z.object({ operationId: z.string().uuid() });
 const VariantImageParam = z.object({ imageId: z.string().uuid() });
+const ListVariantsQuery = z.object({ include_archived: z.coerce.boolean().optional() });
 
 const ListProductsQuery = z.object({
   status: z.string().optional(),
@@ -66,19 +72,29 @@ const ListProductsQuery = z.object({
   include_deleted: z.coerce.boolean().optional(),
   // Model B (docs/49 §3): scope the back-office list to one site — products
   // VISIBLE on it (global + scoped-here), matching that site's storefront.
-  // Omitted → the whole catalog (the shared back office's default view).
-  property: z.string().uuid().optional(),
+  // Omitted → the site the caller is working in (`x-sparx-property-id`, else
+  // primary); `all` → the whole catalog across every site. Not a uuid schema
+  // any more, because `all` is a legal value — resolveListScope validates.
+  property: z.string().min(1).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
   sort_by: z.enum(['updatedAt', 'createdAt', 'title', 'priceMinCents']).optional(),
+  // Sort direction. Defaults to `desc` (newest / most expensive first), which is
+  // wrong for `sort_by=title` — a catalog sorted by name is read A→Z.
+  order: z.enum(['asc', 'desc']).optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const productRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/commerce/products', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const q = ListProductsQuery.parse(request.query);
+    const propertyId = await resolveListScope(
+      auth,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
     const { items, total } = await productService.list(toCommerceContext(request), {
       status: q.status as never,
       categoryId: q.category_id,
@@ -90,10 +106,11 @@ const productRoutes: FastifyPluginAsync = async (app) => {
       hasFitment: q.has_fitment,
       includeArchived: q.include_archived,
       includeDeleted: q.include_deleted,
-      propertyId: q.property,
+      propertyId,
       take: q.take,
       skip: q.skip,
       sortBy: q.sort_by,
+      order: q.order,
     });
     return paged(items, { total, per_page: q.take ?? 50 });
   });
@@ -135,22 +152,9 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const body = (request.body ?? {}) as Record<string, unknown>;
     // Model B (docs/49 §3): a NEW product defaults to the ACTIVE site, so
-    // "different products per site" is the default once a tenant runs more than
-    // one. An explicit `propertyIds` (including `[]` = all sites) is honored
-    // verbatim; single-site tenants are unchanged (no scope rows). This is the
-    // load-bearing default — it covers every create path (dashboard, drawer, API,
-    // MCP), not just one form.
-    if (body.propertyIds === undefined) {
-      const siteCount = await withRequestTenant(request, (tx) => tx.property.count());
-      if (siteCount > 1) {
-        const header = request.headers['x-sparx-property-id'];
-        const activePropertyId = await resolvePropertyId(
-          auth.tenantId,
-          typeof header === 'string' ? header : null
-        );
-        body.propertyIds = [activePropertyId];
-      }
-    }
+    // "different products per site" is the default once a tenant runs more than one
+    // (shared with collections/categories — see defaultActiveSiteScope).
+    await defaultActiveSiteScope(request, auth, body);
     const created = await productService.create(toCommerceContext(request), body);
     reply.code(201);
     return ok(created);
@@ -278,7 +282,17 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const { productId } = ProductIdParam.parse(request.params);
-    return ok(await variantService.listForProduct(toCommerceContext(request), productId));
+    // `include_archived` was already being SENT by callers and silently ignored,
+    // so a retired variant could never be listed — which made `POST /restore`
+    // unreachable from any UI, and left the operator with no way to see the
+    // archived row still holding a SKU against the tenant-wide unique index
+    // (re-creating that code comes back as a bare conflict otherwise).
+    const { include_archived: includeArchived } = ListVariantsQuery.parse(request.query);
+    return ok(
+      await variantService.listForProduct(toCommerceContext(request), productId, {
+        ...(includeArchived ? { includeArchived: true } : {}),
+      })
+    );
   });
 
   app.get('/v1/commerce/products/:productId/variants/options', async (request) => {
@@ -292,8 +306,18 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
     const { productId } = ProductIdParam.parse(request.params);
-    await variantService.setOptions(toCommerceContext(request), productId, request.body);
-    return ok({ productId, updated: true });
+    // Returns the INSERTED options + values, which the service already builds.
+    // Replacing the lattice drops every variant-to-option-value assignment, so a
+    // caller that means to keep its existing SKUs has to re-place them with
+    // `assign-options` — and it cannot do that without the new value ids. The
+    // old `{ productId, updated: true }` forced a follow-up read and a match by
+    // option NAME, which is guesswork the server can answer exactly.
+    const options = await variantService.setOptions(
+      toCommerceContext(request),
+      productId,
+      request.body
+    );
+    return ok(options);
   });
 
   app.post('/v1/commerce/products/:productId/variants', async (request, reply) => {
@@ -361,6 +385,16 @@ const productRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const { productId } = ProductIdParam.parse(request.params);
     return ok(await variantService.listImagesForProduct(toCommerceContext(request), productId));
+  });
+
+  // Whole-gallery reorder. A full ordered id list, not a delta — see
+  // ReorderProductImagesInput for why.
+  app.put('/v1/commerce/products/:productId/image-order', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { productId } = ProductIdParam.parse(request.params);
+    await variantService.reorderImages(toCommerceContext(request), productId, request.body);
+    return ok({ productId, reordered: true });
   });
 
   app.post('/v1/commerce/variants/images', async (request, reply) => {

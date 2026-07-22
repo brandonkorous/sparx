@@ -20,13 +20,46 @@ import { requireCommerceModule } from '../../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
+// Sort columns are a server-side WHITELIST (mirrors the discount/gift-card
+// services). A client-supplied column not on this list is rejected by the enum
+// with a 422, never interpolated into an orderBy. `firstName`/`lastName`/`email`
+// order on the customer relation; `balanceCents`/`updatedAt` on the row itself.
+// Sorting lives on the server because this list pages.
+const AccountCreditSort = z.enum(['balanceCents', 'updatedAt', 'firstName', 'lastName', 'email']);
+const AccountCreditSortOrder = z.enum(['asc', 'desc']);
+
 const AccountCreditQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
   currency: z.string().optional(),
   min_balance_cents: z.coerce.number().int().optional(),
   take: z.coerce.number().int().min(1).max(500).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+  sort_by: AccountCreditSort.optional(),
+  order: AccountCreditSortOrder.optional(),
 });
+
+/** Whitelisted `sort_by` → Prisma orderBy. Default (no `sort_by`) keeps the
+ *  historic `balanceCents desc` so existing callers are unchanged. */
+function accountCreditOrderBy(
+  sortBy: z.infer<typeof AccountCreditSort> | undefined,
+  order: 'asc' | 'desc' | undefined
+): Prisma.AccountCreditOrderByWithRelationInput {
+  const dir = order ?? 'asc';
+  switch (sortBy) {
+    case 'updatedAt':
+      return { updatedAt: dir };
+    case 'balanceCents':
+      return { balanceCents: dir };
+    case 'firstName':
+      return { customer: { firstName: dir } };
+    case 'lastName':
+      return { customer: { lastName: dir } };
+    case 'email':
+      return { customer: { email: dir } };
+    default:
+      return { balanceCents: 'desc' };
+  }
+}
 
 const ListCartsQuery = z.object({
   filter: z.string().optional(),
@@ -40,11 +73,56 @@ const ListCheckoutSessionsQuery = z.object({
   skip: z.coerce.number().int().min(0).optional(),
 });
 
+// The moderation queues page and sort server-side, so `sort_by` is a WHITELIST
+// exactly like account credit above. An off-list column is rejected by the enum
+// with a 422 rather than interpolated into an orderBy. Real columns only:
+// questions carry no rating, so theirs is createdAt/status; reviews add rating.
+const QuestionSort = z.enum(['createdAt', 'status']);
+const ReviewSort = z.enum(['createdAt', 'rating', 'status']);
+const ListSortOrder = z.enum(['asc', 'desc']);
+
+/** Whitelisted question `sort_by` → Prisma orderBy. Default (no `sort_by`) keeps
+ *  the historic `createdAt desc`, so existing callers are unchanged. */
+function questionOrderBy(
+  sortBy: z.infer<typeof QuestionSort> | undefined,
+  order: 'asc' | 'desc' | undefined
+): Prisma.ProductQuestionOrderByWithRelationInput {
+  const dir = order ?? 'desc';
+  switch (sortBy) {
+    case 'status':
+      return { status: dir };
+    case 'createdAt':
+      return { createdAt: dir };
+    default:
+      return { createdAt: 'desc' };
+  }
+}
+
+/** Whitelisted review `sort_by` → Prisma orderBy. Default keeps `createdAt desc`. */
+function reviewOrderBy(
+  sortBy: z.infer<typeof ReviewSort> | undefined,
+  order: 'asc' | 'desc' | undefined
+): Prisma.ProductReviewOrderByWithRelationInput {
+  const dir = order ?? 'desc';
+  switch (sortBy) {
+    case 'rating':
+      return { rating: dir };
+    case 'status':
+      return { status: dir };
+    case 'createdAt':
+      return { createdAt: dir };
+    default:
+      return { createdAt: 'desc' };
+  }
+}
+
 const ListQuestionsQuery = z.object({
   status: z.string().optional(),
   q: z.string().trim().min(1).max(200).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+  sort_by: QuestionSort.optional(),
+  order: ListSortOrder.optional(),
 });
 
 const ListReviewsQuery = z.object({
@@ -52,6 +130,8 @@ const ListReviewsQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+  sort_by: ReviewSort.optional(),
+  order: ListSortOrder.optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
@@ -127,7 +207,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
       const [rows, total] = await Promise.all([
         tx.accountCredit.findMany({
           where,
-          orderBy: { balanceCents: 'desc' },
+          orderBy: accountCreditOrderBy(q.sort_by, q.order),
           take,
           skip,
           select: {
@@ -307,7 +387,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
       const [rows, total] = await Promise.all([
         tx.productReview.findMany({
           where,
-          orderBy: { createdAt: 'desc' },
+          orderBy: reviewOrderBy(q.sort_by, q.order),
           take: q.take ?? 50,
           skip: q.skip ?? 0,
           select: {
@@ -376,7 +456,7 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
       const [rows, total] = await Promise.all([
         tx.productQuestion.findMany({
           where,
-          orderBy: { createdAt: 'desc' },
+          orderBy: questionOrderBy(q.sort_by, q.order),
           take,
           skip,
           select: {
@@ -429,6 +509,8 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
           productId: true,
           body: true,
           status: true,
+          displayName: true,
+          helpfulCount: true,
           createdAt: true,
           customer: { select: { id: true, firstName: true, lastName: true, email: true } },
           product: { select: { id: true, title: true, handle: true } },
@@ -452,6 +534,8 @@ const commerceListRoutes: FastifyPluginAsync = async (app) => {
       productId: row.productId,
       body: row.body,
       status: row.status,
+      displayName: row.displayName,
+      helpfulCount: row.helpfulCount,
       createdAt: row.createdAt.toISOString(),
       productTitle: row.product?.title ?? null,
       productHandle: row.product?.handle ?? null,

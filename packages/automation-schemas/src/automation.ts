@@ -15,6 +15,21 @@ import { Trigger } from './trigger';
 export const CreateAutomationInput = z.object({
   name: z.string().min(1).max(255),
   description: z.string().max(10_000).nullable().optional(),
+  /**
+   * WHICH SITE this rule acts on (docs/131 §3.1). Null/omitted = tenant-wide,
+   * running on every site's events.
+   *
+   * A tenant running two unrelated businesses needs rules that never cross: an
+   * `order.placed` follow-up written for a donut shop must not fire on a machine
+   * shop's orders, with the donut shop's templates and products in its actions.
+   *
+   * The AUTHORING UI should default this to the site being worked in rather than
+   * to null — tenant-wide is the wider blast radius, and the wider option should
+   * be chosen deliberately, not received by omission. The schema keeps it
+   * optional because a genuinely tenant-wide rule is a real thing and because the
+   * system/seed path creates rules before any site is in context.
+   */
+  propertyId: z.string().uuid().nullable().optional(),
   trigger: Trigger,
   conditions: ConditionGroup.default(EMPTY_CONDITION_GROUP),
   actions: z.array(Action).min(1).max(50),

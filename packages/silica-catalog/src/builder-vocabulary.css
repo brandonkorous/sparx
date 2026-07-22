@@ -1,0 +1,124 @@
+/* The layout vocabulary a builder author is allowed to reach.
+ *
+ * WHY THIS FILE EXISTS. Both the storefront and the editor canvas build their CSS by
+ * @source-scanning the silica catalog and silicaui's dist. That makes the available
+ * utility set "whatever the shipped blocks already happen to use" — which is fine
+ * while you only stamp catalog blocks, and silently wrong the moment anyone composes
+ * something new. `col-span-*` appears nowhere in the catalog, so an authored
+ * `lg:col-span-3` emitted NO CSS: the grid rendered equal columns, the content
+ * collapsed into a narrow strip, and nothing anywhere reported a problem. No error,
+ * no console warning, no failed build — just a broken page.
+ *
+ * That failure mode is unacceptable for a builder. Composing new layouts IS the
+ * product, and an AI authoring agent does it on every page. So the vocabulary is
+ * declared here as an explicit contract instead of emerging as a side effect.
+ *
+ * SCOPE, deliberately bounded. This is not "safelist all of Tailwind" — that would
+ * bloat every tenant's stylesheet for utilities nobody authors. It covers the
+ * families that (a) authors reach for constantly and (b) fail INVISIBLY when absent,
+ * i.e. the grid/flow primitives that silently collapse a layout. Utilities that
+ * degrade obviously (a missing color, a missing margin) are still covered by the
+ * scan. Add a family here when it proves to be load-bearing, with a note why.
+ *
+ * Both apps import this file so the canvas and the published site can never disagree
+ * about what an author may write.
+ *
+ * Prefix sets cover BOTH axes silica lays out on: viewport breakpoints (what the
+ * authoring kit emits) and container queries (what the native blocks use, since a
+ * block must adapt to the column it is dropped into, not the window). */
+
+/* Grid definition + placement. The load-bearing pair: `grid-cols-*` without a
+ * matching `col-span-*` is precisely the bug above — the track exists, the item
+ * never spans it. */
+@source inline('{sm:,md:,lg:,xl:,2xl:,}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
+@source inline('{@sm:,@md:,@lg:,@xl:,@2xl:,@3xl:,@4xl:,}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
+@source inline('{sm:,md:,lg:,xl:,2xl:,}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}');
+@source inline(
+  '{@sm:,@md:,@lg:,@xl:,@2xl:,@3xl:,@4xl:,}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}'
+);
+
+/* Row placement — the same trap on the other axis, for editorial/bento layouts. */
+@source inline('{sm:,md:,lg:,xl:,}grid-rows-{1,2,3,4,5,6}');
+@source inline('{sm:,md:,lg:,xl:,}row-span-{1,2,3,4,5,6,full}');
+
+/* Explicit line placement, for a section that pins one block to a column range
+ * rather than flowing. Absent these, the item lands in the next free cell and the
+ * layout looks arbitrary rather than broken — hard to diagnose from the page. */
+@source inline('{sm:,md:,lg:,xl:,}col-start-{1,2,3,4,5,6,7,8,9,10,11,12,13}');
+@source inline('{sm:,md:,lg:,xl:,}col-end-{1,2,3,4,5,6,7,8,9,10,11,12,13}');
+/* Row placement is the other half of that pair, and it is what an alternating
+ * two-column section needs: putting the second child in column 1 does not pull it up
+ * out of row 2 on its own, so a mirrored layout without `row-start` silently renders
+ * as two stacked rows instead of one flipped one. */
+@source inline('{sm:,md:,lg:,xl:,}row-start-{1,2,3,4,5,6,7}');
+@source inline('{sm:,md:,lg:,xl:,}row-end-{1,2,3,4,5,6,7}');
+
+/* Flex sizing. `flex-1` vs `flex-none` on a row silently decides whether a sidebar
+ * keeps its width or collapses to its content. */
+@source inline('{sm:,md:,lg:,xl:,}flex-{1,auto,initial,none}');
+@source inline(
+  '{sm:,md:,lg:,xl:,}{flex-row,flex-col,flex-wrap,flex-nowrap,flex-row-reverse,flex-col-reverse}'
+);
+
+/* Ordering — a two-column split almost always needs the media to move above the copy
+ * on a phone, and that is expressed as an order swap. Missing, the phone layout is
+ * subtly wrong (image first) rather than visibly broken. */
+@source inline('{sm:,md:,lg:,xl:,}order-{1,2,3,4,5,6,first,last,none}');
+
+/* Column container width. An authored section that sets its own measure is common,
+ * and a missing max-width runs text to the full window edge — unreadable, and easy
+ * to mistake for a design choice. */
+@source inline('max-w-{xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,full,none,prose}');
+
+/* ── Typographic range ─────────────────────────────────────────────────────────
+ *
+ * The scan-derived bundle topped out at `text-4xl` with no weight above `bold`,
+ * which quietly imposed a house style: every page on the platform rendered at the
+ * same medium size, because the classes that create scale contrast produced no CSS.
+ * An authored `text-7xl` hero simply inherited its parent size and looked like a
+ * deliberate choice to keep things small. Nothing announced the ceiling.
+ *
+ * Display type is the single cheapest source of visual drama for a site with no
+ * photography budget, so the full scale and weight range is declared here. */
+@source inline('{sm:,md:,lg:,xl:,}text-{xs,sm,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl}');
+@source inline(
+  '{sm:,md:,lg:,xl:,}font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}'
+);
+
+/* Letter-spacing and line-height — the difference between large type that reads as
+ * designed and large type that reads as an accident. Tight tracking on a display
+ * heading is not decoration; without it, oversized text looks unset. */
+@source inline('{sm:,md:,lg:,xl:,}tracking-{tighter,tight,normal,wide,wider,widest}');
+@source inline('{sm:,md:,lg:,xl:,}leading-{none,tight,snug,normal,relaxed,loose}');
+
+/* Full-bleed colour bands. A page built only from `base-100`/`base-200` has no
+ * rhythm — those two sit ~2% apart in lightness and read as one flat surface. Real
+ * sectioning comes from committing a whole band to a colour and flipping the text
+ * to its paired on-colour, so both halves of each pair must exist. */
+@source inline(
+  'bg-{primary,secondary,accent,neutral,base-100,base-200,base-300,info,success,warning,error}'
+);
+@source inline(
+  'text-{primary,secondary,accent,neutral,base-content,primary-content,secondary-content,accent-content,neutral-content,info,success,warning,error}'
+);
+@source inline('border-{primary,secondary,accent,neutral,base-200,base-300}');
+/* Hairline dividers ON a coloured band. A full-strength border in the band's own
+ * on-colour is too loud; the readable choice is that on-colour at low opacity — a
+ * translucent rule that reads as a seam rather than a line. `border-base-300` cannot
+ * do this job on a dark band (it is a near-cream light-theme surface), so without
+ * these the divider is either invisible or glaring. Bounded to the on-colours and the
+ * two low opacities an author actually reaches for. */
+@source inline(
+  '{border,divide}-{base-content,primary-content,neutral-content,accent-content}/{10,20,30}'
+);
+
+/* Spacing. The scan yielded only the handful of steps the catalog blocks happen to
+ * use (`py-12`, `py-16`, `py-20`) — so an authored `py-32` hero collapsed to no
+ * padding at all and the headline sat jammed under the header. Generous vertical
+ * rhythm is most of what separates a designed page from a cramped one, and it has to
+ * be reachable across the whole scale, not just the three values already in use. */
+@source inline(
+  '{sm:,md:,lg:,xl:,}{p,px,py,pt,pb,pl,pr}-{0,1,2,3,4,5,6,8,10,12,14,16,20,24,28,32,40,48}'
+);
+@source inline('{sm:,md:,lg:,xl:,}{gap,gap-x,gap-y}-{0,1,2,3,4,5,6,8,10,12,14,16,20,24}');
+@source inline('{sm:,md:,lg:,xl:,}{mt,mb,mx,my}-{0,1,2,3,4,5,6,8,10,12,16,20,24,auto}');

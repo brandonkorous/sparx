@@ -82,6 +82,7 @@ export async function applyQuotes(ctx: ApplyCtx, pack: SampleDataPack): Promise<
     await tx.billingDocument.create({
       data: {
         tenantId,
+        propertyId: ctx.issuingPropertyId,
         workflowId: workflow.id,
         stageId: stage.id,
         customerId,

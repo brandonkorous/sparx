@@ -384,13 +384,30 @@ export type SubmitPurchaseOrderInput = z.infer<typeof SubmitPurchaseOrderInput>;
 // cost, defaulted from the PO line) and bumps that PO line's received count,
 // advancing the PO to partial/received. A `lotNumber` mints/extends a LotBatch.
 
-export const ReceiveLineInput = z.object({
-  purchaseOrderLineId: Uuid,
-  quantity: z.number().int().positive(),
-  // Actual landed cost — defaults to the PO line's agreed cost when omitted.
-  unitCostCents: z.number().int().nonnegative().optional(),
-  lotNumber: z.string().min(1).max(63).optional(),
-});
+export const ReceiveLineInput = z
+  .object({
+    purchaseOrderLineId: Uuid,
+    // GOOD units received on this delivery — what becomes sellable stock. May be
+    // 0 on a fully-damaged (total-loss) line, where every unit arrived broken; a
+    // zero-good line still has to record SOME arrival through `quantityDamaged`
+    // (see the object-level refine below), so it is never an empty no-op.
+    quantity: z.number().int().nonnegative(),
+    // Damaged-on-arrival units. Booked as two ledger facts on the same receipt —
+    // a `receive` (+) at the same landed cost, then a `damage` (−) write-off — so
+    // the arrival and the valued loss are both recorded, while net on-hand stays 0.
+    // Damaged units are NEVER added to sellable stock and NEVER credited against
+    // the PO line (the supplier still owes them). Defaults to 0.
+    quantityDamaged: z.number().int().min(0).optional(),
+    // Actual landed cost — defaults to the PO line's agreed cost when omitted.
+    unitCostCents: z.number().int().nonnegative().optional(),
+    lotNumber: z.string().min(1).max(63).optional(),
+  })
+  // A receipt line must record SOME arrival — good units, damaged units, or both.
+  // A line with zero of each is a no-op that books nothing and must be rejected.
+  .refine((line) => line.quantity + (line.quantityDamaged ?? 0) >= 1, {
+    message: 'A receipt line must record at least one unit received or damaged',
+    path: ['quantity'],
+  });
 export type ReceiveLineInput = z.infer<typeof ReceiveLineInput>;
 
 export const CreateGoodsReceiptInput = z.object({

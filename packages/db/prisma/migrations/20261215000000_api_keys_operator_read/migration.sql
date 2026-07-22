@@ -1,0 +1,38 @@
+-- Let API-key VERIFICATION read `api_keys`.
+--
+-- The third instance of one bug, and the most consequential
+-- (20261213000000 fixed the member-access junctions):
+--
+--   a table the AUTH PATH must read carries only a tenant_isolation policy,
+--   but the auth path is what DECIDES the tenant — so there is no GUC to set
+--   yet, current_tenant_id() is NULL, and the row is invisible.
+--
+-- For `api_keys` this is not a degraded experience, it is total: api-core's
+-- verifyApiKeyToken looks the key up by `key_prefix` on the app-role connection
+-- with no tenant context (it cannot have one — resolving the tenant is the
+-- point of the lookup). The policy hides every row, the key "does not exist",
+-- and EVERY `sk_live_*` request to api-rest is rejected as UNAUTHORIZED.
+--
+-- Measured on the dev database: 8 rows present, `sparx_app` with no GUC sees 0.
+--
+-- It survived because the two paths differ. api-mcp verifies through
+-- @sparx/auth's `verifyApiKey`, which uses the OWNER client and bypasses
+-- non-forced RLS — so MCP key auth works and its tests pass. api-rest verifies
+-- through api-core on the app connection, and fails. Local `sparx_owner` is a
+-- superuser, which is why nothing looked wrong when the policy was written.
+--
+-- Same fix as `members_operator_read` (migration 20261002000000), whose comment
+-- states the principle: auth must resolve "who is this?" before tenant context
+-- exists. `api_keys` is exactly that kind of table and should have had the
+-- companion policy from the start.
+--
+-- This does not weaken isolation:
+--   · the rows hold a SHA-256 hash, never a usable key — reading one grants
+--     nothing, and verification still requires the plaintext suffix;
+--   · every tenant-scoped request sets the GUC, and with it set the isolation
+--     policy is the one that applies;
+--   · `sparx_app` reaching this table without a GUC is precisely the
+--     authentication step, which by definition precedes tenant scoping.
+
+CREATE POLICY "api_keys_operator_read" ON "api_keys"
+  USING (current_tenant_id() IS NULL);

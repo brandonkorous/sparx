@@ -1,4 +1,4 @@
-import { Button } from '@wizeworks/silicaui-react';
+import { Button, Text } from '@wizeworks/silicaui-react';
 import { Container, Display, Dot, getModuleColor, Spark } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
@@ -19,48 +19,25 @@ import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-business
  */
 
 const M = getModuleColor('dropship');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 export function DropshipHero() {
   const lede =
     'Connect a supplier, import their catalog, set a markup rule. When an order comes in, sparx routes it to the right supplier automatically, pulls back tracking, and emails the customer — all without you touching a box. Sell without holding inventory, on a real platform where suppliers, products, and orders live in one place.';
   const chips = ['supplier connectors', 'auto order routing', 'margin rules', 'tracking sync'];
   return (
-    <section
-      className={`${M.bg} bg-soft`}
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-      }}
-    >
+    <section className={`${M.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
       <Container>
-        <div
-          className="mkt-stack-on-tablet"
-          style={{ gap: 'clamp(40px, 6vw, 72px)', alignItems: 'center' }}
-        >
-          <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
+          <div className="min-w-0 flex-1">
             <Display as="h1" size={84} lineHeight={80}>
               Sell it, never stock it
               <Spark color={M.color} />
             </Display>
-            <p
-              style={{
-                fontFamily: SANS,
-                fontWeight: 400,
-                fontSize: 'clamp(16px, 1.6vw, 20px)',
-                lineHeight: 1.55,
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                maxWidth: '580px',
-                margin: '28px 0 0',
-              }}
-            >
+            <Text className="text-ink-muted mt-7 max-w-[580px] text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
               {lede}
-            </p>
-            <div className="mkt-cluster" style={{ gap: '12px', marginTop: '34px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+            </Text>
+            <div className="mt-[34px] flex flex-wrap items-center gap-3">
+              <Button color="neutral" size="lg">
                 Activate Dropship →
               </Button>
               <a href="#routing">
@@ -69,38 +46,21 @@ export function DropshipHero() {
                 </Button>
               </a>
             </div>
-            <ul
-              className="mkt-cluster"
-              style={{ gap: '10px', marginTop: '26px', listStyle: 'none', padding: 0 }}
-            >
+            <ul className="mt-6 flex list-none flex-wrap items-center gap-2.5 p-0">
               {chips.map((c) => (
                 <li
                   key={c}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '7px 13px',
-                    backgroundColor: 'var(--color-base-100)',
-                    border: '1px solid var(--color-base-300)',
-                    borderRadius: '9999px',
-                  }}
+                  className="bg-base-100 border-base-300 inline-flex items-center gap-2 rounded-full border px-3 py-[7px]"
                 >
                   <Dot color={M.color} size={6} />
-                  <span
-                    style={{
-                      fontFamily: MONO,
-                      fontSize: '12px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
+                  <Text as="span" className="text-mini text-ink-muted font-mono">
                     {c}
-                  </span>
+                  </Text>
                 </li>
               ))}
             </ul>
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
+          <div className="w-full min-w-0 flex-1">
             <Cycle
               items={EXAMPLE_BUSINESSES.map((b) => (
                 <RoutedOrderCard key={b.domain} business={b} />
@@ -118,15 +78,7 @@ export function DropshipHero() {
 function RoutedOrderCard({ business }: { business: ExampleBusiness }) {
   const { dropship: d, customer } = business;
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '16px',
-        boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-        overflow: 'hidden',
-      }}
-    >
+    <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-lg">
       <RoutedHeader d={d} customerName={customer.name} />
       <RoutedProfit d={d} />
       <RoutedTracking d={d} />
@@ -138,46 +90,21 @@ type D = ExampleBusiness['dropship'];
 
 function RoutedHeader({ d, customerName }: { d: D; customerName: string }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        padding: '16px 20px',
-        borderBottom: '1px solid var(--color-base-300)',
-      }}
-    >
-      <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <div className="border-base-300 flex items-center justify-between border-b px-5 py-4">
+      <span className="flex items-center gap-2.5">
         <Dot color={M.color} size={9} />
         <span>
-          <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>
+          <Text as="span" className="text-small text-base-content font-medium">
             {d.routed.number}
-          </span>
+          </Text>
           <br />
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '12px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          <Text as="span" className="text-mini text-ink-subtle">
             {customerName} · routed to {d.supplier}
-          </span>
+          </Text>
         </span>
       </span>
       <span
-        className={`${M.bg} bg-soft ${M.ink}`}
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: '7px',
-          padding: '5px 11px',
-          borderRadius: '9999px',
-          fontFamily: SANS,
-          fontSize: '12px',
-          fontWeight: 500,
-          flexShrink: 0,
-        }}
+        className={`${M.bg} bg-soft ${M.ink} text-mini inline-flex shrink-0 items-center gap-[7px] rounded-full px-3 py-[5px] font-medium`}
       >
         <Dot color={M.color} size={6} /> {d.routed.status}
       </span>
@@ -192,42 +119,18 @@ function RoutedProfit({ d }: { d: D }) {
     [d.routed.profit, 'your profit'],
   ];
   return (
-    <div
-      style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        borderBottom: '1px solid var(--color-base-300)',
-      }}
-    >
+    <div className="border-base-300 grid grid-cols-3 border-b">
       {cells.map(([v, l], i) => (
         <div
           key={l}
-          style={{
-            padding: '14px 16px',
-            borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-200)',
-          }}
+          className={`px-4 py-3.5 ${i === 0 ? '' : 'border-base-200 border-l'}`.trimEnd()}
         >
           <div
-            className={i === 2 ? M.ink : 'text-base-content'}
-            style={{
-              fontFamily: SANS,
-              fontWeight: 500,
-              fontSize: '17px',
-              letterSpacing: '-0.01em',
-            }}
+            className={`text-body-lg font-medium tracking-[-0.01em] ${i === 2 ? M.ink : 'text-base-content'}`}
           >
             {v}
           </div>
-          <div
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              marginTop: '2px',
-            }}
-          >
-            {l}
-          </div>
+          <Text className="text-micro text-ink-subtle mt-0.5 font-mono">{l}</Text>
         </div>
       ))}
     </div>
@@ -236,65 +139,26 @@ function RoutedProfit({ d }: { d: D }) {
 
 function RoutedTracking({ d }: { d: D }) {
   return (
-    <div style={{ padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '12px 14px',
-          backgroundColor: 'var(--color-base-200)',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '10px',
-        }}
-      >
+    <div className="flex flex-col gap-3 px-5 py-4">
+      <div className="bg-base-200 border-base-300 flex items-center gap-2.5 rounded-[10px] border px-3.5 py-3">
         <TruckIcon size={16} color={M.color} />
-        <span style={{ minWidth: 0 }}>
-          <span
-            style={{
-              display: 'block',
-              fontFamily: SANS,
-              fontSize: '13px',
-              fontWeight: 500,
-              color: 'var(--color-base-content)',
-            }}
-          >
+        <span className="min-w-0">
+          <Text as="span" className="text-caption text-base-content block font-medium">
             {d.routed.carrier}
-          </span>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          </Text>
+          <Text as="span" className="text-micro text-ink-subtle font-mono">
             {d.routed.tracking}
-          </span>
+          </Text>
         </span>
-        <span
-          className={M.ink}
-          style={{
-            marginLeft: 'auto',
-            fontFamily: SANS,
-            fontSize: '11.5px',
-            fontWeight: 500,
-            flexShrink: 0,
-          }}
-        >
+        <Text as="span" className={`text-mini ml-auto shrink-0 font-medium ${M.ink}`}>
           sent to customer
-        </span>
+        </Text>
       </div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
+      <div className="flex items-center gap-2.5">
         <Dot color={M.color} size={6} />
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '11.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <Text as="span" className="text-mini text-ink-subtle font-mono">
           {d.connection} · {d.rule} · no inventory held
-        </span>
+        </Text>
       </div>
     </div>
   );
@@ -312,7 +176,7 @@ function TruckIcon({ size, color }: { size: number; color: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
-      style={{ flexShrink: 0 }}
+      className="shrink-0"
     >
       <path d="M1 3h15v13H1z" />
       <path d="M16 8h4l3 3v5h-7V8z" />

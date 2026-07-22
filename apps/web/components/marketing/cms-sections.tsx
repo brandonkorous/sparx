@@ -29,8 +29,6 @@ import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-business
  */
 
 const M = getModuleColor('cms');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // ── HERO ──────────────────────────────────────────────────────────────────────
 export function CmsHero() {
@@ -38,40 +36,19 @@ export function CmsHero() {
     'sparx CMS is a calm, fast place to publish — a block editor, a media library, structured content, and SEO that does its homework. It runs standalone: a publisher, a docs site, or a portfolio needs no shop. Render it on a hosted sparx site, or pull it headless through the API.';
   const chips = ['standalone, no shop', 'structured content', 'SEO built in', 'REST + GraphQL'];
   return (
-    <section
-      className={`${M.bg} bg-soft`}
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-      }}
-    >
+    <section className={`${M.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
       <Container>
-        <div
-          className="mkt-stack-on-tablet"
-          style={{ gap: 'clamp(40px, 6vw, 72px)', alignItems: 'center' }}
-        >
-          <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
+          <div className="min-w-0 flex-1">
             <Display as="h1" size={84} lineHeight={80}>
               Write it. Publish it. Own it
               <Spark color={M.color} />
             </Display>
-            <p
-              style={{
-                fontFamily: SANS,
-                fontWeight: 400,
-                fontSize: 'clamp(16px, 1.6vw, 20px)',
-                lineHeight: 1.55,
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                maxWidth: '560px',
-                margin: '28px 0 0',
-              }}
-            >
+            <p className="text-ink-muted mt-7 max-w-[560px] font-sans text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
               {lede}
             </p>
-            <div className="mkt-cluster" style={{ gap: '12px', marginTop: '34px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Button color="neutral" size="lg">
                 Start publishing →
               </Button>
               <a href="#editor">
@@ -80,38 +57,19 @@ export function CmsHero() {
                 </Button>
               </a>
             </div>
-            <ul
-              className="mkt-cluster"
-              style={{ gap: '10px', marginTop: '26px', listStyle: 'none', padding: 0 }}
-            >
+            <ul className="mt-6 flex list-none flex-wrap items-center gap-2.5 p-0">
               {chips.map((c) => (
                 <li
                   key={c}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '7px 13px',
-                    backgroundColor: 'var(--color-base-100)',
-                    border: '1px solid var(--color-base-300)',
-                    borderRadius: '9999px',
-                  }}
+                  className="border-base-300 bg-base-100 inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
                 >
                   <Dot color={M.color} size={6} />
-                  <span
-                    style={{
-                      fontFamily: MONO,
-                      fontSize: '12px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
-                    {c}
-                  </span>
+                  <span className="text-ink-muted text-mini font-mono">{c}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
+          <div className="w-full min-w-0 flex-1">
             <Cycle
               items={EXAMPLE_BUSINESSES.map((b) => (
                 <EditorCard key={b.domain} business={b} />
@@ -129,180 +87,62 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
   const { article, domain } = business;
   const tools = ['H2', 'B', 'i', '“ ”', '< >', '🔗', '▦'];
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '16px',
-        boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
-          padding: '14px 18px',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '10px', minWidth: 0 }}>
+    <div className="border-base-300 bg-base-100 overflow-hidden rounded-2xl border shadow-lg">
+      <div className="border-base-300 flex items-center justify-between gap-3 border-b px-4 py-3.5">
+        <span className="flex min-w-0 items-center gap-2.5">
           <span
-            className={`${M.bg} bg-soft ${M.ink}`}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '7px',
-              padding: '5px 11px',
-              borderRadius: '9999px',
-              fontFamily: SANS,
-              fontSize: '12px',
-              fontWeight: 500,
-            }}
+            className={`${M.bg} bg-soft ${M.ink} text-mini inline-flex items-center gap-[7px] rounded-full px-3 py-1 font-sans font-medium`}
           >
             <Dot color={M.color} size={7} /> Draft
           </span>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
-            autosaved 12s ago · v7
-          </span>
+          <span className="text-ink-subtle text-micro font-mono">autosaved 12s ago · v7</span>
         </span>
-        <span
-          className="mkt-hide-on-mobile"
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
-          {domain}
-        </span>
+        <span className="mkt-hide-on-mobile text-ink-subtle text-micro font-mono">{domain}</span>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          padding: '9px 18px',
-          borderBottom: '1px solid var(--color-base-200)',
-          backgroundColor: 'var(--color-base-200)',
-          flexWrap: 'wrap',
-        }}
-      >
+      {/* Editor toolbar — mockup UI mimicry, so the mono glyph chips stay. */}
+      <div className="border-base-200 bg-base-200 flex flex-wrap items-center gap-1.5 border-b px-4 py-2">
         {tools.map((t, i) => (
           <span
             key={t}
-            className={i === 1 ? `${M.bg} bg-soft ${M.ink}` : 'bg-base-100'}
-            style={{
-              fontFamily: MONO,
-              fontSize: '12px',
-              ...(i === 1
-                ? {}
-                : { color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)' }),
-              padding: '3px 8px',
-              borderRadius: '6px',
-              border: `1px solid ${i === 1 ? M.color : 'var(--color-base-300)'}`,
-            }}
+            className={`${
+              i === 1
+                ? `${M.bg} bg-soft ${M.ink} border-module-cms`
+                : 'bg-base-100 text-ink-muted border-base-300'
+            } text-mini rounded-md border px-2 py-0.5 font-mono`}
           >
             {t}
           </span>
         ))}
       </div>
-      <div style={{ padding: '22px 22px 8px' }}>
-        <span
-          className={M.ink}
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-          }}
-        >
+      <div className="px-5.5 pt-5.5 pb-2">
+        <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
           {article.category}
         </span>
-        <h2
-          style={{
-            fontFamily: SANS,
-            fontSize: '23px',
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            lineHeight: 1.18,
-            margin: '10px 0 12px',
-          }}
-        >
+        <h2 className="text-h3 mt-2.5 mb-3 font-sans font-medium tracking-[-0.02em]">
           {article.title}
         </h2>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            margin: '0 0 16px',
-          }}
-        >
+        <p className="text-ink-subtle text-caption mt-0 mb-4 font-sans">
           by {article.author} · {article.readTime}
         </p>
         {['100%', '94%', '76%', '100%', '88%'].map((w, i) => (
           <span
             key={`bar-${i}`}
-            style={{
-              display: 'block',
-              height: '9px',
-              borderRadius: '9999px',
-              backgroundColor: 'var(--color-base-200)',
-              width: w,
-              margin: '9px 0',
-            }}
+            className="bg-base-200 my-2.5 block h-2.5 rounded-full"
+            // Per-line width is what makes the placeholder read as prose.
+            style={{ width: w }}
           />
         ))}
       </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '12px',
-          padding: '14px 18px',
-          borderTop: '1px solid var(--color-base-300)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '9px',
-            fontSize: '12.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          }}
-        >
+      <div className="border-base-300 bg-base-200 flex items-center justify-between gap-3 border-t px-4 py-3.5">
+        <span className="text-ink-muted text-mini inline-flex items-center gap-2">
           <span
-            className={`${M.bg} bg-soft ${M.ink}`}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 30,
-              height: 30,
-              borderRadius: '9999px',
-              fontFamily: SANS,
-              fontSize: '12px',
-              fontWeight: 500,
-              border: `1.5px solid ${M.color}`,
-            }}
+            className={`${M.bg} bg-soft ${M.ink} border-module-cms text-mini inline-flex size-[30px] items-center justify-center rounded-full border font-sans font-medium`}
           >
             {article.seoScore}
           </span>
           SEO score · ready to publish
         </span>
-        <Button size="sm" style={{ backgroundColor: M.color }}>
+        <Button color="module-cms" size="sm">
           Publish
         </Button>
       </div>
@@ -314,22 +154,18 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
 export function CmsLifecycle() {
   const stages = [
     {
-      n: '01 · draft',
       title: 'Write',
       body: 'A distraction-free block editor. Autosave every 30 seconds; the last 10 revisions kept and any one restorable — write freely, never lose a word.',
     },
     {
-      n: '02 · in review',
       title: 'Hand it off',
       body: 'Share a private preview link so an editor reads the exact published layout before it goes out. Notes stay on the record.',
     },
     {
-      n: '03 · scheduled',
       title: 'Set the date',
       body: 'Future-date a post and it publishes itself at the minute you chose. Plan a week or a quarter of content without staying up to hit publish.',
     },
     {
-      n: '04 · published',
       title: 'Ship',
       body: 'Live on your domain, in the sitemap, with JSON-LD and an RSS entry. Change the slug later and a 301 redirect is created for you — no link rot.',
     },
@@ -341,78 +177,22 @@ export function CmsLifecycle() {
         headline="From blank page to live, in order"
         lede="Every page and post moves the same calm path — write, hand it off, set the date, ship. Autosave and revisions ride along the whole way, so nothing is ever lost between drafts."
       />
-      <div
-        className="mkt-pipeline"
-        style={{ marginTop: '52px', backgroundColor: 'var(--color-base-100)' }}
-      >
+      <div className="mkt-pipeline bg-base-100 mt-13">
         {stages.map((s, i) => (
           <div
-            key={s.n}
-            className="mkt-stage"
-            style={{
-              position: 'relative',
-              padding: '26px 24px 28px',
-              minHeight: '188px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-            }}
+            key={s.title}
+            className="mkt-pipe-cell relative flex min-h-[188px] flex-col gap-3 px-6 pt-6 pb-7"
           >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {s.n}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '18px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '9px',
-              }}
-            >
+            <h3 className="text-lede m-0 flex items-center gap-2 font-sans font-medium tracking-[-0.01em]">
               <Dot color={M.color} size={8} />
               {s.title}
             </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {s.body}
-            </p>
+            <p className="text-ink-muted text-caption m-0 font-sans">{s.body}</p>
             {i < stages.length - 1 ? (
               <span
-                className="mkt-hide-on-tablet"
-                style={{
-                  position: 'absolute',
-                  right: '-11px',
-                  top: '38px',
-                  zIndex: 2,
-                  width: 22,
-                  height: 22,
-                  borderRadius: '9999px',
-                  backgroundColor: 'var(--color-base-100)',
-                  border: '1px solid var(--color-base-300)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: M.color,
-                }}
+                className="mkt-hide-on-tablet border-base-300 bg-base-100 absolute top-[38px] -right-[11px] z-2 flex size-[22px] items-center justify-center rounded-full border"
+                // Module hue as a VALUE for the inline SVG's currentColor.
+                style={{ color: M.color }}
               >
                 <ArrowRight size={13} />
               </span>
@@ -441,10 +221,7 @@ export function CmsStructured() {
         headline="Model your content, not just paragraphs"
         lede="A blog is one shape; a case study, a recipe, or a team profile is another. Define your own content types with typed fields and sparx generates the editing form — then serves it back as clean, typed JSON over the same API."
       />
-      <div
-        className="mkt-grid-2-1"
-        style={{ marginTop: '52px', gap: '24px', alignItems: 'stretch' }}
-      >
+      <div className="mt-13 grid grid-cols-1 items-stretch gap-6 md:grid-cols-2">
         <SchemaPanel fields={fields} />
         <ResponsePanel />
       </div>
@@ -455,60 +232,25 @@ export function CmsStructured() {
 function SchemaPanel({ fields }: { fields: [string, string][] }) {
   return (
     <div
-      className={`${M.bg} bg-soft`}
-      style={{
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
+      className={`${M.bg} bg-soft border-base-300 flex flex-col overflow-hidden rounded-xl border`}
     >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '9px',
-          padding: '14px 20px',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
+      {/* Panel chrome label — this names the mockup's own header bar, not a
+          marketing heading below it. */}
+      <div className="border-base-300 flex items-center gap-2 border-b px-5 py-3.5">
         <Dot color={M.color} size={8} />
-        <span
-          className={M.ink}
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-          }}
-        >
+        <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
           content type · case study
         </span>
       </div>
       {fields.map(([label, type], i) => (
         <div
           key={label}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px',
-            padding: '13px 20px',
-            borderBottom: i < fields.length - 1 ? '1px solid var(--color-base-200)' : 'none',
-          }}
+          className={`flex items-center justify-between gap-3 px-5 py-3 ${
+            i < fields.length - 1 ? 'border-base-200 border-b' : ''
+          }`}
         >
-          <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>{label}</span>
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              padding: '3px 9px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '9999px',
-            }}
-          >
+          <span className="text-small font-sans font-medium">{label}</span>
+          <span className="text-ink-subtle text-mini border-base-300 rounded-full border px-2 py-0.5 font-mono">
             {type}
           </span>
         </div>
@@ -528,51 +270,14 @@ function ResponsePanel() {
   "status": "published"
 }`;
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        overflow: 'hidden',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '9px',
-          padding: '14px 20px',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
+    <div className="border-base-300 bg-base-100 flex flex-col overflow-hidden rounded-xl border">
+      <div className="border-base-300 flex items-center gap-2 border-b px-5 py-3.5">
         <Dot color={M.color} size={8} />
-        <span
-          className={M.ink}
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-          }}
-        >
+        <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
           GET /v1/case-studies/atlas-supply
         </span>
       </div>
-      <pre
-        style={{
-          margin: 0,
-          padding: '20px 22px',
-          fontFamily: MONO,
-          fontSize: '12.5px',
-          lineHeight: 1.75,
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          whiteSpace: 'pre',
-          overflow: 'auto',
-          flex: 1,
-        }}
-      >
+      <pre className="text-ink-muted text-mini m-0 flex-1 overflow-auto px-5.5 py-5 font-mono leading-[1.75] whitespace-pre">
         {json}
       </pre>
     </div>
@@ -581,6 +286,9 @@ function ResponsePanel() {
 
 // ── ANNOTATED EDITOR FRAME ──────────────────────────────────────────────────────
 export function CmsEditor() {
+  // `n` here is NOT a decorative step marker (RULE #2) — it is an annotation
+  // LEGEND. The same letters render as <Pin n="A" /> inside the EditorFrame
+  // below, so the callout and the thing it points at stay tied together.
   const pins = [
     {
       n: 'A',
@@ -610,9 +318,9 @@ export function CmsEditor() {
         headline="An editor that gets out of the way"
         lede="Built on a real rich-text engine — type, format, embed, link. No nested-popover maze, no mystery markup underneath. Everything alongside is a capability you get on day one."
       />
-      <div className="mkt-frame-grid" style={{ marginTop: '52px' }}>
+      <div className="mkt-frame-grid mt-13">
         <Cycle
-          style={{ minWidth: 0 }}
+          className="min-w-0"
           items={EXAMPLE_BUSINESSES.map((b) => (
             <EditorFrame key={b.domain} business={b} />
           ))}
@@ -621,52 +329,17 @@ export function CmsEditor() {
           {pins.map((p) => (
             <div
               key={p.n}
-              style={{
-                display: 'flex',
-                gap: '13px',
-                padding: '18px 20px',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '12px',
-                marginBottom: '14px',
-              }}
               // The module hue rides the soft wash, NOT a 3px left stripe — the
               // stripe is a retired brand device (and the most recognizable
               // generated-UI tell). Same treatment as every other module card.
-              className={`${M.bg} bg-soft`}
+              className={`${M.bg} bg-soft border-base-300 mb-3.5 flex gap-3 rounded-xl border px-5 py-4`}
             >
-              <span
-                className={M.ink}
-                style={{
-                  fontFamily: MONO,
-                  fontSize: '12px',
-                  flexShrink: 0,
-                  paddingTop: '1px',
-                }}
-              >
-                {p.n}
-              </span>
+              {/* p.n is the annotation KEY, tied to the matching <Pin n> inside
+                  the EditorFrame — never a decorative step marker. */}
+              <span className={`${M.ink} text-mini shrink-0 pt-px font-mono`}>{p.n}</span>
               <div>
-                <h4
-                  style={{
-                    margin: '0 0 4px',
-                    fontFamily: SANS,
-                    fontSize: '14.5px',
-                    fontWeight: 500,
-                  }}
-                >
-                  {p.title}
-                </h4>
-                <p
-                  style={{
-                    margin: 0,
-                    fontFamily: SANS,
-                    fontSize: '13px',
-                    lineHeight: '20px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  }}
-                >
-                  {p.body}
-                </p>
+                <h4 className="text-small mt-0 mb-1 font-sans font-medium">{p.title}</h4>
+                <p className="text-ink-muted text-caption m-0 font-sans">{p.body}</p>
               </div>
             </div>
           ))}
@@ -679,138 +352,46 @@ export function CmsEditor() {
 function EditorFrame({ business }: { business: ExampleBusiness }) {
   const { article } = business;
   return (
-    <div
-      style={{
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        overflow: 'hidden',
-        backgroundColor: 'var(--color-base-100)',
-        boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '12px 16px',
-          borderBottom: '1px solid var(--color-base-300)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
-        <span style={{ display: 'flex', gap: '6px' }}>
+    <div className="border-base-300 bg-base-100 overflow-hidden rounded-xl border shadow-lg">
+      <div className="border-base-300 bg-base-200 flex items-center gap-2 border-b px-4 py-3">
+        <span className="flex gap-1.5">
           {[0, 1, 2].map((d) => (
-            <span
-              key={d}
-              style={{ width: 10, height: 10, borderRadius: '9999px', backgroundColor: '#E0E0E4' }}
-            />
+            <span key={d} className="bg-base-300 size-2.5 rounded-full" />
           ))}
         </span>
-        <span
-          style={{
-            marginLeft: '8px',
-            fontFamily: MONO,
-            fontSize: '12px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            backgroundColor: 'var(--color-base-100)',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '7px',
-            padding: '5px 12px',
-            flex: 1,
-            minWidth: 0,
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-          }}
-        >
+        <span className="text-ink-subtle text-mini border-base-300 bg-base-100 ml-2 min-w-0 flex-1 overflow-hidden rounded-md border px-3 py-1 font-mono text-ellipsis whitespace-nowrap">
           app.sparx.works/cms/{article.slug}
         </span>
       </div>
-      <div style={{ padding: '26px 30px 30px' }}>
-        <span
-          className={M.ink}
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            letterSpacing: '0.05em',
-            textTransform: 'uppercase',
-          }}
-        >
+      <div className="px-7.5 pt-6 pb-7.5">
+        <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
           {article.category}
         </span>
-        <h3
-          style={{
-            margin: '10px 0 6px',
-            fontFamily: SANS,
-            fontSize: '24px',
-            fontWeight: 500,
-            letterSpacing: '-0.02em',
-            lineHeight: 1.2,
-          }}
-        >
+        <h3 className="text-h2 mt-2.5 mb-1.5 font-sans font-medium tracking-[-0.02em]">
           {article.title}
         </h3>
-        <p
-          style={{
-            margin: '0 0 18px',
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <p className="text-ink-subtle text-caption mt-0 mb-4 font-sans">
           by {article.author} · {article.readTime} · v12 <Pin n="D" />
         </p>
         {['100%', '94%', '100%'].map((w, i) => (
           <span
             key={`top-${i}`}
-            style={{
-              display: 'block',
-              height: '9px',
-              borderRadius: '9999px',
-              backgroundColor: 'var(--color-base-200)',
-              width: w,
-              margin: '9px 0',
-            }}
+            className="bg-base-200 my-2.5 block h-2.5 rounded-full"
+            // Per-line width is what makes the placeholder read as prose.
+            style={{ width: w }}
           />
         ))}
-        <div
-          style={{
-            height: '120px',
-            borderRadius: '10px',
-            backgroundColor: 'var(--color-base-200)',
-            margin: '16px 0',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            fontFamily: MONO,
-            fontSize: '12px',
-          }}
-        >
+        <div className="bg-base-200 text-ink-subtle text-mini my-4 flex h-30 items-center justify-center gap-2 rounded-[10px] font-mono">
           <Pin n="B" /> embedded video · from media library
         </div>
         {['94%', '76%'].map((w) => (
           <span
             key={`btm-${w}`}
-            style={{
-              display: 'block',
-              height: '9px',
-              borderRadius: '9999px',
-              backgroundColor: 'var(--color-base-200)',
-              width: w,
-              margin: '9px 0',
-            }}
+            className="bg-base-200 my-2.5 block h-2.5 rounded-full"
+            style={{ width: w }}
           />
         ))}
-        <p
-          style={{
-            margin: '14px 0 0',
-            fontFamily: SANS,
-            fontSize: '12.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <p className="text-ink-subtle text-mini mt-3.5 mb-0 font-sans">
           <Pin n="A" /> blocks &nbsp; <Pin n="C" /> internal links
         </p>
       </div>
@@ -818,24 +399,14 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
   );
 }
 
-/** A small teal annotation pin matching the A/B/C/D callouts. */
+/**
+ * A small teal annotation pin matching the A/B/C/D callouts. The solid module
+ * fill supplies its own paired ink, so there is no hand-picked white on teal.
+ */
 function Pin({ n }: { n: string }) {
   return (
     <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: 19,
-        height: 19,
-        borderRadius: '9999px',
-        backgroundColor: M.color,
-        color: '#FFFFFF',
-        fontFamily: MONO,
-        fontSize: '11px',
-        fontWeight: 500,
-        verticalAlign: 'middle',
-      }}
+      className={`${M.bg} text-module-cms-content text-micro inline-flex size-[19px] items-center justify-center rounded-full align-middle font-mono font-medium`}
     >
       {n}
     </span>
@@ -859,94 +430,38 @@ export function CmsSeoAudit() {
         headline="SEO that checks its own work"
         lede="Every page gets a live audit as you write — not a report you run later. Title and meta lengths, a unique H1, alt text, internal links, and word count, each scored before you publish. Sitemaps and JSON-LD generate themselves."
       />
-      <div className="mkt-seo-grid" style={{ marginTop: '52px' }}>
+      <div className="mkt-seo-grid mt-13">
         <div
-          className={`${M.bg} bg-soft`}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '18px',
-            padding: '30px',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '14px',
-          }}
+          className={`${M.bg} bg-soft border-base-300 flex flex-col gap-4 rounded-xl border p-7.5`}
         >
           <span
-            className={M.ink}
-            style={{
-              fontFamily: SANS,
-              fontSize: '64px',
-              fontWeight: 500,
-              letterSpacing: '-0.03em',
-              lineHeight: 1,
-            }}
+            className={`${M.ink} font-sans text-[64px] leading-none font-medium tracking-[-0.03em]`}
           >
             98
-            <span
-              style={{
-                fontSize: '22px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              /100
-            </span>
+            <span className="text-ink-subtle text-h3">/100</span>
           </span>
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '21px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+          <span className="text-ink-muted text-small font-sans">
             Live SEO score on &ldquo;Pour-over basics.&rdquo; Fix the one warning and it&rsquo;s a
             clean 100 — all before this post ever goes live.
           </span>
         </div>
-        <div
-          style={{
-            backgroundColor: 'var(--color-base-100)',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '14px',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="border-base-300 bg-base-100 overflow-hidden rounded-xl border">
           {checks.map((c, i) => (
             <div
               key={c.label}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '13px',
-                padding: '16px 22px',
-                borderBottom: i < checks.length - 1 ? '1px solid var(--color-base-200)' : 'none',
-              }}
+              className={`flex items-center gap-3 px-5.5 py-4 ${
+                i < checks.length - 1 ? 'border-base-200 border-b' : ''
+              }`}
             >
               <span
-                className={c.warn ? 'bg-warning bg-soft text-warning' : `${M.bg} bg-soft ${M.ink}`}
-                style={{
-                  width: 22,
-                  height: 22,
-                  borderRadius: '9999px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  flexShrink: 0,
-                }}
+                className={`${
+                  c.warn ? 'bg-warning bg-soft text-warning' : `${M.bg} bg-soft ${M.ink}`
+                } flex size-[22px] shrink-0 items-center justify-center rounded-full`}
               >
-                {c.warn ? <Bang size={12} /> : <Check size={12} color={M.color} />}
+                {c.warn ? <Bang size={12} /> : <Check size={12} color="currentColor" />}
               </span>
-              <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>{c.label}</span>
-              <span
-                style={{
-                  marginLeft: 'auto',
-                  fontFamily: MONO,
-                  fontSize: '12px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                {c.meta}
-              </span>
+              <span className="text-small font-sans font-medium">{c.label}</span>
+              <span className="text-ink-subtle text-mini ml-auto font-mono">{c.meta}</span>
             </div>
           ))}
         </div>

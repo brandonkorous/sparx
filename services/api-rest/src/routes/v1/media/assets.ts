@@ -22,6 +22,28 @@ import { conflict, notFound } from '@sparx/api-core/errors';
 
 const ListQuery = z.object({
   q: z.string().max(255).optional(),
+  // Resolve a KNOWN set of assets in one request — comma-separated ids.
+  //
+  // Added for the workbench product Media tab: `GET /commerce/products/:id/images`
+  // hands back `media_asset_id` and nothing renderable, so every gallery needed a
+  // second read to turn ids into thumbnail URLs. The alternative is one
+  // `/media/assets/:id` per image, which on a twelve-photo product is twelve
+  // round trips for one panel — the exact N+1 the workbench data layer exists to
+  // avoid. Ignores `q`/`status`/`type` ordering concerns: an explicit id set is
+  // already the filter.
+  ids: z
+    .string()
+    .max(9_000)
+    .optional()
+    .transform((value) =>
+      value
+        ? value
+            .split(',')
+            .map((id) => id.trim())
+            .filter((id) => id !== '')
+        : undefined
+    )
+    .pipe(z.array(z.string().uuid()).min(1).max(250).optional()),
   status: z.enum(['uploading', 'ready', 'failed']).optional(),
   // Filter to assets whose mime_type starts with this string ("image",
   // "video", "audio") so the dashboard's asset picker can scope to type
@@ -141,6 +163,7 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
 
     const where: Prisma.MediaAssetWhereInput = {
       deletedAt: null,
+      ...(q.ids ? { id: { in: q.ids } } : {}),
       ...(q.status ? { status: q.status } : {}),
       ...(q.type ? { mimeType: { startsWith: q.type } } : {}),
       ...(q.q

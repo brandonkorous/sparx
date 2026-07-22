@@ -6,10 +6,11 @@
 // manual revision, writes an audit log row, and emits
 // `content.entry.published` on Pub/Sub so webhook subscribers fan out.
 //
-// Singleton across pods: a Postgres advisory lock (constant key
-// SCHEDULED_PUBLISH_LOCK_KEY) is acquired with pg_try_advisory_lock; if
-// another pod already holds it the tick returns immediately. The lock
-// is held for the duration of the tick and released in a finally block.
+// Singleton across pods: a TRANSACTION-scoped Postgres advisory lock (constant
+// key SCHEDULED_PUBLISH_LOCK_KEY) via withAdvisoryTickLock; if another pod holds
+// it the tick returns immediately. The lock auto-releases at transaction end, so
+// it cannot leak across pooled connections the way the old session-lock did (see
+// @sparx/db advisory-tick-lock).
 //
 // RLS: the cross-tenant SELECT uses the `find_due_scheduled_entries(int)`
 // SECURITY DEFINER function (migration 20260601100000). The function is
@@ -18,12 +19,13 @@
 // bypass. Per-entry UPDATE rides `withTenant({tenantId})` so the write
 // still goes through the standard tenant_isolation policy.
 
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { recordRevision } from '@sparx/cms';
 import { publish } from '@sparx/api-core/pubsub';
 
-const SCHEDULED_PUBLISH_LOCK_KEY = 4242_4242;
+const SCHEDULED_PUBLISH_LOCK_KEY = ADVISORY_LOCKS.SCHEDULED_PUBLISH;
 const DEFAULT_INTERVAL_MS = 60_000;
 
 interface DueEntry {
@@ -44,95 +46,88 @@ export interface TickResult {
 // is fine; the first run grabs whatever's due, subsequent runs find
 // nothing.
 export async function runScheduledPublishTick(logger: FastifyBaseLogger): Promise<TickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${SCHEDULED_PUBLISH_LOCK_KEY}::int) AS acquired
+  const SKIPPED: TickResult = { acquired: false, processed: 0, errors: 0 };
+  return withAdvisoryTickLock(SCHEDULED_PUBLISH_LOCK_KEY, SKIPPED, () => runLocked(logger));
+}
+
+async function runLocked(logger: FastifyBaseLogger): Promise<TickResult> {
+  // SECURITY DEFINER function — runs as sparx_owner, returns the
+  // due-entry projection across all tenants without sparx_app
+  // gaining RLS bypass. See migration 20260601100000.
+  const due = await prisma.$queryRaw<DueEntry[]>`
+    SELECT id, tenant_id, type_key, slug, scheduled_at
+    FROM find_due_scheduled_entries(100)
   `;
-  if (!lock[0]?.acquired) {
-    logger.debug('scheduled-publish: lock held by another pod, skipping');
-    return { acquired: false, processed: 0, errors: 0 };
+
+  if (due.length === 0) {
+    return { acquired: true, processed: 0, errors: 0 };
   }
 
-  try {
-    // SECURITY DEFINER function — runs as sparx_owner, returns the
-    // due-entry projection across all tenants without sparx_app
-    // gaining RLS bypass. See migration 20260601100000.
-    const due = await prisma.$queryRaw<DueEntry[]>`
-      SELECT id, tenant_id, type_key, slug, scheduled_at
-      FROM find_due_scheduled_entries(100)
-    `;
+  logger.info({ count: due.length }, 'scheduled-publish: publishing due entries');
 
-    if (due.length === 0) {
-      return { acquired: true, processed: 0, errors: 0 };
-    }
+  let processed = 0;
+  let errors = 0;
 
-    logger.info({ count: due.length }, 'scheduled-publish: publishing due entries');
+  for (const row of due) {
+    try {
+      await withTenant({ tenantId: row.tenant_id }, async (tx) => {
+        const fresh = await tx.contentEntry.findUnique({ where: { id: row.id } });
+        if (!fresh || fresh.deletedAt || fresh.status !== 'scheduled') return;
 
-    let processed = 0;
-    let errors = 0;
-
-    for (const row of due) {
-      try {
-        await withTenant({ tenantId: row.tenant_id }, async (tx) => {
-          const fresh = await tx.contentEntry.findUnique({ where: { id: row.id } });
-          if (!fresh || fresh.deletedAt || fresh.status !== 'scheduled') return;
-
-          const after = await tx.contentEntry.update({
-            where: { id: row.id },
-            data: {
-              status: 'published',
-              publishedAt: new Date(),
-              scheduledAt: null,
-            },
-          });
-
-          await recordRevision(tx, {
-            tenantId: row.tenant_id,
-            entryId: after.id,
-            body: (after.body ?? {}) as Record<string, unknown>,
-            seoJson: (after.seoJson ?? {}) as Record<string, unknown>,
+        const after = await tx.contentEntry.update({
+          where: { id: row.id },
+          data: {
             status: 'published',
-            kind: 'manual',
-            authorId: null,
-            summary: 'Scheduled publish fired',
-          });
+            publishedAt: new Date(),
+            scheduledAt: null,
+          },
+        });
 
-          await tx.auditLog.create({
-            data: {
-              tenantId: row.tenant_id,
-              actorId: null,
-              actorType: 'system',
-              action: 'content.entry.published',
-              entityType: 'content_entry',
-              entityId: after.id,
-              diff: {
-                before: { status: 'scheduled' },
-                after: {
-                  status: 'published',
-                  publishedAt: after.publishedAt?.toISOString() ?? null,
-                },
+        await recordRevision(tx, {
+          tenantId: row.tenant_id,
+          entryId: after.id,
+          body: (after.body ?? {}) as Record<string, unknown>,
+          seoJson: (after.seoJson ?? {}) as Record<string, unknown>,
+          status: 'published',
+          kind: 'manual',
+          authorId: null,
+          summary: 'Scheduled publish fired',
+        });
+
+        await tx.auditLog.create({
+          data: {
+            tenantId: row.tenant_id,
+            actorId: null,
+            actorType: 'system',
+            action: 'content.entry.published',
+            entityType: 'content_entry',
+            entityId: after.id,
+            diff: {
+              before: { status: 'scheduled' },
+              after: {
+                status: 'published',
+                publishedAt: after.publishedAt?.toISOString() ?? null,
               },
             },
-          });
+          },
         });
+      });
 
-        await publish(logger, 'content.entry.published', row.tenant_id, null, {
-          entryId: row.id,
-          typeKey: row.type_key,
-          slug: row.slug,
-          scheduledAt: row.scheduled_at.toISOString(),
-        });
+      await publish(logger, 'content.entry.published', row.tenant_id, null, {
+        entryId: row.id,
+        typeKey: row.type_key,
+        slug: row.slug,
+        scheduledAt: row.scheduled_at.toISOString(),
+      });
 
-        processed += 1;
-      } catch (err) {
-        errors += 1;
-        logger.error({ err, entryId: row.id }, 'scheduled-publish: failed to publish entry');
-      }
+      processed += 1;
+    } catch (err) {
+      errors += 1;
+      logger.error({ err, entryId: row.id }, 'scheduled-publish: failed to publish entry');
     }
-
-    return { acquired: true, processed, errors };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${SCHEDULED_PUBLISH_LOCK_KEY}::int)`;
   }
+
+  return { acquired: true, processed, errors };
 }
 
 // Background loop. Started from src/index.ts at boot; returns a stop()

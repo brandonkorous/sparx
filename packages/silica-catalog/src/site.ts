@@ -27,8 +27,9 @@ import {
   type Theme,
 } from '@wizeworks/silicaui-html';
 
-import { collectionHeader, featuredProducts, productGrid } from './commerce';
-import { HOST_KEYS, functionalShell } from './host-nodes';
+import { blogIndexPage } from './cms';
+import { featuredProducts, productGrid, shopHeader } from './commerce';
+import { HOST_KEYS, functionalShell, hostCore } from './host-nodes';
 import { siteFooter, siteNavbar, type SiteChromeOptions } from './site-chrome';
 
 // ── Page content (sparx-authored, neutral copy) ──────────────────────────────
@@ -208,7 +209,7 @@ export function starterFrame(opts: SiteChromeOptions = {}): Frame {
  *  row; Contact is a reach-out prompt. Each is a `pageBody` so the Navigator shows
  *  a real "Page" root that holds sections as siblings. */
 export function starterPages(opts: SiteChromeOptions = {}): Page[] {
-  const { commerceEnabled = true, schedulingEnabled = false } = opts;
+  const { commerceEnabled = true, schedulingEnabled = false, cmsEnabled = false } = opts;
   const homeSections = commerceEnabled
     ? [hero(true), productGrid(), featuredProducts(), ctaBand()]
     : [hero(false), ctaBand()];
@@ -216,7 +217,15 @@ export function starterPages(opts: SiteChromeOptions = {}): Page[] {
     makePage('Home', '/', stampTree(pageBody(homeSections))),
     ...(commerceEnabled
       ? [
-          makePage('Shop', '/shop', stampTree(pageBody([collectionHeader(), productGrid()]))),
+          // Shop = the faceted PLP core (docs/127 §8) under an editable header, so the
+          // shop-all page carries the same brand/type/tags/color/size facets + sort +
+          // pagination as /products, not a bare truncated grid. The core reads the URL for
+          // its filter state; the route renders it through the functional walk.
+          makePage(
+            'Shop',
+            '/shop',
+            stampTree(pageBody([shopHeader(), hostCore(HOST_KEYS.commercePlp)]))
+          ),
           // The cart is a FUNCTIONAL page (docs/122): an editable shell wrapping the
           // pinned `commerce.cart` core. Seeded so a commerce tenant's studio lists a
           // "Cart" page they can restyle/surround — the core stays put (locked: "host").
@@ -306,6 +315,11 @@ export function starterPages(opts: SiteChromeOptions = {}): Page[] {
           ),
         ]
       : []),
+    // Journal — the blog INDEX, seeded only for a tenant with the CMS module active.
+    // The per-post DETAIL page is not seeded here: it is a record template, so it comes
+    // from the `cms.blog_post` code composite (`starterCollectionDto`) like the PDP,
+    // which reaches every tenant instead of only ones created after this shipped.
+    ...(cmsEnabled ? [makePage('Journal', '/blog', stampTree(blogIndexPage()))] : []),
     makePage('About', '/about', stampTree(pageBody([aboutContent(), featureTrio()]))),
     makePage('Contact', '/contact', stampTree(pageBody([contactContent()]))),
   ];

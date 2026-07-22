@@ -19,13 +19,11 @@
 import { z } from 'zod';
 
 import {
-  BuilderNodeSchema,
   BuilderPageKind,
-  ComponentGroup,
-  ComponentKey,
-  ComponentSurface,
   PageSlug,
-  PropSpecListSchema,
+  SilicaEmailDocumentInput,
+  SilicaThemeInput,
+  SilicaTreeInput,
 } from '@sparx/builder-schemas';
 import { ContentTypeSchema } from '@sparx/cms-schemas';
 import { CreateSavedThemeInput } from '@sparx/sitebuilder-schemas';
@@ -305,58 +303,75 @@ export const CommerceDecl = z.object({
 });
 export type CommerceDecl = z.infer<typeof CommerceDecl>;
 
-// ── Builder: components, layout, pages (docs/40, 41, 45, 53) ───────────────────
+// ── The site: frame, pages, theme, symbols (docs/118) ──────────────────────────
+//
+// SILICA-NATIVE, and only silica. A blueprint's authored trees are the same
+// `Node` documents the studio editor and the MCP authoring tools emit, and the
+// installer writes them straight through `siteService.installSite` — the same
+// seam a human author's save goes through.
+//
+// The legacy `BuilderNode` manifest (a `layout` + flat `pages[]`, converted to
+// silica at go-live by a best-effort bridge) is GONE. It could only ever express
+// what the converter could translate, so a template authored in the real editor
+// lost exactly the things that made it good — colour bands, arbitrary utility
+// classes, host cores, attribute bindings — on the way into a bundle. Authoring
+// and installing now share one shape, so a captured site reinstalls byte-identical.
 
-/** A tenant component to create on install (docs/53). Tree + propSpec are the
- *  same shape `componentService.create` takes; pages may place it via a
- *  `custom:<key>` node. */
-export const ComponentDecl = z.object({
-  key: ComponentKey,
-  name: z.string().min(1).max(120),
-  group: ComponentGroup.default('content'),
-  icon: z.string().max(64).default('box'),
-  description: z.string().max(500).optional(),
-  surfaces: z.array(ComponentSurface).min(1).default(['page']),
-  tree: BuilderNodeSchema,
-  propSpec: PropSpecListSchema.default([]),
-});
-export type ComponentDecl = z.infer<typeof ComponentDecl>;
+/** A site-global saved component — silica's `SymbolDef`, keyed by symbol id. Kept
+ *  opaque (silica owns the shape) and passed through to `sync` verbatim, exactly
+ *  as the editor's own `symbols` map is. Replaces the legacy per-tenant
+ *  `ComponentDecl`, whose `custom:<key>` placement node has no silica analogue —
+ *  a silica page inlines a symbol instance instead. */
+export const SiteSymbolsDecl = z.record(z.string(), z.unknown());
+export type SiteSymbolsDecl = z.infer<typeof SiteSymbolsDecl>;
 
-/** The site chrome (header · Outlet · footer). Becomes the property's active
- *  layout unless `makeActive` is false (or the property already has one). */
-export const LayoutDecl = z.object({
-  name: z.string().min(1).max(255),
-  tree: BuilderNodeSchema,
-  makeActive: z.boolean().default(true),
-});
-export type LayoutDecl = z.infer<typeof LayoutDecl>;
-
-export const PageDecl = z.object({
+/** One page of the site. `root` is the page's full silica body tree (the same
+ *  document `siteService.load` returns), NOT a list of sections — a captured page
+ *  round-trips without being re-wrapped. No `id`: the manifest cannot know runtime
+ *  UUIDs (the handle-not-id rule), so the installer mints one per page. */
+export const SitePageDecl = z.object({
   name: z.string().min(1).max(255),
   kind: BuilderPageKind.default('singleton'),
   /** Collection pages target a recordType (e.g. cms.blog_post, commerce.product). */
   recordType: z.string().max(63).optional(),
-  /** Singleton route slug (e.g. about, contact). */
+  /** Route slug; `''` (or omitted) is the home page. */
   slug: PageSlug.optional(),
-  tree: BuilderNodeSchema,
+  root: SilicaTreeInput,
   /** Make this the default template for its recordType (collection pages only). */
   isDefault: z.boolean().default(false),
-  // Singleton SEO (raw URL for ogImage — hot-linked, not a MediaAsset).
+  // SEO (raw URL for ogImage — hot-linked, not a MediaAsset).
   seoTitle: z.string().max(255).optional(),
   seoDescription: z.string().max(500).optional(),
   canonical: z.string().max(2048).optional(),
   ogImage: z.string().max(2048).optional(),
   noindex: z.boolean().optional(),
 });
-export type PageDecl = z.infer<typeof PageDecl>;
+export type SitePageDecl = z.infer<typeof SitePageDecl>;
 
-// ── Email (docs/52) ────────────────────────────────────────────────────────────
+/** The whole authored site: the shared chrome frame, every page, the authored
+ *  theme, and the saved-component symbols. Mirrors `StoredSilicaSite` — what
+ *  `siteService.load`/`getPublishedSite` hand back — so capturing a live site into
+ *  a bundle is a projection, not a translation.
+ *
+ *  `theme` is optional: omitting it lets the installing tenant's own brand-derived
+ *  theme stand, which is what makes one template re-skin per tenant. Include it
+ *  only when the design genuinely depends on specific tokens. */
+export const SiteDecl = z.object({
+  frame: z.object({ root: SilicaTreeInput }).optional(),
+  pages: z.array(SitePageDecl).min(1).max(200),
+  theme: SilicaThemeInput.optional(),
+  symbols: SiteSymbolsDecl.optional(),
+});
+export type SiteDecl = z.infer<typeof SiteDecl>;
 
+// ── Email (docs/52, docs/120) ──────────────────────────────────────────────────
+
+/** A marketing email. `doc` is a silica `EmailDocument` — the shape the email
+ *  editor saves and `renderSilicaEmail` sends. Silica owns `subject`/`preheader`
+ *  inside the document; the row mirrors them, so they are not duplicated here. */
 export const EmailDecl = z.object({
   name: z.string().min(1).max(255),
-  subject: z.string().max(255).optional(),
-  preheader: z.string().max(255).optional(),
-  tree: BuilderNodeSchema,
+  doc: SilicaEmailDocumentInput,
   /** Publish on install. Default false — installs leave emails draft (docs/54 D4). */
   publish: z.boolean().default(false),
 });
@@ -385,9 +400,9 @@ export const BlueprintSchema = z.object({
   contentTypes: z.array(ContentTypeDecl).max(50).default([]),
   content: z.array(ContentEntryDecl).max(500).default([]),
   commerce: CommerceDecl.optional(),
-  components: z.array(ComponentDecl).max(100).default([]),
-  layout: LayoutDecl.optional(),
-  pages: z.array(PageDecl).max(200).default([]),
+  /** The authored silica site (frame + pages + theme + symbols). Optional so a
+   *  commerce/content-only blueprint (no hosted site) stays expressible. */
+  site: SiteDecl.optional(),
   emails: z.array(EmailDecl).max(100).default([]),
 });
 export type Blueprint = z.infer<typeof BlueprintSchema>;

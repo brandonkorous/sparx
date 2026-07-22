@@ -26,13 +26,23 @@ export const PageSlug = z
  *  edits); `published`/`publishedAt` describe the last snapshot. `slug` is the
  *  URL a published singleton page serves at (docs/44); null for collection
  *  templates and unrouted pages. */
-export interface BuilderPageDto {
+/**
+ * A page WITHOUT its tree (docs/127 §3) — what every list surface actually needs.
+ *
+ * `listOrSeed` returned the full DTO, so rendering a list of page NAMES materialized
+ * every draft tree in the property: four JSONB columns read, one of them deserialized
+ * into a `BuilderNode` per row, all of it discarded by a UI that shows a name and a
+ * status. On the busiest dashboard surface in the builder.
+ *
+ * `BuilderPageDto` extends this with the tree, so a caller that genuinely needs a body
+ * (the editor, the publish path) is unchanged and the two can never drift.
+ */
+export interface BuilderPageSummaryDto {
   id: string;
   name: string;
   slug: string | null;
   kind: BuilderPageKind;
   recordType: string | null;
-  tree: BuilderNode;
   published: boolean;
   publishedAt: string | null;
   position: number;
@@ -48,6 +58,12 @@ export interface BuilderPageDto {
   noindex: boolean;
   createdAt: string;
   updatedAt: string;
+}
+
+/** A page WITH its draft body — for the editor and the publish path. Every list
+ *  surface should take {@link BuilderPageSummaryDto} instead. */
+export interface BuilderPageDto extends BuilderPageSummaryDto {
+  tree: BuilderNode;
 }
 
 /** What the PUBLIC storefront read returns (docs/44 §2.2) — the published tree

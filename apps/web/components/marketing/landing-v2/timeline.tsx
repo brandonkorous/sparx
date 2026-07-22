@@ -15,28 +15,28 @@ const MOMENTS = [
     title: 'An order lands before you open.',
     body: 'Inventory updates, payment clears, the customer record updates, and a pickup message is scheduled — automatically, with no integration to configure.',
     result: 'Order handled',
-    color: '#F97316',
+    color: 'var(--color-module-commerce)',
   },
   {
     time: '10:40 AM',
     title: 'A wholesale buyer asks for pricing.',
     body: 'sparx recognizes the company, applies their price list and net terms, and drafts a quote from the same product catalog you already sell from.',
     result: 'Quote ready',
-    color: '#475569',
+    color: 'var(--color-module-b2b)',
   },
   {
     time: '1:15 PM',
     title: "This week's post becomes an email, in one click.",
     body: 'Write it once in the CMS. Send it as a newsletter to your subscribers without re-typing a word or opening a second tool.',
     result: 'Newsletter sent',
-    color: '#14B8A6',
+    color: 'var(--color-module-cms)',
   },
   {
     time: '4:50 PM',
     title: 'You ask your AI what changed today.',
     body: 'Because sparx exposes live business data through MCP, your assistant answers with real orders, customers and inventory — not a stale export.',
     result: 'Answer grounded',
-    color: '#EC4899',
+    color: 'var(--color-module-ai)',
   },
   {
     time: '6:18 PM',
@@ -49,27 +49,36 @@ const MOMENTS = [
 
 export function LandingV2Timeline() {
   return (
+    // A `data-theme="dark"` island: the whole `--color-base-*` ramp flips, so the
+    // paneled system's content-tier rule (`--color-base-100 !important`) paints
+    // this band dark and every ink resolves from `base-content`. `bg-base-100`
+    // is the standalone fallback outside `.mkt-paneled`.
     <section
       id="day"
-      className="mkt-accent px-[var(--gutter-page)] py-[var(--section-py-xl)]"
-      style={{ scrollMarginTop: '80px' }}
+      data-theme="dark"
+      className="mkt-inverse bg-base-100 px-page py-section-xl scroll-mt-20"
     >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
+      <Container className="flex flex-col gap-16">
         <Reveal className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:items-end">
-          <Heading level={2} size="display" style={SECTION_DISPLAY_STYLE} className="text-white">
+          <Heading
+            level={2}
+            size="display"
+            style={SECTION_DISPLAY_STYLE}
+            className="text-base-content"
+          >
             One ordinary day. One extraordinary advantage.
           </Heading>
-          <Text variant="lead" style={{ color: '#A1A1AA' }}>
+          <Text variant="lead" className="text-base-content">
             sparx is most valuable in the moments that used to steal your attention. Here&apos;s
             what it feels like when your whole business shares one brain.
           </Text>
         </Reveal>
 
         <div className="relative">
+          {/* Decorative rail — an alpha on a BACKGROUND, which the ink rule allows. */}
           <span
             aria-hidden
-            className="absolute top-1.5 bottom-1.5 left-[27px] w-px"
-            style={{ backgroundColor: 'var(--color-neutral-content)', opacity: 0.15 }}
+            className="bg-base-content/15 absolute top-1.5 bottom-1.5 left-[27px] w-px"
           />
           <div className="flex flex-col gap-5">
             {MOMENTS.map((m, i) => (

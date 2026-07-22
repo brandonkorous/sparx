@@ -233,3 +233,10 @@ export type {
 // to the type namespace (Prisma.TransactionClient, Prisma.*WhereInput, …).
 // Type-only consumers keep using `import type { Prisma } from '@sparx/db'`.
 export { Prisma } from '@prisma/client';
+
+// The single allocation table for Postgres advisory-lock keys used by the
+// platform's background ticks (see ./advisory-locks for why it is centralized).
+export { ADVISORY_LOCKS, type AdvisoryLockName } from './advisory-locks';
+// The transaction-scoped single-flight guard those keys are used with — replaces
+// the leak-prone session-lock acquire/release pattern (see ./advisory-tick-lock).
+export { withAdvisoryTickLock } from './advisory-tick-lock';

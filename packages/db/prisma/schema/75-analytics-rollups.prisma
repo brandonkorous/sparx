@@ -17,9 +17,17 @@
 // same definition the live `revenue-summary` KPI uses, so the chart and the
 // headline never disagree.
 model RollupCommerceDailyRevenue {
-  tenantId String   @map("tenant_id") @db.Uuid
+  // Surrogate PK (docs/131 §6): the natural key (tenant, property, day) includes a
+  // NULLABLE property — an @@id cannot contain a null column, so the grain is a
+  // NULLS NOT DISTINCT unique index (hand-SQL) over a surrogate id, exactly like
+  // ProductReviewRollup. property_id null = the "unattributed" bucket: revenue whose
+  // order outlived its site (Order.property_id is SetNull). Per-site reads exclude
+  // it; the all-sites total sums every row including it.
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  propertyId String?  @map("property_id") @db.Uuid
   // The UTC day this row aggregates (date only — no time component).
-  bucket   DateTime @db.Date
+  bucket     DateTime @db.Date
 
   ordersCount   Int    @default(0) @map("orders_count")
   // Merchandise subtotal before discounts (sum of order.subtotal).
@@ -33,9 +41,14 @@ model RollupCommerceDailyRevenue {
 
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade (not SetNull): deleting a site drops its rollup rows and the nightly
+  // reconcile re-buckets that site's now-orphaned source orders into the null
+  // bucket — SetNull would instead collide the row onto the existing null bucket
+  // under the NULLS NOT DISTINCT unique.
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  @@id([tenantId, bucket], map: "rollup_commerce_daily_revenue_pkey")
+  @@unique([tenantId, propertyId, bucket], map: "rollup_commerce_daily_revenue_grain")
   @@map("rollup_commerce_daily_revenue")
 }
 
@@ -48,9 +61,15 @@ model RollupCommerceDailyRevenue {
 // net of refunds — the same net cash definition `aggregatePayments` uses — so
 // the chart never disagrees with the AR figures.
 model RollupInvoicingDailyCollected {
-  tenantId String   @map("tenant_id") @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  // NON-null (docs/131 §6): unlike commerce/dropship, the invoicing source
+  // (billing_documents.property_id) is NOT NULL and ON DELETE RESTRICT — a site
+  // with billing history cannot be deleted, so there is never an unattributed
+  // bucket here. Both series attribute to the DOCUMENT's site (a payment inherits
+  // its document's property), so a composite PK is exact and no surrogate is needed.
+  propertyId String   @map("property_id") @db.Uuid
   // The UTC day this row aggregates (date only — no time component).
-  bucket   DateTime @db.Date
+  bucket     DateTime @db.Date
 
   // Payment/deposit events received this day (refunds excluded from the count).
   paymentsCount  Int    @default(0) @map("payments_count")
@@ -65,9 +84,10 @@ model RollupInvoicingDailyCollected {
 
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  @@id([tenantId, bucket], map: "rollup_invoicing_daily_collected_pkey")
+  @@id([tenantId, propertyId, bucket], map: "rollup_invoicing_daily_collected_pkey")
   @@map("rollup_invoicing_daily_collected")
 }
 
@@ -83,9 +103,15 @@ model RollupInvoicingDailyCollected {
 // `/internal/dropship/orders-rollup` reconcile (also the backfill); the read
 // live-overlays the most recent open day(s) so "today" stays fresh.
 model RollupDropshipDailyOrders {
-  tenantId String   @map("tenant_id") @db.Uuid
+  // Surrogate PK + nullable property (docs/131 §6), same shape as the commerce
+  // rollup: a DropshipOrder has no site of its own — it attributes to its storefront
+  // Order (DropshipOrder.order), whose property_id is SetNull, so a routed order can
+  // outlive its site into the null "unattributed" bucket.
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  propertyId String?  @map("property_id") @db.Uuid
   // The UTC day this row aggregates (date only — no time component).
-  bucket   DateTime @db.Date
+  bucket     DateTime @db.Date
 
   // Dropship orders routed (submitted | shipped | delivered) this day.
   ordersCount  Int    @default(0) @map("orders_count")
@@ -98,9 +124,10 @@ model RollupDropshipDailyOrders {
 
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  @@id([tenantId, bucket], map: "rollup_dropship_daily_orders_pkey")
+  @@unique([tenantId, propertyId, bucket], map: "rollup_dropship_daily_orders_grain")
   @@map("rollup_dropship_daily_orders")
 }
 
@@ -115,9 +142,18 @@ model RollupDropshipDailyOrders {
 // the read live-overlays the most recent open day(s). No money columns, so plain
 // INTEGER counts (a tenant's daily run volume stays well under INT4's ceiling).
 model RollupAutomationDailyRuns {
-  tenantId String   @map("tenant_id") @db.Uuid
+  // Surrogate PK + nullable property (docs/131 §6). Buckets by AutomationRun.
+  // property_id — the site a run executed for. null here is SHARED, not orphaned:
+  // a tenant-wide automation (Automation.property_id null = "applies to every
+  // business") produces runs with no single site, so unlike commerce/dropship the
+  // null bucket is a first-class, meaningful value. Per-site reads therefore
+  // INCLUDE the null bucket (every site sees the tenant-wide automations' activity),
+  // the shared-null read the operational layer uses for Automation itself.
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String   @map("tenant_id") @db.Uuid
+  propertyId String?  @map("property_id") @db.Uuid
   // The UTC day this row aggregates (date only — no time component).
-  bucket   DateTime @db.Date
+  bucket     DateTime @db.Date
 
   // All runs started this day (any status, including still in-flight).
   runsCount      Int @default(0) @map("runs_count")
@@ -130,9 +166,10 @@ model RollupAutomationDailyRuns {
 
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
-  @@id([tenantId, bucket], map: "rollup_automation_daily_runs_pkey")
+  @@unique([tenantId, propertyId, bucket], map: "rollup_automation_daily_runs_grain")
   @@map("rollup_automation_daily_runs")
 }
 
@@ -149,6 +186,12 @@ model RollupAutomationDailyRuns {
 // mirrors the live `/v1/inventory/reports/summary` definition exactly:
 // total_cost_cents = Σ(inventory_level.on_hand × moving-average cost) and
 // total_retail_cents = Σ(inventory_level.on_hand × variant.price_cents).
+//
+// Deliberately TENANT-ONLY, no property dimension (docs/131 §6): stock lives in
+// warehouses (no property_id — a warehouse is not a site) and one physical pool
+// serves every site a product is listed on. Splitting a valuation per-site would
+// either double-count the same units or invent an allocation of shared stock, so
+// the honest grain is the tenant. This is the one rollup §6 leaves at (tenant, day).
 model RollupInventoryDailyValuation {
   tenantId String   @map("tenant_id") @db.Uuid
   // The UTC day this snapshot was captured (date only — no time component).

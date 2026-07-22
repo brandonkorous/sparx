@@ -34,6 +34,13 @@ const PLATFORM_LINKS: { path: string; label: string; note: string }[] = [
   },
   { path: '/pricing', label: 'Pricing', note: 'Per-module pricing — pay only for what you use.' },
   {
+    // The AI module's second document — /ai (in moduleLines above) is the
+    // customer-facing concierge; this is the tenant-facing MCP / agentic story.
+    path: '/agentic',
+    label: 'Agentic (MCP)',
+    note: 'Point your own AI (Claude, ChatGPT, Copilot) at live business data over a first-class MCP server — scoped, audited, your key.',
+  },
+  {
     path: '/security',
     label: 'Security',
     note: 'Row-level multi-tenancy, data ownership, backups, SLAs.',

@@ -8,7 +8,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import { notFound } from 'next/navigation';
-import { Button } from '@wizeworks/silicaui-react';
+import { Badge, Button } from '@wizeworks/silicaui-react';
 import { Section, Display, Spark } from '@/components/marketing/primitives';
 import {
   fetchListing,
@@ -121,118 +121,58 @@ export default async function ListingDetailPage({
 
   return (
     <Section surface="page" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
-        <a
-          href={`/market/${cat.id}`}
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            textDecoration: 'none',
-          }}
-        >
+      <div className="flex flex-col gap-8">
+        <a href={`/market/${cat.id}`} className="text-ink-muted text-caption no-underline">
           ← {cat.label}
         </a>
 
-        <div className="mkt-stack-on-tablet" style={{ gap: '40px', alignItems: 'flex-start' }}>
+        <div className="flex flex-col items-start gap-10 lg:flex-row">
           {/* Gallery + description */}
-          <div
-            style={{
-              flex: '2 1 0',
-              minWidth: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px',
-            }}
-          >
+          <div className="flex min-w-0 flex-[2_1_0] flex-col gap-5">
             {hero ? (
               /* Hot-linked preview (docs/54). */
               <img
                 src={hero}
                 alt={`${item.name} preview`}
-                style={{
-                  width: '100%',
-                  borderRadius: '12px',
-                  border: '1px solid var(--color-base-300)',
-                }}
+                className="border-base-300 w-full rounded-xl border"
               />
             ) : (
-              <div
-                style={{
-                  aspectRatio: '16 / 10',
-                  width: '100%',
-                  borderRadius: '12px',
-                  border: '1px solid var(--color-base-300)',
-                  backgroundColor: 'var(--color-base-100)',
-                }}
-              />
+              <div className="border-base-300 bg-base-100 aspect-[16/10] w-full rounded-xl border" />
             )}
 
             {images.length > 1 ? (
-              <div className="mkt-cluster" style={{ gap: '10px' }}>
+              <div className="flex flex-wrap items-center gap-2.5">
                 {images.slice(1, 5).map((m) => (
                   /* Hot-linked preview (docs/54). */
                   <img
                     key={m.url}
                     src={m.url}
                     alt={m.alt ?? `${item.name} preview`}
-                    style={{
-                      width: '120px',
-                      height: '76px',
-                      objectFit: 'cover',
-                      borderRadius: '8px',
-                      border: '1px solid var(--color-base-300)',
-                    }}
+                    className="border-base-300 h-[76px] w-[120px] rounded-lg border object-cover"
                   />
                 ))}
               </div>
             ) : null}
 
             {item.description ? (
-              <p
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '16px',
-                  lineHeight: '26px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  margin: 0,
-                  paddingTop: '8px',
-                }}
-              >
-                {item.description}
-              </p>
+              <p className="text-ink-muted text-body m-0 pt-2">{item.description}</p>
             ) : null}
           </div>
 
           {/* Action panel */}
           <aside
+            className="border-base-300 sticky top-24 flex w-full max-w-[380px] flex-[1_1_320px] flex-col gap-5 rounded-xl border p-7"
+            // The one lead panel on the detail page carries the soft 12% wash of
+            // the listing's accent — catalog data (a JS value), so it stays inline.
             style={{
-              flex: '1 1 320px',
-              maxWidth: '380px',
-              width: '100%',
-              position: 'sticky',
-              top: '96px',
-              // The one lead panel on the detail page carries the soft 12%
-              // module wash (the sanctioned single tinted card), no stripe.
               backgroundColor: `color-mix(in oklab, ${accent} 12%, var(--color-base-100))`,
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              padding: '28px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '20px',
             }}
           >
             {tag ? (
               <span
+                className="text-micro self-start rounded-full px-2.5 py-1 font-medium"
                 style={{
-                  alignSelf: 'flex-start',
-                  padding: '4px 10px',
-                  borderRadius: '9999px',
                   backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)`,
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '11px',
                   color: accent,
                 }}
               >
@@ -241,61 +181,25 @@ export default async function ListingDetailPage({
             ) : null}
 
             <div>
-              <h1
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '26px',
-                  letterSpacing: '-0.02em',
-                  lineHeight: '32px',
-                  color: 'var(--color-base-content)',
-                  margin: 0,
-                }}
-              >
+              <h1 className="text-base-content text-h1 m-0 font-medium tracking-[-0.02em]">
                 {item.name}
               </h1>
               {item.tagline ? (
-                <p
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    paddingTop: '8px',
-                    margin: 0,
-                  }}
-                >
-                  {item.tagline}
-                </p>
+                <p className="text-ink-muted text-small m-0 pt-2">{item.tagline}</p>
               ) : null}
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '12px' }}>
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '20px',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+            <div className="flex items-baseline gap-3">
+              <span className="text-base-content text-h4 font-medium">
                 {priceLabel(item.price)}
               </span>
               {item.installCount > 0 ? (
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '13px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
-                  {item.installCount} installs
-                </span>
+                <span className="text-ink-muted text-caption">{item.installCount} installs</span>
               ) : null}
             </div>
 
-            <a href={ctaHref} style={{ display: 'block' }}>
-              <Button size="lg" style={{ width: '100%', backgroundColor: '#0A0A0A' }}>
+            <a href={ctaHref} className="block">
+              <Button color="neutral" size="lg" className="w-full">
                 {ctaLabel}
               </Button>
             </a>
@@ -319,21 +223,11 @@ export default async function ListingDetailPage({
 
             {requires.length > 0 ? (
               <Detail label="Requires">
-                <div className="mkt-cluster" style={{ gap: '8px' }}>
+                <div className="flex flex-wrap items-center gap-2">
                   {requires.map((m) => (
-                    <span
-                      key={m}
-                      style={{
-                        padding: '3px 9px',
-                        borderRadius: '9999px',
-                        border: '1px solid var(--color-base-300)',
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: '12px',
-                        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                      }}
-                    >
+                    <Badge key={m} variant="outline" size="sm">
                       {m}
-                    </span>
+                    </Badge>
                   ))}
                 </div>
               </Detail>
@@ -350,14 +244,12 @@ export default async function ListingDetailPage({
         </div>
 
         {related.length > 0 ? (
-          <div
-            style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingTop: '24px' }}
-          >
+          <div className="flex flex-col gap-6 pt-6">
             <Display as="h2" size={32}>
               More {cat.label.toLowerCase()}
               <Spark color={accent} />
             </Display>
-            <div className="mkt-grid-3-2-1">
+            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
               {related.map((r) => (
                 <ListingCard key={r.id} item={r} />
               ))}
@@ -371,40 +263,14 @@ export default async function ListingDetailPage({
 
 function Detail({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        borderTop: '1px solid var(--color-base-300)',
-        paddingTop: '16px',
-      }}
-    >
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '12px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
-        {label}
-      </span>
+    <div className="border-base-300 flex flex-col gap-2 border-t pt-4">
+      {/* A spec-group label, meant to be read — full ink, not a faded caption. */}
+      <span className="text-base-content text-small font-medium">{label}</span>
       {children}
     </div>
   );
 }
 
 function Row({ children }: { children: ReactNode }) {
-  return (
-    <span
-      style={{
-        fontFamily: 'var(--font-sans)',
-        fontSize: '14px',
-        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-      }}
-    >
-      {children}
-    </span>
-  );
+  return <span className="text-ink-muted text-small">{children}</span>;
 }

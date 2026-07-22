@@ -20,6 +20,10 @@ import {
 } from './common';
 
 export const CreateServiceInput = z.object({
+  // The site offering this service (docs/131 §4). Optional so a tenant-wide
+  // service can be authored explicitly; the dashboard route defaults it to the
+  // site being worked in.
+  propertyId: z.string().uuid().nullable().optional(),
   bookingType: BookingType.default('appointment'),
   name: z.string().min(1).max(255),
   description: z.string().max(10000).nullable().optional(),

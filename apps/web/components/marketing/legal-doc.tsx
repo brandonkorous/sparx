@@ -1,28 +1,28 @@
 /**
  * Marketing-side layout for sparx's OWN platform legal documents (docs/42 §6)
  * — Terms, Privacy, DPA, Acceptable Use. Replaces the per-page ComingSoon
- * stub with a real, versioned, indexable page: an editorial header (eyebrow,
- * title, version + effective date) + a readable prose column. Nav/Footer come
- * from the root layout.
+ * stub with a real, versioned, indexable page: an editorial header (title,
+ * version + effective date) + a readable prose column. Nav/Footer come from the
+ * root layout.
  *
  * Content is authored per page from the small helpers exported here
  * (`LegalSection` / `LegalP` / `LegalList` / `LegalSubhead`) so every doc
- * shares one typographic register. No raw Tailwind per docs/23 §1 — inline
- * styles reference CSS variables from packages/ui/src/tokens.css.
+ * shares one typographic register. Appearance is the marketing utility
+ * vocabulary registered in app/globals.css — the editorial `text-*` scale and
+ * the real-ink `text-ink-*` colors — never inline style.
  */
 import type { ReactNode } from 'react';
-import { Container, Eyebrow, Display, Spark } from './primitives';
-
-const PROSE_MAX = '760px';
+import { Heading } from '@wizeworks/silicaui-react';
+import { Container, Display, Spark, Text } from './primitives';
 
 export function LegalDoc({
-  eyebrow = 'Legal',
   title,
   version,
   effectiveDate,
   intro,
   children,
 }: {
+  /** @deprecated Eyebrows are removed brand-wide (RULE #2); value ignored. */
   eyebrow?: string;
   title: string;
   /** Date-based version string from lib/legal-versions.ts. */
@@ -35,68 +35,31 @@ export function LegalDoc({
 }) {
   return (
     <>
-      <section
-        style={{
-          paddingTop: 'clamp(96px, 11vw, 150px)',
-          paddingBottom: 'clamp(32px, 5vw, 56px)',
-          paddingLeft: 'var(--gutter-page)',
-          paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
-        <Container style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-          <Eyebrow color="color-mix(in oklab, var(--color-base-content) 50%, transparent)">
-            {eyebrow}
-          </Eyebrow>
+      <section className="bg-base-200 px-page pt-[clamp(96px,11vw,150px)] pb-[clamp(32px,5vw,56px)]">
+        <Container className="flex flex-col gap-5">
           <Display as="h1" size={64} lineHeight={64}>
             {title}
             <Spark />
           </Display>
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              display: 'flex',
-              gap: '20px',
-              flexWrap: 'wrap',
-            }}
-          >
-            <span>Version {version}</span>
-            <span>Effective {effectiveDate}</span>
+          <div className="flex flex-wrap gap-5">
+            <Text as="span" mono size={13} tone="subtle">
+              Version {version}
+            </Text>
+            <Text as="span" mono size={13} tone="subtle">
+              Effective {effectiveDate}
+            </Text>
           </div>
           {intro ? (
-            <p
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '18px',
-                lineHeight: '30px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                maxWidth: '640px',
-                margin: 0,
-                paddingTop: '8px',
-              }}
-            >
+            <Text size={18} className="max-w-[640px] pt-2">
               {intro}
-            </p>
+            </Text>
           ) : null}
         </Container>
       </section>
 
-      <section
-        style={{
-          paddingBottom: 'clamp(80px, 10vw, 140px)',
-          paddingLeft: 'var(--gutter-page)',
-          paddingRight: 'var(--gutter-page)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
+      <section className="bg-base-200 px-page pb-[clamp(80px,10vw,140px)]">
         <Container>
-          <div
-            style={{ maxWidth: PROSE_MAX, display: 'flex', flexDirection: 'column', gap: '40px' }}
-          >
-            {children}
-          </div>
+          <div className="flex max-w-[760px] flex-col gap-10">{children}</div>
         </Container>
       </section>
     </>
@@ -113,23 +76,10 @@ export function LegalSection({
   children: ReactNode;
 }) {
   return (
-    <section
-      id={id}
-      style={{ display: 'flex', flexDirection: 'column', gap: '12px', scrollMarginTop: '96px' }}
-    >
-      <h2
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '22px',
-          lineHeight: '28px',
-          letterSpacing: '-0.02em',
-          color: 'var(--color-base-content)',
-          margin: 0,
-        }}
-      >
+    <section id={id} className="flex scroll-mt-24 flex-col gap-3">
+      <Heading level={2} size={3}>
         {heading}
-      </h2>
+      </Heading>
       {children}
     </section>
   );
@@ -137,52 +87,20 @@ export function LegalSection({
 
 export function LegalSubhead({ children }: { children: ReactNode }) {
   return (
-    <h3
-      style={{
-        fontFamily: 'var(--font-sans)',
-        fontWeight: 500,
-        fontSize: '16px',
-        lineHeight: '24px',
-        color: 'var(--color-base-content)',
-        margin: '8px 0 0',
-      }}
-    >
+    <Heading level={3} size={5} className="mt-2">
       {children}
-    </h3>
+    </Heading>
   );
 }
 
 export function LegalP({ children }: { children: ReactNode }) {
-  return (
-    <p
-      style={{
-        fontFamily: 'var(--font-sans)',
-        fontSize: '15px',
-        lineHeight: '26px',
-        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        margin: 0,
-      }}
-    >
-      {children}
-    </p>
-  );
+  // 16px, not the old 15 — long-form prose sits on the body floor.
+  return <Text size={16}>{children}</Text>;
 }
 
 export function LegalList({ items }: { items: ReactNode[] }) {
   return (
-    <ul
-      style={{
-        margin: 0,
-        paddingLeft: '20px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '8px',
-        fontFamily: 'var(--font-sans)',
-        fontSize: '15px',
-        lineHeight: '26px',
-        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-      }}
-    >
+    <ul className="text-body text-ink-muted flex list-disc flex-col gap-2 pl-5 font-sans">
       {items.map((item, i) => (
         <li key={i}>{item}</li>
       ))}

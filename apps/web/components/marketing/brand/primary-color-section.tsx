@@ -37,15 +37,7 @@ export function PrimaryColorSection() {
         />
 
         <div className="bg-primary flex min-h-[240px] flex-col justify-end gap-5 rounded-xl p-[clamp(32px,5vw,56px)]">
-          <span
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: 'clamp(28px, 4vw, 40px)',
-              letterSpacing: '-0.02em',
-              color: 'var(--color-primary-content)',
-            }}
-          >
+          <span className="text-primary-content font-sans text-[clamp(28px,4vw,40px)] font-medium tracking-[-0.02em]">
             sparx Ember
           </span>
           <div className="flex flex-wrap items-center gap-2.5">
@@ -61,7 +53,7 @@ export function PrimaryColorSection() {
           </div>
         </div>
 
-        <div className="mkt-grid-4-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {RAMP.map((s) => (
             <Swatch key={s.name} {...s} />
           ))}

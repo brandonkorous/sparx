@@ -9,17 +9,37 @@
 // Approval decisions are logged as `CrmActivity` rows for the audit trail; the
 // order transitions to `placed` (approved) or `cancelled` (rejected).
 //
-// Rule evaluation order:
-//   1. Account-specific rule (account_id IS NOT NULL) — most specific wins.
-//   2. Tenant-wide rule (account_id IS NULL) — catch-all.
-// If multiple account rules exist for the same account, the most recently
-// created active one wins. Only one rule fires per order.
+// Rule evaluation (docs/131 §4 — now TWO axes, account and site):
+//
+// A rule MATCHES when its account axis covers this buyer (specific account, or
+// null = any) AND its site axis covers this order's site (specific site, or
+// null = any) AND the order total clears `minAmountCents`.
+//
+// The gate is BOOLEAN — if any rule matches, the order is held. There is no
+// precedence between a specific rule and a catch-all, because they cannot
+// disagree: both answers are "requires approval". That stays true only while a
+// rule's payload is a threshold; the moment rules carry different APPROVERS,
+// "which rule fired" starts to matter and a real precedence order has to be
+// chosen rather than inherited from findFirst's arbitrary ordering.
+//
+// The site axis matters because a rule is a SPENDING CONTROL. A "$500 needs
+// manager sign-off" threshold set for a machine shop, applied to a donut
+// wholesaler, either blocks routine orders or waves through ones that should
+// have been reviewed — and the operator who set it was thinking about one
+// business only. The doc rates this "arguably P0" for that reason: it changes
+// whether an order can be placed at all.
 
 model PurchaseApprovalRule {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String  @map("tenant_id") @db.Uuid
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // null = applies on every site; set = this business's rule (docs/131 §4).
+  // Nullable rather than required because a genuine tenant-wide control exists —
+  // an owner may want "anything over $10k gets my eyes" across everything they
+  // run — and forcing a copy per site would make that intent harder to express,
+  // not easier.
+  propertyId String? @map("property_id") @db.Uuid
   // null = tenant-wide catch-all; set = account-specific.
-  accountId String? @map("account_id") @db.Uuid
+  accountId  String? @map("account_id") @db.Uuid
 
   // Orders with total >= minAmountCents require approval. 0 = all B2B orders.
   minAmountCents Int @default(0) @map("min_amount_cents")
@@ -32,9 +52,16 @@ model PurchaseApprovalRule {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant           Tenant      @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade — a spending control written for one business goes with it. SetNull
+  // would PROMOTE a closed business's threshold to every remaining site, which
+  // for an approval rule means silently gating checkout on businesses that never
+  // agreed to it. Same rule as automations and API keys: deleting a site must
+  // narrow what a rule reaches, never widen it.
+  property         Property?   @relation(fields: [propertyId], references: [id], onDelete: Cascade)
   account          B2BAccount? @relation(fields: [accountId], references: [id], onDelete: Cascade)
   requiredApprover User?       @relation("ApprovalRuleApprover", fields: [requiredApproverUserId], references: [id], onDelete: SetNull)
 
   @@index([tenantId, accountId, isActive])
+  @@index([tenantId, propertyId, accountId, isActive])
   @@map("purchase_approval_rules")
 }

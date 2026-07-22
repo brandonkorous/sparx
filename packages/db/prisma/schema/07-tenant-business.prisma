@@ -1,0 +1,93 @@
+// Tenant business details — the LEGAL ENTITY behind the account.
+//
+// Three names exist in this system and they are not interchangeable. Keeping
+// them straight is the whole reason this model exists — WizeWorks is the worked
+// example: the business is "WizeWorks", it is registered as "WizeWorks LLC",
+// and it runs a site called "sparx".
+//
+//   Tenant.name                 the LEGAL/registered name — "WizeWorks LLC".
+//                               Billing + ownership, and the Better Auth
+//                               organization name (org == tenant). Never
+//                               rendered to a customer (02-tenant.prisma).
+//   TenantBusiness.businessName the BUSINESS as it is known — "WizeWorks". What
+//                               a customer sees on a business document. Set in
+//                               onboarding, editable in Business details. May or
+//                               may not match the registered company name.
+//   Property.name               the SITE — "sparx" (docs/49). Storefront chrome
+//                               and email read this, per site. A business can
+//                               run several; none of them is the business.
+//
+// Before this model there was nowhere to put the facts a business document
+// legally needs: a registered address, a tax id, a company number, a phone.
+// `BillingRenderBrand.addressLines` had been declared since the invoice
+// renderer was written and was never populated by anything, so the seller block
+// on every invoice AND every purchase order rendered empty. This is the source
+// those consumers read.
+//
+// A SATELLITE of Tenant (1:1, PK = tenant_id), exactly like TenantBrand, rather
+// than columns on Tenant itself: `tenants` is the non-RLS dispatch row carrying
+// platform concerns (Stripe billing, Better Auth org fields, acquisition
+// tracking), and these are tenant DATA that belongs behind ENABLE+FORCE RLS.
+//
+// Every field is nullable. A business fills this in over time — an invoice
+// should render with whatever is known, never block on a field nobody set.
+
+model TenantBusiness {
+  tenantId String @id @map("tenant_id") @db.Uuid
+
+  // The business's own name — the one printed on invoices, purchase orders and
+  // receipts, because those are issued by the BUSINESS, not by a site. Falls
+  // back to Tenant.name when unset so a document always has something to print.
+  // Backfilled from TenantBrand.business_name, which is where this fact has been
+  // living (mislabelled as brand) until now.
+  businessName String? @map("business_name") @db.VarChar(255)
+
+  // How the business is constituted: sole_trader | partnership | llc |
+  // corporation | nonprofit | other. A VarChar rather than an enum — the real
+  // set is jurisdiction-specific (Ltd, GmbH, Pty, BV…) and a schema migration
+  // is the wrong gate on a business telling us what it is.
+  entityType String? @map("entity_type") @db.VarChar(40)
+
+  // Company/registration number as issued by the registrar (Companies House,
+  // Secretary of State, ASIC…). Free-form: formats vary by jurisdiction.
+  registrationNumber String? @map("registration_number") @db.VarChar(64)
+
+  // The business's OWN tax identifier — EIN, VAT number, GST, ABN. Distinct
+  // from TaxZone.registrationNumber (a per-jurisdiction nexus registration) and
+  // from B2BAccount.taxId (a CUSTOMER's id). 02-tenant.prisma anticipated this
+  // field living on the legal entity; this satellite is that entity's record.
+  taxId String? @map("tax_id") @db.VarChar(64)
+
+  // Whether the business is registered for sales tax/VAT. Drives whether tax
+  // lines and the tax id are printed on a document at all — a business below
+  // the threshold must NOT show a VAT number it does not have.
+  taxRegistered Boolean @default(false) @map("tax_registered")
+
+  // Business contact. `email` for the account lives on Tenant; these are the
+  // customer-facing lines a document or footer can print.
+  phone        String? @db.VarChar(40)
+  supportEmail String? @map("support_email") @db.VarChar(255)
+
+  // Registered/trading address — the seller block on invoices and purchase
+  // orders. Structured rather than free text so it can also serve as a tax
+  // origin and be formatted per locale.
+  addressLine1 String? @map("address_line1") @db.VarChar(255)
+  addressLine2 String? @map("address_line2") @db.VarChar(255)
+  city         String? @db.VarChar(120)
+  region       String? @db.VarChar(120)
+  postalCode   String? @map("postal_code") @db.VarChar(20)
+  country      String? @db.VarChar(2) // ISO 3166-1 alpha-2
+
+  // Entity-level defaults. Both are absent everywhere else at tenant level
+  // today: currency is per commerce site, timezone is per scheduling location.
+  // A document issued by the ENTITY needs its own answer to both.
+  timezone        String? @db.VarChar(64) // IANA, e.g. America/Denver
+  defaultCurrency String? @map("default_currency") @db.VarChar(3) // ISO 4217
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@map("tenant_businesses")
+}

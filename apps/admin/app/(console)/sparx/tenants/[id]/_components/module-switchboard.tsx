@@ -171,11 +171,7 @@ function ModuleRow({
   return (
     <ModuleProvider module={moduleColor(m.key)}>
       <div className={cn('flex items-center gap-4 py-3', !isLast && 'border-base-300 border-b')}>
-        <span
-          className="h-2.5 w-2.5 shrink-0 rounded-full"
-          style={{ background: 'var(--color-module)' }}
-          aria-hidden="true"
-        />
+        <span className="bg-module h-2.5 w-2.5 shrink-0 rounded-full" aria-hidden="true" />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <Text weight="medium">{moduleLabel(m.key)}</Text>
           {caption ? (

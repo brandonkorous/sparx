@@ -132,7 +132,7 @@ export function DigitalCardTool() {
             </div>
           </div>
 
-          <div className="mkt-cluster gap-2.5">
+          <div className="flex flex-wrap items-center gap-2.5">
             <Button type="button" color="module" variant="solid" size="sm" onClick={downloadVcf}>
               <Download className="h-4 w-4" />
               Download .vcf

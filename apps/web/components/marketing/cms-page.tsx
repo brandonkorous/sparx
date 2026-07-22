@@ -1,14 +1,6 @@
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
-import {
-  Container,
-  Display,
-  Dot,
-  getModuleColor,
-  Section,
-  SectionHeader,
-  Spark,
-} from './primitives';
+import { Display, Dot, getModuleColor, Section, SectionHeader, Spark } from './primitives';
 import { CmsHero, CmsLifecycle, CmsStructured, CmsEditor, CmsSeoAudit } from './cms-sections';
 import { Faq, type FaqItem } from './faq';
 
@@ -64,8 +56,6 @@ export function CmsPage() {
 
 const M = getModuleColor('cms');
 const BUILDER = getModuleColor('builder');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // Page-specific FAQ. Real evaluation questions for sparx CMS, answered straight
 // and grounded in docs/12 (PRD) + docs/17 (billing) — no tier/plan language.
@@ -150,56 +140,17 @@ function CmsCapabilities() {
         headline="Everything a publishing team needs"
         lede="The CMS isn’t just an editor — it’s the whole content layer, with the parts most tools charge extra for already in the box."
       />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-[52px] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {caps.map((c) => (
           <div
             key={c.title}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '26px',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '172px',
-            }}
+            className="bg-base-200 border-base-300 flex min-h-[172px] flex-col gap-3 rounded-xl border p-[26px]"
           >
-            <span
-              className={`${M.bg} bg-soft`}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <span className={`${M.bg} bg-soft flex size-8 items-center justify-center rounded-lg`}>
               <Dot color={M.color} size={9} />
             </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '17px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {c.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {c.body}
-            </p>
+            <h3 className="text-body-lg font-medium tracking-[-0.01em]">{c.title}</h3>
+            <p className="text-ink-muted text-small">{c.body}</p>
           </div>
         ))}
       </div>
@@ -209,8 +160,11 @@ function CmsCapabilities() {
 
 // ── STANDALONE (no shop) ──────────────────────────────────────────────────────
 function CmsStandalone() {
+  // NOTE: each way used to carry an uppercase-mono `tag` ("cms + builder")
+  // stamped directly above its <h3> — an eyebrow, banned by RULE #2. The pairing
+  // it named is already said by `runs` at the foot of the card, so the slot is
+  // gone rather than restyled.
   const ways: {
-    tag: string;
     title: string;
     body: string;
     points: string[];
@@ -218,7 +172,6 @@ function CmsStandalone() {
     runs: string;
   }[] = [
     {
-      tag: 'cms + builder',
       title: 'Rendered on a hosted site',
       body: 'Pair CMS with Builder and your pages and posts render on your own domain — fast, on the CDN, with SSL handled. Selling stays optional; turn Commerce on the day you want it.',
       points: [
@@ -230,7 +183,6 @@ function CmsStandalone() {
       runs: 'CMS + Builder',
     },
     {
-      tag: 'cms + your stack',
       title: 'Headless to any frontend',
       body: 'Query content over REST and GraphQL and render it in Next.js, Astro, SvelteKit, or a native app. The @sparx/site-sdk ships typed helpers for every content type.',
       points: [
@@ -249,83 +201,25 @@ function CmsStandalone() {
         headline="No shop required — ever"
         lede="CMS is its own module. A publisher, a docs site, or a content team can run entirely on sparx without a cart in sight — and pull it any way they like."
       />
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
+      <div className="mt-[52px] grid grid-cols-1 gap-6 md:grid-cols-2">
         {ways.map((w) => (
           <div
             key={w.title}
-            className={`${w.dot === M.color ? M.bg : BUILDER.bg} bg-soft`}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-              padding: '32px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '14px',
-            }}
+            className={`${w.dot === M.color ? M.bg : BUILDER.bg} bg-soft border-base-300 flex flex-col gap-4 rounded-[14px] border p-8`}
           >
-            <span
-              className={w.dot === M.color ? M.ink : BUILDER.ink}
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {w.tag}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '24px',
-                fontWeight: 500,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {w.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '24px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {w.body}
-            </p>
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '12px' }}>
+            <h3 className="text-h2 font-medium tracking-[-0.02em]">{w.title}</h3>
+            <p className="text-ink-muted text-body-sm">{w.body}</p>
+            <ul className="grid list-none gap-3">
               {w.points.map((p) => (
-                <li key={p} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
-                  <span style={{ paddingTop: '7px', flexShrink: 0 }}>
+                <li key={p} className="flex items-start gap-[11px]">
+                  <span className="shrink-0 pt-[7px]">
                     <Dot color={w.dot} size={7} />
                   </span>
-                  <span
-                    style={{
-                      fontFamily: SANS,
-                      fontSize: '14.5px',
-                      lineHeight: '23px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
-                    {p}
-                  </span>
+                  <span className="text-ink-muted text-small">{p}</span>
                 </li>
               ))}
             </ul>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                marginTop: 'auto',
-                paddingTop: '4px',
-              }}
-            >
-              {w.runs}
-            </span>
+            <span className="text-ink-subtle text-mini mt-auto pt-1 font-mono">{w.runs}</span>
           </div>
         ))}
       </div>
@@ -346,58 +240,24 @@ function CmsProof() {
   ];
   return (
     <Section surface="dark" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
-        <Display size={46} lineHeight={48} color="#FFFFFF">
+      <div className="max-w-[760px]">
+        <Display size={46} lineHeight={48}>
           Your words, your structure, your data
           <Spark color={M.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: '22px 0 0',
-          }}
-        >
+        <p className="text-ink-muted text-lede mt-[22px] max-w-[640px]">
           Content lives in the same database as everything else on sparx — no separate CMS to sync,
           no plugin sprawl, no platform that holds your archive hostage. Export the whole thing
           whenever you want.
         </p>
       </div>
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '56px', gap: 0 }}>
+      <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
-          <div
-            key={s.l}
-            style={{
-              padding: i === 0 ? '0' : '0 0 0 32px',
-              borderLeft: i === 0 ? 'none' : '1px solid #262626',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: 'clamp(36px, 5vw, 54px)',
-                letterSpacing: '-0.03em',
-                color: '#FFFFFF',
-                lineHeight: 1,
-              }}
-            >
+          <div key={s.l} className={i === 0 ? '' : 'border-base-300 border-l pl-8'}>
+            <div className="text-base-content text-[clamp(36px,5vw,54px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <div
-              style={{
-                marginTop: '12px',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: '#A1A1AA',
-              }}
-            >
-              {s.l}
-            </div>
+            <div className="text-ink-muted text-small mt-3">{s.l}</div>
           </div>
         ))}
       </div>
@@ -410,62 +270,29 @@ function CmsPricing() {
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${M.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '14px',
-          gap: '32px',
-        }}
+        className={`flex flex-col gap-8 lg:flex-row ${M.bg} bg-soft border-base-300 items-center justify-between rounded-[14px] border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-base-content text-[56px] font-medium tracking-[-0.025em]">
               $49
             </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              /mo
-            </span>
+            <span className="text-ink-subtle text-body">/mo</span>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '640px',
-            }}
-          >
+          <p className="text-ink-muted text-small max-w-[640px]">
             A flat $49/mo, standalone — no Builder required, no tiers, no per-seat or per-record
             metering. Run it headless against the API, or add Builder when you want it rendered on a
             hosted sparx site. One bill with everything else; start free for 14 days, no card to
             begin.
           </p>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate CMS
           </Button>
         </div>
@@ -477,51 +304,28 @@ function CmsPricing() {
 // ── FINAL CTA (dark) ──────────────────────────────────────────────────────────
 function CmsCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '36px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-9">
+        <Display size={88} lineHeight={84}>
           Start publishing today
           <Spark color={M.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <p className="text-ink-muted text-lede max-w-[640px]">
           Open the editor, write your first post, and publish to your own domain — or pull it
           straight into your own frontend over the API. No migration weekend, no contract; turn it
           off the day you stop, and your content stays yours.
         </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <Button size="xl" style={{ backgroundColor: M.color }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button color="module-cms" size="xl">
             Start publishing →
           </Button>
           <a href="#editor">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               See the editor
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

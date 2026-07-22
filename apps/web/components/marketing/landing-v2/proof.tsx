@@ -1,4 +1,4 @@
-import { Badge, Card, CardBody, CardTitle, Heading, Text } from '@wizeworks/silicaui-react';
+import { Card, CardBody, CardTitle, Heading, Text } from '@wizeworks/silicaui-react';
 import { Container } from '../primitives';
 import { SECTION_DISPLAY_STYLE } from './heading-style';
 
@@ -22,8 +22,8 @@ const fmt = (n: number) => `$${n.toLocaleString('en-US')}`;
 
 export function LandingV2Proof() {
   return (
-    <section className="mkt-ground px-[var(--gutter-page)] py-[var(--section-py-xl)]">
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
+    <section className="mkt-ground px-page py-section-xl">
+      <Container className="flex flex-col gap-14">
         <div className="max-w-3xl">
           <Heading level={2} size="display" style={SECTION_DISPLAY_STYLE}>
             Less software.
@@ -40,20 +40,13 @@ export function LandingV2Proof() {
           <Card className="bg-secondary text-secondary-content relative overflow-hidden sm:min-h-[440px] lg:row-span-2 lg:min-h-[600px]">
             <CardBody>
               <div className="flex max-w-md flex-col gap-4">
-                <Badge
-                  className="w-fit"
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.15)',
-                    borderColor: 'rgba(255, 255, 255, 0.25)',
-                    color: '#FFFFFF',
-                  }}
-                >
-                  The cost of disconnected tools
-                </Badge>
+                {/* The "The cost of disconnected tools" <Badge> that sat here was
+                    removed: a badge in the slot directly above a heading is an
+                    eyebrow wearing a component. The title carries itself. */}
                 <CardTitle className="text-5xl leading-[0.95] sm:text-6xl lg:text-7xl">
                   Stop paying for the seams.
                 </CardTitle>
-                <Text style={{ opacity: 0.85 }}>
+                <Text>
                   Sparx puts the website, commerce, customer data, marketing and operations on one
                   shared foundation — so you pay for capability instead of integrations.
                 </Text>

@@ -62,13 +62,27 @@ export function toPromptTemplateDto(row: AiPromptTemplate): PromptTemplateDto {
   };
 }
 
+/** This site's prompts plus the tenant-wide ones (docs/131 §3.5). A library view,
+ *  so BOTH tiers show — the site's own persona sitting beside the shared
+ *  craft-level templates is exactly what an author needs to see. */
 export async function listPromptTemplates(
   ctx: TenantContext,
-  filter: { category?: PromptCategory } = {}
+  filter: { category?: PromptCategory; propertyId?: string | null } = {}
 ): Promise<PromptTemplateDto[]> {
   return withTenant(ctx, async (tx) => {
     const rows = await tx.aiPromptTemplate.findMany({
-      where: filter.category ? { category: filter.category } : {},
+      where: {
+        ...(filter.category ? { category: filter.category } : {}),
+        // `OR`, not `propertyId: { in: [id, null] }` — Prisma's `in` rejects null
+        // even on a nullable column, so the terse form does not typecheck. This
+        // is the two-tier read (site's own + tenant-wide) spelled the way the
+        // client accepts.
+        ...(filter.propertyId
+          ? { OR: [{ propertyId: filter.propertyId }, { propertyId: null }] }
+          : filter.propertyId === null
+            ? { propertyId: null }
+            : {}),
+      },
       orderBy: [{ category: 'asc' }, { name: 'asc' }],
     });
     return rows.map(toPromptTemplateDto);
@@ -91,8 +105,15 @@ export async function createPromptTemplate(
   input: PromptTemplateCreate
 ): Promise<PromptTemplateDto> {
   return withTenant(ctx, async (tx) => {
-    const existing = await tx.aiPromptTemplate.findUnique({
-      where: { tenantId_key: { tenantId: ctx.tenantId, key: input.key } },
+    // Uniqueness is now per (tenant, SITE, key): the same key may exist once
+    // tenant-wide and once per site, which is what lets each business author its
+    // own `persona` without renaming it.
+    // findFirst, not findUnique: `propertyId` is nullable and Prisma's
+    // compound-unique input requires non-null components, so a tenant-wide row
+    // (property_id IS NULL) is not reachable through the unique key. The DB still
+    // enforces one — the index is NULLS NOT DISTINCT (migration 20261217000000).
+    const existing = await tx.aiPromptTemplate.findFirst({
+      where: { propertyId: input.propertyId ?? null, key: input.key },
       select: { id: true },
     });
     if (existing) throw conflict(`A prompt with key "${input.key}" already exists`);
@@ -100,6 +121,7 @@ export async function createPromptTemplate(
     const row = await tx.aiPromptTemplate.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: input.propertyId ?? null,
         key: input.key,
         name: input.name,
         description: input.description ?? null,
@@ -165,8 +187,12 @@ export async function ensureDefaultPromptTemplates(sx: TenantContext): Promise<n
   if (!tx) {
     return withTenant(sx, (scopedTx) => ensureDefaultPromptTemplates({ ...sx, tx: scopedTx }));
   }
+  // Platform defaults install TENANT-WIDE (propertyId null), and deliberately so
+  // (docs/131 §3.5). They are craft-level starters — draft an SEO title,
+  // summarize a thread — not one business's voice. A site that wants its own
+  // authors a site-scoped row, which then wins over the default.
   const present = await tx.aiPromptTemplate.findMany({
-    where: { key: { in: DEFAULT_PROMPT_TEMPLATES.map((t) => t.key) } },
+    where: { propertyId: null, key: { in: DEFAULT_PROMPT_TEMPLATES.map((t) => t.key) } },
     select: { key: true },
   });
   const have = new Set(present.map((p) => p.key));
@@ -191,17 +217,40 @@ export async function ensureDefaultPromptTemplates(sx: TenantContext): Promise<n
   return added;
 }
 
-/** The active chat persona (most-recently-updated enabled `persona` template), or
- *  null. The live-chat first-responder grounds its system prompt with this. */
+/**
+ * The active chat persona for ONE SITE, or null. The live-chat first-responder
+ * grounds its system prompt with this — so this function decides which business
+ * the assistant believes it works for (docs/131 §3.5).
+ *
+ * Resolution is most-specific-wins: the site's own persona, else the tenant-wide
+ * one, else none. That ordering is the whole point. A tenant-wide persona is a
+ * reasonable default for a single-business tenant, but the moment a site has
+ * authored its own voice it must win — otherwise the second business inherits
+ * the first's, which is the defect this replaces.
+ *
+ * `propertyId` is required, not optional-with-a-fallback: a caller that cannot
+ * say which site the conversation is on has no basis for choosing a voice, and
+ * making that a compile error is cheaper than discovering it in a transcript.
+ */
 export async function getActivePersona(
-  tenantId: string
+  tenantId: string,
+  propertyId: string
 ): Promise<{ body: string; model: string | null } | null> {
   return withTenant({ tenantId }, async (tx) => {
-    const row = await tx.aiPromptTemplate.findFirst({
-      where: { category: 'persona', enabled: true },
+    const rows = await tx.aiPromptTemplate.findMany({
+      // Both tiers in ONE query, then picked in memory. Two sequential queries
+      // would be two round-trips on the live-chat hot path to answer a question
+      // this small.
+      // `OR` rather than `in: [id, null]` — Prisma's `in` rejects null.
+      where: {
+        category: 'persona',
+        enabled: true,
+        OR: [{ propertyId }, { propertyId: null }],
+      },
       orderBy: { updatedAt: 'desc' },
-      select: { body: true, model: true },
+      select: { body: true, model: true, propertyId: true },
     });
+    const row = rows.find((r) => r.propertyId === propertyId) ?? rows.find((r) => !r.propertyId);
     return row ? { body: row.body, model: row.model } : null;
   });
 }

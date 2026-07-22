@@ -33,6 +33,9 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'sparx.works',
   'www.sparx.works',
   'app.sparx.works',
+  // workbench.sparx.works — the multi-window workbench app. Without this entry
+  // on-demand TLS is denied and Cloudflare 525s the whole app.
+  'workbench.sparx.works',
   'api.sparx.works',
   'mcp.sparx.works',
   'graphql.sparx.works',

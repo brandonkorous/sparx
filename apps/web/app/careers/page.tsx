@@ -17,24 +17,8 @@ export const metadata: Metadata = {
   alternates: { canonical: '/careers' },
 };
 
-const EMBER = 'var(--color-primary)';
-
-const ledeStyle: React.CSSProperties = {
-  margin: 0,
-  fontFamily: 'var(--font-sans)',
-  fontSize: '19px',
-  lineHeight: '30px',
-  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-  maxWidth: '620px',
-};
-
-const pitchStyle: React.CSSProperties = {
-  margin: 0,
-  fontFamily: 'var(--font-sans)',
-  fontSize: '17px',
-  lineHeight: '28px',
-  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-};
+/** Decorative separator between role meta values — a background dot, not read. */
+const META_DOT = 'color-mix(in oklab, var(--color-base-content) 30%, transparent)';
 
 function RoleCard({ role }: { role: Role }) {
   return (
@@ -42,54 +26,18 @@ function RoleCard({ role }: { role: Role }) {
       <Card>
         <CardBody className="p-8">
           <div className="mkt-role-row">
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', minWidth: 0 }}>
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '21px',
-                  letterSpacing: '-0.01em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+            <div className="flex min-w-0 flex-col gap-2.5">
+              <h3 className="text-h4 text-base-content m-0 font-medium tracking-[-0.01em]">
                 {role.title}
               </h3>
-              <div
-                style={{
-                  display: 'flex',
-                  flexWrap: 'wrap',
-                  alignItems: 'center',
-                  gap: '8px 12px',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
+              <div className="text-caption text-ink-subtle flex flex-wrap items-center gap-x-3 gap-y-2">
                 <span>{role.team}</span>
-                <Dot
-                  color="color-mix(in oklab, var(--color-base-content) 30%, transparent)"
-                  size={3}
-                />
+                <Dot color={META_DOT} size={3} />
                 <span>{role.location}</span>
-                <Dot
-                  color="color-mix(in oklab, var(--color-base-content) 30%, transparent)"
-                  size={3}
-                />
+                <Dot color={META_DOT} size={3} />
                 <span>{role.commitment}</span>
               </div>
-              <p
-                style={{
-                  margin: '4px 0 0',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '16px',
-                  lineHeight: '25px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  maxWidth: '620px',
-                }}
-              >
-                {role.summary}
-              </p>
+              <p className="text-body text-ink-muted mt-1 mb-0 max-w-[620px]">{role.summary}</p>
             </div>
             <span className="mkt-role-arrow">
               View role <span aria-hidden>→</span>
@@ -104,28 +52,10 @@ function RoleCard({ role }: { role: Role }) {
 function StepRow({ index, text }: { index: number; text: string }) {
   return (
     <li className="mkt-step-row">
-      <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '14px',
-          fontWeight: 500,
-          color: EMBER,
-          flexShrink: 0,
-          width: '28px',
-        }}
-      >
+      <span className="text-small text-primary w-7 shrink-0 font-mono font-medium">
         {String(index).padStart(2, '0')}
       </span>
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '17px',
-          lineHeight: '27px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        }}
-      >
-        {text}
-      </span>
+      <span className="text-body-lg text-ink-muted">{text}</span>
     </li>
   );
 }
@@ -134,26 +64,26 @@ export default function CareersPage() {
   return (
     <>
       <Section surface="page" padding="xl">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '22px', maxWidth: '900px' }}>
+        <div className="flex max-w-[900px] flex-col gap-[22px]">
           <Display as="h1" size={76} lineHeight={78}>
             {CAREERS_COPY.title}
             <Spark />
           </Display>
-          <p style={ledeStyle}>{CAREERS_COPY.subtitle}</p>
+          <p className="text-lede-lg text-ink-muted m-0 max-w-[620px]">{CAREERS_COPY.subtitle}</p>
         </div>
       </Section>
 
       <Section surface="surface" padding="lg">
-        <div className="mkt-stack-split">
+        <div className="grid grid-cols-1 items-start gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
           <div className="mkt-stack-copy">
             <Display as="h2" size={38} lineHeight={42}>
               Where we actually are
               <Spark />
             </Display>
           </div>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="flex flex-col gap-5">
             {CAREERS_COPY.pitch.map((p) => (
-              <p key={p} style={pitchStyle}>
+              <p key={p} className="text-body-lg text-ink-muted m-0">
                 {p}
               </p>
             ))}
@@ -162,12 +92,12 @@ export default function CareersPage() {
       </Section>
 
       <Section surface="page" padding="lg">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <div className="flex flex-col gap-8">
           <Display as="h2" size={40} lineHeight={44}>
             Open roles
             <Spark />
           </Display>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className="flex flex-col gap-4">
             {ROLES.map((role) => (
               <RoleCard key={role.slug} role={role} />
             ))}
@@ -176,24 +106,13 @@ export default function CareersPage() {
       </Section>
 
       <Section surface="dark" padding="lg">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '720px' }}>
-          <Display as="h2" size={40} lineHeight={44} color="#FFFFFF">
+        <div className="flex max-w-[720px] flex-col gap-5">
+          <Display as="h2" size={40} lineHeight={44}>
             Don&rsquo;t see your role
-            <Spark color="#FFFFFF" />
+            <Spark />
           </Display>
-          <p
-            style={{
-              margin: 0,
-              fontFamily: 'var(--font-sans)',
-              fontSize: '18px',
-              lineHeight: '29px',
-              color: '#A1A1AA',
-              maxWidth: '580px',
-            }}
-          >
-            {OPEN_APPLICATION.summary}
-          </p>
-          <div style={{ paddingTop: '4px' }}>
+          <p className="text-lede text-ink-muted m-0 max-w-[580px]">{OPEN_APPLICATION.summary}</p>
+          <div className="pt-1">
             <Link
               href={`/careers/${OPEN_APPLICATION.slug}`}
               className={buttonClasses({ size: 'lg' })}
@@ -205,12 +124,12 @@ export default function CareersPage() {
       </Section>
 
       <Section surface="surface" padding="lg">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px', maxWidth: '760px' }}>
+        <div className="flex max-w-[760px] flex-col gap-7">
           <Display as="h2" size={38} lineHeight={42}>
             How we hire
             <Spark />
           </Display>
-          <ol style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+          <ol className="m-0 list-none p-0">
             {CAREERS_COPY.howWeHire.map((step, i) => (
               <StepRow key={step} index={i + 1} text={step} />
             ))}
@@ -219,18 +138,7 @@ export default function CareersPage() {
       </Section>
 
       <Section surface="page" padding="md">
-        <p
-          style={{
-            margin: 0,
-            fontFamily: 'var(--font-sans)',
-            fontSize: '14px',
-            lineHeight: '23px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            maxWidth: '760px',
-          }}
-        >
-          {CAREERS_COPY.entityNote}
-        </p>
+        <p className="text-small text-ink-subtle m-0 max-w-[760px]">{CAREERS_COPY.entityNote}</p>
       </Section>
     </>
   );

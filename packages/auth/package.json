@@ -32,6 +32,7 @@
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
+    "@better-auth/passkey": "1.6.11",
     "@prisma/client": "^6.19.3",
     "@sparx/attribution": "workspace:*",
     "@sparx/db": "workspace:*",

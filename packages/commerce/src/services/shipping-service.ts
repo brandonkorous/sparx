@@ -474,6 +474,13 @@ export async function rateShipment(
   const [matchingZones, liveRates] = await Promise.all([
     withTenant(ctx, async (tx) => {
       const zones = await tx.shippingZone.findMany({
+        // Only zones this SITE delivers from (docs/131 §4); a null property_id
+        // zone belongs to every site, which is what every pre-existing zone is.
+        // Without this the donut shop's 15-mile delivery rates were quoted on a
+        // freight parts order — a price nobody could honour.
+        where: request.propertyId
+          ? { OR: [{ propertyId: request.propertyId }, { propertyId: null }] }
+          : {},
         include: { rates: true },
         orderBy: { priority: 'desc' },
       });

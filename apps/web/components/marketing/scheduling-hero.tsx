@@ -50,9 +50,7 @@ export function SchedulingHero() {
   return (
     <section className={`${M.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
       <Container>
-        {/* `mkt-*` rules are UNLAYERED, so a `gap-*` utility cannot beat their
-            gap — the fluid column gap stays inline by design. */}
-        <div className="mkt-stack-on-tablet items-center" style={{ gap: 'clamp(40px, 6vw, 72px)' }}>
+        <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
           <div className="min-w-0 flex-1">
             <Display level={1}>
               Every booking, one engine
@@ -61,7 +59,7 @@ export function SchedulingHero() {
             <Text variant="lead" className="mt-7 max-w-[580px]">
               {lede}
             </Text>
-            <div className="mkt-cluster mt-[34px]" style={{ gap: '12px' }}>
+            <div className="mt-[34px] flex flex-wrap items-center gap-3">
               <Button size="lg" color="neutral">
                 Activate Scheduling →
               </Button>
@@ -69,7 +67,7 @@ export function SchedulingHero() {
                 See the booking shapes
               </a>
             </div>
-            <ul className="mkt-cluster mt-[26px] list-none p-0" style={{ gap: '10px' }}>
+            <ul className="mt-[26px] flex list-none flex-wrap items-center gap-2.5 p-0">
               {chips.map((c) => (
                 <li
                   key={c}

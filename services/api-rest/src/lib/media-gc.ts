@@ -14,11 +14,12 @@
 // Interval default is daily; in dev we can run it more aggressively via
 // MEDIA_GC_INTERVAL_MS to exercise the path.
 
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { getStorage } from './storage.js';
 
-const MEDIA_GC_LOCK_KEY = 4242_4244;
+const MEDIA_GC_LOCK_KEY = ADVISORY_LOCKS.MEDIA_GC;
 const DEFAULT_INTERVAL_MS = 24 * 60 * 60 * 1000; // daily
 const DEFAULT_GRACE_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
 const BATCH_LIMIT = 200;
@@ -39,15 +40,8 @@ export async function runMediaGcTick(
   logger: FastifyBaseLogger,
   graceMs: number = DEFAULT_GRACE_MS
 ): Promise<MediaGcTickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${MEDIA_GC_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    logger.debug('media-gc: lock held by another pod, skipping');
-    return { acquired: false, removed: 0, errors: 0 };
-  }
-
-  try {
+  const SKIPPED: MediaGcTickResult = { acquired: false, removed: 0, errors: 0 };
+  return withAdvisoryTickLock(MEDIA_GC_LOCK_KEY, SKIPPED, async () => {
     const cutoff = new Date(Date.now() - graceMs);
     // Cross-tenant SELECT. Same approach as scheduled-publish: we'd rather
     // run a hand-rolled query than try to express "across all tenants" via
@@ -115,9 +109,7 @@ export async function runMediaGcTick(
     }
 
     return { acquired: true, removed, errors };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${MEDIA_GC_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startMediaGcLoop(

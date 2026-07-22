@@ -109,6 +109,15 @@ export interface SurfaceFrameProps {
    *  because the drawer/modal HOST chrome already owns the window controls; the
    *  embedded full-page surface has no host, so it carries them here for parity. */
   headerActions?: React.ReactNode;
+  /** `embedded` variant only. `contained` (default) is the centered sheet capped
+   *  at 1120px (with a summary) / 820px (without) — right for a form, which reads
+   *  badly when its fields stretch across a wide display.
+   *
+   *  `full` removes the cap and the side borders so the surface runs edge-to-edge.
+   *  Opt in ONLY when the surface carries a genuine second working pane that wants
+   *  the room — a live document preview, a canvas, a grid — the same reasoning the
+   *  builder's `.bx-shell` is full-bleed. A plain form must stay `contained`. */
+  width?: 'contained' | 'full';
   /** `inline` variant only: an externally-supplied DOM node — typically the
    *  drawer/modal HOST chrome's own action slot (e.g. the dashboard's
    *  `DetailFooterSlotTarget`) — that the active step's action row portals
@@ -134,6 +143,9 @@ export interface SurfaceFrameProps {
 
 interface SurfaceContextValue {
   variant: SurfaceVariant;
+  /** F/embedded width mode — the stacked summary must hide at the SAME breakpoint
+   *  the aside appears at, or the summary disappears from both places in between. */
+  width?: 'contained' | 'full';
   /** F variants (inline/embedded): the leave action. The frame renders it as a
    *  ghost Cancel Button in the top toolbar (matching Back) — never raw JSX. */
   onCancel?: () => void;
@@ -189,7 +201,15 @@ const ExternalActionsTargetContext = React.createContext<HTMLElement | null | un
 // form the field cards go neutral, so this rail is the single module cue; it uses
 // the standard 12% card-tint level (matching Card variant="module") so the lone
 // tinted element reads consistently with module tints elsewhere.
-const SUMMARY_BG = 'bg-primary';
+// `bg-module bg-soft`, NOT `bg-primary`. This previously read `bg-primary` — a
+// SOLID brand-Ember slab — which contradicted this comment on both axes: solid
+// instead of soft, and the brand hue instead of the active module's. Two things
+// prove the tint is the intent: every SurfaceSummary primitive below paints its
+// text `text-base-content` (the neutral page ink, which is only legible on a
+// light panel), and the house rule is that a tint is always `<color> + soft`,
+// never a baked fill. It went unnoticed while the rail was a narrow 320px strip;
+// a `width="full"` surface widens it enough that a solid fill becomes a wall.
+const SUMMARY_BG = 'bg-module bg-soft';
 
 // ── Rail (immersive `page` variant) ────────────────────────────────────────────
 // RAIL_BG + RailWordmark are shared with the auth split-panel via ../brand/brand-rail
@@ -418,10 +438,9 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
                     'flex h-7 w-7 items-center justify-center rounded-full border text-[12px] font-semibold transition-colors duration-200',
                     status === 'upcoming' &&
                       'text-base-content bg-base-100 border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
-                    status === 'done' &&
-                      'bg-module border-transparent text-[var(--color-module-content)]',
+                    status === 'done' && 'bg-module text-module-content border-transparent',
                     status === 'current' &&
-                      'bg-module ring-module/20 border-transparent text-[var(--color-module-content)] ring-4'
+                      'bg-module ring-module/20 text-module-content border-transparent ring-4'
                   )}
                 >
                   {status === 'done' ? <Check className="h-3.5 w-3.5" /> : idx + 1}
@@ -682,6 +701,7 @@ function FSurfaceFrame({
   variant,
   title,
   headerActions,
+  width = 'contained',
   backLabel,
   steps,
   current,
@@ -695,6 +715,7 @@ function FSurfaceFrame({
   variant: 'inline' | 'embedded';
   title?: React.ReactNode;
   headerActions?: React.ReactNode;
+  width?: 'contained' | 'full';
   backLabel?: string;
   steps: SurfaceStepDef[];
   current: number;
@@ -719,10 +740,11 @@ function FSurfaceFrame({
     <div
       className={cn(
         'bg-base-100 @container flex h-full min-h-0 flex-col overflow-hidden',
-        // Embedded (full page) is a CONTAINED, centered sheet — never edge-to-edge.
-        // Capped in width with the page showing on either side; the inline (drawer/
-        // modal) host already bounds the frame, so it fills its host instead.
+        // Embedded (full page) defaults to a CONTAINED, centered sheet — capped in
+        // width with the page showing on either side; the inline (drawer/modal)
+        // host already bounds the frame, so it fills its host instead.
         variant === 'embedded' &&
+          width === 'contained' &&
           cn(
             'border-base-300 mx-auto w-full border-x',
             // With a summary the sheet is wide (room for form + the right column);
@@ -730,6 +752,10 @@ function FSurfaceFrame({
             // float in a huge gutter.
             hasSummary ? 'max-w-[1120px]' : 'max-w-[820px]'
           ),
+        // `full`: no cap and no side borders — the surface IS the page. For
+        // surfaces with a real second pane (a live preview, a canvas) where the
+        // gutter is wasted space rather than comfortable reading measure.
+        variant === 'embedded' && width === 'full' && 'w-full',
         className
       )}
     >
@@ -751,7 +777,16 @@ function FSurfaceFrame({
       <div
         className={cn(
           'grid min-h-0 flex-1 grid-cols-1',
-          hasSummary && '@[720px]:grid-cols-[1fr_320px]'
+          // The aside is a narrow 320px rail for the default contained sheet —
+          // enough for a totals summary and nothing more. A `full`-width surface
+          // widened itself to make room for a real second pane (a live document
+          // preview), so its aside grows to match; keeping it at 320 would put
+          // all the new width into the form column, stretching fields to an
+          // unreadable measure and defeating the point of going full-bleed.
+          hasSummary &&
+            (width === 'full'
+              ? '@[1100px]:grid-cols-[minmax(0,1fr)_minmax(440px,40%)]'
+              : '@[720px]:grid-cols-[1fr_320px]')
         )}
       >
         {/* Form column: progress + working pane (SurfaceStep owns its scroll and
@@ -770,7 +805,10 @@ function FSurfaceFrame({
         {hasSummary && (
           <aside
             className={cn(
-              'border-base-300 hidden min-h-0 flex-col overflow-y-auto border-l px-6 py-6 @[720px]:flex',
+              'border-base-300 hidden min-h-0 flex-col overflow-y-auto border-l px-6 py-6',
+              // The aside appears at the same breakpoint its column is defined at,
+              // or it would render stacked-and-hidden between the two.
+              width === 'full' ? '@[1100px]:flex' : '@[720px]:flex',
               SUMMARY_BG
             )}
           >
@@ -784,7 +822,13 @@ function FSurfaceFrame({
     <ExternalActionsTargetContext.Provider value={mergeIntoHostChrome ? actionsTarget : undefined}>
       <ActionSlotProvider>
         <SurfaceContext.Provider
-          value={{ variant, onCancel: showBackLink ? undefined : onCancel, cancelLabel, summary }}
+          value={{
+            variant,
+            width,
+            onCancel: showBackLink ? undefined : onCancel,
+            cancelLabel,
+            summary,
+          }}
         >
           {variant === 'embedded' ? (
             <div className="bg-base-200 h-full overflow-hidden">{inner}</div>
@@ -815,6 +859,7 @@ export function SurfaceFrame({
   cancelLabel,
   summary,
   headerActions,
+  width,
   actionsTarget,
   className,
   children,
@@ -901,6 +946,7 @@ export function SurfaceFrame({
         variant={variant}
         title={title}
         headerActions={headerActions}
+        width={width}
         backLabel={backLabel}
         steps={steps}
         current={current}
@@ -1106,7 +1152,13 @@ export function SurfaceStep({
   className,
   children,
 }: SurfaceStepProps) {
-  const { variant, onCancel, cancelLabel, summary } = React.useContext(SurfaceContext);
+  const {
+    variant,
+    width: ctxWidth,
+    onCancel,
+    cancelLabel,
+    summary,
+  } = React.useContext(SurfaceContext);
   const actionSlotNode = React.useContext(ActionSlotNodeContext);
   const externalActionsTarget = React.useContext(ExternalActionsTargetContext);
   // A host-supplied target (see `actionsTarget` on SurfaceFrame) takes priority
@@ -1150,7 +1202,8 @@ export function SurfaceStep({
             {isF && summary && (
               <div
                 className={cn(
-                  'border-base-300 mt-6 rounded-xl border px-5 py-4 @[720px]:hidden',
+                  'border-base-300 mt-6 rounded-xl border px-5 py-4',
+                  ctxWidth === 'full' ? '@[1100px]:hidden' : '@[720px]:hidden',
                   SUMMARY_BG
                 )}
               >

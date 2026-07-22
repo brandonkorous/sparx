@@ -1,17 +1,22 @@
-// Collection detail = its products. Resolves the merchant's `collection`-scope
-// layout (or the seeded default) and renders it through the shared
-// SectionRenderer bound to this collection: a header section + a product-grid
-// section (count + grid + pagination). Metadata + breadcrumbs are page chrome.
+// Collection detail — an EDITABLE shell around a PINNED `commerce.collection-detail` core
+// (docs/122 + docs/127 §8). The core renders the collection's header + its members as a
+// FACETED, sortable, paginated grid (the same browser the PLP + category detail use,
+// scoped to this collection), so a large collection is genuinely shoppable rather than a
+// single truncated page. The route keeps the record lookup + the 404/redirect guard and
+// mounts the core with the collection handle; the tenant's published `commerce.collection`
+// template (or the code fallback) is the shell around it. The sample-data preview keeps the
+// legacy section renderer, so a collection layout can be designed before a real one exists.
 
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import { collectionDetailPage } from '@sparx/silica-catalog';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SectionRenderer } from '@/components/section-renderer';
-import { SilicaBody } from '@/components/silica-chrome';
-import { getCollection, listCollectionProducts } from '@/lib/commerce';
+import { SilicaFunctionalBody } from '@/components/silica-chrome';
+import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { getCollection } from '@/lib/commerce';
 import { getPublishedSilicaCollection } from '@/lib/silica';
-import { buildSilicaHost, collectionToSilicaRecord } from '@/lib/silica-data';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import {
@@ -64,52 +69,42 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
   if (!site) notFound();
   const { handle } = await params;
   const sp = (await searchParams) ?? {};
-  const page = Math.max(1, Number(one(sp.page) ?? '1') || 1);
 
-  // Sample-data preview (doc 36 §9): token-gated `sparxSampleData=1` renders the
-  // collection layout against fixed SAMPLE_* fixtures so it can be designed
-  // before any real collection exists. The layout still resolves from the
-  // (draft) snapshot — only the bound data is swapped.
   const sample = isSampleRequested(sp);
-  const collection = sample ? SAMPLE_COLLECTION : await getCollection(site.slug, handle);
-  if (!collection) {
-    if (!sample) await applyRedirect(site.slug, `/collections/${handle}`);
-    notFound();
-  }
 
-  // The silica engine's published `commerce.collection` template wins first (docs/118
-  // Stage 6): it renders the collection through the shared silica walker — a header
-  // over a grid of THIS collection's products, injected as the `collection` object
-  // scope (with its products pre-fetched onto the record's `products` list, so the
-  // grid never binds the whole catalog). Null → fall through to the legacy sections.
-  // Preview sample-data keeps the legacy path. Bare, like the PDP — the silica frame
-  // in the root layout provides the chrome.
+  // Live path: the functional `commerce.collection-detail` core inside the tenant's
+  // editable shell (published template → type default → code fallback). The core renders
+  // the header + the faceted, sorted, paged member grid from the handle + search params.
   if (!sample) {
-    const silicaTemplate = await getPublishedSilicaCollection(
+    const collection = await getCollection(site.slug, handle);
+    if (!collection) {
+      await applyRedirect(site.slug, `/collections/${handle}`);
+      notFound();
+    }
+    const propertySlug = await resolveActivePropertySlug();
+    const published = await getPublishedSilicaCollection(
       site.slug,
       'commerce.collection',
       collection.id
     );
-    if (silicaTemplate) {
-      // Render the collection's products in one grid (page 1, a generous cap).
-      // Paginated collection templates are a follow-up — the composite has no pager.
-      const { items } = await listCollectionProducts(site.slug, handle, 1, 48);
-      const host = await buildSilicaHost(site.slug, silicaTemplate.root, {
-        record: {
-          key: 'collection',
-          value: collectionToSilicaRecord(collection, items, site.slug),
-        },
-        currency: site.commerce.defaultCurrency,
-        locale: site.commerce.defaultLocale,
-      });
-      return <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={host} />;
-    }
+    const shell = published?.root ?? collectionDetailPage();
+    const renderHost = storefrontHostRenderer({
+      site,
+      propertySlug: propertySlug ?? undefined,
+      recordHandle: handle,
+      searchParams: sp,
+    });
+    return (
+      <div className="st-container">
+        <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
+      </div>
+    );
   }
 
-  // The commerce:collection layout: the merchant's published one, or the seeded
-  // default (parity). A site-preview token resolves the draft instead. In preview
-  // only, `sparxLayoutKey` forces a specific alternate layout onto the canvas
-  // (gated to the preview token — a public visitor can't pin a layout via query).
+  // Sample-data preview (doc 36 §9): token-gated `sparxSampleData=1` renders the collection
+  // layout against fixed SAMPLE_* fixtures through the legacy section renderer, so it can be
+  // designed before any real collection exists.
+  const collection = SAMPLE_COLLECTION;
   const snapshot = await getPublishedSite(
     site.slug,
     one(sp.sparxSitePreview),
@@ -127,14 +122,8 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
   const gridSection = sections.find((s) => s.sectionType === 'collection-products');
   const requestedPerPage =
     typeof gridSection?.config.perPage === 'number' ? gridSection.config.perPage : 24;
-
-  const { items, total, perPage } = sample
-    ? {
-        items: SAMPLE_COLLECTION_PRODUCTS.slice(0, requestedPerPage),
-        total: SAMPLE_COLLECTION_PRODUCTS.length,
-        perPage: requestedPerPage,
-      }
-    : await listCollectionProducts(site.slug, handle, page, requestedPerPage);
+  const items = SAMPLE_COLLECTION_PRODUCTS.slice(0, requestedPerPage);
+  const total = SAMPLE_COLLECTION_PRODUCTS.length;
   const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
 
   return (
@@ -154,7 +143,7 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
           currency,
           locale,
           collection,
-          collectionExtras: { items, total, page, perPage, currentParams: sp },
+          collectionExtras: { items, total, page: 1, perPage: requestedPerPage, currentParams: sp },
         }}
         definitions={snapshot?.definitions ?? []}
       />

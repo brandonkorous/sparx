@@ -1,0 +1,403 @@
+'use client';
+
+// STOCK — how much of each thing you have right now, everywhere you keep it.
+//
+// ── Why this one IS a table ──────────────────────────────────────────────
+//
+// The house rule is that a short list of one-line things is cards, not a table.
+// This is the other case: hundreds of rows that each carry four numbers, and the
+// whole job of the screen is comparing those numbers down a column. Cards would
+// turn a scan into a read. The columns disclose with @container so a pane docked
+// at 320px still shows the two that matter — what it is and how many can be sold
+// — rather than six columns of two characters each.
+//
+// ── Every narrowing is a SERVER filter ───────────────────────────────────
+//
+// Search, location, "running low", the sort and the paging all go to the API.
+// Sorting the loaded window in the browser sorts ONE page and presents it as the
+// answer, so "what is closest to running out" would return the scarcest of the
+// fifty rows that happen to be in hand. "Running low" in particular is an
+// expression over three columns, which is why the endpoint grew a real filter
+// for it rather than the client sieving a page.
+//
+// ── Three empty states, because they are three different problems ────────
+//
+// Nothing matches the search · nothing matches the low-stock filter (which is
+// GOOD news and should say so) · nothing is counted anywhere yet. Telling
+// someone to go record their first count when they have four hundred rows and
+// mistyped a SKU is the worse of the mistakes.
+
+import { useState } from 'react';
+import {
+  Badge,
+  Card,
+  EmptyState,
+  NativeSelect,
+  SearchInput,
+  Table,
+  Text,
+  ToggleGroup,
+  ToggleGroupItem,
+  ToolbarSeparator,
+} from '@wizeworks/silicaui-react';
+import { ArrowDown, ArrowUp, Boxes, TrendingDown } from 'lucide-react';
+import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
+import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
+import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import {
+  levelState,
+  locationLabel,
+  sellable,
+  useStockLevels,
+  useStockLocations,
+  type SortDirection,
+  type StockLevel,
+  type StockSortKey,
+} from './data';
+
+/** Same modifier contract as every other list in the app. */
+function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
+  if (event.altKey) return 'window';
+  if (event.shiftKey) return 'beside';
+  return 'tab';
+}
+
+/**
+ * What to try when nothing matched — naming ONLY what is actually narrowing the
+ * list. Telling someone to clear a filter they never set sends them hunting for
+ * a control that is already off.
+ */
+function emptyAdvice(search: string, locationName: string | null): string {
+  const parts: string[] = [];
+  if (search) parts.push('Try part of a product code or a product name.');
+  if (locationName) {
+    parts.push(
+      `You are only seeing stock kept at ${locationName} — switch to every location for the rest.`
+    );
+  }
+  return parts.join(' ');
+}
+
+export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
+  const [search, setSearch] = useState('');
+  const [locationId, setLocationId] = useState('');
+  const [lowOnly, setLowOnly] = useState(false);
+  // Most recently changed first: opened cold, the useful question is "what
+  // moved". Switching to "To sell" answers "what is nearly gone" instead.
+  const [sort, setSort] = useState<{ key: StockSortKey; dir: SortDirection }>({
+    key: 'updatedAt',
+    dir: 'desc',
+  });
+
+  const [pageSize, setPageSize] = useState<PageSize>(50);
+  const [page, setPage] = useState(1);
+  // How wide the current window has grown. "Load more" raises this; anything
+  // that changes WHICH rows match resets it.
+  const [take, setTake] = useState<number>(50);
+
+  const skip = (page - 1) * pageSize;
+  const locations = useStockLocations();
+  const activeLocations = (locations.data?.items ?? []).filter((location) => location.isActive);
+  const locationName = activeLocations.find((location) => location.id === locationId)?.name ?? null;
+
+  const { data, isLoading, isFetching, dataUpdatedAt, isError, refetch } = useStockLevels({
+    q: search.trim(),
+    ...(locationId ? { warehouseId: locationId } : {}),
+    lowStockOnly: lowOnly,
+    sortBy: sort.key,
+    order: sort.dir,
+    take,
+    skip,
+  });
+
+  const rows = data?.items ?? [];
+  const total = data?.total;
+  const narrowed = search.trim() !== '' || locationId !== '' || lowOnly;
+
+  /** Anything that changes which rows match returns to the first window —
+   *  staying on page 5 of a result set that now has two pages shows nothing. */
+  const resetWindow = () => {
+    setPage(1);
+    setTake(pageSize);
+  };
+
+  const toggleSort = (key: StockSortKey) => {
+    setSort((current) =>
+      current.key === key
+        ? { key, dir: current.dir === 'asc' ? 'desc' : 'asc' }
+        : // Quantities open smallest-first ("what is nearly gone"), timestamps
+          // newest-first, names A–Z. Each is the question people actually ask.
+          { key, dir: key === 'updatedAt' ? 'desc' : 'asc' }
+    );
+    resetWindow();
+  };
+
+  const header = (key: StockSortKey, label: string, extra = '') => (
+    <th
+      className={extra}
+      aria-sort={sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+    >
+      <button
+        type="button"
+        className="link link-hover inline-flex items-center gap-1"
+        onClick={() => {
+          toggleSort(key);
+        }}
+      >
+        {label}
+        {sort.key === key ? (
+          sort.dir === 'asc' ? (
+            <ArrowUp className="size-3" aria-hidden />
+          ) : (
+            <ArrowDown className="size-3" aria-hidden />
+          )
+        ) : null}
+      </button>
+    </th>
+  );
+
+  const open = (level: StockLevel, event: { shiftKey: boolean; altKey: boolean }) => {
+    ctx.open('inventory.stock.item', { variantId: level.variantId }, { target: targetFor(event) });
+  };
+
+  const body = () => {
+    // A failed load REPLACES the table. Rendering an empty grid under live
+    // filters invites someone to conclude they have no stock.
+    if (isError) {
+      return (
+        <EmptyState
+          icon={<Boxes className="size-6" aria-hidden />}
+          title="Could not load your stock"
+          description="This is a problem reaching the server. Your stock is unaffected — the numbers just could not be read just now."
+        />
+      );
+    }
+
+    if (isLoading) {
+      return (
+        <p className="p-4 text-sm" role="status">
+          Loading stock…
+        </p>
+      );
+    }
+
+    if (rows.length === 0) {
+      // "Nothing is running low" is good news, and an empty state that reads
+      // like a failure over good news is its own kind of wrong.
+      if (lowOnly && search.trim() === '') {
+        return (
+          <EmptyState
+            icon={<TrendingDown className="size-6" aria-hidden />}
+            title={
+              locationName ? `Nothing is running low at ${locationName}` : 'Nothing is running low'
+            }
+            description="Everything with a reorder rule is above the level you asked to be warned at. Turn the filter off to see all your stock."
+          />
+        );
+      }
+      return (
+        <EmptyState
+          icon={<Boxes className="size-6" aria-hidden />}
+          title={narrowed ? 'Nothing matches that' : 'Nothing is being counted yet'}
+          description={
+            narrowed
+              ? emptyAdvice(search.trim(), locationName)
+              : 'Stock appears here once you record how many of something you have. Open a product and use its Stock panel to count it for the first time — until then your website treats it as out of stock.'
+          }
+        />
+      );
+    }
+
+    return (
+      <Table size="sm" hover>
+        <thead>
+          <tr>
+            {header('product', 'Item')}
+            <th className="hidden @lg:table-cell">Location</th>
+            {header('available', 'To sell', 'text-right whitespace-nowrap')}
+            <th className="hidden text-right @xl:table-cell">On the shelf</th>
+            <th className="hidden text-right @3xl:table-cell">Spoken for</th>
+            <th>State</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((level) => {
+            const state = levelState(level);
+            return (
+              <tr
+                key={`${level.variantId}:${level.warehouseId}`}
+                className="cursor-pointer"
+                tabIndex={0}
+                role="button"
+                onClick={(event) => {
+                  open(level, event);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key !== 'Enter' && event.key !== ' ') return;
+                  event.preventDefault();
+                  open(level, event);
+                }}
+              >
+                {/* `max-w-0 w-full` is load-bearing, not decoration. A table
+                    cell sizes to its content, so at 380px the product name kept
+                    pushing the row wider and shoved the state badge off the
+                    right edge — the one column that must never be the one to
+                    go. Zeroing the max width makes this the cell that GIVES,
+                    which is what lets the truncation below actually bite. */}
+                <td className="w-full max-w-0">
+                  {/* Identity is two facts and they are not equals: the product
+                      name is what a person recognises, the code is how the shelf
+                      is labelled. Both readable, one leading. */}
+                  <span className="flex min-w-0 flex-col">
+                    <span className="truncate">{level.productTitle ?? 'Untitled product'}</span>
+                    <span className="truncate font-mono text-sm">{level.sku ?? 'No code'}</span>
+                    {/* Below @lg the Location column is gone, so it comes back
+                        here — a stock row without a place is not an answer. */}
+                    <span className="truncate text-sm @lg:hidden">{locationLabel(level)}</span>
+                  </span>
+                </td>
+                <td className="hidden max-w-48 truncate @lg:table-cell">{locationLabel(level)}</td>
+                <td className="text-right font-medium whitespace-nowrap tabular-nums">
+                  {sellable(level)}
+                </td>
+                <td className="hidden text-right tabular-nums @xl:table-cell">{level.onHand}</td>
+                <td className="hidden text-right tabular-nums @3xl:table-cell">
+                  {level.allocated}
+                </td>
+                <td>
+                  <Badge color={state.tone} variant="soft" size="sm">
+                    {state.label}
+                  </Badge>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
+    );
+  };
+
+  return (
+    <div className={PANE_SHELL}>
+      {/* Four controls and no primary action — stock is not something you create
+          here, it arrives by counting, receiving or selling. So the refresh
+          button carries the `ml-auto` that a primary action normally would.
+          Nothing wraps: the location picker sheds to a narrow control and the
+          search box absorbs whatever is left. */}
+      <PaneToolbar label="Stock list controls">
+        {/* The width has to sit on a WRAPPER: SearchInput forwards className to
+            its inner <input>, so a sizing class aimed at the control never
+            reaches the element that actually lays out. */}
+        <div className="max-w-xs min-w-0 flex-1">
+          <SearchInput
+            size="sm"
+            aria-label="Search stock"
+            placeholder="Product name or code…"
+            value={search}
+            onValueChange={(next) => {
+              setSearch(next);
+              resetWindow();
+            }}
+          />
+        </div>
+
+        <ToolbarSeparator className="hidden @xl:block" />
+
+        {/* A picker rather than chips: a business can have twenty locations, and
+            twenty chips is a toolbar that is taller than the table. */}
+        <NativeSelect
+          size="sm"
+          className="max-w-40 shrink"
+          aria-label="Show stock kept at"
+          value={locationId}
+          onChange={(event) => {
+            setLocationId(event.target.value);
+            resetWindow();
+          }}
+        >
+          <option value="">Every location</option>
+          {activeLocations.map((location) => (
+            <option key={location.id} value={location.id}>
+              {location.name}
+            </option>
+          ))}
+        </NativeSelect>
+
+        {/* One pressed button, not a chip pair: this is a single yes/no question,
+            and "All / Running low" as two chips reads as two categories of
+            stock. It sheds its label below @2xl — the falling arrow plus the
+            tooltip carries it, and search is used far more often than this. */}
+        <ToggleGroup
+          size="sm"
+          color="module"
+          className="shrink-0"
+          value={lowOnly ? ['low'] : []}
+          onValueChange={(next: unknown[]) => {
+            setLowOnly(next.includes('low'));
+            resetWindow();
+          }}
+        >
+          <ToggleGroupItem
+            value="low"
+            aria-label="Only show what is running low"
+            title="Only show what is running low"
+          >
+            <TrendingDown className="size-4" aria-hidden />
+            <span className="hidden @2xl:inline">Running low</span>
+          </ToggleGroupItem>
+        </ToggleGroup>
+
+        {/* ALWAYS the last child of a list toolbar — see RefreshButton. */}
+        <RefreshButton
+          className="ml-auto"
+          isFetching={isFetching}
+          updatedAt={data ? dataUpdatedAt : undefined}
+          onRefresh={() => {
+            void refetch();
+          }}
+        />
+      </PaneToolbar>
+
+      {/* Full width — matches the house list convention: the table fills the pane. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
+
+      {/* Sits on the pane, not in the card — it describes the table rather than
+          being part of it, which is what the recessed surface says. */}
+      <div className="shrink-0">
+        <ListPagination
+          shown={rows.length}
+          firstRow={rows.length === 0 ? 0 : skip + 1}
+          total={total}
+          page={page}
+          pageSize={pageSize}
+          canLoadMore={take < MAX_TAKE}
+          busy={isFetching}
+          onLoadMore={() => {
+            setTake((current) => Math.min(current + pageSize, MAX_TAKE));
+          }}
+          onPageChange={(next) => {
+            setPage(next);
+            // A jump REPLACES the window, so growth from "load more" belongs to
+            // the window you just left, not the one you land on.
+            setTake(pageSize);
+          }}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+            setTake(size);
+          }}
+        />
+        {/* Only where there is a pointer to do them with — on the stack these
+            three modifiers do not exist — and only when there is something to
+            click, since advice about opening rows reads as an instruction when
+            the answer to the search is that there are none. */}
+        {rows.length > 0 ? (
+          <Text className="hidden px-1 pb-1 text-sm @xl:block">
+            Click to open · Shift-click alongside · Alt-click new window
+          </Text>
+        ) : null}
+      </div>
+    </div>
+  );
+}

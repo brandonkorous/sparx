@@ -17,7 +17,7 @@
 // `started_at` (when the run began); terminal counters lag `runs_count` for
 // in-flight runs until the reconcile re-buckets them once they settle.
 
-import { withTenant, type TxClient } from '@sparx/db';
+import { Prisma, withTenant, type TxClient } from '@sparx/db';
 
 import type { ServiceCtx } from './automation-service';
 
@@ -117,11 +117,38 @@ interface RawDayRow {
   skipped_count: number;
 }
 
+function mapRunRow(r: RawDayRow): DayRow {
+  const date = startOfUtcDay(new Date(r.bucket));
+  return {
+    key: utcDateKey(date),
+    date,
+    runsCount: Number(r.runs_count ?? 0),
+    completedCount: Number(r.completed_count ?? 0),
+    failedCount: Number(r.failed_count ?? 0),
+    skippedCount: Number(r.skipped_count ?? 0),
+  };
+}
+
 // One GROUP-BY-day pass over automation_runs in [from, toExclusive), bucketed by
 // started_at's UTC date. RLS scopes the read to the tenant — the aggregate spans
 // every automation the tenant owns. Shared by the live overlay/cold-start in
-// runsTimeseries and by the nightly reconcile.
-async function aggregateRunsByDay(tx: TxClient, from: Date, toExclusive: Date): Promise<DayRow[]> {
+// runsTimeseries.
+//
+// Site scoping is the SHARED-NULL read (docs/131 §6) — and this is where
+// automation deliberately DIFFERS from the commerce revenue rollup. A run's
+// property_id is the site it executed for, but NULL there is not an orphan: a
+// tenant-wide automation (one that applies to every site) and any run triggered
+// by a tenant-level record produce property_id = NULL, which is SHARED activity
+// every site is entitled to see. So a scoped read for one site must ALSO include
+// the null bucket — `(property_id = $site OR property_id IS NULL)`, NOT `=$site`
+// alone. `propertyId` undefined = every site (the all-sites total, which already
+// sums the null bucket in via no filter).
+async function aggregateRunsByDay(
+  tx: TxClient,
+  from: Date,
+  toExclusive: Date,
+  propertyId?: string
+): Promise<DayRow[]> {
   const rows = await tx.$queryRaw<RawDayRow[]>`
     SELECT
       (started_at AT TIME ZONE 'UTC')::date                     AS bucket,
@@ -132,21 +159,51 @@ async function aggregateRunsByDay(tx: TxClient, from: Date, toExclusive: Date): 
     FROM automation_runs
     WHERE started_at >= ${from}
       AND started_at < ${toExclusive}
+      ${
+        propertyId
+          ? // Shared-null read (docs/131 §6): a single site sees its OWN runs plus
+            // the tenant-wide (null-property) runs that apply to every site — this
+            // OR is intentional and NOT the commerce `= propertyId` semantics.
+            Prisma.sql`AND (property_id = ${propertyId}::uuid OR property_id IS NULL)`
+          : Prisma.empty
+      }
     GROUP BY 1
     ORDER BY 1
   `;
 
-  return rows.map((r) => {
-    const date = startOfUtcDay(new Date(r.bucket));
-    return {
-      key: utcDateKey(date),
-      date,
-      runsCount: Number(r.runs_count ?? 0),
-      completedCount: Number(r.completed_count ?? 0),
-      failedCount: Number(r.failed_count ?? 0),
-      skippedCount: Number(r.skipped_count ?? 0),
-    };
-  });
+  return rows.map(mapRunRow);
+}
+
+interface RawDayPropRow extends RawDayRow {
+  property_id: string | null;
+}
+
+// The per-PROPERTY pass the nightly reconcile writes (docs/131 §6): one row per
+// (site, day), null property_id = the SHARED tenant-wide bucket (a run for a
+// tenant-wide automation or triggered by a tenant-level record). This aggregate
+// is identical in shape to the commerce reconcile — GROUP BY property_id, day,
+// nullable property_id — the shared-null semantics live only in the READ above,
+// never in how the rollup is stored.
+async function aggregateRunsByDayPerProperty(
+  tx: TxClient,
+  from: Date,
+  toExclusive: Date
+): Promise<(DayRow & { propertyId: string | null })[]> {
+  const rows = await tx.$queryRaw<RawDayPropRow[]>`
+    SELECT
+      property_id,
+      (started_at AT TIME ZONE 'UTC')::date                     AS bucket,
+      COUNT(*)::int                                             AS runs_count,
+      (COUNT(*) FILTER (WHERE status = 'completed'))::int       AS completed_count,
+      (COUNT(*) FILTER (WHERE status = 'failed'))::int          AS failed_count,
+      (COUNT(*) FILTER (WHERE status = 'skipped'))::int         AS skipped_count
+    FROM automation_runs
+    WHERE started_at >= ${from}
+      AND started_at < ${toExclusive}
+    GROUP BY property_id, 2
+    ORDER BY 2
+  `;
+  return rows.map((r) => ({ ...mapRunRow(r), propertyId: r.property_id }));
 }
 
 function bucketStartFor(dateKey: string, grain: 'week' | 'month'): string {
@@ -181,13 +238,35 @@ function successRateOf(completed: number, failed: number): number {
   return settled > 0 ? +((completed / settled) * 100).toFixed(1) : 0;
 }
 
-/** Daily/weekly/monthly run-activity series for the whole tenant, backed by the
- *  rollup with a live overlay of the most recent open day(s). */
+// Sum a day's measures into the bucket map. Accumulates rather than overwrites
+// because a per-site read (docs/131 §6) now finds MULTIPLE rollup rows per bucket
+// — the site's own row plus the SHARED tenant-wide (null-property) row — and an
+// all-sites read finds every site's row per bucket; both must add back up to the
+// tenant total. The closed and open windows stay disjoint, so this never
+// double-counts across them.
+function addRunMeasures(byKey: Map<string, DayMeasures>, key: string, m: DayMeasures): void {
+  const cur = byKey.get(key);
+  byKey.set(
+    key,
+    cur
+      ? {
+          runsCount: cur.runsCount + m.runsCount,
+          completedCount: cur.completedCount + m.completedCount,
+          failedCount: cur.failedCount + m.failedCount,
+          skippedCount: cur.skippedCount + m.skippedCount,
+        }
+      : { ...m }
+  );
+}
+
+/** Daily/weekly/monthly run-activity series for the whole tenant (or one site),
+ *  backed by the rollup with a live overlay of the most recent open day(s). */
 export async function runsTimeseries(
   ctx: ServiceCtx,
-  input: { range: DateRange; grain?: RollupGrain }
+  input: { range: DateRange; grain?: RollupGrain; propertyId?: string }
 ): Promise<RunsTimeseries> {
   const grain = input.grain ?? 'day';
+  const propertyId = input.propertyId;
   const from = startOfUtcDay(new Date(input.range.from));
   const to = startOfUtcDay(new Date(input.range.to));
   // First day served live (recomputed on every read). Everything before it is a
@@ -202,14 +281,22 @@ export async function runsTimeseries(
     // 1) Closed days from the rollup. Cold-start fallback: if the rollup hasn't
     //    been reconciled yet, aggregate the closed window live so a fresh deploy
     //    still serves real history immediately (cheap at Phase-1 volumes).
+    //    Per-site (docs/131 §6): read the site's OWN rows PLUS the shared
+    //    tenant-wide (null-property) rows — every site sees the tenant-wide
+    //    automations' activity — and let addRunMeasures sum them; all-sites reads
+    //    every row and sums them back to the tenant total. This `OR null` is the
+    //    automation-specific shared-null read, NOT commerce's `{ propertyId }`.
     if (closedToExclusive.getTime() > from.getTime()) {
       const rollup = await tx.rollupAutomationDailyRuns.findMany({
-        where: { bucket: { gte: from, lt: closedToExclusive } },
+        where: {
+          bucket: { gte: from, lt: closedToExclusive },
+          ...(propertyId ? { OR: [{ propertyId }, { propertyId: null }] } : {}),
+        },
         orderBy: { bucket: 'asc' },
       });
       if (rollup.length > 0) {
         for (const r of rollup) {
-          byKey.set(utcDateKey(startOfUtcDay(new Date(r.bucket))), {
+          addRunMeasures(byKey, utcDateKey(startOfUtcDay(new Date(r.bucket))), {
             runsCount: r.runsCount,
             completedCount: r.completedCount,
             failedCount: r.failedCount,
@@ -217,17 +304,19 @@ export async function runsTimeseries(
           });
         }
       } else {
-        for (const d of await aggregateRunsByDay(tx, from, closedToExclusive)) {
-          byKey.set(d.key, d);
+        for (const d of await aggregateRunsByDay(tx, from, closedToExclusive, propertyId)) {
+          addRunMeasures(byKey, d.key, d);
         }
       }
     }
 
-    // 2) Open day(s) always recomputed live so they're fresh.
+    // 2) Open day(s) always recomputed live so they're fresh. Same shared-null
+    //    scoping as the closed window (docs/131 §6) — aggregateRunsByDay includes
+    //    the null bucket when a propertyId is set.
     const overlayFrom = new Date(Math.max(from.getTime(), overlayStart.getTime()));
     if (toExclusive.getTime() > overlayFrom.getTime()) {
-      for (const d of await aggregateRunsByDay(tx, overlayFrom, toExclusive)) {
-        byKey.set(d.key, d);
+      for (const d of await aggregateRunsByDay(tx, overlayFrom, toExclusive, propertyId)) {
+        addRunMeasures(byKey, d.key, d);
       }
     }
 
@@ -274,13 +363,18 @@ export async function reconcileRunsRollup(
   const toExclusive = addUtcDays(today, 1); // include today
 
   return withTenant({ tenantId: ctx.tenantId }, async (tx) => {
-    const rows = await aggregateRunsByDay(tx, windowStart, toExclusive);
+    // Per (property, day) rows (docs/131 §6). Delete-then-insert the whole window
+    // for the tenant regardless of property — every site's rows plus the shared
+    // null-property row are rewritten in one pass, so a run that settled after an
+    // earlier reconcile self-heals and a site with no runs that day has no row.
+    const rows = await aggregateRunsByDayPerProperty(tx, windowStart, toExclusive);
 
     await tx.rollupAutomationDailyRuns.deleteMany({ where: { bucket: { gte: windowStart } } });
     if (rows.length > 0) {
       await tx.rollupAutomationDailyRuns.createMany({
         data: rows.map((r) => ({
           tenantId: ctx.tenantId,
+          propertyId: r.propertyId,
           bucket: r.date,
           runsCount: r.runsCount,
           completedCount: r.completedCount,

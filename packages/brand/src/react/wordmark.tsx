@@ -54,7 +54,7 @@ export function Wordmark({
   return (
     <svg
       width={width}
-      height={size}
+      //height={size}
       viewBox={WORDMARK_VIEWBOX}
       xmlns="http://www.w3.org/2000/svg"
       role="img"

@@ -12,16 +12,18 @@ data:
   # The api-rest publisher uses one topic per EventType (topic name == event
   # type) — no shared/fan-out topic, so there is no PUBSUB_TOPIC to set.
   GCP_PROJECT_ID: sparxworks
-  # Better Auth / dashboard need to know the canonical public origin so the
-  # OAuth/session cookies scope correctly. NOT a secret.
+  # Better Auth / the workbench (the staff app at app.sparx.works) need the
+  # canonical public origin so the OAuth/session cookies scope correctly. NOT a
+  # secret.
   BETTER_AUTH_URL: https://app.sparx.works
   # MCP OAuth (docs/07 §5). MCP_RESOURCE_URL is the canonical resource
   # identifier of the MCP server (the audience OAuth tokens target); the
-  # dashboard validates it at consent + advertises it, and api-mcp echoes it in
+  # workbench validates it at consent + advertises it, and api-mcp echoes it in
   # its protected-resource metadata. MCP_AUTH_SERVER_URL is the authorization
-  # server (this dashboard/Better Auth origin) that api-mcp points clients at.
-  # NOT secrets. (AUTH_DATABASE_URL, used by api-mcp to introspect OAuth tokens
-  # as sparx_owner, lives in sparx-app-secrets alongside the other DB URLs.)
+  # server (the workbench / Better Auth origin at app.sparx.works) that api-mcp
+  # points clients at. NOT secrets. (AUTH_DATABASE_URL, used by api-mcp to
+  # introspect OAuth tokens as sparx_owner, lives in sparx-app-secrets alongside
+  # the other DB URLs.)
   MCP_RESOURCE_URL: https://mcp.sparx.works/mcp
   MCP_AUTH_SERVER_URL: https://app.sparx.works
   # Site MCP (docs/113) — the shopper-facing MCP plane (mcp-site).
@@ -38,16 +40,18 @@ data:
   NEXT_PUBLIC_APP_URL: https://app.sparx.works
   NEXT_PUBLIC_API_URL: https://api.sparx.works
   NEXT_PUBLIC_MARKETING_URL: https://sparx.works
-  # Dashboard → api-rest in-cluster URL. Avoids going out through Caddy.
+  # Staff app → api-rest in-cluster URL. Avoids going out through Caddy.
   SPARX_API_REST_URL: http://api-rest.sparx-prod.svc.cluster.local:3000
-  # api-rest → dashboard in-cluster URL, used ONLY for the partner account
-  # provisioning call (POST /api/internal/partner-provision, docs/114 §B.2):
-  # account creation runs only where Better Auth lives (the dashboard), so
-  # approving an accountless partner delegates the tenant + owner + invite there.
-  # Authenticated with the shared SPARX_INTERNAL_JWT_SECRET (already in
-  # sparx-app-secrets). Distinct from any browser-facing dashboard URL — this is
-  # the private ClusterIP address.
-  SPARX_DASHBOARD_INTERNAL_URL: http://dashboard.sparx-prod.svc.cluster.local:3000
+  # api-rest → staff-app in-cluster URL, used ONLY for the two internal
+  # service-to-service calls that must run where Better Auth lives: partner
+  # account provisioning (POST /api/internal/partner-provision, docs/114 §B.2)
+  # and staff password reset (POST /api/internal/user-password-reset). Better
+  # Auth now lives in the workbench (it replaced the dashboard), so this points
+  # at the workbench Service. Authenticated with the shared
+  # SPARX_INTERNAL_JWT_SECRET (already in sparx-app-secrets). Private ClusterIP
+  # address, distinct from the browser-facing app origin. NOTE: the var name is
+  # legacy (predates the dashboard→workbench cutover); its value is the workbench.
+  SPARX_DASHBOARD_INTERNAL_URL: http://workbench.sparx-prod.svc.cluster.local:3000
   # PUBLIC origin of api-rest — baked into rendered email media URLs (logos,
   # product images), which resolve via GET /v1/public/media/:id (a REST-only
   # route; GraphQL at graphql.sparx.works doesn't serve bytes). Distinct from the

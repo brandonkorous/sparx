@@ -19,12 +19,14 @@ import { CartView } from '@/components/cart-view';
 import { SearchExperience, type SearchParams } from '@/components/search/search-experience';
 import { ProductListing } from '@/components/products/product-listing';
 import { CollectionIndex } from '@/components/collections/collection-index';
+import { CollectionDetail } from '@/components/collections/collection-detail';
 import { CategoryIndex } from '@/components/category/category-index';
 import { CategoryDetail } from '@/components/category/category-detail';
 import { BookingServices } from '@/components/booking/booking-services';
 import { BookingServiceDetail } from '@/components/booking/booking-service-detail';
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
+import { ArticleBody } from '@/components/cms/article-body';
 import { mediaUrl } from '@/lib/media';
 import type { ResolvedSite } from '@/lib/site-context';
 
@@ -45,6 +47,11 @@ export interface HostCoreContext {
   /** The in-scope record's id, for a per-record template whose core resolves by id (the
    *  booking-service-detail core). Absent for non-per-record cores. */
   recordId?: string;
+  /** The in-scope CMS entry's rich-text doc, for the article-body core. Passed as DATA
+   *  rather than fetched by the core because the route already holds the entry it
+   *  resolved the template for — re-reading it here would be a second round trip for a
+   *  document we have in hand. */
+  articleDoc?: unknown;
 }
 
 /** Build the storefront `HostRenderer` for a route — a single switch over the pinned
@@ -69,9 +76,18 @@ export function storefrontHostRenderer(ctx: HostCoreContext): HostRenderer {
         // Self-contained: resolves the tenant from the request host, no props/context.
         return <BookingServices />;
       case HOST_KEYS.commerceCategoryDetail:
-        // Per-record: the route passes the category handle (+ page in searchParams).
+        // Per-record: the route passes the category handle (+ facets/sort/page in searchParams).
         return (
           <CategoryDetail
+            site={ctx.site}
+            handle={ctx.recordHandle ?? ''}
+            searchParams={ctx.searchParams}
+          />
+        );
+      case HOST_KEYS.commerceCollectionDetail:
+        // Per-record: the route passes the collection handle (+ facets/sort/page in searchParams).
+        return (
+          <CollectionDetail
             site={ctx.site}
             handle={ctx.recordHandle ?? ''}
             searchParams={ctx.searchParams}
@@ -84,6 +100,13 @@ export function storefrontHostRenderer(ctx: HostCoreContext): HostRenderer {
         // Mode-parameterized: the composite/route bakes `mode` into the node's props
         // (signin | register | forgot | reset); the form reads its own URL params.
         return <AccountAuth mode={toAuthMode(node.props?.mode)} />;
+      case HOST_KEYS.cmsArticleBody:
+        // Per-record: the route passes the entry's doc. `node.class` is deliberately NOT
+        // forwarded — the walk already puts it on the host wrapper this mounts inside, so
+        // passing it again would apply the author's measure and padding twice (a max-w-3xl
+        // inside a max-w-3xl, py-10 doubled). The brand core forwards it because it renders
+        // an inline mark whose own sizing classes matter; a prose block just fills its shell.
+        return <ArticleBody doc={ctx.articleDoc} />;
       case HOST_KEYS.siteBrand:
         // The brand mark — resolved straight off the site the route already has, so the
         // header always reflects what's in Site settings right now. `show` is the

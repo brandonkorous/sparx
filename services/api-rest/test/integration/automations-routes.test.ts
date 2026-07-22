@@ -101,7 +101,17 @@ describe('automation routes', () => {
       payload: { name: 'Welcome new customers' },
     });
     expect(patched.statusCode).toBe(200);
-    expect(patched.json().data.name).toBe('Welcome new customers');
+    // A document edit STAGES in the draft — the live row keeps running the
+    // published version until `publish` promotes it (automation-service.ts
+    // `updateAutomation`, Builder-style draft → publish). So the live `name` is
+    // deliberately still the created one here.
+    //
+    // This assertion used to expect the new name, which was correct BEFORE
+    // versioning landed and has been wrong since. Asserting the staged-not-live
+    // behaviour is worth more than asserting a string: it is the part of the
+    // contract someone could plausibly break without noticing.
+    expect(patched.json().data.name).toBe('Greet new customers');
+    expect(patched.json().data.draft?.name).toBe('Welcome new customers');
 
     // activate
     const activated = await app.inject({

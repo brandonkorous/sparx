@@ -283,7 +283,7 @@ model BuilderEmail {
   silicaDraftDocument     Json? @map("silica_draft_document")
   silicaPublishedDocument Json? @map("silica_published_document")
   // Catalog ordering (cf. BuilderPage.position).
-  position      Int       @default(0)
+  position                Int   @default(0)
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -536,4 +536,242 @@ enum PlatformComponentVisibility {
   private
 
   @@map("platform_component_visibility")
+}
+
+// The append-only OP LOG — every semantic edit the silica engine emitted, in the
+// order it happened (docs/126 §2, Phase 2).
+//
+// silicaui 0.30's `<Builder onChange(site, ops, meta)>` now hands the host what the
+// author DID as causal-ordered operations, not just the resulting whole `Site`. This
+// table records them. It is what unblocks two things the whole-site blob could never
+// give: real per-edit history ("what changed, when, by whom") and — once the realtime
+// relay lands (Phase 4) — multi-editor reconnect, where a client that was at `seq=N`
+// is caught up by replaying ops `N+1…`.
+//
+// SEQ IS PER-PROPERTY, not per-page. The doc sketch keyed it `(page_id, seq)`, but the
+// engine's `meta.baseSeq` / `ackSeq` track ONE document-wide sequence per editing
+// session — a client is "at seq N" across its whole site, not per page. A per-page seq
+// could not answer the reconnect question the engine actually asks, so the sequence is
+// monotonic per property and `owner_kind`/`owner_id` merely say which tree inside the
+// property an op addressed (its `target`).
+//
+// ADDITIVE, deliberately. `silica_draft_tree` stays the authoritative snapshot the
+// editor loads and the storefront (via publish) serves; this log is written in the
+// SAME transaction as that snapshot, so the two cannot disagree. Event-sourced reads
+// (snapshot + replay) are a later cutover (docs/126 §5.1), not folded in here — the
+// same parallel-run discipline every stage of this migration has used.
+//
+// Retained, not pruned (§5.2): ops are the history, they are small, and retention is a
+// product decision rather than a storage necessity. Tenant-scoped + FORCE RLS.
+model BuilderPageOp {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Per-property monotonic ordering — the value a client acks and reconnects against.
+  // BigInt: an active site can accrue a lot of ops over its life, and this must never
+  // wrap or collide.
+  seq BigInt @db.BigInt
+
+  // Client-generated id for one flushed batch. Groups the ops of a single onChange
+  // burst so a retried flush is idempotent (the service refuses a batch_id already
+  // recorded for the property) rather than double-appending.
+  batchId String @map("batch_id") @db.VarChar(64)
+
+  // Who made the edit. Null for a system/automation path with no human actor; no FK —
+  // users live in the Better Auth instance and a deleted user must not take the edit
+  // history with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  // Which tree inside the property the op addressed (from `op.target`). `frame` and
+  // `site` scopes have no id; `page` and `symbol` do.
+  ownerKind String  @map("owner_kind") @db.VarChar(16) // page | frame | symbol | site
+  ownerId   String? @map("owner_id") @db.VarChar(255)
+
+  // The op's `kind` (`node.insert`, `page.setSlug`, …), lifted out of the JSON so
+  // "every text edit" or "every structural op" is an index scan, not a JSONB filter.
+  opKind String @map("op_kind") @db.VarChar(32)
+  // The full op, verbatim as the engine emitted it. Shape validated by the service's
+  // Zod schema, never the DB.
+  op     Json
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The ordering key AND the concurrency guard: two clients that race to append the
+  // same seq collide here, and one retries — the backstop that keeps the log a total
+  // order. Named explicitly (the generated name would truncate past 63 chars).
+  @@unique([tenantId, propertyId, seq], map: "builder_page_ops_property_seq_key")
+  // Idempotent retry — a re-sent flush finds its batch already present.
+  @@index([tenantId, propertyId, batchId])
+  // "The history of this page/symbol", in order.
+  @@index([tenantId, propertyId, ownerKind, ownerId, seq])
+  @@map("builder_page_ops")
+}
+
+// An IMMUTABLE, content-addressed copy of one published silica tree (docs/126 §5.3).
+//
+// Every publish writes the exact bytes it published, keyed by the SHA-256 of their
+// canonical form. Rows are only ever INSERTED — never updated, never deleted except
+// by the property cascade. That is the whole point: a published artifact is what
+// visitors actually received, so it must not be reachable by any later edit.
+//
+// Content addressing makes republishing cheap and history honest. An unchanged page
+// in a ten-page publish hashes to the row that already exists, so the insert is
+// skipped and the release simply names the same hash again — storage grows with what
+// CHANGED, not with how often the author pressed Publish. It also means two pages
+// that happen to hold identical trees still get their own rows, because the hash is
+// scoped per owner: dedupe across owners would make "the history of this page" a join
+// against every other page's releases for no saving worth having.
+//
+// Parallel-run, deliberately. The storefront still reads `silica_published_tree`
+// (docs/126 §5.5); this table is the history + rollback source until Phase 6 flips
+// reads onto it and drops those columns. Tenant-scoped + FORCE RLS.
+model BuilderPageArtifact {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Which store the tree came from. `page`/`layout` mirror BuilderNodeIndex;
+  // `symbols` and `theme` are the two site-global parts of a silica `Site`, whose
+  // owner_id is the property id (there is exactly one of each per property).
+  ownerKind String @map("owner_kind") @db.VarChar(16) // page | layout | symbols | theme
+  ownerId   String @map("owner_id") @db.VarChar(255)
+
+  // SHA-256 hex of the canonical JSON encoding of `tree` — the address. 64 chars,
+  // fixed, so Char rather than VarChar.
+  hash String @db.Char(64)
+  // The published bytes themselves. Never rewritten.
+  tree Json
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The dedupe key AND the lookup key — a release resolves each manifest entry
+  // through exactly this index. Explicitly named: the default would exceed
+  // Postgres's 63-char identifier limit and truncate (cf. BuilderPageAssignment).
+  @@unique([tenantId, propertyId, ownerKind, ownerId, hash], map: "builder_page_artifacts_owner_hash_key")
+  // "The history of this page" — newest first.
+  @@index([tenantId, propertyId, ownerKind, ownerId])
+  @@map("builder_page_artifacts")
+}
+
+// One PUBLISH — the unit an author actually acts on, and therefore the unit they
+// roll back (docs/126 §5.3, resolving 125 §6's total absence of history).
+//
+// Why a release rather than a per-page pointer: `publish()` is atomic across the
+// whole site. It snapshots every page, the active chrome, the theme and the symbol
+// library in one transaction, and those parts are coupled — a page written against a
+// symbol that a later release deleted does not render correctly on its own. Rolling
+// back one page to "yesterday" while the symbols stay at "today" reproduces exactly
+// the corruption the artifact table exists to prevent. So the restorable unit is the
+// whole manifest, and the property points at a release.
+//
+// `manifest` is the list of {ownerKind, ownerId, hash} the release published, and
+// `hash` is the content address OF that manifest — the single hash identifying this
+// state of the site. Two publishes that changed nothing therefore share a hash. The
+// second one still gets its OWN ROW (the author pressed Publish; that happened, and
+// the audit trail should say so) — but a consumer comparing it to its predecessor can
+// tell it changed nothing, which is what lets a history UI collapse or annotate the
+// no-op rather than showing two entries that look like distinct versions.
+//
+// Append-only like the artifacts. Tenant-scoped + FORCE RLS.
+model BuilderRelease {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Content address of `manifest` — the release's identity.
+  hash     String @db.Char(64)
+  // [{ ownerKind, ownerId, hash }] — resolved against builder_page_artifacts.
+  manifest Json
+
+  // Denormalized for the history list, which otherwise has to parse every manifest
+  // just to render "12 pages".
+  pageCount Int @default(0) @map("page_count")
+
+  // What produced this release. `publish` is an author pressing Publish; `restore`
+  // is a rollback, which publishes a PRIOR manifest forward as a NEW release rather
+  // than deleting history — so the act of undoing is itself auditable.
+  source         String  @default("publish") @db.VarChar(16) // publish | restore
+  // When `source = 'restore'`, the release this one reinstated.
+  restoredFromId String? @map("restored_from_id") @db.Uuid
+
+  // Nullable: a publish can originate from a system path (MCP, automation) with no
+  // human actor. No FK — users live in the Better Auth instance and a deleted user
+  // must not take the release history with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The history list, and the "what is live right now" read (newest row wins).
+  @@index([tenantId, propertyId, createdAt])
+  @@map("builder_releases")
+}
+
+// A DERIVED index of the nodes inside every silica tree a property owns — page
+// bodies, the site chrome (layout), and symbol masters (docs/126 §5.4).
+//
+// Why it exists: the trees are JSONB blobs, so nothing about their CONTENTS is
+// queryable. That leaves three real questions unanswerable without loading and
+// walking every tree in the property:
+//   · "what breaks if I change or delete this saved component?" — a symbol master
+//     is referenced by `instanceOf` from any number of nodes on any number of pages,
+//     and until now deleting one was a blind write.
+//   · "what shows this product?" — the impact of deleting a bound record.
+//   · "which pages contain a node type this renderer can't draw?" — the queryable
+//     half of the unknown-type problem (docs/125 §2.2).
+//
+// It is a CACHE, not a source of truth: every row is derivable by re-walking the
+// owning tree, and it is rebuilt wholesale per owner on write (delete-then-insert),
+// so it can never drift into a half-updated state. A surrogate PK rather than
+// (owner, node_id) because a silica node id is OPTIONAL — template/block nodes carry
+// none, and those nodes still hold bindings worth indexing.
+model BuilderNodeIndex {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Which tree this node lives in. All three are node trees and all three can hold
+  // symbol instances and bindings, so all three are indexed the same way.
+  ownerKind String @map("owner_kind") @db.VarChar(16) // page | layout | symbol
+  // BuilderPage.id / BuilderLayout.id / the symbol key. A VarChar (not a Uuid + FK)
+  // because a symbol key is not a uuid; cleanup rides the delete-then-insert rebuild
+  // and the property cascade below.
+  ownerId   String @map("owner_id") @db.VarChar(255)
+
+  // Absent on template/block nodes — see the PK note above.
+  nodeId String? @map("node_id") @db.VarChar(255)
+  kind   String  @db.VarChar(16) // element | component | outlet | host
+  type   String  @db.VarChar(120) // the tag (element) or component name
+
+  // `NodeBase.instanceOf` — the symbol master this node is an instance of.
+  symbolId String? @map("symbol_id") @db.VarChar(255)
+
+  // The decoded `data.ref` binding, when it pins a specific record. Split into
+  // entity + id so "everything showing product X" is an index seek, not a LIKE.
+  bindingEntity String? @map("binding_entity") @db.VarChar(20)
+  bindingId     String? @map("binding_id") @db.VarChar(255)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The rebuild key — every write deletes this owner's rows then re-inserts.
+  @@index([tenantId, ownerKind, ownerId])
+  // "Where is this symbol used?"
+  @@index([tenantId, symbolId])
+  // "What shows this record?"
+  @@index([tenantId, bindingEntity, bindingId])
+  // "Which pages contain type X?" — the unknown-type census.
+  @@index([tenantId, propertyId, type])
+  @@map("builder_node_index")
 }

@@ -38,6 +38,8 @@ export async function listWarehouses(
   ctx: ServiceContext,
   filter: {
     q?: string;
+    /** Narrow to one warehouse type (owned / 3pl / dropship / virtual). */
+    type?: string;
     includeInactive?: boolean;
     includeSystem?: boolean;
     take?: number;
@@ -47,6 +49,7 @@ export async function listWarehouses(
   return withTenant(ctx, async (tx) => {
     const where: Prisma.WarehouseWhereInput = {
       deletedAt: null,
+      ...(filter.type ? { type: filter.type } : {}),
       ...(filter.includeInactive ? {} : { isActive: true }),
       // The in-transit holding location is a system warehouse — keep it out of the
       // ordinary list/pickers unless a caller explicitly opts in.

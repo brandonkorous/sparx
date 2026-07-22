@@ -18,6 +18,10 @@ const BulkModerateReviews = z.object({
 const BulkDeleteReviews = z.object({
   reviewIds: z.array(z.string().uuid()).min(1).max(200),
 });
+const ProductQuestionsQuery = z.object({
+  status: z.enum(['pending', 'published', 'rejected']).optional(),
+  take: z.coerce.number().int().min(1).max(200).optional(),
+});
 const BulkModerateQuestions = z.object({
   questionIds: z.array(z.string().uuid()).min(1).max(200),
   status: z.enum(['published', 'rejected']),
@@ -101,6 +105,24 @@ const reviewRoutes: FastifyPluginAsync = async (app) => {
   });
 
   // Q&A
+  //
+  // The per-product list mirrors `/products/:productId/reviews`. Without it the
+  // only way to see one product's questions was the tenant-wide PENDING queue,
+  // which by definition cannot show the ones already answered — so a product
+  // panel had no way to render its own Q&A history at all.
+  app.get('/v1/commerce/products/:productId/questions', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { productId } = ProductIdParam.parse(request.params);
+    const q = ProductQuestionsQuery.parse(request.query ?? {});
+    return ok(
+      await reviewService.listQuestionsForProduct(toCommerceContext(request), productId, {
+        ...(q.status ? { status: q.status } : {}),
+        ...(q.take !== undefined ? { take: q.take } : {}),
+      })
+    );
+  });
+
   app.get('/v1/commerce/questions/pending', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);

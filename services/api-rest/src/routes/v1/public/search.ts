@@ -17,9 +17,9 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 
 import { ok } from '@sparx/api-core/envelope';
-import { notFound } from '@sparx/api-core/errors';
-import { prisma, withTenant } from '@sparx/db';
+import { withTenant } from '@sparx/db';
 import { searchAll } from '@sparx/search';
+import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 
 // Only entity types with a public storefront page. Categories are an admin
 // organizational concept (no storefront route) and stay out.
@@ -34,11 +34,8 @@ const SearchQuery = z.object({
   perPage: z.coerce.number().int().min(1).max(50).default(20),
 });
 
-async function resolveTenantBySlug(slug: string): Promise<string> {
-  const t = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
-  if (!t) throw notFound('Tenant', slug);
-  return t.id;
-}
+// Cached in lib/tenant-slug.ts (docs/127 §5).
+const resolveTenantBySlug = requireTenantIdBySlug;
 
 interface Hit {
   entity_type: string;

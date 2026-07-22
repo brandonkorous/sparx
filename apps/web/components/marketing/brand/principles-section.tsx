@@ -44,7 +44,7 @@ export function PrinciplesSection() {
           lede="The brand is a set of decisions as much as a set of colors. These are the rules that make a sparx surface feel like sparx, whatever module you’re in."
         />
 
-        <div className="mkt-grid-3-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {PRINCIPLES.map((p) => (
             <Card key={p.n} className="bg-base-200">
               <CardBody className="flex flex-col gap-3.5">

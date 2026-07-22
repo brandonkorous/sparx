@@ -89,9 +89,10 @@ export {
   releaseOnTx,
   commit,
   expireDueReservations,
+  listReservations,
   pickWarehouseFor,
 } from './reservations';
-export type { ReservationResult } from './reservations';
+export type { ReservationResult, ReservationRow, ListReservationsFilter } from './reservations';
 
 // ─── Sell path (checkout commit · cancel restock · default warehouse) ──
 export {

@@ -5,6 +5,7 @@
 // recover-able message rather than a blank screen.
 
 import { useEffect } from 'react';
+import { Button, Link } from '@wizeworks/silicaui-react';
 import { SparkMascot } from '@/components/marketing/spark-mascot';
 
 export default function Error({
@@ -19,67 +20,27 @@ export default function Error({
   }, [error]);
 
   return (
-    <main
-      style={{
-        minHeight: '70vh',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '48px 24px',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: '460px',
-          textAlign: 'center',
-          padding: '40px',
-          border: '1px solid rgba(128,128,128,0.22)',
-          borderRadius: '14px',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+    <main className="flex min-h-[70vh] items-center justify-center px-6 py-12">
+      <div className="border-base-300 max-w-[460px] rounded-xl border p-10 text-center">
+        <div className="mb-5 flex justify-center">
           <SparkMascot expression="sad" tone="light" size={104} bob={false} />
         </div>
-        <h1 style={{ fontSize: '26px', fontWeight: 600, margin: '0 0 10px', color: 'inherit' }}>
+        <h1 className="text-h1 text-base-content m-0 mb-2.5 font-semibold">
           This page hit an error
         </h1>
-        <p style={{ fontSize: '15px', lineHeight: 1.6, opacity: 0.7, margin: '0 0 24px' }}>
+        <p className="text-body-sm text-ink-muted m-0 mb-6">
           Something unexpected happened. Try again, or head back to the homepage.
         </p>
-        <div
-          style={{ display: 'flex', gap: '14px', justifyContent: 'center', alignItems: 'center' }}
-        >
-          <button
-            type="button"
-            onClick={reset}
-            style={{
-              background: '#e04631',
-              color: '#fff',
-              border: 'none',
-              borderRadius: '8px',
-              padding: '10px 18px',
-              fontSize: '14px',
-              fontWeight: 500,
-              cursor: 'pointer',
-            }}
-          >
+        <div className="flex items-center justify-center gap-3.5">
+          <Button type="button" color="primary" onClick={reset}>
             Try again
-          </button>
-          <a href="/" style={{ color: '#e04631', fontSize: '14px', textDecoration: 'underline' }}>
+          </Button>
+          <Link href="/" color="primary" className="text-small">
             Back to sparx
-          </a>
+          </Link>
         </div>
         {error.digest ? (
-          <p
-            style={{
-              fontFamily: 'var(--font-mono, monospace)',
-              fontSize: '11px',
-              opacity: 0.5,
-              margin: '24px 0 0',
-            }}
-          >
-            Reference: {error.digest}
-          </p>
+          <p className="text-micro text-ink-subtle m-0 mt-6 font-mono">Reference: {error.digest}</p>
         ) : null}
       </div>
     </main>

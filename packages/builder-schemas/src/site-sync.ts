@@ -87,17 +87,99 @@ export const SilicaThemeInput = z.looseObject({
   tokens: z.record(z.string(), z.unknown()),
 }) as unknown as z.ZodType<SilicaTheme>;
 
+/** One tree an op addresses (silicaui `OpTarget`). `frame`/`site` carry no id; `page`/
+ *  `symbol` do. The server reads this to key the op log by owner without understanding
+ *  the op itself. */
+export const BuilderOpTarget = z.union([
+  z.object({ scope: z.literal('page'), id: z.string().min(1) }),
+  z.object({ scope: z.literal('frame') }),
+  z.object({ scope: z.literal('symbol'), id: z.string().min(1) }),
+  z.object({ scope: z.literal('site') }),
+]);
+export type BuilderOpTarget = z.infer<typeof BuilderOpTarget>;
+
+/**
+ * One op, validated at the ENVELOPE only (silicaui 0.30 `Op` — docs/126 §2).
+ *
+ * The server persists ops verbatim and only needs `target` (which tree — for the
+ * history index) and `kind` (which operation — for "every text edit" style queries).
+ * Everything else is stored opaquely via `z.looseObject`. This is deliberate decoupling:
+ * silicaui owns the op vocabulary, and adding a new op kind must never require a server
+ * schema change to keep recording history. The engine-side `Op` union (imported into the
+ * dashboard from `@wizeworks/silicaui-builder/react`) is the authority on the full shape;
+ * the wire only pins the two fields the log is keyed on.
+ */
+export const BuilderOpEnvelope = z.looseObject({
+  target: BuilderOpTarget,
+  kind: z.string().min(1).max(32),
+});
+export type BuilderOpEnvelope = z.infer<typeof BuilderOpEnvelope>;
+
 /** The whole extracted site — the debounced `onChange` payload. `frame`/`symbols`/
  *  `theme` are optional (a site can have no chrome, no saved components, and an
  *  unedited brand-derived theme). Every part is persisted; nothing is discarded. */
 export const SiteSyncInput = z.object({
   pages: z.array(SiteSyncPageInput).min(1),
+  /**
+   * The COMPLETE page roster, in order, when `pages` carries only the pages whose
+   * bodies actually changed (docs/126 Phase 0).
+   *
+   * The engine hands the host the entire `Site` on every edit, and the host wrote all
+   * of it back on every 700ms autosave burst — so a one-character heading edit on a
+   * 12-page site rewrote 12 JSONB columns, and two authors editing different pages
+   * silently reverted each other because each payload was the whole site.
+   *
+   * With a roster, `pages` narrows to just the changed bodies while deletion and
+   * ordering still resolve against the full set. Omit it and `pages` IS the roster —
+   * the original whole-site semantics, which is what the MCP writers and the blueprint
+   * installer still send.
+   */
+  pageIds: z.array(z.string().min(1)).nullish(),
+  /**
+   * Optimistic-concurrency precondition (docs/126 Phase 1): the `updatedAt` the client
+   * last saw, per page id, as ISO strings.
+   *
+   * There is otherwise NO concurrency control on a builder tree — no version column,
+   * no ETag, no lock. Two authors on one site each hold a full in-memory `Site`, so
+   * whoever autosaves last silently reverts the other, including on pages they never
+   * opened. Phase 0 shrinks that blast radius to the pages actually sent; this makes
+   * the collision detectable instead of silent.
+   *
+   * A page whose stored `updatedAt` is newer than the sent one is REJECTED rather than
+   * overwritten. Omit the map entirely for last-write-wins (MCP writers, the blueprint
+   * installer, and any caller that legitimately owns the whole site).
+   */
+  pageUpdatedAt: z.record(z.string(), z.string()).nullish(),
   frame: z.object({ root: SilicaTreeInput }).nullish(),
   symbols: z.record(z.string(), z.unknown()).nullish(),
   theme: SilicaThemeInput.nullish(),
   // The saved-theme library (silicaui 0.16). Structural per-theme validation via
   // the same opaque `SilicaThemeInput`; persisted as draft-only authoring state.
   savedThemes: z.array(SilicaThemeInput).nullish(),
+  /**
+   * The causal-ordered ops the engine emitted for THIS batch of edits (silicaui 0.30's
+   * `onChange(site, ops, meta)` — docs/126 Phase 2). Appended to the op log alongside
+   * the snapshot write, never in place of it: the snapshot stays authoritative, this is
+   * the history + (future) realtime-relay stream.
+   *
+   * Omitted by every non-engine caller (MCP writers, blueprint installer) — they mutate
+   * the snapshot directly and have no op stream, which is correct: the log records what
+   * the collaborative editor did, and a scripted write has no author interleaving to
+   * reconcile.
+   */
+  ops: z.array(BuilderOpEnvelope).nullish(),
+  /**
+   * The sequence number the client was at before these ops (`meta.baseSeq`). The server
+   * assigns each op the next per-property seq and returns the new high-water mark so the
+   * client can `ackSeq()` it. Present iff `ops` is.
+   */
+  baseSeq: z.number().int().nonnegative().nullish(),
+  /**
+   * A client-generated id for this flush's ops, so a retried save is idempotent — the
+   * server refuses a batch it has already recorded rather than appending a second copy.
+   * Present iff `ops` is; the client mints a fresh one per flush.
+   */
+  batchId: z.string().min(1).max(64).nullish(),
 });
 export type SiteSyncInput = z.infer<typeof SiteSyncInput>;
 
@@ -121,6 +203,70 @@ export interface SitePublishState {
   /** True when nothing has EVER been published — visitors see no site at all,
    *  a materially different message from "your changes aren't live yet". */
   neverPublished: boolean;
+}
+
+// ── Publish history (docs/126 §5.3) ──────────────────────────────────────────
+// Every publish seals an immutable RELEASE — the manifest of content-addressed
+// trees that made up the whole site at that moment. The history is what makes a
+// publish reversible, so these are the shapes the studio's history drawer reads.
+
+/** One publish, as the history list shows it. */
+export interface ReleaseSummaryDto {
+  id: string;
+  /** The content address of the manifest — the site's identity at this publish.
+   *  Two publishes that changed nothing share a hash, which is how a no-op is
+   *  recognized rather than shown as a distinct version. */
+  hash: string;
+  /** How many page bodies the release published. */
+  pageCount: number;
+  /** `publish` — an author pressed Publish. `restore` — this release reinstated an
+   *  earlier one (rollback is itself a publish, so it appears in the history too). */
+  source: string;
+  /** For a `restore`, the release it reinstated. */
+  restoredFromId: string | null;
+  /** Null for a system publish (MCP, automation) with no human actor. */
+  actorId: string | null;
+  createdAt: string;
+  /** True for the release visitors are being served right now — the newest one. */
+  current: boolean;
+}
+
+/** What a restore actually did. Reported rather than assumed, because two of these
+ *  numbers describe changes the author did not explicitly ask for (docs/126 §5.3). */
+export interface RestoreResultDto {
+  /** The NEW release the restore created — history is append-only, so restoring
+   *  publishes the old manifest forward rather than rewinding. */
+  releaseId: string;
+  hash: string;
+  /** Pages whose live version was rewritten from the restored release. */
+  pagesRestored: number;
+  /** Pages that were live but did not exist in the restored release — created
+   *  afterwards, so the restore UNPUBLISHED them. Their drafts are untouched. */
+  pagesUnpublished: number;
+  /** Entries in the restored release whose page has since been deleted. Skipped:
+   *  restoring must not resurrect something the author removed on purpose. */
+  entriesSkipped: number;
+}
+
+// ── Where-used (docs/126 §5.4) ───────────────────────────────────────────────
+// Answered from the derived node index rather than by walking every tree.
+
+/** Where one tree references a thing. `ownerId` is a page/layout row id or a symbol
+ *  key, per `ownerKind`; `count` is how many nodes in that tree reference it. */
+export interface UsagePlacementDto {
+  ownerKind: 'page' | 'layout' | 'symbol';
+  ownerId: string;
+  /** The author-facing name — the page/layout title, or the symbol key. Resolved
+   *  server-side, because every consumer puts this in a sentence for a person. */
+  label: string;
+  count: number;
+}
+
+/** One node type present in the property's trees, with how often it occurs. Diff
+ *  against the renderer's known set to find content that renders as nothing. */
+export interface TypeCensusRowDto {
+  type: string;
+  count: number;
 }
 
 // ── Public storefront reads (docs/118 Stage 6, the render cutover) ────────────
@@ -149,13 +295,18 @@ export interface SitePublishState {
  *  `schedulingEnabled` is the same public module-state signal for the Scheduling
  *  module, driving the starter fallback's Book link + `/book` page. Unlike Commerce
  *  it defaults to `false` when undefined (scheduling is opt-in, no legacy behavior to
- *  preserve). */
+ *  preserve).
+ *  `cmsEnabled` is the same signal for the CMS module, driving the starter fallback's
+ *  Journal link + `/blog` index. Defaults to `false` like Scheduling. It was missing
+ *  while the other two were here, which made a publisher-only tenant unreachable in
+ *  their own chrome: posts rendered at `/blog/<slug>` with no index and no link. */
 export interface PublishedSilicaFrameDto {
   frame: SilicaFrame | null;
   symbols: Record<string, SilicaSymbolDef>;
   theme: SilicaTheme | null;
   commerceEnabled?: boolean;
   schedulingEnabled?: boolean;
+  cmsEnabled?: boolean;
 }
 
 /** A published silica PAGE body + the meta the storefront titles/routes it by.

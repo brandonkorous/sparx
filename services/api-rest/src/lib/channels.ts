@@ -14,6 +14,9 @@ export interface ChannelConnectionView {
   id: string;
   channel: string;
   status: string;
+  /** Which site this connection sells for (docs/131 §4); null = tenant-wide. The
+   *  manage UI shows it so two businesses' Etsy connections are distinguishable. */
+  propertyId: string | null;
   shopName: string | null;
   externalId: string | null;
   lastSyncedAt: string | null;
@@ -36,6 +39,7 @@ export async function listChannelConnections(
     id: r.id,
     channel: r.channel,
     status: r.status,
+    propertyId: r.propertyId,
     shopName: r.shopName,
     externalId: r.externalId,
     lastSyncedAt: r.lastSyncedAt?.toISOString() ?? null,
@@ -46,6 +50,9 @@ export async function listChannelConnections(
 
 export interface ChannelConnectionUpsert {
   channel: string;
+  /** The site this connection belongs to (docs/131 §4); null = tenant-wide.
+   *  Carried from the OAuth state, not re-derived. */
+  propertyId: string | null;
   externalId: string | null;
   shopName: string | null;
   /** AES-256-GCM ciphertext (via @sparx/channels/crypto) — never plaintext. */
@@ -70,33 +77,47 @@ export async function upsertChannelConnection(
 ): Promise<void> {
   const metadata = { channelParams: input.params ?? {} } as Prisma.InputJsonValue;
   await withTenant({ tenantId: ctx.tenantId }, async (tx) => {
-    const connection = await tx.channelConnection.upsert({
-      where: { tenantId_channel: { tenantId: ctx.tenantId, channel: input.channel } },
-      create: {
-        tenantId: ctx.tenantId,
-        channel: input.channel,
-        status: 'active',
-        externalId: input.externalId,
-        shopName: input.shopName,
-        accessTokenEnc: input.accessTokenEnc,
-        refreshTokenEnc: input.refreshTokenEnc,
-        tokenExpiresAt: input.tokenExpiresAt,
-        scopes: input.scopes,
-        metadata,
-      },
-      update: {
-        status: 'active',
-        externalId: input.externalId,
-        shopName: input.shopName,
-        accessTokenEnc: input.accessTokenEnc,
-        refreshTokenEnc: input.refreshTokenEnc,
-        tokenExpiresAt: input.tokenExpiresAt,
-        scopes: input.scopes,
-        syncErrors: [],
-        metadata,
-      },
+    // findFirst + branch rather than upsert: the unique is now
+    // (tenant, property, channel) with a NULLABLE property, and Prisma's
+    // compound-unique input requires non-null components, so a tenant-wide
+    // connection (property_id IS NULL) is unreachable through the unique key.
+    // The DB still guarantees one — the index is NULLS NOT DISTINCT.
+    const existing = await tx.channelConnection.findFirst({
+      where: { propertyId: input.propertyId ?? null, channel: input.channel },
       select: { id: true },
     });
+    const connection = existing
+      ? await tx.channelConnection.update({
+          where: { id: existing.id },
+          data: {
+            status: 'active',
+            externalId: input.externalId,
+            shopName: input.shopName,
+            accessTokenEnc: input.accessTokenEnc,
+            refreshTokenEnc: input.refreshTokenEnc,
+            tokenExpiresAt: input.tokenExpiresAt,
+            scopes: input.scopes,
+            syncErrors: [],
+            metadata,
+          },
+          select: { id: true },
+        })
+      : await tx.channelConnection.create({
+          data: {
+            tenantId: ctx.tenantId,
+            propertyId: input.propertyId ?? null,
+            channel: input.channel,
+            status: 'active',
+            externalId: input.externalId,
+            shopName: input.shopName,
+            accessTokenEnc: input.accessTokenEnc,
+            refreshTokenEnc: input.refreshTokenEnc,
+            tokenExpiresAt: input.tokenExpiresAt,
+            scopes: input.scopes,
+            metadata,
+          },
+          select: { id: true },
+        });
 
     // Routing directory: drop any stale link for this connection (a reconnect to a
     // different shop) and upsert the current shop → (tenant, connection). RLS pins

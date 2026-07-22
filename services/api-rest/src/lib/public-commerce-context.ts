@@ -16,18 +16,21 @@ import { z } from 'zod';
 
 import type { ServiceContext } from '@sparx/commerce';
 import { isModuleEnabled } from '@sparx/auth';
-import { prisma, withTenant } from '@sparx/db';
+import { withTenant } from '@sparx/db';
 import { forbidden, moduleDisabled, notFound } from '@sparx/api-core/errors';
+import { requireTenantIdBySlug } from './tenant-slug.js';
 
 const TenantQuery = z.object({ tenant: z.string().min(1).max(63) });
 
 /** Resolve the tenant slug carried on the query string to its id, or 404. */
 export async function resolveTenantId(request: FastifyRequest): Promise<string> {
   const { tenant } = TenantQuery.parse(request.query);
-  const row = await prisma.tenant.findUnique({ where: { slug: tenant }, select: { id: true } });
-  if (!row) throw notFound('Tenant', tenant);
-  if (row.id === '00000000-0000-0000-0000-000000000000') throw notFound('Tenant', tenant);
-  return row.id;
+  // Cached in lib/tenant-slug.ts (docs/127 §5). The sentinel check stays here rather
+  // than moving into the shared resolver: the "Sparx Platform" tenant is a legitimate
+  // read target elsewhere (built-in content types), just never a storefront's own.
+  const id = await requireTenantIdBySlug(tenant);
+  if (id === '00000000-0000-0000-0000-000000000000') throw notFound('Tenant', tenant);
+  return id;
 }
 
 /** A service context for the public storefront — tenant-scoped, no staff user. */

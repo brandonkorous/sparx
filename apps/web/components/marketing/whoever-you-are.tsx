@@ -30,20 +30,19 @@ export function WhoeverYouAre({
   headlineLineHeight?: number;
 } = {}) {
   return (
-    <section id="whoever" className="mkt-whoever mkt-brand">
+    // The copy sits over footage behind a charcoal scrim, so the whole band is a
+    // themed dark island: `--color-base-content` (and the ink tones) resolve light
+    // on their own. That replaces the old rgba(255,255,255,.92) lede override AND
+    // fixes the trailing `text-base-content` line, which previously went dark on
+    // the video whenever the visitor browsed in light mode. The island lives on
+    // the <section> because <Container> deliberately takes no arbitrary DOM props.
+    <section id="whoever" className="mkt-whoever mkt-brand" data-theme="dark">
       <VideoMontage />
-      <Container style={{ position: 'relative', zIndex: 1, width: '100%' }}>
+      <Container className="relative z-1 w-full">
         <Reveal
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '36px',
-            maxWidth: headlineSize ? '860px' : '720px',
-          }}
+          className={`flex flex-col gap-9 ${headlineSize ? 'max-w-[860px]' : 'max-w-[720px]'}`}
         >
           <SectionHeader
-            invert
-            ledeColor="rgba(255, 255, 255, 0.92)"
             headlineSize={headlineSize}
             headlineLineHeight={headlineLineHeight}
             headline={
@@ -51,7 +50,7 @@ export function WhoeverYouAre({
                 Whoever you are,
                 <br />
                 it&apos;s already for you
-                <Spark color="#818CF8" />
+                <Spark />
               </>
             }
             lede={
@@ -61,8 +60,8 @@ export function WhoeverYouAre({
               </>
             }
           />
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <div className="mkt-cluster" style={{ gap: '12px' }}>
+          <div className="flex flex-col gap-3.5">
+            <div className="flex flex-wrap items-center gap-3">
               <a
                 href={signupHref('whoever')}
                 aria-label="Start free"

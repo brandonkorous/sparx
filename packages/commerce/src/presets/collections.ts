@@ -16,7 +16,9 @@ function collectionPreset(spec: {
   tags: string[];
   chip: string;
   // handle made required (it keys the install marker), though optional on the schema.
-  input: Omit<CreateCollectionInput, 'handle'> & { handle: string };
+  // propertyIds omitted: platform presets are all-sites (no per-site scope), so the
+  // create default ([] = every site) is exactly right and the literals needn't set it.
+  input: Omit<CreateCollectionInput, 'handle' | 'propertyIds'> & { handle: string };
 }) {
   const handle = spec.input.handle;
   return commercePreset({

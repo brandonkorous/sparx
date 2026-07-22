@@ -24,6 +24,8 @@ import {
   emailVerificationSubject,
   type EmailVerificationEmailProps,
 } from './templates/email-verification';
+import { MagicLinkEmail, magicLinkSubject, type MagicLinkEmailProps } from './templates/magic-link';
+import { LoginOtpEmail, loginOtpSubject, type LoginOtpEmailProps } from './templates/login-otp';
 import {
   DomainRenewalReminderEmail,
   domainRenewalReminderSubject,
@@ -96,6 +98,8 @@ export type TemplateId =
   | 'welcome-merchant'
   | 'partner-welcome'
   | 'email-verification'
+  | 'magic-link'
+  | 'login-otp'
   | 'domain-renewal-reminder'
   | 'chat-notification'
   | 'market-settlement-report'
@@ -132,6 +136,20 @@ export type TemplateSend =
       template: 'email-verification';
       to: string;
       props: EmailVerificationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'magic-link';
+      to: string;
+      props: MagicLinkEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'login-otp';
+      to: string;
+      props: LoginOtpEmailProps;
       from?: string;
       replyTo?: string;
     }
@@ -286,6 +304,38 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'email-verification',
+      };
+    }
+    case 'magic-link': {
+      const element = wrap(<MagicLinkEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: magicLinkSubject,
+        html,
+        text,
+        templateId: 'magic-link',
+      };
+    }
+    case 'login-otp': {
+      const element = wrap(<LoginOtpEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: loginOtpSubject,
+        html,
+        text,
+        templateId: 'login-otp',
       };
     }
     case 'domain-renewal-reminder': {

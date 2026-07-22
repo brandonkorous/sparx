@@ -16,6 +16,9 @@ const Slug = z
   .regex(/^[a-z][a-z0-9-]*$/, 'Slug must be lowercase kebab-case');
 
 export const CreatePipelineInput = z.object({
+  // The site this sales process belongs to (docs/131 §5); explicit null =
+  // tenant-wide. The dashboard route defaults it to the site being worked in.
+  propertyId: z.string().uuid().nullable().optional(),
   name: z.string().min(1).max(120),
   slug: Slug,
   isDefault: z.boolean().default(false),

@@ -138,7 +138,10 @@ export async function provisionTenant(
   // until the merchant opts into GDPR/CCPA. Seeding the row now (rather than lazily
   // on first read) means the consent surface + `computeBannerEnabled` always have a
   // concrete row to read, and a tenant is never missing this core site-state.
-  await tx.consentSettings.create({ data: { tenantId: tenant.id } });
+  // Per SITE, not per tenant (docs/131 §3.9) — so a second site provisioned
+  // later gets its own row and its own regime, rather than inheriting the
+  // first business's banner and policy version.
+  await tx.consentSettings.create({ data: { tenantId: tenant.id, propertyId: property.id } });
 
   return { tenantId: tenant.id, propertyId: property.id };
 }

@@ -8,12 +8,30 @@
 //   GET    /v1/builder/site/publish-state
 //                                     → what differs between the draft and what
 //                                       visitors are served (the "not live yet" signal)
-//   POST   /v1/builder/site/publish  → snapshot every silica draft tree → published
+//   POST   /v1/builder/site/publish  → snapshot every silica draft tree → published,
+//                                       and seal an immutable release (docs/126 §5.3)
+//   GET    /v1/builder/site/releases  → the publish history, newest first
+//   POST   /v1/builder/site/releases/:releaseId/restore
+//                                     → republish a prior release. Append-only: the
+//                                       restore is itself a new release, so undoing
+//                                       an undo is just another restore
 //   POST   /v1/builder/site/frame/reset
 //                                     → restore the header + footer to the current
 //                                       starter chrome (DRAFT only). Narrow on
 //                                       purpose — pages/theme/symbols and everything
 //                                       visitors are served stay put
+//   GET    /v1/builder/site/symbols/:symbolId/usages
+//                                     → where a saved component is PLACED (docs/126
+//                                       §5.4). Deleting a master detaches every
+//                                       instance across every page, so this is what
+//                                       makes that an informed decision
+//   GET    /v1/builder/site/records/:entity/:recordId/usages
+//                                     → which trees PIN a specific record — the blast
+//                                       radius of deleting a product / entry
+//   GET    /v1/builder/site/type-census
+//                                     → every node type present, most-used first;
+//                                       diff against the renderer's known set to find
+//                                       content that renders as nothing (docs/125 §2.2)
 //   DELETE /v1/builder/site          → discard the silica site; the editor re-opens
 //                                       on the current starter seed (the re-seed
 //                                       lifecycle — catalog composites are STAMPED,
@@ -26,11 +44,13 @@
 // Zod schema (`SiteSyncInput`), keeping api-rest free of @sparx/builder-schemas.
 
 import type { FastifyPluginAsync } from 'fastify';
-import { siteService } from '@sparx/builder';
+import { artifactService, nodeIndexService, opLogService, siteService } from '@sparx/builder';
+import { withTenant } from '@sparx/db';
 import { isModuleEnabled } from '@sparx/auth';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
+import { getBuilderBroadcaster } from '../../../websocket/builder-broadcast.js';
 
 const builderSiteRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/site', async (request) => {
@@ -42,9 +62,64 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
 
   app.put('/v1/builder/site', async (request) => {
     requireRole(request, 'editor');
+    const ctx = await toBuilderContext(request);
     await requireBuilderModule(request);
-    await siteService.sync(await toBuilderContext(request), request.body);
-    return ok({ saved: true });
+    const { relay, ...result } = await siteService.sync(ctx, request.body);
+    // Relay the just-persisted ops to co-editors (docs/126 Phase 4). Done here, not in
+    // the service, because the socket server is an api-rest concern — the service stays
+    // socket-agnostic. `relay` is stripped from the response: the sender already holds
+    // these ops, so echoing them back over HTTP would be waste.
+    if (relay) getBuilderBroadcaster()?.opsAppended(ctx.propertyId, relay);
+    // The fresh per-page `updatedAt` + the op-log seq ride back so the studio can advance
+    // its optimistic-concurrency map (Phase 1) and `ackSeq` the engine (Phase 2).
+    return ok({ saved: true, ...result });
+  });
+
+  // The op log's current high-water sequence (docs/126 Phase 4). The studio reads it at
+  // load so it can `ackSeq` the engine to the right starting point and request catch-up
+  // from there over the socket — closing the gap between the HTTP load and the socket
+  // join. Cheap: a single MAX(seq).
+  app.get('/v1/builder/site/seq', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    const seq = await withTenant(ctx, (tx) => opLogService.currentSeq(ctx, tx));
+    return ok({ seq });
+  });
+
+  // ── Where-used (docs/126 §5.4) ─────────────────────────────────────────────
+  // Answered from the derived node index rather than by walking every tree in the
+  // property. Read-only, so `viewer` — knowing what a delete would break should never
+  // require the permission to perform it.
+
+  app.get('/v1/builder/site/symbols/:symbolId/usages', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { symbolId } = request.params as { symbolId: string };
+    const usages = await nodeIndexService.findSymbolUsage(
+      await toBuilderContext(request),
+      symbolId
+    );
+    return ok(usages);
+  });
+
+  app.get('/v1/builder/site/records/:entity/:recordId/usages', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { entity, recordId } = request.params as { entity: string; recordId: string };
+    const usages = await nodeIndexService.findRecordUsage(
+      await toBuilderContext(request),
+      entity,
+      recordId
+    );
+    return ok(usages);
+  });
+
+  app.get('/v1/builder/site/type-census', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const census = await nodeIndexService.typeCensus(await toBuilderContext(request));
+    return ok(census);
   });
 
   // What differs between the author's draft and what visitors are actually served.
@@ -59,8 +134,35 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/builder/site/publish', async (request) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
-    await siteService.publish(await toBuilderContext(request));
-    return ok({ published: true });
+    const release = await siteService.publish(await toBuilderContext(request));
+    // The release id + hash ride back so the caller can name what it just published —
+    // and so a UI can offer "undo" without a second round trip (docs/126 §5.3).
+    return ok({ published: true, releaseId: release.id, hash: release.hash });
+  });
+
+  // ── Publish history (docs/126 §5.3) ────────────────────────────────────────
+  // Every publish is an immutable release. `viewer` reads the history; restoring is
+  // a publish, so it takes the same `editor` role as publishing.
+
+  app.get('/v1/builder/site/releases', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { limit } = request.query as { limit?: string };
+    const releases = await artifactService.listReleases(
+      await toBuilderContext(request),
+      limit ? Number(limit) : undefined
+    );
+    return ok(releases);
+  });
+
+  app.post('/v1/builder/site/releases/:releaseId/restore', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { releaseId } = request.params as { releaseId: string };
+    // Republishes the old manifest FORWARD as a new release — history is append-only,
+    // so a restore is itself restorable. The counts describe what actually moved.
+    const result = await artifactService.restoreRelease(await toBuilderContext(request), releaseId);
+    return ok(result);
   });
 
   // Restore the header + footer to the current starter chrome. `editor`, not
@@ -76,14 +178,21 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'editor');
     await requireBuilderModule(request);
     const ctx = await toBuilderContext(request);
-    const [commerceEnabled, schedulingEnabled] = await Promise.all([
+    const [commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
       // Fails OPEN, matching the studio's starter seed: a flag-lookup blip must never
       // silently strip Commerce chrome from a tenant who pays for it.
       isModuleEnabled(ctx.tenantId, 'commerce').catch(() => true),
       // Fails CLOSED — Scheduling is opt-in, so a blip must not invent a Book link.
       isModuleEnabled(ctx.tenantId, 'scheduling').catch(() => false),
+      // Fails CLOSED for the same reason — a blip must not invent a Journal link to
+      // an index with nothing behind it.
+      isModuleEnabled(ctx.tenantId, 'cms').catch(() => false),
     ]);
-    const frame = await siteService.resetFrame(ctx, { commerceEnabled, schedulingEnabled });
+    const frame = await siteService.resetFrame(ctx, {
+      commerceEnabled,
+      schedulingEnabled,
+      cmsEnabled,
+    });
     return ok({ frame });
   });
 

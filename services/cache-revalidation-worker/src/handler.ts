@@ -23,7 +23,7 @@ export interface CacheEventEnvelope {
   data?: unknown;
 }
 
-export type RevalidateScope = 'commerce' | 'content' | 'site';
+export type RevalidateScope = 'commerce' | 'content' | 'site' | 'builder';
 
 /**
  * Map an event type to the storefront cache scope it invalidates, or null when
@@ -52,6 +52,14 @@ export function planRevalidation(type: string): RevalidateScope | null {
   // ships a noop publisher); the scope is wired so it's a one-line follow-up.
   if (type.startsWith('sitebuilder.')) {
     return 'site';
+  }
+  // Builder / silica publishes (docs/127 §6). Their own scope rather than 'site':
+  // `site:` tags the legacy Site Builder snapshot + resolved nav menus, while
+  // `builder:` tags the page/layout/frame/style reads in apps/site's builder.ts and
+  // silica.ts. Purging one should not evict the other — they change on different
+  // events and a page publish is by far the more frequent of the two.
+  if (type.startsWith('builder.')) {
+    return 'builder';
   }
   return null;
 }

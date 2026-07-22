@@ -9,8 +9,8 @@ import { INCLUDED } from './data';
 // pay for modules, this comes with all of them" lands as layout, not a claim.
 export function PricingV1AlwaysIncluded() {
   return (
-    <section className="mkt-stage px-[var(--gutter-page)] py-[var(--section-py-xl)]">
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+    <section className="mkt-stage px-page py-section-xl">
+      <Container className="flex flex-col gap-12">
         <div className="max-w-3xl">
           <Heading level={2} size="display" style={SECTION_DISPLAY_STYLE}>
             Every plan ships with the platform
@@ -28,14 +28,10 @@ export function PricingV1AlwaysIncluded() {
             return (
               <Card key={it.title}>
                 <CardBody className="gap-3">
-                  <span
-                    className="flex h-11 w-11 items-center justify-center rounded-xl"
-                    style={{
-                      backgroundColor:
-                        'color-mix(in oklab, var(--color-primary) 12%, var(--color-base-100))',
-                    }}
-                  >
-                    <Icon size={20} strokeWidth={2} color="var(--color-primary)" aria-hidden />
+                  {/* `bg-primary bg-soft` is silica's own tint — replaces the
+                      hand-rolled 12% color-mix, which ignored the theme. */}
+                  <span className="bg-primary bg-soft flex size-11 items-center justify-center rounded-xl">
+                    <Icon size={20} strokeWidth={2} className="text-primary" aria-hidden />
                   </span>
                   <CardTitle className="text-base">{it.title}</CardTitle>
                   <Text className="text-sm">{it.body}</Text>

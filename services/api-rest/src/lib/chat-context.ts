@@ -11,7 +11,10 @@ import { isModuleEnabled } from '@sparx/auth';
 import { requireAuth } from '@sparx/api-core/auth';
 import { moduleDisabled } from '@sparx/api-core/errors';
 
+import { z } from 'zod';
+
 import { resolveTenantId } from './public-commerce-context.js';
+import { resolvePublicPropertyId } from './property.js';
 
 export function toChatContext(request: FastifyRequest): TenantContext {
   const auth = requireAuth(request);
@@ -26,15 +29,28 @@ export async function requireChatModule(request: FastifyRequest): Promise<void> 
 }
 
 /** Resolve `?tenant=<slug>` → tenantId and assert chat is active. The public
- *  storefront widget identifies its tenant by slug on every call. */
+ *  storefront widget identifies its tenant by slug on every call.
+ *
+ *  Also resolves WHICH SITE the widget is embedded on (docs/131 §3.7), via the
+ *  same `?property=<slug>` the rest of the public storefront reads use. Without
+ *  it every visitor conversation landed on the tenant's primary site, so the
+ *  donut shop's chats appeared in the machine shop's inbox and were answered in
+ *  the machine shop's voice. */
 export async function publicChatContext(
   request: FastifyRequest
-): Promise<{ tenantId: string; ctx: TenantContext }> {
+): Promise<{ tenantId: string; propertyId: string; ctx: TenantContext }> {
   const tenantId = await resolveTenantId(request);
   const enabled = await isModuleEnabled(tenantId, 'chat');
   if (!enabled) throw moduleDisabled('chat');
-  return { tenantId, ctx: { tenantId } };
+  const { property } = PublicSiteQuery.parse(request.query);
+  const propertyId = await resolvePublicPropertyId(tenantId, property);
+  return { tenantId, propertyId, ctx: { tenantId } };
 }
+
+const PublicSiteQuery = z
+  .object({ property: z.string().min(1).max(63).optional() })
+  // The widget sends other params (tenant, …) and must not 400 on them.
+  .passthrough();
 
 /** The anonymous-ownership token a widget echoes back on every public call. */
 export function readChatToken(request: FastifyRequest): string | undefined {

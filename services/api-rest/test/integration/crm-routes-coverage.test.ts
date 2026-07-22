@@ -25,7 +25,7 @@ import {
 } from '@sparx/crm';
 
 import { createApp } from '../../src/app.js';
-import { authHeader, signToken, type TestTenant } from '../helpers.js';
+import { authHeader, seedPrimaryProperty, signToken, type TestTenant } from '../helpers.js';
 
 interface CrmFixture {
   tenant: TestTenant;
@@ -58,7 +58,10 @@ async function createActiveCrmTenant(
     await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenant.id}'`);
     return tx.user.findFirstOrThrow({ where: { tenantId: tenant.id, email } });
   });
-  const fixture: TestTenant = { tenantId: tenant.id, userId: user.id, email };
+  // Real provisioning gives every tenant a PRIMARY site; a fixture without one
+  // builds a tenant that cannot exist, and site-resolving reads 404.
+  const propertyId = await seedPrimaryProperty(tenant.id, `Test ${tenant.slug}`);
+  const fixture: TestTenant = { tenantId: tenant.id, userId: user.id, email, propertyId };
   // Trigger the activation bootstrap so /v1/crm/pipelines etc. have data to read.
   await bus.publish({
     id: crypto.randomUUID(),
@@ -351,7 +354,7 @@ describe('CRM REST coverage — module gate fires on every route group', () => {
       await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenant.id}'`);
       return tx.user.findFirstOrThrow({ where: { tenantId: tenant.id, email } });
     });
-    const token = signToken(app, { tenantId: tenant.id, userId: user.id, email });
+    const token = signToken(app, { tenantId: tenant.id, userId: user.id });
 
     const res = await app.inject({
       method: method as 'GET',

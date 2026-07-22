@@ -90,7 +90,7 @@ export function RichTextEditor({
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-[var(--color-primary)] underline underline-offset-2',
+          class: 'text-primary underline underline-offset-2',
         },
       }),
       Placeholder.configure({ placeholder }),
@@ -145,7 +145,7 @@ export function RichTextEditor({
     <div
       className={cn(
         'bg-base-100 rounded-md border',
-        'border-base-300 focus-within:border-[var(--color-primary)]',
+        'border-base-300 focus-within:border-primary',
         'focus-within:ring-2 focus-within:ring-[var(--color-primary)] focus-within:ring-offset-2',
         'transition-colors duration-150',
         disabled && 'cursor-not-allowed opacity-50',

@@ -15,14 +15,7 @@ import type {
   PublishedSilicaPageDto,
   SilicaNode,
 } from '@sparx/builder-schemas';
-import {
-  categoryDetailPage,
-  collectionDetailPage,
-  productDetailPage,
-  serviceDetailPage,
-  starterFrame,
-  starterPages,
-} from '@sparx/silica-catalog';
+import { recordTemplate, starterFrame, starterPages } from '@sparx/silica-catalog';
 
 import { resolveActivePropertySlug } from './site-context';
 
@@ -83,23 +76,20 @@ function starterFrameDto(flags: ModuleFlags): PublishedSilicaFrameDto {
   return { frame: starterFrame(flags), symbols: {}, theme: null, ...flags };
 }
 
-/** The default per-record composite for a record type (PDP / collection / category /
- *  booking service), or null. Each is the code-authored template that renders a record of
- *  that type out of the box until the tenant publishes their own template for it. */
+/** The default per-record composite for a record type, or null. Each is the
+ *  code-authored template that renders a record of that type out of the box until the
+ *  tenant publishes their own.
+ *
+ *  A lookup into `RECORD_TEMPLATES`, NOT a chain of `if`s. It was a chain, and
+ *  `cms.blog_post` was missing from it — silently, because the chain's `return null`
+ *  is a legal answer meaning "no default for this type". Posts dropped to the bare
+ *  no-template fallback and nothing said why. The registry is exhaustiveness-tested
+ *  against the record types the platform actually routes, so the next type to get a
+ *  route fails a test instead of shipping a blank page. */
 function starterCollectionDto(recordType: string): PublishedSilicaPageDto | null {
-  if (recordType === 'commerce.product') {
-    return starterPageDto('Product detail', '', productDetailPage(), recordType);
-  }
-  if (recordType === 'commerce.collection') {
-    return starterPageDto('Collection', '', collectionDetailPage(), recordType);
-  }
-  if (recordType === 'commerce.category') {
-    return starterPageDto('Category detail', '', categoryDetailPage(), recordType);
-  }
-  if (recordType === 'scheduling.service') {
-    return starterPageDto('Service detail', '', serviceDetailPage(), recordType);
-  }
-  return null;
+  const template = recordTemplate(recordType);
+  if (!template) return null;
+  return starterPageDto(template.label, '', template.root, recordType);
 }
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
@@ -120,9 +110,29 @@ interface ErrorEnvelope {
   error: { code: string; message: string };
 }
 
-// INTERIM: uncached so a publish reflects immediately — no tag-purge is wired yet
-// (the deferred Pub/Sub→revalidation-worker slice), matching lib/builder.ts.
-const NO_STORE: RequestInit = { cache: 'no-store' };
+/**
+ * Fetch policy for a silica read (docs/127 §6). Mirrors `builderFetchInit` in
+ * lib/builder.ts and shares its `builder:<slug>` tag — both tiers are invalidated by
+ * the same publish, so they belong on the same tag.
+ *
+ * These were `cache: 'no-store'` because no tag-purge existed. It does now:
+ * `installBuilderPubSubBridge` publishes `builder.*`, cache-revalidation-worker maps
+ * it to the `builder` scope, and app/api/revalidate purges `builder:<slug>`.
+ *
+ * A PREVIEW read is never cached — it serves the DRAFT tree, which changes on every
+ * autosave and belongs to one author's in-flight work.
+ */
+function silicaFetchInit(tenantSlug: string, previewToken?: string): RequestInit {
+  if (previewToken) {
+    return { cache: 'no-store', headers: { Authorization: `Preview ${previewToken}` } };
+  }
+  return {
+    next: {
+      revalidate: 300,
+      tags: ['sparx-storefront', `tenant:${tenantSlug}`, `builder:${tenantSlug}`],
+    },
+  };
+}
 
 /** The raw frame envelope fetch, `cache()`-memoized per request/tenantSlug so the
  *  home/page fallbacks below (each needing `commerceEnabled`) never re-fetch it —
@@ -132,7 +142,7 @@ const fetchFrameEnvelope = cache(
     try {
       const res = await fetch(
         `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-        NO_STORE
+        silicaFetchInit(tenantSlug)
       );
       const json = (await res.json()) as SuccessEnvelope<PublishedSilicaFrameDto> | ErrorEnvelope;
       if (!res.ok || 'error' in json) return null;
@@ -150,6 +160,7 @@ const fetchFrameEnvelope = cache(
 interface ModuleFlags {
   commerceEnabled: boolean;
   schedulingEnabled: boolean;
+  cmsEnabled: boolean;
 }
 
 async function resolveModuleFlags(tenantSlug: string): Promise<ModuleFlags> {
@@ -157,6 +168,10 @@ async function resolveModuleFlags(tenantSlug: string): Promise<ModuleFlags> {
   return {
     commerceEnabled: data?.commerceEnabled ?? true,
     schedulingEnabled: data?.schedulingEnabled ?? false,
+    // Fails CLOSED like Scheduling: on a transient lookup failure a tenant briefly
+    // loses a Journal link, which is recoverable. Failing open would advertise a blog
+    // index to every tenant without the module, where it renders an empty grid.
+    cmsEnabled: data?.cmsEnabled ?? false,
   };
 }
 
@@ -189,12 +204,13 @@ export async function getPublishedSilicaFrame(
  *  to the code starter home when none is published, so a fresh tenant's homepage is
  *  the editable silica starter rather than a blank/legacy composition. */
 export async function getPublishedSilicaHome(
-  tenantSlug: string
+  tenantSlug: string,
+  opts: { previewToken?: string } = {}
 ): Promise<PublishedSilicaPageDto | null> {
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/silica/home?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-      NO_STORE
+      silicaFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return starterHomeDto(await resolveCommerceEnabled(tenantSlug));
@@ -211,12 +227,13 @@ export async function getPublishedSilicaHome(
  *  `about/team`); api-rest matches it against the stored `/`-prefixed slug. */
 export async function getPublishedSilicaPage(
   tenantSlug: string,
-  slug: string
+  slug: string,
+  opts: { previewToken?: string } = {}
 ): Promise<PublishedSilicaPageDto | null> {
   try {
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/silica/page?tenant=${encodeURIComponent(tenantSlug)}&slug=${encodeURIComponent(slug)}${await propertyParam()}`,
-      NO_STORE
+      silicaFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) {
@@ -237,13 +254,14 @@ export async function getPublishedSilicaPage(
 export async function getPublishedSilicaCollection(
   tenantSlug: string,
   recordType: string,
-  recordId?: string
+  recordId?: string,
+  opts: { previewToken?: string } = {}
 ): Promise<PublishedSilicaPageDto | null> {
   try {
     const recordParam = recordId ? `&recordId=${encodeURIComponent(recordId)}` : '';
     const res = await fetch(
       `${BASE_URL}/v1/public/builder/silica/collection?tenant=${encodeURIComponent(tenantSlug)}&recordType=${encodeURIComponent(recordType)}${recordParam}${await propertyParam()}`,
-      NO_STORE
+      silicaFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) return starterCollectionDto(recordType);

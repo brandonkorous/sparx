@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Heading } from '@wizeworks/silicaui-react';
 import { Container } from '../primitives';
 import type { MarketingModule } from '../primitives';
-import { MODULES, MODULE_ICON, MODULE_HEX } from '../modules-catalog';
+import { MODULES, PAID_MODULES, MODULE_ICON, MODULE_HEX } from '../modules-catalog';
 import { ModuleToggleCard } from '../module-toggle-card';
 import { StackSummaryCard, type StackLineItem } from '../stack-summary-card';
 import { SECTION_DISPLAY_STYLE } from './heading-style';
@@ -37,7 +37,13 @@ const ELSEWHERE_MONTHLY: Record<string, number> = {
 export function LandingV2Switchboard() {
   const [active, setActive] = useState<Set<MarketingModule>>(new Set(DEFAULT_ACTIVE));
 
+  // SEO and Automations are free platform capabilities — always on, never
+  // togglable, and absent from ELSEWHERE_MONTHLY so they add $0 to both sides.
+  const isFree = (id: MarketingModule): boolean => MODULES.some((m) => m.id === id && m.free);
+  const isActive = (id: MarketingModule): boolean => isFree(id) || active.has(id);
+
   const toggle = (id: MarketingModule) => {
+    if (isFree(id)) return;
     setActive((prev) => {
       const next = new Set(prev);
       if (next.has(id)) next.delete(id);
@@ -46,7 +52,7 @@ export function LandingV2Switchboard() {
     });
   };
 
-  const activeModules = MODULES.filter((m) => active.has(m.id));
+  const activeModules = MODULES.filter((m) => isActive(m.id));
   const activeLabels = new Set(activeModules.map((m) => m.label));
   const lineItems: StackLineItem[] = activeModules.map((m) => {
     const included = m.includedWith?.some((label) => activeLabels.has(label)) ?? false;
@@ -66,10 +72,7 @@ export function LandingV2Switchboard() {
   );
 
   return (
-    <section
-      id="modules"
-      className="mkt-brand bg-accent px-[var(--gutter-page)] py-[var(--section-py-xl)]"
-    >
+    <section id="modules" className="mkt-brand bg-accent px-page py-section-xl">
       <Container>
         <div className="flex flex-col gap-14">
           <div className="max-w-3xl">
@@ -87,7 +90,10 @@ export function LandingV2Switchboard() {
               style={SECTION_DISPLAY_STYLE}
               className="text-accent-content"
             >
-              <span style={{ opacity: 0.55 }}>Switch on the rest when you&apos;re ready.</span>
+              {/* Was `opacity: 0.55` — a fade on a headline a visitor is meant
+                  to READ. Both clauses now carry full accent ink; the sequence
+                  itself supplies the hierarchy. */}
+              Switch on the rest when you&apos;re ready.
             </Heading>
           </div>
 
@@ -99,15 +105,22 @@ export function LandingV2Switchboard() {
                 color={m.id}
                 label={m.label}
                 title={m.title}
-                active={active.has(m.id)}
+                active={isActive(m.id)}
+                disabled={m.free}
                 onToggle={() => toggle(m.id)}
-                badgeText={m.includedWith ? `Free with ${m.includedWith[0]}` : `$${m.price}/mo`}
+                badgeText={
+                  m.free
+                    ? 'Free'
+                    : m.includedWith
+                      ? `Free with ${m.includedWith.join(' or ')}`
+                      : `$${m.price}/mo`
+                }
               />
             ))}
             <StackSummaryCard
               className="lg:col-start-4 lg:row-span-4 lg:row-start-1"
-              activeCount={activeModules.length}
-              totalModules={MODULES.length}
+              activeCount={activeModules.filter((m) => !m.free).length}
+              totalModules={PAID_MODULES.length}
               lineItems={lineItems}
               total={total}
               elsewhereTotal={elsewhereTotal}

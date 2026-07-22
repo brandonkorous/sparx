@@ -6,13 +6,22 @@ import { categoryService, collectionService } from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { withRequestTenant } from '@sparx/api-core/db';
-import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
+import {
+  defaultActiveSiteScope,
+  requireCommerceModule,
+  toCommerceContext,
+} from '../../../lib/commerce-context.js';
+import { resolveListScope } from '../../../lib/property.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
 const ListCategoriesQuery = z.object({
   q: z.string().optional(),
+  // Model B (docs/49 §3): omitted → the site the caller is working in
+  // (`x-sparx-property-id`, else primary); `all` → every site.
+  property: z.string().min(1).optional(),
+
   // Tri-state featured filter (docs/34 §7.1): yes → featured, no → not-featured,
   // omitted → no filter.
   featured: z.enum(['yes', 'no']).optional(),
@@ -20,8 +29,19 @@ const ListCategoriesQuery = z.object({
 
 const ListCollectionsQuery = z.object({
   q: z.string().optional(),
+  // Model B (docs/49 §3): omitted → the site the caller is working in
+  // (`x-sparx-property-id`, else primary); `all` → every site.
+  property: z.string().min(1).optional(),
+
   type: z.enum(['manual', 'rules']).optional(),
   include_archived: z.coerce.boolean().optional(),
+
+  // Server-side sort. The whitelist IS the set of orderable columns — an
+  // off-list value is rejected here rather than silently ignored, so the client
+  // can never ask the table to sort by something the server won't honour.
+  sort_by: z.enum(['name', 'type', 'productCount', 'updatedAt']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
+
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -30,9 +50,14 @@ const ListCollectionsQuery = z.object({
 const categoryRoutes: FastifyPluginAsync = async (app) => {
   // Categories
   app.get('/v1/commerce/categories', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const query = ListCategoriesQuery.parse(request.query);
+    const propertyId = await resolveListScope(
+      auth,
+      query.property,
+      request.headers['x-sparx-property-id']
+    );
     // No q/featured → the full nested tree; with either → flat matches (the
     // service decides). Bare callers (parent pickers, options loaders) pass
     // nothing and still get the whole tree.
@@ -40,6 +65,7 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
       await categoryService.tree(toCommerceContext(request), {
         q: query.q,
         featured: query.featured === 'yes' ? true : query.featured === 'no' ? false : undefined,
+        propertyId,
       })
     );
   });
@@ -52,9 +78,12 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
   });
 
   app.post('/v1/commerce/categories', async (request, reply) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireCommerceModule(request);
-    const created = await categoryService.create(toCommerceContext(request), request.body);
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    // Model B: a new category defaults to the active site on a multi-site tenant.
+    await defaultActiveSiteScope(request, auth, body);
+    const created = await categoryService.create(toCommerceContext(request), body);
     reply.code(201);
     return ok(created);
   });
@@ -97,12 +126,20 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
 
   // Collections
   app.get('/v1/commerce/collections', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const q = ListCollectionsQuery.parse(request.query);
+    const propertyId = await resolveListScope(
+      auth,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
     const { items, total } = await collectionService.list(toCommerceContext(request), {
       q: q.q,
       type: q.type,
+      propertyId,
+      sortBy: q.sort_by,
+      order: q.order,
       take: q.take,
       skip: q.skip,
     });
@@ -119,7 +156,10 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
   app.post('/v1/commerce/collections', async (request, reply) => {
     const auth = requireRole(request, 'editor');
     await requireCommerceModule(request);
-    const created = await collectionService.create(toCommerceContext(request), request.body);
+    const body = (request.body ?? {}) as Record<string, unknown>;
+    // Model B: a new collection defaults to the active site on a multi-site tenant.
+    await defaultActiveSiteScope(request, auth, body);
+    const created = await collectionService.create(toCommerceContext(request), body);
     // Collections have no publish lifecycle — they're live on existence — so seed
     // the SEO snapshot at create so the new collection shows in the overview
     // (docs/50 §7). Best-effort.

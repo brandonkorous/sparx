@@ -31,11 +31,28 @@ export async function nextOrderNumber(tx: TxClient, tenantId: string): Promise<s
 // it with their own prefix. The (tenant_id, number_seq) unique constraint is the
 // collision backstop, identical in spirit to the order/quote number guard.
 
-/** Next stable per-tenant document sequence. Count of already-numbered documents
- *  + 1 — monotonic, gap-prone on voids (fine for a human id). */
-export async function nextBillingDocumentSeq(tx: TxClient, tenantId: string): Promise<number> {
+/**
+ * Next stable per-SITE document sequence (docs/131 §3.6). Count of that site's
+ * already-numbered documents + 1 — monotonic, gap-prone on voids (fine for a
+ * human id).
+ *
+ * `propertyId` is the whole point of this function now. Counting per TENANT
+ * interleaved two businesses' books — Bob's Parts INV-000123, Savory Donuts
+ * INV-000124 — so each set appeared to skip numbers, and the gaps disclosed to
+ * customers that two unrelated brands are one entity. Both businesses now start
+ * at 1 and count only their own, which is what separate books look like.
+ *
+ * The collision backstop moved with it: the unique constraint is
+ * (tenant_id, property_id, number_seq), so a lost race still fails loudly rather
+ * than silently issuing a duplicate invoice number.
+ */
+export async function nextBillingDocumentSeq(
+  tx: TxClient,
+  tenantId: string,
+  propertyId: string
+): Promise<number> {
   const count = await tx.billingDocument.count({
-    where: { tenantId, numberSeq: { not: null } },
+    where: { tenantId, propertyId, numberSeq: { not: null } },
   });
   return count + 1;
 }

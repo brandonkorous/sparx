@@ -13,7 +13,7 @@
 
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
-import { buildSparxDnsRecords, generateDkimKeypair, RegistrarError } from '@sparx/registrar';
+import { buildSparxDnsRecords, RegistrarError } from '@sparx/registrar';
 import { getRegistrar } from './registrar.js';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { env } from './env.js';
@@ -213,16 +213,12 @@ const purchaseDomainTool = {
       throw err;
     }
 
-    // 3. Generate DKIM keypair and configure DNS (non-fatal on failure —
-    //    domain-worker retries DNS config via the dnsConfigured flag).
-    let dkimPublicKey = '';
-    let dkimPrivateKey = '';
+    // 3. Configure DNS (non-fatal on failure — domain-worker retries DNS config
+    //    via the dnsConfigured flag). DKIM is Mailgun's, added at Mailgun domain
+    //    verification, not self-signed here.
     let dnsConfigured = false;
     try {
-      const keypair = generateDkimKeypair();
-      dkimPublicKey = keypair.publicKey;
-      dkimPrivateKey = keypair.privateKey;
-      const dnsRecords = buildSparxDnsRecords(dkimPublicKey);
+      const dnsRecords = buildSparxDnsRecords();
       await registrar.configureDNS(input.domain, dnsRecords);
       dnsConfigured = true;
     } catch {
@@ -260,14 +256,12 @@ const purchaseDomainTool = {
           registeredAt: new Date(),
           autoRenew: true,
           whoisPrivacy: input.privacy,
-          ...(dkimPublicKey ? { dkimPublicKey, dkimPrivateKey } : {}),
         },
         update: {
           status: 'pending_ssl',
           registrar: 'godaddy',
           registrarOrderId: orderId,
           registeredAt: new Date(),
-          ...(dkimPublicKey ? { dkimPublicKey, dkimPrivateKey } : {}),
         },
       }),
     ]);

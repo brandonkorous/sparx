@@ -10,7 +10,7 @@ import type { FastifyInstance } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { invalidateModuleCache, issueApiKey } from '@sparx/auth';
 import { createApp } from '../../src/app.js';
-import { authHeader, signToken } from '../helpers.js';
+import { authHeader, seedPrimaryProperty, signToken } from '../helpers.js';
 
 interface InvTenant {
   tenantId: string;
@@ -61,6 +61,9 @@ async function createInventoryTenant(inventoryEnabled: boolean): Promise<InvTena
     });
     return { warehouseId: w.id, variantId: v.id };
   });
+  // Real provisioning gives every tenant a PRIMARY site, so a fixture without
+  // one builds a tenant that cannot exist — and every site-resolving read 404s.
+  await seedPrimaryProperty(tenant.id, `Test ${tenant.slug}`);
   return { tenantId: tenant.id, userId, email, warehouseId, variantId, sku };
 }
 
@@ -163,7 +166,7 @@ describe('documented inventory API', () => {
   it('lets a JWT (dashboard) actor through without scopes', async () => {
     const t = await createInventoryTenant(true);
     try {
-      const token = signToken(app, { tenantId: t.tenantId, userId: t.userId, email: t.email });
+      const token = signToken(app, { tenantId: t.tenantId, userId: t.userId });
       const res = await app.inject({
         method: 'GET',
         url: '/v1/inventory/alerts',

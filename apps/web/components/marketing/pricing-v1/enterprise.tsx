@@ -5,51 +5,55 @@ import { Check } from 'lucide-react';
 // undefined, and silica's unconditional `cloneElement(render, …)` then throws
 // "Element type is invalid … got: undefined" during prerender.
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { Container, Display, Spark } from '../primitives';
+import { Container, Display, Spark, Text } from '../primitives';
 import { Reveal } from '../reveal';
 import { PLATFORM_HREF, SALES_HREF } from '../cta';
 import { ENTERPRISE_FEATS } from './data';
 
-// Device: the dark inverse beat. A theme-aware charcoal band (mkt-accent) with
-// an inverted display headline, a two-column capability check-list, and two real
-// silicaui Buttons — matching the dark-band treatment used across the homepage.
+// Device: the dark beat. A `data-theme="dark"` island with an inverted display
+// headline, a two-column capability check-list, and two real silicaui Buttons —
+// matching the dark-band treatment used across the homepage.
 export function PricingV1Enterprise() {
   return (
-    <section className="mkt-accent px-[var(--gutter-page)] py-[var(--section-py-xl)]">
+    // `data-theme="dark"` makes this a real themed island: the whole
+    // `--color-base-*` ramp flips, so the headline, lede, checks, and the outline
+    // button all resolve on-brand — no #FFFFFF / #A1A1AA / #2A2A2A / #818CF8.
+    // `.mkt-inverse` declares the paneled system's INVERSE TIER and paints
+    // nothing — it exists so the seam-merge selectors see this band as a tier
+    // CHANGE against its light neighbours and keep the corner notch. Without it
+    // the section falls to the content tier, which force-paints it and merges
+    // its corners into the adjacent plates. `bg-base-100` does the actual
+    // painting (dark inside the island), and covers the un-paneled case too.
+    <section data-theme="dark" className="mkt-inverse bg-base-100 px-page py-section-xl">
       <Container>
-        <Reveal
-          className="mkt-stack-on-tablet"
-          style={{ justifyContent: 'space-between', gap: '48px', alignItems: 'center' }}
-        >
-          <div style={{ flex: 1, minWidth: '300px' }}>
-            <Display size={46} color="#FFFFFF">
+        <Reveal className="flex flex-col items-center justify-between gap-12 lg:flex-row">
+          <div className="min-w-[300px] flex-1">
+            <Display size={46}>
               Bigger needs? Let&rsquo;s talk
-              <Spark color="#818CF8" />
+              <Spark />
             </Display>
-            <p
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '18px',
-                lineHeight: '30px',
-                color: '#A1A1AA',
-                maxWidth: '560px',
-                margin: '20px 0 0',
-              }}
-            >
+            <Text size={18} className="mt-5 max-w-[560px]">
               For teams with security reviews, procurement, and uptime commitments. Custom pricing
               that still bills the way the switchboard does — pay for the modules you run.
-            </p>
+            </Text>
 
             <div className="mt-7 grid max-w-xl grid-cols-1 gap-x-7 gap-y-3.5 sm:grid-cols-2">
               {ENTERPRISE_FEATS.map((f) => (
-                <span
+                <Text
+                  as="span"
                   key={f}
-                  className="flex items-center gap-2.5 text-[15px]"
-                  style={{ color: 'rgba(255,255,255,0.82)' }}
+                  size={15}
+                  tone="default"
+                  className="flex items-center gap-2.5"
                 >
-                  <Check size={16} strokeWidth={2.4} color="#818CF8" aria-hidden />
+                  <Check
+                    size={16}
+                    strokeWidth={2.4}
+                    className="text-primary shrink-0"
+                    aria-hidden
+                  />
                   {f}
-                </span>
+                </Text>
               ))}
             </div>
           </div>
@@ -66,7 +70,6 @@ export function PricingV1Enterprise() {
               href={PLATFORM_HREF}
               aria-label="See the platform"
               className={buttonClasses({ size: 'lg', variant: 'outline' })}
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
             >
               See the platform →
             </a>

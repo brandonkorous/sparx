@@ -48,12 +48,7 @@ import {
   verifyCname,
   CNAME_TARGET,
 } from '../../lib/domain.js';
-import {
-  buildSparxDnsRecords,
-  generateDkimKeypair,
-  getRegistrar,
-  RegistrarError,
-} from '../../lib/registrar.js';
+import { buildSparxDnsRecords, getRegistrar, RegistrarError } from '../../lib/registrar.js';
 import { chargeForDomain, refundDomainCharge } from '../../lib/domain-billing.js';
 import { env } from '../../env.js';
 
@@ -350,7 +345,7 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
   //      the deferred-purchase flow the domain is chosen before it's bought).
   //   2. Charge the tenant for real (chargeForDomain) BEFORE registering.
   //   3. GoDaddy: purchaseDomain → orderId (refund the charge if this fails).
-  //   4. GoDaddy: generateDkimKeypair + configureDNS (sparx record set)
+  //   4. GoDaddy: configureDNS (sparx record set)
   //   5. DB: insert domain_purchases + upsert domains row (type: purchased)
   //   6. Pub/Sub: publish domain.purchased
   //   7. Return { domain, orderId, expiresAt, purchase }
@@ -439,9 +434,9 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
       throw err;
     }
 
-    // 4. GoDaddy: DKIM keypair + DNS
-    const { publicKey: dkimPublicKey, privateKey: dkimPrivateKey } = generateDkimKeypair();
-    const dnsRecords = buildSparxDnsRecords(dkimPublicKey);
+    // 4. GoDaddy: DNS (DKIM is Mailgun's — added at Mailgun domain verification,
+    //    not self-signed here).
+    const dnsRecords = buildSparxDnsRecords();
 
     let dnsConfigured = false;
     try {
@@ -492,8 +487,6 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
           autoRenew: true,
           whoisPrivacy: input.privacy,
           renewalPriceCents,
-          dkimPublicKey,
-          dkimPrivateKey,
         },
         update: {
           type: 'purchased',
@@ -505,8 +498,6 @@ const domainsRoutes: FastifyPluginAsync = async (app) => {
           autoRenew: true,
           whoisPrivacy: input.privacy,
           renewalPriceCents,
-          dkimPublicKey,
-          dkimPrivateKey,
         },
       });
 

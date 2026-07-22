@@ -89,7 +89,23 @@ export async function evaluateCustomerForTenant(
   const exited: string[] = [];
 
   await withTenant(ctx, async (tx) => {
-    const segments = await tx.segment.findMany({ where: { archivedAt: null } });
+    // A customer is only evaluated against segments of THEIR OWN site, plus the
+    // tenant-wide ones (docs/131 §5). Without this a Savory Donuts customer could
+    // land in a Bob's Parts segment and then receive its broadcast — the leak
+    // this scoping closes. The customer's site is authoritative here (a segment
+    // draws FROM a site's customers), so it bounds the query.
+    const customer = await tx.customer.findUnique({
+      where: { id: customerId },
+      select: { propertyId: true },
+    });
+    const segments = await tx.segment.findMany({
+      where: {
+        archivedAt: null,
+        ...(customer?.propertyId
+          ? { OR: [{ propertyId: customer.propertyId }, { propertyId: null }] }
+          : {}),
+      },
+    });
 
     for (const segment of segments) {
       const parsed = SegmentRuleSchema.safeParse(segment.rules);

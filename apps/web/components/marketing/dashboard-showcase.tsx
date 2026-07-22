@@ -1,4 +1,5 @@
 import { SparxMark } from '@sparx/ui';
+import { badgeClasses, cx } from '@wizeworks/silicaui-react/server';
 import {
   BarChart3,
   Boxes,
@@ -113,9 +114,8 @@ interface SectionItem {
 interface ModuleDef {
   key: string;
   label: string;
+  /** The module hue as a TOKEN value — feeds `--m` in the generated CSS. */
   color: string;
-  tint: string;
-  text: string;
   icon: LucideIcon;
   page: { title: string; desc: string; primary: string };
   sections: SectionItem[];
@@ -129,9 +129,7 @@ const MODULES: ModuleDef[] = [
   {
     key: 'builder',
     label: 'Builder',
-    color: '#6366F1',
-    tint: '#EEF2FF',
-    text: '#4338CA',
+    color: 'var(--color-module-builder)',
     icon: Boxes,
     page: { title: 'Builder', desc: '2 properties · last 14 days', primary: 'New page' },
     sections: [
@@ -229,9 +227,7 @@ const MODULES: ModuleDef[] = [
   {
     key: 'commerce',
     label: 'Commerce',
-    color: '#F97316',
-    tint: '#FFF7ED',
-    text: '#C2410C',
+    color: 'var(--color-module-commerce)',
     icon: ShoppingCart,
     page: { title: 'Commerce', desc: 'Last 30 days', primary: 'New product' },
     sections: [
@@ -376,9 +372,7 @@ const MODULES: ModuleDef[] = [
   {
     key: 'cms',
     label: 'CMS',
-    color: '#14B8A6',
-    tint: '#F0FDFA',
-    text: '#0F766E',
+    color: 'var(--color-module-cms)',
     icon: FileText,
     page: { title: 'CMS', desc: 'Last 30 days', primary: 'New post' },
     sections: [
@@ -489,9 +483,7 @@ const MODULES: ModuleDef[] = [
   {
     key: 'crm',
     label: 'CRM',
-    color: '#06B6D4',
-    tint: '#ECFEFF',
-    text: '#0E7490',
+    color: 'var(--color-module-crm)',
     icon: Users,
     page: { title: 'CRM', desc: '1,204 customers', primary: 'New customer' },
     sections: [
@@ -621,9 +613,7 @@ const MODULES: ModuleDef[] = [
   {
     key: 'email',
     label: 'Email',
-    color: '#0EA5E9',
-    tint: '#F0F9FF',
-    text: '#0369A1',
+    color: 'var(--color-module-email)',
     icon: Send,
     page: { title: 'Email', desc: 'Last 30 days', primary: 'New broadcast' },
     sections: [
@@ -724,9 +714,7 @@ const MODULES: ModuleDef[] = [
   {
     key: 'b2b',
     label: 'B2B',
-    color: '#475569',
-    tint: '#F1F5F9',
-    text: '#334155',
+    color: 'var(--color-module-b2b)',
     icon: Building2,
     page: { title: 'B2B', desc: '37 accounts · Net-30', primary: 'New quote' },
     sections: [
@@ -826,9 +814,7 @@ const MODULES: ModuleDef[] = [
   {
     key: 'dropship',
     label: 'Dropship',
-    color: '#10B981',
-    tint: '#ECFDF5',
-    text: '#047857',
+    color: 'var(--color-module-dropship)',
     icon: Truck,
     page: { title: 'Dropship', desc: '6 suppliers · 3 regions', primary: 'Add supplier' },
     sections: [
@@ -929,9 +915,7 @@ const MODULES: ModuleDef[] = [
   {
     key: 'ai',
     label: 'AI',
-    color: '#EC4899',
-    tint: '#FDF2F8',
-    text: '#9D174D',
+    color: 'var(--color-module-ai)',
     icon: Sparkles,
     page: { title: 'AI', desc: '24 tools · 4 clients', primary: 'New tool' },
     sections: [
@@ -1049,14 +1033,14 @@ const PAGES = MODULES.flatMap((m) => [
 // (Commerce overview) view. Section item + rail styles live in classes (not
 // inline) so the `:checked` rules can win on specificity.
 const INTERACTIVE_CSS = `
-.dsx-frame{position:relative;--m:${DEFAULT.color};--m-tint:color-mix(in oklab, var(--m) 15%, var(--color-base-100));--m-text:var(--m);}
+.dsx-frame{position:relative;--m:${DEFAULT.color};--m-tint:color-mix(in oklab, var(--m) 15%, var(--color-base-100));--m-text:var(--m);--m-ink:var(--color-primary-content);}
 .dsx-radio{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;}
-.dsx-railtile{color:color-mix(in oklab, var(--color-base-content) 50%, transparent);cursor:pointer;transition:background .15s ease,color .15s ease;}
-.dsx-railtile:hover{background:var(--color-base-200);color:color-mix(in oklab, var(--color-base-content) 70%, transparent);}
-.dsx-secitem{display:flex;align-items:center;gap:8px;height:32px;flex-shrink:0;padding:0 8px;border-radius:6px;font-family:var(--font-sans);font-size:13px;font-weight:400;color:color-mix(in oklab, var(--color-base-content) 70%, transparent);background:transparent;}
+.dsx-railtile{color:var(--color-ink-subtle);cursor:pointer;transition:background .15s ease,color .15s ease;}
+.dsx-railtile:hover{background:var(--color-base-200);color:var(--color-ink-muted);}
+.dsx-secitem{display:flex;align-items:center;gap:8px;height:32px;flex-shrink:0;padding:0 8px;border-radius:6px;font-family:var(--font-sans);font-size:13px;font-weight:400;color:var(--color-ink-muted);background:transparent;}
 .dsx-secitem--link{cursor:pointer;}
 .dsx-secitem--link:hover{background:var(--color-base-200);}
-.dsx-secicon{display:inline-flex;flex-shrink:0;color:color-mix(in oklab, var(--color-base-content) 50%, transparent);}
+.dsx-secicon{display:inline-flex;flex-shrink:0;color:var(--color-ink-subtle);}
 .dsx-panel{display:none;flex-direction:column;flex:1;min-height:0;}
 .dsx-panel--commerce{display:flex;}
 .dsx-page{display:none;flex-direction:column;flex:1;min-height:0;overflow-y:auto;}
@@ -1080,22 +1064,13 @@ ${PAGES.map(
 ).join('')}
 `;
 
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
+// Status families — mapped from the cell text (lowercased) onto the platform's
+// real `statusTone()` vocabulary, then rendered through silica's own
+// `badgeClasses()`. The pill therefore looks exactly like a dashboard `<Badge>`
+// (same tint math, same paired ink) instead of a hand-mirrored hex pair.
+type StatusTone = 'success' | 'neutral' | 'warning' | 'danger';
 
-// Status badge families — mapped from the cell text (lowercased). Mirrors the
-// dashboard's success / neutral / warning / danger Badge colors.
-const STATUS_FAMILIES = {
-  success: { bg: '#ECFDF5', fg: '#047857' },
-  neutral: {
-    bg: 'var(--color-base-200)',
-    fg: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-  },
-  warning: { bg: '#FEF3C7', fg: '#B45309' },
-  danger: { bg: '#FFE4E6', fg: '#BE123C' },
-} as const;
-
-const STATUS_LOOKUP: Record<string, keyof typeof STATUS_FAMILIES> = {
+const STATUS_LOOKUP: Record<string, StatusTone> = {
   active: 'success',
   published: 'success',
   live: 'success',
@@ -1132,15 +1107,25 @@ const STATUS_LOOKUP: Record<string, keyof typeof STATUS_FAMILIES> = {
   expired: 'danger',
 };
 
-function statusColor(value: string) {
-  return STATUS_FAMILIES[STATUS_LOOKUP[value.toLowerCase()] ?? 'neutral'];
+function statusBadgeClass(value: string) {
+  return badgeClasses({
+    color: STATUS_LOOKUP[value.toLowerCase()] ?? 'neutral',
+    variant: 'soft',
+    size: 'sm',
+  });
 }
-
 /**
  * The interactive dashboard mockup — a functional UI recreation, not
  * editorial marketing type, so it never needs re-skinning per page. Callers
  * wrap it in their own section shell/header/copy (the homepage's dashboard
  * section does this) rather than forking these ~2,200 lines.
+ *
+ * Appearance is CLASS-BASED: every static rule is a Tailwind utility reading a
+ * silica token (`bg-base-100`, `border-base-300`, `text-ink-subtle`, the
+ * editorial `text-*` scale). The only inline-shaped values left are the four
+ * radio-driven custom properties the stateless `:has()` CSS sets — `--m`,
+ * `--m-tint`, `--m-text`, `--m-ink` — and those ride as arbitrary utilities
+ * (`bg-[var(--m)]`), not `style` objects, so nothing here stamps a hex.
  */
 export function DashboardFrame({ bleed = false }: { bleed?: boolean } = {}) {
   return (
@@ -1148,15 +1133,7 @@ export function DashboardFrame({ bleed = false }: { bleed?: boolean } = {}) {
       {/* The board is a wide, faithful recreation of the real app; on phones it
           scrolls horizontally rather than cramming. A quiet hint tells touch
           users to swipe (desktop never sees it). */}
-      <span
-        className="mkt-tablet-down-only"
-        style={{
-          marginTop: '-40px',
-          fontFamily: 'var(--font-mono)',
-          fontSize: '12px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
+      <span className="mkt-tablet-down-only text-ink-subtle text-mini -mt-10 font-mono">
         Swipe to explore the dashboard →
       </span>
 
@@ -1167,27 +1144,12 @@ export function DashboardFrame({ bleed = false }: { bleed?: boolean } = {}) {
           section and scrolls the whole page sideways. It's also wrong inside a
           rounded card, where a full-bleed child spills past the corners. */}
       <div
-        style={{
-          overflowX: 'auto',
-          WebkitOverflowScrolling: 'touch',
-          ...(bleed
-            ? {
-                margin: '0 calc(var(--gutter-page) * -1)',
-                padding: '0 var(--gutter-page)',
-              }
-            : {}),
-        }}
+        className={cx(
+          'overflow-x-auto [-webkit-overflow-scrolling:touch]',
+          bleed && '-mx-page px-page'
+        )}
       >
-        <div
-          className="dsx-frame"
-          style={{
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '12px 12px',
-            overflow: 'hidden',
-            backgroundColor: 'var(--color-base-100)',
-            minWidth: '960px',
-          }}
-        >
+        <div className="dsx-frame bg-base-100 border-base-300 min-w-[960px] overflow-hidden rounded-xl border">
           <style dangerouslySetInnerHTML={{ __html: INTERACTIVE_CSS }} />
           {PAGES.map((p) => (
             <input
@@ -1203,14 +1165,7 @@ export function DashboardFrame({ bleed = false }: { bleed?: boolean } = {}) {
 
           <BrowserChrome />
 
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'stretch',
-              height: '600px',
-              backgroundColor: 'var(--color-base-200)',
-            }}
-          >
+          <div className="bg-base-200 flex h-[600px] items-stretch">
             <Rail />
             <Panel />
             <Main />
@@ -1223,51 +1178,31 @@ export function DashboardFrame({ bleed = false }: { bleed?: boolean } = {}) {
 
 function BrowserChrome() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '14px',
-        padding: '14px 20px',
-        backgroundColor: 'var(--color-base-200)',
-        borderBottom: '1px solid var(--color-base-300)',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'center', gap: '7px' }}>
-        <span style={{ width: 11, height: 11, borderRadius: 9999, backgroundColor: '#FF5F57' }} />
-        <span style={{ width: 11, height: 11, borderRadius: 9999, backgroundColor: '#FEBC2E' }} />
-        <span style={{ width: 11, height: 11, borderRadius: 9999, backgroundColor: '#28C840' }} />
+    <div className="bg-base-200 border-base-300 flex items-center gap-3.5 border-b px-5 py-3.5">
+      {/* Window traffic lights — mockup chrome. The three hues are the semantic
+          error/warning/success tokens, so they flip with the theme instead of
+          freezing the macOS hex triple into the page. */}
+      <div className="flex items-center gap-2">
+        <span className="bg-error size-[11px] rounded-full" />
+        <span className="bg-warning size-[11px] rounded-full" />
+        <span className="bg-success size-[11px] rounded-full" />
       </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          padding: '6px 14px',
-          backgroundColor: 'var(--color-base-100)',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '6px',
-          flex: 1,
-          maxWidth: '520px',
-          marginLeft: '24px',
-        }}
-      >
-        <svg width={12} height={12} viewBox="0 0 24 24" fill="none" aria-hidden>
+      <div className="bg-base-100 border-base-300 ml-6 flex max-w-[520px] flex-1 items-center gap-2 rounded-md border px-3.5 py-1.5">
+        <svg
+          width={12}
+          height={12}
+          viewBox="0 0 24 24"
+          fill="none"
+          aria-hidden
+          className="text-ink-muted shrink-0"
+        >
           <path
             d="M12 1L3 5V11C3 16 7 21 12 23C17 21 21 16 21 11V5L12 1Z"
-            stroke="color-mix(in oklab, var(--color-base-content) 70%, transparent)"
+            stroke="currentColor"
             strokeWidth={2}
           />
         </svg>
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '12px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          }}
-        >
-          app.sparx.works/dashboard
-        </span>
+        <span className="text-ink-muted text-mini font-mono">app.sparx.works/dashboard</span>
       </div>
     </div>
   );
@@ -1277,20 +1212,8 @@ function BrowserChrome() {
 
 function Rail() {
   return (
-    <aside
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        width: '56px',
-        flexShrink: 0,
-        backgroundColor: 'var(--color-base-100)',
-        borderRight: '1px solid var(--color-base-300)',
-        padding: '12px 0 10px',
-        gap: '4px',
-      }}
-    >
-      <div style={{ height: 40, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+    <aside className="bg-base-100 border-base-300 flex w-14 shrink-0 flex-col items-center gap-1 border-r pt-3 pb-2.5">
+      <div className="flex h-10 items-center justify-center">
         <SparxMark size={20} />
       </div>
       <RailStatic icon={Search} label="Search" />
@@ -1302,23 +1225,19 @@ function Rail() {
           <label
             key={m.key}
             htmlFor={`dsx-${m.key}-overview`}
-            className={`dsx-railtile dsx-railtile--${m.key}`}
+            className={cx(
+              'dsx-railtile',
+              `dsx-railtile--${m.key}`,
+              'flex size-8 items-center justify-center rounded-lg'
+            )}
             title={m.label}
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 8,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
           >
             <Icon size={17} strokeWidth={1.8} />
           </label>
         );
       })}
       <RailDivider />
-      <div style={{ flex: 1 }} />
+      <div className="flex-1" />
       <RailStatic icon={Gauge} label="SEO" />
       <RailStatic icon={Settings} label="Settings" />
     </aside>
@@ -1330,15 +1249,7 @@ function RailStatic({ icon: Icon, label }: { icon: LucideIcon; label: string }) 
     <span
       title={label}
       aria-hidden
-      style={{
-        width: 32,
-        height: 32,
-        borderRadius: 8,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-      }}
+      className="text-ink-subtle flex size-8 items-center justify-center rounded-lg"
     >
       <Icon size={17} strokeWidth={1.8} />
     </span>
@@ -1346,67 +1257,28 @@ function RailStatic({ icon: Icon, label }: { icon: LucideIcon; label: string }) 
 }
 
 function RailDivider() {
-  return (
-    <span
-      aria-hidden
-      style={{
-        width: 26,
-        height: 1,
-        backgroundColor: 'var(--color-base-300)',
-        margin: '5px 0',
-      }}
-    />
-  );
+  return <span aria-hidden className="bg-base-300 my-1 h-px w-6" />;
 }
 
 // ── Contextual panel (one per module; marquee sections link, rest are inert) ──
 
 function Panel() {
   return (
-    <aside
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: '212px',
-        flexShrink: 0,
-        backgroundColor: 'var(--color-base-100)',
-        borderRight: '1px solid var(--color-base-300)',
-        overflow: 'hidden',
-      }}
-    >
+    <aside className="bg-base-100 border-base-300 flex w-[212px] shrink-0 flex-col overflow-hidden border-r">
       {MODULES.map((m) => (
         <div key={m.key} className={`dsx-panel dsx-panel--${m.key}`}>
-          <div style={{ padding: '13px 16px 10px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '10px',
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+          <div className="px-4 pt-3 pb-2.5">
+            {/* Panel section label — real dashboard chrome (a field label inside
+                the mockup), not an editorial eyebrow over a marketing heading. */}
+            <span className="text-ink-subtle text-micro font-sans font-medium tracking-[0.08em] uppercase">
               Module
             </span>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '7px', marginTop: '3px' }}>
-              <span
-                style={{ width: 8, height: 8, borderRadius: 9999, backgroundColor: 'var(--m)' }}
-              />
-              <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>{m.label}</span>
+            <div className="mt-1 flex items-center gap-2">
+              <span className="size-2 rounded-full bg-[var(--m)]" />
+              <span className="text-small font-sans font-medium">{m.label}</span>
             </div>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '2px',
-              padding: '2px 8px 12px',
-              flex: 1,
-              minHeight: 0,
-              overflowY: 'auto',
-            }}
-          >
+          <div className="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2 pt-0.5 pb-3">
             {m.sections.map((s) => {
               const Icon = s.icon;
               const id = s.slug ? `${m.key}-${s.slug}` : null;
@@ -1443,15 +1315,7 @@ function Panel() {
 
 function Main() {
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        flex: 1,
-        minWidth: 0,
-        backgroundColor: 'var(--color-base-200)',
-      }}
-    >
+    <div className="bg-base-200 flex min-w-0 flex-1 flex-col">
       {MODULES.flatMap((m) => [
         <OverviewPage key={`${m.key}-overview`} module={m} />,
         ...m.lists.map((l) => <ListPageView key={`${m.key}-${l.slug}`} module={m} page={l} />),
@@ -1464,9 +1328,7 @@ function OverviewPage({ module: m }: { module: ModuleDef }) {
   return (
     <div className={`dsx-page dsx-page--${m.key}-overview`}>
       <TopBar module={m} />
-      <div
-        style={{ display: 'flex', flexDirection: 'column', gap: '18px', padding: '8px 24px 26px' }}
-      >
+      <div className="flex flex-col gap-5 px-6 pt-2 pb-6">
         <PageHead module={m} />
         <StatRow module={m} />
         <ChartRow module={m} />
@@ -1480,9 +1342,7 @@ function ListPageView({ module: m, page }: { module: ModuleDef; page: ListPage }
   return (
     <div className={`dsx-page dsx-page--${m.key}-${page.slug}`}>
       <TopBar module={m} crumb={page.label} />
-      <div
-        style={{ display: 'flex', flexDirection: 'column', gap: '16px', padding: '8px 24px 26px' }}
-      >
+      <div className="flex flex-col gap-4 px-6 pt-2 pb-6">
         <ListPageHead page={page} />
         <ListToolbar page={page} />
         <ListTable page={page} />
@@ -1493,84 +1353,31 @@ function ListPageView({ module: m, page }: { module: ModuleDef; page: ListPage }
 
 function TopBar({ module: m, crumb }: { module: ModuleDef; crumb?: string }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        gap: '12px',
-        padding: '11px 22px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '7px',
-          fontFamily: SANS,
-          fontSize: '13px',
-        }}
-      >
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '4px',
-            color: 'var(--color-base-content)',
-          }}
-        >
+    <div className="flex items-center justify-between gap-3 px-6 py-3">
+      <div className="text-caption flex items-center gap-2 font-sans">
+        <span className="text-base-content inline-flex items-center gap-1">
           {TENANT}
-          <ChevronDown size={13} style={{ opacity: 0.7 }} />
+          <ChevronDown size={13} className="opacity-70" />
         </span>
-        <span style={{ color: 'color-mix(in oklab, var(--color-base-content) 30%, transparent)' }}>
-          /
-        </span>
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '4px',
-            color: 'var(--m-text)',
-          }}
-        >
+        <span className="text-ink-subtle">/</span>
+        <span className="inline-flex items-center gap-1 text-[var(--m-text)]">
           {m.label}
-          <ChevronDown size={13} style={{ opacity: 0.7 }} />
+          <ChevronDown size={13} className="opacity-70" />
         </span>
         {crumb ? (
           <>
-            <span
-              style={{ color: 'color-mix(in oklab, var(--color-base-content) 30%, transparent)' }}
-            >
-              /
-            </span>
-            <span
-              style={{ color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)' }}
-            >
-              {crumb}
-            </span>
+            <span className="text-ink-subtle">/</span>
+            <span className="text-ink-muted">{crumb}</span>
           </>
         ) : null}
       </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
+      <div className="text-ink-subtle flex items-center gap-1">
         <Clock size={16} strokeWidth={1.8} />
         <MoreHorizontal size={16} strokeWidth={1.8} />
         <Moon size={16} strokeWidth={1.8} />
-        <span
-          style={{
-            width: 28,
-            height: 28,
-            borderRadius: 9999,
-            marginLeft: 4,
-            background: 'linear-gradient(135deg, #EEF2FF, #FDF2F8)',
-          }}
-        />
+        {/* Account avatar placeholder — a plain surface chip. (It was a two-stop
+            gradient; gradients are banned as a visual device.) */}
+        <span className="bg-base-300 ml-1 size-7 rounded-full" />
       </div>
     </div>
   );
@@ -1578,77 +1385,32 @@ function TopBar({ module: m, crumb }: { module: ModuleDef; crumb?: string }) {
 
 function PrimaryAction({ label }: { label: string }) {
   return (
-    <span
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '6px',
-        padding: '9px 14px',
-        borderRadius: 9,
-        backgroundColor: 'var(--m)',
-        color: '#FFFFFF',
-        fontFamily: SANS,
-        fontWeight: 500,
-        fontSize: '13px',
-        whiteSpace: 'nowrap',
-      }}
-    >
+    <span className="text-caption inline-flex items-center gap-1.5 rounded-lg bg-[var(--m)] px-3.5 py-2 font-sans font-medium whitespace-nowrap text-[var(--m-ink)]">
       <Plus size={14} strokeWidth={2.2} />
       {label}
     </span>
   );
 }
 
-function PageHead({ module: m }: { module: ModuleDef }) {
-  const Icon = m.icon;
+/** The module/page glyph tile at the head of a page — module tint + module ink. */
+function HeadIcon({ icon: Icon }: { icon: LucideIcon }) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-        gap: '16px',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-        <span
-          style={{
-            width: 38,
-            height: 38,
-            borderRadius: 10,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'var(--m-tint)',
-            color: 'var(--m)',
-            marginTop: 2,
-          }}
-        >
-          <Icon size={20} strokeWidth={1.8} />
-        </span>
+    <span className="mt-0.5 flex size-[38px] shrink-0 items-center justify-center rounded-lg bg-[var(--m-tint)] text-[var(--m)]">
+      <Icon size={20} strokeWidth={1.8} />
+    </span>
+  );
+}
+
+function PageHead({ module: m }: { module: ModuleDef }) {
+  return (
+    <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start gap-3">
+        <HeadIcon icon={m.icon} />
         <div>
-          <h3
-            style={{
-              fontFamily: SANS,
-              fontWeight: 500,
-              fontSize: '24px',
-              letterSpacing: '-0.02em',
-              color: 'var(--color-base-content)',
-              margin: 0,
-            }}
-          >
+          <h3 className="text-base-content text-h2 m-0 font-sans font-medium tracking-[-0.02em]">
             {m.page.title}
           </h3>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: '3px 0 0',
-            }}
-          >
-            {m.page.desc}
-          </p>
+          <p className="text-ink-subtle text-caption m-0 mt-1 font-sans">{m.page.desc}</p>
         </div>
       </div>
       <PrimaryAction label={m.page.primary} />
@@ -1657,72 +1419,20 @@ function PageHead({ module: m }: { module: ModuleDef }) {
 }
 
 function ListPageHead({ page }: { page: ListPage }) {
-  const Icon = page.icon;
   return (
-    <div
-      style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-        gap: '16px',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-        <span
-          style={{
-            width: 38,
-            height: 38,
-            borderRadius: 10,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            backgroundColor: 'var(--m-tint)',
-            color: 'var(--m)',
-            marginTop: 2,
-            flexShrink: 0,
-          }}
-        >
-          <Icon size={20} strokeWidth={1.8} />
-        </span>
+    <div className="flex items-start justify-between gap-4">
+      <div className="flex items-start gap-3">
+        <HeadIcon icon={page.icon} />
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <h3
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '24px',
-                letterSpacing: '-0.02em',
-                color: 'var(--color-base-content)',
-                margin: 0,
-              }}
-            >
+          <div className="flex items-center gap-2">
+            <h3 className="text-base-content text-h2 m-0 font-sans font-medium tracking-[-0.02em]">
               {page.title}
             </h3>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '11px',
-                padding: '2px 9px',
-                borderRadius: 9999,
-                backgroundColor: 'var(--m-tint)',
-                color: 'var(--m-text)',
-                whiteSpace: 'nowrap',
-              }}
-            >
+            <span className="text-micro rounded-full bg-[var(--m-tint)] px-2.5 py-0.5 font-sans font-medium whitespace-nowrap text-[var(--m-text)]">
               {page.count}
             </span>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              margin: '4px 0 0',
-              maxWidth: '52ch',
-              lineHeight: 1.5,
-            }}
-          >
+          <p className="text-ink-subtle text-caption m-0 mt-1 max-w-[52ch] font-sans">
             {page.desc}
           </p>
         </div>
@@ -1734,88 +1444,33 @@ function ListPageHead({ page }: { page: ListPage }) {
 
 // ── List toolbar (static-but-faithful: search + filter chips + sort + view) ──
 
+/** The toolbar's dropdown chip — one shared class list, not a stamped style object. */
+const CHIP =
+  'border-base-300 bg-base-100 text-ink-muted text-caption inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 font-sans whitespace-nowrap';
+
 function ListToolbar({ page }: { page: ListPage }) {
-  const chip = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '5px',
-    padding: '7px 11px',
-    border: '1px solid var(--color-base-300)',
-    borderRadius: 8,
-    backgroundColor: 'var(--color-base-100)',
-    fontFamily: SANS,
-    fontSize: '12.5px',
-    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-    whiteSpace: 'nowrap' as const,
-  };
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          flex: '0 1 280px',
-          minWidth: 180,
-          padding: '7px 12px',
-          backgroundColor: 'var(--color-base-100)',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: 8,
-        }}
-      >
-        <Search
-          size={14}
-          strokeWidth={1.8}
-          style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}
-        />
-        <span
-          style={{
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
-          Search…
-        </span>
+    <div className="flex flex-wrap items-center gap-2">
+      <div className="bg-base-100 border-base-300 flex min-w-[180px] flex-[0_1_280px] items-center gap-2 rounded-lg border px-3 py-1.5">
+        <Search size={14} strokeWidth={1.8} className="text-ink-subtle shrink-0" />
+        <span className="text-ink-subtle text-caption font-sans">Search…</span>
       </div>
       {page.filters.map((f) => (
-        <span key={f} style={chip}>
+        <span key={f} className={CHIP}>
           {f}
-          <ChevronDown size={12} style={{ opacity: 0.6 }} />
+          <ChevronDown size={12} className="opacity-60" />
         </span>
       ))}
-      <span style={{ flex: 1 }} />
-      <span style={chip}>
+      <span className="flex-1" />
+      <span className={CHIP}>
         Recently updated
-        <ChevronDown size={12} style={{ opacity: 0.6 }} />
+        <ChevronDown size={12} className="opacity-60" />
       </span>
-      <span
-        style={{
-          display: 'inline-flex',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: 8,
-          overflow: 'hidden',
-          backgroundColor: 'var(--color-base-100)',
-        }}
-      >
-        <span
-          style={{
-            display: 'inline-flex',
-            padding: '7px 9px',
-            backgroundColor: 'var(--color-base-200)',
-            color: 'var(--color-base-content)',
-          }}
-        >
+      <span className="border-base-300 bg-base-100 inline-flex overflow-hidden rounded-lg border">
+        <span className="bg-base-200 text-base-content inline-flex px-2.5 py-1.5">
           <List size={14} strokeWidth={1.8} />
         </span>
-        <span
-          style={{
-            display: 'inline-flex',
-            padding: '7px 9px',
-            borderLeft: '1px solid var(--color-base-300)',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <span className="border-base-300 text-ink-subtle inline-flex border-l px-2.5 py-1.5">
           <LayoutGrid size={14} strokeWidth={1.8} />
         </span>
       </span>
@@ -1825,33 +1480,30 @@ function ListToolbar({ page }: { page: ListPage }) {
 
 // ── List table (the dashboard's primary archetype, with sample rows) ──
 
+/** Shared cell chrome. `last` drops the divider on the final row. */
+function cellClass(last: boolean, extra?: string) {
+  return cx(
+    'text-caption px-3.5 py-3 align-middle',
+    last ? null : 'border-base-300 border-b',
+    extra
+  );
+}
+
 function ListTable({ page }: { page: ListPage }) {
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: 11,
-        overflow: 'hidden',
-      }}
-    >
-      <table style={{ width: '100%', borderCollapse: 'collapse', fontFamily: SANS }}>
+    <div className="bg-base-100 border-base-300 overflow-hidden rounded-xl border">
+      <table className="w-full border-collapse font-sans">
         <thead>
           <tr>
+            {/* Uppercase column headers are the dashboard table's own chrome —
+                real UI mimicry, not an editorial eyebrow. */}
             {page.columns.map((c) => (
               <th
                 key={c.label}
-                style={{
-                  textAlign: c.kind === 'num' ? 'right' : 'left',
-                  padding: '10px 14px',
-                  fontSize: '10.5px',
-                  fontWeight: 500,
-                  letterSpacing: '0.05em',
-                  textTransform: 'uppercase',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  borderBottom: '1px solid var(--color-base-300)',
-                  whiteSpace: 'nowrap',
-                }}
+                className={cx(
+                  'border-base-300 text-ink-subtle text-micro border-b px-3.5 py-2.5 font-medium tracking-[0.05em] whitespace-nowrap uppercase',
+                  c.kind === 'num' ? 'text-right' : 'text-left'
+                )}
               >
                 {c.label}
               </th>
@@ -1865,54 +1517,21 @@ function ListTable({ page }: { page: ListPage }) {
               <tr key={ri}>
                 {row.map((cell, ci) => {
                   const col = page.columns[ci]!;
-                  const base = {
-                    padding: '11px 14px',
-                    borderBottom: last ? 'none' : '1px solid var(--color-base-300)',
-                    fontSize: '13px',
-                    verticalAlign: 'middle' as const,
-                  };
                   if (col.kind === 'title') {
                     const parts = cell.split('\n');
                     const main = parts[0] ?? '';
                     const sub = parts[1];
                     return (
-                      <td key={ci} style={base}>
-                        <div style={{ fontWeight: 500, color: 'var(--color-base-content)' }}>
-                          {main}
-                        </div>
-                        {sub ? (
-                          <div
-                            style={{
-                              fontSize: '11.5px',
-                              color:
-                                'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                              marginTop: 1,
-                            }}
-                          >
-                            {sub}
-                          </div>
-                        ) : null}
+                      <td key={ci} className={cellClass(last)}>
+                        <div className="text-base-content font-medium">{main}</div>
+                        {sub ? <div className="text-ink-subtle text-mini">{sub}</div> : null}
                       </td>
                     );
                   }
                   if (col.kind === 'badge') {
-                    const c = statusColor(cell);
                     return (
-                      <td key={ci} style={base}>
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            padding: '2px 8px',
-                            borderRadius: 9999,
-                            fontSize: '11px',
-                            fontWeight: 500,
-                            backgroundColor: c.bg,
-                            color: c.fg,
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {cell}
-                        </span>
+                      <td key={ci} className={cellClass(last)}>
+                        <span className={statusBadgeClass(cell)}>{cell}</span>
                       </td>
                     );
                   }
@@ -1920,25 +1539,14 @@ function ListTable({ page }: { page: ListPage }) {
                     return (
                       <td
                         key={ci}
-                        style={{
-                          ...base,
-                          textAlign: 'right',
-                          fontVariantNumeric: 'tabular-nums',
-                          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                        }}
+                        className={cellClass(last, 'text-ink-muted text-right tabular-nums')}
                       >
                         {cell}
                       </td>
                     );
                   }
                   return (
-                    <td
-                      key={ci}
-                      style={{
-                        ...base,
-                        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                      }}
-                    >
+                    <td key={ci} className={cellClass(last, 'text-ink-muted')}>
                       {cell}
                     </td>
                   );
@@ -1954,73 +1562,25 @@ function ListTable({ page }: { page: ListPage }) {
 
 function StatRow({ module: m }: { module: ModuleDef }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '10px' }}>
+    <div className="grid grid-cols-4 gap-2.5">
       {m.stats.map((s) => {
         const Icon = s.icon;
         return (
-          <div
-            key={s.label}
-            style={{
-              backgroundColor: 'var(--color-base-200)',
-              borderRadius: 10,
-              padding: '13px 14px',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginBottom: 8,
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '10px',
-                  letterSpacing: '0.06em',
-                  textTransform: 'uppercase',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
+          <div key={s.label} className="bg-base-200 rounded-lg p-3.5">
+            <div className="mb-2 flex items-center justify-between">
+              {/* Stat label — dashboard chrome inside the mockup. */}
+              <span className="text-ink-subtle text-micro font-sans font-medium tracking-[0.06em] uppercase">
                 {s.label}
               </span>
-              <span
-                style={{
-                  width: 25,
-                  height: 25,
-                  borderRadius: 7,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: 'var(--m-tint)',
-                  color: 'var(--m)',
-                }}
-              >
+              <span className="flex size-6 items-center justify-center rounded-md bg-[var(--m-tint)] text-[var(--m)]">
                 <Icon size={13} strokeWidth={1.8} />
               </span>
             </div>
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '23px',
-                letterSpacing: '-0.02em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <div className="text-base-content text-h2 font-sans font-medium tracking-[-0.02em]">
               {s.value}
             </div>
             <div
-              style={{
-                fontFamily: SANS,
-                fontSize: '11.5px',
-                marginTop: 3,
-                color: s.up
-                  ? '#047857'
-                  : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
+              className={cx('text-mini mt-1 font-sans', s.up ? 'text-success' : 'text-ink-subtle')}
             >
               {s.delta}
             </div>
@@ -2033,7 +1593,7 @@ function StatRow({ module: m }: { module: ModuleDef }) {
 
 function ChartRow({ module: m }: { module: ModuleDef }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+    <div className="grid grid-cols-2 gap-3">
       <ChartCard title={m.charts[0]!.title} sub={m.charts[0]!.sub}>
         <AreaChart />
       </ChartCard>
@@ -2054,60 +1614,17 @@ function ChartCard({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: 11,
-        padding: '14px 16px 10px',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          marginBottom: 8,
-        }}
-      >
+    <div className="bg-base-100 border-base-300 rounded-xl border px-4 pt-3.5 pb-2.5">
+      <div className="mb-2 flex items-start justify-between">
         <div>
-          <div
-            style={{
-              fontFamily: SANS,
-              fontWeight: 500,
-              fontSize: '13.5px',
-              color: 'var(--color-base-content)',
-            }}
-          >
-            {title}
-          </div>
-          <div
-            style={{
-              fontFamily: SANS,
-              fontSize: '11.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              marginTop: 1,
-            }}
-          >
-            {sub}
-          </div>
+          <div className="text-base-content text-caption font-sans font-medium">{title}</div>
+          <div className="text-ink-subtle text-mini font-sans">{sub}</div>
         </div>
-        <span
-          style={{
-            fontFamily: SANS,
-            fontWeight: 500,
-            fontSize: '10px',
-            padding: '2px 8px',
-            borderRadius: 9999,
-            backgroundColor: '#FEF3C7',
-            color: '#B45309',
-            whiteSpace: 'nowrap',
-          }}
-        >
+        <span className={badgeClasses({ color: 'warning', variant: 'soft', size: 'sm' })}>
           Sample data
         </span>
       </div>
-      <div style={{ height: 80 }}>{children}</div>
+      <div className="h-20">{children}</div>
     </div>
   );
 }
@@ -2118,15 +1635,13 @@ const BARS = [34, 44, 29, 50, 60, 47, 38, 55, 66, 52, 70, 58];
 
 function AreaChart() {
   return (
-    <svg
-      viewBox="0 0 300 80"
-      preserveAspectRatio="none"
-      style={{ width: '100%', height: 80, display: 'block' }}
-    >
-      <path d={`${AREA_PATH} L300,80 L0,80 Z`} style={{ fill: 'var(--m)', fillOpacity: 0.12 }} />
+    <svg viewBox="0 0 300 80" preserveAspectRatio="none" className="block h-20 w-full">
+      <path d={`${AREA_PATH} L300,80 L0,80 Z`} fill="var(--m)" fillOpacity={0.12} />
       <path
         d={AREA_PATH}
-        style={{ fill: 'none', stroke: 'var(--m)', strokeWidth: 2 }}
+        fill="none"
+        stroke="var(--m)"
+        strokeWidth={2}
         strokeLinecap="round"
         strokeLinejoin="round"
       />
@@ -2140,11 +1655,7 @@ function BarChart() {
   const gap = 7;
   const bw = (w - gap * (BARS.length - 1)) / BARS.length;
   return (
-    <svg
-      viewBox="0 0 300 80"
-      preserveAspectRatio="none"
-      style={{ width: '100%', height: 80, display: 'block' }}
-    >
+    <svg viewBox="0 0 300 80" preserveAspectRatio="none" className="block h-20 w-full">
       {BARS.map((v, i) => {
         const bh = (v / 72) * h;
         return (
@@ -2155,7 +1666,7 @@ function BarChart() {
             width={bw}
             height={bh}
             rx={1.5}
-            style={{ fill: 'var(--m)' }}
+            fill="var(--m)"
           />
         );
       })}
@@ -2165,76 +1676,23 @@ function BarChart() {
 
 function CardRow({ module: m }: { module: ModuleDef }) {
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '10px' }}>
+    <div className="grid grid-cols-3 gap-2.5">
       {m.cards.map((c) => (
         <div
           key={c.name}
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            backgroundColor: 'var(--color-base-100)',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: 11,
-            overflow: 'hidden',
-          }}
+          className="bg-base-100 border-base-300 flex flex-col overflow-hidden rounded-xl border"
         >
-          <div style={{ height: 3, backgroundColor: 'var(--m)' }} />
-          <div
-            style={{ display: 'flex', flexDirection: 'column', padding: '13px 15px 14px', flex: 1 }}
-          >
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '11.5px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {c.desc}
-            </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '15px',
-                letterSpacing: '-0.01em',
-                color: 'var(--color-base-content)',
-                marginTop: 2,
-              }}
-            >
+          <div className="h-[3px] bg-[var(--m)]" />
+          <div className="flex flex-1 flex-col px-4 pt-3.5 pb-3.5">
+            <span className="text-ink-subtle text-mini font-sans">{c.desc}</span>
+            <span className="text-base-content text-body-sm font-sans font-medium tracking-[-0.01em]">
               {c.name}
             </span>
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                marginTop: 14,
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '10.5px',
-                  padding: '2px 8px',
-                  borderRadius: 9999,
-                  backgroundColor: 'var(--m-tint)',
-                  color: 'var(--m-text)',
-                }}
-              >
+            <div className="mt-3.5 flex items-center justify-between">
+              <span className="text-micro rounded-full bg-[var(--m-tint)] px-2 py-0.5 font-sans font-medium text-[var(--m-text)]">
                 Active
               </span>
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontWeight: 500,
-                  fontSize: '12px',
-                  padding: '5px 12px',
-                  borderRadius: 7,
-                  backgroundColor: 'var(--m)',
-                  color: '#FFFFFF',
-                }}
-              >
+              <span className="text-mini rounded-md bg-[var(--m)] px-3 py-1 font-sans font-medium text-[var(--m-ink)]">
                 Open
               </span>
             </div>

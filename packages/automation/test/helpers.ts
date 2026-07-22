@@ -87,6 +87,20 @@ export async function dropTenant(tenantId: string): Promise<void> {
   await ownerDb.tenant.delete({ where: { id: tenantId } }).catch(() => undefined);
 }
 
+/** A site under the tenant. Two of these is the whole point of docs/131 — one
+ *  tenant, two unrelated businesses that must never see each other's records. */
+export async function seedProperty(tenantId: string, name: string): Promise<string> {
+  const p = await ownerDb.property.create({
+    data: {
+      tenantId,
+      slug: `${name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${crypto.randomBytes(3).toString('hex')}`,
+      name,
+    },
+    select: { id: true },
+  });
+  return p.id;
+}
+
 export interface SeedCustomerOpts {
   type?: string;
   email?: string;
@@ -94,6 +108,8 @@ export interface SeedCustomerOpts {
   orderCount?: number;
   lastOrderDaysAgo?: number;
   tags?: string[];
+  /** Which site this customer belongs to; omitted = a tenant-level contact. */
+  propertyId?: string;
 }
 
 /** Insert a customer (owner/BYPASSRLS, no GUC needed). Returns its id. */
@@ -105,6 +121,7 @@ export async function seedCustomer(tenantId: string, opts: SeedCustomerOpts = {}
   const c = await ownerDb.customer.create({
     data: {
       tenantId,
+      propertyId: opts.propertyId ?? null,
       type: opts.type ?? 'retail',
       email: opts.email ?? `cust-${crypto.randomBytes(3).toString('hex')}@sparx.test`,
       totalSpent: opts.totalSpent ?? 0,

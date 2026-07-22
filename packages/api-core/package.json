@@ -33,6 +33,10 @@
       "types": "./src/webhook-delivery.ts",
       "default": "./src/webhook-delivery.ts"
     },
+    "./webhook-secret-crypto": {
+      "types": "./src/webhook-secret-crypto.ts",
+      "default": "./src/webhook-secret-crypto.ts"
+    },
     "./slug": {
       "types": "./src/slug.ts",
       "default": "./src/slug.ts"

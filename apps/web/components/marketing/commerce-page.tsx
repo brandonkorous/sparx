@@ -30,7 +30,7 @@ import { Faq, type FaqItem } from './faq';
  * the primary processor (no invented PayPal/Klarna); wallets are Apple Pay /
  * Google Pay / Link. Tax = TaxJar / Avalara, carrier rates = EasyPost. The
  * transaction fee is the real 0.5% → 0.3% → 0% ladder from billing §2. Flat
- * $49/mo with Invoicing bundled free — no tiers, no "+", no "Pro+".
+ * $49/mo with Invoicing + Inventory bundled free — no tiers, no "+", no "Pro+".
  */
 export function CommercePage() {
   return (
@@ -63,8 +63,6 @@ export function CommercePage() {
 
 const C = getModuleColor('commerce');
 const BUILDER = getModuleColor('builder');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // Page-specific FAQ. Real evaluation questions for sparx Commerce, answered
 // straight and grounded in docs/09 (PRD) + docs/17 (billing) — no tier/plan
@@ -74,7 +72,7 @@ const COMMERCE_FAQ: FaqItem[] = [
     id: 'commerce-pricing',
     question: 'How much does sparx Commerce cost?',
     answer:
-      'A flat $49/mo, with Invoicing included free. No tiers and no setup fee — turn Commerce on, add any other modules à la carte, and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
+      'A flat $49/mo, with Invoicing and Inventory included free. No tiers and no setup fee — turn Commerce on, add any other modules à la carte, and it all lands on one bill. Start on a 14-day free trial; no card required to begin.',
   },
   {
     id: 'commerce-fees',
@@ -116,43 +114,22 @@ function CommerceHero() {
     'stripe payments',
     'headless or hosted',
     'D2C + B2B, one engine',
-    'invoicing included',
+    'invoicing + inventory free',
   ];
   return (
-    <section
-      className={`${C.bg} bg-soft`}
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-      }}
-    >
+    <section className={`${C.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
       <Container>
-        <div
-          className="mkt-stack-on-tablet"
-          style={{ gap: 'clamp(40px, 6vw, 72px)', alignItems: 'center' }}
-        >
-          <div style={{ flex: 1, minWidth: 0 }}>
+        <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
+          <div className="min-w-0 flex-1">
             <Display as="h1" size={88} lineHeight={84}>
               Sell, ship, get paid
               <Spark color={C.color} />
             </Display>
-            <p
-              style={{
-                fontFamily: SANS,
-                fontWeight: 400,
-                fontSize: 'clamp(16px, 1.6vw, 20px)',
-                lineHeight: 1.55,
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                maxWidth: '560px',
-                margin: '28px 0 0',
-              }}
-            >
+            <p className="text-ink-muted mt-7 max-w-[560px] font-sans text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
               {lede}
             </p>
-            <div className="mkt-cluster" style={{ gap: '12px', marginTop: '34px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+            <div className="mt-8 flex flex-wrap items-center gap-3">
+              <Button color="neutral" size="lg">
                 Start selling →
               </Button>
               <a href="#journey">
@@ -161,38 +138,19 @@ function CommerceHero() {
                 </Button>
               </a>
             </div>
-            <ul
-              className="mkt-cluster"
-              style={{ gap: '10px', marginTop: '26px', listStyle: 'none', padding: 0 }}
-            >
+            <ul className="mt-6 flex list-none flex-wrap items-center gap-2.5 p-0">
               {chips.map((c) => (
                 <li
                   key={c}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '7px 13px',
-                    backgroundColor: 'var(--color-base-100)',
-                    border: '1px solid var(--color-base-300)',
-                    borderRadius: '9999px',
-                  }}
+                  className="border-base-300 bg-base-100 inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
                 >
                   <Dot color={C.color} size={6} />
-                  <span
-                    style={{
-                      fontFamily: MONO,
-                      fontSize: '12px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
-                    {c}
-                  </span>
+                  <span className="text-ink-muted text-mini font-mono">{c}</span>
                 </li>
               ))}
             </ul>
           </div>
-          <div style={{ flex: 1, minWidth: 0, width: '100%' }}>
+          <div className="w-full min-w-0 flex-1">
             <OrderReceipt />
           </div>
         </div>
@@ -222,166 +180,54 @@ function OrderReceipt() {
 function ReceiptCard({ business }: { business: ExampleBusiness }) {
   const { order, customer } = business;
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '16px',
-        boxShadow: '0 14px 40px rgba(15, 15, 20, 0.06)',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '16px 20px',
-          borderBottom: '1px solid var(--color-base-300)',
-        }}
-      >
-        <span style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+    <div className="border-base-300 bg-base-100 overflow-hidden rounded-2xl border shadow-lg">
+      <div className="border-base-300 flex items-center justify-between border-b px-5 py-4">
+        <span className="flex items-center gap-2.5">
           <Dot color={C.color} size={9} />
           <span>
-            <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '14px' }}>
-              {order.number}
-            </span>
+            <span className="text-small font-sans font-medium">{order.number}</span>
             <br />
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {customer.name} · just now
-            </span>
+            <span className="text-ink-subtle text-mini font-sans">{customer.name} · just now</span>
           </span>
         </span>
         <span
-          className={`${C.bg} bg-soft ${C.ink}`}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '7px',
-            padding: '5px 11px',
-            borderRadius: '9999px',
-            fontFamily: SANS,
-            fontSize: '12px',
-            fontWeight: 500,
-          }}
+          className={`${C.bg} bg-soft ${C.ink} text-mini inline-flex items-center gap-[7px] rounded-full px-3 py-1 font-sans font-medium`}
         >
           <Check size={13} color={C.color} /> Paid
         </span>
       </div>
       {order.products.map((it) => (
-        <div
-          key={it.sku}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '13px',
-            padding: '13px 20px',
-            borderBottom: '1px solid var(--color-base-200)',
-          }}
-        >
-          <span
-            style={{
-              width: 38,
-              height: 38,
-              borderRadius: '8px',
-              backgroundColor: 'var(--color-base-200)',
-              flexShrink: 0,
-              boxShadow: 'inset 0 0 0 1px rgba(9, 9, 11, 0.05)',
-            }}
-          />
+        <div key={it.sku} className="border-base-200 flex items-center gap-3 border-b px-5 py-3">
+          <span className="bg-base-200 border-base-300 size-[38px] shrink-0 rounded-lg border" />
           <span>
-            <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>{it.name}</span>
+            <span className="text-small font-sans font-medium">{it.name}</span>
             <br />
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            <span className="text-ink-subtle text-mini font-sans">
               {it.sku} · qty {it.qty}
             </span>
           </span>
-          <span
-            style={{
-              marginLeft: 'auto',
-              fontFamily: SANS,
-              fontSize: '14px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
-            {it.price}
-          </span>
+          <span className="text-ink-muted text-small ml-auto font-sans">{it.price}</span>
         </div>
       ))}
-      <div style={{ padding: '14px 20px' }}>
+      <div className="px-5 py-3.5">
         {[
           ['Subtotal', order.subtotal],
           [order.shipping.label, order.shipping.value],
           [order.tax.label, order.tax.value],
         ].map(([l, v]) => (
-          <div
-            key={l}
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              fontFamily: SANS,
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              padding: '4px 0',
-            }}
-          >
+          <div key={l} className="text-ink-muted text-caption flex justify-between py-1 font-sans">
             <span>{l}</span>
             <span>{v}</span>
           </div>
         ))}
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'baseline',
-            marginTop: '8px',
-            paddingTop: '12px',
-            borderTop: '1px solid var(--color-base-300)',
-          }}
-        >
-          <span style={{ fontFamily: SANS, fontSize: '14px', fontWeight: 500 }}>Total</span>
-          <span
-            style={{
-              fontFamily: SANS,
-              fontWeight: 500,
-              fontSize: '22px',
-              letterSpacing: '-0.02em',
-            }}
-          >
-            {order.total}
-          </span>
+        <div className="border-base-300 mt-2 flex items-baseline justify-between border-t pt-3">
+          <span className="text-small font-sans font-medium">Total</span>
+          <span className="text-h3 font-sans font-medium tracking-[-0.02em]">{order.total}</span>
         </div>
       </div>
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '9px',
-          padding: '13px 20px',
-          borderTop: '1px solid var(--color-base-300)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
+      <div className="border-base-300 bg-base-200 flex items-center gap-2 border-t px-5 py-3">
         <Dot color={C.color} size={6} />
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '11.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <span className="text-ink-subtle text-mini font-mono">
           paid with {order.paidWith} · inventory decremented
         </span>
       </div>
@@ -404,78 +250,28 @@ function PaymentsRail() {
         headline="Stripe, plus the wallets they already use"
         lede="Payments run on Stripe as the primary processor — you keep your own Stripe account and relationship. sparx connects it through Stripe Connect; the methods below are on by default."
       />
-      <div
-        className="mkt-grid-4-2-1"
-        style={{
-          marginTop: '48px',
-          gap: 0,
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '14px',
-          overflow: 'hidden',
-        }}
-      >
+      <div className="border-base-300 mt-12 grid grid-cols-1 gap-0 overflow-hidden rounded-xl border sm:grid-cols-2 lg:grid-cols-4">
         {methods.map((m, i) => (
           <div
             key={m.nm}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              padding: '28px 26px',
-              backgroundColor: 'var(--color-base-100)',
-              borderLeft: i === 0 ? 'none' : '1px solid var(--color-base-300)',
-            }}
+            className={`bg-base-100 flex flex-col gap-2 px-6 py-7 ${
+              i === 0 ? '' : 'border-base-300 border-l'
+            }`}
           >
             <span
-              className={`${C.bg} bg-soft`}
-              style={{
-                width: 34,
-                height: 34,
-                borderRadius: '9px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                marginBottom: '4px',
-              }}
+              className={`${C.bg} bg-soft mb-1 flex size-[34px] items-center justify-center rounded-lg`}
             >
               <Dot color={C.color} size={9} />
             </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {m.nm}
-            </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '13px',
-                lineHeight: '20px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {m.ds}
-            </span>
+            <span className="text-body font-sans font-medium tracking-[-0.01em]">{m.nm}</span>
+            <span className="text-ink-muted text-caption font-sans">{m.ds}</span>
           </div>
         ))}
       </div>
-      <p
-        style={{
-          marginTop: '18px',
-          fontFamily: SANS,
-          fontSize: '14px',
-          lineHeight: '22px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          maxWidth: '720px',
-        }}
-      >
+      <p className="text-ink-subtle text-small mt-4 max-w-[720px] font-sans">
         Test mode runs against staging, payment intents confirm on submit, and refunds return to the
         original method. Need net terms or a PO at checkout instead?{' '}
-        <a href="/b2b" className={C.ink} style={{ fontWeight: 500 }}>
+        <a href="/b2b" className={`${C.ink} font-medium`}>
           That&rsquo;s B2B
         </a>
         , layered on the same engine.
@@ -511,7 +307,7 @@ function FeeLadder() {
       pctSize: 76,
       pctColor: 'var(--color-base-content)',
       barW: '12%',
-      barColor: '#0A0A0A',
+      barColor: 'var(--color-base-content)',
       body: 'Once your active modules total $299 a month or more, the per-transaction fee disappears entirely.',
     },
   ];
@@ -522,79 +318,36 @@ function FeeLadder() {
         headline="A transaction fee that shrinks as you grow"
         lede="One honest line, no asterisks. sparx takes a small per-transaction fee on Commerce — and it steps down the more of the platform you run, all the way to nothing."
       />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px', alignItems: 'end' }}>
+      <div className="mt-13 grid grid-cols-1 items-end gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {rungs.map((r) => (
           <div
             key={r.when}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              backgroundColor: 'var(--color-base-100)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '14px',
-              padding: '26px 26px 28px',
-            }}
+            className="border-base-300 bg-base-100 flex flex-col gap-3.5 rounded-xl border px-6 pt-6 pb-7"
           >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                letterSpacing: '0.04em',
-                textTransform: 'uppercase',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            <span className="text-ink-subtle text-mini font-mono tracking-[0.04em] uppercase">
               {r.when}
             </span>
             <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                letterSpacing: '-0.03em',
-                lineHeight: 1,
-                fontSize: `clamp(48px, 7vw, ${r.pctSize}px)`,
-                color: r.pctColor,
-              }}
+              className="font-sans leading-none font-medium tracking-[-0.03em]"
+              // Per-rung display size + hue are data-driven, so the computed
+              // clamp and the token color stay inline.
+              style={{ fontSize: `clamp(48px, 7vw, ${r.pctSize}px)`, color: r.pctColor }}
             >
               {r.pct}
             </span>
             <span
-              style={{
-                height: '6px',
-                borderRadius: '9999px',
-                width: r.barW,
-                backgroundColor: r.barColor,
-                opacity: 0.85,
-              }}
+              className="h-1.5 rounded-full"
+              // Bar width + fill encode the rung's value — dynamic by definition.
+              style={{ width: r.barW, backgroundColor: r.barColor }}
             />
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {r.body}
-            </p>
+            <p className="text-ink-muted text-caption font-sans">{r.body}</p>
           </div>
         ))}
       </div>
-      <p
-        style={{
-          marginTop: '20px',
-          fontFamily: SANS,
-          fontSize: '14px',
-          lineHeight: '22px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          maxWidth: '680px',
-        }}
-      >
+      <p className="text-ink-subtle text-small mt-5 max-w-[680px] font-sans">
         The fee is taken through Stripe Connect and is separate from Stripe&rsquo;s own processing
         rate. No per-seat charges, no per-product metering — see{' '}
-        <a href="/pricing" className={C.ink} style={{ fontWeight: 500 }}>
+        <a href="/pricing" className={`${C.ink} font-medium`}>
           full pricing
         </a>
         .
@@ -638,56 +391,17 @@ function Operations() {
         headline={<>Everything after &ldquo;paid&rdquo;</>}
         lede="The order is only the start. Commerce ships the operations that make selling sustainable at real volume — inventory, promotions, refunds, reporting, and bulk tooling."
       />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {ops.map((o) => (
           <div
             key={o.title}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '26px',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '178px',
-            }}
+            className="border-base-300 bg-base-200 flex min-h-[178px] flex-col gap-3 rounded-xl border p-6"
           >
-            <span
-              className={`${C.bg} bg-soft`}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <span className={`${C.bg} bg-soft flex size-8 items-center justify-center rounded-lg`}>
               <Dot color={C.color} size={9} />
             </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '17px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {o.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {o.body}
-            </p>
+            <h3 className="text-body-lg m-0 font-sans font-medium tracking-[-0.01em]">{o.title}</h3>
+            <p className="text-ink-muted text-caption m-0 font-sans">{o.body}</p>
           </div>
         ))}
       </div>
@@ -697,8 +411,10 @@ function Operations() {
 
 // ── HEADLESS / HOSTED ───────────────────────────────────────────────────────
 function HeadlessOrHosted() {
+  // No `tag` field: the uppercase mono label that used to sit above each card's
+  // <h3> was an eyebrow (RULE #2). The module combination it named is already
+  // carried, unambiguously, by the `runs` line at the foot of the card.
   const ways: {
-    tag: string;
     title: string;
     body: string;
     points: string[];
@@ -706,7 +422,6 @@ function HeadlessOrHosted() {
     runs: string;
   }[] = [
     {
-      tag: 'commerce + your stack',
       title: 'Run it headless',
       body: 'Every capability is an API endpoint first; the dashboard is one consumer among many. Build your own front end, or let an AI assistant work the catalog and orders over MCP.',
       points: [
@@ -718,7 +433,6 @@ function HeadlessOrHosted() {
       runs: 'Commerce + API · MCP',
     },
     {
-      tag: 'commerce + builder',
       title: 'Get a hosted storefront',
       body: 'Pair Commerce with Builder and the storefront renders for you — product pages, collections, cart, and the converting checkout — on your custom domain, SSL and CDN handled.',
       points: [
@@ -737,83 +451,27 @@ function HeadlessOrHosted() {
         headline="Headless, hosted, or both"
         lede="Commerce is the engine, not the front end. Drive it entirely through the API and MCP, or switch on Builder and get a hosted storefront on your own domain — same data either way."
       />
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '24px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-6 md:grid-cols-2">
         {ways.map((w, i) => (
           <div
             key={w.title}
-            className={i === 0 ? `${C.bg} bg-soft` : 'bg-base-100'}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '16px',
-              padding: '32px',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '14px',
-            }}
+            className={`${
+              i === 0 ? `${C.bg} bg-soft` : 'bg-base-100'
+            } border-base-300 flex flex-col gap-4 rounded-xl border p-8`}
           >
-            <span
-              className={C.ink}
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
-              {w.tag}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '24px',
-                fontWeight: 500,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {w.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '24px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {w.body}
-            </p>
-            <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'grid', gap: '12px' }}>
+            <h3 className="text-h2 m-0 font-sans font-medium tracking-[-0.02em]">{w.title}</h3>
+            <p className="text-ink-muted text-body-sm m-0 font-sans">{w.body}</p>
+            <ul className="m-0 grid list-none gap-3 p-0">
               {w.points.map((p) => (
-                <li key={p} style={{ display: 'flex', gap: '11px', alignItems: 'flex-start' }}>
-                  <span style={{ paddingTop: '7px', flexShrink: 0 }}>
+                <li key={p} className="flex items-start gap-3">
+                  <span className="shrink-0 pt-[7px]">
                     <Dot color={w.dot} size={7} />
                   </span>
-                  <span
-                    style={{
-                      fontFamily: SANS,
-                      fontSize: '14.5px',
-                      lineHeight: '23px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    }}
-                  >
-                    {p}
-                  </span>
+                  <span className="text-ink-muted text-small font-sans">{p}</span>
                 </li>
               ))}
             </ul>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                marginTop: 'auto',
-                paddingTop: '4px',
-              }}
-            >
-              {w.runs}
-            </span>
+            <span className="text-ink-subtle text-mini mt-auto pt-1 font-mono">{w.runs}</span>
           </div>
         ))}
       </div>
@@ -834,57 +492,25 @@ function CommerceProof() {
   ];
   return (
     <Section surface="dark" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
-        <Display size={46} lineHeight={48} color="#FFFFFF">
+      {/* Inside the dark island the base ramp is flipped, so ink resolves from
+          tokens — no #FFFFFF / #A1A1AA / #262626 hand-picked for the band. */}
+      <div className="max-w-[760px]">
+        <Display size={46} lineHeight={48}>
           See the whole funnel, on the same data
           <Spark color={C.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: '22px 0 0',
-          }}
-        >
+        <p className="text-ink-muted text-lede mt-5 max-w-[640px] font-sans">
           Because orders, customers, and content share one database, the numbers reconcile by
           default — no exports, no two systems disagreeing about what happened.
         </p>
       </div>
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '56px', gap: 0 }}>
+      <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
-          <div
-            key={s.l}
-            style={{
-              padding: i === 0 ? '0' : '0 0 0 32px',
-              borderLeft: i === 0 ? 'none' : '1px solid #262626',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: 'clamp(40px, 5vw, 56px)',
-                letterSpacing: '-0.03em',
-                color: '#FFFFFF',
-                lineHeight: 1,
-              }}
-            >
+          <div key={s.l} className={i === 0 ? '' : 'border-base-300 border-l pl-8'}>
+            <div className="text-base-content font-sans text-[clamp(40px,5vw,56px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <div
-              style={{
-                marginTop: '12px',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: '#A1A1AA',
-              }}
-            >
-              {s.l}
-            </div>
+            <div className="text-ink-muted text-small mt-3 font-sans">{s.l}</div>
           </div>
         ))}
       </div>
@@ -897,61 +523,28 @@ function CommercePricing() {
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${C.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '14px',
-          gap: '32px',
-        }}
+        className={`flex flex-col lg:flex-row ${C.bg} bg-soft border-base-300 items-center justify-between gap-8 rounded-xl border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-base-content font-sans text-[56px] font-medium tracking-[-0.025em]">
               $49
             </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              /mo
-            </span>
+            <span className="text-ink-subtle text-body font-sans">/mo</span>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '640px',
-            }}
-          >
-            A flat $49/mo — the transactional core, with Invoicing bundled in free. No tiers, no
-            per-seat charge, no per-product metering. Pair it with Builder for a hosted storefront
-            or run it headless against the API. Start free for 14 days; no card to begin.
+          <p className="text-ink-muted text-small m-0 max-w-[640px] font-sans">
+            A flat $49/mo — the transactional core, with Invoicing and Inventory bundled in free. No
+            tiers, no per-seat charge, no per-product metering. Pair it with Builder for a hosted
+            storefront or run it headless against the API. Start free for 14 days; no card to begin.
           </p>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate Commerce
           </Button>
         </div>
@@ -963,52 +556,32 @@ function CommercePricing() {
 // ── FINAL CTA (dark) ────────────────────────────────────────────────────────
 function CommerceCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '36px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    // A real dark island rather than a hand-painted #0A0A0A band: `surface="dark"`
+    // flips the whole base ramp, so the headline, lede, and outline button all
+    // resolve their own ink.
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-9">
+        <Display size={88} lineHeight={84}>
           Start selling this afternoon
           <Spark color={C.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <p className="text-ink-muted text-lede m-0 max-w-[640px] font-sans">
           Add products, connect Stripe, and take your first order — no contract, no migration
           weekend. Turn Commerce off the day you stop selling; your data stays, and you keep your
           processor relationships.
         </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <Button size="xl" style={{ backgroundColor: C.color }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button color="module-commerce" size="xl">
             Start selling →
           </Button>
           <a href="#journey">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               See how an order flows
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }
 

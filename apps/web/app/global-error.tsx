@@ -31,19 +31,16 @@ export default function GlobalError({
           fontFamily: 'system-ui, -apple-system, sans-serif',
         }}
       >
+        {/*
+         * The inline styles in this file are DELIBERATE and must stay (RULE #1's
+         * only exception here). A global-error boundary renders its own <html>/
+         * <body> and mounts when the root layout itself has thrown — globals.css
+         * is not guaranteed to have loaded, so every utility class and every
+         * --color-* token would resolve to nothing, leaving an unstyled white
+         * page at the exact moment the fallback matters most. The literal hexes
+         * and the system-ui stack are the correct implementation, not a miss.
+         */}
         <div style={{ maxWidth: '460px', textAlign: 'center' }}>
-          <p
-            style={{
-              fontFamily: 'monospace',
-              fontSize: '12px',
-              letterSpacing: '0.08em',
-              textTransform: 'uppercase',
-              color: '#e04631',
-              margin: '0 0 12px',
-            }}
-          >
-            Something went wrong
-          </p>
           <h1 style={{ fontSize: '26px', fontWeight: 600, margin: '0 0 10px' }}>
             sparx hit an error
           </h1>

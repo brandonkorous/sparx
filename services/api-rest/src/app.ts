@@ -143,12 +143,14 @@ import mediaAssetRoutes from './routes/v1/media/assets.js';
 import crmRoutes from './routes/v1/crm/index.js';
 import orderRoutes from './routes/v1/orders.js';
 import invoicingRoutes from './routes/v1/invoicing/index.js';
+import financeRoutes from './routes/v1/finance/index.js';
 import b2bRoutes from './routes/v1/b2b/index.js';
 import chatRoutes from './routes/v1/chat/index.js';
 import publicChatRoutes from './routes/v1/public/chat.js';
 import pushRoutes from './routes/v1/push.js';
 import sitebuilderRoutes from './routes/v1/sitebuilder/index.js';
 import builderRoutes from './routes/v1/builder/index.js';
+import analyticsRoutes from './routes/v1/analytics/index.js';
 import formsRoutes from './routes/v1/forms.js';
 import commerceRoutes from './routes/v1/commerce/index.js';
 import presetRoutes from './routes/v1/presets.js';
@@ -160,6 +162,7 @@ import marketRoutes from './routes/v1/market/index.js';
 import channelRoutes from './routes/v1/channels/index.js';
 import schedulingRoutes from './routes/v1/scheduling/index.js';
 import tenantRoutes from './routes/v1/tenant.js';
+import tenantBusinessRoutes from './routes/v1/tenant-business.js';
 import billingRoutes from './routes/v1/billing.js';
 import brandRoutes from './routes/v1/brand.js';
 import propertiesRoutes from './routes/v1/properties.js';
@@ -170,12 +173,17 @@ import legalRoutes from './routes/v1/legal.js';
 import meRoutes from './routes/v1/me.js';
 import feedbackRoutes from './routes/v1/feedback.js';
 import userRoutes from './routes/v1/users.js';
+import teamRoutes from './routes/v1/team.js';
 import emailTestRoutes from './routes/v1/email/test.js';
 import emailRoutes from './routes/v1/email/index.js';
 import emailWebhookRoutes from './routes/v1/public/email-webhook.js';
 import emailUnsubscribeRoutes from './routes/v1/public/email-unsubscribe.js';
 import channelWebhookRoutes from './routes/v1/public/channel-webhooks.js';
 import dashboardRoutes from './routes/v1/dashboard.js';
+import jobsRoutes from './routes/v1/jobs.js';
+import activityRoutes from './routes/v1/activity.js';
+import notificationRoutes from './routes/v1/notifications.js';
+import notificationPreferenceRoutes from './routes/v1/notification-preferences.js';
 import searchRoutes from './routes/v1/search.js';
 import seoAuditRoutes from './routes/v1/seo/audit.js';
 import seoReportRoutes from './routes/v1/seo/reports.js';
@@ -184,6 +192,9 @@ import organicRoutes from './routes/v1/seo/organic.js';
 import aiReportRoutes from './routes/v1/ai/reports.js';
 import aiPromptTemplateRoutes from './routes/v1/ai/prompt-templates.js';
 import aiToolPolicyRoutes from './routes/v1/ai/tool-policies.js';
+import aiCredentialRoutes from './routes/v1/ai/credentials.js';
+import aiApiKeyRoutes from './routes/v1/ai/api-keys.js';
+import aiMcpConnectionRoutes from './routes/v1/ai/mcp-connections.js';
 import automationRoutes from './routes/v1/automations/index.js';
 import platformRoutes from './routes/v1/platform/index.js';
 import { bootstrapProviders } from './lib/providers-bootstrap.js';
@@ -747,7 +758,16 @@ export async function createApp(): Promise<FastifyInstance> {
   // cookie-based session, sparx_customer_session, is only ever read via
   // apps/site's own same-origin proxy route, never a direct cross-origin
   // fetch), so credentials stay off.
-  await app.register(cors, { origin: true, credentials: false });
+  //
+  // `methods` must be explicit: @fastify/cors defaults to GET,HEAD,POST, which
+  // silently strands every browser-origin PATCH/PUT/DELETE at preflight. The
+  // dashboard never noticed (it calls api-rest from the server); the workbench
+  // calls from the browser and does full CRUD with a Bearer token.
+  await app.register(cors, {
+    origin: true,
+    credentials: false,
+    methods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  });
   // Cookie support — used by the storefront customer session (httpOnly
   // sparx_customer_session). Unsigned: the session token is already a
   // high-entropy opaque value stored only as a SHA-256 hash server-side.
@@ -867,11 +887,13 @@ export async function createApp(): Promise<FastifyInstance> {
   // them. Registered alongside the modules rather than inside one.
   await app.register(orderRoutes);
   await app.register(invoicingRoutes);
+  await app.register(financeRoutes);
   await app.register(b2bRoutes);
   await app.register(chatRoutes);
   await app.register(pushRoutes);
   await app.register(sitebuilderRoutes);
   await app.register(builderRoutes);
+  await app.register(analyticsRoutes);
   await app.register(formsRoutes);
   await app.register(commerceRoutes);
   await app.register(presetRoutes);
@@ -883,6 +905,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(marketRoutes);
   await app.register(schedulingRoutes);
   await app.register(tenantRoutes);
+  await app.register(tenantBusinessRoutes);
   await app.register(billingRoutes);
   await app.register(brandRoutes);
   await app.register(propertiesRoutes);
@@ -893,9 +916,14 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(meRoutes);
   await app.register(feedbackRoutes);
   await app.register(userRoutes);
+  await app.register(teamRoutes);
   await app.register(emailTestRoutes);
   await app.register(emailRoutes);
   await app.register(dashboardRoutes);
+  await app.register(jobsRoutes);
+  await app.register(activityRoutes);
+  await app.register(notificationRoutes);
+  await app.register(notificationPreferenceRoutes);
   await app.register(searchRoutes);
   await app.register(seoAuditRoutes);
   await app.register(seoReportRoutes);
@@ -904,6 +932,9 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(aiReportRoutes);
   await app.register(aiPromptTemplateRoutes);
   await app.register(aiToolPolicyRoutes);
+  await app.register(aiCredentialRoutes);
+  await app.register(aiApiKeyRoutes);
+  await app.register(aiMcpConnectionRoutes);
   await app.register(automationRoutes);
   await app.register(platformRoutes);
 

@@ -58,11 +58,11 @@ describe('CRM module activation bootstrap', () => {
     await publishActivated('crm');
 
     const ctx = { tenantId: tenant.tenantId };
+    // The default pipeline is tenant-wide (property_id null); the unique is now
+    // (tenant, property, slug), so findFirst on the null-property row.
     const pipeline = await withTenant(ctx, (tx) =>
-      tx.pipeline.findUnique({
-        where: {
-          tenantId_slug: { tenantId: tenant.tenantId, slug: DEFAULT_PIPELINE_TEMPLATE.slug },
-        },
+      tx.pipeline.findFirst({
+        where: { propertyId: null, slug: DEFAULT_PIPELINE_TEMPLATE.slug },
         include: { stages: true },
       })
     );

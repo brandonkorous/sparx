@@ -16,7 +16,8 @@ import { getPublishedBuilderCollection } from '@/lib/builder';
 import { loadBuilderData, postToBuilderRecord } from '@/lib/builder-data';
 import { getPublishedSilicaCollection } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
-import { SilicaBody } from '@/components/silica-chrome';
+import { SilicaFunctionalBody } from '@/components/silica-chrome';
+import { storefrontHostRenderer } from '@/components/silica-host-cores';
 import { getBlogPostBySlug } from '@/lib/content';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
@@ -102,10 +103,24 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,
     });
+    // The FUNCTIONAL walk, not the HTML-string one: a post template's whole point is
+    // showing the written body, and the body is a rich-text document no binding can
+    // render — it mounts through the `cms.article-body` host core, which only exists in
+    // React. The string path would leave it an empty `<div data-sui-host>`, i.e. a post
+    // page with everything except the post.
     return (
       <>
         <ArticleJsonLd post={post} site={site} />
-        <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={host} />
+        <SilicaFunctionalBody
+          root={silicaTemplate.root}
+          symbols={silicaTemplate.symbols}
+          host={host}
+          renderHost={storefrontHostRenderer({
+            site,
+            recordId: post.id,
+            articleDoc: post.body?.body ?? null,
+          })}
+        />
       </>
     );
   }

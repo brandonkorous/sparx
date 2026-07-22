@@ -18,6 +18,7 @@ import {
   Handle,
   HazmatClass,
   InventoryPolicy,
+  Locale,
   MoneyCents,
   ProductStatus,
   Sku,
@@ -94,10 +95,42 @@ export type CreateVariantInput = z.infer<typeof CreateVariantInput>;
 // Update is partial — except `sku` and `optionValueIds`, which require
 // dedicated endpoints because they have unique-constraint and lattice-
 // consistency implications respectively.
-export const UpdateVariantInput = CreateVariantInput.partial().omit({
-  sku: true,
-  optionValueIds: true,
-});
+export const UpdateVariantInput = CreateVariantInput.partial()
+  .omit({
+    sku: true,
+    optionValueIds: true,
+  })
+  .extend({
+    // ── Strip create-only DEFAULTS on update ──────────────────────────────────
+    // Exactly the footgun already documented on UpdateProductInput below: in this
+    // Zod version `.partial()` does NOT neutralize `.default()`, so a body that
+    // OMITS one of these still arrives at the service with the create-default
+    // filled in, and variantService.update's `input.X !== undefined` guards write
+    // it. A price-only PATCH therefore silently DEMOTED the default variant
+    // (isDefault → false), reset the variant's order (position → 0), forced the
+    // currency back to USD, and reverted the out-of-stock behaviour to `deny`.
+    // Re-declaring them as plain `.optional()` restores true partial semantics.
+    // Keep this list in sync with every `.default()` in CreateVariantInput.
+    currency: Currency.optional(),
+    inventoryPolicy: InventoryPolicy.optional(),
+    requiresShipping: z.boolean().optional(),
+    isDefault: z.boolean().optional(),
+    position: z.number().int().nonnegative().optional(),
+    // ── Nullable columns need an explicit CLEAR ───────────────────────────────
+    // These are nullable on ProductVariant and the service already writes
+    // `input.X` straight through (and maps a null `dimensions` to three null
+    // columns), but `.optional()` alone accepts only `undefined` — which the
+    // service reads as "leave it alone". Without `.nullish()` there is no way to
+    // remove a was-price, a cost, a barcode or a parcel size once one is set.
+    title: z.string().max(255).nullish(),
+    barcode: Barcode.nullish(),
+    compareAtPriceCents: MoneyCents.nullish(),
+    costCents: MoneyCents.nullish(),
+    weight: WeightGrams.nullish(),
+    dimensions: Dimensions.nullish(),
+    fulfillmentType: FulfillmentType.nullish(),
+    dropshipSourceId: Uuid.nullish(),
+  });
 export type UpdateVariantInput = z.infer<typeof UpdateVariantInput>;
 
 // SKU change — separate so the conflict path can return a CONFLICT
@@ -141,8 +174,28 @@ export const SetVariantImageBindingsInput = z.object({
   // prefers a variant's own images over option-value or product-level ones.
   variantId: Uuid.nullable().default(null),
   optionValueIds: z.array(Uuid).max(8).default([]),
+  // Alt text. `undefined` leaves it alone, `null` clears it — unlike the two
+  // fields above, which are authoritative and clear when omitted.
+  //
+  // It lives here because it was previously write-once at CreateVariantImageInput
+  // time and there was no way to change it afterwards: a merchant who uploaded a
+  // photo without a description could never add one. This is the endpoint that
+  // already owns "how this image presents itself", and the back-office edits alt
+  // in the same form as the bindings, so a second route would only mean two
+  // requests behind one Save.
+  alt: z.string().max(512).nullish(),
 });
 export type SetVariantImageBindingsInput = z.infer<typeof SetVariantImageBindingsInput>;
+
+// Reorder a product's gallery. The FULL ordered list of that product's image
+// ids — not a delta — because "move this one to slot 3" has no well-defined
+// meaning when two clients reorder concurrently, whereas a whole-list write is
+// last-writer-wins and always leaves the gallery in a consistent order.
+// `position` is then simply the index in this array.
+export const ReorderProductImagesInput = z.object({
+  imageIds: z.array(Uuid).min(1).max(250),
+});
+export type ReorderProductImagesInput = z.infer<typeof ReorderProductImagesInput>;
 
 export const CreateVariantImageInput = z.object({
   productId: Uuid,
@@ -253,3 +306,37 @@ export const BulkTagProductsInput = z.object({
   removeTags: z.array(z.string().min(1).max(63)).max(50).default([]),
 });
 export type BulkTagProductsInput = z.infer<typeof BulkTagProductsInput>;
+
+// ─── Translations ────────────────────────────────────────────────────
+//
+// One row per (product, locale) holding the merchant-facing copy a
+// storefront swaps in when it renders in that language. The product's own
+// `title` / `description` / `seoTitle` / `seoDescription` columns remain
+// the DEFAULT locale — a translation never overwrites them, it sits
+// alongside, and a storefront falls back to the product when no row
+// exists for the requested tag.
+//
+// Field caps mirror the columns exactly (VARCHAR(255) title + seoTitle,
+// VARCHAR(512) seoDescription, TEXT description) so a too-long string is
+// a clean 422 instead of a Postgres 22001.
+//
+// PUT semantics: this is the WHOLE row for that locale. An omitted
+// optional field is stored as NULL, not left at its previous value —
+// which is what makes "clear the Spanish SEO description" expressible
+// without a separate patch verb.
+export const UpsertProductTranslationInput = z.object({
+  locale: Locale,
+  title: z.string().min(1).max(255),
+  description: z.string().max(50_000).nullish(),
+  seoTitle: z.string().max(255).nullish(),
+  seoDescription: z.string().max(512).nullish(),
+});
+export type UpsertProductTranslationInput = z.infer<typeof UpsertProductTranslationInput>;
+
+// Save-all for a translations editor: every locale in one round trip.
+// Capped at 100 — a tenant translating a product into more than a hundred
+// languages is a bulk-import job, not an interactive save.
+export const BulkUpsertProductTranslationsInput = z.object({
+  translations: z.array(UpsertProductTranslationInput).min(1).max(100),
+});
+export type BulkUpsertProductTranslationsInput = z.infer<typeof BulkUpsertProductTranslationsInput>;

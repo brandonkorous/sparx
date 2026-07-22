@@ -338,69 +338,80 @@ export const CUSTOMER_ESTIMATE_WORKFLOW: DocumentWorkflowTemplate = {
   ],
 };
 
+// The platform default line types — deliberately INDUSTRY-AGNOSTIC. What matters
+// functionally is the `pricingMode` (how the line gets its price); the wording is
+// generic on purpose so a salon, a consultancy, a publisher, and a repair shop
+// all read their own work into it. A vertical that wants trade-specific labels
+// ("Part", "Sublet", "Chair rental") renames or adds its own — line types are
+// per-tenant and editable.
+//
+// The `key` slugs are the ORIGINAL stable ids and intentionally left unchanged:
+// they're internal (the UI sends lineTypeId, never the key), a handful of callers
+// look them up by slug, and `bootstrapDefaultLineTypes` is idempotent BY KEY — so
+// renaming a key would spawn a duplicate type on any tenant that re-activates
+// invoicing. Only the human-facing name/label is neutralised.
 export const DEFAULT_DOCUMENT_LINE_TYPES: DocumentLineTypeTemplate[] = [
   {
     key: 'part',
-    name: 'Part',
-    label: 'Part',
+    name: 'Product',
+    label: 'Product',
     pricingMode: 'markup',
     defaultTaxable: true,
-    category: 'parts',
+    category: 'product',
     sortOrder: 0,
   },
   {
     key: 'labor',
-    name: 'Labor',
-    label: 'Labor',
+    name: 'Service',
+    label: 'Service',
     pricingMode: 'labor',
     defaultTaxable: false,
-    category: 'labor',
+    category: 'service',
     sortOrder: 1,
   },
   {
-    key: 'sublet',
-    name: 'Sublet',
-    label: 'Sublet / Outside Work',
-    pricingMode: 'pass_through',
+    key: 'catalog',
+    name: 'Catalog item',
+    label: 'Catalog item',
+    pricingMode: 'catalog',
     defaultTaxable: true,
-    category: 'sublet',
+    category: 'product',
     sortOrder: 2,
   },
   {
-    key: 'freight',
-    name: 'Freight',
-    label: 'Freight / Shipping',
-    pricingMode: 'pass_through',
-    defaultTaxable: false,
-    category: 'freight',
-    sortOrder: 3,
-  },
-  {
     key: 'materials',
-    name: 'Shop Materials',
-    label: 'Shop Materials / Supplies',
+    name: 'Materials & supplies',
+    label: 'Materials & supplies',
     pricingMode: 'flat',
     defaultTaxable: true,
-    computation: 'percent_of_labor',
     category: 'materials',
-    sortOrder: 4,
+    sortOrder: 3,
   },
   {
     key: 'fee',
     name: 'Fee',
-    label: 'Misc / Flat Fee',
+    label: 'Fee',
     pricingMode: 'flat',
     defaultTaxable: false,
     category: 'fee',
+    sortOrder: 4,
+  },
+  {
+    key: 'freight',
+    name: 'Shipping',
+    label: 'Shipping',
+    pricingMode: 'pass_through',
+    defaultTaxable: false,
+    category: 'shipping',
     sortOrder: 5,
   },
   {
-    key: 'catalog',
-    name: 'Catalog Item',
-    label: 'Catalog Item',
-    pricingMode: 'catalog',
+    key: 'sublet',
+    name: 'Subcontracted work',
+    label: 'Subcontracted work',
+    pricingMode: 'pass_through',
     defaultTaxable: true,
-    category: 'parts',
+    category: 'subcontract',
     sortOrder: 6,
   },
 ];

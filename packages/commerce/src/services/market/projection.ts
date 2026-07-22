@@ -29,14 +29,14 @@ const SITE_BASE = process.env.SPARX_SITE_BASE ?? '';
 const MARKET_LOW_STOCK_THRESHOLD = 5;
 
 /** The seller's own storefront product URL (the "Visit their store" link). */
-function storefrontProductUrl(slug: string, handle: string): string | null {
-  if (!SITE_BASE) return null;
+function storefrontProductUrl(slug: string | null, handle: string): string | null {
+  if (!SITE_BASE || !slug) return null;
   const base = SITE_BASE.replace('{slug}', slug).replace(/\/$/, '');
   return `${base}/products/${encodeURIComponent(handle)}`;
 }
 
-function storefrontBaseUrl(slug: string): string | null {
-  if (!SITE_BASE) return null;
+function storefrontBaseUrl(slug: string | null): string | null {
+  if (!SITE_BASE || !slug) return null;
   return SITE_BASE.replace('{slug}', slug).replace(/\/$/, '');
 }
 
@@ -67,17 +67,30 @@ async function resolveMediaUrl(
   return asset ? mediaPublicUrl(asset.key) : null;
 }
 
-/** The merchant's customer-facing display name + slug + logo, resolved from the
- *  primary property (+ its optional brand override) + the tenant brand. */
-async function resolveMerchantIdentity(tx: TxClient, tenantId: string) {
+/** The merchant's public identity (docs/131 §7): a site-chosen global `handle` for the
+ *  `/merchants/{handle}` page, and the name/logo of the MARKETED SITE (`marketPropertyId`)
+ *  — never "Korous Family Inc." the tenant. `storefrontSlug` (the tenant slug) is kept
+ *  SEPARATELY for the "visit their store" link, which points at the real storefront and
+ *  is a different URL from the marketplace merchant page. Falls back to the primary site
+ *  + tenant slug only during the migration backfill window. */
+async function resolveMerchantIdentity(
+  tx: TxClient,
+  tenantId: string,
+  merchant: { marketPropertyId: string | null; handle: string | null }
+) {
   const tenant = await tx.tenant.findUnique({
     where: { id: tenantId },
     select: { slug: true, socials: true },
   });
-  const property = await tx.property.findFirst({
-    where: { isPrimary: true },
-    select: { name: true, brandOverride: true },
-  });
+  const property = merchant.marketPropertyId
+    ? await tx.property.findFirst({
+        where: { id: merchant.marketPropertyId },
+        select: { name: true, brandOverride: true },
+      })
+    : await tx.property.findFirst({
+        where: { isPrimary: true },
+        select: { name: true, brandOverride: true },
+      });
   const brand = await tx.tenantBrand.findUnique({
     where: { tenantId },
     select: { logoLightMediaId: true },
@@ -89,7 +102,10 @@ async function resolveMerchantIdentity(tx: TxClient, tenantId: string) {
     override.logoMediaId ?? brand?.logoLightMediaId ?? null
   );
   return {
-    slug: tenant?.slug ?? null,
+    // The marketplace handle → /merchants/{handle}. Never the tenant slug (post-backfill).
+    slug: merchant.handle ?? tenant?.slug ?? null,
+    // The storefront subdomain for the "visit their store" link — a separate URL.
+    storefrontSlug: tenant?.slug ?? null,
     name,
     logoUrl,
     socials: tenant?.socials ?? [],
@@ -121,7 +137,10 @@ async function refreshMerchantOnTx(tx: TxClient, tenantId: string): Promise<void
     await tx.marketMerchant.deleteMany({ where: { tenantId } });
     return;
   }
-  const identity = await resolveMerchantIdentity(tx, tenantId);
+  const identity = await resolveMerchantIdentity(tx, tenantId, {
+    marketPropertyId: profile.marketPropertyId,
+    handle: profile.handle,
+  });
   if (!identity.slug) return;
   const listingCount = await tx.marketListing.count({ where: { tenantId } });
   const bannerUrl = await resolveMediaUrl(tx, profile.bannerMediaId);
@@ -141,6 +160,7 @@ async function refreshMerchantOnTx(tx: TxClient, tenantId: string): Promise<void
 
   const data = {
     tenantId,
+    propertyId: profile.marketPropertyId,
     slug: identity.slug,
     name: identity.name,
     logoUrl: identity.logoUrl,
@@ -148,7 +168,7 @@ async function refreshMerchantOnTx(tx: TxClient, tenantId: string): Promise<void
     bio: profile.bio,
     location: profile.location,
     headline: profile.headline,
-    siteUrl: storefrontBaseUrl(identity.slug),
+    siteUrl: storefrontBaseUrl(identity.storefrontSlug),
     socials: identity.socials as object,
     listingCount,
     rating,
@@ -169,7 +189,7 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
   await withTenant(ctx, async (tx) => {
     const profile = await tx.marketMerchantProfile.findUnique({
       where: { tenantId: ctx.tenantId },
-      select: { enabled: true, defaultCategory: true },
+      select: { enabled: true, defaultCategory: true, marketPropertyId: true, handle: true },
     });
     const product = await tx.product.findFirst({
       where: { id: productId, tenantId: ctx.tenantId },
@@ -223,7 +243,10 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
       return;
     }
 
-    const identity = await resolveMerchantIdentity(tx, ctx.tenantId);
+    const identity = await resolveMerchantIdentity(tx, ctx.tenantId, {
+      marketPropertyId: profile?.marketPropertyId ?? null,
+      handle: profile?.handle ?? null,
+    });
     if (!identity.slug) return;
 
     const slug = await uniqueListingSlug(tx, product.handle, product.id);
@@ -278,7 +301,7 @@ export async function projectMarketListing(ctx: ServiceContext, productId: strin
       bestSellerRank: product.bestSellerRank,
       lowStock,
       featured: product.marketFeatured,
-      productUrl: storefrontProductUrl(identity.slug, product.handle),
+      productUrl: storefrontProductUrl(identity.storefrontSlug, product.handle),
       searchText,
       publishedAt: product.publishedAt,
     };

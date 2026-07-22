@@ -59,6 +59,37 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(cmsMcpTools as unknown as AnyMcpTool[]),
 ];
 
+/**
+ * Tools that can honour a SITE restriction (docs/131 §3.2).
+ *
+ * Derived from the tool arrays rather than hand-listed by name, so a new builder
+ * or sitebuilder tool is covered the day it is added — a hand-kept list would
+ * silently deny it instead, and "the new tool doesn't work with site keys" is a
+ * bug nobody would trace back to here.
+ *
+ * These three families resolve their target site through `toPropertyContext`,
+ * which is where the ceiling is applied. Everything else — CRM, commerce,
+ * inventory, invoicing, scheduling, email, CMS — reads tenant-wide today, so a
+ * site-scoped key is REFUSED rather than served cross-business data. Each moves
+ * onto this list as its services become site-aware (docs/131 §4–5).
+ *
+ * Refusing is the deliberate choice over silently widening: a key that cannot
+ * yet do something is a limitation someone reports, whereas a key that quietly
+ * returns another business's customers is the defect this exists to remove.
+ */
+const SITE_SCOPABLE_TOOL_NAMES: ReadonlySet<string> = new Set(
+  [
+    ...(sitebuilderMcpTools as unknown as AnyMcpTool[]),
+    ...(builderMcpTools as unknown as AnyMcpTool[]),
+    ...(mediaMcpTools as unknown as AnyMcpTool[]),
+  ].map((t) => t.name)
+);
+
+/** Can this tool run under a site-restricted credential? */
+export function isSiteScopableTool(name: string): boolean {
+  return SITE_SCOPABLE_TOOL_NAMES.has(name);
+}
+
 const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:crm',
   'write:crm_bulk',

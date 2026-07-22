@@ -120,7 +120,7 @@ export function Faq({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '56px' }}>
+      <div className="flex flex-col gap-14">
         <SectionHeader
           headline={
             heading ?? (

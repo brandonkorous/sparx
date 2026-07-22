@@ -36,7 +36,12 @@ import { StorefrontBuilderRuntime } from '@/components/storefront-builder-runtim
 import type { PublishedSilicaFrameDto } from '@sparx/builder-schemas';
 import { getPublishedSilicaFrame } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
-import { buildSilicaThemeCss, buildSilicaThemeCssFromTheme } from '@sparx/site-themes';
+import {
+  buildSilicaThemeCss,
+  buildSilicaThemeCssFromTheme,
+  brandFontHref,
+  themeFontFamilies,
+} from '@sparx/site-themes';
 import { listCollections } from '@/lib/commerce';
 import { getLegalFooterLinks } from '@/lib/legal';
 import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/builder';
@@ -154,33 +159,12 @@ function buildThemeCss(
   });
 }
 
-// ── Brand web fonts ──────────────────────────────────────────────────────────
-//
-// The compiled theme sets `--st-font-heading` / `--st-font-body` to the tenant's
-// brand families (e.g. 'Quicksand', 'Nunito'), but the families themselves must
-// be LOADED or the browser silently falls back to Geist. Build a single Google
-// Fonts stylesheet for whatever the tenant chose, skipping the bundled fallbacks
-// (Geist/Inter/system) which need no network load. Sourced from the compiled
-// snapshot (the source of truth) with the legacy theme columns as a backstop.
-const BUNDLED_FONTS = new Set([
-  'Geist',
-  'Geist Mono',
-  'Inter',
-  'system-ui',
-  'ui-sans-serif',
-  'sans-serif',
-  '-apple-system',
-]);
-
-function brandFontHref(families: (string | null | undefined)[]): string | null {
-  const uniq = Array.from(
-    new Set(families.map((f) => (f ?? '').trim()).filter((f) => f && !BUNDLED_FONTS.has(f)))
-  );
-  if (uniq.length === 0) return null;
-  return `https://fonts.googleapis.com/css2?${uniq
-    .map((f) => `family=${f.replace(/ /g, '+')}:wght@400;500;600;700;800`)
-    .join('&')}&display=swap`;
-}
+// Brand web fonts — the tenant's chosen families (e.g. 'Quicksand', 'Nunito')
+// must be LOADED or the browser silently falls back to Geist. `brandFontHref`
+// (@sparx/site-themes, shared with the Builder canvas so the two never drift)
+// builds one Google Fonts stylesheet for whatever the tenant chose; see its use
+// below with the compiled snapshot as the source of truth + theme columns as a
+// backstop.
 
 // Inline, before-paint script that resolves data-theme for policies that can't
 // be decided at SSR time (auto = prefers-color-scheme, toggle = cookie). Fixed
@@ -241,7 +225,14 @@ function navNodesToFooterColumns(nodes: NavNode[]): FooterColumn[] {
 }
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const site = await resolveSite();
+  // Three independent resolutions, awaited together (docs/127 §9). `resolveSite` and
+  // `resolveActivePropertySlug` share a request-cached `resolveSiteRoute()` underneath,
+  // so overlapping them costs one round-trip, not two.
+  const [site, activePropertySlug, hdrs] = await Promise.all([
+    resolveSite(),
+    resolveActivePropertySlug(),
+    headers(),
+  ]);
   // Live Chat (docs/56, docs/69 A-4) — the floating widget mounts only when the
   // tenant has the `chat` module active. The widget is a client component, so it
   // talks to the browser-reachable public API origin (NEXT_PUBLIC_API_URL), not
@@ -251,36 +242,37 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       ?.enabled
   );
   const chatApiUrl = process.env.NEXT_PUBLIC_API_URL ?? '';
-  // Active site slug (docs/58 D1) — handed to CartProvider so storefront carts
-  // (and the orders they become) are tagged with their origin site. Cheap: the
-  // underlying resolveSiteRoute() is request-cached alongside resolveSite.
-  const activePropertySlug = await resolveActivePropertySlug();
   // Mirror of the `?sparxSitePreview=` token, set by the proxy so this layout
   // (which the App Router never hands searchParams) can render the DRAFT chrome
   // — header/footer/announcement — in the editor preview, not just published.
-  const hdrs = await headers();
   const sitePreviewToken = hdrs.get('x-sparx-site-preview') ?? undefined;
-  const snapshot = site
-    ? await getPublishedSite(site.slug, sitePreviewToken, activePropertySlug ?? undefined)
-    : null;
 
-  // A published Builder layout (docs/45) is the chrome shell, and it WINS over
-  // the legacy header/footer when present — the additive "Builder owns it, else
-  // fall through" pattern (cf. the page render path, docs/44 §2.5). Its chrome
-  // binds to the `site` sources resolved here. The snapshot is still read above
-  // for THEME (the Builder layout carries chrome, not tokens).
-  const builderLayout = site ? await getPublishedBuilderLayout(site.slug) : null;
+  // Four INDEPENDENT reads, awaited together (docs/127 §9). They were sequential, so
+  // chrome sat four api-rest round-trips deep before it could render — on a path that
+  // is `no-store`, meaning every request paid all four. None of them feeds another:
+  //
+  //   · snapshot      — the legacy Site Builder publish snapshot, read here for THEME
+  //   · builderLayout — the sparx Builder chrome shell (docs/45), WINS over legacy
+  //                     header/footer when present ("Builder owns it, else fall
+  //                     through", cf. docs/44 §2.5)
+  //   · silicaFrame   — the silica engine's published FRAME (docs/118 Stage 6), which
+  //                     wins over BOTH of the above by the same additive rule. Null
+  //                     until a silica layout is published, so a non-silica tenant is
+  //                     byte-for-byte unchanged
+  //   · surfaceCss    — the compiled Surface stylesheet (docs/47 §5): the utilities
+  //                     authored as node `class` strings across the published trees.
+  //                     '' until class-first authoring is in use
+  const [snapshot, builderLayout, silicaFrame, surfaceCss] = await Promise.all([
+    site ? getPublishedSite(site.slug, sitePreviewToken, activePropertySlug ?? undefined) : null,
+    site ? getPublishedBuilderLayout(site.slug) : null,
+    site
+      ? getPublishedSilicaFrame(site.slug)
+      : Promise.resolve<PublishedSilicaFrameDto>({ frame: null, symbols: {}, theme: null }),
+    site ? getPublishedBuilderStyles(site.slug) : '',
+  ]);
 
-  // The silica engine's published FRAME (docs/118 Stage 6) is the chrome shell and
-  // WINS over both the sparx Builder layout and the legacy header/footer when
-  // present — the same additive "engine owns it, else fall through" rule. Its
-  // bindings resolve against the sparx host built over the frame's data needs
-  // (mostly static chrome today). `frame` is null until a silica layout is
-  // published, so a non-silica tenant is byte-for-byte unchanged.
-  const silicaFrame: PublishedSilicaFrameDto = site
-    ? await getPublishedSilicaFrame(site.slug)
-    : { frame: null, symbols: {}, theme: null };
   const silicaActive = Boolean(silicaFrame.frame);
+  // Depends on silicaFrame, so it stays sequential behind it.
   const silicaHost =
     site && silicaFrame.frame
       ? await buildSilicaHost(site.slug, silicaFrame.frame.root, {
@@ -300,12 +292,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           },
         })
       : null;
-
-  // The compiled Surface stylesheet (docs/47 §5): the utilities authored as
-  // node `class` strings across the tenant's published trees. Injected after the
-  // --st-* theme block so the utilities resolve against the tenant tokens. '' (so
-  // nothing is injected) until class-first authoring is in use.
-  const surfaceCss = site ? await getPublishedBuilderStyles(site.slug) : '';
 
   // Active base theme preset (additive registry) for the no-snapshot path.
   const themePreset = (site?.settings as { theme?: { preset?: string } } | undefined)?.theme
@@ -330,9 +316,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ? buildSilicaThemeCss(snapshot.compiledV2)
         : '';
 
-  // The tenant's brand fonts to load (compiled snapshot first, theme columns as a
-  // backstop). Without this the storefront renders every theme in the Geist fallback.
+  // The fonts to load, or the storefront renders every theme in the Geist fallback.
+  // The AUTHORED silica theme leads: a typeface/heading font picked in the builder's
+  // Design inspector lives ONLY in that theme (`--font-head` + `theme.fonts`), not the
+  // brand columns — so reading just the columns names the font but never loads it.
+  // Compiled snapshot + brand columns follow as the backstop for a brand-derived
+  // theme; `brandFontHref` de-dupes the overlap.
   const fontHref = brandFontHref([
+    ...(silicaActive && silicaFrame.theme ? themeFontFamilies(silicaFrame.theme) : []),
     snapshot?.compiledV2?.shared.fontHeading,
     snapshot?.compiledV2?.shared.fontBody,
     site?.theme?.fontHeading,

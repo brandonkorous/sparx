@@ -23,12 +23,12 @@ export function MonogramSection() {
           lede="When the full wordmark won’t fit, the spark stands in on its own. One shape, one color — sparx Ember — the same brand moment as the wordmark’s “x”, holding from a hero down to a 16px favicon on any surface, light or dark."
         />
 
-        <div className="mkt-grid-2-1">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Tile label="On light" theme="light" />
           <Tile label="On dark" theme="dark" />
         </div>
 
-        <div className="mkt-grid-2-1">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           <Panel title="Anatomy">
             <dl className="m-0 flex flex-col">
               <Row label="Fill" value="--color-primary" />

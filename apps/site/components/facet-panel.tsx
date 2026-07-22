@@ -124,8 +124,9 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
 // The fitment narrowing block: an optional domain switcher, one <select> per
 // reachable `level` tier (a generic node drill — picking one reveals the next),
 // and a numeric widget per `range` dimension. Fully generic over the active
-// domain's `dimensions`; renders nothing when no domain is installed.
-function FitmentFacet({
+// domain's `dimensions`; renders nothing when no domain is installed. Exported so
+// the unified BrowseFacets panel can compose the drill alongside the count facets.
+export function FitmentFacet({
   domains,
   activeDomain,
   levels,

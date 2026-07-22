@@ -13,8 +13,6 @@ import { getModuleColor, type MarketingModule, Section, SectionHeader, Dot } fro
  */
 
 const M = getModuleColor('crm');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // ── AUTOMATION ────────────────────────────────────────────────────────────────
 export function CrmAutomation() {
@@ -56,20 +54,11 @@ export function CrmAutomation() {
         headline="When something changes, do the next thing"
         lede="CRM shares triggers with the email automation engine. Pick the signal, pick the action — send an email, assign a rep, create a task, fire a webhook. No code, and it runs off the same events the timeline already records."
       />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginTop: '52px' }}>
+      <div className="mt-[52px] flex flex-col gap-3.5">
         {rows.map((r) => (
           <div key={r.when} className="mkt-auto-row">
             <AutoCell label="when" module={r.whenModule} text={r.when} />
-            <div
-              className="mkt-auto-arrow"
-              aria-hidden
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: M.color,
-              }}
-            >
+            <div className={`mkt-auto-arrow ${M.ink} flex items-center justify-center`} aria-hidden>
               <svg
                 width="20"
                 height="20"
@@ -104,35 +93,12 @@ function AutoCell({
   then?: boolean;
 }) {
   return (
-    <div
-      className={then ? 'mkt-auto-then' : undefined}
-      style={{
-        padding: '20px 24px',
-        backgroundColor: then ? 'var(--color-base-200)' : 'var(--color-base-100)',
-      }}
-    >
-      <div
-        style={{
-          fontFamily: MONO,
-          fontSize: '10.5px',
-          letterSpacing: '0.05em',
-          textTransform: 'uppercase',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
+    <div className={`px-6 py-5 ${then ? 'mkt-auto-then bg-base-200' : 'bg-base-100'}`}>
+      {/* "when" / "then" are field labels on the rule row — device chrome. */}
+      <div className="text-ink-subtle text-micro font-mono tracking-[0.05em] uppercase">
         {label}
       </div>
-      <div
-        style={{
-          fontFamily: SANS,
-          fontSize: '14.5px',
-          fontWeight: 500,
-          marginTop: '7px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '9px',
-        }}
-      >
+      <div className="text-small mt-[7px] flex items-center gap-[9px] font-medium">
         <Dot color={getModuleColor(module).color} size={8} />
         {text}
       </div>
@@ -176,58 +142,21 @@ export function CrmCapabilities() {
         headline="Everything a sales and support team needs"
         lede="The record and the pipeline are the spine — these are the parts that make a day’s work actually move."
       />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-[52px] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {caps.map((c) => {
           const hue = getModuleColor(c.module ?? 'crm');
           return (
             <div
               key={c.title}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px',
-                padding: '26px',
-                backgroundColor: 'var(--color-base-200)',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '12px',
-                minHeight: '172px',
-              }}
+              className="bg-base-200 border-base-300 flex min-h-[172px] flex-col gap-3 rounded-xl border p-[26px]"
             >
               <span
-                className={`${hue.bg} bg-soft`}
-                style={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+                className={`${hue.bg} bg-soft flex size-8 items-center justify-center rounded-lg`}
               >
                 <Dot color={hue.color} size={9} />
               </span>
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '17px',
-                  fontWeight: 500,
-                  letterSpacing: '-0.01em',
-                }}
-              >
-                {c.title}
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '13.5px',
-                  lineHeight: '21px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {c.body}
-              </p>
+              <h3 className="text-body-lg font-medium tracking-[-0.01em]">{c.title}</h3>
+              <p className="text-ink-muted text-small">{c.body}</p>
             </div>
           );
         })}

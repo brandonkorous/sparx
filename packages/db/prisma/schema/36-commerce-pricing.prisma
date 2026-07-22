@@ -25,16 +25,35 @@ model PriceList {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant     Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  b2bAccount B2BAccount?        @relation(fields: [b2bAccountId], references: [id], onDelete: Cascade)
-  collection ProductCollection? @relation(fields: [collectionId], references: [id], onDelete: SetNull)
-  entries    PriceListEntry[]
-  bulkTiers  BulkPriceTier[]
+  tenant        Tenant              @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  b2bAccount    B2BAccount?         @relation(fields: [b2bAccountId], references: [id], onDelete: Cascade)
+  collection    ProductCollection?  @relation(fields: [collectionId], references: [id], onDelete: SetNull)
+  entries       PriceListEntry[]
+  bulkTiers     BulkPriceTier[]
+  propertyLinks PriceListProperty[]
 
   @@index([tenantId, status])
   @@index([tenantId, channel])
   @@index([tenantId, b2bAccountId])
   @@map("commerce_price_lists")
+}
+
+// Per-site scoping (docs/131 §4) — which web PROPERTIES a price list applies on,
+// the Discount pattern (a price list is a commercial targeting rule an owner can run
+// across a same-catalog portfolio, so a column can't express "sites A and B not C").
+// NO rows = applies on ALL sites (the default, backward-compatible, zero backfill);
+// one-or-more rows = ONLY those sites. A junction (composite PK, NO tenant_id —
+// tenant scoping rides the FK parents, exactly like DiscountProperty/ProductProperty).
+model PriceListProperty {
+  propertyId  String @map("property_id") @db.Uuid
+  priceListId String @map("price_list_id") @db.Uuid
+
+  property  Property  @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  priceList PriceList @relation(fields: [priceListId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, priceListId])
+  @@index([priceListId])
+  @@map("commerce_price_list_properties")
 }
 
 // Per-variant override on a price list. Either fixed price OR percent-
@@ -127,6 +146,11 @@ model ContractPrice {
 //   margin_target → target margin frac  (0.45 = "45% margin")
 //   flat          → dollars added to cost (15.00 = "+$15")
 //   matrix        → null; bands[] carries per-band {method,value}
+// Deliberately TENANT-WIDE, no property_id (docs/131 §4): a catalog markup writes a
+// VARIANT's single list price (variant.priceCents), and a variant is one shared row —
+// it cannot hold two per-site prices, so per-site catalog markup is incoherent.
+// Markup operates on the shared catalog; the per-site price difference is expressed by
+// PriceList (resolve-time) instead.
 model MarkupRule {
   id                String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId          String   @map("tenant_id") @db.Uuid
@@ -231,6 +255,11 @@ model MarkupRecomputeReview {
 //
 // `value` is a percent (3.0 = 3%) when type='percentage', or dollars (5.00)
 // when type='flat'. `cap_cents` caps the computed amount.
+// Deliberately TENANT-WIDE, no property_id (docs/131 §4): a surcharge is a
+// card-processing fee pass-through, and payments are per-TENANT (one merchant
+// account — TenantPaymentConfig), so the fee is shared across a tenant's sites. Its
+// `paymentMethods` + `appliesTo` (checkout | invoice) axes already differentiate it;
+// site is not the right axis, and the checkout session carries no site to enforce on.
 model SurchargeRule {
   id             String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId       String   @map("tenant_id") @db.Uuid

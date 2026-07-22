@@ -21,6 +21,12 @@
    as LITERAL strings, so a published silica tree's classes (grid-cols-*, @container,
    aspect-square, snap-x, object-cover, …) emit into this bundle. Explicit @source
    overrides Tailwind's node_modules ignore (mirrors the dashboard canvas setup). */
+/* The DECLARED builder layout vocabulary. The @source scans below only pick up
+   classes the shipped blocks already use, so anything an author composes fresh
+   (col-span-*, order-*, …) emitted no CSS and collapsed the layout silently.
+   Shared by the storefront and the canvas so the two can never disagree. */
+@import '../../../packages/silica-catalog/src/builder-vocabulary.css';
+
 @source '../../../packages/silica-catalog/src/**/*.{ts,tsx}';
 @source '../node_modules/@wizeworks/silicaui-html/dist/**/*.js';
 

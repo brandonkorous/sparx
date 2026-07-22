@@ -86,7 +86,7 @@ export default function ConceptsPage() {
         <DocTable>
           <thead>
             <tr>
-              <th style={{ width: '24%' }}>Module</th>
+              <th className="w-[24%]">Module</th>
               <th>What it does</th>
             </tr>
           </thead>
@@ -240,7 +240,7 @@ export default function ConceptsPage() {
         <DocTable>
           <thead>
             <tr>
-              <th style={{ width: '34%' }}>Host</th>
+              <th className="w-[34%]">Host</th>
               <th>What it serves</th>
             </tr>
           </thead>

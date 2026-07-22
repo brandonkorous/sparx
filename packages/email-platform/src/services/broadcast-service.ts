@@ -76,6 +76,10 @@ async function loadPublishedBuilderEmail(
 
 export interface ListBroadcastsQuery {
   q?: string;
+  /** The member's reachable sites (docs/131 §3.3); undefined = unrestricted. A
+   *  broadcast's null property means the tenant's primary brand (shared), so a
+   *  restricted member sees their sites' broadcasts PLUS tenant-wide ones. */
+  propertyIds?: string[];
   take?: number;
   skip?: number;
 }
@@ -87,11 +91,22 @@ export async function list(
   const take = Math.min(query.take ?? 50, 250);
   const skip = query.skip ?? 0;
   const where: Prisma.BroadcastWhereInput = {
+    ...(query.propertyIds
+      ? {
+          OR: [{ propertyId: { in: query.propertyIds } }, { propertyId: null }],
+        }
+      : {}),
     ...(query.q
       ? {
-          OR: [
-            { name: { contains: query.q, mode: 'insensitive' } },
-            { subject: { contains: query.q, mode: 'insensitive' } },
+          // Nest the text search under AND so it composes with the site OR above
+          // rather than overwriting it (two top-level ORs would clobber).
+          AND: [
+            {
+              OR: [
+                { name: { contains: query.q, mode: 'insensitive' } },
+                { subject: { contains: query.q, mode: 'insensitive' } },
+              ],
+            },
           ],
         }
       : {}),
@@ -247,7 +262,10 @@ async function enqueueAndMark(
 
   const [recipients, settings] = await Promise.all([
     expandRecipients(ctx, broadcast),
-    getSettings(ctx),
+    // This broadcast's SITE decides the sender identity (docs/131 §3.4), the same
+    // way it already decides the brand and `{{tenant.name}}` further down. A
+    // broadcast with no property falls back to the primary inside getSettings.
+    getSettings(ctx, broadcast.propertyId),
   ]);
 
   const doc = await loadPublishedBuilderEmail(ctx, broadcast.builderEmailId);

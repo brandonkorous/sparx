@@ -233,19 +233,17 @@ describe('product_detail_page — the composed PDP body', () => {
   });
 });
 
-describe('collection_detail_page — header + the collection’s own products', () => {
-  it('renders the collection name/description AND a card per product IN the collection', () => {
+describe('collection_detail_page — the pinned collection-detail core', () => {
+  it('is an editable shell wrapping the pinned commerce.collection-detail core', () => {
+    // The collection detail is now a FUNCTIONAL core (docs/127 §8) — header + a faceted,
+    // sorted, paged grid of the collection's members, server-rendered on the storefront by
+    // <CollectionDetail>, not a bind-based `products` repeat. The composite lowers to the
+    // empty host mount point the storefront walk swaps for the real component, exactly like
+    // the category detail (its browse-tree sibling).
     const html = renderSilicaBody(collectionDetailPage(), { host });
-    expect(html).toContain('Lighting'); // the collection name (scope-relative to the collection)
-    expect(html).toContain('Warm, sculptural light.'); // its description
-    // the collection's OWN products (a scope-relative `products` repeat, NOT the catalog)
-    expect(html).toContain('Aurora Lamp');
-    expect(html).toContain('Dune Chair');
-    expect((html.match(/Lamp|Chair/g) ?? []).length).toBe(2);
-    // each card links to its product's PDP
-    expect(html).toContain('href="/products/aurora-lamp"');
-    expect(html).toContain('href="/products/dune-chair"');
-    expect(html).not.toContain('<input type="hidden" name="__sui-attr'); // carriers hoisted away
+    expect(html).toContain('data-sui-host="commerce.collection-detail"');
+    // No baked product markup — the core owns the grid, so nothing is stamped here.
+    expect(html).not.toContain('Aurora Lamp');
   });
 });
 

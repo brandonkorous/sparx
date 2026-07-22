@@ -3,147 +3,56 @@
 // demo card. Split out of hero.tsx so the headline column and the device
 // illustration stay independently readable/editable.
 
+/** Window-chrome traffic lights — device mimicry, so they use the fixed Tailwind
+ *  palette rather than theme tokens (a real macOS bar doesn't theme-flip). */
+const TRAFFIC_LIGHTS = ['bg-red-400', 'bg-amber-400', 'bg-green-500'];
+
 export function BusinessDemoCard() {
   return (
-    <div style={{ position: 'relative' }}>
-      <div
-        style={{
-          borderRadius: '22px',
-          backgroundColor: 'var(--color-base-100)',
-          boxShadow: '0 40px 100px rgba(0, 0, 0, 0.45)',
-          overflow: 'hidden',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '7px',
-            padding: '13px 16px',
-            borderBottom: '1px solid var(--color-base-300)',
-          }}
-        >
-          {['#FF5F57', '#FEBC2E', '#28C840'].map((c) => (
-            <span
-              key={c}
-              style={{ width: 10, height: 10, borderRadius: 9999, backgroundColor: c }}
-            />
+    <div className="relative">
+      <div className="bg-base-100 overflow-hidden rounded-[22px] shadow-2xl">
+        <div className="border-base-300 flex items-center gap-[7px] border-b px-4 py-[13px]">
+          {TRAFFIC_LIGHTS.map((c) => (
+            <span key={c} className={`h-2.5 w-2.5 rounded-full ${c}`} />
           ))}
-          <span
-            style={{
-              marginLeft: 'auto',
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: '11.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          <span className="text-ink-subtle text-micro ml-auto font-medium">
             Bloom &amp; Co. &middot; sparx Assistant
           </span>
         </div>
 
-        <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '22px' }}>
-          <div
-            style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}
-          >
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '20px',
-                letterSpacing: '-0.02em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-col gap-[22px] p-6">
+          <div className="flex items-start justify-between">
+            <h3 className="text-base-content text-h4 m-0 font-medium tracking-[-0.02em]">
               Good morning, Jess.
             </h3>
-            <span
-              style={{
-                padding: '6px 10px',
-                borderRadius: 9999,
-                backgroundColor:
-                  'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))',
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '11px',
-                color: 'var(--color-success)',
-                whiteSpace: 'nowrap',
-              }}
-            >
+            {/* Status signal — silica's own `soft` wash, not a hand-rolled color-mix. */}
+            <span className="bg-success bg-soft text-success text-micro rounded-full px-2.5 py-1.5 font-medium whitespace-nowrap">
               Business online
             </span>
           </div>
 
-          <p
-            style={{
-              margin: 0,
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 500,
-              fontSize: 'clamp(20px, 2.4vw, 26px)',
-              lineHeight: 1.15,
-              letterSpacing: '-0.02em',
-              color: 'var(--color-base-content)',
-            }}
-          >
+          <p className="text-base-content m-0 text-[clamp(20px,2.4vw,26px)] leading-[1.15] font-medium tracking-[-0.02em]">
             &ldquo;What needs my attention today?&rdquo;
           </p>
 
-          <div
-            style={{
-              padding: '18px',
-              borderRadius: '14px',
-              backgroundColor: 'var(--color-base-200)',
-              border: '1px solid var(--color-base-300)',
-            }}
-          >
-            <p
-              style={{
-                margin: '0 0 8px',
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '14.5px',
-                color: 'var(--color-base-content)',
-              }}
-            >
+          <div className="bg-base-200 border-base-300 rounded-2xl border p-[18px]">
+            <p className="text-base-content text-small m-0 mb-2 font-medium">
               Three things. I&apos;ve already handled two.
             </p>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: 'var(--font-sans)',
-                fontSize: '13.5px',
-                lineHeight: 1.6,
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+            <p className="text-ink-muted text-caption m-0">
               Saturday inventory is running low, a caf&eacute; asked about wholesale pricing, and
               yesterday&apos;s abandoned carts are ready for a follow-up.
             </p>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '10px',
-                marginTop: '14px',
-              }}
-            >
+            <div className="mt-3.5 grid grid-cols-2 gap-2.5">
               <DemoAction label="Review inventory" sub="12 bundles remaining" />
               <DemoAction label="Open wholesale lead" sub="$620 potential order" />
             </div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '10.5px',
-                letterSpacing: '0.1em',
-                textTransform: 'uppercase',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+          <div className="flex flex-col gap-2.5">
+            {/* Legend for the activity feed below — labels a functional group, not
+                an eyebrow introducing a heading. */}
+            <span className="text-ink-subtle text-micro font-medium tracking-[0.1em] uppercase">
               Handled by sparx
             </span>
             <ActivityRow text="Sent pickup reminders to 14 customers" />
@@ -152,53 +61,10 @@ export function BusinessDemoCard() {
         </div>
       </div>
 
-      <div
-        className="mkt-hide-on-mobile"
-        style={{
-          position: 'absolute',
-          right: '-28px',
-          bottom: '36px',
-          width: '150px',
-          padding: '16px',
-          borderRadius: '16px',
-          backgroundColor: 'var(--color-secondary)',
-          color: 'var(--color-secondary-content)',
-          boxShadow: '0 22px 55px rgba(0, 0, 0, 0.3)',
-          transform: 'rotate(-4deg)',
-        }}
-      >
-        <span
-          style={{
-            display: 'block',
-            fontFamily: 'var(--font-sans)',
-            fontSize: '11px',
-            opacity: 0.85,
-          }}
-        >
-          This week
-        </span>
-        <span
-          style={{
-            display: 'block',
-            fontFamily: 'var(--font-sans)',
-            fontWeight: 700,
-            fontSize: '28px',
-            letterSpacing: '-0.03em',
-            margin: '2px 0',
-          }}
-        >
-          +24%
-        </span>
-        <span
-          style={{
-            display: 'block',
-            fontFamily: 'var(--font-sans)',
-            fontSize: '11px',
-            opacity: 0.85,
-          }}
-        >
-          online orders
-        </span>
+      <div className="mkt-hide-on-mobile bg-secondary text-secondary-content absolute right-[-28px] bottom-9 w-[150px] rotate-[-4deg] rounded-2xl p-4 shadow-2xl">
+        <span className="text-micro block">This week</span>
+        <span className="my-0.5 block text-[28px] font-bold tracking-[-0.03em]">+24%</span>
+        <span className="text-micro block">online orders</span>
       </div>
     </div>
   );
@@ -206,75 +72,28 @@ export function BusinessDemoCard() {
 
 function DemoAction({ label, sub }: { label: string; sub: string }) {
   return (
-    <div
-      style={{
-        padding: '12px',
-        borderRadius: '10px',
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        textAlign: 'left',
-      }}
-    >
-      <span
-        style={{
-          display: 'block',
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '12.5px',
-          color: 'var(--color-base-content)',
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          display: 'block',
-          fontFamily: 'var(--font-sans)',
-          fontSize: '11px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          marginTop: '2px',
-        }}
-      >
-        {sub}
-      </span>
+    <div className="bg-base-100 border-base-300 rounded-[10px] border p-3 text-left">
+      <span className="text-base-content text-mini block font-medium">{label}</span>
+      <span className="text-ink-subtle text-micro mt-0.5 block">{sub}</span>
     </div>
   );
 }
 
 function ActivityRow({ text }: { text: string }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-      <span
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 22,
-          height: 22,
-          borderRadius: 7,
-          backgroundColor: 'var(--color-primary)',
-          flexShrink: 0,
-        }}
-      >
+    <div className="flex items-center gap-2.5">
+      <span className="bg-primary text-primary-content inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[7px]">
         <svg width={11} height={11} viewBox="0 0 24 24" fill="none" aria-hidden>
           <path
             d="M5 12L10 17L19 7"
-            stroke="white"
+            stroke="currentColor"
             strokeWidth={3}
             strokeLinecap="round"
             strokeLinejoin="round"
           />
         </svg>
       </span>
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '13px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        }}
-      >
-        {text}
-      </span>
+      <span className="text-ink-muted text-caption">{text}</span>
     </div>
   );
 }

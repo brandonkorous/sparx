@@ -12,8 +12,9 @@ import { ENTERPRISE_FEATS } from '../pricing-v1/data';
 
 /**
  * "Bigger needs? Let's talk." — the enterprise beat, rebuilt as a DOM-scoped
- * `data-theme="dark"` island (v1 used the `mkt-accent` class with hardcoded
- * #FFFFFF/#A1A1AA/#818CF8 hex; all of it is gone). On the scoped dark theme,
+ * `data-theme="dark"` island. The inverse tier is now `.mkt-inverse`, which
+ * declares the tier and paints nothing; v1's hardcoded #FFFFFF/#A1A1AA/#818CF8
+ * hex is gone along with the fill it sat on. On the scoped dark theme,
  * both Buttons and every text/check color resolve from `color`/`variant` props
  * and `base-content`/`primary` tokens — zero hardcoded hex.
  */

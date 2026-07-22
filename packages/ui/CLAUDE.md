@@ -58,4 +58,8 @@ Every color-bearing component is **four orthogonal axes** — never a flat enum.
 
 ## The wordmark
 
-The sparx wordmark renders with the **"x" always in sparx Indigo `#6366F1`** — never one solid color. Geist 500, tracking `-0.03em`.
+The sparx wordmark renders with the **"x" always in sparx Ember `#e04631`** — the brand primary (`--color-primary`) — never one solid color. Geist 500, tracking `-0.03em`.
+
+This previously read "sparx Indigo `#6366F1`". That is **wrong and out of date**: the wordmark "x" and the Builder module hue SPLIT. Ember is the brand primary; Indigo `#6366f1` is now only `--color-module-builder`. The code is the authority — [packages/brand/src/marks.ts](../brand/src/marks.ts) `BRAND.primary = '#e04631'`, commented "the primary brand color and the wordmark 'x'", with `builder: '#6366f1'` as a separate module entry.
+
+**Never re-inline the art or the "x" hex.** The spark/wordmark/mascot geometry and the `BRAND` constants live in `@sparx/brand` ([marks.ts](../brand/src/marks.ts)); the React components (`Spark`, `Wordmark`, `SparkMascot`) come from `@sparx/brand/react`. `@sparx/ui`, market, and the marketing site all re-export from there — change the art in ONE place.

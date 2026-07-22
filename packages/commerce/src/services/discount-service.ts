@@ -59,9 +59,32 @@ export interface DiscountRow {
   updatedAt: string;
 }
 
+/**
+ * Columns the discount list may be ordered by. This is the AUTHORITATIVE
+ * whitelist — the api-rest route's Zod enum mirrors it, and nothing outside this
+ * set ever reaches an `orderBy`. Sorting lives on the server because the list
+ * pages: sorting one loaded page in the client and presenting it as the answer
+ * would hand back "the biggest discount" from page 2.
+ */
+export type DiscountSortField =
+  | 'name'
+  | 'code'
+  | 'status'
+  | 'valueCents'
+  | 'valuePercent'
+  | 'createdAt'
+  | 'updatedAt';
+
 export async function listDiscounts(
   ctx: ServiceContext,
-  filter: { status?: string; q?: string; take?: number; skip?: number } = {}
+  filter: {
+    status?: string;
+    q?: string;
+    take?: number;
+    skip?: number;
+    sortBy?: DiscountSortField;
+    order?: 'asc' | 'desc';
+  } = {}
 ): Promise<{ items: DiscountRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.DiscountWhereInput = {
@@ -76,10 +99,17 @@ export async function listDiscounts(
           }
         : {}),
     };
+    // A user sort ends on `id` so paging stays deterministic when the chosen
+    // column ties (two discounts of the same value, say). With no sort the list
+    // keeps its resolution order — highest priority first, then most recent —
+    // which is the order that decides which promotion wins.
+    const orderBy: Prisma.DiscountOrderByWithRelationInput[] = filter.sortBy
+      ? [{ [filter.sortBy]: filter.order ?? 'asc' }, { id: 'asc' }]
+      : [{ priority: 'desc' }, { updatedAt: 'desc' }];
     const [rows, total] = await Promise.all([
       tx.discount.findMany({
         where,
-        orderBy: [{ priority: 'desc' }, { updatedAt: 'desc' }],
+        orderBy,
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
       }),
@@ -290,14 +320,35 @@ export async function redeemCode(
   return withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
       where: { id: input.cartId, abandonedAt: null },
-      select: { id: true, customerId: true, channel: true },
+      select: { id: true, customerId: true, channel: true, propertyId: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
 
     const discount = await tx.discount.findFirst({
-      where: { code: upper, deletedAt: null, status: 'active' },
+      where: {
+        code: upper,
+        deletedAt: null,
+        status: 'active',
+        // The promo must be offered ON THIS CART'S SITE (docs/131 §4). No links
+        // at all = every site, the ProductProperty convention — so an untargeted
+        // discount behaves exactly as it always has. Without this, "20% off
+        // donuts" applied at a machine-shop checkout, and the machine shop paid
+        // for a promotion it never ran.
+        ...(cart.propertyId
+          ? {
+              OR: [
+                { siteLinks: { none: {} } },
+                { siteLinks: { some: { propertyId: cart.propertyId } } },
+              ],
+            }
+          : {}),
+      },
     });
     if (!discount) {
+      // Deliberately the same message as a non-existent code. A code that IS
+      // valid on a sibling site must not be distinguishable from one that does
+      // not exist, or the error becomes a way to enumerate the other business's
+      // active promotions.
       throw new CommercePricingError(`No active discount for code "${upper}"`);
     }
 
@@ -451,10 +502,31 @@ export async function issueGiftCard(
   return { id: result.id, code: result.code };
 }
 
+/**
+ * Columns the gift-card list may be ordered by. The AUTHORITATIVE whitelist,
+ * mirrored by the api-rest route's Zod enum. As with discounts, sorting is
+ * server-side because the list pages — a client sort of one window is a wrong
+ * answer the moment there is a second window.
+ */
+export type GiftCardSortField =
+  | 'code'
+  | 'balanceCents'
+  | 'initialBalanceCents'
+  | 'status'
+  | 'expiresAt'
+  | 'createdAt';
+
 export async function listGiftCards(
   ctx: ServiceContext,
-  filter: { status?: string; q?: string; take?: number } = {}
-): Promise<GiftCardSummary[]> {
+  filter: {
+    status?: string;
+    q?: string;
+    take?: number;
+    skip?: number;
+    sortBy?: GiftCardSortField;
+    order?: 'asc' | 'desc';
+  } = {}
+): Promise<{ items: GiftCardSummary[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.GiftCardWhereInput = {
       ...(filter.status ? { status: filter.status } : {}),
@@ -468,12 +540,21 @@ export async function listGiftCards(
           }
         : {}),
     };
-    const rows = await tx.giftCard.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take: Math.min(filter.take ?? 100, 500),
-    });
-    return rows.map(serializeGiftCard);
+    // `id` is the deterministic tiebreaker so a page boundary never repeats or
+    // skips a card when the sorted column ties. Default: newest issued first.
+    const orderBy: Prisma.GiftCardOrderByWithRelationInput[] = filter.sortBy
+      ? [{ [filter.sortBy]: filter.order ?? 'asc' }, { id: 'asc' }]
+      : [{ createdAt: 'desc' }, { id: 'asc' }];
+    const [rows, total] = await Promise.all([
+      tx.giftCard.findMany({
+        where,
+        orderBy,
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.giftCard.count({ where }),
+    ]);
+    return { items: rows.map(serializeGiftCard), total };
   });
 }
 
@@ -488,6 +569,47 @@ export async function lookupGiftCard(
     });
     return row ? serializeGiftCard(row) : null;
   });
+}
+
+export interface GiftCardTransactionRow {
+  id: string;
+  deltaCents: number;
+  reason: string;
+  note: string | null;
+  orderId: string | null;
+  createdAt: string;
+}
+
+export interface GiftCardDetail extends GiftCardSummary {
+  message: string | null;
+  transactions: GiftCardTransactionRow[];
+}
+
+/**
+ * One gift card in full, WITH its ledger. The balance and every movement are
+ * read-only history — a gift card is money, so it is never edited in place; it
+ * is adjusted (an audited transaction) through `adjustGiftCard`.
+ */
+export async function getGiftCard(ctx: ServiceContext, id: string): Promise<GiftCardDetail> {
+  const row = await withTenant(ctx, (tx) =>
+    tx.giftCard.findFirst({
+      where: { id },
+      include: { transactions: { orderBy: { createdAt: 'desc' }, take: 200 } },
+    })
+  );
+  if (!row) throw new CommerceNotFoundError('GiftCard', id);
+  return {
+    ...serializeGiftCard(row),
+    message: row.message,
+    transactions: row.transactions.map((t) => ({
+      id: t.id,
+      deltaCents: t.deltaCents,
+      reason: t.reason,
+      note: t.note,
+      orderId: t.orderId,
+      createdAt: t.createdAt.toISOString(),
+    })),
+  };
 }
 
 /**

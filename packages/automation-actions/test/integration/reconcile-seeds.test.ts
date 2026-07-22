@@ -78,7 +78,8 @@ describe('reconcileSystemSeeds (backfill)', () => {
     const summary = await reconcileSystemSeeds(appDb);
 
     // The active tenant now holds the full B2B catalog: the Locked dunning ladder,
-    // the no-email onboarding task, and the four email-sending defaults.
+    // the no-email onboarding task, and the four email-sending defaults — plus the
+    // always-on (`module: null`) seeds, which reconcile installs for every tenant.
     const active = await systemAutomations(activeTenant);
     expect(active.map((a) => a.name).sort()).toEqual([
       'B2B account approved',
@@ -86,14 +87,17 @@ describe('reconcileSystemSeeds (backfill)', () => {
       'B2B overdue escalation',
       'B2B quote expiring',
       'B2B quote received',
+      'Handle form submissions',
       'New B2B account onboarding task',
     ]);
     const dunning = active.find((a) => a.name === 'B2B overdue escalation');
     expect(dunning?.locked).toBe(true);
     expect(dunning?.status).toBe('active');
 
-    // The b2b-inactive tenant is untouched.
-    expect(await systemAutomations(inactiveTenant)).toHaveLength(0);
+    // The b2b-inactive tenant gets NO b2b seed — only the always-on ones, which
+    // are deliberately module-independent (any tenant can have a site form).
+    const inactive = await systemAutomations(inactiveTenant);
+    expect(inactive.map((a) => a.name).sort()).toEqual(['Handle form submissions']);
 
     // The summary reports a b2b module pass that covered at least our tenant
     // (the cross-tenant scan may also pick up other suites' residue — assert a
@@ -109,8 +113,9 @@ describe('reconcileSystemSeeds (backfill)', () => {
     await reconcileSystemSeeds(appDb);
     await reconcileSystemSeeds(appDb);
 
-    // The six B2B seeds, installed once — a second pass adds no duplicate.
+    // The six B2B seeds + the always-on form handler, installed once — a second
+    // pass adds no duplicate.
     const rows = await systemAutomations(tenantId);
-    expect(rows).toHaveLength(6);
+    expect(rows).toHaveLength(7);
   });
 });

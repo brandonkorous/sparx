@@ -47,10 +47,6 @@ model Domain {
   autoRenew            Boolean   @default(true) @map("auto_renew")
   whoisPrivacy         Boolean   @default(false) @map("whois_privacy")
   renewalPriceCents    Int?      @map("renewal_price_cents")
-  // DKIM keypair generated at purchase time (docs/24 §3). Public key goes into
-  // the DKIM TXT record; private key is kept for signing outbound email.
-  dkimPublicKey        String?   @map("dkim_public_key") @db.Text
-  dkimPrivateKey       String?   @map("dkim_private_key") @db.Text
   // Renewal reminder thresholds already notified: '30d', '14d', '7d'. The
   // domain-worker's nightly cron checks this before sending to avoid duplicates.
   renewalRemindersSent String[]  @default([]) @map("renewal_reminders_sent")

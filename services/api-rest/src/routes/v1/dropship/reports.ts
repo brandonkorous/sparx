@@ -21,8 +21,9 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { reportingService } from '@sparx/commerce';
 import { ok } from '@sparx/api-core/envelope';
-import { requireRole } from '@sparx/api-core/auth';
+import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
+import { resolveListScope } from '../../../lib/property.js';
 
 // Accepts ?from=&to= (ISO 8601) and defaults to the last 30 days when both are
 // omitted — matches the dashboard's presets so the surface is forgiving.
@@ -33,6 +34,9 @@ const RangeQuery = z.object({
 
 const TimeseriesQuery = RangeQuery.extend({
   grain: z.enum(['day', 'week', 'month']).optional(),
+  // docs/131 §6: a site id → that site; `all` → tenant-wide (member-gated);
+  // absent → active site. resolveListScope returns undefined for the all total.
+  property: z.string().min(1).max(63).optional(),
 });
 
 const ActivityQuery = z.object({
@@ -51,10 +55,16 @@ const reportRoutes: FastifyPluginAsync = (app) => {
     requireRole(request, 'admin');
     const q = TimeseriesQuery.parse(request.query);
     const range = resolveRange(q);
+    const propertyId = await resolveListScope(
+      requireAuth(request),
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
     return ok(
       await reportingService.dropshipOrdersTimeseries(toDropshipContext(request), {
         range,
         ...(q.grain ? { grain: q.grain } : {}),
+        ...(propertyId ? { propertyId } : {}),
       })
     );
   });

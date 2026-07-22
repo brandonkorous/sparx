@@ -17,6 +17,7 @@
 // rides the SECURITY DEFINER function, while per-row work runs under
 // withTenant({tenantId}) so every read + the status UPDATE pass tenant_isolation.
 
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import {
@@ -30,7 +31,7 @@ import { env } from '../env.js';
 import { resolveActivePropertyName } from './property.js';
 import { sendTenantEmailByKey } from './tenant-email.js';
 
-const SCHEDULING_NOTIFICATION_LOCK_KEY = 4242_4245;
+const SCHEDULING_NOTIFICATION_LOCK_KEY = ADVISORY_LOCKS.SCHEDULING_NOTIFICATIONS;
 const DEFAULT_INTERVAL_MS = 60_000;
 
 // A booking in one of these states should not fire a stale reminder/change notice
@@ -53,6 +54,9 @@ interface Dispatchable {
   channel: 'email' | 'sms';
   bookingId: string;
   customerId: string | null;
+  /** The booking's site (docs/131 §3.4/§4) — sends the reminder under the right
+   *  business's sender identity, not the tenant's primary. */
+  propertyId: string | null;
   /** Email address or phone number, per channel. */
   recipient: string;
   serviceName: string;
@@ -117,6 +121,7 @@ async function claim(row: DueNotification): Promise<Dispatchable | null> {
         timezone: true,
         status: true,
         customerId: true,
+        propertyId: true,
         service: { select: { name: true } },
       },
     });
@@ -156,6 +161,7 @@ async function claim(row: DueNotification): Promise<Dispatchable | null> {
       channel: row.channel as 'email' | 'sms',
       bookingId: row.booking_id,
       customerId,
+      propertyId: booking.propertyId,
       recipient,
       serviceName: booking.service?.name ?? 'your booking',
       startAt: booking.startAt,
@@ -175,6 +181,7 @@ async function dispatch(
     const res = await sendTenantEmailByKey(logger, tenantId, {
       key: BOOKING_EMAIL_KEY[d.type],
       to: d.recipient,
+      propertyId: d.propertyId,
       ref: { customerId: d.customerId, bookingId: d.bookingId },
       emailType: 'transactional',
       variables: { source: 'scheduling' },
@@ -201,15 +208,8 @@ async function dispatch(
 export async function runBookingNotificationTick(
   logger: FastifyBaseLogger
 ): Promise<SchedulingTickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${SCHEDULING_NOTIFICATION_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    logger.debug('scheduling-notifications: lock held by another pod, skipping');
-    return { acquired: false, processed: 0, errors: 0 };
-  }
-
-  try {
+  const SKIPPED: SchedulingTickResult = { acquired: false, processed: 0, errors: 0 };
+  return withAdvisoryTickLock(SCHEDULING_NOTIFICATION_LOCK_KEY, SKIPPED, async () => {
     const due = await prisma.$queryRaw<DueNotification[]>`
       SELECT id, tenant_id, booking_id, type, channel FROM find_due_booking_notifications(100)
     `;
@@ -244,9 +244,7 @@ export async function runBookingNotificationTick(
     }
 
     return { acquired: true, processed, errors };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${SCHEDULING_NOTIFICATION_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startBookingNotificationLoop(

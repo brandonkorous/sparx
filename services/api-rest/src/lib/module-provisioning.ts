@@ -33,6 +33,7 @@
 // (docs/104 R1–R4). The platform bus awaits every subscriber, so seeding finishes
 // before the module-toggle route returns — no separate /bootstrap round-trip.
 
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import { isModuleEnabled, type ModuleSlug } from '@sparx/auth';
 import { commerceSiteService, shippingService, taxService } from '@sparx/commerce';
 import {
@@ -165,7 +166,7 @@ export function registerModuleProvisioningConsumer(): () => void {
 // module's active tenants via the SAME `find_tenants_with_active_module` SECURITY
 // DEFINER scan the email/automation reconciles use, and idempotently re-seeds.
 
-const RECONCILE_LOCK_KEY = 4242_4247; // distinct from the other api-rest ticks
+const RECONCILE_LOCK_KEY = ADVISORY_LOCKS.MODULE_PROVISIONING_RECONCILE;
 const RECONCILE_INTERVAL_MS = 6 * 60 * 60_000; // every 6h — activation covers the common path
 
 export interface ModuleProvisioningReconcileResult {
@@ -182,16 +183,9 @@ export interface ModuleProvisioningReconcileResult {
 export async function reconcileModuleProvisioning(
   logger: FastifyBaseLogger
 ): Promise<ModuleProvisioningReconcileResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${RECONCILE_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    logger.debug('module-provisioning-reconcile: lock held by another pod, skipping');
-    return { acquired: false, tenants: 0 };
-  }
-
-  let tenantsTouched = 0;
-  try {
+  const SKIPPED: ModuleProvisioningReconcileResult = { acquired: false, tenants: 0 };
+  return withAdvisoryTickLock(RECONCILE_LOCK_KEY, SKIPPED, async () => {
+    let tenantsTouched = 0;
     for (const slug of PROVISIONED_MODULES) {
       const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
         SELECT tenant_id FROM find_tenants_with_active_module(${slug})
@@ -230,9 +224,7 @@ export async function reconcileModuleProvisioning(
     }
 
     return { acquired: true, tenants: tenantsTouched };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${RECONCILE_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 /** Drive reconcileModuleProvisioning on an interval. Mirrors the email

@@ -9,7 +9,7 @@ sources:
 
 ~60 workspace packages, grouped by domain (one line each):
 
-**UI / design:** `@sparx/ui` (dashboard components) · `@sparx/site-ui` (site components, `--st-*`) · `@sparx/site-themes` (tenant theme presets + compiler) · `@sparx/web-chrome` (marketing header) · `@sparx/surface-compile` (per-tenant CSS compile). → [[design]], [[components]].
+**UI / design:** `@sparx/ui` (dashboard components) · `@sparx/site-ui` (site components, `--st-*`) · `@sparx/site-themes` (tenant theme presets + compiler) · `@sparx/surface-compile` (per-tenant CSS compile). → [[design]], [[components]].
 
 **Builder / CMS:** `@sparx/builder-schemas` (BuilderNode schemas + the [[builder-catalog]]) · `@sparx/builder-render` (node→element map) · `@sparx/builder` · `@sparx/sitebuilder(-schemas)` · `@sparx/section-template-react` · `@sparx/cms-editor(-schemas)` · `@sparx/blueprints`.
 

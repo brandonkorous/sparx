@@ -43,14 +43,23 @@ export interface PublicConsentConfig {
   policyVersion: string;
 }
 
-/** Read a tenant's public consent config, falling back to mode='off' defaults
- *  when no settings row exists (the common case until a tenant configures it).
- *  Must be called inside `withTenant` so RLS scopes the read. */
+/** Read ONE SITE's public consent config (docs/131 §3.9), falling back to
+ *  mode='off' defaults when no settings row exists (the common case until a
+ *  business configures it). Must be called inside `withTenant` so RLS scopes the
+ *  read.
+ *
+ *  There is deliberately no fallback to a sibling site: mode='off' means "we
+ *  have not set up a banner here", which is true and safe, whereas inheriting
+ *  another business's GDPR configuration would show its banner, its policy
+ *  version, and its name to people who never visited it. */
 export async function readPublicConsentConfig(
   tx: TxClient,
-  tenantId: string
+  tenantId: string,
+  propertyId: string
 ): Promise<PublicConsentConfig> {
-  const row = await tx.consentSettings.findUnique({ where: { tenantId } });
+  const row = await tx.consentSettings.findUnique({
+    where: { tenantId_propertyId: { tenantId, propertyId } },
+  });
   const mode = (row?.mode ?? 'off') as ConsentMode;
   const activeCategories = Array.isArray(row?.activeCategories)
     ? (row.activeCategories as unknown[]).filter((c): c is string => typeof c === 'string')

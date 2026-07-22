@@ -19,7 +19,7 @@ import type { Pipeline, PipelineStage, Prisma } from '@sparx/db';
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
-import { CrmNotFoundError } from '../errors';
+import { CrmConflictError, CrmNotFoundError, CrmValidationError } from '../errors';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Pipelines
@@ -27,11 +27,21 @@ import { CrmNotFoundError } from '../errors';
 
 export async function list(
   ctx: ServiceContext,
-  args: { q?: string; includeArchived?: boolean; take?: number; skip?: number } = {}
+  args: {
+    q?: string;
+    includeArchived?: boolean;
+    /** Member's reachable sites (docs/131 §3.3); undefined = unrestricted. */
+    propertyIds?: string[];
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: (Pipeline & { stages: PipelineStage[] })[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.PipelineWhereInput = {
       ...(args.includeArchived ? {} : { archivedAt: null }),
+      ...(args.propertyIds
+        ? { OR: [{ propertyId: { in: args.propertyIds } }, { propertyId: null }] }
+        : {}),
       ...(args.q ? { name: { contains: args.q, mode: 'insensitive' } } : {}),
     };
     const [items, total] = await Promise.all([
@@ -69,6 +79,9 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Pi
     const created = await tx.pipeline.create({
       data: {
         tenantId: ctx.tenantId,
+        // The site this sales process belongs to (docs/131 §5); the route
+        // defaults it to the site being worked in, explicit null = tenant-wide.
+        propertyId: input.propertyId ?? null,
         name: input.name,
         slug: input.slug,
         isDefault: input.isDefault,
@@ -222,6 +235,100 @@ export async function updateStage(
   });
 }
 
+/**
+ * Delete a stage from a pipeline.
+ *
+ * Two guards make this safe rather than destructive:
+ *   • A pipeline must keep at least one stage — deleting the last is refused
+ *     (409), because a deal has nowhere to live otherwise.
+ *   • A stage that still has open deals on it cannot just vanish: the caller must
+ *     name a DIFFERENT stage on the SAME pipeline to move those deals to, and the
+ *     move + delete run in one transaction. With no deals on it, the stage is
+ *     removed directly. Returns the pipeline with its remaining stages.
+ */
+export async function deleteStage(
+  ctx: ServiceContext,
+  args: { pipelineId: string; stageId: string; reassignToStageId?: string }
+): Promise<Pipeline & { stages: PipelineStage[] }> {
+  const result = await withTenant(ctx, async (tx) => {
+    const pipeline = await tx.pipeline.findUnique({
+      where: { id: args.pipelineId },
+      include: { stages: true },
+    });
+    if (!pipeline) throw new CrmNotFoundError('Pipeline', args.pipelineId);
+
+    const stage = pipeline.stages.find((s) => s.id === args.stageId);
+    if (!stage) throw new CrmNotFoundError('PipelineStage', args.stageId);
+
+    if (pipeline.stages.length <= 1) {
+      throw new CrmConflictError(
+        'A pipeline must keep at least one stage. Add another stage before removing this one.',
+        'stageId'
+      );
+    }
+
+    const dealsOnStage = await tx.deal.count({
+      where: { stageId: args.stageId, deletedAt: null },
+    });
+
+    let movedDeals = 0;
+    if (dealsOnStage > 0) {
+      if (!args.reassignToStageId) {
+        throw new CrmValidationError(
+          'This stage still has deals on it. Choose a stage to move them to before removing it.',
+          [{ field: 'reassignToStageId', message: 'required when the stage has deals' }]
+        );
+      }
+      if (args.reassignToStageId === args.stageId) {
+        throw new CrmValidationError('Choose a different stage to move the deals to.', [
+          { field: 'reassignToStageId', message: 'must differ from the stage being removed' },
+        ]);
+      }
+      const target = pipeline.stages.find((s) => s.id === args.reassignToStageId);
+      if (!target) throw new CrmNotFoundError('PipelineStage', args.reassignToStageId);
+
+      const moved = await tx.deal.updateMany({
+        where: { stageId: args.stageId, deletedAt: null },
+        data: { stageId: args.reassignToStageId },
+      });
+      movedDeals = moved.count;
+    }
+
+    await tx.pipelineStage.delete({ where: { id: args.stageId } });
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'crm.pipeline_stage.deleted',
+      entityType: 'PipelineStage',
+      entityId: args.stageId,
+      diff: {
+        before: { name: stage.name, pipelineId: args.pipelineId },
+        after: { movedDeals, reassignedTo: args.reassignToStageId ?? null },
+      },
+    });
+
+    const refreshed = await tx.pipeline.findUnique({
+      where: { id: args.pipelineId },
+      include: { stages: { orderBy: { sortOrder: 'asc' } } },
+    });
+    // Just deleted a stage on it, so it exists — narrow for the type checker.
+    if (!refreshed) throw new CrmNotFoundError('Pipeline', args.pipelineId);
+    return refreshed;
+  });
+
+  await publishCrmEvent({
+    tenantId: ctx.tenantId,
+    topic: 'crm.pipeline.updated',
+    payload: { pipelineId: args.pipelineId, change: 'stage_deleted' },
+    dedupeKey: `crm.pipeline.stage_deleted:${args.stageId}`,
+  });
+
+  return result;
+}
+
 /** Reorder stages atomically. Postgres' UNIQUE (pipeline_id, sort_order)
  *  index would trip if we set the new order one row at a time, so we run
  *  a two-pass update inside a single transaction: bump every stage to a
@@ -289,10 +396,12 @@ export async function bootstrapDefaultPipeline(
   ctx: ServiceContext
 ): Promise<Pipeline & { stages: PipelineStage[] }> {
   return withTenant(ctx, async (tx) => {
-    const existing = await tx.pipeline.findUnique({
-      where: {
-        tenantId_slug: { tenantId: ctx.tenantId, slug: DEFAULT_PIPELINE_TEMPLATE.slug },
-      },
+    // The default pipeline is TENANT-WIDE (property_id null) — the starter sales
+    // process every business inherits until it authors its own. findFirst, not
+    // findUnique: the unique is now (tenant, property, slug) NULLS NOT DISTINCT,
+    // and Prisma cannot reach a null-property row through a compound-unique key.
+    const existing = await tx.pipeline.findFirst({
+      where: { propertyId: null, slug: DEFAULT_PIPELINE_TEMPLATE.slug },
       include: { stages: { orderBy: { sortOrder: 'asc' } } },
     });
     if (existing) return existing;
@@ -300,6 +409,7 @@ export async function bootstrapDefaultPipeline(
     const pipeline = await tx.pipeline.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: null,
         name: DEFAULT_PIPELINE_TEMPLATE.name,
         slug: DEFAULT_PIPELINE_TEMPLATE.slug,
         isDefault: DEFAULT_PIPELINE_TEMPLATE.isDefault,

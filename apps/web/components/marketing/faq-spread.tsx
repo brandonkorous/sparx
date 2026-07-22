@@ -3,8 +3,6 @@
 import { useState } from 'react';
 import type { FaqItem } from './faq';
 
-const SANS = 'var(--font-sans)';
-
 /**
  * The FAQ "index + spread": a left rail of questions drives one answer panel.
  * Each rail item is a dot + the question; the active question's dot carries the
@@ -29,17 +27,7 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
 
   return (
     <div className="mkt-faq-spread">
-      <ul
-        className="mkt-faq-rail"
-        style={{
-          listStyle: 'none',
-          margin: 0,
-          padding: 0,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '2px',
-        }}
-      >
+      <ul className="mkt-faq-rail m-0 flex list-none flex-col gap-0.5 p-0">
         {items.map((item, i) => {
           const on = i === active;
           return (
@@ -48,40 +36,20 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
                 type="button"
                 onClick={() => setActive(i)}
                 aria-pressed={on}
-                style={{
-                  display: 'flex',
-                  alignItems: 'flex-start',
-                  gap: '12px',
-                  width: '100%',
-                  textAlign: 'left',
-                  border: 'none',
-                  cursor: 'pointer',
-                  padding: '12px 14px',
-                  borderRadius: '8px',
-                  fontFamily: SANS,
-                  fontSize: '15px',
-                  lineHeight: '22px',
-                  fontWeight: on ? 500 : 400,
-                  color: on
-                    ? 'var(--color-base-content)'
-                    : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  backgroundColor: on ? 'var(--color-base-100)' : 'transparent',
-                  transition: 'color 0.15s ease, background-color 0.15s ease',
-                }}
+                // Inactive questions are still meant to be READ, so they get a
+                // real ink token (`text-ink-muted`), not a mix into transparent.
+                className={`text-body-sm flex w-full cursor-pointer items-start gap-3 rounded-lg border-none px-3.5 py-3 text-left transition-colors duration-150 ${
+                  on ? 'bg-base-100 text-base-content font-medium' : 'text-ink-muted bg-transparent'
+                }`}
               >
                 <span
                   aria-hidden
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 9999,
-                    flexShrink: 0,
-                    marginTop: '6px',
-                    backgroundColor: on
-                      ? accent
-                      : 'color-mix(in oklab, var(--color-base-content) 30%, transparent)',
-                    transition: 'background-color 0.15s ease',
-                  }}
+                  className={`mt-1.5 h-2 w-2 shrink-0 rounded-full transition-colors duration-150 ${
+                    on ? '' : 'bg-base-content/30'
+                  }`}
+                  // The active dot carries the section accent, which is a
+                  // per-section runtime value — hence still inline.
+                  style={on ? { backgroundColor: accent } : undefined}
                 />
                 {item.question}
               </button>
@@ -90,40 +58,12 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
         })}
       </ul>
 
-      <div
-        style={{
-          flex: 1,
-          minWidth: 0,
-          backgroundColor: 'var(--color-base-100)',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '12px',
-          padding: 'clamp(24px, 3vw, 40px)',
-        }}
-      >
-        <h3
-          style={{
-            margin: 0,
-            fontFamily: SANS,
-            fontWeight: 500,
-            fontSize: 'clamp(20px, 2.4vw, 26px)',
-            letterSpacing: '-0.02em',
-            lineHeight: 1.25,
-            color: 'var(--color-base-content)',
-          }}
-        >
+      <div className="bg-base-100 border-base-300 min-w-0 flex-1 rounded-xl border p-[clamp(24px,3vw,40px)]">
+        <h3 className="text-base-content m-0 text-[clamp(20px,2.4vw,26px)] leading-[1.25] font-medium tracking-[-0.02em]">
           {hasMark ? q.slice(0, -1) : q}
           {hasMark ? <span style={{ color: accent }}>?</span> : null}
         </h3>
-        <p
-          style={{
-            margin: '18px 0 0',
-            fontFamily: SANS,
-            fontSize: '15px',
-            lineHeight: '26px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            whiteSpace: 'pre-line',
-          }}
-        >
+        <p className="text-ink-muted text-body-sm mt-[18px] mb-0 whitespace-pre-line">
           {current.answer}
         </p>
       </div>

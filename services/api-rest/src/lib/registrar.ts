@@ -7,7 +7,7 @@
 // `RegistrarClient` interface, not on GoDaddy.
 //
 // Re-exports the provider-agnostic contract (shared types, RegistrarError, and
-// the registrar-neutral DNS/DKIM helpers) so route handlers import everything
+// the registrar-neutral DNS helper) so route handlers import everything
 // registrar-related from this one module.
 
 import type { RegistrarClient } from '@sparx/registrar';

@@ -1,4 +1,4 @@
-import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
+import { Dot, getModuleColor, Section, SectionHeader, Text } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
 
@@ -16,8 +16,6 @@ import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-business
  */
 
 const M = getModuleColor('b2b');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // ── NET TERMS & CREDIT + A/R AGING ──────────────────────────────────────────
 export function B2bTerms() {
@@ -28,7 +26,7 @@ export function B2bTerms() {
         headline="Net terms, credit, and what’s outstanding"
         lede="Sell on terms without selling blind. Set Net 15 to 60 and a credit limit per account; orders on terms invoice automatically with the buyer’s PO number and count against the limit. When an account would run over, the order holds for your approval — and A/R aging shows what’s outstanding by age."
       />
-      <div className="mkt-b2b-split" style={{ marginTop: '52px' }}>
+      <div className="mkt-b2b-split mt-12">
         <Cycle
           items={EXAMPLE_BUSINESSES.map((b) => (
             <CreditCard key={b.domain} business={b} />
@@ -44,195 +42,84 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
   const { b2b } = business;
   return (
     <div
-      className={`${M.bg} bg-soft`}
-      style={{
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        padding: '24px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '18px',
-        height: '100%',
-      }}
+      className={`${M.bg} border-base-300 bg-soft flex h-full flex-col gap-5 rounded-xl border p-6`}
     >
       <div>
-        <div
-          style={{ fontFamily: SANS, fontWeight: 500, fontSize: '18px', letterSpacing: '-0.01em' }}
-        >
+        <Text as="div" size={18} tone="default" weight={500} className="tracking-[-0.01em]">
           {b2b.account}
-        </div>
-        <div
-          style={{
-            fontFamily: MONO,
-            fontSize: '12px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            marginTop: '4px',
-          }}
-        >
+        </Text>
+        <Text as="div" size={12} mono tone="subtle" className="mt-1">
           {b2b.terms} · {b2b.tier}
-        </div>
+        </Text>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+      <div className="flex flex-col gap-2">
+        <div className="flex items-baseline justify-between">
+          <Text as="span" size={13}>
             Credit used
-          </span>
-          <span
-            style={{
-              fontFamily: SANS,
-              fontSize: '13px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            }}
-          >
+          </Text>
+          <Text as="span" size={13}>
             {b2b.creditUsed} / {b2b.creditLimit}
-          </span>
+          </Text>
         </div>
-        <span
-          style={{
-            display: 'block',
-            height: '8px',
-            borderRadius: '9999px',
-            backgroundColor: 'var(--color-base-200)',
-            overflow: 'hidden',
-          }}
-        >
+        <span className="bg-base-200 block h-2 overflow-hidden rounded-full">
           <span
-            style={{
-              display: 'block',
-              height: '100%',
-              width: b2b.creditUsedPct,
-              backgroundColor: M.color,
-              borderRadius: '9999px',
-            }}
+            className="bg-module-b2b block h-full rounded-full"
+            style={{ width: b2b.creditUsedPct }}
           />
         </span>
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <Text as="span" size={11} mono tone="subtle">
           {b2b.creditUsedPct} of limit used
-        </span>
+        </Text>
       </div>
-      <div
-        className={`${M.bg} bg-soft`}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '9px',
-          marginTop: 'auto',
-          padding: '12px 14px',
-          borderRadius: '10px',
-        }}
-      >
+      <div className={`${M.bg} bg-soft mt-auto flex items-center gap-2 rounded-lg px-3.5 py-3`}>
         <Dot color={M.color} size={7} />
-        <span className={M.ink} style={{ fontFamily: SANS, fontSize: '12.5px' }}>
+        <Text as="span" size={13} tone="none" className={M.ink}>
           New PO checks the limit before it’s placed
-        </span>
+        </Text>
       </div>
     </div>
   );
 }
 
 /** Static A/R aging ledger — the real dashboard buckets (current, 1–30, 31–60,
- *  60+). Illustrative totals; the device is the shape, not a tenant's numbers. */
+ *  60+). Illustrative totals; the device is the shape, not a tenant's numbers.
+ *  The two older buckets wear the SEMANTIC warning/error hues, not a hex. */
 function AgingLedger() {
   const rows: { label: string; value: string; bar: string; tone: string }[] = [
-    { label: 'Current', value: '$34,200', bar: '100%', tone: M.color },
-    { label: '1–30 days', value: '$11,400', bar: '34%', tone: M.color },
-    { label: '31–60 days', value: '$4,100', bar: '12%', tone: '#D97706' },
-    { label: '60+ days', value: '$2,400', bar: '7%', tone: '#DC2626' },
+    { label: 'Current', value: '$34,200', bar: '100%', tone: 'bg-module-b2b' },
+    { label: '1–30 days', value: '$11,400', bar: '34%', tone: 'bg-module-b2b' },
+    { label: '31–60 days', value: '$4,100', bar: '12%', tone: 'bg-warning' },
+    { label: '60+ days', value: '$2,400', bar: '7%', tone: 'bg-error' },
   ];
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        padding: '24px',
-      }}
-    >
-      <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-        <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '15px' }}>
+    <div className="bg-base-100 border-base-300 rounded-xl border p-6">
+      <div className="flex items-baseline justify-between">
+        <Text as="span" size={15} tone="default" weight={500}>
           Accounts receivable
-        </span>
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '11px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        </Text>
+        <Text as="span" size={11} mono tone="subtle">
           outstanding by age
-        </span>
+        </Text>
       </div>
-      <div
-        style={{
-          fontFamily: SANS,
-          fontWeight: 500,
-          fontSize: '28px',
-          letterSpacing: '-0.02em',
-          marginTop: '10px',
-        }}
-      >
+      <Text as="div" size={28} tone="default" weight={500} className="mt-2.5 tracking-[-0.02em]">
         $52,100
-      </div>
-      <div
-        style={{
-          fontFamily: SANS,
-          fontSize: '13px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          marginBottom: '20px',
-        }}
-      >
+      </Text>
+      <Text as="div" size={13} tone="subtle" className="mb-5">
         across 41 open invoices
-      </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      </Text>
+      <div className="flex flex-col gap-4">
         {rows.map((r) => (
-          <div key={r.label} style={{ display: 'flex', flexDirection: 'column', gap: '7px' }}>
-            <div
-              style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}
-            >
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
+          <div key={r.label} className="flex flex-col gap-2">
+            <div className="flex items-baseline justify-between">
+              <Text as="span" size={13}>
                 {r.label}
-              </span>
-              <span style={{ fontFamily: SANS, fontSize: '13.5px', fontWeight: 500 }}>
+              </Text>
+              <Text as="span" size={13} tone="default" weight={500}>
                 {r.value}
-              </span>
+              </Text>
             </div>
-            <span
-              style={{
-                display: 'block',
-                height: '6px',
-                borderRadius: '9999px',
-                backgroundColor: 'var(--color-base-200)',
-                overflow: 'hidden',
-              }}
-            >
-              <span
-                style={{
-                  display: 'block',
-                  height: '100%',
-                  width: r.bar,
-                  backgroundColor: r.tone,
-                  borderRadius: '9999px',
-                  opacity: 0.9,
-                }}
-              />
+            <span className="bg-base-200 block h-1.5 overflow-hidden rounded-full">
+              <span className={`${r.tone} block h-full rounded-full`} style={{ width: r.bar }} />
             </span>
           </div>
         ))}
@@ -268,56 +155,24 @@ export function B2bBulkPo() {
         headline="Ordering the way buyers actually order"
         lede="Wholesale isn’t a retail cart with a bigger total. POs, saved carts, case quantities, and approval thresholds are built into the same checkout — so a routine reorder is one click and a big first order routes for sign-off."
       />
-      <div className="mkt-grid-2-1" style={{ marginTop: '52px', gap: '20px' }}>
+      <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-2">
         {rows.map((r) => (
           <div
             key={r.title}
-            style={{
-              display: 'flex',
-              gap: '16px',
-              padding: '26px',
-              backgroundColor: 'var(--color-base-100)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-            }}
+            className="bg-base-100 border-base-300 flex gap-4 rounded-xl border p-6"
           >
             <span
-              className={`${M.bg} bg-soft`}
-              style={{
-                width: 34,
-                height: 34,
-                borderRadius: '9px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
-              }}
+              className={`${M.bg} bg-soft flex size-[34px] shrink-0 items-center justify-center rounded-lg`}
             >
               <Dot color={M.color} size={9} />
             </span>
             <div>
-              <h3
-                style={{
-                  margin: '0 0 6px',
-                  fontFamily: SANS,
-                  fontSize: '16px',
-                  fontWeight: 500,
-                  letterSpacing: '-0.01em',
-                }}
-              >
+              <h3 className="text-body text-base-content mt-0 mb-1.5 font-sans font-medium tracking-[-0.01em]">
                 {r.title}
               </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: SANS,
-                  fontSize: '13.5px',
-                  lineHeight: '21px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
+              <Text size={13} className="m-0">
                 {r.body}
-              </p>
+              </Text>
             </div>
           </div>
         ))}

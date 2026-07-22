@@ -26,6 +26,7 @@ import { tryVerifyPreviewToken } from '../../../lib/preview.js';
 import { readPublicConsentConfig } from '../../../lib/consent.js';
 import { parseBrandOverride, mergeBrandIdentity } from '../../../lib/property-brand.js';
 import { resolvePublicPropertyId, contentSiteVisibilityWhere } from '../../../lib/property.js';
+import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 
 // `property` (a stable site slug) scopes content to one web PROPERTY (docs/49
 // Model B). The storefront passes it for non-primary sites; omitted → primary.
@@ -42,6 +43,23 @@ const BySlugQuery = z.object({
   property: z.string().min(1).max(63).optional(),
   type: z.string().min(1).max(63),
   slug: z.string().min(1).max(255),
+});
+
+// Batch entry read by id (docs/127 §7). The storefront resolves the CMS entries a
+// builder tree PINS, and did it with one HTTP round-trip per pin — the commerce
+// loader beside it already batched via an `ids:` parameter, so a page pinning six
+// blog posts made six requests where a page pinning six products made one.
+//
+// Capped at 50: pins come from an authored tree, so a realistic page has a handful.
+// The cap bounds the `IN (...)` rather than expressing an expected size.
+const ByIdsQuery = z.object({
+  tenant: z.string().min(1).max(63),
+  property: z.string().min(1).max(63).optional(),
+  ids: z
+    .string()
+    .min(1)
+    .transform((raw) => raw.split(',').filter(Boolean))
+    .pipe(z.array(z.string().uuid()).min(1).max(50)),
 });
 
 const TypeKeyParams = z.object({ key: z.string().min(1).max(63) });
@@ -82,11 +100,9 @@ function readSiteSocials(
   return own.length > 0 ? own : coerceSocials(tenantSocials);
 }
 
-async function resolveTenantBySlug(slug: string): Promise<string> {
-  const t = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
-  if (!t) throw notFound('Tenant', slug);
-  return t.id;
-}
+// Cached in lib/tenant-slug.ts (docs/127 §5) — seven handlers in this file alone
+// resolved the same slug uncached, once per request.
+const resolveTenantBySlug = requireTenantIdBySlug;
 
 // "privacy-policy" → "Privacy Policy". Used as the footer link label only when
 // a placement has no explicit label override (the seed always sets one).
@@ -213,6 +229,35 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     );
     if (!row) throw notFound(`${q.type}`, q.slug);
     return ok(serializeEntry(row));
+  });
+
+  // Batch lookup by id (docs/127 §7) — the storefront hydrates every CMS entry a
+  // builder tree pins in ONE request instead of one per pin.
+  //
+  // Registered BEFORE `/entries/:id` because Fastify would otherwise match "by-ids"
+  // as an `:id` param and fail its uuid parse.
+  //
+  // Published-only, deliberately: this serves the storefront render path, and unlike
+  // the single-id route there is no preview token scoped to a SET of entries. A
+  // previewed page still resolves its pins as published, which is the same behaviour
+  // the per-pin path had.
+  app.get('/v1/public/content/entries/by-ids', async (request) => {
+    const q = ByIdsQuery.parse(request.query);
+    const tenantId = await resolveTenantBySlug(q.tenant);
+    const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const rows = await withTenant({ tenantId }, (tx) =>
+      tx.contentEntry.findMany({
+        where: {
+          id: { in: q.ids },
+          status: 'published',
+          deletedAt: null,
+          ...contentSiteVisibilityWhere(propertyId),
+        },
+      })
+    );
+    // Unresolvable ids are simply absent — a pin to a deleted or unpublished entry
+    // renders nothing, matching the per-pin path's null return.
+    return ok(rows.map(serializeEntry));
   });
 
   // Public lookup by id — used for `reference` field resolution where a
@@ -437,7 +482,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           // Cookie-consent config travels with the tenant payload so the
           // storefront layout decides off/quiet-notice/banner server-side in
           // the same fetch — no second round-trip, no client flash (docs/42 §4).
-          readPublicConsentConfig(tx, tenant.id),
+          readPublicConsentConfig(tx, tenant.id, propertyId),
           // The active site's optional brand override (docs/49 §3, Phase 4). Read
           // by slug within the tenant; null when no `?property=` or no override.
           query.property

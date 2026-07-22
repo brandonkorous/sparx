@@ -431,9 +431,12 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/commerce/account/wishlist', async (request) => {
     const ctx = await accountContext(request);
     const customerId = await requireCustomerId(request, ctx, 'account:read');
+    // Read the list for THIS storefront (docs/131 §4) — must match the site the
+    // POST scopes to, or the shopper's saved items appear to vanish when viewed.
+    const propertyId = await activeProperty(request, ctx.tenantId);
     const items = await withTenant(ctx, async (tx) => {
       const wishlist = await tx.wishlist.findFirst({
-        where: { customerId },
+        where: { customerId, propertyId },
         orderBy: { createdAt: 'asc' },
         select: {
           items: { orderBy: { createdAt: 'desc' }, select: { variantId: true } },
@@ -481,14 +484,18 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     const body = WishlistAddBody.parse(request.body);
     const ctx = await accountContext(request);
     const customerId = await requireCustomerId(request, ctx, 'account:write');
+    // A shopper's saved items belong to the storefront they were browsing
+    // (docs/131 §4): the donut-site list and the parts-site list are separate.
+    // Scoping the find AND the create by site is what keeps them apart.
+    const propertyId = await activeProperty(request, ctx.tenantId);
     await withTenant(ctx, async (tx) => {
       let wishlist = await tx.wishlist.findFirst({
-        where: { customerId },
+        where: { customerId, propertyId },
         orderBy: { createdAt: 'asc' },
         select: { id: true },
       });
       wishlist ??= await tx.wishlist.create({
-        data: { tenantId: ctx.tenantId, customerId },
+        data: { tenantId: ctx.tenantId, customerId, propertyId },
         select: { id: true },
       });
       // Unique (wishlistId, variantId) — skip if already saved.
@@ -509,8 +516,14 @@ const publicAccountRoutes: FastifyPluginAsync = async (app) => {
     const { variantId } = WishlistParam.parse(request.params);
     const ctx = await accountContext(request);
     const customerId = await requireCustomerId(request, ctx, 'account:write');
+    // Remove from THIS storefront's list (docs/131 §4) — without the site filter,
+    // removing an item on one site would also pull it from the other's list when
+    // the same variant is saved on both.
+    const propertyId = await activeProperty(request, ctx.tenantId);
     await withTenant(ctx, (tx) =>
-      tx.wishlistItem.deleteMany({ where: { variantId, wishlist: { customerId } } })
+      tx.wishlistItem.deleteMany({
+        where: { variantId, wishlist: { customerId, propertyId } },
+      })
     );
     return ok({ ok: true });
   });

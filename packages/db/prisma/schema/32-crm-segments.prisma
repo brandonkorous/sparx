@@ -8,6 +8,17 @@
 model Segment {
   id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId    String    @map("tenant_id") @db.Uuid
+  // The site whose customers this segment draws from (docs/131 §4/§5); null =
+  // tenant-wide (every customer). This closes a live inconsistency the doc
+  // names: `Customer` is already property-scoped and a segment FEEDS the
+  // property-scoped `Broadcast`, so an unscoped segment sat between two scoped
+  // endpoints — a "high-value customers" audience built on one business could
+  // silently feed the other's marketing.
+  //
+  // Nullable because a genuinely cross-business audience is real (an owner
+  // emailing every VIP they have), and the segment's site — when set — bounds
+  // which customers its rules evaluate over.
+  propertyId  String?   @map("property_id") @db.Uuid
   name        String    @db.VarChar(120)
   slug        String    @db.VarChar(63)
   description String?   @db.Text
@@ -19,11 +30,16 @@ model Segment {
   createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
   updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant  Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  members SegmentMember[]
+  tenant   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a segment is an audience defined for one business.
+  property Property?       @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  members  SegmentMember[]
 
-  @@unique([tenantId, slug])
+  // (tenant, property, slug), NULLS NOT DISTINCT in SQL — two sites may each have
+  // a `vip` segment, and the tenant-wide tier still can't duplicate a slug.
+  @@unique([tenantId, propertyId, slug])
   @@index([tenantId, archivedAt])
+  @@index([tenantId, propertyId, archivedAt])
   @@map("segments")
 }
 
@@ -38,6 +54,9 @@ model SegmentMember {
   segment  Segment  @relation(fields: [segmentId], references: [id], onDelete: Cascade)
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
 
+  // No property_id here (docs/131 §2 pattern 3): a membership is the intersection
+  // of a segment and a customer, both of which already carry a site, so its site
+  // is theirs. A column would be a third copy able to disagree with either.
   @@id([segmentId, customerId])
   @@index([tenantId, segmentId, enteredAt(sort: Desc)])
   @@index([tenantId, customerId])

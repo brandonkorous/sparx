@@ -173,6 +173,12 @@ events before we can report on them.
 
 Site analytics is the flagship workload-B pipeline and the natural first tenant of BigQuery.
 
+**Joining captured traffic to money** — attributing an order to the traffic that
+produced it — is decided separately in
+[128-session-attribution.md](128-session-attribution.md). It is time-sensitive in a way
+the rest of this doc is not: attribution only works on data captured after the change
+ships, so it cannot be backfilled.
+
 ---
 
 ## 7. Read endpoints

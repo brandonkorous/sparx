@@ -1,3 +1,4 @@
+import { Text } from '@wizeworks/silicaui-react';
 import { Dot, getModuleColor, Section, SectionHeader } from './primitives';
 import { Cycle } from './cycle';
 import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-businesses';
@@ -18,29 +19,23 @@ import { EXAMPLE_BUSINESSES, type ExampleBusiness } from '@/lib/example-business
  */
 
 const M = getModuleColor('dropship');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // ── AUTOMATED ORDER ROUTING (the marquee rail) ──────────────────────────────
 export function DropshipRouting() {
   const stages = [
     {
-      n: '01 · placed',
       title: 'An order comes in',
       body: 'A customer checks out as normal — through your store or the API. The order can mix dropship lines with stock you hold; sparx sorts that out next.',
     },
     {
-      n: '02 · split',
       title: 'Split by supplier',
       body: 'The router groups the lines into a fulfillment group per supplier. Two suppliers on one order become two groups, each handled independently.',
     },
     {
-      n: '03 · submitted',
       title: 'Routed to each supplier',
       body: 'Every group is submitted automatically through its supplier adapter — idempotent on the order id, so a retry never double-orders. A failure holds and alerts you, never drops.',
     },
     {
-      n: '04 · tracked',
       title: 'Tracking flows back',
       body: 'Tracking arrives by webhook or poll, updates the fulfillment record, emails the customer, and logs a CRM activity. Combined tracking once every group ships.',
     },
@@ -52,78 +47,20 @@ export function DropshipRouting() {
         headline="Orders route themselves"
         lede="This is the part you stop doing by hand. When an order lands, sparx splits it by supplier, submits each group, and pulls tracking back to the customer — automatically, whether one supplier fills it or three."
       />
-      <div
-        className="mkt-pipeline"
-        style={{ marginTop: '52px', backgroundColor: 'var(--color-base-100)' }}
-      >
+      <div className="mkt-pipeline bg-base-100 mt-13">
         {stages.map((s, i) => (
           <div
-            key={s.n}
-            className="mkt-stage"
-            style={{
-              position: 'relative',
-              padding: '26px 24px 28px',
-              minHeight: '208px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-            }}
+            key={s.title}
+            className="mkt-pipe-cell relative flex min-h-[188px] flex-col gap-3 px-6 pt-6 pb-7"
           >
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.06em',
-                textTransform: 'uppercase',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {s.n}
-            </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '18px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '9px',
-              }}
-            >
+            <h3 className="text-body-lg m-0 flex items-center gap-2.5 font-sans font-medium tracking-[-0.01em]">
               <Dot color={M.color} size={8} />
               {s.title}
             </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {s.body}
-            </p>
+            <Text className="text-caption text-ink-muted m-0">{s.body}</Text>
             {i < stages.length - 1 ? (
               <span
-                className="mkt-hide-on-tablet"
-                style={{
-                  position: 'absolute',
-                  right: '-11px',
-                  top: '38px',
-                  zIndex: 2,
-                  width: 22,
-                  height: 22,
-                  borderRadius: '9999px',
-                  backgroundColor: 'var(--color-base-100)',
-                  border: '1px solid var(--color-base-300)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: M.color,
-                }}
+                className={`mkt-hide-on-tablet bg-base-100 border-base-300 ${M.ink} absolute top-[38px] -right-[11px] z-2 flex h-[22px] w-[22px] items-center justify-center rounded-full border`}
               >
                 <ArrowRight size={13} />
               </span>
@@ -164,56 +101,17 @@ export function DropshipInventory() {
           </>
         }
       />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {cells.map((c) => (
           <div
             key={c.title}
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '12px',
-              padding: '26px',
-              backgroundColor: 'var(--color-base-100)',
-              border: '1px solid var(--color-base-300)',
-              borderRadius: '12px',
-              minHeight: '186px',
-            }}
+            className="bg-base-100 border-base-300 flex min-h-[186px] flex-col gap-3 rounded-xl border p-6"
           >
-            <span
-              className={`${M.bg} bg-soft`}
-              style={{
-                width: 32,
-                height: 32,
-                borderRadius: '8px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
+            <span className={`${M.bg} bg-soft flex h-8 w-8 items-center justify-center rounded-lg`}>
               <Dot color={M.color} size={9} />
             </span>
-            <h3
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '17px',
-                fontWeight: 500,
-                letterSpacing: '-0.01em',
-              }}
-            >
-              {c.title}
-            </h3>
-            <p
-              style={{
-                margin: 0,
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '21px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              {c.body}
-            </p>
+            <h3 className="text-body-lg m-0 font-sans font-medium tracking-[-0.01em]">{c.title}</h3>
+            <Text className="text-caption text-ink-muted m-0">{c.body}</Text>
           </div>
         ))}
       </div>
@@ -236,7 +134,7 @@ export function DropshipTracking() {
           </>
         }
       />
-      <div className="mkt-ds-split" style={{ marginTop: '52px' }}>
+      <div className="mkt-ds-split mt-13">
         <Cycle
           items={EXAMPLE_BUSINESSES.map((b) => (
             <TrackingTimeline key={b.domain} business={b} />
@@ -259,76 +157,40 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
   const activeIdx = Math.max(0, steps.indexOf(d.routed.status));
   return (
     <div
-      className={`${M.bg} bg-soft`}
-      style={{
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        padding: '24px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '18px',
-        height: '100%',
-      }}
+      className={`${M.bg} bg-soft border-base-300 flex h-full flex-col gap-[18px] rounded-[14px] border p-6`}
     >
       <div>
-        <span style={{ fontFamily: SANS, fontWeight: 500, fontSize: '16px' }}>
+        <Text as="span" className="text-body text-base-content font-medium">
           {d.routed.number}
-        </span>
-        <span
-          style={{
-            display: 'block',
-            fontFamily: MONO,
-            fontSize: '11.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            marginTop: '4px',
-          }}
-        >
+        </Text>
+        <Text as="span" className="text-mini text-ink-subtle mt-1 block font-mono">
           routed to {d.supplier} · {d.routed.carrier}
-        </span>
+        </Text>
       </div>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+      <div className="flex flex-col gap-3.5">
         {steps.map((s, i) => {
           const done = i <= activeIdx;
           return (
-            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+            <div key={s} className="flex items-center gap-3">
               <span
-                style={{
-                  width: 18,
-                  height: 18,
-                  borderRadius: '9999px',
-                  flexShrink: 0,
-                  backgroundColor: done ? M.color : 'var(--color-base-200)',
-                  border: done ? 'none' : '1px solid var(--color-base-300)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
+                className={`flex h-[18px] w-[18px] shrink-0 items-center justify-center rounded-full ${
+                  done ? M.bg : 'bg-base-200 border-base-300 border'
+                }`}
               >
-                {done ? <Check size={11} color="#fff" /> : null}
+                {done ? <Check size={11} /> : null}
               </span>
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '14px',
-                  fontWeight: i === activeIdx ? 500 : 400,
-                  color: done
-                    ? 'var(--color-base-content)'
-                    : 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
+              <Text
+                as="span"
+                className={`text-small ${done ? 'text-base-content' : 'text-ink-subtle'} ${
+                  i === activeIdx ? 'font-medium' : 'font-normal'
+                }`}
               >
                 {s}
-              </span>
+              </Text>
               {i === activeIdx ? (
-                <span
-                  className={M.ink}
-                  style={{
-                    marginLeft: 'auto',
-                    fontFamily: MONO,
-                    fontSize: '11px',
-                  }}
-                >
+                <Text as="span" className={`text-micro ml-auto font-mono ${M.ink}`}>
                   current
-                </span>
+                </Text>
               ) : null}
             </div>
           );
@@ -342,113 +204,44 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
 function ShippingEmail({ business }: { business: ExampleBusiness }) {
   const { dropship: d, customer, name, email } = business;
   return (
-    <div
-      style={{
-        backgroundColor: 'var(--color-base-100)',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: '14px',
-        overflow: 'hidden',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '10px',
-          padding: '14px 20px',
-          borderBottom: '1px solid var(--color-base-300)',
-          backgroundColor: 'var(--color-base-200)',
-        }}
-      >
+    <div className="bg-base-100 border-base-300 overflow-hidden rounded-[14px] border">
+      {/* Inbox chrome — device mimicry, kept verbatim. */}
+      <div className="border-base-300 bg-base-200 flex items-center gap-2.5 border-b px-5 py-3.5">
         <Dot color={M.color} size={8} />
-        <span
-          style={{
-            fontFamily: MONO,
-            fontSize: '11.5px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <Text as="span" className="text-mini text-ink-subtle font-mono">
           from {email.sender}
-        </span>
+        </Text>
       </div>
-      <div style={{ padding: '22px' }}>
-        <div
-          style={{ fontFamily: SANS, fontWeight: 500, fontSize: '16px', letterSpacing: '-0.01em' }}
-        >
+      <div className="p-[22px]">
+        <div className="text-body text-base-content font-medium tracking-[-0.01em]">
           Your {name} order has shipped
         </div>
-        <p
-          style={{
-            margin: '12px 0 0',
-            fontFamily: SANS,
-            fontSize: '13.5px',
-            lineHeight: '21px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          }}
-        >
+        <Text className="text-caption text-ink-muted mt-3">
           Hi {customer.name.split(' ')[0]} — {d.routed.number} is on its way via {d.routed.carrier}.
           Track it any time with the number below.
-        </p>
-        <div
-          style={{
-            marginTop: '16px',
-            padding: '14px 16px',
-            backgroundColor: 'var(--color-base-200)',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '10px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-          }}
-        >
+        </Text>
+        <div className="bg-base-200 border-base-300 mt-4 flex items-center gap-3 rounded-[10px] border px-4 py-3.5">
           <TruckGlyph size={16} color={M.color} />
-          <span style={{ minWidth: 0 }}>
-            <span
-              style={{
-                display: 'block',
-                fontFamily: SANS,
-                fontSize: '12.5px',
-                fontWeight: 500,
-              }}
-            >
+          <span className="min-w-0">
+            <Text as="span" className="text-mini text-base-content block font-medium">
               {d.routed.carrier}
-            </span>
-            <span
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            </Text>
+            <Text as="span" className="text-micro text-ink-subtle font-mono">
               {d.routed.tracking}
-            </span>
+            </Text>
           </span>
-          <span
-            className={`${M.bg} bg-soft ${M.ink}`}
-            style={{
-              marginLeft: 'auto',
-              fontFamily: SANS,
-              fontSize: '11.5px',
-              fontWeight: 500,
-              padding: '6px 12px',
-              borderRadius: '9999px',
-              flexShrink: 0,
-            }}
+          <Text
+            as="span"
+            className={`${M.bg} bg-soft ${M.ink} text-mini ml-auto shrink-0 rounded-full px-3 py-1.5 font-medium`}
           >
             Track order
-          </span>
+          </Text>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '9px', marginTop: '16px' }}>
+        <div className="mt-4 flex items-center gap-2.5">
           <Dot color={M.color} size={6} />
-          <span
-            style={{
-              fontFamily: MONO,
-              fontSize: '11px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          <Text as="span" className="text-micro text-ink-subtle font-mono">
             sent via sparx Email · {d.supplier} never named
-          </span>
+          </Text>
         </div>
       </div>
     </div>
@@ -474,14 +267,14 @@ function ArrowRight({ size }: { size: number }) {
   );
 }
 
-function Check({ size, color }: { size: number; color: string }) {
+function Check({ size }: { size: number }) {
   return (
     <svg
       width={size}
       height={size}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
+      stroke="currentColor"
       strokeWidth={3}
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -504,7 +297,7 @@ function TruckGlyph({ size, color }: { size: number; color: string }) {
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
-      style={{ flexShrink: 0 }}
+      className="shrink-0"
     >
       <path d="M1 3h15v13H1z" />
       <path d="M16 8h4l3 3v5h-7V8z" />

@@ -104,10 +104,23 @@ export function createErrorsPlugin(options: ErrorsPluginOptions = {}): FastifyPl
       }
 
       if (err.statusCode === 401) {
+        // Preserve an explicitly-attached code instead of flattening every 401
+        // to UNAUTHORIZED. `lib/preview.ts` sets `INVALID_PREVIEW_TOKEN` at five
+        // call sites to tell a caller their preview link is revoked or expired
+        // rather than that they are logged out — two different problems with two
+        // different fixes. Blanket-mapping discarded that at the door, so the
+        // distinction existed in the thrower and nowhere else.
+        //
+        // `FST_*` codes are Fastify's own (FST_JWT_NO_AUTHORIZATION_IN_HEADER
+        // and friends) and are deliberately NOT surfaced — they are internal
+        // vocabulary, and leaking them would make the framework part of our
+        // public contract.
+        const attached =
+          typeof err.code === 'string' && !err.code.startsWith('FST_') ? err.code : 'UNAUTHORIZED';
         return reply.code(401).send({
           success: false,
           error: {
-            code: 'UNAUTHORIZED',
+            code: attached,
             message: err.message || 'Authentication required.',
             request_id: requestId,
           },

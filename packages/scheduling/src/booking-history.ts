@@ -15,6 +15,7 @@ import { withTenant } from '@sparx/db';
 
 export type BookingAuditAction =
   | 'booking.created'
+  | 'booking.updated'
   | 'booking.confirmed'
   | 'booking.rescheduled'
   | 'booking.cancelled'

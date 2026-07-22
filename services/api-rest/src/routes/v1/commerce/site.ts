@@ -1,18 +1,18 @@
 // Commerce — storefront settings + reporting (revenue, top products, etc).
 
-import type { FastifyPluginAsync } from 'fastify';
+import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
 import { reportingService, commerceSiteService } from '@sparx/commerce';
 import { ok } from '@sparx/api-core/envelope';
-import { requireRole } from '@sparx/api-core/auth';
+import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
-import { resolvePropertyId } from '../../../lib/property.js';
+import { resolveListScope, resolvePropertyId, type SiteActor } from '../../../lib/property.js';
 
 /** The active site (docs/49 Phase 6): the `x-sparx-property-id` the dashboard
  *  switcher sets, else the tenant's primary. */
-function resolveRequestProperty(request: { headers: Record<string, unknown> }, tenantId: string) {
+function resolveRequestProperty(request: FastifyRequest, actor: SiteActor) {
   const requested = request.headers['x-sparx-property-id'];
-  return resolvePropertyId(tenantId, typeof requested === 'string' ? requested : null);
+  return resolvePropertyId(actor, typeof requested === 'string' ? requested : null);
 }
 
 // Reporting endpoints accept ?from=&to= (ISO 8601) and default to the
@@ -29,6 +29,11 @@ const LimitedRangeQuery = RangeQuery.extend({
 
 const TimeseriesQuery = RangeQuery.extend({
   grain: z.enum(['day', 'week', 'month']).optional(),
+  // docs/131 §6: which business's figures. A site id → that site; `all` → the
+  // tenant-wide total (revenue whose site was deleted included, member-access
+  // gated); absent → the active site (x-sparx-property-id). Resolved by
+  // resolveListScope, which returns undefined for the all-sites total.
+  property: z.string().min(1).max(63).optional(),
 });
 
 // `channel` is a derived channel key — a bucket (storefront, b2b_portal, …) or a
@@ -50,7 +55,7 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
-    const propertyId = await resolveRequestProperty(request, ctx.tenantId);
+    const propertyId = await resolveRequestProperty(request, requireAuth(request));
     return ok(await commerceSiteService.getSettings(ctx, propertyId));
   });
 
@@ -58,7 +63,7 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'admin');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
-    const propertyId = await resolveRequestProperty(request, ctx.tenantId);
+    const propertyId = await resolveRequestProperty(request, requireAuth(request));
     await commerceSiteService.updateSettings(ctx, propertyId, request.body);
     return ok({ updated: true });
   });
@@ -67,7 +72,7 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
-    const propertyId = await resolveRequestProperty(request, ctx.tenantId);
+    const propertyId = await resolveRequestProperty(request, requireAuth(request));
     return ok(await commerceSiteService.getTheme(ctx, propertyId));
   });
 
@@ -75,7 +80,7 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'admin');
     await requireCommerceModule(request);
     const ctx = toCommerceContext(request);
-    const propertyId = await resolveRequestProperty(request, ctx.tenantId);
+    const propertyId = await resolveRequestProperty(request, requireAuth(request));
     await commerceSiteService.updateTheme(ctx, propertyId, request.body);
     return ok({ updated: true });
   });
@@ -96,10 +101,16 @@ const siteCommerceRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const q = TimeseriesQuery.parse(request.query);
     const range = resolveRange(q);
+    const propertyId = await resolveListScope(
+      requireAuth(request),
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
     return ok(
       await reportingService.revenueTimeseries(toCommerceContext(request), {
         range,
         ...(q.grain ? { grain: q.grain } : {}),
+        ...(propertyId ? { propertyId } : {}),
       })
     );
   });

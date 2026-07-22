@@ -17,9 +17,10 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { prisma, withTenant } from '@sparx/db';
+import { withTenant } from '@sparx/db';
 import { getStorage, variantKey } from '../../../lib/storage.js';
 import { notFound } from '@sparx/api-core/errors';
+import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 import { env } from '../../../env.js';
 
 // Filename pattern matches what variantKey() emits in storage.ts:
@@ -59,9 +60,9 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/media/:id', async (request, reply) => {
     const { id } = RedirectParams.parse(request.params);
     const { tenant: slug } = RedirectQuery.parse(request.query);
-    const tenant = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
-    if (!tenant) throw notFound('Tenant', slug);
-    const asset = await withTenant({ tenantId: tenant.id }, (tx) =>
+    // Cached in lib/tenant-slug.ts (docs/127 §5).
+    const tenantId = await requireTenantIdBySlug(slug);
+    const asset = await withTenant({ tenantId }, (tx) =>
       tx.mediaAsset.findFirst({ where: { id }, select: { key: true, mimeType: true } })
     );
     if (!asset?.key) throw notFound('MediaAsset', id);
@@ -105,7 +106,7 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
     // — that mints a direct storage.googleapis.com URL that is (a) allUsers-blocked
     // and (b) an /originals/ path in the PUBLIC bucket (originals live in the PRIVATE
     // bucket), so it 403s. The variant route (below) serves the bytes instead.
-    const variants = await withTenant({ tenantId: tenant.id }, (tx) =>
+    const variants = await withTenant({ tenantId }, (tx) =>
       tx.mediaVariant.findMany({
         where: { assetId: id },
         select: { format: true, width: true, key: true },

@@ -4,7 +4,7 @@
 // instance. GoDaddy today; adding name.com is a one-line `case` + provider
 // import here, with no change to the domain MCP tools, which depend on the
 // `RegistrarClient` interface. Re-exports the contract surface (types,
-// RegistrarError, neutral DNS/DKIM helpers) for convenience.
+// RegistrarError, neutral DNS helper) for convenience.
 
 import type { RegistrarClient } from '@sparx/registrar';
 import { createGoDaddyRegistrar } from '@sparx/godaddy';

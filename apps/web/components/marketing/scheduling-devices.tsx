@@ -70,9 +70,7 @@ export function SchedulingNoOverlap() {
         headline="Double-booking is impossible, not unlikely"
         lede="Most tools check for conflicts in code, then hope the check ran before someone else booked. sparx enforces it in the database itself: a resource cannot hold two overlapping bookings at the same time, full stop. A racing second request fails cleanly and is offered the next open slot — even if your calendar sync lags."
       />
-      {/* `.mkt-stack-on-tablet` is UNLAYERED, so its 32px gap beats any `gap-*`
-          utility — the 24px override has to stay inline to win. */}
-      <div className="mkt-stack-on-tablet mt-13" style={{ gap: '24px' }}>
+      <div className="mt-13 flex flex-col gap-6 lg:flex-row">
         <ResourceLane />
         <RejectedRace />
       </div>
@@ -187,7 +185,7 @@ export function SchedulingReminders() {
         lede="Deposits and reminders are the highest-ROI things a booking tool does. sparx sends confirmations, reminders, and follow-ups by email and SMS on the cadence you set — and when someone cancels, the waitlist auto-promotes the next person before the slot ever sits empty."
       />
       {/* See the note in SchedulingNoOverlap: the unlayered `.mkt-*` gap wins. */}
-      <div className="mkt-stack-on-tablet mt-13" style={{ gap: '24px' }}>
+      <div className="mt-13 flex flex-col gap-6 lg:flex-row">
         <Cycle
           items={SCHEDULING_SCENES.map((s) => (
             <ReminderTimeline key={s.ref} scene={s} />

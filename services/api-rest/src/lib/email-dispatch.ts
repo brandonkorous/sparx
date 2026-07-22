@@ -10,14 +10,15 @@
 // CMS/sitebuilder ticks). Per-row work rides withTenant({tenantId}) so the
 // UPDATE still goes through tenant_isolation; the cross-tenant scan does not.
 
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
 import { emailService } from '@sparx/builder';
 import type { EmailRecipientRef } from './email-data.js';
-import { buildFrom, renderBuilderEmailDoc } from './tenant-email.js';
+import { buildFrom, loadSenderIdentity, renderBuilderEmailDoc } from './tenant-email.js';
 
-const EMAIL_DISPATCH_LOCK_KEY = 4242_4244;
+const EMAIL_DISPATCH_LOCK_KEY = ADVISORY_LOCKS.EMAIL_DISPATCH;
 const DEFAULT_INTERVAL_MS = 60_000;
 
 interface DueSend {
@@ -74,15 +75,8 @@ async function markSendFailed(tenantId: string, sendId: string, reason: string):
 }
 
 export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<TickResult> {
-  const lock = await prisma.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${EMAIL_DISPATCH_LOCK_KEY}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    logger.debug('email-dispatch: lock held by another pod, skipping');
-    return { acquired: false, processed: 0, errors: 0 };
-  }
-
-  try {
+  const SKIPPED: TickResult = { acquired: false, processed: 0, errors: 0 };
+  return withAdvisoryTickLock(EMAIL_DISPATCH_LOCK_KEY, SKIPPED, async () => {
     const due = await prisma.$queryRaw<DueSend[]>`
       SELECT id, tenant_id, due_at FROM find_due_scheduled_sends(100)
     `;
@@ -106,9 +100,6 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             });
             return null;
           }
-          const settings = await tx.emailSettings.findUnique({
-            where: { tenantId: row.tenant_id },
-          });
           await tx.scheduledSend.update({
             where: { id: send.id },
             data: { status: 'sent', sentAt: new Date(), attempts: { increment: 1 } },
@@ -117,24 +108,33 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             to: send.recipient,
             customerId: send.customerId,
             // The site this send is on behalf of (docs/49 Phase 7) — drives the
-            // per-site brand for the deferred render below.
+            // per-site brand for the deferred render below, and the per-site
+            // SENDER IDENTITY resolved just after this transaction closes.
             propertyId: send.propertyId,
             // Entity refs + trigger-time snapshot for a designed (Builder) email
-            // (docs/91 §3); physical address for the compliance footer node.
+            // (docs/91 §3).
             entityRefs: send.entityRefs,
             entitySnapshot: send.entitySnapshot,
-            physicalAddress: settings?.physicalAddress ?? null,
             payload,
-            from: buildFrom(settings?.fromName ?? null, settings?.fromAddress ?? null),
-            // A per-send Reply-To (a form notification → the visitor) wins over the
-            // tenant's default reply address.
-            replyTo: payload.replyTo ?? settings?.replyTo ?? undefined,
           };
         });
 
         if (!dispatch) continue;
 
-        const { payload, to, from, replyTo, customerId, propertyId } = dispatch;
+        const { payload, to, customerId, propertyId } = dispatch;
+        // Resolved OUTSIDE the transaction above, deliberately: the identity is a
+        // per-site lookup (docs/131 §3.4) that may itself need to resolve the
+        // tenant's primary site, and nesting that inside the already-open
+        // interactive transaction would hold a scarce PgBouncer server connection
+        // across a second one.
+        const identity = await loadSenderIdentity(row.tenant_id, propertyId);
+        const from = buildFrom(identity.fromName, identity.fromAddress);
+        // A per-send Reply-To (a form notification → the visitor) wins over the
+        // site's default reply address.
+        const replyTo = payload.replyTo ?? identity.replyTo ?? undefined;
+        // The CAN-SPAM postal address for the compliance footer node — this
+        // site's, not the tenant's first business's.
+        const physicalAddress = identity.physicalAddress;
         const common = {
           to,
           from,
@@ -201,7 +201,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             propertyId,
             ref,
             marketing,
-            physicalAddress: dispatch.physicalAddress,
+            physicalAddress,
             snapshot: dispatch.entitySnapshot as Record<string, unknown> | null,
             subjectOverride: payload.defer.subject,
             preheaderOverride: payload.defer.preheader,
@@ -243,9 +243,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
     }
 
     return { acquired: true, processed, errors };
-  } finally {
-    await prisma.$queryRaw`SELECT pg_advisory_unlock(${EMAIL_DISPATCH_LOCK_KEY}::int)`;
-  }
+  });
 }
 
 export function startEmailDispatchLoop(

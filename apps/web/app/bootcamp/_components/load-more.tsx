@@ -35,14 +35,14 @@ export function LoadMoreBootcamps({
   return (
     <>
       {items.length > 0 ? (
-        <div className="mkt-grid-3-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {items.map((b) => (
             <BootcampDirectoryCard key={b.id} bootcamp={b} />
           ))}
         </div>
       ) : null}
       {cursor ? (
-        <div style={{ display: 'flex', justifyContent: 'center' }}>
+        <div className="flex justify-center">
           <Button variant="outline" onClick={onMore} loading={pending} disabled={pending}>
             Load more
           </Button>

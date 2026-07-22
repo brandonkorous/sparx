@@ -1,5 +1,12 @@
 import * as React from 'react';
-import { Section, SectionHeader, Spark } from './primitives';
+import { Badge } from '@wizeworks/silicaui-react';
+// `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
+// This is a Server Component: an element passed as silica's `render` prop
+// arrives at the RSC boundary as a lazy client reference whose `.type` is
+// undefined, and silica's unconditional `cloneElement(render, …)` then throws
+// "Element type is invalid … got: undefined" during prerender.
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Display, Section, SectionHeader, Spark, Text } from './primitives';
 import { PricingSwitchboard } from './pricing-switchboard';
 
 /**
@@ -10,7 +17,16 @@ import { PricingSwitchboard } from './pricing-switchboard';
  *
  * Model: per-module flat pricing + a 14-day free trial (docs/17). No bundles,
  * no metering. Builder is a normal $10 module, not a required base.
+ *
+ * Authoring: silica components + Tailwind utilities only (SILICA-VOCABULARY.md).
+ * The only inline `style` left is a per-row module hue read out of MOD — a
+ * genuinely dynamic value, not a static appearance.
  */
+
+/** Join class fragments, dropping falsy ones. */
+function cx(...parts: (string | false | null | undefined)[]): string {
+  return parts.filter(Boolean).join(' ');
+}
 
 const MOD: Record<string, string> = {
   builder: 'var(--color-module-builder)',
@@ -121,71 +137,24 @@ const INCLUDED: { icon: React.ReactNode; title: string; body: string }[] = [
 function AlwaysIncluded() {
   return (
     <Section surface="surface" padding="xl">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+      <div className="flex flex-col gap-12">
         <SectionHeader
           headline="Every plan ships with the platform"
           accent="var(--color-primary)"
           lede="You pay for modules. Everything underneath them — the hosting, the security, the API — is included on every plan, from one module to all twelve."
         />
-        <div
-          className="mkt-grid-4-2-1"
-          style={{
-            gap: '1px',
-            backgroundColor: 'var(--color-base-300)',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '14px',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="border-base-300 bg-base-300 grid grid-cols-1 gap-px overflow-hidden rounded-xl border sm:grid-cols-2 lg:grid-cols-4">
           {INCLUDED.map((it) => (
-            <div
-              key={it.title}
-              style={{
-                backgroundColor: 'var(--color-base-100)',
-                padding: '26px 24px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '8px',
-                minHeight: '150px',
-              }}
-            >
-              <span
-                style={{
-                  width: 30,
-                  height: 30,
-                  borderRadius: 8,
-                  backgroundColor: '#EEF2FF',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  marginBottom: 4,
-                }}
-              >
+            <div key={it.title} className="bg-base-100 flex min-h-[150px] flex-col gap-2 p-6">
+              {/* The icon chip carries the platform hue; the glyph inside strokes
+                  with `currentColor`, so one class sets both. */}
+              <span className="bg-primary bg-soft text-primary mb-1 inline-flex size-[30px] items-center justify-center rounded-lg">
                 {it.icon}
               </span>
-              <h3
-                style={{
-                  margin: 0,
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '15px',
-                  letterSpacing: '-0.01em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+              <Text as="h3" size={15} tone="default" weight={500} className="tracking-[-0.01em]">
                 {it.title}
-              </h3>
-              <p
-                style={{
-                  margin: 0,
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '13px',
-                  lineHeight: '19px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {it.body}
-              </p>
+              </Text>
+              <Text size={13}>{it.body}</Text>
             </div>
           ))}
         </div>
@@ -236,7 +205,7 @@ const LEDGER: { key: string; name: string; price: string; alt: string; amt: stri
   },
   {
     key: 'ai',
-    name: 'AI · MCP',
+    name: 'AI',
     price: '$49',
     alt: 'Zapier Team + custom integration work',
     amt: '$103',
@@ -288,86 +257,29 @@ const SCENARIOS: {
 function CostSavings() {
   return (
     <Section surface="page" padding="xl">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+      <div className="flex flex-col gap-10">
         <SectionHeader
           headline="What the same stack costs in pieces"
           accent="var(--color-primary)"
           lede="Each module replaces a tool you'd otherwise pay for on its own. Here's the real, published 2026 price of each — and what you keep by running them as one platform on one bill."
         />
 
-        <div
-          className="mkt-grid-3-2-1"
-          style={{
-            gap: '1px',
-            backgroundColor: 'var(--color-base-300)',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '14px',
-            overflow: 'hidden',
-          }}
-        >
+        <div className="border-base-300 bg-base-300 grid grid-cols-1 gap-px overflow-hidden rounded-xl border sm:grid-cols-2 lg:grid-cols-3">
           {STATS.map((s) => (
-            <div
-              key={s.value}
-              style={{
-                backgroundColor: 'var(--color-base-100)',
-                padding: '28px 26px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '10px',
-              }}
-            >
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '42px',
-                  lineHeight: 1,
-                  letterSpacing: '-0.03em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+            <div key={s.value} className="bg-base-100 flex flex-col gap-2.5 p-7">
+              <Display as="h3" size={42} lineHeight={42}>
                 {s.value}
-                {s.suffix ? (
-                  <span
-                    style={{
-                      fontSize: '22px',
-                      color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                    }}
-                  >
-                    {s.suffix}
-                  </span>
-                ) : null}
-              </span>
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '14px',
-                  lineHeight: '21px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {s.label}
-              </span>
+                {s.suffix ? <span className="text-h3 text-ink-muted">{s.suffix}</span> : null}
+              </Display>
+              <Text size={14}>{s.label}</Text>
             </div>
           ))}
         </div>
 
         {/* Ledger */}
-        <div
-          style={{
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '14px',
-            overflow: 'hidden',
-            backgroundColor: 'var(--color-base-100)',
-          }}
-        >
-          <div
-            className="mkt-ledger-head"
-            style={{
-              backgroundColor: 'var(--color-base-200)',
-              borderBottom: '1px solid var(--color-base-300)',
-            }}
-          >
+        <div className="bg-base-100 border-base-300 overflow-hidden rounded-xl border">
+          <div className="mkt-ledger-head bg-base-200 border-base-300 border-b">
+            {/* Table column headers — a functional label row, not an eyebrow. */}
             <LedgerLabel>sparx module</LedgerLabel>
             <span />
             <LedgerLabel>What you&apos;d buy instead</LedgerLabel>
@@ -376,159 +288,69 @@ function CostSavings() {
           {LEDGER.map((row, i) => (
             <div
               key={row.key}
-              className="mkt-ledger-row"
-              style={{
-                borderBottom: i === LEDGER.length - 1 ? undefined : '1px solid #F1F1F3',
-              }}
+              className={cx(
+                'mkt-ledger-row',
+                i === LEDGER.length - 1 ? null : 'border-base-300 border-b'
+              )}
             >
-              <span
-                className="mkt-ledger-mod"
-                style={{ display: 'flex', alignItems: 'center', gap: '11px', minWidth: 0 }}
-              >
+              <span className="mkt-ledger-mod flex min-w-0 items-center gap-3">
                 <span
-                  style={{
-                    width: 10,
-                    height: 10,
-                    borderRadius: 9999,
-                    backgroundColor: MOD[row.key],
-                    flexShrink: 0,
-                  }}
+                  className="size-2.5 shrink-0 rounded-full"
+                  style={{ backgroundColor: MOD[row.key] }}
                 />
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '15px',
-                    color: 'var(--color-base-content)',
-                  }}
-                >
+                <Text as="span" size={15} tone="default" weight={500}>
                   {row.name}
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '12px',
-                    color: '#4338CA',
-                    backgroundColor: '#EEF2FF',
-                    padding: '2px 9px',
-                    borderRadius: 9999,
-                  }}
-                >
+                </Text>
+                <Badge color="primary" variant="soft" size="sm" className="font-mono">
                   {row.price}
-                </span>
+                </Badge>
               </span>
-              <span
-                className="mkt-ledger-vs"
-                aria-hidden
-                style={{
-                  textAlign: 'center',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  fontFamily: 'var(--font-mono)',
-                }}
-              >
+              <span className="mkt-ledger-vs text-ink-subtle text-center font-mono" aria-hidden>
                 →
               </span>
-              <span
-                className="mkt-ledger-alt"
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '14px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  minWidth: 0,
-                }}
-              >
+              <Text as="span" size={14} className="min-w-0">
                 {row.alt}
-              </span>
-              <span
-                className="mkt-ledger-amt"
-                style={{
-                  textAlign: 'right',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '14px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
+              </Text>
+              <Text as="span" size={14} mono className="mkt-ledger-amt text-right">
                 {row.amt}
-              </span>
+              </Text>
             </div>
           ))}
         </div>
 
         {/* Scenario cards */}
-        <div className="mkt-grid-2-1">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {SCENARIOS.map((sc) => (
             <div
               key={sc.title}
-              style={{
-                border: sc.featured
-                  ? '1px solid var(--color-primary)'
-                  : '1px solid var(--color-base-300)',
-                borderRadius: '14px',
-                padding: '24px 26px',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '14px',
-                backgroundColor: 'var(--color-base-100)',
-                boxShadow: sc.featured ? '0 12px 32px rgba(99, 102, 241, 0.1)' : undefined,
-              }}
+              className={cx(
+                'bg-base-100 flex flex-col gap-3.5 rounded-xl border p-6',
+                sc.featured ? 'border-primary shadow-lg' : 'border-base-300'
+              )}
             >
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '16px',
-                  letterSpacing: '-0.01em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
-                {sc.title}
-                <span
-                  style={{
-                    display: 'block',
-                    fontWeight: 400,
-                    fontSize: '13px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                    marginTop: '4px',
-                  }}
-                >
+              <div>
+                <Text as="h3" size={16} tone="default" weight={500} className="tracking-[-0.01em]">
+                  {sc.title}
+                </Text>
+                <Text size={13} className="mt-1">
                   {sc.sub}
-                </span>
-              </span>
+                </Text>
+              </div>
               <ScenarioLine k="Bought separately" v={sc.separate} strike />
               <ScenarioLine k="On sparx" v={sc.sparx} sparx />
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '9px',
-                  marginTop: '2px',
-                  padding: '11px 13px',
-                  backgroundColor:
-                    'color-mix(in oklab, var(--color-success) 15%, var(--color-base-100))',
-                  borderRadius: '9px',
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '13.5px',
-                  color: '#065F46',
-                }}
-              >
+              <div className="bg-success bg-soft text-success mt-0.5 flex items-center gap-2.5 rounded-lg px-3 py-3">
                 <CheckMark />
-                {sc.save}
+                <Text as="span" size={14} tone="none" weight={500}>
+                  {sc.save}
+                </Text>
               </div>
             </div>
           ))}
         </div>
 
-        <p
-          style={{
-            margin: 0,
-            maxWidth: '880px',
-            fontFamily: 'var(--font-sans)',
-            fontSize: '12.5px',
-            lineHeight: '20px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        {/* Sourcing footnote — deliberately quiet: a legal-style note, not copy
+            the visitor is asked to read. */}
+        <Text size={12} tone="subtle" className="max-w-[880px]">
           Comparison uses publicly listed 2026 monthly prices for representative growth-tier plans
           of the tools each module replaces — Webflow Premium, Shopify Advanced and Plus, a headless
           CMS, HubSpot Sales Professional, Klaviyo, a dropshipping app, FreshBooks, an inventory
@@ -536,7 +358,7 @@ function CostSavings() {
           contacts, and usage, so a real-world stack usually costs more. Invoicing and Inventory
           come free with Commerce or B2B, so they add $0 to the full-platform total. sparx is flat —
           the module price is the price.
-        </p>
+        </Text>
       </div>
     </Section>
   );
@@ -545,14 +367,10 @@ function CostSavings() {
 function LedgerLabel({ children, align }: { children: React.ReactNode; align?: 'right' }) {
   return (
     <span
-      style={{
-        fontFamily: 'var(--font-mono)',
-        fontSize: '11px',
-        letterSpacing: '0.06em',
-        textTransform: 'uppercase',
-        color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        textAlign: align,
-      }}
+      className={cx(
+        'text-micro text-ink-muted font-mono tracking-[0.06em] uppercase',
+        align === 'right' && 'text-right'
+      )}
     >
       {children}
     </span>
@@ -571,31 +389,20 @@ function ScenarioLine({
   sparx?: boolean;
 }) {
   return (
-    <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between' }}>
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontSize: '14px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        }}
-      >
+    <div className="flex items-baseline justify-between">
+      <Text as="span" size={14}>
         {k}
-      </span>
-      <span
-        style={{
-          fontFamily: 'var(--font-mono)',
-          fontSize: '15px',
-          fontWeight: sparx ? 500 : 400,
-          color: strike
-            ? 'color-mix(in oklab, var(--color-base-content) 50%, transparent)'
-            : sparx
-              ? '#4338CA'
-              : 'var(--color-base-content)',
-          textDecoration: strike ? 'line-through' : undefined,
-        }}
+      </Text>
+      <Text
+        as="span"
+        size={15}
+        mono
+        weight={sparx ? 500 : 400}
+        tone={sparx ? 'none' : 'default'}
+        className={cx(sparx && 'text-primary', strike && 'line-through')}
       >
         {v}
-      </span>
+      </Text>
     </div>
   );
 }
@@ -691,7 +498,7 @@ const FEATURES: { key: string; name: string; price: string; repl: string; feats:
   },
   {
     key: 'ai',
-    name: 'AI · MCP',
+    name: 'AI',
     price: '+ $49/mo',
     repl: 'Replaces Zapier + custom glue code',
     feats: [
@@ -774,93 +581,45 @@ const FEATURES: { key: string; name: string; price: string; repl: string; feats:
 function FeatureTable() {
   return (
     <Section surface="surface" padding="xl">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+      <div className="flex flex-col gap-10">
         <SectionHeader
           headline="Every feature, by module"
           accent="var(--color-primary)"
           lede="The complete list — what each module includes and what it replaces. Open any module below; the platform underneath comes with every plan."
         />
-        <div
-          style={{
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '14px',
-            overflow: 'hidden',
-            backgroundColor: 'var(--color-base-100)',
-          }}
-        >
+        <div className="bg-base-100 border-base-300 overflow-hidden rounded-xl border">
           {FEATURES.map((m, i) => (
             <details
               key={m.key}
-              className="mkt-ft-module"
+              className={cx(
+                'mkt-ft-module',
+                i === FEATURES.length - 1 ? null : 'border-base-300 border-b'
+              )}
               open={i === 0}
-              style={{
-                borderBottom: i === FEATURES.length - 1 ? undefined : '1px solid #F1F1F3',
-              }}
             >
               <summary className="mkt-summary mkt-ft-summary">
-                <span
-                  className="mkt-ft-name"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '11px',
-                    flexShrink: 0,
-                    width: '188px',
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '16px',
-                    letterSpacing: '-0.01em',
-                    color: 'var(--color-base-content)',
-                  }}
+                <Text
+                  as="span"
+                  size={16}
+                  tone="default"
+                  weight={500}
+                  className="mkt-ft-name flex w-[188px] shrink-0 items-center gap-3 tracking-[-0.01em]"
                 >
                   <span
-                    style={{
-                      width: 10,
-                      height: 10,
-                      borderRadius: 9999,
-                      backgroundColor: MOD[m.key],
-                      flexShrink: 0,
-                    }}
+                    className="size-2.5 shrink-0 rounded-full"
+                    style={{ backgroundColor: MOD[m.key] }}
                   />
                   {m.name}
-                </span>
-                <span
-                  className="mkt-ft-price"
-                  style={{
-                    flexShrink: 0,
-                    width: '76px',
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '13px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  }}
-                >
+                </Text>
+                <Text as="span" size={13} mono className="mkt-ft-price w-[76px] shrink-0">
                   {m.price}
-                </span>
-                <span
-                  className="mkt-ft-repl"
-                  style={{
-                    flex: 1,
-                    minWidth: 0,
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '13px',
-                    lineHeight: '18px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
+                </Text>
+                <Text as="span" size={13} className="mkt-ft-repl min-w-0 flex-1">
                   {m.repl}
-                </span>
-                <span
-                  className="mkt-ft-count"
-                  style={{
-                    flexShrink: 0,
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '11px',
-                    letterSpacing: '0.02em',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  }}
-                >
+                </Text>
+                <Text as="span" size={11} mono className="mkt-ft-count shrink-0 tracking-[0.02em]">
                   {m.feats.length} features
-                </span>
+                </Text>
                 <span className="mkt-ft-chev">
                   <svg
                     width={18}
@@ -877,18 +636,13 @@ function FeatureTable() {
                   </svg>
                 </span>
               </summary>
-              <div className="mkt-ft-body" style={{ padding: '2px 26px 24px 47px' }}>
+              <div className="mkt-ft-body pt-0.5 pr-6 pb-6 pl-12">
                 <div className="mkt-ft-feats">
                   {m.feats.map((f) => (
                     <span key={f}>
                       <span
-                        style={{
-                          width: 5,
-                          height: 5,
-                          borderRadius: 9999,
-                          backgroundColor: MOD[m.key],
-                          flexShrink: 0,
-                        }}
+                        className="size-[5px] shrink-0 rounded-full"
+                        style={{ backgroundColor: MOD[m.key] }}
                       />
                       {f}
                     </span>
@@ -923,46 +677,24 @@ const PRINCIPLES: { title: string; body: string }[] = [
 function BillingPrinciples() {
   return (
     <Section surface="page" padding="xl">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '48px' }}>
+      <div className="flex flex-col gap-12">
         <SectionHeader headline="Pricing without the asterisks" accent="var(--color-primary)" />
-        <div className="mkt-grid-3-2-1" style={{ gap: '40px 48px' }}>
+        <div className="grid grid-cols-1 gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {PRINCIPLES.map((p) => (
             <div key={p.title}>
-              <h3
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  margin: 0,
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '17px',
-                  letterSpacing: '-0.01em',
-                  color: 'var(--color-base-content)',
-                }}
+              <Text
+                as="h3"
+                size={17}
+                tone="default"
+                weight={500}
+                className="flex items-center gap-2.5 tracking-[-0.01em]"
               >
-                <span
-                  style={{
-                    width: 8,
-                    height: 8,
-                    borderRadius: 9999,
-                    backgroundColor: 'var(--color-primary)',
-                    flexShrink: 0,
-                  }}
-                />
+                <span className="bg-primary size-2 shrink-0 rounded-full" />
                 {p.title}
-              </h3>
-              <p
-                style={{
-                  margin: '9px 0 0 18px',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '14px',
-                  lineHeight: '22px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
+              </Text>
+              <Text size={14} className="mt-2 ml-[18px]">
                 {p.body}
-              </p>
+              </Text>
             </div>
           ))}
         </div>
@@ -985,65 +717,35 @@ const ENTERPRISE_FEATS = [
 function Enterprise() {
   return (
     <Section surface="dark" padding="xl">
-      <div
-        style={{
-          display: 'flex',
-          gap: '48px',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div style={{ flex: 1, minWidth: '300px' }}>
+      <div className="flex flex-wrap items-center justify-between gap-12">
+        <div className="min-w-[300px] flex-1">
           <SectionHeader
-            invert
-            headlineSize={44}
             headline="Bigger needs? Let&rsquo;s talk"
-            accent="#818CF8"
+            accent="var(--color-primary)"
             lede="For teams with security reviews, procurement, and uptime commitments. Custom pricing that still bills the way the switchboard does — pay for the modules you run."
           />
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 1fr',
-              gap: '14px 28px',
-              marginTop: '26px',
-              maxWidth: '560px',
-            }}
-          >
+          <div className="mt-7 grid max-w-[560px] grid-cols-2 gap-x-7 gap-y-3.5">
             {ENTERPRISE_FEATS.map((f) => (
-              <span
+              <Text
                 key={f}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '14px',
-                  color: 'rgba(255, 255, 255, 0.82)',
-                }}
+                as="span"
+                size={14}
+                tone="default"
+                className="flex items-center gap-2.5"
               >
-                <CheckMark color="#818CF8" />
+                <CheckMark className="text-primary" />
                 {f}
-              </span>
+              </Text>
             ))}
           </div>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px',
-            flexShrink: 0,
-            alignItems: 'flex-start',
-          }}
-        >
-          <CtaLink href="/enterprise" tone="onDark">
+        <div className="flex shrink-0 flex-col items-start gap-3">
+          <a href="/enterprise" className={buttonClasses({ size: 'lg', variant: 'solid' })}>
             Talk to sales
-          </CtaLink>
-          <CtaLink href="/platform" tone="outlineDark">
+          </a>
+          <a href="/platform" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
             See the platform →
-          </CtaLink>
+          </a>
         </div>
       </div>
     </Section>
@@ -1095,37 +797,14 @@ function Faq() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
+      <div className="flex flex-col gap-10">
         <SectionHeader headline="Questions about the bill" accent="var(--color-primary)" />
-        <div style={{ maxWidth: '820px', borderTop: '1px solid var(--color-base-300)' }}>
+        <div className="border-base-300 max-w-[820px] border-t">
           {FAQS.map((f) => (
-            <details
-              key={f.q}
-              className="mkt-faq-item"
-              style={{ borderBottom: '1px solid var(--color-base-300)' }}
-            >
-              <summary
-                className="mkt-summary"
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '16px',
-                  padding: '20px 4px',
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '17px',
-                  letterSpacing: '-0.01em',
-                  color: 'var(--color-base-content)',
-                }}
-              >
+            <details key={f.q} className="mkt-faq-item border-base-300 border-b">
+              <summary className="mkt-summary text-base-content text-body-lg flex items-center justify-between gap-4 px-1 py-5 font-sans font-medium tracking-[-0.01em]">
                 {f.q}
-                <span
-                  className="mkt-faq-icon"
-                  style={{
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
+                <span className="mkt-faq-icon text-ink-muted">
                   <svg
                     width={18}
                     height={18}
@@ -1141,19 +820,9 @@ function Faq() {
                   </svg>
                 </span>
               </summary>
-              <p
-                style={{
-                  margin: 0,
-                  padding: '0 4px 22px',
-                  maxWidth: '680px',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '15px',
-                  lineHeight: '24px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
+              <Text size={15} className="max-w-[680px] px-1 pb-6">
                 {f.a}
-              </p>
+              </Text>
             </details>
           ))}
         </div>
@@ -1166,126 +835,54 @@ function Faq() {
 
 function FinalCta() {
   return (
-    <Section
-      surface="page"
-      padding="xl"
-      style={{
-        borderTop: '1px solid var(--color-base-300)',
-        textAlign: 'center',
-      }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0' }}>
-        <SectionHeaderCentered />
-        <p
-          style={{
-            margin: '20px auto 32px',
-            maxWidth: '540px',
-            fontFamily: 'var(--font-sans)',
-            fontSize: '18px',
-            lineHeight: '28px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          }}
-        >
+    <Section surface="page" padding="xl" className="border-base-300 border-t text-center">
+      <div className="flex flex-col items-center">
+        <div className="mx-auto max-w-[15ch]">
+          <Display size={56} lineHeight={57}>
+            Your plan&apos;s already built
+            <Spark />
+          </Display>
+        </div>
+        <Text size={18} className="mx-auto mt-5 mb-8 max-w-[540px]">
           Flip on the modules you need to see your exact price, then start a 14-day free trial of
           the whole platform — no credit card required.
-        </p>
-        <div style={{ display: 'flex', gap: '14px', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <CtaLink href="#plan" tone="primary">
+        </Text>
+        <div className="flex flex-wrap justify-center gap-3.5">
+          <a
+            href="#plan"
+            className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
+          >
             Build your plan ↑
-          </CtaLink>
-          <CtaLink href="/enterprise" tone="ghost">
+          </a>
+          <a href="/enterprise" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
             Talk to sales
-          </CtaLink>
+          </a>
         </div>
-        <div
-          style={{
-            marginTop: '22px',
-            fontFamily: 'var(--font-mono)',
-            fontSize: '12px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-          }}
-        >
+        <Text size={12} mono className="mt-6">
           14-day free trial · No card to start · Cancel anytime
-        </div>
+        </Text>
       </div>
     </Section>
   );
 }
 
-function SectionHeaderCentered() {
-  return (
-    <h2
-      style={{
-        margin: 0,
-        fontFamily: 'var(--font-sans)',
-        fontWeight: 500,
-        fontSize: 'clamp(34px, 5vw, 56px)',
-        lineHeight: 1.02,
-        letterSpacing: '-0.03em',
-        maxWidth: '15ch',
-        color: 'var(--color-base-content)',
-      }}
-    >
-      Your plan&apos;s already built
-      <Spark />
-    </h2>
-  );
-}
-
 /* ── Shared helpers ──────────────────────────────────────────── */
 
-function CtaLink({
-  href,
-  tone,
-  children,
-}: {
-  href: string;
-  tone: 'primary' | 'ghost' | 'onDark' | 'outlineDark';
-  children: React.ReactNode;
-}) {
-  const base: React.CSSProperties = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '8px',
-    fontFamily: 'var(--font-sans)',
-    fontWeight: 500,
-    fontSize: '16px',
-    padding: '14px 24px',
-    borderRadius: '10px',
-    textDecoration: 'none',
-    border: '1px solid transparent',
-    cursor: 'pointer',
-  };
-  const tones: Record<string, React.CSSProperties> = {
-    primary: { backgroundColor: 'var(--color-primary)', color: '#fff' },
-    ghost: {
-      backgroundColor: 'transparent',
-      color: 'var(--color-base-content)',
-      borderColor: 'var(--color-base-300)',
-    },
-    onDark: { backgroundColor: '#fff', color: '#0A0A0A' },
-    outlineDark: { backgroundColor: 'transparent', color: '#fff', borderColor: '#2F2F2F' },
-  };
-  return (
-    <a href={href} style={{ ...base, ...tones[tone] }}>
-      {children}
-    </a>
-  );
-}
-
-function CheckMark({ color = '#059669' }: { color?: string }) {
+/** Check glyph — strokes with `currentColor`, so the caller sets the hue with an
+ *  ink utility (`text-success`, `text-primary`) rather than a hex prop. */
+function CheckMark({ className }: { className?: string }) {
   return (
     <svg
       width={15}
       height={15}
       viewBox="0 0 24 24"
       fill="none"
-      stroke={color}
+      stroke="currentColor"
       strokeWidth={2.4}
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden
-      style={{ flexShrink: 0 }}
+      className={cx('shrink-0', className)}
     >
       <polyline points="20 6 9 17 4 12" />
     </svg>
@@ -1311,7 +908,7 @@ function Glyph({
       height={16}
       viewBox="0 0 24 24"
       fill="none"
-      stroke="#4338CA"
+      stroke="currentColor"
       strokeWidth={1.8}
       strokeLinecap="round"
       strokeLinejoin="round"

@@ -23,6 +23,7 @@ import { withTenant } from '@sparx/db';
 import type { Prisma, Product } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
+import { productSiteVisibility } from './site-visibility';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
@@ -48,20 +49,10 @@ export interface ListProductsFilter {
   take?: number;
   skip?: number;
   sortBy?: 'updatedAt' | 'createdAt' | 'title' | 'priceMinCents';
-}
-
-/** The Model B visibility predicate (docs/49 §3): a product is on a site if it
- *  has NO scope rows (global) OR a scope row for that site. Wrapped in `AND` so
- *  it composes with any existing top-level `OR` (e.g. text search) without
- *  key-colliding. */
-function productSiteVisibility(propertyId: string): Prisma.ProductWhereInput {
-  return {
-    AND: [
-      {
-        OR: [{ propertyLinks: { none: {} } }, { propertyLinks: { some: { propertyId } } }],
-      },
-    ],
-  };
+  /** Sort direction. Defaults to `desc`, which is right for the date + price
+   *  sorts ("newest", "most expensive") but wrong for `title` — a catalog sorted
+   *  by name is read A→Z, and without this the only available answer was Z→A. */
+  order?: 'asc' | 'desc';
 }
 
 export interface ProductListItem {
@@ -112,10 +103,11 @@ export async function list(
     };
 
     const sortField = filter.sortBy ?? 'updatedAt';
+    const sortDirection = filter.order ?? 'desc';
     const [rows, total] = await Promise.all([
       tx.product.findMany({
         where,
-        orderBy: { [sortField]: 'desc' },
+        orderBy: { [sortField]: sortDirection },
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
         select: {
@@ -217,6 +209,25 @@ export interface ProductDetail {
   optionCount: number;
   categoryIds: string[];
   collectionIds: string[];
+  /**
+   * WHY this product is in each collection it belongs to.
+   *
+   * `collectionIds` above is every membership regardless of origin, which is
+   * ambiguous in the one way that matters: a product can be in a collection
+   * because someone put it there (`manual`) OR because that collection's rule
+   * matched it (`rule`, written by the commerce-indexer's
+   * `projectCollectionRules`). The two behave completely differently — a rule
+   * membership is recomputed on every reprojection, so it cannot be removed
+   * from the product side and must not be re-saved as a manual pin.
+   *
+   * Without this field a client that round-trips `collectionIds` through
+   * `update()` silently CONVERTS every rule membership into a manual one (the
+   * write below stamps `addedBy: 'manual'`), which pins the product into the
+   * collection forever even after it stops matching. Carrying the origin is
+   * what lets an editor send back only the manual set and say, honestly, that
+   * the rest is not its to change.
+   */
+  collectionMemberships: { collectionId: string; addedBy: 'manual' | 'rule' }[];
   // sparx.market opt-in (docs/106 §4.7). `marketListed` is the tenant-set flag;
   // `marketCategory` is the catalog aisle. The product editor's sparx.market
   // section reads these to seed its List/Category controls.
@@ -236,7 +247,7 @@ export async function get(ctx: ServiceContext, productId: string): Promise<Produ
       where: { id: productId, deletedAt: null },
       include: {
         categoryLinks: { select: { categoryId: true } },
-        collectionLinks: { select: { collectionId: true } },
+        collectionLinks: { select: { collectionId: true, addedBy: true } },
         propertyLinks: { select: { propertyId: true } },
         _count: { select: { variants: true, options: true } },
       },
@@ -262,7 +273,7 @@ export async function getByHandle(
       },
       include: {
         categoryLinks: { select: { categoryId: true } },
-        collectionLinks: { select: { collectionId: true } },
+        collectionLinks: { select: { collectionId: true, addedBy: true } },
         propertyLinks: { select: { propertyId: true } },
         _count: { select: { variants: true, options: true } },
       },
@@ -507,7 +518,7 @@ export async function update(
       where: { id: productId, deletedAt: null },
       include: {
         categoryLinks: { select: { categoryId: true } },
-        collectionLinks: { select: { collectionId: true } },
+        collectionLinks: { select: { collectionId: true, addedBy: true } },
         propertyLinks: { select: { propertyId: true } },
         _count: { select: { variants: true, options: true } },
       },
@@ -562,7 +573,7 @@ export async function update(
       },
       include: {
         categoryLinks: { select: { categoryId: true } },
-        collectionLinks: { select: { collectionId: true } },
+        collectionLinks: { select: { collectionId: true, addedBy: true } },
         propertyLinks: { select: { propertyId: true } },
         _count: { select: { variants: true, options: true } },
       },
@@ -582,6 +593,24 @@ export async function update(
       }
     }
     if (input.collectionIds !== undefined) {
+      // Only MANUAL collections may be assigned from the product side, and the
+      // check is not pedantry: the write below stamps `addedBy: 'manual'`, so
+      // accepting a rules-driven id would pin this product into a smart
+      // collection permanently — the next reprojection leaves the manual row
+      // alone, and the product never falls out when it stops matching. The
+      // dedicated `collectionService.setProductCollections` has always refused
+      // this; PATCH silently allowed it, which is the more likely path.
+      if (input.collectionIds.length > 0) {
+        const manualCount = await tx.productCollection.count({
+          where: { id: { in: input.collectionIds }, type: 'manual', deletedAt: null },
+        });
+        if (manualCount !== input.collectionIds.length) {
+          throw new CommerceValidationError(
+            'Some collectionIds are unknown or rules-driven — a product can only be added by hand to a manual collection. Change the collection’s rule instead.',
+            [{ field: 'collectionIds', message: 'Unknown or rules-driven collection' }]
+          );
+        }
+      }
       await tx.collectionProduct.deleteMany({
         where: { productId, addedBy: 'manual' },
       });
@@ -618,7 +647,21 @@ export async function update(
       diff: { before: serializeProduct(before), after: serializeProduct(updated) },
     });
 
-    return updated;
+    // `updated` was read BEFORE the three membership writes above, so its link
+    // sets describe the world as it was. An editor that seeds its form from this
+    // response would therefore show the categories, collections and sites it
+    // just replaced — and immediately look dirty again, or worse, re-send the
+    // old set on the next save. Re-read them.
+    const [categoryLinks, collectionLinks, propertyLinks] = await Promise.all([
+      tx.categoryProduct.findMany({ where: { productId }, select: { categoryId: true } }),
+      tx.collectionProduct.findMany({
+        where: { productId },
+        select: { collectionId: true, addedBy: true },
+      }),
+      tx.productProperty.findMany({ where: { productId }, select: { propertyId: true } }),
+    ]);
+
+    return { ...updated, categoryLinks, collectionLinks, propertyLinks };
   });
 
   await publishCommerceEvent({
@@ -820,7 +863,7 @@ export async function bulkTag(
 
 type ProductWithIncludes = Product & {
   categoryLinks: { categoryId: string }[];
-  collectionLinks: { collectionId: string }[];
+  collectionLinks: { collectionId: string; addedBy: string }[];
   propertyLinks: { propertyId: string }[];
   _count: { variants: number; options: number };
 };
@@ -860,6 +903,13 @@ function toProductDetail(p: ProductWithIncludes): ProductDetail {
     optionCount: p._count.options,
     categoryIds: p.categoryLinks.map((c) => c.categoryId),
     collectionIds: p.collectionLinks.map((c) => c.collectionId),
+    collectionMemberships: p.collectionLinks.map((c) => ({
+      collectionId: c.collectionId,
+      // Anything the indexer did not stamp `rule` is a person's doing. Defaulting
+      // to `manual` on an unknown value keeps an editor able to remove it, which
+      // is the safe direction to be wrong in.
+      addedBy: c.addedBy === 'rule' ? ('rule' as const) : ('manual' as const),
+    })),
     marketListed: p.marketListed,
     marketCategory: p.marketCategory,
     propertyIds: p.propertyLinks.map((l) => l.propertyId),

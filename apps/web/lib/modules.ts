@@ -32,7 +32,8 @@ export interface ModulePricing {
 export interface ModuleMeta {
   slug: string;
   module: MarketingModule;
-  /** Eyebrow chip label (e.g. "Builder", "AI · MCP") */
+  /** Chip label on the OG card (e.g. "Builder", "AI") — matches the module's
+   *  dashboard manifest label, not a widened marketing variant. */
   label: string;
   /** Tagline for hero headline — pair with `headlineSecondary` for the lede line */
   headlinePrimary: string;
@@ -145,7 +146,7 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
       period: '/mo',
       modifier: '',
       bundleNote:
-        'A flat $49/mo with Invoicing bundled in free. Pair it with Builder for a hosted storefront or run it headless against the API — one toggle on one bill, off the moment you stop selling. A small per-transaction fee on Commerce steps down to 0% as your active modules grow.',
+        'A flat $49/mo with Invoicing and Inventory bundled in free. Pair it with Builder for a hosted storefront or run it headless against the API — one toggle on one bill, off the moment you stop selling. A small per-transaction fee on Commerce steps down to 0% as your active modules grow.',
     },
   },
   cms: {
@@ -348,50 +349,53 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'A flat $99/mo, layered on Commerce. Wholesale pricing, net terms, RFQ, purchase orders, and fleet accounts — native, on one bill with everything else.',
+        'A flat $99/mo, layered on Commerce, with Invoicing and Inventory bundled in free. Wholesale pricing, net terms, RFQ, purchase orders, and fleet accounts — native, on one bill with everything else.',
     },
     marketingDomain: 'sparxb2b.com',
   },
   ai: {
     slug: 'ai',
     module: 'ai',
-    label: 'AI · MCP',
-    headlinePrimary: 'Bring your',
-    headlineSecondary: 'own AI',
-    title: 'sparx AI — Bring your own AI. Native MCP for Claude, ChatGPT, Copilot.',
+    // /ai is the customer-facing half of the AI module — the concierge that
+    // answers a tenant's website visitors. The tenant-facing MCP / agentic half
+    // is its own document at /agentic. Both are the one $49 `ai` module.
+    label: 'AI',
+    headlinePrimary: 'Answers for',
+    headlineSecondary: 'your customers',
+    title: 'sparx AI Concierge — answer your customers, on your own AI.',
     description:
-      'Don’t learn another chatbot. Connect Claude, ChatGPT, or Copilot to sparx and run your business in plain English — from the chat you already use. No exports, no CSVs.',
-    lede: 'We didn’t build you another AI assistant to learn. We opened a direct line so the AI you already use — Claude, ChatGPT, Copilot — can read and write your live business data in plain English, from the same chat you’re already in. No new tool, no new tab, no exports.',
+      'An AI that answers your website visitors instantly — grounded on your live catalog and policies, and it hands off to a real person the moment it’s unsure. Bring your own Anthropic or OpenAI key; sparx never runs the AI for you.',
+    lede: 'Put an AI on your site chat that actually knows your business. It answers from your live products, orders, and policies — not a scraped FAQ — and when it isn’t sure, it hands the conversation to your team instead of guessing. You connect your own AI; the intelligence is always yours.',
     features: [
       {
         number: '01',
-        title: 'Nothing new to learn.',
-        body: 'Stay in the assistant you already trust. sparx shows up as tools inside it — no second app, no separate chat history, no bot to babysit.',
+        title: 'Answers, not guesses.',
+        body: 'Every reply is grounded on your live catalog, order status, and policies — the same records your dashboard shows, the moment they change. No scraped FAQ to go stale.',
       },
       {
         number: '02',
-        title: 'Your whole business, reachable.',
-        body: 'Ask about orders, customers, and revenue. Create a draft, update inventory, send a quote. Everything the API can do, your AI can do — in plain English.',
+        title: 'Knows when to get a human.',
+        body: 'Each answer carries a confidence score. Below the line — or any doubt — it hands off to your team on the staff inbox instead of making something up.',
       },
       {
         number: '03',
-        title: 'Connect once.',
-        body: 'Generate a scoped key, paste it with one endpoint into your client. Works with Claude, ChatGPT, Copilot, Cursor — anything that speaks MCP.',
+        title: 'Bring your own AI.',
+        body: 'Connect your own Anthropic or OpenAI key in one screen. sparx runs no AI on your behalf — no key, and every chat simply goes to a person.',
       },
       {
         number: '04',
-        title: 'Scoped & audited.',
-        body: 'Per-agent keys, per-tool permissions, every call written to the audit log. Write actions confirm first. Revoke in one click.',
+        title: 'Looks, never touches.',
+        body: 'The concierge can look anything up for a customer, but it never places an order or changes a record on their behalf. Reading is automatic; acting stays human.',
       },
       {
         number: '05',
-        title: 'A first-class server.',
-        body: 'Not a plugin. The MCP server is part of the platform, scoped to your tenant, deployed alongside the API — and it tracks the modules you run.',
+        title: 'Sounds like you.',
+        body: 'Set the greeting, the away message, the tone, and the accent color. It opens the way you would and stays on brand through the whole conversation.',
       },
       {
         number: '06',
-        title: 'Live data, no middleman.',
-        body: 'Your AI reads the same records the dashboard does, the moment they change. No nightly export, no sync to drift, nothing in between.',
+        title: 'On the clock you choose.',
+        body: 'Set operating hours: outside them, customers get your away message and a clean handoff, so no one waits on a bot that should be a person.',
       },
     ],
     pricing: {
@@ -399,7 +403,7 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
       period: '/mo',
       modifier: '+',
       bundleNote:
-        'A flat $49/mo. Connect any MCP client and read or write live data across every module you run — scoped, audited, revocable, all on one bill.',
+        'A flat $49/mo for the whole AI module — this customer-facing concierge AND agentic MCP access for your own team (that half lives at /agentic). Bring your own AI key; one module, one bill.',
     },
   },
   dropship: {

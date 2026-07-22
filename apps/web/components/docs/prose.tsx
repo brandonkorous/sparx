@@ -119,7 +119,7 @@ export function Breadcrumb({ items }: { items: Crumb[] }) {
   return (
     <nav className="docs-breadcrumb" aria-label="Breadcrumb">
       {items.map((c, i) => (
-        <span key={`${c.label}-${i}`} style={{ display: 'inline-flex', gap: '8px' }}>
+        <span key={`${c.label}-${i}`} className="inline-flex gap-2">
           {c.href ? <a href={c.href}>{c.label}</a> : <span className="current">{c.label}</span>}
           {i < items.length - 1 ? <span className="sep">/</span> : null}
         </span>

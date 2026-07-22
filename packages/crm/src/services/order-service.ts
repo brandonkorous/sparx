@@ -90,6 +90,10 @@ export async function list(
       ...(filter.paymentStatus ? { paymentStatus: filter.paymentStatus } : {}),
       ...(filter.channel ? { channel: filter.channel } : {}),
       ...(filter.propertyId ? { propertyId: filter.propertyId } : {}),
+      // Member access ceiling (docs/131 §3.3): a restricted member sees only
+      // orders on their granted sites — NOT null-property (orphaned) orders,
+      // which belong to a deleted business they have no claim to.
+      ...(filter.propertyIds ? { propertyId: { in: filter.propertyIds } } : {}),
       // B2B scoping rides the customer relation — an Order carries no
       // b2bAccountId of its own. A specific account wins over the broad
       // "any B2B account" lens when both are supplied.
@@ -106,12 +110,26 @@ export async function list(
             },
           }
         : {}),
-      ...(filter.q ? { orderNumber: { startsWith: filter.q, mode: 'insensitive' } } : {}),
+      // Search spans the order number AND the buyer. It was an order-number
+      // PREFIX match, which answers only the question someone already knows the
+      // answer to — a customer on the phone gives you their name, not
+      // "ORD-1042", and a partial number ("1042") matched nothing at all.
+      ...(filter.q
+        ? {
+            OR: [
+              { orderNumber: { contains: filter.q, mode: 'insensitive' as const } },
+              { customer: { firstName: { contains: filter.q, mode: 'insensitive' as const } } },
+              { customer: { lastName: { contains: filter.q, mode: 'insensitive' as const } } },
+              { customer: { company: { contains: filter.q, mode: 'insensitive' as const } } },
+              { customer: { email: { contains: filter.q, mode: 'insensitive' as const } } },
+            ],
+          }
+        : {}),
     };
     const [items, total] = await Promise.all([
       tx.order.findMany({
         where,
-        orderBy: { [filter.sortBy]: 'desc' },
+        orderBy: { [filter.sortBy]: filter.order },
         take: filter.take,
         skip: filter.skip,
         // Joined so the Customer / Account columns render from the list query

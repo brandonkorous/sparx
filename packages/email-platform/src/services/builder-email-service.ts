@@ -121,7 +121,10 @@ export async function prepareTestSend(
   const { to } = TestSendInput.parse(rawInput);
   const [brand, settings] = await Promise.all([
     resolveEmailBrand(ctx, propertyId),
-    getSettings(ctx),
+    // The same site as the brand on the line above (docs/131 §3.4) — a test send
+    // that renders one business's brand under another's From line would be a
+    // smoke test of something that never happens.
+    getSettings(ctx, propertyId ?? null),
   ]);
 
   // The test copy is rendered by the SAME projector + frame the real send uses, so

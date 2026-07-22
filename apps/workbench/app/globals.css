@@ -1,0 +1,311 @@
+/* ── workbench styles ────────────────────────────────────────────────────────
+   Built ground-up on silicaui. Unlike apps/dashboard there is NO coexistence
+   layer here: @sparx/brand/theme.css is the sole token authority and there is
+   no @sparx/ui/tokens.css, no .sx-c-* role vars, no legacy --color-bg-* set.
+   That is the point of this app — it starts at the destination the dashboard is
+   migrating toward.
+
+   Cascade-layer order is declared in @sparx/brand/layers.css, imported from
+   app/layout.tsx BEFORE this file. It cannot live here: this is the Tailwind v4
+   entry, and Tailwind rewrites a top-level `@layer` statement to its own
+   canonical order, silently dropping ours. */
+@import 'tailwindcss';
+@import '@sparx/brand/theme.css';
+@import '@sparx/brand/toast.css';
+/* SparkMascot motion (blink/bob/wink) — the brand loading state renders the
+   mascot, and without these keyframes its face would sit frozen. See
+   components/pane-waiting.tsx. */
+@import '@sparx/brand/mascot.css';
+
+/* The CMS block editor's own surface styles (`.sparx-content-editor`). Plain CSS
+   on brand tokens this app already defines, so it just needs importing once. And
+   `@source` so Tailwind emits the utility classes the editor's TOOLBAR uses in
+   its TSX (bg-module, ring-primary, h-3.5 …) — without scanning the package,
+   those are never generated and the toolbar renders unstyled. */
+@import '@sparx/cms-editor/editor.css';
+@source '../../../packages/cms-editor/src';
+
+/* The silica Email Builder chrome (`builder.email.editor`) — its Insert palette,
+   canvas and Design inspector emit utility classes as LITERAL strings from the
+   shipped dist. Tailwind only generates a utility it SEES, so without scanning
+   these two packages the editor renders unstyled. Explicit @source overrides
+   Tailwind's default node_modules ignore. (The email CANVAS itself is inline-
+   styled, email-safe HTML — it needs no Tailwind — so no layout-vocabulary import
+   is required here, unlike the page builder.) */
+@source '../node_modules/@wizeworks/silicaui-html/dist/**/*.js';
+@source '../node_modules/@wizeworks/silicaui-builder/dist/**/*.js';
+
+/* The page/site Builder CANVAS (`builder.studio`). Unlike the email canvas above,
+   the site canvas is CLASS-styled: silica renders the tenant's page tree using a
+   layout/spacing/type/max-width vocabulary that lives as LITERAL class strings in
+   the catalog + schema packages (e.g. 'mx-auto w-full max-w-5xl px-6 pt-12 …', the
+   navbar-start/center/end zones), NOT in this app's scannable TSX. Tailwind only
+   emits a utility it SEES, so these packages MUST be scanned or the canvas renders
+   its classes as no-ops — cramped padding, wrong type, broken navbar alignment.
+
+   We scan AROUND one landmine rather than excluding it: builder-schemas'
+   `html-import.test.ts` embeds a hostile `bg-[url(x)]` fixture (it asserts the
+   importer DROPS that class). Turbopack's Tailwind does NOT honor `@source not`
+   (verified: the exclusion is silently ignored), so scanning the `src` root emits
+   `background-image: url(x)` → Turbopack tries to resolve module `x` → the build
+   fails. So: silica-catalog/src is hostile-free and scanned whole; for
+   builder-schemas we point ONLY at the vocabulary-bearing sources (`catalog/` +
+   the three class-carrying root files), never the `src` root that holds the test.
+   Adding a new class-bearing builder-schemas file means adding it here too. */
+@source '../../../packages/silica-catalog/src';
+@source '../../../packages/builder-schemas/src/catalog';
+@source '../../../packages/builder-schemas/src/site-chrome.ts';
+@source '../../../packages/builder-schemas/src/starters.ts';
+@source '../../../packages/builder-schemas/src/box-to-class.ts';
+
+/* ── Canvas vocabulary safelist ───────────────────────────────────────────
+   The site canvas renders the tenant's page tree from the DATABASE, so its
+   classes are runtime data Tailwind can never statically scan (the scans above
+   only cover catalog SOURCE, not the saved document). Rather than a custom
+   compiled layer or `--*` tokens — one silicaui system, no parallel layer — we
+   force-generate the builder's silicaui utility vocabulary with `@source
+   inline`. This is Tailwind emitting SILICAUI'S OWN utilities at build time,
+   including every responsive variant, so a `lg:grid-cols-12` / `sm:pt-32` on a
+   DB node actually has CSS. The leading empty in `{,sm:,…}` keeps the base.
+
+   The text ladder here MIRRORS silicaui's canonical `TYPE_SCALE`
+   (`@wizeworks/silicaui/type-scale`, xs→10xl as of 0.31.0). silica exposes that
+   scale as a JS object for building a size picker or safelist in CODE — it can't
+   be consumed by a CSS `@source inline` directive, so `@source inline` stays the
+   mechanism and the keys below are kept in lock-step with TYPE_SCALE by hand. If
+   silica extends the scale again, extend the `text-{…}` set to match. */
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}text-{xs,sm,md,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}'
+);
+/* silicaui typography display steps (`typography.js`): fluid clamp() hero type,
+   emitted as component classes on-demand — so runtime canvas content needs them
+   safelisted. Not responsive utilities (they scale by container query), so no
+   breakpoint prefixes. */
+@source inline('display display-1 display-2 display-3');
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}leading-{none,tight,snug,normal,relaxed,loose}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}tracking-{tighter,tight,normal,wide,wider,widest}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}text-{left,center,right,justify}');
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}{block,inline-block,inline,flex,inline-flex,grid,inline-grid,hidden}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}');
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}flex-{row,row-reverse,col,col-reverse,wrap,nowrap,1,auto,initial,none}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}items-{start,end,center,baseline,stretch}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}justify-{start,end,center,between,around,evenly}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}gap-{x-,y-,}{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32}');
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}{p,px,py,pt,pr,pb,pl}-{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32,36,40,44,48,56,64,72,80,96}'
+);
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}{m,mx,my,mt,mr,mb,ml}-{0,1,2,3,4,5,6,8,10,12,16,20,24,auto}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}w-{full,auto,fit,min,max,screen,1/2,1/3,2/3,1/4,3/4}');
+@source inline(
+  '{,sm:,md:,lg:,xl:,2xl:}max-w-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,full,prose}'
+);
+@source inline('{,sm:,md:,lg:,xl:,2xl:}h-{full,auto,screen,fit}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}min-h-{0,full,screen}');
+@source inline('rounded-{none,sm,md,lg,xl,2xl,3xl,full,box,field,selector}');
+@source inline('border-{0,2,4,8}');
+@source inline(
+  '{uppercase,lowercase,capitalize,normal-case,italic,not-italic,underline,line-through,no-underline,truncate}'
+);
+@source inline('object-{contain,cover,fill,none,scale-down}');
+@source inline('{,sm:,md:,lg:,xl:,2xl:}overflow-{auto,hidden,visible,scroll}');
+/* silicaui COMPONENT classes the canvas composes with (emitted on-demand by the
+   plugin, so runtime DB content needs them safelisted). navbar is a real silicaui
+   component (silicaui/src/components/navbar.js); btn/card/badge are used by the
+   chrome too but listed here so a canvas that uses them stands alone. */
+@source inline('navbar navbar-start navbar-center navbar-end');
+@source inline('btn btn-{primary,secondary,accent,neutral,ghost,link,outline,soft,sm,md,lg,xl}');
+@source inline(
+  'card card-body card-title card-actions badge badge-{primary,secondary,accent,neutral,soft,outline}'
+);
+
+/* `module` is the active-module bridge: it generates .btn-module / .badge-module
+   / .bg-module / .text-module reading --color-module + --color-module-content,
+   which <ModuleScope> repoints per subtree. The 18 solid per-module hues live in
+   @sparx/brand/theme.css as --color-module-<name>.
+   `danger` is sparx's statusTone() vocabulary, paired with --color-danger. */
+@plugin '@wizeworks/silicaui' {
+  colors:
+    primary, secondary, accent, neutral, info, success, warning, error, danger, module,
+    module-builder, module-commerce, module-cms, module-crm, module-invoicing, module-email,
+    module-b2b, module-dropship, module-inventory, module-chat, module-scheduling, module-ai,
+    module-automations, module-seo;
+}
+
+/* Bridge the non-color brand tokens into the Tailwind v4 theme. Colors are owned
+   entirely by silicaui via the @plugin above — there is no parallel color bridge.
+ *
+ * Radius is deliberately ABSENT here. @sparx/brand/theme.css defines radius
+ * semantically — --radius-box (surfaces), --radius-field (inputs/buttons),
+ * --radius-selector (pills) — and silicaui already emits rounded-box /
+ * rounded-field / rounded-selector from them. Re-declaring a t-shirt scale
+ * (--radius-sm/md/lg/xl) here would be self-referential: those names don't exist
+ * in the theme, so the bridge resolves to nothing and `rounded-lg` silently
+ * falls back to Tailwind's own default — a radius the brand never chose.
+ *
+ * So: use rounded-field / rounded-box / rounded-selector by ROLE. Changing the
+ * brand's radius then re-shapes the whole app from one place, which is the point. */
+@theme {
+  --font-sans: var(--font-sans);
+  --font-heading: var(--font-heading);
+  --font-mono: var(--font-mono);
+}
+
+html,
+body {
+  height: 100%;
+  background-color: var(--color-base-200);
+  color: var(--color-base-content);
+  /*font-family: var(--font-sans);*/
+}
+
+/* The workbench is a fixed-viewport application shell, not a scrolling document.
+   Panes own their own scrolling; the page itself never scrolls. */
+body {
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-heading);
+  /* Europa's contextual alternates ('calt') — explicit so it's a deliberate
+     part of the heading style, not an accident of the browser default. */
+  font-variant-ligatures: contextual;
+}
+
+/* Field help text, corrected app-wide.
+ *
+ * silicaui ships .field-description at 12px / 65% opacity. That is a reasonable
+ * library default for a dense developer tool and the wrong one for sparx: our
+ * users are non-technical business owners, and these lines are exactly the
+ * jargon-free guidance they most need to READ — what a tax rate decimal means,
+ * where the invoice gets sent. Two house rules apply and both were being
+ * broken: body text has a floor (12px is caption territory, not explanation),
+ * and hierarchy is never carried by fading readable text.
+ *
+ * So it moves to the caption step of the type scale at full ink strength.
+ * Corrected here rather than with a utility on every FieldDescription, because
+ * the fix belongs to the app's type scale, not to individual fields. */
+.field-description {
+  font-size: 0.875rem; /* 14px — the caption step, not the 12px sub-floor. */
+  line-height: 1.4;
+  opacity: 1;
+  color: var(--color-base-content);
+}
+
+/* A dropdown opened INSIDE a dialog has to render above it.
+ *
+ * silicaui 0.28 added a layering scale (--z-drawer 40 / --z-dialog 50 /
+ * --z-lightbox 60 / --z-popover 70 / --z-tooltip 80 / --z-toast 90) that puts
+ * popovers above dialogs. The VALUES are right; the mechanism still isn't.
+ * Measured on 0.28: `.select-popup` computes `z-index: 70` — on an element
+ * whose `position` is `static`, and **z-index has no effect on a static
+ * element**. Its real stacking level comes from the Base UI positioner that
+ * wraps it, which is still `z-index: auto`. So the dropdown competes at `auto`
+ * against the dialog popup's 51 and loses, exactly as it did on 0.27 at 50.
+ *
+ * Nothing at the call site can reach it: the popup portals as a SIBLING of the
+ * dialog (both into the pane — see lib/dock/window-boundary.tsx), so no
+ * descendant selector matches, no prop exposes the positioner, and styling the
+ * surface via `popupClassName` cannot work because a child can't out-stack its
+ * own parent's level.
+ *
+ * So the POSITIONER is raised here, matched by the popup it hosts, and set from
+ * silica's own token so this tracks the library's intent instead of inventing a
+ * competing number. Delete this block once a silicaui release either positions
+ * the popup surface or applies the z-index to the positioner — verify by
+ * measuring, not by reading the changelog: 0.28 documented the fix without it
+ * taking effect. */
+[role='presentation']:has(> .select-popup),
+[role='presentation']:has(> .calendar-popup),
+[role='presentation']:has(> .popover),
+[role='presentation']:has(> .menu) {
+  z-index: var(--z-popover, 70);
+}
+[role='presentation']:has(> .tooltip) {
+  z-index: var(--z-tooltip, 80);
+}
+
+/* Sparky's idle roam behind the auth pane. ONE element that tucks fully behind
+ * the card's centre (translate(-50%,-50%) at 50%/50% → hidden under the opaque
+ * pane) and pokes out a DIFFERENT edge each beat: upper-right, middle-left, then
+ * the bottom, returning to centre between each so only ever one peek is visible.
+ * top/left are percentages of the pane wrapper (which matches the card), so it
+ * tracks whatever height the card is. Static resting pose (motion off) is the
+ * upper-right peek. */
+.sparky-peek {
+  top: 15%;
+  left: 100%;
+  transform: translate(-12%, -50%) rotate(8deg);
+  will-change: top, left, transform;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sparky-peek {
+    animation: sparky-roam 45s ease-in-out infinite;
+  }
+}
+@keyframes sparky-roam {
+  /* hidden behind card centre (rest) */
+  0%,
+  8% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  /* poke out upper-right */
+  15%,
+  22% {
+    top: 15%;
+    left: 100%;
+    transform: translate(-12%, -50%) rotate(8deg);
+  }
+  /* hide */
+  29%,
+  35% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  /* poke out middle-left */
+  42%,
+  49% {
+    top: 50%;
+    left: 0%;
+    transform: translate(-88%, -50%) rotate(-8deg);
+  }
+  /* hide */
+  56%,
+  62% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  /* poke out the bottom */
+  69%,
+  76% {
+    top: 100%;
+    left: 50%;
+    transform: translate(-50%, -12%) rotate(3deg);
+  }
+  /* hide + long rest */
+  83%,
+  100% {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}

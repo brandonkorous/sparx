@@ -12,11 +12,13 @@ import { getModuleColor, Section, SectionHeader, Dot } from './primitives';
  *    forecast strip, mirroring the dashboard kanban + forecast view.
  *
  * Grounded in docs/11 + the dashboard CRM surfaces. CRM cyan as a signal.
+ *
+ * Class-based per SILICA-VOCABULARY.md. The uppercase/mono strings that survive
+ * here ("segment · win-back at-risk", the stage names, the predicate operators)
+ * are DEVICE CHROME inside a mimicked CRM surface, not editorial eyebrows.
  */
 
 const M = getModuleColor('crm');
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 
 // ── SEGMENTS ────────────────────────────────────────────────────────────────────
 export function CrmSegments() {
@@ -38,137 +40,46 @@ export function CrmSegments() {
         headline="Define the audience, watch it fill"
         lede="Build a segment from any field on the record — lifetime spend, days since last order, email engagement, B2B pricing tier. It updates itself as customers cross the line, and syncs straight to an Email broadcast. No list to export, ever."
       />
-      <div className="mkt-seg-grid" style={{ marginTop: '52px' }}>
+      <div className="mkt-seg-grid mt-[52px]">
         <div
-          className={`${M.bg} bg-soft`}
-          style={{
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '14px',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
+          className={`${M.bg} bg-soft border-base-300 flex flex-col overflow-hidden rounded-[14px] border`}
         >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '9px',
-              padding: '14px 20px',
-              borderBottom: '1px solid var(--color-base-300)',
-            }}
-          >
+          {/* Device chrome: the segment's name rail inside the mimicked builder. */}
+          <div className="border-base-300 flex items-center gap-[9px] border-b px-5 py-3.5">
             <Dot color={M.color} size={8} />
-            <span
-              className={M.ink}
-              style={{
-                fontFamily: MONO,
-                fontSize: '11px',
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
+            <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
               segment · win-back at-risk
             </span>
           </div>
           {preds.map((p) => (
             <div
               key={p.field}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                flexWrap: 'wrap',
-                padding: '13px 20px',
-                borderBottom: '1px solid var(--color-base-200)',
-              }}
+              className="border-base-200 flex flex-wrap items-center gap-2 border-b px-5 py-[13px]"
             >
               {p.join ? (
                 <span
-                  className={`${M.bg} bg-soft ${M.ink}`}
-                  style={{
-                    fontFamily: MONO,
-                    fontSize: '11px',
-                    padding: '3px 9px',
-                    borderRadius: '6px',
-                  }}
+                  className={`${M.bg} bg-soft ${M.ink} text-micro rounded-md px-[9px] py-[3px] font-mono`}
                 >
                   {p.join}
                 </span>
               ) : null}
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '13.5px',
-                  padding: '5px 10px',
-                  border: '1px solid var(--color-base-300)',
-                  borderRadius: '7px',
-                  backgroundColor: 'var(--color-base-200)',
-                }}
-              >
-                <span style={{ fontWeight: 500 }}>{p.field}</span>{' '}
-                <span
-                  style={{
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                    fontFamily: MONO,
-                    fontSize: '12px',
-                  }}
-                >
-                  {p.op}
-                </span>{' '}
-                {p.value}
+              <span className="border-base-300 bg-base-200 text-small rounded-[7px] border px-2.5 py-[5px]">
+                <span className="font-medium">{p.field}</span>{' '}
+                <span className="text-ink-subtle text-mini font-mono">{p.op}</span> {p.value}
               </span>
             </div>
           ))}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '9px',
-              padding: '14px 20px',
-              marginTop: 'auto',
-              backgroundColor: 'var(--color-base-200)',
-              borderTop: '1px solid var(--color-base-300)',
-              fontFamily: MONO,
-              fontSize: '11.5px',
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            }}
-          >
+          <div className="bg-base-200 border-base-300 text-ink-subtle text-mini mt-auto flex items-center gap-[9px] border-t px-5 py-3.5 font-mono">
             <Dot color={M.color} size={6} />
             recomputed live · synced to Email
           </div>
         </div>
-        <div
-          style={{
-            backgroundColor: 'var(--color-base-100)',
-            border: '1px solid var(--color-base-300)',
-            borderRadius: '14px',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <div style={{ padding: '24px 22px 18px' }}>
-            <div
-              className={M.ink}
-              style={{
-                fontFamily: SANS,
-                fontSize: '52px',
-                fontWeight: 500,
-                letterSpacing: '-0.03em',
-                lineHeight: 1,
-              }}
-            >
+        <div className="bg-base-100 border-base-300 flex flex-col overflow-hidden rounded-[14px] border">
+          <div className="px-[22px] pt-6 pb-[18px]">
+            <div className={`${M.ink} text-[52px] leading-none font-medium tracking-[-0.03em]`}>
               218
             </div>
-            <p
-              style={{
-                margin: '8px 0 0',
-                fontFamily: SANS,
-                fontSize: '13px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+            <p className="text-ink-muted text-caption mt-2">
               customers match right now — auto-added the moment they cross the line, removed when
               they reorder.
             </p>
@@ -176,54 +87,14 @@ export function CrmSegments() {
           {matches.map((c) => (
             <div
               key={c.name}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '11px',
-                padding: '12px 22px',
-                borderTop: '1px solid var(--color-base-200)',
-              }}
+              className="border-base-200 flex items-center gap-[11px] border-t px-[22px] py-3"
             >
-              <span
-                style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: '9999px',
-                  backgroundColor: 'var(--color-base-200)',
-                  flexShrink: 0,
-                }}
-              />
-              <span style={{ minWidth: 0 }}>
-                <span
-                  style={{
-                    display: 'block',
-                    fontFamily: SANS,
-                    fontSize: '13.5px',
-                    fontWeight: 500,
-                  }}
-                >
-                  {c.name}
-                </span>
-                <span
-                  style={{
-                    fontFamily: SANS,
-                    fontSize: '11.5px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
-                  {c.meta}
-                </span>
+              <span className="bg-base-200 size-7 shrink-0 rounded-full" />
+              <span className="min-w-0">
+                <span className="text-small block font-medium">{c.name}</span>
+                <span className="text-ink-subtle text-mini">{c.meta}</span>
               </span>
-              <span
-                style={{
-                  marginLeft: 'auto',
-                  fontFamily: MONO,
-                  fontSize: '13px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                }}
-              >
-                {c.amt}
-              </span>
+              <span className="text-ink-muted text-caption ml-auto font-mono">{c.amt}</span>
             </div>
           ))}
         </div>
@@ -288,30 +159,15 @@ export function CrmPipeline() {
         headline="A pipeline that already knows your orders"
         lede="Deals move Lead → Qualified → Proposal → Negotiation → Closed, on a board you drag, a list you sort, or a forecast weighted by probability. Each deal links to the customer’s real quotes and orders — so “quote sent → accepted → invoice paid” lives on one card."
       />
-      <div className="mkt-pipeline-5" style={{ marginTop: '52px' }}>
+      <div className="mkt-pipeline-5 mt-[52px]">
         {stages.map((s) => (
           <div
             key={s.name}
-            style={{
-              backgroundColor: 'var(--color-base-100)',
-              padding: '16px 14px',
-              minHeight: '220px',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '11px',
-            }}
+            className="bg-base-100 flex min-h-[220px] flex-col gap-[11px] px-3.5 py-4"
           >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span
-                style={{
-                  fontFamily: SANS,
-                  fontSize: '12.5px',
-                  fontWeight: 500,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '7px',
-                }}
-              >
+            <div className="flex items-center justify-between">
+              {/* Stage header — kanban column chrome, kept as-is. */}
+              <span className="text-caption flex items-center gap-[7px] font-medium">
                 {s.won ? (
                   <svg
                     width="13"
@@ -327,47 +183,24 @@ export function CrmPipeline() {
                     <polyline points="20 6 9 17 4 12" />
                   </svg>
                 ) : (
+                  // Per-stage confidence ramp — a computed value, so it stays inline.
                   <span style={{ opacity: s.opacity }}>
                     <Dot color={M.color} size={8} />
                   </span>
                 )}
                 {s.name}
               </span>
-              <span
-                style={{
-                  fontFamily: MONO,
-                  fontSize: '11px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
-                {s.n}
-              </span>
+              <span className="text-ink-subtle text-micro font-mono">{s.n}</span>
             </div>
             {s.deals.map((d) => (
               <div
                 key={d.t}
-                style={{
-                  border: `1px solid ${d.p === 'won' ? M.color : 'var(--color-base-300)'}`,
-                  borderRadius: '9px',
-                  padding: '11px',
-                  backgroundColor: 'var(--color-base-200)',
-                }}
+                className={`bg-base-200 rounded-[9px] border p-[11px] ${
+                  d.p === 'won' ? 'border-module-crm' : 'border-base-300'
+                }`}
               >
-                <div
-                  style={{ fontFamily: SANS, fontSize: '12.5px', fontWeight: 500, lineHeight: 1.3 }}
-                >
-                  {d.t}
-                </div>
-                <div
-                  style={{
-                    fontFamily: MONO,
-                    fontSize: '11px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                    marginTop: '6px',
-                    display: 'flex',
-                    justifyContent: 'space-between',
-                  }}
-                >
+                <div className="text-caption leading-[1.3] font-medium">{d.t}</div>
+                <div className="text-ink-muted text-micro mt-1.5 flex justify-between font-mono">
                   <span>{d.v}</span>
                   <span className={M.ink}>{d.p}</span>
                 </div>
@@ -376,39 +209,11 @@ export function CrmPipeline() {
           </div>
         ))}
       </div>
-      <div
-        className="mkt-cluster"
-        style={{
-          gap: '32px',
-          marginTop: '22px',
-          padding: '18px 22px',
-          backgroundColor: 'var(--color-base-100)',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '12px',
-        }}
-      >
+      <div className="bg-base-100 border-base-300 mt-[22px] flex flex-wrap items-center gap-8 rounded-xl border px-[22px] py-[18px]">
         {forecast.map(([n, l]) => (
           <div key={l}>
-            <div
-              style={{
-                fontFamily: SANS,
-                fontSize: '22px',
-                fontWeight: 500,
-                letterSpacing: '-0.02em',
-              }}
-            >
-              {n}
-            </div>
-            <div
-              style={{
-                fontFamily: SANS,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                marginTop: '2px',
-              }}
-            >
-              {l}
-            </div>
+            <div className="text-h3 font-medium tracking-[-0.02em]">{n}</div>
+            <div className="text-ink-subtle text-mini mt-0.5">{l}</div>
           </div>
         ))}
       </div>

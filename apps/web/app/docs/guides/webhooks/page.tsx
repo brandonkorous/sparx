@@ -172,7 +172,7 @@ export default function WebhooksPage() {
         <DocTable>
           <thead>
             <tr>
-              <th style={{ width: '40%' }}>Event</th>
+              <th className="w-[40%]">Event</th>
               <th>Fires when</th>
             </tr>
           </thead>
@@ -255,7 +255,7 @@ export default function WebhooksPage() {
         <DocTable>
           <thead>
             <tr>
-              <th style={{ width: '34%' }}>Header</th>
+              <th className="w-[34%]">Header</th>
               <th>Value</th>
             </tr>
           </thead>
@@ -317,7 +317,7 @@ export default function WebhooksPage() {
         <DocTable>
           <thead>
             <tr>
-              <th style={{ width: '40%' }}>Attempt</th>
+              <th className="w-[40%]">Attempt</th>
               <th>Wait before retry</th>
             </tr>
           </thead>

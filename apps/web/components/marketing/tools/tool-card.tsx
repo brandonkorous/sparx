@@ -15,7 +15,19 @@ import type { ToolMeta } from './registry';
  * module signal on the platform does (and without the uppercase kicker the
  * hand-rolled tag used to be).
  */
-export function ToolCard({ tool }: { tool: ToolMeta }) {
+export function ToolCard({
+  tool,
+  headingLevel: Heading = 'h3',
+}: {
+  tool: ToolMeta;
+  /**
+   * Heading tag for the tool name. The card appears in two places at different
+   * outline depths: straight under the hub's `h1` (where `h3` skips a level and
+   * trips a11y checks) and inside the related-tools strip, which has its own
+   * `h2`. The caller owns the level because only the caller knows the depth.
+   */
+  headingLevel?: 'h2' | 'h3';
+}) {
   const color = getModuleColor(tool.module);
   const mod = getModule(tool.module);
   const Icon = tool.icon;
@@ -32,8 +44,8 @@ export function ToolCard({ tool }: { tool: ToolMeta }) {
           </span>
           <ArrowUpRight className="tool-card__arrow text-ink-subtle" size={18} />
         </span>
-        <h3 className="text-body m-0 font-medium tracking-tight">{tool.name}</h3>
-        <p className="text-caption text-ink-muted tool-card__desc m-0">{tool.tagline}</p>
+        <Heading className="text-body m-0 font-medium tracking-tight">{tool.name}</Heading>
+        <p className="text-body-sm text-ink-muted tool-card__desc m-0">{tool.tagline}</p>
         <span
           className={cx(
             badgeClasses({ color: `module-${tool.module}`, variant: 'soft', size: 'sm' }),

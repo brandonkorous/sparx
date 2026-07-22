@@ -9,7 +9,10 @@ import type { FastifyRequest } from 'fastify';
 import type { ServiceContext } from '@sparx/commerce';
 import { isModuleEnabled } from '@sparx/auth';
 import { requireAuth } from '@sparx/api-core/auth';
+import { withRequestTenant } from '@sparx/api-core/db';
 import { moduleDisabled } from '@sparx/api-core/errors';
+
+import { defaultPropertyIdsToActiveSite, resolvePropertyId, type SiteActor } from './property.js';
 
 export function toCommerceContext(request: FastifyRequest): ServiceContext {
   const auth = requireAuth(request);
@@ -23,4 +26,22 @@ export async function requireCommerceModule(request: FastifyRequest): Promise<vo
   const auth = requireAuth(request);
   const enabled = await isModuleEnabled(auth.tenantId, 'commerce');
   if (!enabled) throw moduleDisabled('commerce');
+}
+
+/** Model B (docs/49 §3): on a multi-site tenant, default a new catalog item's
+ *  `body.propertyIds` to the ACTIVE site (from the `x-sparx-property-id` header,
+ *  else the primary). The request plumbing for the pure `defaultPropertyIdsToActiveSite`
+ *  helper, shared by the product / collection / category create routes. */
+export async function defaultActiveSiteScope(
+  request: FastifyRequest,
+  actor: SiteActor,
+  body: Record<string, unknown>
+): Promise<void> {
+  const header = request.headers['x-sparx-property-id'];
+  const headerPropertyId = typeof header === 'string' ? header : null;
+  await defaultPropertyIdsToActiveSite(
+    body,
+    () => withRequestTenant(request, (tx) => tx.property.count()),
+    () => resolvePropertyId(actor, headerPropertyId)
+  );
 }

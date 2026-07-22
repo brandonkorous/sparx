@@ -20,10 +20,17 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import type { FastifyInstance } from 'fastify';
 import { prisma } from '@sparx/db';
 import { invalidateModuleCache } from '@sparx/auth';
+import { DEFAULT_EMAIL_TEMPLATES } from '@sparx/builder-schemas';
 import { resetPlatformBusForTesting } from '@sparx/crm';
 import { createApp } from '../../src/app.js';
 import { registerEmailProvisioningConsumer } from '../../src/lib/email-provisioning.js';
 import { authHeader, signToken, createTestTenant, dropTestTenant } from '../helpers.js';
+
+// Derived from the catalog, never hardcoded. Three templates were added and this
+// suite sat red asserting 18 — because the number lived in the TEST rather than
+// coming from the thing under test, so growing the catalog broke the suite
+// instead of being covered by it.
+const DEFAULT_COUNT = DEFAULT_EMAIL_TEMPLATES.length;
 
 interface EmailDto {
   id: string;
@@ -57,15 +64,12 @@ describe('per-site email — provisioning + override join', () => {
     const t = await createTestTenant('owner');
     const token = signToken(app, t);
 
-    // createTestTenant seeds no Property; author routes need a real primary site.
-    const propertyId = await prisma.$transaction(async (tx) => {
-      await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${t.tenantId}'`);
-      const p = await tx.property.create({
-        data: { tenantId: t.tenantId, slug: 'primary', name: 'Primary', isPrimary: true },
-        select: { id: true },
-      });
-      return p.id;
-    });
+    // createTestTenant NOW seeds the primary site itself, matching what real
+    // provisioning does. This used to mint its own — which, once the helper
+    // started seeding one, made a SECOND row with slug 'primary' and
+    // is_primary = true, tripping the "exactly one primary per tenant" partial
+    // unique index and failing every test in this file at setup.
+    const propertyId = t.propertyId;
 
     const res = await app.inject({
       method: 'PUT',
@@ -122,16 +126,16 @@ describe('per-site email — provisioning + override join', () => {
     return res.json().data.emails as EmailDto[];
   }
 
-  it('activating email provisions the 18 keyed defaults (published, idempotent)', async () => {
+  it('activating email provisions every keyed default (published, idempotent)', async () => {
     const { tenantId, token } = await setupTenant();
     try {
       const keys = await defaultKeys(tenantId);
-      expect(keys.length).toBe(18);
-      expect(new Set(keys).size).toBe(18); // distinct
+      expect(keys.length).toBe(DEFAULT_COUNT);
+      expect(new Set(keys).size).toBe(DEFAULT_COUNT); // distinct
 
       // Surfaced through the tenant-wide catalog, every one published (send-ready).
       const emails = await listTenant(token);
-      expect(emails.length).toBe(18);
+      expect(emails.length).toBe(DEFAULT_COUNT);
       expect(emails.every((e) => e.published)).toBe(true);
 
       // Re-activation is a safe no-op — no duplicate rows.
@@ -149,7 +153,7 @@ describe('per-site email — provisioning + override join', () => {
         payload: { enabled: true },
       });
       invalidateModuleCache();
-      expect((await defaultKeys(tenantId)).length).toBe(18);
+      expect((await defaultKeys(tenantId)).length).toBe(DEFAULT_COUNT);
     } finally {
       await dropTestTenant(tenantId);
     }
@@ -164,7 +168,7 @@ describe('per-site email — provisioning + override join', () => {
 
       // Before forking, the site sees the tenant default itself.
       const before = await listSite(token, propertyId);
-      expect(before.length).toBe(18);
+      expect(before.length).toBe(DEFAULT_COUNT);
       expect(before.some((e) => e.id === base.id)).toBe(true);
 
       // Fork → a NEW per-site draft override (distinct id, not yet published).
@@ -182,7 +186,7 @@ describe('per-site email — provisioning + override join', () => {
       // The site list now shows the override IN PLACE OF the default — same count,
       // the default's id gone, the override's id present under the same name.
       const after = await listSite(token, propertyId);
-      expect(after.length).toBe(18);
+      expect(after.length).toBe(DEFAULT_COUNT);
       expect(after.some((e) => e.id === base.id)).toBe(false);
       const row = after.find((e) => e.name === base.name);
       expect(row?.id).toBe(override.id);
@@ -200,7 +204,7 @@ describe('per-site email — provisioning + override join', () => {
       });
       expect(again.statusCode).toBe(200);
       expect((again.json().data as EmailDto).id).toBe(override.id);
-      expect((await listSite(token, propertyId)).length).toBe(18);
+      expect((await listSite(token, propertyId)).length).toBe(DEFAULT_COUNT);
     } finally {
       await dropTestTenant(tenantId);
     }

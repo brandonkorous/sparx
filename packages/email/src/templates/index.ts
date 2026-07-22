@@ -22,6 +22,10 @@ export {
   type EmailVerificationEmailProps,
 } from './email-verification';
 
+export { MagicLinkEmail, magicLinkSubject, type MagicLinkEmailProps } from './magic-link';
+
+export { LoginOtpEmail, loginOtpSubject, type LoginOtpEmailProps } from './login-otp';
+
 export { EmailLayout } from './_layout';
 
 export {

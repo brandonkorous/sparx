@@ -29,15 +29,35 @@ model ProductCategory {
   updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
-  tenant   Tenant            @relation(fields: [tenantId], references: [id], onDelete: Cascade)
-  parent   ProductCategory?  @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
-  children ProductCategory[] @relation("CategoryTree")
-  products CategoryProduct[]
+  tenant        Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  parent        ProductCategory?   @relation("CategoryTree", fields: [parentId], references: [id], onDelete: SetNull)
+  children      ProductCategory[]  @relation("CategoryTree")
+  products      CategoryProduct[]
+  propertyLinks CategoryProperty[]
 
   @@unique([tenantId, handle], map: "product_categories_tenant_handle_unique")
   @@index([tenantId, parentId])
   @@index([tenantId, path])
   @@map("commerce_product_categories")
+}
+
+// Per-site scoping (docs/49 §3 Model B) — which web PROPERTIES a category is
+// visible on. Mirrors ProductProperty exactly: NO rows = visible on ALL sites
+// (the backward-compatible default, zero backfill); one-or-more rows = visible
+// ONLY on those sites. A junction (composite PK, NO tenant_id — tenant scoping
+// rides the FK parents, like CategoryProduct), so the RLS audit skips it. The
+// site read filters `propertyLinks none OR propertyLinks some(propertyId)`
+// (api-rest lib/property.ts categorySiteVisibilityWhere).
+model CategoryProperty {
+  propertyId String @map("property_id") @db.Uuid
+  categoryId String @map("category_id") @db.Uuid
+
+  property Property        @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  category ProductCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, categoryId])
+  @@index([categoryId])
+  @@map("commerce_category_properties")
 }
 
 // Join — a product can sit in many categories (its primary plus
@@ -85,11 +105,31 @@ model ProductCollection {
   shippingProfileLinks ShippingProfileCollection[]
   b2bTierOverrides     B2bTierProductOverride[]
   b2bAccountOverrides  B2bAccountProductOverride[]
+  propertyLinks        CollectionProperty[]
 
   @@unique([tenantId, handle], map: "product_collections_tenant_handle_unique")
   @@index([tenantId, type])
   @@index([tenantId, updatedAt(sort: Desc)])
   @@map("commerce_product_collections")
+}
+
+// Per-site scoping (docs/49 §3 Model B) — which web PROPERTIES a collection is
+// visible on. Mirrors ProductProperty exactly: NO rows = visible on ALL sites
+// (the backward-compatible default, zero backfill); one-or-more rows = visible
+// ONLY on those sites. A junction (composite PK, NO tenant_id — tenant scoping
+// rides the FK parents, like CollectionProduct), so the RLS audit skips it. The
+// site read filters `propertyLinks none OR propertyLinks some(propertyId)`
+// (api-rest lib/property.ts collectionSiteVisibilityWhere).
+model CollectionProperty {
+  propertyId   String @map("property_id") @db.Uuid
+  collectionId String @map("collection_id") @db.Uuid
+
+  property   Property          @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  collection ProductCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+
+  @@id([propertyId, collectionId])
+  @@index([collectionId])
+  @@map("commerce_collection_properties")
 }
 
 // Join — populated for both manual and rules-driven collections (rules

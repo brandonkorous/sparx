@@ -29,6 +29,7 @@ import {
 import type { ServiceContext } from '@sparx/email-platform';
 
 import { resolveActivePropertyName } from './property.js';
+import { loadSenderIdentity } from './tenant-email.js';
 import { bookingIcsUrl } from './scheduling-ical.js';
 
 /** The entity ids a send resolves against (docs/91 §3) — the automation's
@@ -233,9 +234,10 @@ async function resolveTenant(
   propertyId?: string | null
 ): Promise<Record<string, string>> {
   const [settings, propertyName] = await Promise.all([
-    withTenant(ctx, (tx) =>
-      tx.emailSettings.findUnique({ where: { tenantId: ctx.tenantId }, select: { replyTo: true } })
-    ),
+    // Per-site (docs/131 §3.4): `{{tenant.replyTo}}` in body copy must be the
+    // address of the business whose name is on the message, and that is the same
+    // site whose name resolves on the next line.
+    loadSenderIdentity(ctx.tenantId, propertyId ?? null),
     resolveActivePropertyName(ctx.tenantId, propertyId ?? null),
   ]);
   // `{{site.name}}` is customer-facing copy ("Welcome to …", "thanks for shopping

@@ -858,13 +858,32 @@ interface RawDayRow {
   collected: unknown;
 }
 
-// One GROUP-BY-day pass over non-cancelled orders in [from, toExclusive).
-// Bucketed by placed_at's UTC date. RLS scopes the read to the tenant. Shared by
-// the live overlay/cold-start in revenueTimeseries and by the nightly reconcile.
+function mapRevenueRow(r: RawDayRow): DayRow {
+  const date = startOfUtcDay(new Date(r.bucket));
+  const refundedCents = rawToCents(r.refunded);
+  return {
+    key: utcDateKey(date),
+    date,
+    ordersCount: Number(r.orders_count ?? 0),
+    grossCents: rawToCents(r.gross),
+    discountCents: rawToCents(r.discount),
+    refundedCents,
+    netCents: rawToCents(r.collected) - refundedCents,
+  };
+}
+
+// One GROUP-BY-day pass over non-cancelled orders in [from, toExclusive),
+// SCOPED for a read (docs/131 §6). `propertyId` undefined = every site (the
+// all-sites total, which includes orders whose site was deleted — the
+// unattributed bucket); a value = only that site's orders (orphaned-null orders
+// are correctly excluded from a single business's figures). Bucketed by
+// placed_at's UTC date; RLS scopes to the tenant. Shared by the live overlay /
+// cold-start in revenueTimeseries.
 async function aggregateRevenueByDay(
   tx: TxClient,
   from: Date,
-  toExclusive: Date
+  toExclusive: Date,
+  propertyId?: string
 ): Promise<DayRow[]> {
   const rows = await tx.$queryRaw<RawDayRow[]>`
     SELECT
@@ -878,23 +897,43 @@ async function aggregateRevenueByDay(
     WHERE status <> 'cancelled'
       AND placed_at >= ${from}
       AND placed_at < ${toExclusive}
+      ${propertyId ? Prisma.sql`AND property_id = ${propertyId}::uuid` : Prisma.empty}
     GROUP BY 1
     ORDER BY 1
   `;
+  return rows.map(mapRevenueRow);
+}
 
-  return rows.map((r) => {
-    const date = startOfUtcDay(new Date(r.bucket));
-    const refundedCents = rawToCents(r.refunded);
-    return {
-      key: utcDateKey(date),
-      date,
-      ordersCount: Number(r.orders_count ?? 0),
-      grossCents: rawToCents(r.gross),
-      discountCents: rawToCents(r.discount),
-      refundedCents,
-      netCents: rawToCents(r.collected) - refundedCents,
-    };
-  });
+interface RawDayPropRow extends RawDayRow {
+  property_id: string | null;
+}
+
+// The per-PROPERTY pass the nightly reconcile writes (docs/131 §6): one row per
+// (property, day), null property_id = the unattributed bucket (an order that
+// outlived its site). GROUP BY property_id so every site's daily figures are
+// stored separately and a per-site read is an indexed lookup, not a re-scan.
+async function aggregateRevenueByDayPerProperty(
+  tx: TxClient,
+  from: Date,
+  toExclusive: Date
+): Promise<(DayRow & { propertyId: string | null })[]> {
+  const rows = await tx.$queryRaw<RawDayPropRow[]>`
+    SELECT
+      property_id,
+      (placed_at AT TIME ZONE 'UTC')::date AS bucket,
+      COUNT(*)::int                        AS orders_count,
+      COALESCE(SUM(subtotal), 0)           AS gross,
+      COALESCE(SUM(discount_total), 0)     AS discount,
+      COALESCE(SUM(refund_total), 0)       AS refunded,
+      COALESCE(SUM(total), 0)              AS collected
+    FROM orders
+    WHERE status <> 'cancelled'
+      AND placed_at >= ${from}
+      AND placed_at < ${toExclusive}
+    GROUP BY property_id, 2
+    ORDER BY 2
+  `;
+  return rows.map((r) => ({ ...mapRevenueRow(r), propertyId: r.property_id }));
 }
 
 function bucketStartFor(dateKey: string, grain: 'week' | 'month'): string {
@@ -928,11 +967,33 @@ function foldByGrain(
   return [...map.values()].sort((a, b) => (a.bucket < b.bucket ? -1 : 1));
 }
 
+// Sum a day's measures into the bucket map. Accumulates rather than overwrites
+// because the all-sites read (docs/131 §6) now finds MULTIPLE rollup rows per
+// bucket — one per site plus the unattributed null — that must add up to the
+// tenant total. The closed and open windows stay disjoint, so this never
+// double-counts across them.
+function addDayMeasures(byKey: Map<string, DayMeasures>, key: string, m: DayMeasures): void {
+  const cur = byKey.get(key);
+  byKey.set(
+    key,
+    cur
+      ? {
+          ordersCount: cur.ordersCount + m.ordersCount,
+          grossCents: cur.grossCents + m.grossCents,
+          discountCents: cur.discountCents + m.discountCents,
+          refundedCents: cur.refundedCents + m.refundedCents,
+          netCents: cur.netCents + m.netCents,
+        }
+      : { ...m }
+  );
+}
+
 export async function revenueTimeseries(
   ctx: ServiceContext,
-  input: { range: DateRange; grain?: RollupGrain }
+  input: { range: DateRange; grain?: RollupGrain; propertyId?: string }
 ): Promise<RevenueTimeseries> {
   const grain = input.grain ?? 'day';
+  const propertyId = input.propertyId;
   const from = startOfUtcDay(new Date(input.range.from));
   const to = startOfUtcDay(new Date(input.range.to));
   // First day served live (recomputed on every read). Everything before it is a
@@ -947,14 +1008,19 @@ export async function revenueTimeseries(
     // 1) Closed days from the rollup. Cold-start fallback: if the rollup hasn't
     //    been reconciled yet, aggregate the closed window live so a fresh deploy
     //    still serves real history immediately (cheap at Phase-1 volumes).
+    //    Per-site (docs/131 §6): filter to the one site, or read every site row
+    //    and let addDayMeasures sum them back to the tenant total.
     if (closedToExclusive.getTime() > from.getTime()) {
       const rollup = await tx.rollupCommerceDailyRevenue.findMany({
-        where: { bucket: { gte: from, lt: closedToExclusive } },
+        where: {
+          bucket: { gte: from, lt: closedToExclusive },
+          ...(propertyId ? { propertyId } : {}),
+        },
         orderBy: { bucket: 'asc' },
       });
       if (rollup.length > 0) {
         for (const r of rollup) {
-          byKey.set(utcDateKey(startOfUtcDay(new Date(r.bucket))), {
+          addDayMeasures(byKey, utcDateKey(startOfUtcDay(new Date(r.bucket))), {
             ordersCount: r.ordersCount,
             grossCents: Number(r.grossCents),
             discountCents: Number(r.discountCents),
@@ -963,8 +1029,8 @@ export async function revenueTimeseries(
           });
         }
       } else {
-        for (const d of await aggregateRevenueByDay(tx, from, closedToExclusive)) {
-          byKey.set(d.key, d);
+        for (const d of await aggregateRevenueByDay(tx, from, closedToExclusive, propertyId)) {
+          addDayMeasures(byKey, d.key, d);
         }
       }
     }
@@ -972,8 +1038,8 @@ export async function revenueTimeseries(
     // 2) Open days (today + yesterday) always recomputed live so they're fresh.
     const overlayFrom = new Date(Math.max(from.getTime(), overlayStart.getTime()));
     if (toExclusive.getTime() > overlayFrom.getTime()) {
-      for (const d of await aggregateRevenueByDay(tx, overlayFrom, toExclusive)) {
-        byKey.set(d.key, d);
+      for (const d of await aggregateRevenueByDay(tx, overlayFrom, toExclusive, propertyId)) {
+        addDayMeasures(byKey, d.key, d);
       }
     }
 
@@ -1019,13 +1085,18 @@ export async function reconcileRevenueRollup(
   const toExclusive = addUtcDays(today, 1); // include today
 
   return withTenant(ctx, async (tx) => {
-    const rows = await aggregateRevenueByDay(tx, windowStart, toExclusive);
+    // Per (property, day) rows (docs/131 §6). Delete-then-insert the whole window
+    // for the tenant regardless of property — every site's rows are rewritten in
+    // one pass, so a late refund on any site self-heals and a site with no orders
+    // that day simply has no row.
+    const rows = await aggregateRevenueByDayPerProperty(tx, windowStart, toExclusive);
 
     await tx.rollupCommerceDailyRevenue.deleteMany({ where: { bucket: { gte: windowStart } } });
     if (rows.length > 0) {
       await tx.rollupCommerceDailyRevenue.createMany({
         data: rows.map((r) => ({
           tenantId: ctx.tenantId,
+          propertyId: r.propertyId,
           bucket: r.date,
           ordersCount: r.ordersCount,
           grossCents: BigInt(r.grossCents),
@@ -1131,18 +1202,34 @@ interface RawDropshipDayRow {
   cost: unknown;
 }
 
+function mapDropshipRow(r: RawDropshipDayRow): DropshipDayRow {
+  const date = startOfUtcDay(new Date(r.bucket));
+  return {
+    key: utcDateKey(date),
+    date,
+    ordersCount: Number(r.orders_count ?? 0),
+    revenueCents: rawCents(r.revenue),
+    costCents: rawCents(r.cost),
+  };
+}
+
 // One GROUP-BY-day pass over routed dropship orders in [from, toExclusive),
 // bucketed by created_at's UTC date. Cost expands each order's `line_items`
 // JSON; revenue joins the order's storefront items to the variant whose
 // dropship_source_id matches the order's supplier — the same attribution
 // `dropshipMarginReport` does, aggregated per day in SQL. The revenue CTE is
 // bounded to the window's orders so the live overlay stays cheap. RLS scopes
-// every table to the tenant. Shared by the live overlay/cold-start and the
-// nightly reconcile.
+// every table to the tenant. Shared by the live overlay/cold-start read.
+//
+// Site attribution (docs/131 §6): a DropshipOrder has no site of its own, so it
+// inherits its storefront Order's `property_id` (joined below). `propertyId`
+// undefined = every site (all-sites total, includes orphaned orders); a value =
+// only that site.
 async function aggregateDropshipByDay(
   tx: TxClient,
   from: Date,
-  toExclusive: Date
+  toExclusive: Date,
+  propertyId?: string
 ): Promise<DropshipDayRow[]> {
   const rows = await tx.$queryRaw<RawDropshipDayRow[]>`
     WITH ds AS (
@@ -1160,9 +1247,11 @@ async function aggregateDropshipByDay(
           ) AS li
         ), 0) AS cost_cents
       FROM dropship_orders o
+      JOIN orders ord ON ord.id = o.order_id
       WHERE o.status IN ('submitted', 'shipped', 'delivered')
         AND o.created_at >= ${from}
         AND o.created_at < ${toExclusive}
+        ${propertyId ? Prisma.sql`AND ord.property_id = ${propertyId}::uuid` : Prisma.empty}
     ),
     rev AS (
       SELECT
@@ -1187,17 +1276,68 @@ async function aggregateDropshipByDay(
     GROUP BY ds.bucket
     ORDER BY ds.bucket
   `;
+  return rows.map(mapDropshipRow);
+}
 
-  return rows.map((r) => {
-    const date = startOfUtcDay(new Date(r.bucket));
-    return {
-      key: utcDateKey(date),
-      date,
-      ordersCount: Number(r.orders_count ?? 0),
-      revenueCents: rawCents(r.revenue),
-      costCents: rawCents(r.cost),
-    };
-  });
+interface RawDropshipDayPropRow extends RawDropshipDayRow {
+  property_id: string | null;
+}
+
+// The per-PROPERTY pass the nightly reconcile writes (docs/131 §6): one row per
+// (site, day) via the storefront order's property_id, null = the unattributed
+// bucket (a routed order whose site was deleted).
+async function aggregateDropshipByDayPerProperty(
+  tx: TxClient,
+  from: Date,
+  toExclusive: Date
+): Promise<(DropshipDayRow & { propertyId: string | null })[]> {
+  const rows = await tx.$queryRaw<RawDropshipDayPropRow[]>`
+    WITH ds AS (
+      SELECT
+        o.order_id       AS order_id,
+        o.supplier_id    AS supplier_id,
+        ord.property_id  AS property_id,
+        (o.created_at AT TIME ZONE 'UTC')::date AS bucket,
+        COALESCE((
+          SELECT SUM(
+            COALESCE((li ->> 'quantity')::numeric, 0)
+            * COALESCE((li ->> 'unitPriceCents')::numeric, 0)
+          )
+          FROM jsonb_array_elements(
+            CASE WHEN jsonb_typeof(o.line_items) = 'array' THEN o.line_items ELSE '[]'::jsonb END
+          ) AS li
+        ), 0) AS cost_cents
+      FROM dropship_orders o
+      JOIN orders ord ON ord.id = o.order_id
+      WHERE o.status IN ('submitted', 'shipped', 'delivered')
+        AND o.created_at >= ${from}
+        AND o.created_at < ${toExclusive}
+    ),
+    rev AS (
+      SELECT
+        oi.order_id           AS order_id,
+        pv.dropship_source_id AS supplier_id,
+        SUM(oi.quantity * ROUND(oi.unit_price * 100)) AS revenue_cents
+      FROM order_items oi
+      JOIN commerce_product_variants pv ON pv.id = oi.variant_id
+      WHERE pv.dropship_source_id IS NOT NULL
+        AND oi.order_id IN (SELECT order_id FROM ds)
+      GROUP BY oi.order_id, pv.dropship_source_id
+    )
+    SELECT
+      ds.property_id                      AS property_id,
+      ds.bucket                           AS bucket,
+      COUNT(*)::int                       AS orders_count,
+      COALESCE(SUM(rev.revenue_cents), 0) AS revenue,
+      COALESCE(SUM(ds.cost_cents), 0)     AS cost
+    FROM ds
+    LEFT JOIN rev
+      ON rev.order_id = ds.order_id
+     AND rev.supplier_id = ds.supplier_id
+    GROUP BY ds.property_id, ds.bucket
+    ORDER BY ds.bucket
+  `;
+  return rows.map((r) => ({ ...mapDropshipRow(r), propertyId: r.property_id }));
 }
 
 function foldDropshipByGrain(
@@ -1230,11 +1370,33 @@ function toDropshipPoint(bucket: string, m: DropshipDayMeasures): DropshipOrders
   };
 }
 
+// Accumulate a day's dropship measures into the bucket map — sums the per-site
+// rollup rows back to the tenant total for an all-sites read (docs/131 §6). See
+// addDayMeasures on the revenue side for why this accumulates.
+function addDropshipMeasures(
+  byKey: Map<string, DropshipDayMeasures>,
+  key: string,
+  m: DropshipDayMeasures
+): void {
+  const cur = byKey.get(key);
+  byKey.set(
+    key,
+    cur
+      ? {
+          ordersCount: cur.ordersCount + m.ordersCount,
+          revenueCents: cur.revenueCents + m.revenueCents,
+          costCents: cur.costCents + m.costCents,
+        }
+      : { ...m }
+  );
+}
+
 export async function dropshipOrdersTimeseries(
   ctx: ServiceContext,
-  input: { range: DateRange; grain?: RollupGrain }
+  input: { range: DateRange; grain?: RollupGrain; propertyId?: string }
 ): Promise<DropshipOrdersTimeseries> {
   const grain = input.grain ?? 'day';
+  const propertyId = input.propertyId;
   const from = startOfUtcDay(new Date(input.range.from));
   const to = startOfUtcDay(new Date(input.range.to));
   const overlayStart = addUtcDays(startOfUtcDay(new Date()), -OVERLAY_DAYS);
@@ -1245,23 +1407,27 @@ export async function dropshipOrdersTimeseries(
     const byKey = new Map<string, DropshipDayMeasures>();
 
     // 1) Closed days from the rollup, with a live cold-start fallback so a fresh
-    //    deploy serves real history before the first reconcile runs.
+    //    deploy serves real history before the first reconcile runs. Per-site
+    //    (docs/131 §6): filter to the one site, or sum every site's rows.
     if (closedToExclusive.getTime() > from.getTime()) {
       const rollup = await tx.rollupDropshipDailyOrders.findMany({
-        where: { bucket: { gte: from, lt: closedToExclusive } },
+        where: {
+          bucket: { gte: from, lt: closedToExclusive },
+          ...(propertyId ? { propertyId } : {}),
+        },
         orderBy: { bucket: 'asc' },
       });
       if (rollup.length > 0) {
         for (const r of rollup) {
-          byKey.set(utcDateKey(startOfUtcDay(new Date(r.bucket))), {
+          addDropshipMeasures(byKey, utcDateKey(startOfUtcDay(new Date(r.bucket))), {
             ordersCount: r.ordersCount,
             revenueCents: Number(r.revenueCents),
             costCents: Number(r.costCents),
           });
         }
       } else {
-        for (const d of await aggregateDropshipByDay(tx, from, closedToExclusive)) {
-          byKey.set(d.key, d);
+        for (const d of await aggregateDropshipByDay(tx, from, closedToExclusive, propertyId)) {
+          addDropshipMeasures(byKey, d.key, d);
         }
       }
     }
@@ -1269,8 +1435,8 @@ export async function dropshipOrdersTimeseries(
     // 2) Open days (today + yesterday) always recomputed live so they're fresh.
     const overlayFrom = new Date(Math.max(from.getTime(), overlayStart.getTime()));
     if (toExclusive.getTime() > overlayFrom.getTime()) {
-      for (const d of await aggregateDropshipByDay(tx, overlayFrom, toExclusive)) {
-        byKey.set(d.key, d);
+      for (const d of await aggregateDropshipByDay(tx, overlayFrom, toExclusive, propertyId)) {
+        addDropshipMeasures(byKey, d.key, d);
       }
     }
 
@@ -1322,13 +1488,14 @@ export async function reconcileDropshipOrdersRollup(
   const toExclusive = addUtcDays(today, 1); // include today
 
   return withTenant(ctx, async (tx) => {
-    const rows = await aggregateDropshipByDay(tx, windowStart, toExclusive);
+    const rows = await aggregateDropshipByDayPerProperty(tx, windowStart, toExclusive);
 
     await tx.rollupDropshipDailyOrders.deleteMany({ where: { bucket: { gte: windowStart } } });
     if (rows.length > 0) {
       await tx.rollupDropshipDailyOrders.createMany({
         data: rows.map((r) => ({
           tenantId: ctx.tenantId,
+          propertyId: r.propertyId,
           bucket: r.date,
           ordersCount: r.ordersCount,
           revenueCents: BigInt(r.revenueCents),

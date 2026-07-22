@@ -70,6 +70,18 @@ resource "cloudflare_record" "sparx_works_app" {
   comment         = "Merchant dashboard"
 }
 
+resource "cloudflare_record" "sparx_works_workbench" {
+  count           = var.cloudflare_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.sparx_works[0].id
+  name            = "workbench"
+  type            = "A"
+  content         = google_compute_address.ingress.address
+  ttl             = 1
+  proxied         = true
+  allow_overwrite = true
+  comment         = "Workbench — multi-window operator app"
+}
+
 resource "cloudflare_record" "sparx_works_api" {
   count           = var.cloudflare_enabled ? 1 : 0
   zone_id         = data.cloudflare_zone.sparx_works[0].id

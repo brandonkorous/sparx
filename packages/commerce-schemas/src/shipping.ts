@@ -131,6 +131,12 @@ export const ShipmentPackage = z.object({
 export type ShipmentPackage = z.infer<typeof ShipmentPackage>;
 
 export const ShipmentRequest = z.object({
+  // Which site is quoting (docs/131 §4). Optional — omitted means "don't filter
+  // by site", which is what every caller predating multi-site shipping wants and
+  // is exactly today's behaviour. A caller that KNOWS its site (checkout, the
+  // storefront cart) passes it and gets only that business's zones plus the
+  // tenant-wide ones.
+  propertyId: z.string().uuid().optional(),
   fromAddress: AddressSnapshot,
   toAddress: AddressSnapshot,
   packages: z.array(ShipmentPackage).min(1).max(50),

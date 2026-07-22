@@ -63,10 +63,7 @@ const contentAnalyticsRoutes: FastifyPluginAsync = (app) => {
     const limit = q.limit ?? 8;
 
     const header = request.headers['x-sparx-property-id'];
-    const propertyId = await resolvePropertyId(
-      auth.tenantId,
-      typeof header === 'string' ? header : null
-    );
+    const propertyId = await resolvePropertyId(auth, typeof header === 'string' ? header : null);
 
     return withTenant({ tenantId: auth.tenantId }, async (tx) => {
       // 1) Pageviews grouped by path for this site in the window.

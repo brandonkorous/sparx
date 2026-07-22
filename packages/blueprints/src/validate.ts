@@ -67,11 +67,6 @@ export function validateBlueprintIntegrity(bp: Blueprint): BlueprintIssue[] {
       add(`commerce.products[${i}]`, `Duplicate product handle "${p.handle}".`);
     productHandles.add(p.handle);
   });
-  const componentKeys = new Set<string>();
-  bp.components.forEach((c, i) => {
-    if (componentKeys.has(c.key)) add(`components[${i}]`, `Duplicate component key "${c.key}".`);
-    componentKeys.add(c.key);
-  });
 
   // ── Brand asset refs ────────────────────────────────────────────────────────
   checkAsset('brand.logoLightAssetId', bp.brand.logoLightAssetId);
@@ -203,25 +198,34 @@ export function validateBlueprintIntegrity(bp: Blueprint): BlueprintIssue[] {
     }
   });
 
-  // ── Pages ───────────────────────────────────────────────────────────────────
+  // ── Site pages ──────────────────────────────────────────────────────────────
+  const sitePages = bp.site?.pages ?? [];
   const singletonSlugs = new Set<string>();
   const defaultByRecordType = new Map<string, number>();
-  bp.pages.forEach((pg, i) => {
+  sitePages.forEach((pg, i) => {
     if (pg.kind === 'collection' && !pg.recordType)
-      add(`pages[${i}]`, `Collection page "${pg.name}" needs a recordType.`);
+      add(`site.pages[${i}]`, `Collection page "${pg.name}" needs a recordType.`);
     if (pg.kind === 'singleton' && pg.recordType)
-      add(`pages[${i}]`, `Singleton page "${pg.name}" must not set a recordType.`);
+      add(`site.pages[${i}]`, `Singleton page "${pg.name}" must not set a recordType.`);
     if (pg.isDefault && pg.kind !== 'collection')
-      add(`pages[${i}]`, `Only a collection page can be a recordType default.`);
+      add(`site.pages[${i}]`, `Only a collection page can be a recordType default.`);
     if (pg.kind === 'singleton' && pg.slug) {
-      if (singletonSlugs.has(pg.slug)) add(`pages[${i}].slug`, `Duplicate page slug "${pg.slug}".`);
+      if (singletonSlugs.has(pg.slug))
+        add(`site.pages[${i}].slug`, `Duplicate page slug "${pg.slug}".`);
       singletonSlugs.add(pg.slug);
     }
     if (pg.isDefault && pg.recordType)
       defaultByRecordType.set(pg.recordType, (defaultByRecordType.get(pg.recordType) ?? 0) + 1);
   });
   for (const [rt, count] of defaultByRecordType)
-    if (count > 1) add('pages', `Multiple default templates for recordType "${rt}" (${count}).`);
+    if (count > 1)
+      add('site.pages', `Multiple default templates for recordType "${rt}" (${count}).`);
+
+  // A silica site must have exactly one home page (slug `''`/absent) — the route
+  // every other page's chrome links back to, and what `pages[0]` means to silica.
+  const homes = sitePages.filter((pg) => pg.kind === 'singleton' && !pg.slug).length;
+  if (sitePages.length > 0 && homes !== 1)
+    add('site.pages', `A site needs exactly one home page (slug omitted or ""); found ${homes}.`);
 
   // ── requiresModules sanity ──────────────────────────────────────────────────
   const mods = new Set(bp.requiresModules);
@@ -235,8 +239,8 @@ export function validateBlueprintIntegrity(bp: Blueprint): BlueprintIssue[] {
     add('requiresModules', `Content entries present but "cms" is not listed.`);
   if (bp.emails.length > 0 && !mods.has('email'))
     add('requiresModules', `Emails present but "email" is not listed.`);
-  if ((bp.pages.length > 0 || bp.layout || bp.components.length > 0) && !mods.has('builder'))
-    add('requiresModules', `Pages/layout/components present but "builder" is not listed.`);
+  if (bp.site && !mods.has('builder'))
+    add('requiresModules', `An authored site is present but "builder" is not listed.`);
 
   return issues;
 }

@@ -123,6 +123,19 @@ export const SILICA_STYLE_GUIDE = {
       'native.navbar / native.footer — AVOID for the frame: they hardcode "SilicaUI" demo branding. Use the sparx ' +
         'chrome composites (sparx.navbar / sparx.footer), which bind to the tenant’s own identity.',
     ],
+    colorBands:
+      'BUILD PAGES WITH RANGE, and know the two traps that punish it. A page built only from ' +
+      '`bg-base-100` / `bg-base-200` reads as one flat surface — those two sit ~2% apart in lightness. Real rhythm ' +
+      'comes from committing whole sections to a colour and swinging between them (e.g. `bg-neutral` → `bg-primary` ' +
+      '→ `bg-base-100` → `bg-accent`), which costs nothing and needs no photography. ' +
+      'TRAP 1 — always pair a background with its ON-COLOUR: `bg-neutral text-neutral-content`, ' +
+      '`bg-primary text-primary-content`, `bg-accent text-accent-content`. A band with no paired ink inherits ' +
+      'dark body text and the section becomes unreadable. ' +
+      "TRAP 2 — HEADINGS DO NOT INHERIT THE BAND COLOUR. silicaui's theme layer sets " +
+      '`:where(h1,h2,h3,h4,h5,h6){ color: var(--color-base-content) }`, so a heading inside a dark band renders ' +
+      'DARK-ON-DARK and effectively disappears, even though the paragraph beside it is fine. Put the on-colour ' +
+      'class on the heading ITSELF (`<h2 class="… text-neutral-content">`) every single time. This is the most ' +
+      'common way an otherwise-correct dark section ships broken.',
     houseStyle:
       'sparx bans EYEBROWS (a small uppercase kicker label above a heading) — hierarchy is carried by scale/weight/' +
       'color. `native.content_prose` and `native.feature_media` ship an eyebrow node: DELETE it when you stamp them. ' +

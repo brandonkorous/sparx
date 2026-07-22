@@ -69,16 +69,20 @@ model Property {
 
   // Builder presentation layer, re-keyed per-property (docs/49 Phase 1B).
   // Tenant-authored components stay tenant-wide and do NOT relate here.
-  builderPages       BuilderPage[]
-  builderLayouts     BuilderLayout[]
-  builderAssignments BuilderPageAssignment[]
+  builderPages         BuilderPage[]
+  builderNodeIndex     BuilderNodeIndex[]
+  builderPageArtifacts BuilderPageArtifact[]
+  builderReleases      BuilderRelease[]
+  builderPageOps       BuilderPageOp[]
+  builderLayouts       BuilderLayout[]
+  builderAssignments   BuilderPageAssignment[]
   // The silica site record (docs/118): this site's authored theme + saved-component
   // symbols. Site-global, so it hangs off the property — never off a layout.
-  builderSite        BuilderSite?
+  builderSite          BuilderSite?
   // Per-site email overrides (docs/49 Phase 7b / docs/91 §6) — a site's fork of a
   // provisioned default, or a site-specific custom email. null-property emails are
   // tenant-wide (the 13 defaults + tenant custom emails). SetNull on delete.
-  builderEmails      BuilderEmail[]
+  builderEmails        BuilderEmail[]
 
   // Sitebuilder applied-theme trio, re-keyed per-property (docs/49 Phase 6). Each
   // site keeps its own draft config + published version history + publish
@@ -100,14 +104,149 @@ model Property {
   broadcasts           Broadcast[]
   scheduledSends       ScheduledSend[]
   emailEvents          EmailEvent[]
+  // This site's SENDER IDENTITY — from name/address, reply-to, and the CAN-SPAM
+  // postal address in the footer (docs/131 §3.4). Required + Cascade: unlike the
+  // rows above it does NOT fall back to the primary, because falling back is what
+  // put the other business's name on the envelope.
+  emailSettings        EmailSettings?
+
+  // Per-site AI (docs/131 §3.5). The `persona` prompt is the live-chat AI's
+  // system prompt — the VOICE the business answers in — and tool policies are
+  // per-site safety decisions. Both nullable on the other side: a null-property
+  // row is tenant-wide, and the site's own row wins over it.
+  aiPromptTemplates AiPromptTemplate[]
+  aiToolPolicies    AiToolPolicy[]
+
+  // Live chat (docs/131 §3.7). Conversations SetNull on delete — a support
+  // thread is a record of something that really happened and outlives its site,
+  // like orders above. Quick replies Cascade: authored copy for one business.
+  chatConversations ChatConversation[]
+  chatQuickReplies  ChatQuickReply[]
+
+  // Per-site redirects (docs/131 §3.8) — a 301 is addressed to a PATH, and two
+  // sites have unrelated path spaces. Nullable on the other side: a tenant-wide
+  // rule fires everywhere, and the site's own rule wins for the same path.
+  redirects Redirect[]
+
+  // Per-site cookie consent (docs/131 §3.9). REQUIRED on both, with no
+  // tenant-wide tier: consent is a legal relationship between one visitor and
+  // one business, so inheriting a sibling's is the defect, not a convenience.
+  consentSettings ConsentSettings?
+  consentRecords  ConsentRecord[]
+
+  // Invoicing (docs/131 §3.6). Documents are RESTRICT on delete — the only
+  // relation here that blocks rather than cascading or nulling, because a
+  // finalized invoice is a financial record with statutory retention. A site with
+  // billing history is archived, never deleted. Templates cascade (artwork).
+  billingDocuments         BillingDocument[]
+  billingDocumentTemplates BillingDocumentTemplate[]
+
+  // B2B spending controls (docs/131 §4) — a per-site approval threshold. Nullable
+  // on the other side: a genuinely tenant-wide control ("anything over $10k gets
+  // my eyes") is a real intent worth expressing once.
+  purchaseApprovalRules PurchaseApprovalRule[]
+
+  // Customer-facing commerce (docs/131 §4). Discounts use the JUNCTION pattern
+  // (a portfolio-wide sale is ONE promotion, not N copies to keep in sync);
+  // shipping zones and profiles use a nullable column. ShippingRate deliberately
+  // has neither — it inherits its site from the zone it hangs off.
+  discountLinks    DiscountProperty[]
+  shippingZones    ShippingZone[]
+  shippingProfiles ShippingProfile[]
+
+  // SEO scorecards (docs/131 §4). Nullable on the other side: SET for pages,
+  // which belong to one site, NULL for products/collections, which reach sites
+  // through junctions and can appear on several while having one score.
+  seoAudits SeoAudit[]
+
+  // Per-site product rating aggregate (docs/131 §4) — the cheap per-(product,
+  // site) rating lookup product-card grids read, so a storefront never shows a
+  // star average blended across sibling businesses.
+  productReviewRollups ProductReviewRollup[]
+
+  // Per-site analytics rollups (docs/131 §6). Inventory valuation is deliberately
+  // absent — it stays tenant-only (one stock pool serves every site).
+  rollupCommerceDailyRevenue    RollupCommerceDailyRevenue[]
+  rollupInvoicingDailyCollected RollupInvoicingDailyCollected[]
+  rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
+  rollupAutomationDailyRuns     RollupAutomationDailyRuns[]
+
+  // Per-site pricing (docs/131 §4): price lists apply via a junction (Discount
+  // shape). Markup + surcharge rules are deliberately tenant-wide — markup writes a
+  // variant's single shared list price, and a surcharge is a per-tenant payment fee.
+  priceListLinks PriceListProperty[]
+
+  // The site a tenant markets AS on sparx.market (docs/131 §7) — its public merchant
+  // identity is this property's, not the tenant's.
+  marketMerchantProfiles MarketMerchantProfile[]
+
+  // Shopper-authored content (docs/131 §4), stamped with WHERE IT WAS WRITTEN
+  // rather than inferred from the product — a product reaches sites through a
+  // junction and can be listed on several, so the act of writing is the only
+  // thing that identifies a site. All SetNull: a real person wrote these, and
+  // closing a storefront must not delete their words or empty their saved list.
+  productReviews   ProductReview[]
+  productQuestions ProductQuestion[]
+  wishlists        Wishlist[]
+
+  // CMS editorial (docs/131 §4). Authors SetNull — a byline is a PERSON, and
+  // their published articles still reference it after a site closes. Taxonomies
+  // and terms Cascade: editorial vocabulary belongs to the business that wrote
+  // it. Note the two scope INDEPENDENTLY — a shared vocabulary ("categories")
+  // holding per-site terms ("Diesel repair") is the useful arrangement.
+  authors       Author[]
+  taxonomies    Taxonomy[]
+  taxonomyTerms TaxonomyTerm[]
+
+  // Scheduling (docs/131 §4). Services/policies/intake forms + bookings take a
+  // direct propertyId (bookings SetNull — they are records; the rest Cascade).
+  // Resources and locations use JUNCTIONS because a person or a place can serve
+  // both businesses — the same shape as warehouses.
+  schedulingServices SchedulingService[]
+  bookingPolicies    BookingPolicy[]
+  intakeForms        IntakeForm[]
+  bookings           Booking[]
+  locationLinks      BusinessLocationProperty[]
+  resourceLinks      SchedulingResourceProperty[]
+
+  // External sales channels (docs/131 §4) — an Etsy/TikTok shop belongs to one
+  // business, so the connection is per-site (Cascade: it holds that shop's OAuth
+  // tokens). ChannelProductMapping inherits its site from the connection and has
+  // no relation here.
+  channelConnections ChannelConnection[]
+
+  // Legacy CMS (docs/131 §4). Pages take a direct propertyId (a slug is a URL,
+  // like redirects); ContentType is a nullable vocabulary like Taxonomy (its
+  // entries carry the real per-site scope via ContentEntryProperty).
+  pages        Page[]
+  contentTypes ContentType[]
+
+  // CRM audience (docs/131 §5) — a segment draws from one business's customers
+  // and feeds its broadcasts. Nullable (a cross-business audience is real);
+  // SegmentMember inherits and has no relation here.
+  segments Segment[]
+
+  // CRM sales pipelines (docs/131 §5). Pipeline is the authored process
+  // (Cascade); Deal is the record, denormalized from its pipeline (SetNull,
+  // outlives the site). PipelineStage inherits and has no relation here.
+  pipelines Pipeline[]
+  deals     Deal[]
+
+  // CRM tasks (docs/131 §5) — a work queue item, denormalized from its
+  // customer/deal so a site-scoped member sees only their business's tasks.
+  // SetNull: a task outlives its site.
+  tasks Task[]
 
   // Custom + purchased hostnames pointing at this site (docs/49 §5, docs/24).
   domains Domain[]
 
-  // Model B per-site scoping (docs/49 §3) — which products / content entries this
-  // site exposes. EMPTY = the site shows ALL (the default, Model A behavior).
+  // Model B per-site scoping (docs/49 §3) — which products / content entries /
+  // collections / categories this site exposes. EMPTY = the site shows ALL (the
+  // default, Model A behavior).
   productLinks      ProductProperty[]
   contentEntryLinks ContentEntryProperty[]
+  collectionLinks   CollectionProperty[]
+  categoryLinks     CategoryProperty[]
 
   // Origin-site tagging (docs/58 D1) — orders + carts placed on this site. These
   // SetNull on delete (orders outlive their site); they are NOT a fork.
@@ -125,6 +264,24 @@ model Property {
   // supplier connection with NO rows here serves ALL sites; rows present restrict
   // it to those sites. JUNCTION — no fork, ON DELETE CASCADE.
   dropshipSupplierScopes DropshipSupplierProperty[]
+
+  // ── P0 site scoping (docs/131 §3) ──────────────────────────────────────────
+  // Rules that act only on THIS business. Null-property automations are
+  // tenant-wide. CASCADE, not SetNull: deleting a site must narrow a rule's
+  // reach, never promote it to every site.
+  automations    Automation[]
+  // Run history, SetNull — a run is a record of what happened and outlives the
+  // site it happened on.
+  automationRuns AutomationRun[]
+
+  // API keys that may read and write only THIS business. Null-property keys
+  // reach the whole tenant. CASCADE — a credential must never gain reach.
+  apiKeys ApiKey[]
+
+  // Which staff may open this site, when their membership is set to `selected`.
+  // JUNCTION mirroring MemberModuleAccess — no rows under `all` means no
+  // restriction at all.
+  memberAccess MemberPropertyAccess[]
 
   // Site forms (docs/115) — submissions captured on this site + the server-side
   // routing config for its form nodes.

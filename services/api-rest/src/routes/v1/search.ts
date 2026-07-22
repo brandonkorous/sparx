@@ -27,6 +27,7 @@ import { publish } from '@sparx/api-core/pubsub';
 
 import { requireCommerceModule } from '../../lib/commerce-context.js';
 import { requireCrmModule } from '../../lib/crm-context.js';
+import { resolveListScope } from '../../lib/property.js';
 
 const SearchProductsQuery = z.object({
   q: z.string().optional(),
@@ -37,7 +38,8 @@ const SearchProductsQuery = z.object({
   sort_by: z.string().optional(),
   // Model B (docs/49 §3): scope the back-office product search to one site
   // (the dashboard catalog's Site filter). Omitted → the whole catalog.
-  property: z.string().uuid().optional(),
+  // Omitted → the caller's active site; `all` → every site.
+  property: z.string().min(1).optional(),
   // Fitment filters accept comma-separated values; the wrapper composes
   // them into Typesense filter grammar so callers don't learn it.
   fitment_makes: z.string().optional(),
@@ -52,7 +54,8 @@ const SearchQuery = z.object({
   per_page: z.coerce.number().int().min(1).max(250).optional(),
   // Active site (docs/58) — scope customer/order search to one web property
   // (the dashboard list Site filter). Omitted → the whole tenant ("All sites").
-  property: z.string().uuid().optional(),
+  // Omitted → the caller's active site; `all` → every site.
+  property: z.string().min(1).optional(),
 });
 
 const PaletteQuery = z.object({
@@ -93,9 +96,14 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     await requireCommerceModule(request);
     const auth = requireAuth(request);
     const q = SearchProductsQuery.parse(request.query);
+    const propertyId = await resolveListScope(
+      auth,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
     const result = await searchProducts({
       tenantId: auth.tenantId,
-      propertyId: q.property,
+      propertyId,
       q: q.q,
       page: q.page,
       perPage: q.per_page,
@@ -119,10 +127,15 @@ const searchRoutes: FastifyPluginAsync = (app) => {
     await requireCrmModule(request);
     const auth = requireAuth(request);
     const q = SearchQuery.parse(request.query);
+    const propertyId = await resolveListScope(
+      auth,
+      q.property,
+      request.headers['x-sparx-property-id']
+    );
     const result = await searchCustomers({
       tenantId: auth.tenantId,
       q: q.q ?? '*',
-      propertyId: q.property,
+      propertyId,
       page: q.page,
       perPage: q.per_page,
     });

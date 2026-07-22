@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, getModuleColor, Section, Spark } from './primitives';
+import { Button, Text } from '@wizeworks/silicaui-react';
+import { Display, getModuleColor, Section, Spark } from './primitives';
 import { EmailHero, EmailPipeline } from './email-sections';
 import { EmailKinds, EmailDeliverability } from './email-deliverability';
 import { EmailBroadcast, EmailAutomations, EmailCapabilities } from './email-devices';
@@ -57,7 +57,6 @@ export function EmailPage() {
 }
 
 const E = getModuleColor('email');
-const SANS = 'var(--font-sans)';
 
 // Page-specific FAQ. Real evaluation questions for sparx Email, answered
 // straight and grounded in docs/13 (PRD v3.2) + docs/17 (billing) — no tier/
@@ -115,58 +114,24 @@ function EmailProof() {
   ];
   return (
     <Section surface="dark" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
-        <Display size={46} lineHeight={48} color="#FFFFFF">
+      <div className="max-w-[760px]">
+        <Display size={46} lineHeight={48}>
           Your domain, your list, your data
           <Spark color={E.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: '22px 0 0',
-          }}
-        >
+        <Text variant="lead" className="text-ink-muted mt-6 max-w-[640px]">
           Email runs on the same database as your customers and orders, so every open feeds the CRM
           and every segment is current. Send from your own domain, keep your own reputation, and pay
           one flat price no matter the volume.
-        </p>
+        </Text>
       </div>
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '56px', gap: 0 }}>
+      <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
-          <div
-            key={s.l}
-            style={{
-              padding: i === 0 ? '0' : '0 0 0 32px',
-              borderLeft: i === 0 ? 'none' : '1px solid #262626',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: 'clamp(36px, 5vw, 54px)',
-                letterSpacing: '-0.03em',
-                color: '#FFFFFF',
-                lineHeight: 1,
-              }}
-            >
+          <div key={s.l} className={i === 0 ? undefined : 'border-base-300 border-l pl-8'}>
+            <div className="text-base-content font-sans text-[clamp(36px,5vw,54px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <div
-              style={{
-                marginTop: '12px',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: '#A1A1AA',
-              }}
-            >
-              {s.l}
-            </div>
+            <Text className="text-small text-ink-muted mt-3">{s.l}</Text>
           </div>
         ))}
       </div>
@@ -179,62 +144,31 @@ function EmailPricing() {
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${E.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '14px',
-          gap: '32px',
-        }}
+        className={`flex flex-col lg:flex-row ${E.bg} bg-soft border-base-300 items-center justify-between gap-8 rounded-[14px] border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-base-content font-sans text-[56px] font-medium tracking-[-0.025em]">
               $29
             </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            <Text as="span" className="text-body text-ink-subtle">
               /mo
-            </span>
+            </Text>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '640px',
-            }}
-          >
+          <Text className="text-small text-ink-muted m-0 max-w-[640px]">
             A flat $29/mo — transactional and marketing email, automations, templates, and
             broadcasts. No per-email fees and no contact-tier surcharges; send 10K or 1M a month for
             the same price. Switch it on alongside whatever modules you run. Start free for 14 days;
             no card to begin.
-          </p>
+          </Text>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate Email
           </Button>
         </div>
@@ -246,51 +180,28 @@ function EmailPricing() {
 // ── FINAL CTA (dark) ────────────────────────────────────────────────────────
 function EmailCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '36px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-9">
+        <Display size={88} lineHeight={84}>
           Send your first email today
           <Spark color={E.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <Text variant="lead" className="text-ink-muted m-0 max-w-[640px]">
           Turn Email on, add your domain, and transactional mail starts flowing immediately — the
           marketing tools are there when you want them. No migration weekend, no contract; turn it
           off the day you stop, and your data stays yours.
-        </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <Button size="xl" style={{ backgroundColor: E.color }}>
+        </Text>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button color="module-email" size="xl">
             Activate Email →
           </Button>
           <a href="#pipeline">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               See how a send flows
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

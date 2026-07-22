@@ -30,12 +30,46 @@ import {
   type PublicProduct,
   type PublicProductListItem,
 } from './commerce';
-import { getEntryById, publicGet, type ApiEntry } from './content';
+import { getEntriesByIds, publicGet, type ApiEntry } from './content';
 import { mediaUrl } from './media';
 
 /** How many products the `commerce.featured` rail shows at most — a curated
  *  handful, never the whole catalog (the whole-catalog grid binds `commerce.product`). */
 const FEATURED_LIMIT = 8;
+
+/**
+ * How many records a bound COLLECTION grid renders (docs/127 §8).
+ *
+ * This was a bare `24` inlined at each fetch. At the catalog sizes this platform
+ * targets that is not a page size, it is silent data loss: a tenant with 137 products
+ * saw 24 of them, the storefront showed no pagination, and nothing anywhere said the
+ * other 113 existed — not to the shopper, not to the author, not to a log.
+ *
+ * Named here so there is ONE number, and paired with the `*Total` / `*HasMore` roots
+ * below so the truncation is at least VISIBLE while real pagination is designed.
+ */
+const COLLECTION_PAGE_SIZE = 24;
+
+/** Publish "how many there really are" alongside a truncated list, so a template can
+ *  bind `commerce.productTotal` / `commerce.productHasMore` ("Showing 24 of 137",
+ *  "View all") instead of the list silently ending. Also logs the truncation: an
+ *  author who never binds those still leaves a trail worth finding. */
+function setListMeta(
+  root: DataSources,
+  key: string,
+  shown: number,
+  total: number,
+  label: string
+): void {
+  setAtPath(root, `${key}Total`, total);
+  setAtPath(root, `${key}HasMore`, total > shown);
+  if (total > shown) {
+    console.warn(
+      `[silica-data] ${label}: showing ${shown} of ${total} — the rest are not rendered ` +
+        `and the storefront offers no pagination yet (docs/127 §8).`
+    );
+  }
+}
 
 /** A product in the shape the silica commerce composites bind (scope-relative
  *  refs). `image` is a `{ url, alt }` object; the host `format` unwraps it to the
@@ -124,25 +158,60 @@ export function collectionToSilicaRecord(
   };
 }
 
+// The route a CMS collection card links to. Only `blog_post` has a per-record
+// detail route (`apps/site/app/blog/[slug]`); other content types render inline and
+// carry no destination, so their card `url` resolves to `''` and `bindAttr` leaves
+// the anchor un-clickable rather than pointing it at a 404.
+function entryUrl(type: string, slug: string | null | undefined): string {
+  if (!slug) return '';
+  return type === 'blog_post' ? `/blog/${slug}` : '';
+}
+
 // A CMS entry's `body` IS its field map; resolve the conventional `featuredImage`
 // media-id to a `{ url, alt }` so an image ref renders (mirrors builder-data's
-// resolveEntryBodyAssets, but as the silica scope-relative record).
+// resolveEntryBodyAssets, but as the silica scope-relative record). The entry-level
+// `slug` and a computed `url` are merged IN so a repeat card can bind its `<a href>`
+// to `cms.<type>.url` — without this the collection is `body`-only and every card in a
+// journal index points at the same static href (the bug that made every post link to
+// the index). Mirrors the commerce card's `url: /products/${handle}` projection.
 function toSilicaEntry(
-  body: Record<string, unknown> | null | undefined,
-  tenantSlug: string
+  entry: Pick<ApiEntry, 'body' | 'slug' | 'published_at'>,
+  tenantSlug: string,
+  type: string
 ): Record<string, unknown> {
-  const b = { ...(body ?? {}) };
+  const b = { ...(entry.body ?? {}) };
   if (typeof b.featuredImage === 'string') {
     const url = mediaUrl(b.featuredImage, tenantSlug);
     b.featuredImage = url ? { url, alt: typeof b.title === 'string' ? b.title : '' } : null;
   }
+  b.slug = entry.slug ?? '';
+  b.url = entryUrl(type, entry.slug);
+  // The publish date lives on the ROW, not in the body, so a card that wants to date
+  // itself has nothing to bind without this. Pre-formatted for display: a binding
+  // resolves to a string and there is no formatter in the tree to turn an ISO stamp
+  // into something a reader wants to see.
+  b.publishedAt = entry.published_at ?? '';
+  b.publishedOn = entry.published_at ? formatEntryDate(entry.published_at) : '';
   return b;
 }
 
+/** `2026-07-18T…` → `18 July 2026`. Locale-fixed on purpose: the storefront renders
+ *  on the server, so a locale-derived format would vary by deploy region rather than
+ *  by reader. */
+function formatEntryDate(iso: string): string {
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return '';
+  return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+// Fetches ONE MORE than it renders (docs/127 §8). The entries endpoint returns a bare
+// array through `publicGet`, so there is no total to read — but asking for n+1 and
+// seeing n+1 come back is a definitive "there are more", which is the fact the
+// storefront actually needs. The extra row is sliced off before rendering.
 async function listEntries(tenantSlug: string, type: string): Promise<ApiEntry[]> {
   return publicGet<ApiEntry[]>(
     '/v1/public/content/entries',
-    { tenant: tenantSlug, type, limit: 24 },
+    { tenant: tenantSlug, type, limit: COLLECTION_PAGE_SIZE + 1 },
     { tag: `entries:${tenantSlug}:${type}` }
   );
 }
@@ -244,10 +313,13 @@ export async function buildSilicaHost(
   // and product pins all read from ONE list.
   if (p.catalog || p.featured || needs.productPins.length > 0) {
     tasks.push(
-      listProducts(tenantSlug, { perPage: 24 })
-        .then(({ items }) => {
+      listProducts(tenantSlug, { perPage: COLLECTION_PAGE_SIZE })
+        .then(({ items, total }) => {
           const products = items.map((i) => toSilicaProduct(i, tenantSlug));
-          if (p.catalog) setAtPath(root, 'commerce.product', products);
+          if (p.catalog) {
+            setAtPath(root, 'commerce.product', products);
+            setListMeta(root, 'commerce.product', products.length, total, 'product catalog');
+          }
           if (p.featured) {
             // "Featured" = products the merchant tagged `featured` (a no-schema curation
             // signal on the existing `tags` field); newest-few fallback so the rail is
@@ -311,24 +383,40 @@ export async function buildSilicaHost(
   for (const type of needs.cmsTypes) {
     tasks.push(
       listEntries(tenantSlug, type)
-        .then((entries) =>
+        .then((entries) => {
+          const shown = entries.slice(0, COLLECTION_PAGE_SIZE);
           setAtPath(
             root,
             `cms.${type}`,
-            entries.map((e) => toSilicaEntry(e.body, tenantSlug))
-          )
-        )
+            shown.map((e) => toSilicaEntry(e, tenantSlug, type))
+          );
+          // n+1 came back → there is at least one more. No exact total available here,
+          // so `*Total` is deliberately not set rather than guessed.
+          const hasMore = entries.length > COLLECTION_PAGE_SIZE;
+          setAtPath(root, `cms.${type}HasMore`, hasMore);
+          if (hasMore) {
+            console.warn(
+              `[silica-data] cms.${type}: showing ${shown.length} entries, more exist — ` +
+                `the storefront offers no pagination yet (docs/127 §8).`
+            );
+          }
+        })
         .catch(() => setAtPath(root, `cms.${type}`, []))
     );
   }
 
-  for (const id of needs.cmsPins) {
+  // ONE request for every CMS pin (docs/127 §7) — this was a fetch per pin, while the
+  // product pins directly above derive from the already-fetched catalog list.
+  if (needs.cmsPins.length > 0) {
     tasks.push(
-      getEntryById(tenantSlug, id)
-        .then((entry) => {
-          if (!entry) return;
+      getEntriesByIds(tenantSlug, needs.cmsPins)
+        .then((entries) => {
           const pins = (root[PINS_ROOT] as Record<string, unknown> | undefined) ?? {};
-          pins[entityPinKey('cms', id)] = toSilicaEntry(entry.body, tenantSlug);
+          for (const id of needs.cmsPins) {
+            const entry = entries.get(id);
+            if (entry)
+              pins[entityPinKey('cms', id)] = toSilicaEntry(entry, tenantSlug, entry.type_key);
+          }
           root[PINS_ROOT] = pins;
         })
         .catch(() => undefined)

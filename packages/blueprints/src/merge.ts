@@ -13,7 +13,7 @@
 //
 // Zod/DB/React-free: unit-testable in isolation and safe to import anywhere.
 
-import type { BuilderNode } from '@sparx/builder-schemas';
+import type { SilicaNode } from '@sparx/builder-schemas';
 
 export type ConflictSide = 'mine' | 'theirs';
 
@@ -130,17 +130,44 @@ export function resolverFrom(takeTheirs: Iterable<string>): (path: string) => Co
   return (path: string) => (set.has(path) ? 'theirs' : 'mine');
 }
 
-// ── builder-tree merge (docs/55 §7.2) ───────────────────────────────────────────
+// ── silica-tree merge (docs/55 §7.2) ────────────────────────────────────────────
 //
-// Trees merge NODE-KEYED by `BuilderNode.id`. This is tractable because the
-// installer stamps manifest node ids unchanged and blueprint authors keep ids
-// stable across versions — so base/current/incoming share ids for corresponding
-// nodes. Each node's scalar/object fields (type, name, class, props, binding)
-// three-way-merge via mergeValue; children merge by id with order best-effort.
+// Trees merge NODE-KEYED by `Node.id`. This is tractable because the installer
+// writes manifest node ids UNCHANGED (it never re-stamps — `stampTree` mints a
+// fresh id on every node, which would destroy the correspondence this merge needs)
+// and blueprint authors keep ids stable across versions, so base/current/incoming
+// share ids for corresponding nodes. Each node's own fields three-way-merge via
+// mergeValue; element children merge by id with order best-effort.
+//
+// TWO silica shapes the legacy `BuilderNode` merge never had to handle:
+//
+//   · `Child = Node | string` — a text child is a bare string with no id, so it
+//     cannot be keyed. A node whose children include ANY string (or any node
+//     missing an id) merges its `children` ATOMICALLY as one value instead of
+//     per-child. That keeps the core invariant intact (a tenant edit is still
+//     never silently overwritten) without inventing synthetic ids that would not
+//     survive a round-trip. In practice a text-bearing node is a leaf — a heading
+//     with one string child — where whole-array merge is exactly right anyway.
+//
+//   · `id` is OPTIONAL on the silica type. Stored trees are always stamped, but a
+//     hand-authored fragment may not be, so the id-keyed path is used only when
+//     every child on all three sides actually has one.
 
-const NODE_FIELDS = ['type', 'name', 'class', 'props', 'binding'] as const;
+const NODE_FIELDS = [
+  'kind',
+  'tag',
+  'name',
+  'class',
+  'attrs',
+  'props',
+  'data',
+  'component',
+  'label',
+  'locked',
+  'pinned',
+] as const;
 
-function pickFields(n: BuilderNode | undefined): Record<string, unknown> | undefined {
+function pickFields(n: SilicaNode | undefined): Record<string, unknown> | undefined {
   if (!n) return undefined;
   const rec = n as unknown as Record<string, unknown>;
   const out: Record<string, unknown> = {};
@@ -148,31 +175,62 @@ function pickFields(n: BuilderNode | undefined): Record<string, unknown> | undef
   return out;
 }
 
-function indexById(nodes: BuilderNode[] | undefined): Map<string, BuilderNode> {
-  const m = new Map<string, BuilderNode>();
-  for (const n of nodes ?? []) m.set(n.id, n);
+/** Element children only — a string child has no identity to merge on. */
+type ChildList = readonly (SilicaNode | string)[] | undefined;
+
+/** A node's id, read off the record. `id` is declared on most silica node kinds
+ *  but NOT on `OutletNode`, so the union has no common `.id` — reading it through
+ *  the record shape keeps this merge total over every kind instead of excluding
+ *  outlets (which do appear in a frame tree). */
+function nodeId(n: SilicaNode | undefined): string | undefined {
+  const v = (n as unknown as Record<string, unknown> | undefined)?.id;
+  return typeof v === 'string' ? v : undefined;
+}
+
+/** A node's children, read off the record — same reason as `nodeId`: `OutletNode`
+ *  declares none, so the union has no common `.children`. */
+function nodeChildren(n: SilicaNode | undefined): ChildList {
+  const v = (n as unknown as Record<string, unknown> | undefined)?.children;
+  return Array.isArray(v) ? (v as ChildList) : undefined;
+}
+
+/** Can this children array take the id-keyed path? Only if every entry is a node
+ *  carrying an id. Any string, or any id-less node, forces the atomic path. */
+function keyable(children: ChildList): children is readonly SilicaNode[] {
+  return (children ?? []).every(
+    (c) => typeof c === 'object' && c !== null && nodeId(c) !== undefined
+  );
+}
+
+function indexById(nodes: readonly SilicaNode[] | undefined): Map<string, SilicaNode> {
+  const m = new Map<string, SilicaNode>();
+  for (const n of nodes ?? []) {
+    const id = nodeId(n);
+    if (id) m.set(id, n);
+  }
   return m;
 }
 
 function mergeChildren(
-  base: BuilderNode[] | undefined,
-  current: BuilderNode[] | undefined,
-  incoming: BuilderNode[] | undefined,
+  base: readonly SilicaNode[] | undefined,
+  current: readonly SilicaNode[] | undefined,
+  incoming: readonly SilicaNode[] | undefined,
   opts: MergeOptions,
   path: string
-): { merged: BuilderNode[]; changes: FieldChange[] } {
+): { merged: SilicaNode[]; changes: FieldChange[] } {
   const baseM = indexById(base);
   const curM = indexById(current);
   const incM = indexById(incoming);
-  const incIds = (incoming ?? []).map((n) => n.id);
+  const incIds = (incoming ?? []).map((n) => nodeId(n) ?? '');
   const changes: FieldChange[] = [];
-  const merged: BuilderNode[] = [];
+  const merged: SilicaNode[] = [];
 
   // Walk the tenant's current order — the authoritative arrangement of what they have.
   for (const child of current ?? []) {
-    const childPath = `${path}/${child.id}`;
-    const b = baseM.get(child.id);
-    const inc = incM.get(child.id);
+    const cid = nodeId(child) ?? '';
+    const childPath = `${path}/${cid}`;
+    const b = baseM.get(cid);
+    const inc = incM.get(cid);
     if (!inc) {
       // Author dropped this node. Untouched by the tenant ⇒ remove (auto); edited by
       // the tenant ⇒ keep as an orphan, never lose their work (U3).
@@ -191,15 +249,16 @@ function mergeChildren(
       continue;
     }
     const r = mergeNode(b, child, inc, opts, childPath);
-    if (r.merged !== undefined) merged.push(r.merged as BuilderNode);
+    if (r.merged !== undefined) merged.push(r.merged as SilicaNode);
     changes.push(...r.changes);
   }
 
   // Author-added nodes (in incoming, absent from base AND current). A node in base
   // but not current was deleted by the tenant — stay deleted, don't resurrect.
   for (const inc of incoming ?? []) {
-    if (curM.has(inc.id) || baseM.has(inc.id)) continue;
-    const childPath = `${path}/${inc.id}`;
+    const iid = nodeId(inc) ?? '';
+    if (curM.has(iid) || baseM.has(iid)) continue;
+    const childPath = `${path}/${iid}`;
     changes.push({
       path: childPath,
       type: 'auto',
@@ -209,10 +268,10 @@ function mergeChildren(
       taken: 'theirs',
     });
     // Best-effort position: just after the nearest preceding incoming sibling already placed.
-    const incIdx = incIds.indexOf(inc.id);
+    const incIdx = incIds.indexOf(iid);
     let insertAt = merged.length;
     for (let i = incIdx - 1; i >= 0; i--) {
-      const mi = merged.findIndex((m) => m.id === incIds[i]);
+      const mi = merged.findIndex((m) => nodeId(m) === incIds[i]);
       if (mi >= 0) {
         insertAt = mi + 1;
         break;
@@ -227,9 +286,9 @@ function mergeChildren(
 /** Three-way merge a single node (and its subtree) by id. base/incoming may be
  *  absent (added/removed); `current` absent means the tenant deleted it. */
 function mergeNode(
-  base: BuilderNode | undefined,
-  current: BuilderNode | undefined,
-  incoming: BuilderNode | undefined,
+  base: SilicaNode | undefined,
+  current: SilicaNode | undefined,
+  incoming: SilicaNode | undefined,
   opts: MergeOptions,
   path: string
 ): MergeResult {
@@ -270,19 +329,37 @@ function mergeNode(
     opts,
     path
   );
-  const merged = { ...(fieldRes.merged as Record<string, unknown>), id: current.id } as BuilderNode;
-  const childRes = mergeChildren(base?.children, current.children, incoming.children, opts, path);
-  if (current.children !== undefined || childRes.merged.length > 0)
-    merged.children = childRes.merged;
-  const changes = [...fieldRes.changes, ...childRes.changes];
+  const curId = nodeId(current);
+  const mergedRec = { ...(fieldRes.merged as Record<string, unknown>) };
+  if (curId !== undefined) mergedRec.id = curId;
+  const merged = mergedRec as unknown as SilicaNode;
+
+  // Children. The id-keyed walk needs every child on all three sides to BE an
+  // id-carrying node; a string (text) child or an unstamped one makes the array
+  // unkeyable, so it merges as a single atomic value instead. Doing otherwise
+  // would drop text children on the floor — they have no id to match on.
+  const baseKids = nodeChildren(base);
+  const curKids = nodeChildren(current);
+  const incKids = nodeChildren(incoming);
+  const canKey = keyable(baseKids) && keyable(curKids) && keyable(incKids);
+  let changes: FieldChange[];
+  if (canKey) {
+    const childRes = mergeChildren(baseKids, curKids, incKids, opts, path);
+    if (curKids !== undefined || childRes.merged.length > 0) mergedRec.children = childRes.merged;
+    changes = [...fieldRes.changes, ...childRes.changes];
+  } else {
+    const childRes = mergeValue(baseKids, curKids, incKids, opts, `${path}/children`);
+    if (childRes.merged !== undefined) mergedRec.children = childRes.merged;
+    changes = [...fieldRes.changes, ...childRes.changes];
+  }
   return { merged, changes, changed: !canonicalEqual(merged, current) };
 }
 
-/** Public entry: node-keyed three-way merge of a whole builder tree (docs/55 §7.2). */
+/** Public entry: node-keyed three-way merge of a whole silica tree (docs/55 §7.2). */
 export function mergeTree(
-  base: BuilderNode | undefined,
-  current: BuilderNode | undefined,
-  incoming: BuilderNode | undefined,
+  base: SilicaNode | undefined,
+  current: SilicaNode | undefined,
+  incoming: SilicaNode | undefined,
   opts: MergeOptions = {},
   path = 'tree'
 ): MergeResult {

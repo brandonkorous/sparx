@@ -8,7 +8,7 @@
 // their owning module wires the engine.
 
 import type { ResolvedFields, TenantCtx } from '../engine-types';
-import { registerResolver, registerScanner, type ScannedRow } from './registry';
+import { PROPERTY_FIELD, registerResolver, registerScanner, type ScannedRow } from './registry';
 
 const MS_PER_DAY = 86_400_000;
 
@@ -44,10 +44,15 @@ interface CustomerLike {
   firstOrderAt: Date | null;
   lastOrderAt: Date | null;
   createdAt: Date;
+  propertyId: string | null;
 }
 
 function customerFields(c: CustomerLike, now: Date): ResolvedFields {
   return {
+    // WHICH BUSINESS this record belongs to (docs/131 §3.1) — the engine filters
+    // site-scoped automations on it. Reserved key, not part of the condition
+    // vocabulary. Null for a tenant-level CRM contact tied to no site.
+    [PROPERTY_FIELD]: c.propertyId,
     'customer.id': c.id,
     'customer.type': c.type,
     'customer.email': c.email,
@@ -75,6 +80,7 @@ const CUSTOMER_SELECT = {
   firstOrderAt: true,
   lastOrderAt: true,
   createdAt: true,
+  propertyId: true,
 } as const;
 
 async function hydrateCustomer(ctx: TenantCtx, customerId: string): Promise<ResolvedFields> {
@@ -151,6 +157,7 @@ async function hydrateOrder(ctx: TenantCtx, orderId: string): Promise<ResolvedFi
       currency: true,
       placedAt: true,
       customerId: true,
+      propertyId: true,
     },
   });
   if (!o) return {};
@@ -167,6 +174,13 @@ async function hydrateOrder(ctx: TenantCtx, orderId: string): Promise<ResolvedFi
     'order.placedAt': o.placedAt,
   };
   Object.assign(fields, await hydrateCustomer(ctx, o.customerId));
+  // AFTER the customer merge, deliberately. hydrateCustomer sets PROPERTY_FIELD
+  // too, and Object.assign would otherwise let the customer's site overwrite the
+  // order's — which is wrong in both directions: a customer created before the
+  // order (or a tenant-level contact) can carry a different site or none at all,
+  // while the ORDER is the thing that actually happened on a storefront. The
+  // order's own site is authoritative, so it is written last.
+  fields[PROPERTY_FIELD] = o.propertyId;
   return fields;
 }
 
@@ -182,6 +196,11 @@ const DEAL_EVENTS = ['crm.deal.created', 'crm.deal.updated', 'crm.deal.stage_cha
 const ORDER_EVENTS = [
   'order.placed',
   'order.paid',
+  // The failure side of payment, not just the success side: without it the
+  // payment-failed notification seed renders "Payment failed on order " with
+  // `{{order.number}}` resolved to nothing — the one detail that makes the
+  // notification actionable.
+  'order.payment_failed',
   'payment.captured',
   'order.fulfilled',
   'order.delivered',

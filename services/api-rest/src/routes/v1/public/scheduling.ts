@@ -25,6 +25,7 @@ import {
   listServices,
 } from '@sparx/scheduling';
 import { resolveTenantId } from '../../../lib/public-commerce-context.js';
+import { resolvePublicPropertyId } from '../../../lib/property.js';
 import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 import { createBookingDeposit } from '../../../lib/scheduling-payments.js';
 import { bookingCalendarLinks } from '../../../lib/scheduling-ical.js';
@@ -130,7 +131,14 @@ async function findOrCreateCustomer(
 const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/public/scheduling/services', async (request) => {
     const tenantId = await requireScheduling(request);
-    const services = await listServices(tenantId, { activeOnly: true });
+    // The site the widget is embedded on (docs/131 §4), via the same
+    // `?property=` every public storefront read uses — so a donut site's booking
+    // widget lists donut services, not the machine shop's oil changes.
+    const propertyId = await resolvePublicPropertyId(
+      tenantId,
+      (request.query as { property?: string }).property
+    );
+    const services = await listServices(tenantId, { activeOnly: true, propertyId });
     return ok(
       services
         .filter((s) => s.bookableOnline)

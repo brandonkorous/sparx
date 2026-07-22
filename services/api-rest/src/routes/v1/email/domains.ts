@@ -4,7 +4,7 @@
 //   POST   /v1/email/domains              → provision (Mailgun POST /v4/domains)
 //   GET    /v1/email/domains/:id          → fetch one (incl. dns_records)
 //   POST   /v1/email/domains/:id/verify   → re-check DNS, flip state
-//   POST   /v1/email/domains/:id/default  → make default sender
+//   POST   /v1/email/domains/:id/default  → make default sender FOR THIS SITE
 //   DELETE /v1/email/domains/:id          → remove
 
 import type { FastifyPluginAsync } from 'fastify';
@@ -13,6 +13,7 @@ import { domainService } from '@sparx/email-platform';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireEmailModule, toEmailContext } from '../../../lib/email-context.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
@@ -60,10 +61,17 @@ const emailDomainRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/email/domains/:id/default', async (request) => {
-    requireRole(request, 'admin');
+    const auth = requireRole(request, 'admin');
     await requireEmailModule(request);
     const { id } = PathId.parse(request.params);
-    const domain = await domainService.setDefault(toEmailContext(request), id);
+    // "Default" is now per-site (docs/131 §3.4): this makes the domain the
+    // default for the site the caller is currently working in, not for every
+    // business the tenant runs.
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
+    const domain = await domainService.setDefault(toEmailContext(request), propertyId, id);
     return ok(domain);
   });
 

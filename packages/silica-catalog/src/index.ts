@@ -8,8 +8,13 @@
 
 export * from './types';
 export * from './attr-binding';
+export * from './placeholder';
 export * from './commerce';
 export * from './scheduling';
+export * from './cms';
+export * from './record-templates';
+export * from './vocabulary-check';
+export * from './vocabulary-patterns';
 export * from './host-nodes';
 export * from './ensure-ids';
 export * from './upgrade-frame';

@@ -2,6 +2,82 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## RULE #1 — silicaui first, Tailwind second, everything else needs approval
+
+**Build every UI on silicaui.** Reach for a `@wizeworks/silicaui-react` component and its
+`color × variant × size × shape` props before anything else. **Tailwind utility classes are also
+allowed** — layout, spacing, sizing, positioning, one-off chrome. That is the whole sanctioned
+toolbox.
+
+**Anything that is not silicaui or Tailwind requires Brandon's explicit approval, asked for
+up front — not shipped and explained afterwards.** That includes: a new dependency or component
+library, a hand-rolled replacement for something silicaui already provides, a bespoke CSS file,
+and any inline `style` that paints a control.
+
+**If you are touching a file that does it the old way, migrate it** — don't match the surrounding
+mistake. And never "re-skin" a silicaui component:
+
+```tsx
+// NEVER — an inline hex fill on a control. Stays black inside a dark themed
+// island, ignores the token system, and is exactly what this rule exists to stop.
+<Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>Start free</Button>
+
+// ALWAYS — props resolve to the plugin's real classes: `btn btn-neutral btn-lg`.
+<Button color="neutral" size="lg">Start free</Button>
+<Button color="module-commerce" size="xl">Start selling</Button>   // module hues are registered colors
+<Button variant="outline" size="lg">Talk to sales</Button>         // inside <Section surface="dark">, the
+                                                                   // theme island resolves border + ink
+```
+
+Colors come from tokens, never hex: `--color-neutral`, `--color-primary`, `--color-module-<slug>`
+(all registered with the plugin in each app's `globals.css`). A hardcoded hex cannot respond to
+light/dark, so it is wrong even when it looks right on the screen you tested. The only sanctioned
+literal-hex context is edge-runtime OG images (Satori can't resolve CSS custom properties) —
+those read `MODULE_HEX` from `@sparx/brand`.
+
+Detail: [packages/ui/CLAUDE.md](packages/ui/CLAUDE.md), [docs/35-ui-variant-system.md](docs/35-ui-variant-system.md).
+
+## RULE #2 — no eyebrows, no eyebrow badges, no editorial formatting
+
+**Nothing sits above a heading to introduce it.** No kicker, no label, no category chip, no
+`01 / 02 / 03` step marker, no uppercase-mono micro-caps — and **no `<Badge>` used as one either.**
+Swapping an uppercase `<span>` for a `<Badge>` in the same slot is the same anti-pattern wearing a
+component; the ban is on the _slot_, not the markup.
+
+```tsx
+// NEVER — all four are the same eyebrow.
+<span className="font-mono text-xs uppercase tracking-wide">Confident</span><h3>…</h3>
+<Badge color="success" variant="soft">Confident</Badge><h3>…</h3>
+<span>01</span><h3>…</h3>
+<p className="uppercase">How it works</p><h2>…</h2>
+
+// ALWAYS — the heading carries itself; hierarchy comes from scale, weight, and color.
+<h3>…</h3>
+```
+
+**No editorial formatting** either: no pull quotes, no drop caps, no rules/dividers used as
+decoration, no magazine-style label columns. This is product marketing, not a magazine spread.
+A `<Badge>` is for **state on a thing** (`<Badge color={statusTone(s)}>` on a row, a card, a
+record) — never a decorative label introducing a section.
+
+## RULE #3 — soft/muted/transparent is a deliberate signal, not a default
+
+**Text:** never `soft`, `muted`, `/opacity`, or a `color-mix(… , transparent)` ink on anything a
+person is meant to READ. Readable text gets a real ink token (`--color-base-content`, or the
+surface's `-content`). Faded text is reserved for text deliberately not meant to be read —
+decorative watermarks, disabled controls, a de-emphasized duplicate.
+
+**Backgrounds:** the same. `bg-soft` is **not** part of the primary theme — it is an accent applied
+on purpose, to the ONE thing that earns it. Applying `soft` everywhere drains the exact power it
+exists for and flattens the design system into mush. **If everything were meant to be soft, soft
+would be the theme color.** It isn't.
+
+Practical test before typing `soft`/`muted`/`/opacity`: _what is this de-emphasized relative to,
+and is that contrast actually doing work on this screen?_ If the answer is "nothing in particular,
+it just looked nicer," use the real token. Hierarchy comes from **scale, weight, and color** —
+not from fading things out. Related: [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md), and the
+base font floor of 16px for body text.
+
 ## Repository status
 
 The repo is **substantially built out**. Alongside the design docs under [docs/](docs/), the platform ships **4 Next.js apps** (`dashboard`, `site`, `market`, `web`; `admin` + `b2b-portal` remain empty placeholders), **~18 services** (`api-rest`, `api-graphql`, `api-mcp`, `mcp-site`, + a worker fleet), **~60 packages**, and a Prisma schema of **~277 models across 164 migrations**. `@sparx/ui` is a full CVA + Radix + Tailwind v4 component library, not a skeleton.
@@ -16,7 +92,9 @@ Don't claim builds/tests pass without actually running them.
 
 ### File & function size
 
-Target **≤250 lines per file** and **≤50 lines per function** (≤120 for JSX component bodies). The point is **cohesion — one file/function, one responsibility** — with line count as the smell detector, not the verdict. **Split when a unit carries a second responsibility; never fragment a single cohesive one just to hit the number** (three files that only call each other read worse than one). This is **self-governed, not ESLint-enforced** — `max-lines`/`max-lines-per-function` were removed from [eslint.config.js](eslint.config.js) because the constant warning output wasn't worth it; hold the target by discipline when authoring/editing a file, not by watching lint output. **Enforcement is boy-scout, not a migration:** when you're already editing an over-limit file, split it then — there is no dedicated refactor sweep, and a pre-existing over-limit file is not a reason to block unrelated work.
+**There is no line-count target.** Cohesion is the only rule: one file, one responsibility; one function, one job. **Split when a unit takes on a second responsibility — never to hit a number.** Three files that only call each other read worse than one, and a form split across components so each piece stays "small" is how a field ends up owned by two different components at once.
+
+A single coherent unit is easier to hold in one piece than to reassemble from fragments, so prefer keeping it whole. This is self-governed, not ESLint-enforced — `max-lines`/`max-lines-per-function` are deliberately absent from [eslint.config.js](eslint.config.js).
 
 ## What this product is
 
@@ -58,7 +136,7 @@ These are architectural commitments that won't be obvious from reading individua
 ## Brand & design (binding for any UI work)
 
 - **The dashboard design system runs on silicaui (`@wizeworks/silicaui*`).** Styled primitives (`Button`/`Badge`/`Card`/`Input`/`Select`/`Table`/`Tabs`/`Dialog`/`Alert`/…) come from **`@wizeworks/silicaui-react`**; the `@wizeworks/silicaui` Tailwind plugin (wired per app in `globals.css`) emits the color + component classes (`btn-*`, `badge-*`, `bg-primary`, `bg-soft`, …); color tokens live in **`@sparx/brand/theme.css`**. **`@sparx/ui` is now the home of the ~25 sparx _compositions_ only** (`ModuleProvider`, `SurfaceFrame`, the shell, `ListToolbar`/`FilterBar`/`BulkActionBar`/`SelectionList`, `toast`, `PageHeader`, `Stat`, chart wrappers, `statusTone`, `cn`, `Wordmark`), rebuilt on silica. The hand-rolled `.sx-c-*` role-var recipe + the `--sparx-*` / `--color-bg-*` / `--color-surface-*` token set are **gone**; `packages/ui/src/tokens.css` keeps only non-color tokens (type/space/radius/shadow/motion) + `--chart-*`. Detail: [packages/ui/CLAUDE.md](packages/ui/CLAUDE.md) + the [[project_silicaui_migration]] memory.
-- **A component's _appearance_ lives in the component library; feature code never re-skins a control — but it may compose layout with utilities.** Feature code in `apps/*` uses named component variants (`<Button color="primary" variant="soft">`). Layout/positioning/spacing/sizing utilities and one-off chrome (e.g. an `absolute top-0 right-0` indicator) are fine in feature code. The banned pattern is **re-skinning a control**: a background fill paired with a foreground text color (or hand-built `hover:`/`focus:`/`disabled:` states) = recreating a `<Button>`/`<Input>`/`<Badge>` — use the silicaui primitive/variant instead, or add a composition to `@sparx/ui`. ESLint flags exactly that fill+foreground fingerprint (a warning), not raw utilities in general. See [docs/23-frontend-component-architecture.md](docs/23-frontend-component-architecture.md) §1 and §15, plus the multi-axis variant system in [docs/35-ui-variant-system.md](docs/35-ui-variant-system.md).
+- **A component's _appearance_ lives in the component library; feature code never re-skins a control — but it may compose layout with utilities.** Feature code in `apps/*` uses named component variants (`<Button color="primary" variant="soft">`). Layout/positioning/spacing/sizing utilities and one-off chrome (e.g. an `absolute top-0 right-0` indicator) are fine in feature code. The banned pattern is **re-skinning a control**: a background fill paired with a foreground text color (or hand-built `hover:`/`focus:`/`disabled:` states) = recreating a `<Button>`/`<Input>`/`<Badge>` — use the silicaui primitive/variant instead, or add a composition to `@sparx/ui`. ESLint flags exactly that fill+foreground fingerprint (a warning), not raw utilities in general — **a warning is NOT the enforcement mechanism; RULE #1 at the top of this file is.** 54 re-skinned `<Button style={{ backgroundColor: '#0A0A0A' }}>` call sites accumulated across `apps/web` under that warning before being migrated on 2026-07-18. See [docs/23-frontend-component-architecture.md](docs/23-frontend-component-architecture.md) §1 and §15, plus the multi-axis variant system in [docs/35-ui-variant-system.md](docs/35-ui-variant-system.md).
 - Controls are still **four-axis `color × variant × size × shape`** (never a flat enum), but resolution is now silicaui's plugin-emitted classes — `<Button color variant size>` → `btn btn-<color> btn-<variant> btn-<size>` (silica spells `dashed` as `btn-dash`) — not the old `.sx-c-*` role vars. Every variant references a silica token CSS var (`--color-*`, never a hardcoded color). Module color shifts automatically via `<ModuleProvider module="…">`, which sets `--color-module` (+ `-content`) on its subtree. The sparx wordmark keeps the **"x" in sparx Ember `#e04631`** (the brand primary — `--color-primary`; note this SPLIT from the Builder module hue, which stays Indigo `#6366F1`). Build mechanics, the silica-class mapping, tints-via-`soft`, and house decisions live in [packages/ui/CLAUDE.md](packages/ui/CLAUDE.md). **Brand marks are centralized in `@sparx/brand`** — the spark/wordmark/mascot geometry + `BRAND` color constants in [packages/brand/src/marks.ts](packages/brand/src/marks.ts), the React components (`Spark`, `Wordmark`, `SparkMascot`) at `@sparx/brand/react`. `@sparx/ui`, market, and the marketing site all re-export from there; edge OG routes import the constants. Change the art in ONE place — never re-inline SVG paths or the wordmark's "x" hex in a component or OG route.
 - Per-module colors (Builder=Indigo, Commerce=Orange, CMS=Teal, CRM=Cyan, etc.) live in `@sparx/brand/theme.css` as `--color-module-<name>` and appear identically across the module's marketing site, its sidebar nav item, and the subtle module-tint background on `<Card variant="module">` cards (`bg-module bg-soft` — a theme-aware `color-mix` into the surface via silica's universal `soft` treatment, formerly a 3px top stripe; there are no baked tint tokens). Full list in [docs/sparx-brand-guide.md](docs/sparx-brand-guide.md).
 - **Color follows functionality, not the page — there is NO "one hue per screen" rule** (the earlier DESIGN.md framing, "the active module's color is the only brand color on screen," was wrong and is corrected). The active route tints the chrome + page-level primary action; any panel/badge/action that surfaces _another_ module's functionality wears THAT module's hue via a **nested `<ModuleProvider module="…">`** (a product page's inventory panel is amber, its SEO panel yellow, a linked customer cyan). One screen legibly carries several module hues — carried by the _signals_ (module-tinted cards, primaries, key badges/icons) while the chassis (page background + non-primary cards) stays neutral. A module-tint background IS now a sanctioned signal, but a disciplined one: on a dense cross-module page tint only the **one "primary" card per module hue** and leave the rest plain (`<Card variant="module">` is the tint; `OverviewCard`'s `plain` prop is the neutral opt-out) — a wall of tinted cards is competing washes, not wayfinding. And a **single-module working surface** (create/edit form, wizard, editor) keeps its cards neutral entirely — the tint differentiates nothing there, so identity rides the chrome + Save button (read-only detail/transaction views may keep one tinted KPI accent card). Orthogonally, **state is its own color axis**: resolve status with `statusTone()` and render `<Badge color={statusTone(s)} variant="soft">`, and reach for soft semantic callouts (info/success/warning/danger) to break a wall of black-on-white into something scannable. The only banned use of color is decoration (a second brand hue for flavor, or a module color as a decorative background wash on the chassis). Detail in [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md) (Color-Follows-Functionality + Semantic-Status rules), [docs/35-ui-variant-system.md](docs/35-ui-variant-system.md) §9, and the `surface-review` skill's cross-module wayfinding heuristic.

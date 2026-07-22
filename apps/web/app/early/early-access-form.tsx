@@ -20,12 +20,8 @@ import { joinWaitlist, type WaitlistState } from './actions';
 
 const INITIAL: WaitlistState = { status: 'idle' };
 
-const labelStyle: React.CSSProperties = {
-  fontFamily: 'var(--font-sans)',
-  fontSize: '13px',
-  fontWeight: 500,
-  color: 'var(--color-base-content)',
-};
+const LABEL_CLASS = 'text-caption text-base-content font-medium';
+const OPTIONAL_CLASS = 'text-ink-subtle font-normal';
 
 export function EarlyAccessForm() {
   const [state, action, pending] = useActionState(joinWaitlist, INITIAL);
@@ -47,18 +43,14 @@ export function EarlyAccessForm() {
   }
 
   return (
-    <form
-      action={clientAction}
-      style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}
-      noValidate
-    >
+    <form action={clientAction} className="flex flex-col gap-[18px]" noValidate>
       <Field>
-        <FieldLabel style={labelStyle}>Name</FieldLabel>
+        <FieldLabel className={LABEL_CLASS}>Name</FieldLabel>
         <FieldControl name="name" autoComplete="name" placeholder="Ada Lovelace" maxLength={255} />
       </Field>
 
       <Field {...v.field('email')}>
-        <FieldLabel required style={labelStyle}>
+        <FieldLabel required className={LABEL_CLASS}>
           Email
         </FieldLabel>
         <FieldControl
@@ -75,16 +67,8 @@ export function EarlyAccessForm() {
       </Field>
 
       <Field>
-        <FieldLabel style={labelStyle}>
-          What are you building?{' '}
-          <span
-            style={{
-              color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              fontWeight: 400,
-            }}
-          >
-            (optional)
-          </span>
+        <FieldLabel className={LABEL_CLASS}>
+          What are you building? <span className={OPTIONAL_CLASS}>(optional)</span>
         </FieldLabel>
         <FieldControl
           render={
@@ -99,7 +83,7 @@ export function EarlyAccessForm() {
       </Field>
 
       {/* Honeypot — hidden from people, catnip for bots. */}
-      <div aria-hidden style={{ position: 'absolute', left: '-9999px', width: 1, height: 1 }}>
+      <div aria-hidden className="absolute left-[-9999px] h-px w-px">
         <label htmlFor="ea-website">Website</label>
         <input id="ea-website" name="website" type="text" tabIndex={-1} autoComplete="off" />
       </div>
@@ -112,15 +96,7 @@ export function EarlyAccessForm() {
 
       <SubmitButton pending={pending} />
 
-      <p
-        style={{
-          margin: 0,
-          fontFamily: 'var(--font-sans)',
-          fontSize: '12px',
-          lineHeight: '18px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
+      <p className="text-mini text-ink-subtle m-0">
         No spam. One email when your invite is ready — and the occasional note on what shipped.
       </p>
     </form>
@@ -129,7 +105,7 @@ export function EarlyAccessForm() {
 
 function SubmitButton({ pending }: { pending: boolean }) {
   return (
-    <Button type="submit" size="lg" disabled={pending} style={{ width: '100%' }}>
+    <Button type="submit" size="lg" disabled={pending} className="w-full">
       {pending ? 'Joining…' : 'Join the waitlist →'}
     </Button>
   );
@@ -137,59 +113,22 @@ function SubmitButton({ pending }: { pending: boolean }) {
 
 function Confirmation({ email }: { email?: string }) {
   return (
-    <div
-      role="status"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '14px',
-        alignItems: 'flex-start',
-        paddingTop: '8px',
-        paddingBottom: '8px',
-      }}
-    >
+    <div role="status" className="flex flex-col items-start gap-3.5 py-2">
       <span
         aria-hidden
-        style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: 44,
-          height: 44,
-          borderRadius: 9999,
-          backgroundColor: 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))',
-          color: 'var(--color-primary, #e04631)',
-          fontSize: 22,
-        }}
+        className="bg-primary bg-soft text-primary text-h3 inline-flex h-11 w-11 items-center justify-center rounded-full"
       >
         ✓
       </span>
-      <span
-        style={{
-          fontFamily: 'var(--font-sans)',
-          fontWeight: 500,
-          fontSize: '24px',
-          letterSpacing: '-0.02em',
-          color: 'var(--color-base-content)',
-        }}
-      >
+      <span className="text-h2 text-base-content font-medium tracking-[-0.02em]">
         You&rsquo;re on the list
         <Spark />
       </span>
-      <p
-        style={{
-          margin: 0,
-          fontFamily: 'var(--font-sans)',
-          fontSize: '15px',
-          lineHeight: '24px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          maxWidth: '380px',
-        }}
-      >
+      <p className="text-body-sm text-ink-muted m-0 max-w-[380px]">
         {email ? (
           <>
-            We&rsquo;ve got <strong style={{ color: 'var(--color-base-content)' }}>{email}</strong>.
-            We&rsquo;ll reach out the moment your invite is ready.
+            We&rsquo;ve got <strong className="text-base-content">{email}</strong>. We&rsquo;ll
+            reach out the moment your invite is ready.
           </>
         ) : (
           <>We&rsquo;ll reach out the moment your invite is ready.</>

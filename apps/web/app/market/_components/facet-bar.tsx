@@ -9,6 +9,8 @@
 // better than a sidebar and collapses for free. As categories add denser facets,
 // this is where a left rail / mobile Filters sheet (§13) would slot in.
 
+import { badgeClasses } from '@wizeworks/silicaui-react/server';
+
 import type { MarketplaceCategory } from '@/lib/marketplace-registry';
 import type { MarketplaceFacetBucket } from '@/lib/marketplace';
 import { canonicalQueryString, parseFacetList, type BrowseParams } from '@/lib/browse-params';
@@ -43,7 +45,7 @@ export function FacetBar({
   if (category.facets.length === 0) return null;
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+    <div className="flex flex-col gap-4">
       {category.facets.map((facet) => {
         const counts = facetCounts[facet.key] ?? {};
         const selected = parseFacetList(current[facet.key]);
@@ -54,18 +56,11 @@ export function FacetBar({
         if (values.length === 0) return null;
 
         return (
-          <div key={facet.key} style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {facet.label}
-            </span>
-            <div className="mkt-cluster" style={{ gap: '8px' }}>
+          <div key={facet.key} className="flex flex-col gap-2">
+            {/* A filter GROUP label over its controls — a real form label, not an
+                eyebrow. Full ink so it reads. */}
+            <span className="text-base-content text-small font-medium">{facet.label}</span>
+            <div className="flex flex-wrap items-center gap-2">
               {values.map((value) => {
                 const isOn = selected.includes(value);
                 const nextList = isOn ? selected.filter((v) => v !== value) : [...selected, value];
@@ -78,35 +73,24 @@ export function FacetBar({
                     // catalog's real content is reachable from the unfiltered page and
                     // the sitemap. Filtering is for humans; nofollow says so.
                     rel="nofollow"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                      padding: '5px 11px',
-                      borderRadius: '9999px',
-                      border: '1px solid',
-                      borderColor: isOn ? category.accent : 'var(--color-base-300)',
-                      backgroundColor: isOn
-                        ? `color-mix(in srgb, ${category.accent} 12%, transparent)`
-                        : 'var(--color-base-100)',
-                      fontFamily: 'var(--font-sans)',
-                      fontSize: '13px',
-                      fontWeight: isOn ? 500 : 400,
-                      color: isOn
-                        ? category.accent
-                        : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                      textDecoration: 'none',
-                    }}
+                    className={`${badgeClasses({
+                      variant: 'outline',
+                      size: 'lg',
+                    })} gap-1.5 no-underline ${isOn ? 'font-medium' : ''}`}
+                    // The selected chip wears the CATEGORY's hue, which is
+                    // registry data (a JS value), not a registered token.
+                    style={
+                      isOn
+                        ? {
+                            borderColor: category.accent,
+                            backgroundColor: `color-mix(in srgb, ${category.accent} 12%, transparent)`,
+                            color: category.accent,
+                          }
+                        : undefined
+                    }
                   >
                     {value}
-                    <span
-                      style={{
-                        color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                        fontWeight: 400,
-                      }}
-                    >
-                      {counts[value] ?? 0}
-                    </span>
+                    <span className="text-ink-subtle font-normal">{counts[value] ?? 0}</span>
                     {isOn ? <span aria-hidden>×</span> : null}
                   </a>
                 );
@@ -119,13 +103,7 @@ export function FacetBar({
       {anySelected ? (
         <a
           href={`/market/${category.id}`}
-          style={{
-            alignSelf: 'flex-start',
-            fontFamily: 'var(--font-sans)',
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-            textDecoration: 'underline',
-          }}
+          className="text-base-content text-caption self-start underline"
         >
           Clear all filters
         </a>

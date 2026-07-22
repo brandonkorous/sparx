@@ -10,7 +10,7 @@ import { prisma, withTenant } from '@sparx/db';
 import { invalidateModuleCache } from '@sparx/auth';
 import { inventoryService } from '@sparx/inventory';
 import { createApp } from '../../src/app.js';
-import { authHeader, signToken } from '../helpers.js';
+import { authHeader, seedPrimaryProperty, signToken } from '../helpers.js';
 
 interface B2bInvTenant {
   tenantId: string;
@@ -61,6 +61,9 @@ async function seedTenant(b2bEnabled: boolean): Promise<B2bInvTenant> {
     { tenantId: tenant.id, userId },
     { variantId, warehouseId, delta: 30, reason: 'receive' }
   );
+  // Real provisioning gives every tenant a PRIMARY site, so a fixture without
+  // one builds a tenant that cannot exist — and every site-resolving read 404s.
+  await seedPrimaryProperty(tenant.id, `Test ${tenant.slug}`);
   return { tenantId: tenant.id, userId, email, accountId, variantId };
 }
 

@@ -1,5 +1,5 @@
 import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, Dot, getModuleColor, Section, Spark } from './primitives';
+import { Display, Dot, getModuleColor, Section, Spark } from './primitives';
 import { type ModuleMeta } from '@/lib/modules';
 
 /**
@@ -31,17 +31,11 @@ function shortLabel(label: string): string {
 
 function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(56px, 9vw, 96px)',
-        paddingBottom: 'var(--section-py-lg)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', maxWidth: '1100px' }}>
+    // Not <Section>: the hero's top pad is a tighter fluid clamp than the shared
+    // section rhythm, so it owns its own band.
+    <section className="bg-base-200 px-page pb-section-lg pt-[clamp(56px,9vw,96px)]">
+      <div className="max-w-content mx-auto flex w-full flex-col gap-10">
+        <div className="flex max-w-[1100px] flex-col gap-2">
           <Display as="h1" size={104} lineHeight={96}>
             {meta.headlinePrimary}
           </Display>
@@ -51,54 +45,27 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
           </Display>
         </div>
 
-        <div
-          className="mkt-stack-on-tablet mkt-align-end-on-desktop"
-          style={{ justifyContent: 'space-between', gap: '40px', maxWidth: '1280px' }}
-        >
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontWeight: 400,
-              fontSize: 'clamp(16px, 1.6vw, 20px)',
-              lineHeight: 1.55,
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              maxWidth: '640px',
-              margin: 0,
-            }}
-          >
+        <div className="max-w-content flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
+          <p className="text-ink-muted m-0 max-w-[640px] text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
             {meta.lede}
           </p>
 
-          <div
-            className="mkt-align-end-on-desktop"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '14px',
-              alignItems: 'flex-start',
-            }}
-          >
-            <div className="mkt-cluster" style={{ gap: '12px' }}>
-              <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <div className="flex flex-col items-start gap-3.5 lg:items-end">
+            <div className="flex flex-wrap items-center gap-3">
+              <Button color="neutral" size="lg">
                 Start free
               </Button>
               <Button size="lg" variant="outline">
                 See pricing
               </Button>
             </div>
-            <span
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: '12px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
+            <span className="text-ink-subtle text-mini font-mono">
               {meta.marketingDomain ? `${meta.marketingDomain} · ` : ''}
               No credit card · Cancel anytime
             </span>
           </div>
         </div>
-      </Container>
+      </div>
     </section>
   );
 }
@@ -106,83 +73,34 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
 function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
   return (
     <Section surface="surface" padding="lg">
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '64px' }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px', maxWidth: '720px' }}>
+      <div className="flex flex-col gap-16">
+        <div className="flex max-w-[720px] flex-col gap-5">
           <Display size={56} lineHeight={60}>
             Every part of {shortLabel(meta.label)}
             <Spark color={color.color} />
           </Display>
         </div>
 
-        <div className="mkt-grid-3-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {meta.features.map((f, i) => (
             <div
               key={f.number}
-              className={i === 0 ? `${color.bg} bg-soft` : 'bg-base-200'}
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                padding: '32px',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '8px',
-                gap: '14px',
-              }}
+              className={`border-base-300 flex flex-col gap-3.5 rounded-lg border p-8 ${
+                i === 0 ? `${color.bg} bg-soft` : 'bg-base-200'
+              }`}
             >
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
+              {/* The card's `f.number` step marker was removed per the no-eyebrow
+                  rule — it sat directly above the title doing nothing but
+                  numbering it. The module dot carries the identity. */}
+              <span
+                className={`${color.bg} bg-soft inline-flex h-7 w-7 items-center justify-center rounded-md`}
               >
-                <span
-                  className={`${color.bg} bg-soft`}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    width: 28,
-                    height: 28,
-                    borderRadius: '6px',
-                  }}
-                >
-                  <Dot color={color.color} size={8} />
-                </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-mono)',
-                    fontSize: '12px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                  }}
-                >
-                  {f.number}
-                </span>
-              </div>
-              <h3
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '20px',
-                  letterSpacing: '-0.02em',
-                  lineHeight: '26px',
-                  color: 'var(--color-base-content)',
-                  paddingTop: '8px',
-                  margin: 0,
-                }}
-              >
+                <Dot color={color.color} size={8} />
+              </span>
+              <h3 className="text-base-content text-h4 m-0 pt-2 font-medium tracking-[-0.02em]">
                 {f.title}
               </h3>
-              <p
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '14px',
-                  lineHeight: '22px',
-                  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  margin: 0,
-                }}
-              >
-                {f.body}
-              </p>
+              <p className="text-ink-muted text-small m-0">{f.body}</p>
             </div>
           ))}
         </div>
@@ -195,72 +113,29 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${color.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '12px',
-          gap: '32px',
-        }}
+        className={`flex flex-col lg:flex-row ${color.bg} bg-soft border-base-300 items-center justify-between gap-8 rounded-xl border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
             {meta.pricing.modifier ? (
-              <span
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontWeight: 500,
-                  fontSize: '40px',
-                  letterSpacing: '-0.02em',
-                  color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-                }}
-              >
+              <span className="text-ink-subtle text-[40px] font-medium tracking-[-0.02em]">
                 {meta.pricing.modifier}
               </span>
             ) : null}
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <span className="text-base-content text-[56px] font-medium tracking-[-0.025em]">
               {meta.pricing.price}
             </span>
-            <span
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              {meta.pricing.period}
-            </span>
+            <span className="text-ink-subtle text-body">{meta.pricing.period}</span>
           </div>
-          <p
-            style={{
-              fontFamily: 'var(--font-sans)',
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '640px',
-            }}
-          >
-            {meta.pricing.bundleNote}
-          </p>
+          <p className="text-ink-muted text-small m-0 max-w-[640px]">{meta.pricing.bundleNote}</p>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate {shortLabel(meta.label)}
           </Button>
         </div>
@@ -271,52 +146,27 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
 
 function ModuleCta({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '48px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    // Themed dark island — the whole --color-base-* ramp flips, so the headline
+    // and lede resolve on-brand without the old #0A0A0A/#FFFFFF/#A1A1AA trio.
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-12">
+        <Display size={88} lineHeight={84}>
           Ready to go
           <Spark color={color.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: 'var(--font-sans)',
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <p className="text-ink-muted text-lede m-0 max-w-[640px]">
           Activate {shortLabel(meta.label)} in one click. No migration, no consultant, no contract.
           Turn it back off any time — your data stays.
         </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <Button size="xl" variant="solid">
             Start your site →
           </Button>
-          <Button
-            size="xl"
-            variant="outline"
-            style={{
-              backgroundColor: 'transparent',
-              borderColor: '#2A2A2A',
-              color: '#FFFFFF',
-            }}
-          >
+          <Button size="xl" variant="outline">
             Talk to sales
           </Button>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

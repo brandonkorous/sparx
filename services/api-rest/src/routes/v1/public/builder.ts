@@ -21,13 +21,13 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { prisma } from '@sparx/db';
 import { pageService, layoutService, siteService, surfaceCssService } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { isModuleEnabled } from '@sparx/auth';
 import { tryVerifySitePreview } from '../../../lib/preview.js';
 import { resolvePublicPropertyId } from '../../../lib/property.js';
+import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 
 // `property` (a stable property slug) scopes the read to one of the tenant's web
 // PROPERTIES/sites (docs/49). Omitted → the tenant's primary site, so single-site
@@ -52,11 +52,9 @@ const TenantQuery = z.object({
   property: z.string().min(1).max(63).optional(),
 });
 
-async function resolveTenantBySlug(slug: string): Promise<string> {
-  const t = await prisma.tenant.findUnique({ where: { slug }, select: { id: true } });
-  if (!t) throw notFound('Tenant', slug);
-  return t.id;
-}
+// Cached in lib/tenant-slug.ts (docs/127 §5) — this ran uncached on every storefront
+// read, ~6 per page render, while resolvePublicPropertyId beside it was already cached.
+const resolveTenantBySlug = requireTenantIdBySlug;
 
 const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/builder/page', async (request) => {
@@ -122,7 +120,7 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
-    const [frame, commerceEnabled, schedulingEnabled] = await Promise.all([
+    const [frame, commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
       siteService.getPublishedFrame({ tenantId, propertyId }),
       // Drives the storefront's code-authored starter fallback (silica.ts) — a
       // tenant with no Commerce module never gets Shop/Cart/Orders chrome. Not a
@@ -131,8 +129,12 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
       // Same public module signal for Scheduling — drives the starter Book link/page
       // and lets the /book route 404 when the module is off.
       isModuleEnabled(tenantId, 'scheduling'),
+      // Same for CMS — drives the starter Journal link + the `/blog` index page. A
+      // publisher-only tenant had neither while Commerce and Scheduling both had a
+      // flag here, so their posts were reachable only by typing the URL.
+      isModuleEnabled(tenantId, 'cms'),
     ]);
-    return ok({ ...frame, commerceEnabled, schedulingEnabled });
+    return ok({ ...frame, commerceEnabled, schedulingEnabled, cmsEnabled });
   });
 
   app.get('/v1/public/builder/silica/home', async (request) => {

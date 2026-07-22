@@ -9,21 +9,15 @@ import type { PartnerTier } from '@/lib/partners';
  * drives both, so the two representations can never diverge. Not pricing cards,
  * not a $/mo table — a clean capability comparison, Certified column tinted with
  * the platform Ember (it sits top of the directory).
+ *
+ * Class-based: the Ember column tint is silica's own `bg-primary bg-soft`
+ * treatment and every ink is a real token utility — including the non-strong
+ * cells, which used to be a 70%-into-transparent color-mix (faded readable text,
+ * banned by RULE #3) and are now `text-ink-muted`.
  */
 
-const SANS = 'var(--font-sans)';
-const EMBER = 'var(--color-primary)';
-const EMBER_TEXT = 'var(--color-primary)';
-const EMBER_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
-const BORDER = 'var(--color-base-300)';
-const CERT_CELL = 'color-mix(in oklab, var(--color-primary) 5%, var(--color-base-100))';
-
-// The "/ first payment" · "/ ongoing" qualifier next to each commission figure.
-const SMALL: React.CSSProperties = {
-  fontSize: '15px',
-  color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-  fontWeight: 400,
-};
+/** The "/ first payment" · "/ ongoing" qualifier next to each commission figure. */
+const SMALL = 'text-body-sm text-ink-muted font-normal';
 
 type Cell = { text: string; strong?: boolean } | 'dash';
 
@@ -38,7 +32,7 @@ const HEADS: TierHead[] = [
     tier: 'informal',
     commission: (
       <>
-        20%<small style={SMALL}> first payment</small>
+        20%<small className={SMALL}> first payment</small>
       </>
     ),
     note: 'No application — sign up and refer.',
@@ -47,7 +41,7 @@ const HEADS: TierHead[] = [
     tier: 'registered',
     commission: (
       <>
-        30%<small style={SMALL}> first payment</small>
+        30%<small className={SMALL}> first payment</small>
       </>
     ),
     note: 'Application + brief review.',
@@ -57,8 +51,8 @@ const HEADS: TierHead[] = [
     commission: (
       <>
         30%
-        <span style={{ color: EMBER_TEXT }}> + 5%</span>
-        <small style={SMALL}> ongoing</small>
+        <span className="text-primary"> + 5%</span>
+        <small className={SMALL}> ongoing</small>
       </>
     ),
     note: 'Application + certification.',
@@ -120,55 +114,22 @@ function TierBadge({ tier }: { tier: PartnerTier }) {
 
 function Commission({ children }: { children: ReactNode }) {
   return (
-    <div
-      style={{
-        marginTop: '14px',
-        fontFamily: SANS,
-        fontWeight: 500,
-        fontSize: '32px',
-        letterSpacing: '-0.03em',
-        color: 'var(--color-base-content)',
-      }}
-    >
+    <div className="text-base-content mt-3.5 text-[32px] font-medium tracking-[-0.03em]">
       {children}
     </div>
   );
 }
 
 function cellContent(cell: Cell): ReactNode {
-  if (cell === 'dash')
-    return (
-      <span style={{ color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)' }}>
-        —
-      </span>
-    );
-  return (
-    <span
-      style={{
-        color: cell.strong
-          ? EMBER_TEXT
-          : 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-      }}
-    >
-      {cell.text}
-    </span>
-  );
+  if (cell === 'dash') return <span className="text-ink-subtle">—</span>;
+  return <span className={cell.strong ? 'text-primary' : 'text-ink-muted'}>{cell.text}</span>;
 }
 
 export function PartnerTiers() {
   return (
     <>
       {/* Desktop matrix */}
-      <div
-        className="mkt-hide-on-tablet"
-        style={{
-          marginTop: '56px',
-          border: `1px solid ${BORDER}`,
-          borderRadius: '16px',
-          overflow: 'hidden',
-          backgroundColor: 'var(--color-base-100)',
-        }}
-      >
+      <div className="mkt-hide-on-tablet border-base-300 bg-base-100 mt-14 overflow-hidden rounded-2xl border">
         <div className="mkt-tier-cols">
           <SpineHeadCell />
           {HEADS.map((h) => (
@@ -176,11 +137,7 @@ export function PartnerTiers() {
           ))}
         </div>
         {ROWS.map((row) => (
-          <div
-            key={row.label}
-            className="mkt-tier-cols"
-            style={{ borderTop: `1px solid ${BORDER}` }}
-          >
+          <div key={row.label} className="mkt-tier-cols border-base-300 border-t">
             <BodyCell spine>{row.label}</BodyCell>
             {row.cells.map((cell, i) => (
               <BodyCell key={i} certified={i === 2}>
@@ -192,10 +149,7 @@ export function PartnerTiers() {
       </div>
 
       {/* Tablet/mobile stacked tier panels */}
-      <div
-        className="mkt-tablet-down-only-flex"
-        style={{ flexDirection: 'column', gap: '16px', marginTop: '48px' }}
-      >
+      <div className="mkt-tablet-down-only-flex mt-12 flex-col gap-4">
         {HEADS.map((h, ti) => (
           <TierPanel key={h.tier} head={h} tierIndex={ti} />
         ))}
@@ -206,16 +160,8 @@ export function PartnerTiers() {
 
 function SpineHeadCell() {
   return (
-    <div style={{ padding: '30px 26px', display: 'flex', alignItems: 'flex-end' }}>
-      <span
-        style={{
-          fontFamily: SANS,
-          fontSize: '13px',
-          color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-        }}
-      >
-        What each tier unlocks
-      </span>
+    <div className="flex items-end px-[26px] py-[30px]">
+      <span className="text-ink-subtle text-caption">What each tier unlocks</span>
     </div>
   );
 }
@@ -224,24 +170,11 @@ function HeadCell({ head }: { head: TierHead }) {
   const certified = head.tier === 'certified';
   return (
     <div
-      style={{
-        padding: '30px 26px',
-        borderLeft: `1px solid ${BORDER}`,
-        backgroundColor: certified ? EMBER_TINT : undefined,
-      }}
+      className={`border-base-300 border-l px-[26px] py-[30px] ${certified ? 'bg-primary bg-soft' : ''}`}
     >
       <TierBadge tier={head.tier} />
       <Commission>{head.commission}</Commission>
-      <p
-        style={{
-          margin: '6px 0 0',
-          fontFamily: SANS,
-          fontSize: '13px',
-          color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-        }}
-      >
-        {head.note}
-      </p>
+      <p className="text-ink-muted text-caption mt-1.5">{head.note}</p>
     </div>
   );
 }
@@ -257,17 +190,13 @@ function BodyCell({
 }) {
   return (
     <div
-      style={{
-        padding: '18px 26px',
-        borderLeft: spine ? undefined : `1px solid ${BORDER}`,
-        backgroundColor: certified ? CERT_CELL : undefined,
-        display: 'flex',
-        alignItems: 'center',
-        fontFamily: SANS,
-        fontSize: '14px',
-        fontWeight: spine ? 500 : 400,
-        color: spine ? 'var(--color-base-content)' : undefined,
-      }}
+      className={[
+        'text-small flex items-center px-[26px] py-[18px]',
+        spine ? 'text-base-content font-medium' : 'border-base-300 border-l',
+        certified ? 'bg-primary/5' : '',
+      ]
+        .filter(Boolean)
+        .join(' ')}
     >
       {children}
     </div>
@@ -279,61 +208,22 @@ function TierPanel({ head, tierIndex }: { head: TierHead; tierIndex: number }) {
   const unlocks = ROWS.filter((r) => r.cells[tierIndex] !== 'dash');
   return (
     <div
-      style={{
-        border: `1px solid ${certified ? EMBER : BORDER}`,
-        borderRadius: '16px',
-        overflow: 'hidden',
-        backgroundColor: 'var(--color-base-100)',
-      }}
+      className={`bg-base-100 overflow-hidden rounded-2xl border ${certified ? 'border-primary' : 'border-base-300'}`}
     >
-      <div
-        style={{
-          padding: '24px',
-          borderBottom: `1px solid ${BORDER}`,
-          backgroundColor: certified ? EMBER_TINT : undefined,
-        }}
-      >
+      <div className={`border-base-300 border-b p-6 ${certified ? 'bg-primary bg-soft' : ''}`}>
         <TierBadge tier={head.tier} />
         <Commission>{head.commission}</Commission>
-        <p
-          style={{
-            margin: '6px 0 0',
-            fontFamily: SANS,
-            fontSize: '13px',
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-          }}
-        >
-          {head.note}
-        </p>
+        <p className="text-ink-muted text-caption mt-1.5">{head.note}</p>
       </div>
-      <ul
-        style={{
-          listStyle: 'none',
-          margin: 0,
-          padding: '20px 24px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '12px',
-        }}
-      >
+      <ul className="flex list-none flex-col gap-3 px-6 py-5">
         {unlocks.map((r) => {
           const cell = r.cells[tierIndex];
           const detail = cell && cell !== 'dash' ? cell.text : '';
           return (
-            <li
-              key={r.label}
-              style={{
-                display: 'flex',
-                gap: '10px',
-                fontFamily: SANS,
-                fontSize: '14px',
-                lineHeight: '20px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
-              <span style={{ color: EMBER, flexShrink: 0 }}>✓</span>
+            <li key={r.label} className="text-ink-muted text-small flex gap-2.5">
+              <span className="text-primary shrink-0">✓</span>
               <span>
-                <span style={{ color: 'var(--color-base-content)' }}>{r.label}</span>
+                <span className="text-base-content">{r.label}</span>
                 {detail ? ` — ${detail}` : ''}
               </span>
             </li>

@@ -10,12 +10,47 @@ import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-
 const PathId = z.object({ id: z.string().uuid() });
 const EntryParam = z.object({ entryId: z.string().uuid() });
 const TierParam = z.object({ tierId: z.string().uuid() });
+const ProductIdParam = z.object({ productId: z.string().uuid() });
+
+// Sort columns are a server-side WHITELIST (mirrors the discount service's
+// `DiscountSortField`). A client-supplied column that is not on the list is
+// rejected by the enum, never interpolated into an orderBy — Zod answers a bad
+// `sort_by` with a 422. Sorting lives on the server because both lists page.
+const SortOrder = z.enum(['asc', 'desc']);
+const DiscountSort = z.enum([
+  'name',
+  'code',
+  'status',
+  'valueCents',
+  'valuePercent',
+  'createdAt',
+  'updatedAt',
+]);
+const GiftCardSort = z.enum([
+  'code',
+  'balanceCents',
+  'initialBalanceCents',
+  'status',
+  'expiresAt',
+  'createdAt',
+]);
 
 const ListDiscountsQuery = z.object({
   status: z.string().optional(),
   q: z.string().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+  sort_by: DiscountSort.optional(),
+  order: SortOrder.optional(),
+});
+
+const ListGiftCardsQuery = z.object({
+  status: z.string().optional(),
+  q: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+  sort_by: GiftCardSort.optional(),
+  order: SortOrder.optional(),
 });
 
 const ListPriceListsQuery = z.object({
@@ -30,6 +65,9 @@ const ListPriceListsQuery = z.object({
 const ListContractPricesQuery = z.object({
   b2b_account_id: z.string().uuid(),
 });
+
+const AccountCreditLedgerParams = z.object({ customerId: z.string().uuid() });
+const AccountCreditLedgerQuery = z.object({ currency: z.string().length(3).optional() });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const pricingRoutes: FastifyPluginAsync = async (app) => {
@@ -84,6 +122,35 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const { id } = PathId.parse(request.params);
     return ok(await pricingService.listEntries(toCommerceContext(request), id));
+  });
+
+  // Write MANY entries for ONE list in a single request (upsert on variant +
+  // quantity). This is the authoring write side the workbench price-list editor
+  // uses: a list can carry hundreds of prices, and a request per entry is the
+  // N+1 storm the client data layer forbids. The list id comes from the path;
+  // the body carries only the entries. Distinct path (`/entries/bulk`) + method
+  // from the reads above, so no route collides.
+  app.post('/v1/commerce/price-lists/:id/entries/bulk', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    const body = (request.body ?? {}) as { entries?: unknown };
+    return ok(
+      await pricingService.bulkSetEntries(toCommerceContext(request), {
+        priceListId: id,
+        entries: body.entries ?? [],
+      })
+    );
+  });
+
+  // Every price-list entry for ONE product, across all its lists — the inverse
+  // of :id/entries, for the Product → Pricing tab. Answered in one query so the
+  // client never loops price lists (the workbench data layer forbids the N+1).
+  app.get('/v1/commerce/products/:productId/price-list-entries', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { productId } = ProductIdParam.parse(request.params);
+    return ok(await pricingService.listEntriesForProduct(toCommerceContext(request), productId));
   });
 
   app.post('/v1/commerce/price-list-entries', async (request) => {
@@ -171,8 +238,17 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
       ...(q.q ? { q: q.q } : {}),
       take: q.take,
       skip: q.skip,
+      ...(q.sort_by ? { sortBy: q.sort_by } : {}),
+      ...(q.order ? { order: q.order } : {}),
     });
     return paged(items, { total, per_page: q.take ?? 50 });
+  });
+
+  app.get('/v1/commerce/discounts/:id', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await discountService.getDiscount(toCommerceContext(request), id));
   });
 
   app.post('/v1/commerce/discounts', async (request, reply) => {
@@ -206,17 +282,21 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     return ok({ id, archived: true });
   });
 
-  // Gift cards
+  // Gift cards — a real paged list (skip/take/total + server-side sort), the
+  // same shape as discounts, so the workbench table pages and sorts correctly.
   app.get('/v1/commerce/gift-cards', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    return ok(
-      await discountService.listGiftCards(toCommerceContext(request), {
-        q: q?.q,
-        take: q?.take ? Number(q.take) : undefined,
-      })
-    );
+    const q = ListGiftCardsQuery.parse(request.query);
+    const { items, total } = await discountService.listGiftCards(toCommerceContext(request), {
+      ...(q.status ? { status: q.status } : {}),
+      ...(q.q ? { q: q.q } : {}),
+      take: q.take,
+      skip: q.skip,
+      ...(q.sort_by ? { sortBy: q.sort_by } : {}),
+      ...(q.order ? { order: q.order } : {}),
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.post('/v1/commerce/gift-cards', async (request, reply) => {
@@ -234,6 +314,15 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     return ok(await discountService.lookupGiftCard(toCommerceContext(request), q?.code ?? ''));
   });
 
+  // One gift card in full, WITH its ledger. Static `/lookup` is registered above;
+  // Fastify prefers the literal segment, so this param route never shadows it.
+  app.get('/v1/commerce/gift-cards/:id', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    return ok(await discountService.getGiftCard(toCommerceContext(request), id));
+  });
+
   app.post('/v1/commerce/gift-cards/adjust', async (request) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
@@ -245,6 +334,29 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'editor');
     await requireCommerceModule(request);
     return ok(await discountService.grantAccountCredit(toCommerceContext(request), request.body));
+  });
+
+  // One customer's store-credit balance + its ledger. Static `/grant` is
+  // registered above; Fastify prefers the literal segment over `:customerId`.
+  // (The list of every customer WITH credit lives at GET /v1/commerce/
+  // account-credit in routes/v1/commerce/lists.ts.)
+  app.get('/v1/commerce/account-credit/:customerId/ledger', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { customerId } = AccountCreditLedgerParams.parse(request.params);
+    const q = AccountCreditLedgerQuery.parse(request.query);
+    const currency = q.currency ?? 'USD';
+    const ctx = toCommerceContext(request);
+    const [balance, transactions] = await Promise.all([
+      discountService.getAccountCreditBalance(ctx, customerId, currency),
+      discountService.listAccountCreditTransactions(ctx, customerId, currency),
+    ]);
+    return ok({
+      customerId,
+      currency,
+      balanceCents: balance?.balanceCents ?? 0,
+      transactions,
+    });
   });
 };
 

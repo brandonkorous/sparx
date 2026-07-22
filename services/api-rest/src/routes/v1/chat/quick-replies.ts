@@ -13,22 +13,39 @@ import { requireRole } from '@sparx/api-core/auth';
 
 import { requireChatModule, toChatContext } from '../../../lib/chat-context.js';
 import { quickReplyService, CreateQuickReplyInput } from '../../../lib/chat/index.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 
 const quickReplyRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/chat/quick-replies', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireChatModule(request);
-    const items = await quickReplyService.list(toChatContext(request));
+    // This site's replies plus the tenant-wide ones (docs/131 §3.7).
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
+    const items = await quickReplyService.list(toChatContext(request), propertyId);
     return ok(items);
   });
 
   app.post('/v1/chat/quick-replies', async (request, reply) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireChatModule(request);
     const input = CreateQuickReplyInput.parse(request.body);
-    const created = await quickReplyService.create(toChatContext(request), input);
+    const propertyId = await resolvePropertyId(
+      auth,
+      request.headers['x-sparx-property-id'] as string | undefined
+    );
+    const created = await quickReplyService.create(toChatContext(request), {
+      ...input,
+      // An omitted propertyId defaults to the site being worked in; only an
+      // EXPLICIT null makes it tenant-wide. Defaulting the other way would make
+      // every reply leak to every business unless the author remembered — the
+      // exact failure this change exists to end.
+      propertyId: input.propertyId === undefined ? propertyId : input.propertyId,
+    });
     reply.code(201);
     return ok(created);
   });

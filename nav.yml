@@ -1,0 +1,194 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e130]:
+    - generic [ref=e131]:
+      - generic [ref=e132]:
+        - img [ref=e134]
+        - generic "WizeWorks LLC" [ref=e136]
+        - generic [ref=e137]: /
+        - button "WizeWorks" [ref=e138] [cursor=pointer]:
+          - img [ref=e139]
+          - generic [ref=e142]: WizeWorks
+          - img [ref=e143]
+      - button "Search everything ⌘K" [ref=e146] [cursor=pointer]:
+        - img [ref=e147]
+        - generic [ref=e150]: Search everything
+        - generic [ref=e151]: ⌘K
+      - generic [ref=e152]:
+        - button "Add to favorites" [ref=e154] [cursor=pointer]:
+          - img [ref=e155]
+        - button "Notifications" [ref=e157] [cursor=pointer]:
+          - img [ref=e158]
+        - button "Send feedback" [ref=e161] [cursor=pointer]:
+          - img [ref=e162]
+        - button "Switch to dark theme" [ref=e164] [cursor=pointer]:
+          - img [ref=e165]
+        - button "Account — E2E Staff" [ref=e167] [cursor=pointer]:
+          - img "E2E Staff" [ref=e168]: ES
+    - generic [ref=e169]:
+      - complementary "Modules" [ref=e172]:
+        - generic [ref=e174]:
+          - button "Workbench" [ref=e176] [cursor=pointer]:
+            - img [ref=e178]
+          - button "Invoicing" [ref=e184] [cursor=pointer]:
+            - img [ref=e186]
+          - button "Selling" [ref=e190] [cursor=pointer]:
+            - img [ref=e192]
+          - button "Customers" [ref=e197] [cursor=pointer]:
+            - img [ref=e199]
+          - button "Wholesale" [ref=e205] [cursor=pointer]:
+            - img [ref=e207]
+          - button "Inventory" [ref=e212] [cursor=pointer]:
+            - img [ref=e214]
+          - button "Site" [ref=e225] [cursor=pointer]:
+            - img [ref=e227]
+          - button "Content" [ref=e230] [cursor=pointer]:
+            - img [ref=e232]
+          - button "Email" [ref=e236] [cursor=pointer]:
+            - img [ref=e238]
+          - button "Scheduling" [ref=e242] [cursor=pointer]:
+            - img [ref=e244]
+          - button "Finance" [ref=e249] [cursor=pointer]:
+            - img [ref=e251]
+          - button "Dropshipping" [ref=e254] [cursor=pointer]:
+            - img [ref=e256]
+          - button "Automations" [ref=e262] [cursor=pointer]:
+            - img [ref=e264]
+          - button "Search" [ref=e269] [cursor=pointer]:
+            - img [ref=e271]
+          - button "Messages" [ref=e275] [cursor=pointer]:
+            - img [ref=e277]
+          - button "AI" [ref=e280] [cursor=pointer]:
+            - img [ref=e282]
+          - button "Partners" [ref=e286] [cursor=pointer]:
+            - img [ref=e288]
+        - generic [ref=e293]:
+          - button "Saved layouts" [ref=e294] [cursor=pointer]:
+            - img [ref=e296]
+          - button "Expand the module rail" [ref=e301] [cursor=pointer]:
+            - img [ref=e303]
+      - complementary [ref=e305]:
+        - generic [ref=e306]:
+          - generic [ref=e307]:
+            - img [ref=e308]
+            - generic [ref=e313]: Workbench
+          - button [ref=e314] [cursor=pointer]:
+            - img [ref=e315]
+        - generic [ref=e317]:
+          - generic [ref=e319]:
+            - generic:
+              - img
+            - searchbox [ref=e320]
+          - generic [ref=e321]:
+            - button [ref=e323] [cursor=pointer]:
+              - img [ref=e325]
+              - generic [ref=e328]: Start here
+            - button [ref=e330] [cursor=pointer]:
+              - img [ref=e332]
+              - generic [ref=e334]: Pulse
+            - button [ref=e336] [cursor=pointer]:
+              - img [ref=e338]
+              - generic [ref=e340]: Your feedback
+          - generic [ref=e341]:
+            - generic [ref=e342]: Your business
+            - button [ref=e344] [cursor=pointer]:
+              - img [ref=e346]
+              - generic [ref=e349]: Business details
+            - button [ref=e351] [cursor=pointer]:
+              - img [ref=e353]
+              - generic [ref=e358]: Team
+            - button [ref=e360] [cursor=pointer]:
+              - img [ref=e362]
+              - generic [ref=e365]: Sites
+            - button [ref=e367] [cursor=pointer]:
+              - img [ref=e369]
+              - generic [ref=e373]: Domains
+            - button [ref=e375] [cursor=pointer]:
+              - img [ref=e377]
+              - generic [ref=e380]: Notifications
+          - generic [ref=e381]:
+            - generic [ref=e382]: What sparx does
+            - button [ref=e384] [cursor=pointer]:
+              - img [ref=e386]
+              - generic [ref=e390]: Modules
+            - button [ref=e392] [cursor=pointer]:
+              - img [ref=e394]
+              - generic [ref=e397]: Industry
+            - button [ref=e399] [cursor=pointer]:
+              - img [ref=e401]
+              - generic [ref=e403]: Sample data
+            - button [ref=e405] [cursor=pointer]:
+              - img [ref=e407]
+              - generic [ref=e411]: Marketplace
+          - generic [ref=e412]:
+            - generic [ref=e413]: Connections & access
+            - button [ref=e415] [cursor=pointer]:
+              - img [ref=e417]
+              - generic [ref=e419]: Integrations
+            - button [ref=e421] [cursor=pointer]:
+              - img [ref=e423]
+              - generic [ref=e426]: AI connections
+            - button [ref=e428] [cursor=pointer]:
+              - img [ref=e430]
+              - generic [ref=e435]: Partner access
+            - button [ref=e437] [cursor=pointer]:
+              - img [ref=e439]
+              - generic [ref=e441]: Security
+        - paragraph [ref=e443]: Opens as a new panel you can move anywhere.
+      - main [ref=e444]:
+        - generic [ref=e453]:
+          - generic [ref=e454]:
+            - generic [ref=e459] [cursor=pointer]:
+              - img [ref=e460]
+              - generic "Start here" [ref=e463]
+              - button "Close Start here" [ref=e464]:
+                - img [ref=e465]
+            - button "Move these tabs to their own window" [ref=e472] [cursor=pointer]:
+              - img [ref=e473]
+          - generic [ref=e480]:
+            - heading "Your workbench" [level=1] [ref=e481]
+            - paragraph [ref=e482]: Every panel here is yours to move, resize, split, or pull onto a second screen. Nothing is fixed in place.
+            - generic [ref=e483]:
+              - generic [ref=e484]:
+                - img [ref=e485]
+                - generic [ref=e488]:
+                  - paragraph [ref=e489]: Open anything by name
+                  - paragraph [ref=e490]: Press ⌘K and start typing. No menus to learn — if you know what you want, say it.
+              - generic [ref=e491]:
+                - img [ref=e492]
+                - generic [ref=e494]:
+                  - paragraph [ref=e495]: Put things side by side
+                  - paragraph [ref=e496]: Drag a tab to the edge of a panel to split it. Hold ⇧ when opening to place something alongside what you are already looking at.
+              - generic [ref=e497]:
+                - img [ref=e498]
+                - generic [ref=e502]:
+                  - paragraph [ref=e503]: Pull a panel onto another screen
+                  - paragraph [ref=e504]: Drag a tab out of the window and let go. It becomes its own window you can move to a second monitor.
+              - generic [ref=e505]:
+                - img [ref=e506]
+                - generic [ref=e510]:
+                  - paragraph [ref=e511]: Keep an arrangement
+                  - paragraph [ref=e512]: Your layout comes back exactly as you left it. Save named layouts for the different kinds of work you do.
+            - generic [ref=e513]:
+              - button "Open invoices" [ref=e514] [cursor=pointer]
+              - paragraph [ref=e515]:
+                - text: or press
+                - generic [ref=e516]: ⌘
+                - generic [ref=e517]: K
+                - text: to search
+    - contentinfo [ref=e518]:
+      - generic [ref=e519]: Online
+      - button "Payment recorded yesterday" [ref=e521] [cursor=pointer]:
+        - img [ref=e522]
+        - generic [ref=e525]: Payment recorded
+        - generic [ref=e526]: yesterday
+  - generic [ref=e30]:
+    - img [ref=e32]
+    - button "Open Tanstack query devtools" [ref=e80] [cursor=pointer]:
+      - img [ref=e81]
+  - button "Open Next.js Dev Tools" [ref=e26] [cursor=pointer]:
+    - img [ref=e27]
+  - alert [ref=e129]: sparx Workbench
+  - generic:
+    - region "Notifications"
+  - generic:
+    - region "Notifications"

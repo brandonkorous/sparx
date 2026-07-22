@@ -99,7 +99,19 @@ async function pickForRole(
   tx: TxClient,
   req: ResourceRequirement,
   span: Interval,
-  opts: { explicitIds: string[]; locationId?: string; partySize?: number; strategy: string }
+  opts: {
+    explicitIds: string[];
+    locationId?: string;
+    partySize?: number;
+    strategy: string;
+    /** The site this booking is for (docs/131 §4). A resource is eligible only
+     *  if it works for this site (a junction row) or is unrestricted (no rows).
+     *  This is what stops one storefront's booking from allocating a person who
+     *  only works the other business — the double-booking-a-human failure the
+     *  resource junction exists to prevent. Undefined = no site constraint (a
+     *  tenant-wide service). */
+    propertyId?: string | null;
+  }
 ): Promise<AllocationPick[]> {
   const count = req.count ?? 1;
   const candidates = await tx.schedulingResource.findMany({
@@ -107,6 +119,16 @@ async function pickForRole(
       kind: req.kind,
       isActive: true,
       deletedAt: null,
+      // Reachable from this site: either the resource has a link to it, or it has
+      // NO links at all (available everywhere — the ProductProperty convention).
+      ...(opts.propertyId
+        ? {
+            OR: [
+              { siteLinks: { some: { propertyId: opts.propertyId } } },
+              { siteLinks: { none: {} } },
+            ],
+          }
+        : {}),
       ...(req.skillTags?.length ? { skillTags: { hasEvery: req.skillTags } } : {}),
       ...(opts.locationId ? { locationId: opts.locationId } : {}),
       ...(opts.explicitIds.length ? { id: { in: opts.explicitIds } } : { bookableOnline: true }),
@@ -199,6 +221,9 @@ export async function createBooking(
         locationId,
         partySize: input.partySize,
         strategy: service.assignmentStrategy,
+        // The service's site bounds which resources may be allocated (docs/131
+        // §4) — a tenant-wide service (null) imposes no constraint.
+        propertyId: service.propertyId,
       });
       picks.push(...rolePicks);
     }
@@ -210,6 +235,10 @@ export async function createBooking(
       booking = await tx.booking.create({
         data: {
           tenantId,
+          // Inherit the SITE from the service being booked (docs/131 §4),
+          // denormalized so the booking still names the right business if the
+          // service is later re-scoped or deleted.
+          propertyId: service.propertyId,
           serviceId: service.id,
           bookingType: service.bookingType,
           seriesId: opts.seriesId ?? null,
@@ -362,13 +391,67 @@ export async function cancelBooking(
   return cancelled;
 }
 
+/** One field's old→new pair, as recorded on a `booking.updated` history entry. */
+interface FieldChange {
+  from: unknown;
+  to: unknown;
+}
+
+/**
+ * The field-level old→new diff for an update, limited to the fields actually
+ * PRESENT in this request AND actually changed. This is what "save the old
+ * version" means for a note/parts/asset/location edit: the booking row itself
+ * only keeps the new value, so without this the prior value is lost.
+ *
+ * Scalars compare by value (a null-normalised equality); the two JSON fields
+ * (`assetRef`, `partsLinked`) compare by serialised shape.
+ */
+function diffBookingUpdate(
+  existing: Booking,
+  input: UpdateBookingInput
+): Record<string, FieldChange> {
+  const changes: Record<string, FieldChange> = {};
+
+  const scalar = (field: 'notes' | 'staffNotes' | 'workOrderId' | 'locationId') => {
+    const next = input[field];
+    if (next === undefined) return;
+    const from = existing[field] ?? null;
+    const to = next ?? null;
+    if (from !== to) changes[field] = { from, to };
+  };
+  scalar('notes');
+  scalar('staffNotes');
+  scalar('workOrderId');
+  scalar('locationId');
+
+  if (input.assetRef !== undefined) {
+    const from = existing.assetRef ?? null;
+    const to = input.assetRef ?? null;
+    if (JSON.stringify(from) !== JSON.stringify(to)) changes.assetRef = { from, to };
+  }
+  if (input.partsLinked !== undefined) {
+    const from = existing.partsLinked ?? [];
+    const to = input.partsLinked;
+    if (JSON.stringify(from) !== JSON.stringify(to)) changes.partsLinked = { from, to };
+  }
+
+  return changes;
+}
+
 /** Staff-side edits that don't move the booking in time (notes, parts, asset,
- *  location). Time changes go through rescheduleBooking so the EXCLUDE re-checks. */
-export async function updateBooking(tenantId: string, input: UpdateBookingInput): Promise<Booking> {
+ *  location). Time changes go through rescheduleBooking so the EXCLUDE re-checks.
+ *  The prior value of every changed field is captured to the audit trail as a
+ *  `booking.updated` event, so the history keeps the old version. */
+export async function updateBooking(
+  tenantId: string,
+  input: UpdateBookingInput,
+  actorId?: string
+): Promise<Booking> {
   const { id, assetRef, partsLinked, ...rest } = input;
-  return withTenant({ tenantId }, async (tx) => {
-    await loadBooking(tx, id);
-    return tx.booking.update({
+  const { booking, changes } = await withTenant({ tenantId }, async (tx) => {
+    const existing = await loadBooking(tx, id);
+    const changed = diffBookingUpdate(existing, input);
+    const updated = await tx.booking.update({
       where: { id },
       data: {
         ...rest,
@@ -378,7 +461,14 @@ export async function updateBooking(tenantId: string, input: UpdateBookingInput)
         ...(partsLinked !== undefined ? { partsLinked } : {}),
       },
     });
+    return { booking: updated, changes: changed };
   });
+  // Best-effort, and only when something actually moved — recordBookingEvent
+  // swallows its own failures so history never fails the edit it describes.
+  if (Object.keys(changes).length > 0) {
+    await recordBookingEvent(tenantId, id, 'booking.updated', actorId, { changes });
+  }
+  return booking;
 }
 
 export async function rescheduleBooking(

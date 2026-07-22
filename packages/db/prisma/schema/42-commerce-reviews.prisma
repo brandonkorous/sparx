@@ -5,6 +5,20 @@
 model ProductReview {
   id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId   String  @map("tenant_id") @db.Uuid
+  // The site this review was WRITTEN ON (docs/131 §4) — deliberately not "the
+  // site that owns the product", because a product reaches sites through the
+  // ProductProperty junction and can be listed on several at once.
+  //
+  // That distinction is the whole reason this column exists. Without it, a
+  // review left on one storefront appears on every storefront selling the same
+  // item, carrying that storefront's voice and context with it ("arrived next
+  // day", "the staff at the counter were great") into a business the reviewer
+  // never dealt with. Denormalized here rather than inferred, because the fact
+  // is about the ACT of writing and cannot be recovered from the product later.
+  //
+  // Nullable: rows written before multi-site have no answer, and inventing one
+  // would be worse than admitting it.
+  propertyId String? @map("property_id") @db.Uuid
   productId  String  @map("product_id") @db.Uuid
   variantId  String? @map("variant_id") @db.Uuid
   customerId String? @map("customer_id") @db.Uuid
@@ -37,6 +51,11 @@ model ProductReview {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
   tenant        Tenant                @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // SetNull, like orders and chat conversations: a review is a RECORD OF
+  // SOMETHING A REAL PERSON WROTE. Closing the storefront it was left on must
+  // not delete their words — it only detaches them from a site that no longer
+  // exists.
+  property      Property?             @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   product       Product               @relation(fields: [productId], references: [id], onDelete: Cascade)
   variant       ProductVariant?       @relation(fields: [variantId], references: [id], onDelete: SetNull)
   customer      Customer?             @relation(fields: [customerId], references: [id], onDelete: SetNull)
@@ -44,6 +63,7 @@ model ProductReview {
   helpfulVotes  ReviewHelpfulVote[]
   moderationLog ReviewModerationLog[]
 
+  @@index([tenantId, propertyId, productId, status])
   @@index([tenantId, productId, status])
   @@index([tenantId, status, createdAt(sort: Desc)])
   @@index([tenantId, customerId])
@@ -110,6 +130,11 @@ model ReviewModerationLog {
 model ProductQuestion {
   id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId     String  @map("tenant_id") @db.Uuid
+  // The site the question was ASKED ON (docs/131 §4), same reasoning as
+  // ProductReview above — and sharper here, because a question is usually
+  // addressed to the seller ("do you have this in stock at your shop?") and its
+  // answer is specific to the business that gave it.
+  propertyId   String? @map("property_id") @db.Uuid
   productId    String  @map("product_id") @db.Uuid
   customerId   String? @map("customer_id") @db.Uuid
   displayName  String? @map("display_name") @db.VarChar(63)
@@ -122,10 +147,16 @@ model ProductQuestion {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant   Tenant          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // SetNull — a real person asked this; it outlives the storefront.
+  property Property?       @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   product  Product         @relation(fields: [productId], references: [id], onDelete: Cascade)
   customer Customer?       @relation(fields: [customerId], references: [id], onDelete: SetNull)
+  // ProductAnswer carries NO property_id: an answer exists only under its
+  // question, so it inherits the site (docs/131 §2, pattern 3). A column there
+  // could disagree with its parent, which has no meaning.
   answers  ProductAnswer[]
 
+  @@index([tenantId, propertyId, productId, status])
   @@index([tenantId, productId, status])
   @@map("commerce_product_questions")
 }
@@ -155,6 +186,15 @@ model ProductAnswer {
 model Wishlist {
   id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId   String  @map("tenant_id") @db.Uuid
+  // The site this list was SAVED ON (docs/131 §4). A shopper's saved items
+  // belong to the storefront they were browsing: seeing donuts in a list opened
+  // on a machine-shop site is not a feature, and the default list name
+  // ("My Wishlist") plus the public share link both read as that business's.
+  //
+  // Note this pairs with the §7 decision on CustomerUser — one login may span a
+  // brand family, but ENTITLEMENTS and saved state stay per-site. A wishlist is
+  // exactly that kind of state.
+  propertyId String? @map("property_id") @db.Uuid
   customerId String  @map("customer_id") @db.Uuid
   name       String  @default("My Wishlist") @db.VarChar(127)
   isPublic   Boolean @default(false) @map("is_public")
@@ -164,6 +204,9 @@ model Wishlist {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
   tenant   Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // SetNull rather than Cascade: the shopper's saved items are THEIRS, not the
+  // storefront's, so closing a site must not silently empty someone's list.
+  property Property?      @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   customer Customer       @relation(fields: [customerId], references: [id], onDelete: Cascade)
   items    WishlistItem[]
 
@@ -187,4 +230,46 @@ model WishlistItem {
   @@unique([wishlistId, variantId], map: "wishlist_items_unique")
   @@index([tenantId, wishlistId])
   @@map("commerce_wishlist_items")
+}
+
+// Per-SITE product rating aggregate (docs/131 §4). One row per (product, site the
+// reviews were WRITTEN on) holding the SUM of ratings and the count — not the
+// average. Sums, because a storefront's rating combines two buckets (its own
+// reviews + the null "legacy/shared" bucket) and averages cannot be averaged;
+// sum(sum)/sum(count) is the only correct combine.
+//
+// Why this table exists at all: the review LIST already computes the right
+// per-site average live (review-service scopes its aggregate), but the
+// denormalized product.average_rating / review_count are TENANT-WIDE and drive
+// product-card badges and rating sort on a per-site grid — where a shopper would
+// see a star average blended across sibling businesses. This is the cheap
+// per-(product, site) lookup those surfaces read instead.
+//
+// property_id is nullable: null is the bucket for reviews written before
+// multi-site (or with no site), which every storefront counts. Maintained by
+// recomputeProductRating alongside the all-sites product.* columns.
+model ProductReviewRollup {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  productId  String  @map("product_id") @db.Uuid
+  // The site these reviews were written on; null = the legacy/shared bucket every
+  // site includes.
+  propertyId String? @map("property_id") @db.Uuid
+
+  // SUM of approved ratings and their count in this (product, site) bucket. A
+  // per-site average is sum(sumRating)/sum(reviewCount) over the site + null rows.
+  sumRating   Int @default(0) @map("sum_rating")
+  reviewCount Int @default(0) @map("review_count")
+
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  product  Product   @relation(fields: [productId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // NULLS NOT DISTINCT (migration) so the null bucket is a single row per product,
+  // not one per recompute.
+  @@unique([tenantId, productId, propertyId])
+  @@index([productId])
+  @@map("commerce_product_review_rollups")
 }

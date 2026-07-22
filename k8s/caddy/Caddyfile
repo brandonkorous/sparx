@@ -91,12 +91,29 @@ mcp.sparx.zone {
   reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
 }
 
+# The staff app. Served by the workbench (apps/workbench), which replaced the
+# decommissioned dashboard here. app.sparx.works is also the MCP OAuth
+# authorization-server origin (MCP_AUTH_SERVER_URL) and the Better Auth origin —
+# the workbench serves the /.well-known discovery docs + /oauth/consent.
 app.sparx.works {
   tls {
     on_demand
   }
   import security_headers
-  reverse_proxy dashboard.sparx-prod.svc.cluster.local:3000
+  reverse_proxy workbench.sparx-prod.svc.cluster.local:3000
+}
+
+# Legacy host from when the workbench ran beside the dashboard. It now lives at
+# app.sparx.works (the canonical staff URL), so send this subdomain there — a
+# permanent redirect keeps any old bookmark/link working. Better Auth cookies +
+# the OAuth origin are scoped to app.sparx.works, so this host must NOT serve the
+# app itself.
+workbench.sparx.works {
+  tls {
+    on_demand
+  }
+  import security_headers
+  redir https://app.sparx.works{uri} permanent
 }
 
 sparx.works, www.sparx.works {
@@ -159,6 +176,37 @@ api.kanninja.com {
 mcp.kanninja.com {
   import security_headers
   reverse_proxy mcp.kanninja.svc.cluster.local:80
+}
+
+# ----- SilicaUI marketing + docs site (co-tenant in the `silicaui` namespace) -----
+# The site's workloads live in their own `silicaui` namespace (a static Next.js
+# export served by nginx), reached cross-namespace via its ClusterIP Service.
+#
+# Uses `tls { on_demand }` (like the sparx platform hosts, NOT the kanNINJA-style
+# explicit managed block). silicaui.com/www are allow-listed as static platform
+# hosts in the on-demand ask endpoint (api-rest /internal/domain-check
+# PLATFORM_HOSTNAMES), so issuance is authorized. On-demand is deliberate here:
+# this Caddy is a single replica on a Recreate rollout, so every boot has a
+# ~15-60s window with no registered LB backend, and an explicit block fires all
+# its startup issuance attempts inside it — a first cert can never be obtained at
+# boot (this is exactly what blocked silicaui's cert). On-demand defers issuance
+# to the first HTTPS request, which lands on the warm, LB-registered pod, so the
+# ACME challenge succeeds. Requires silicaui.com / www DNS to resolve to this LB
+# (35.254.145.54) first.
+silicaui.com {
+  tls {
+    on_demand
+  }
+  import security_headers
+  reverse_proxy site.silicaui.svc.cluster.local:80
+}
+
+www.silicaui.com {
+  tls {
+    on_demand
+  }
+  import security_headers
+  redir https://silicaui.com{uri} permanent
 }
 
 # ----- WizeWorks operator console (admin.wize.works, wize-admin namespace) -----

@@ -1,0 +1,123 @@
+/* Skins dockview with sparx tokens.
+ *
+ * dockview ships its own dark/light themes, which look like a developer tool.
+ * Every value below is remapped onto a silica token instead, so the dock inherits
+ * the platform's surface ramp and follows the light/dark toggle automatically —
+ * there is no dockview theme class to switch, because the tokens themselves
+ * change under [data-theme].
+ *
+ * This file is the one place in the app allowed to target a third-party library's
+ * class names. It is component-library work that happens to live in an app, which
+ * is why eslint.config.js exempts lib/dock/** from the re-skinning rule. */
+
+/* The surface ramp, and why every value below moved one step deeper.
+ *
+ * The shell is a three-level ramp: base-300 is the GROUND (the shell root and
+ * the gutters between groups), base-200 is the PANE — a surface laid on the
+ * ground — and base-100 is CONTENT lifted onto the pane (cards, the rail, the
+ * toolbar). A pane used to be base-100 itself, which spent the top of the ramp
+ * on the pane and left its contents nothing to be lifted ONTO: every list was a
+ * flat slab divided only by hairlines.
+ *
+ * The tab strip has to move with it or the whole thing comes apart. The active
+ * tab is deliberately the same colour as the pane below it, so tab and content
+ * read as one continuous surface with the strip cut away — that is the entire
+ * trick that makes a dock look like a dock. Leave the active tab on base-100
+ * while the pane goes to base-200 and it detaches into a floating chip. So:
+ * strip → ground, active tab → pane, and the relationship is preserved. */
+.dv-dockview {
+  --dv-background-color: var(--color-base-300);
+  --dv-paneview-active-outline-color: var(--color-module);
+
+  /* Tab strip */
+  --dv-tabs-and-actions-container-background-color: var(--color-base-300);
+  --dv-tabs-and-actions-container-height: 36px;
+  --dv-activegroup-visiblepanel-tab-background-color: var(--color-base-200);
+  --dv-activegroup-hiddenpanel-tab-background-color: var(--color-base-300);
+  --dv-inactivegroup-visiblepanel-tab-background-color: var(--color-base-200);
+  --dv-inactivegroup-hiddenpanel-tab-background-color: var(--color-base-300);
+  --dv-activegroup-visiblepanel-tab-color: var(--color-base-content);
+  --dv-activegroup-hiddenpanel-tab-color: color-mix(
+    in oklch,
+    var(--color-base-content) 60%,
+    transparent
+  );
+  --dv-inactivegroup-visiblepanel-tab-color: color-mix(
+    in oklch,
+    var(--color-base-content) 75%,
+    transparent
+  );
+  --dv-inactivegroup-hiddenpanel-tab-color: color-mix(
+    in oklch,
+    var(--color-base-content) 50%,
+    transparent
+  );
+
+  /* Structure */
+  --dv-separator-border: var(--color-base-300);
+  --dv-paneview-header-border-color: var(--color-base-300);
+  --dv-group-view-background-color: var(--color-base-200);
+  --dv-tab-divider-color: var(--color-base-300);
+
+  /* Drag + drop affordances */
+  --dv-drag-over-background-color: color-mix(in oklch, var(--color-module) 14%, transparent);
+  --dv-drag-over-border-color: var(--color-module);
+
+  --dv-icon-hover-background-color: var(--color-base-300);
+  --dv-floating-box-shadow: 0 10px 30px rgb(0 0 0 / 18%);
+}
+
+/* ── Tabs ──────────────────────────────────────────────────────────────────
+ * A tab has to read as a THING you can grab, not a word in a row — this is a
+ * dock, so tabs are the primary drag handle and their edges have to be legible.
+ * Inactive tabs sit on the strip's own recessed background; the active tab is
+ * lifted to the pane surface (base-100) so it visually joins the content below
+ * it, and takes a module-coloured bar along its top edge.
+ *
+ * The accent bar CANNOT live on .dv-tab itself: <ModuleScope> renders INSIDE the
+ * tab (dockview owns the tab element), so --color-module is set on a descendant
+ * and CSS custom properties only inherit DOWNWARD. A rule on .dv-tab reads the
+ * :root fallback — brand ember — and every tab came out the same red regardless
+ * of module. So the bar is drawn by the ModuleScope element instead, which is
+ * inside the cascade that defines the variable. */
+/* dockview's tab is only a container + drag handle here: it gets sizing and a
+   separator, and everything visual (fill, ink, module accent, active state)
+   comes from the silica-classed element <PaneTab> renders inside it. Nothing
+   below re-implements a tab's appearance. */
+.dv-dockview .dv-tab {
+  padding: 0;
+  min-width: 7rem;
+  max-width: 15rem;
+  background-color: transparent;
+  /* Tabs sit flush, so a separator HERE lands between the inner element's own
+     module-coloured left and right edges — three hairlines per junction, the
+     middle one neutral and loudest, which read as "the left border is missing"
+     on every tab but the first. The separator now comes from the module edges
+     themselves; this is deliberately borderless. */
+  border-right: 0;
+  /* A hair of space so each tab's left and right edges read as ITS outline
+     rather than merging with its neighbour's into one seam. */
+  margin-right: 2px;
+}
+
+/* Close affordance: shown on the active tab (handled in the component) and on
+   hover/focus elsewhere. Never `display: none` — that would take it away from
+   keyboard and screen reader users, not just from sight. */
+.dv-dockview .dv-tab:hover [data-tab-close],
+.dv-dockview .dv-tab [data-tab-close]:focus-visible {
+  opacity: 1;
+}
+
+/* Keyboard focus must stay visible inside panes (WCAG 2.1 AA). dockview's reset
+   otherwise suppresses it on the tab strip. */
+.dv-dockview .dv-tab:focus-visible {
+  outline: 2px solid var(--color-module);
+  outline-offset: -2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dv-dockview * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}

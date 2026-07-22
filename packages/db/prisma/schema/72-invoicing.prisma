@@ -115,6 +115,16 @@ model BillingDocumentLineType {
 model BillingDocument {
   id             String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId       String  @map("tenant_id") @db.Uuid
+  // The business ISSUING this document (docs/131 §3.6). Required — every invoice
+  // has an issuer, and `numberSeq` below is now a per-SITE sequence rather than a
+  // per-tenant one.
+  //
+  // The old per-tenant sequence interleaved two businesses' books: Bob's Parts
+  // issued INV-000123, Savory Donuts INV-000124, so each set of books appeared to
+  // skip numbers — and the gaps disclosed to customers that two unrelated brands
+  // are one entity, which is precisely what a tenant running separate brands is
+  // trying not to say.
+  propertyId     String  @map("property_id") @db.Uuid
   workflowId     String  @map("workflow_id") @db.Uuid
   stageId        String  @map("stage_id") @db.Uuid
   customerId     String? @map("customer_id") @db.Uuid
@@ -133,8 +143,19 @@ model BillingDocument {
 
   // Denormalized party snapshots ({ name, address, … }) frozen onto the document
   // so a later customer-record edit never rewrites a finalized document (§6).
-  billTo Json? @map("bill_to")
-  shipTo Json? @map("ship_to")
+  billTo   Json? @map("bill_to")
+  shipTo   Json? @map("ship_to")
+  // The ISSUER, frozen at finalize (docs/131 §3.6 + docs/130 §2.7). The other two
+  // parties were already snapshotted and the seller was not — so renaming a site,
+  // or editing the legal entity's address, silently rewrote the letterhead on
+  // invoices that had ALREADY BEEN SENT. A customer's copy and the tenant's copy
+  // then disagree about who billed them, which is the one discrepancy an audit
+  // cannot be talked out of.
+  //
+  // Carries BOTH names deliberately: `{ siteName, legalName, address, taxId, … }`.
+  // The trading name is what the customer recognises; the legal entity is what
+  // the tax authority requires, and on a multi-brand tenant they differ.
+  issuedBy Json? @map("issued_by")
 
   // Tax rate applied to taxable lines (0.0875 = 8.75%); the per-line `taxable`
   // flag selects which lines it hits. Jurisdiction automation deferred (§17).
@@ -153,6 +174,19 @@ model BillingDocument {
   // AR status — payment-derived, independent of the workflow stage (§8):
   // unpaid | partial | paid | overdue | void.
   status      String    @default("unpaid") @db.VarChar(20)
+  /// URGENCY rank of `status`, for sorting: overdue(10) → unpaid(20) →
+  /// partial(30) → paid(40) → void(50). READ-ONLY — a Postgres GENERATED
+  /// ALWAYS ... STORED column. Exists because ORDER BY status sorts the text
+  /// alphabetically, which places PAID second and is not what anyone means by
+  /// sorting on status. See migration 20261206000000_billing_document_status_rank.
+  ///
+  /// `@default(dbgenerated())` is load-bearing, not decoration: it is what stops
+  /// Prisma emitting the column on INSERT. With a plain `@default(0)` every
+  /// `billingDocument.create()` fails with Postgres 428C9 ("cannot insert a
+  /// non-DEFAULT value into column status_rank"). Do NOT use `@ignore` here
+  /// either — that would drop the field from the client and break the
+  /// `orderBy: { statusRank }` sort in billing-document-service.orderByFor.
+  statusRank  Int       @default(dbgenerated()) @map("status_rank") @db.SmallInt
   // Net-terms due date — set on finalize from the B2B account's payment terms,
   // or by hand. Drives overdue escalation (§8). Null for pay-now/retail docs.
   dueAt       DateTime? @map("due_at") @db.Timestamptz
@@ -183,6 +217,13 @@ model BillingDocument {
   deletedAt DateTime? @map("deleted_at") @db.Timestamptz
 
   tenant         Tenant                    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Restrict, not Cascade and not SetNull — the only model in this remediation
+  // that takes this option, and for a reason neither of the others has. A
+  // finalized invoice is a FINANCIAL RECORD with statutory retention: deleting it
+  // with its site (Cascade) destroys the books, and orphaning it (SetNull) leaves
+  // a document nobody issued. So a site with billing documents cannot be deleted
+  // at all — the operator must archive it instead, which is the honest answer.
+  property       Property                  @relation(fields: [propertyId], references: [id], onDelete: Restrict)
   workflow       DocumentWorkflow          @relation(fields: [workflowId], references: [id])
   stage          DocumentStage             @relation(fields: [stageId], references: [id])
   customer       Customer?                 @relation(fields: [customerId], references: [id], onDelete: SetNull)
@@ -197,8 +238,11 @@ model BillingDocument {
   payments       BillingDocumentPayment[]
   dealLinks      DealBillingDocument[]
 
-  @@unique([tenantId, number], map: "billing_documents_tenant_number_unique")
-  @@unique([tenantId, numberSeq], map: "billing_documents_tenant_seq_unique")
+  // Uniqueness is per SITE now: two businesses may each hold INV-000001, and
+  // should — that is what separate books look like.
+  @@unique([tenantId, propertyId, number], map: "billing_documents_tenant_number_unique")
+  @@unique([tenantId, propertyId, numberSeq], map: "billing_documents_tenant_seq_unique")
+  @@index([tenantId, propertyId, status, dueAt])
   @@index([tenantId, workflowId, stageId])
   @@index([tenantId, customerId])
   @@index([tenantId, b2bAccountId])
@@ -298,12 +342,18 @@ model BillingDocumentSnapshot {
 // so a tenant never *must* design one. A built-in default tree ships seeded
 // (lazy-materialised on first list); the builder edits that copy.
 model BillingDocumentTemplate {
-  id        String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String  @map("tenant_id") @db.Uuid
-  name      String  @db.VarChar(120)
-  // One default per tenant (partial-unique WHERE is_default, hand-SQL) — the
-  // template `…/pdf` resolves when published.
-  isDefault Boolean @default(false) @map("is_default")
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // null = available to every site (docs/131 §3.6). A letterhead is brand
+  // artwork, so two unrelated businesses forced onto one is the same defect as
+  // the shared sender identity in §3.4 — but a genuinely neutral template is
+  // real, which is why this narrows rather than requiring a copy per site.
+  propertyId String? @map("property_id") @db.Uuid
+  name       String  @db.VarChar(120)
+  // One default per SITE (partial-unique WHERE is_default, hand-SQL) — the
+  // template `…/pdf` resolves when published. Per-tenant meant picking a
+  // letterhead for one business silently re-branded the other's invoices.
+  isDefault  Boolean @default(false) @map("is_default")
 
   // The editor's working tree; publishing snapshots it into publishedTree. Both
   // are validated BuilderNode trees (the same shape the page/email builders store).
@@ -314,9 +364,13 @@ model BillingDocumentTemplate {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a letterhead designed for one business goes with it. Authored
+  // artwork, not a record of anything.
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
 
   @@index([tenantId])
+  @@index([tenantId, propertyId])
   @@map("billing_document_templates")
 }
 

@@ -14,6 +14,9 @@ const Slug = z
   .regex(/^[a-z][a-z0-9-]*$/, 'Segment slug must be lowercase kebab-case');
 
 export const CreateSegmentInput = z.object({
+  // The site this audience draws from (docs/131 §5); explicit null = tenant-wide.
+  // The dashboard route defaults it to the site being worked in.
+  propertyId: z.string().uuid().nullable().optional(),
   name: z.string().min(1).max(120),
   slug: Slug,
   description: z.string().max(2000).nullable().optional(),

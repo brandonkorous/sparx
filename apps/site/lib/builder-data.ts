@@ -20,7 +20,7 @@ import {
   type DataSources,
 } from '@sparx/builder-schemas';
 
-import { getEntryById, publicGet, type ApiEntry, type BlogPostBody } from './content';
+import { getEntriesByIds, publicGet, type ApiEntry, type BlogPostBody } from './content';
 import { listProducts, type PublicProductListItem } from './commerce';
 import { mediaUrl } from './media';
 import type { ResolvedSite } from './site-context';
@@ -67,12 +67,22 @@ function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
   cursor[segs[segs.length - 1] ?? ''] = value;
 }
 
+/**
+ * How many records a bound COLLECTION renders (docs/127 §8) — one named number rather
+ * than a bare `24` inlined per fetch. At the catalog sizes this platform targets, a
+ * silent cap is data loss: the extra records simply never appear, with no pagination
+ * and no signal to the shopper or the author.
+ */
+const COLLECTION_PAGE_SIZE = 24;
+
 // A CMS entry's `body` IS the field map (keys match the content type's schema
-// fields), so `item.<field>` resolves directly against it.
+// fields), so `item.<field>` resolves directly against it. Fetches ONE MORE than it
+// renders so truncation is detectable — the endpoint returns a bare array, so n+1
+// coming back is the only available "there are more" signal.
 async function listEntries(tenantSlug: string, type: string): Promise<ApiEntry[]> {
   return publicGet<ApiEntry[]>(
     '/v1/public/content/entries',
-    { tenant: tenantSlug, type, limit: 24 },
+    { tenant: tenantSlug, type, limit: COLLECTION_PAGE_SIZE + 1 },
     { tag: `entries:${tenantSlug}:${type}` }
   );
 }
@@ -148,20 +158,20 @@ function resolveEntryBodyAssets(
 /** Hydrate the CMS entries a tree PINS by id (docs/98 Pillar 7 record-display) into
  *  `__pins['cms:<id>']` — the entry body with asset fields resolved, so a section
  *  pinned to a blog post reads `item.title` / `item.body` / `item.featuredImage`.
- *  One fetch per pin; a missing/unpublished entry simply doesn't render. */
+ *  One batched fetch for all pins; a missing/unpublished entry doesn't render. */
 async function loadCmsPins(tenantSlug: string, tree: BuilderNode): Promise<DataSources> {
   const ids = collectBindingRefs(tree)
     .entities.filter((e) => e.entity === 'cms')
     .map((e) => e.id);
   if (ids.length === 0) return {};
+  // ONE request for every pin (docs/127 §7), matching how the commerce loader batches
+  // its product pins. This was a fetch per pin.
+  const entries = await getEntriesByIds(tenantSlug, ids);
   const pins: Record<string, unknown> = {};
-  await Promise.all(
-    ids.map((id) =>
-      getEntryById(tenantSlug, id).then((entry) => {
-        if (entry) pins[entityPinKey('cms', id)] = resolveEntryBodyAssets(entry.body, tenantSlug);
-      })
-    )
-  );
+  for (const id of ids) {
+    const entry = entries.get(id);
+    if (entry) pins[entityPinKey('cms', id)] = resolveEntryBodyAssets(entry.body, tenantSlug);
+  }
   return Object.keys(pins).length > 0 ? { [PINS_ROOT]: pins } : {};
 }
 
@@ -213,26 +223,44 @@ export async function loadBuilderData(
   for (const type of cmsTypes) {
     tasks.push(
       listEntries(tenantSlug, type)
-        .then((entries) =>
+        .then((entries) => {
+          const shown = entries.slice(0, COLLECTION_PAGE_SIZE);
           setAtPath(
             root,
             `cms.${type}`,
-            entries.map((e) => resolveEntryBodyAssets(e.body, tenantSlug))
-          )
-        )
+            shown.map((e) => resolveEntryBodyAssets(e.body, tenantSlug))
+          );
+          // n+1 came back → more exist. Bindable, so a template can say so instead of
+          // the list just ending (docs/127 §8).
+          const hasMore = entries.length > COLLECTION_PAGE_SIZE;
+          setAtPath(root, `cms.${type}HasMore`, hasMore);
+          if (hasMore) {
+            console.warn(
+              `[builder-data] cms.${type}: showing ${shown.length} entries, more exist — ` +
+                `no pagination on the storefront yet (docs/127 §8).`
+            );
+          }
+        })
         .catch(() => setAtPath(root, `cms.${type}`, []))
     );
   }
   if (commerce) {
     tasks.push(
-      listProducts(tenantSlug, { perPage: 24 })
-        .then(({ items }) =>
-          setAtPath(
-            root,
-            'commerce.product',
-            items.map((p) => mapProduct(p, tenantSlug))
-          )
-        )
+      listProducts(tenantSlug, { perPage: COLLECTION_PAGE_SIZE })
+        .then(({ items, total }) => {
+          const products = items.map((p) => mapProduct(p, tenantSlug));
+          setAtPath(root, 'commerce.product', products);
+          // The list endpoint DOES report a total here, so the exact count is bindable
+          // ("Showing 24 of 137") rather than just a boolean (docs/127 §8).
+          setAtPath(root, 'commerce.productTotal', total);
+          setAtPath(root, 'commerce.productHasMore', total > products.length);
+          if (total > products.length) {
+            console.warn(
+              `[builder-data] product catalog: showing ${products.length} of ${total} — ` +
+                `the rest are not rendered and there is no pagination yet (docs/127 §8).`
+            );
+          }
+        })
         .catch(() => setAtPath(root, 'commerce.product', []))
     );
   }

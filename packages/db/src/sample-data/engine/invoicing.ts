@@ -150,6 +150,7 @@ export async function applyInvoicing(ctx: ApplyCtx, pack: SampleDataPack): Promi
     const doc = await tx.billingDocument.create({
       data: {
         tenantId,
+        propertyId: ctx.issuingPropertyId,
         workflowId: workflow.id,
         stageId: stage.id,
         customerId: party.id,
@@ -348,6 +349,7 @@ async function seedB2bAr(ctx: ApplyCtx, pack: SampleDataPack, opts: B2bArOpts): 
     const doc = await tx.billingDocument.create({
       data: {
         tenantId,
+        propertyId: ctx.issuingPropertyId,
         workflowId: opts.workflowId,
         stageId: stage.id,
         b2bAccountId: account.id,

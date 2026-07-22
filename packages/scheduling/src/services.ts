@@ -15,6 +15,10 @@ export async function createService(
     tx.schedulingService.create({
       data: {
         tenantId,
+        // The site offering this service (docs/131 §4); undefined leaves it
+        // tenant-wide. The route resolves the current site and passes it, so a
+        // service authored while working in one business belongs to it.
+        propertyId: input.propertyId ?? null,
         bookingType: input.bookingType,
         name: input.name,
         description: input.description ?? null,
@@ -75,12 +79,17 @@ export async function getService(tenantId: string, id: string): Promise<Scheduli
 
 export async function listServices(
   tenantId: string,
-  opts: { bookingType?: string; activeOnly?: boolean } = {}
+  opts: { bookingType?: string; activeOnly?: boolean; propertyId?: string } = {}
 ): Promise<SchedulingService[]> {
   return withTenant({ tenantId }, (tx) =>
     tx.schedulingService.findMany({
       where: {
         deletedAt: null,
+        // The booking widget shows only THIS site's services plus any tenant-wide
+        // ones (docs/131 §4). The public storefront always passes its site; staff
+        // callers may omit it to see everything. Without this a donut site's
+        // widget offered oil changes.
+        ...(opts.propertyId ? { OR: [{ propertyId: opts.propertyId }, { propertyId: null }] } : {}),
         ...(opts.bookingType ? { bookingType: opts.bookingType } : {}),
         ...(opts.activeOnly ? { isActive: true } : {}),
       },
@@ -99,6 +108,10 @@ export async function listServicesPaged(
     q?: string;
     bookingType?: string;
     activeOnly?: boolean;
+    /** The member's reachable sites (docs/131 §3.3); undefined = unrestricted. A
+     *  service's null property means tenant-wide (shared), so a restricted member
+     *  sees their businesses' services PLUS tenant-wide ones. */
+    propertyIds?: string[];
     take?: number;
     skip?: number;
   } = {}
@@ -106,13 +119,22 @@ export async function listServicesPaged(
   return withTenant({ tenantId }, async (tx) => {
     const where: Prisma.SchedulingServiceWhereInput = {
       deletedAt: null,
+      ...(opts.propertyIds
+        ? { OR: [{ propertyId: { in: opts.propertyIds } }, { propertyId: null }] }
+        : {}),
       ...(opts.bookingType ? { bookingType: opts.bookingType } : {}),
       ...(opts.activeOnly ? { isActive: true } : {}),
       ...(opts.q
         ? {
-            OR: [
-              { name: { contains: opts.q, mode: 'insensitive' } },
-              { description: { contains: opts.q, mode: 'insensitive' } },
+            // Nested under AND so the text search composes with the site OR
+            // above instead of clobbering it (two top-level ORs collide).
+            AND: [
+              {
+                OR: [
+                  { name: { contains: opts.q, mode: 'insensitive' } },
+                  { description: { contains: opts.q, mode: 'insensitive' } },
+                ],
+              },
             ],
           }
         : {}),

@@ -66,7 +66,7 @@ export function CopyValue({ value, label, tone = 'subtle' }: CopyValueProps) {
       aria-label={label ?? `Copy ${value}`}
       className="font-mono font-normal"
       iconEnd={
-        <span aria-hidden style={{ color: copied ? 'var(--color-success)' : undefined }}>
+        <span aria-hidden className={copied ? 'text-success' : undefined}>
           {copied ? '✓' : '⧉'}
         </span>
       }
@@ -148,13 +148,11 @@ export function Swatch({ name, value, hex, token, note, height = 88, theme }: Sw
       <div
         ref={tileRef}
         data-theme={theme}
-        className="rounded-lg"
-        style={{
-          height,
-          backgroundColor: value,
-          boxShadow:
-            'inset 0 0 0 1px color-mix(in oklab, var(--color-base-content) 12%, transparent)',
-        }}
+        className="ring-base-content/12 rounded-lg ring-1 ring-inset"
+        // SPECIMEN — `backgroundColor` IS the swatch: this tile exists to display
+        // the exact resolved value of `value`, so it must never become a token
+        // utility that a theme change could repaint. `height` is per-instance.
+        style={{ height, backgroundColor: value }}
       />
       <div className="flex flex-col gap-2">
         <Text as="span" size={14} weight={500} tone="default">

@@ -1,0 +1,249 @@
+'use client';
+
+// Shipping — the whole-business view of how you deliver.
+//
+// Two things live here, and they answer two different questions. DELIVERY
+// REGIONS (zones) answer "where do you deliver, and what does it cost there?" —
+// this is where nearly every shop spends its time. PRODUCT GROUPS (profiles)
+// answer "do some products ship differently from the rest?" — most shops have
+// one group and never touch it, so it sits second.
+//
+// Each row opens its own create-and-manage pane. Rates (the actual delivery
+// options and their prices) are edited inside a region, because a price only
+// means something once you know the region it applies to.
+
+import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import { Boxes, Plus, ServerCrash, Truck } from 'lucide-react';
+import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
+import { FormSection } from '../../components/form-section';
+import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import { coverageSummary } from './geo';
+import {
+  shippingErrorMessage,
+  useShippingProfiles,
+  useShippingZones,
+  type ShippingProfile,
+  type ShippingZone,
+} from './shipping-data';
+
+function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
+  if (event.altKey) return 'window';
+  if (event.shiftKey) return 'beside';
+  return 'tab';
+}
+
+function ZoneRow({ zone, onOpen }: { zone: ShippingZone; onOpen: RowOpen }) {
+  return (
+    <button
+      type="button"
+      className="hover:bg-base-200 flex w-full flex-wrap items-center gap-2 rounded px-2 py-2 text-left"
+      onClick={(event) => {
+        onOpen('commerce.shipping.zone.detail', zone.id, event);
+      }}
+    >
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="font-semibold">{zone.name}</span>
+        <Text as="span" className="text-sm">
+          {coverageSummary(zone.targeting.countries)}
+        </Text>
+      </span>
+      {zone.rateCount === 0 ? (
+        <Badge color="warning" variant="soft" size="sm">
+          No delivery options yet
+        </Badge>
+      ) : (
+        <Badge color="neutral" variant="soft" size="sm">
+          {zone.rateCount === 1 ? '1 option' : `${String(zone.rateCount)} options`}
+        </Badge>
+      )}
+    </button>
+  );
+}
+
+function ProfileRow({ profile, onOpen }: { profile: ShippingProfile; onOpen: RowOpen }) {
+  const count = profile.productCount + profile.variantCount;
+  return (
+    <button
+      type="button"
+      className="hover:bg-base-200 flex w-full flex-wrap items-center gap-2 rounded px-2 py-2 text-left"
+      onClick={(event) => {
+        onOpen('commerce.shipping.profile.detail', profile.id, event);
+      }}
+    >
+      <span className="flex min-w-0 flex-1 flex-col">
+        <span className="font-semibold">{profile.name}</span>
+        {profile.requiresFreight || profile.requiresSignature ? (
+          <Text as="span" className="text-sm">
+            {[
+              profile.requiresFreight ? 'Ships as freight' : null,
+              profile.requiresSignature ? 'Needs a signature' : null,
+            ]
+              .filter(Boolean)
+              .join(' · ')}
+          </Text>
+        ) : null}
+      </span>
+      <Text as="span" className="shrink-0 text-sm tabular-nums">
+        {count === 0
+          ? 'All other products'
+          : count === 1
+            ? '1 product'
+            : `${String(count)} products`}
+      </Text>
+    </button>
+  );
+}
+
+type RowOpen = (surface: string, id: string, event: { shiftKey: boolean; altKey: boolean }) => void;
+
+export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
+  const zones = useShippingZones();
+  const profiles = useShippingProfiles();
+
+  const open: RowOpen = (surface, id, event) => {
+    ctx.open(surface, { id }, { target: targetFor(event) });
+  };
+
+  const isFetching = zones.isFetching || profiles.isFetching;
+  const updatedAt = Math.max(zones.dataUpdatedAt, profiles.dataUpdatedAt) || undefined;
+
+  const zoneRows = zones.data?.items ?? [];
+  const profileRows = profiles.data?.items ?? [];
+
+  return (
+    <div className={PANE_SHELL}>
+      <PaneToolbar label="Shipping controls">
+        <Truck className="size-4 shrink-0" aria-hidden />
+        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
+          Shipping
+        </Heading>
+        <RefreshButton
+          className="ml-auto"
+          isFetching={isFetching}
+          updatedAt={zones.data ? updatedAt : undefined}
+          onRefresh={() => {
+            void zones.refetch();
+            void profiles.refetch();
+          }}
+        />
+      </PaneToolbar>
+
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className="mx-auto flex w-full max-w-3xl flex-col gap-4">
+          {zones.isError ? (
+            <EmptyState
+              icon={<ServerCrash className="size-6" aria-hidden />}
+              title="Could not load your shipping setup"
+              description={shippingErrorMessage(
+                zones.error,
+                'This is a problem reaching the server. Your delivery settings are unaffected.'
+              )}
+              actions={
+                <Button
+                  size="sm"
+                  color="module"
+                  onClick={() => {
+                    void zones.refetch();
+                    void profiles.refetch();
+                  }}
+                >
+                  Try again
+                </Button>
+              }
+            />
+          ) : (
+            <>
+              <div className="flex flex-col gap-1">
+                <Heading level={1} className="text-2xl font-semibold">
+                  How you deliver
+                </Heading>
+                <Text className="text-sm">
+                  Set up the places you deliver to and what each delivery option costs. Shoppers see
+                  the options for wherever their address is, and pay the price you set here.
+                </Text>
+              </div>
+
+              <FormSection
+                title="Delivery regions"
+                description="A region is a set of places you deliver to. Each one holds the delivery options a shopper there can choose from."
+                action={
+                  <Button
+                    size="sm"
+                    color="module"
+                    onClick={(event) => {
+                      open('commerce.shipping.zone.detail', 'new', event);
+                    }}
+                  >
+                    <Plus className="size-4" aria-hidden />
+                    Add a region
+                  </Button>
+                }
+              >
+                {zones.isPending ? (
+                  <Text className="text-sm" role="status">
+                    Loading…
+                  </Text>
+                ) : zoneRows.length === 0 ? (
+                  <EmptyState
+                    size="sm"
+                    icon={<Truck className="size-6" aria-hidden />}
+                    title="No delivery regions yet"
+                    description="Add your first region — for example one covering your own country — then give it a delivery option and a price."
+                  />
+                ) : (
+                  <div className="flex flex-col">
+                    {zoneRows.map((zone) => (
+                      <ZoneRow key={zone.id} zone={zone} onOpen={open} />
+                    ))}
+                  </div>
+                )}
+              </FormSection>
+
+              <FormSection
+                title="Product groups"
+                description="Most shops need just one. Add another only if some products ship differently — bulky freight, or anything that needs a signature — so they can be priced on their own."
+                action={
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    color="neutral"
+                    onClick={(event) => {
+                      open('commerce.shipping.profile.detail', 'new', event);
+                    }}
+                  >
+                    <Plus className="size-4" aria-hidden />
+                    Add a group
+                  </Button>
+                }
+              >
+                {profiles.isPending ? (
+                  <Text className="text-sm" role="status">
+                    Loading…
+                  </Text>
+                ) : profileRows.length === 0 ? (
+                  <EmptyState
+                    size="sm"
+                    icon={<Boxes className="size-6" aria-hidden />}
+                    title="No product groups yet"
+                    description="Every product ships the same way until you add a group. Add one to price a set of products separately."
+                  />
+                ) : (
+                  <div className="flex flex-col">
+                    {profileRows.map((profile) => (
+                      <ProfileRow key={profile.id} profile={profile} onOpen={open} />
+                    ))}
+                  </div>
+                )}
+              </FormSection>
+
+              <p className="px-1 text-xs">
+                Click to open · Shift-click to open alongside · Alt-click for a new window
+              </p>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

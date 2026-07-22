@@ -22,6 +22,9 @@ const PathId = z.object({ id: z.string().uuid() });
 
 const ListQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
+  // Narrow to one kind of location. The operator Locations surface offers this
+  // as a filter, so it resolves server-side rather than sieving a loaded page.
+  type: z.enum(['owned', '3pl', 'dropship', 'virtual']).optional(),
   include_archived: z.coerce.boolean().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
@@ -41,6 +44,7 @@ const inventoryLocationRoutes: FastifyPluginAsync = async (app) => {
     const q = ListQuery.parse(request.query);
     const { items, total } = await inventoryService.listWarehouses(toInventoryContext(request), {
       q: q.q,
+      ...(q.type !== undefined ? { type: q.type } : {}),
       includeInactive: q.include_archived === true,
       ...(q.take !== undefined ? { take: q.take } : {}),
       ...(q.skip !== undefined ? { skip: q.skip } : {}),

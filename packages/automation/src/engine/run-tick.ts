@@ -16,6 +16,7 @@
 // read/write then re-enters `withTenant` so it is FORCE-RLS scoped. `db` is the
 // app-role client.
 
+import { ADVISORY_LOCKS, withAdvisoryTickLock } from '@sparx/db';
 import { Action } from '@sparx/automation-schemas';
 import type { PrismaClient } from '@prisma/client';
 import { withTenant } from '@sparx/db';
@@ -33,7 +34,7 @@ import {
 import { resolveFields } from '../resolvers/registry';
 import { installBuiltins } from './install';
 
-const AUTOMATION_TICK_LOCK = 4242_4250;
+const AUTOMATION_TICK_LOCK = ADVISORY_LOCKS.AUTOMATION_RUN;
 const DEFAULT_BATCH = 100;
 
 export interface TickResult {
@@ -70,48 +71,46 @@ export async function runAutomationTick(
 ): Promise<TickResult> {
   installBuiltins();
 
-  const lock = await db.$queryRaw<{ acquired: boolean }[]>`
-    SELECT pg_try_advisory_lock(${AUTOMATION_TICK_LOCK}::int) AS acquired
-  `;
-  if (!lock[0]?.acquired) {
-    deps.logger.debug({}, 'automation-tick: lock held by another pod, skipping');
-    return { acquired: false, runs: 0, completed: 0, failed: 0, parked: 0 };
-  }
-
-  try {
-    // Cross-tenant discovery via the SECURITY DEFINER helper (NOW() inside the
-    // function gates waiting runs by resume_at) — see the header note.
-    const rows = await db.$queryRaw<DueRunRow[]>`
+  // Pass THIS tick's injected `db` as the lock client (not the shared global) so
+  // the lock and the work sit on the same client — see withAdvisoryTickLock.
+  const SKIPPED: TickResult = { acquired: false, runs: 0, completed: 0, failed: 0, parked: 0 };
+  return withAdvisoryTickLock(
+    AUTOMATION_TICK_LOCK,
+    SKIPPED,
+    async () => {
+      // Cross-tenant discovery via the SECURITY DEFINER helper (NOW() inside the
+      // function gates waiting runs by resume_at) — see the header note.
+      const rows = await db.$queryRaw<DueRunRow[]>`
       SELECT id, tenant_id, automation_id, cause_depth, cursor_index, trigger_event
       FROM find_due_automation_runs(${batch}::int)
     `;
-    const due: DueRun[] = rows.map((r) => ({
-      id: r.id,
-      tenantId: r.tenant_id,
-      automationId: r.automation_id,
-      causeDepth: r.cause_depth,
-      cursorIndex: r.cursor_index,
-      triggerEvent: r.trigger_event,
-    }));
+      const due: DueRun[] = rows.map((r) => ({
+        id: r.id,
+        tenantId: r.tenant_id,
+        automationId: r.automation_id,
+        causeDepth: r.cause_depth,
+        cursorIndex: r.cursor_index,
+        triggerEvent: r.trigger_event,
+      }));
 
-    const result: TickResult = {
-      acquired: true,
-      runs: due.length,
-      completed: 0,
-      failed: 0,
-      parked: 0,
-    };
+      const result: TickResult = {
+        acquired: true,
+        runs: due.length,
+        completed: 0,
+        failed: 0,
+        parked: 0,
+      };
 
-    for (const run of due) {
-      const outcome = await driveRun(deps, db, run);
-      if (outcome === 'completed') result.completed += 1;
-      else if (outcome === 'failed') result.failed += 1;
-      else if (outcome === 'parked') result.parked += 1;
-    }
-    return result;
-  } finally {
-    await db.$queryRaw`SELECT pg_advisory_unlock(${AUTOMATION_TICK_LOCK}::int)`;
-  }
+      for (const run of due) {
+        const outcome = await driveRun(deps, db, run);
+        if (outcome === 'completed') result.completed += 1;
+        else if (outcome === 'failed') result.failed += 1;
+        else if (outcome === 'parked') result.parked += 1;
+      }
+      return result;
+    },
+    { client: db }
+  );
 }
 
 type RunOutcome = 'completed' | 'failed' | 'parked';

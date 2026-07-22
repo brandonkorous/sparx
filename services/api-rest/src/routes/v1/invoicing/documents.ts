@@ -16,6 +16,8 @@
 //   POST   /v1/invoicing/documents/:id/convert-to-order  → committed → Order created
 //   GET    /v1/invoicing/documents/:id/pdf               → branded print-HTML (§10)
 //   GET    /v1/invoicing/documents/:id/snapshots/:sid/pdf → print a frozen record
+//   POST   /v1/invoicing/documents/preview                → live preview of an
+//          UNSAVED draft, so the editor can show the real artifact while typing
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -27,12 +29,14 @@ import {
   billingLineService,
   billingPaymentService,
   billingRenderService,
+  buildRenderDataFromDraft,
 } from '@sparx/crm';
 import { GatewayNotFoundError, PaymentConfigError, paymentService } from '@sparx/payments';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { ApiError } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireInvoicingModule, toInvoicingContext } from '../../../lib/invoicing-context.js';
+import { reachableSiteIds } from '../../../lib/property.js';
 import { renderTenantInvoiceHtml, resolveInvoiceBrand } from '../../../lib/invoice-render.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -48,10 +52,55 @@ const ListDocumentsQuery = z.object({
   b2bAccountId: z.string().uuid().optional(),
   status: z.string().max(20).optional(),
   includeDeleted: z.coerce.boolean().optional(),
-  take: z.coerce.number().int().min(1).max(200).optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+  // Snake_case to match every other list endpoint's sort parameter. (The
+  // camelCase filters above are this route's own long-standing inconsistency;
+  // renaming them is a breaking change for existing callers, so new parameters
+  // simply stop making it worse.)
+  sort_by: z
+    .enum(['number', 'customer', 'status', 'dueAt', 'total', 'balance', 'updatedAt', 'createdAt'])
+    .optional(),
+  // The platform's other list endpoints hardcode 'desc'. A receivables list is
+  // read "what is due soonest", which is ascending — so this one takes a real
+  // direction, following the precedent in scheduling/bookings.
+  order: z.enum(['asc', 'desc']).optional(),
 });
 const SnapshotPathIds = z.object({ id: z.string().uuid(), snapshotId: z.string().uuid() });
+
+/** The unsaved draft the editor previews. Everything is optional on purpose — the
+ *  editor posts on every keystroke, so a half-typed document must render rather
+ *  than 400. Money fields are coerced because number inputs hand back strings. */
+const DraftLineBody = z.object({
+  lineTypeId: z.string().uuid().nullish(),
+  description: z.string().nullish(),
+  quantity: z.coerce.number().nullish(),
+  unitPrice: z.coerce.number().nullish(),
+  discountAmount: z.coerce.number().nullish(),
+  taxable: z.boolean().nullish(),
+});
+
+const DraftPreviewBody = z.object({
+  stageId: z.string().uuid().nullish(),
+  title: z.string().nullish(),
+  number: z.string().nullish(),
+  status: z.string().nullish(),
+  currency: z.string().nullish(),
+  customerId: z.string().uuid().nullish(),
+  b2bAccountId: z.string().uuid().nullish(),
+  billTo: z.unknown().nullish(),
+  shipTo: z.unknown().nullish(),
+  issuedAt: z.string().nullish(),
+  dueAt: z.string().nullish(),
+  validUntil: z.string().nullish(),
+  notes: z.string().nullish(),
+  taxRate: z.coerce.number().nullish(),
+  shippingTotal: z.coerce.number().nullish(),
+  surchargeTotal: z.coerce.number().nullish(),
+  depositTotal: z.coerce.number().nullish(),
+  amountPaid: z.coerce.number().nullish(),
+  lines: z.array(DraftLineBody).nullish(),
+});
 const PaymentLinkBody = z.object({
   successUrl: z.string().url(),
   expiresAt: z.string().datetime().optional(),
@@ -59,7 +108,7 @@ const PaymentLinkBody = z.object({
 
 const documentRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/invoicing/documents', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireInvoicingModule(request);
     const q = ListDocumentsQuery.parse(request.query);
     const { items, total } = await billingDocumentService.list(toInvoicingContext(request), {
@@ -68,12 +117,20 @@ const documentRoutes: FastifyPluginAsync = (app) => {
       stageId: q.stageId,
       customerId: q.customerId,
       b2bAccountId: q.b2bAccountId,
+      // Bound to the member's reachable sites (docs/131 §3.3) — invoices are
+      // among the most sensitive per-business records.
+      propertyIds: reachableSiteIds(auth),
       status: q.status,
       includeDeleted: q.includeDeleted,
       // The service speaks limit/offset; `default(50)`/`default(0)` apply when omitted.
       ...(q.take !== undefined ? { limit: q.take } : {}),
       ...(q.skip !== undefined ? { offset: q.skip } : {}),
+      ...(q.sort_by !== undefined ? { sortBy: q.sort_by } : {}),
+      ...(q.order !== undefined ? { order: q.order } : {}),
     });
+    // `total` is what makes a client able to say "50 of 214" and to offer a
+    // jump straight to the last page rather than only "load more" — without it
+    // a long list can only be walked forwards.
     return paged(items, { total, skip: q.skip ?? 0, per_page: q.take ?? 50 });
   });
 
@@ -305,6 +362,29 @@ const documentRoutes: FastifyPluginAsync = (app) => {
       'Content-Disposition',
       `inline; filename="${data.number ?? 'document'}.html"`
     );
+    return reply.send(html);
+  });
+
+  // Live preview of an UNSAVED draft — the editor POSTs whatever it currently
+  // holds and gets back the real branded artifact, routed through the same
+  // template/default resolution the `…/pdf` routes use. POST, not GET: the body
+  // is the whole document, and this must never be cached or bookmarked.
+  //
+  // Read-only by construction — it writes nothing, so `viewer` is the right role
+  // and an in-progress draft never touches the database.
+  app.post('/v1/invoicing/documents/preview', async (request, reply) => {
+    requireRole(request, 'viewer');
+    await requireInvoicingModule(request);
+    const ctx = toInvoicingContext(request);
+    const draft = DraftPreviewBody.parse(request.body ?? {});
+    const [data, brand] = await Promise.all([
+      buildRenderDataFromDraft(ctx, draft),
+      resolveInvoiceBrand(ctx),
+    ]);
+    const html = await renderTenantInvoiceHtml(ctx, data, brand);
+    void reply.header('Content-Type', 'text/html; charset=utf-8');
+    // The editor embeds this in an iframe on every keystroke — never store it.
+    void reply.header('Cache-Control', 'no-store');
     return reply.send(html);
   });
 

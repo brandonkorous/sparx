@@ -54,7 +54,7 @@ export function ToolsValue() {
           accent={getModuleColor('builder').color}
           headlineSize={38}
         />
-        <div className="mkt-grid-2-1">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {PILLARS.map((pillar) => {
             const color = getModuleColor(pillar.module);
             return (

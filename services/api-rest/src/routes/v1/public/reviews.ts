@@ -18,6 +18,7 @@ import { ok } from '@sparx/api-core/envelope';
 import { badRequest, notFound } from '@sparx/api-core/errors';
 
 import { publicCommerceContext } from '../../../lib/public-commerce-context.js';
+import { resolvePublicPropertyId } from '../../../lib/property.js';
 import { optionalCustomer } from '../../../lib/customer-session.js';
 
 const HandleParam = z.object({ handle: z.string().min(1).max(255) });
@@ -60,6 +61,13 @@ const publicReviewRoutes: FastifyPluginAsync = async (app) => {
     try {
       const result = await reviewService.submit(ctx, {
         productId: product.id,
+        // Stamp the review with the storefront it was written on (docs/131 §4) —
+        // this is the fact the whole per-site review model hangs on, and it is
+        // unrecoverable after the fact.
+        propertyId: await resolvePublicPropertyId(
+          tenantId,
+          (request.query as { property?: string }).property
+        ),
         rating: body.rating,
         // The guest's name is the review's display name (the service falls back
         // to the customer profile name for signed-in reviewers, but storefront
@@ -82,6 +90,16 @@ const publicReviewRoutes: FastifyPluginAsync = async (app) => {
     const query = ReviewListQuery.parse(request.query ?? {});
     const { tenantId, ctx } = await publicCommerceContext(request);
 
+    // The storefront asking (docs/131 §4). listReviewsForProduct scopes to this
+    // site plus tenant-wide/legacy reviews, and — crucially — its rating summary
+    // uses the SAME scope, so the star average matches the reviews shown beneath
+    // it. Earlier this caller passed no site, so the per-site scoping I added to
+    // the service was inert on the busiest review surface.
+    const propertyId = await resolvePublicPropertyId(
+      tenantId,
+      (request.query as { property?: string }).property
+    );
+
     const product = await withTenant({ tenantId }, (tx) =>
       tx.product.findFirst({
         where: { handle, status: 'active', deletedAt: null },
@@ -93,7 +111,12 @@ const publicReviewRoutes: FastifyPluginAsync = async (app) => {
     const { items, total, averageRating } = await reviewService.listReviewsForProduct(
       ctx,
       product.id,
-      { status: 'approved', take: query.perPage, skip: (query.page - 1) * query.perPage }
+      {
+        status: 'approved',
+        propertyId,
+        take: query.perPage,
+        skip: (query.page - 1) * query.perPage,
+      }
     );
 
     return ok({
@@ -138,6 +161,11 @@ const publicReviewRoutes: FastifyPluginAsync = async (app) => {
 
     const questions = await reviewService.listQuestionsForProduct(ctx, product.id, {
       status: 'published',
+      // Questions asked on THIS storefront plus tenant-wide/legacy (docs/131 §4).
+      propertyId: await resolvePublicPropertyId(
+        tenantId,
+        (request.query as { property?: string }).property
+      ),
     });
     // Strip moderation-only fields; expose just what the PDP renders.
     return ok(
@@ -177,6 +205,11 @@ const publicReviewRoutes: FastifyPluginAsync = async (app) => {
     try {
       const result = await reviewService.submitQuestion(ctx, {
         productId: product.id,
+        // Stamp the storefront the question was asked on (docs/131 §4).
+        propertyId: await resolvePublicPropertyId(
+          tenantId,
+          (request.query as { property?: string }).property
+        ),
         body: body.body,
         ...(customerId ? { customerId } : {}),
         ...(body.displayName ? { displayName: body.displayName } : {}),

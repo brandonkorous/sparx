@@ -176,6 +176,16 @@ export const MarketMerchantProfileInput = z.object({
   headline: z.string().max(255).nullish(),
   bannerMediaId: z.string().uuid().nullish(),
   defaultCategory: MarketCategorySlug.nullish(),
+  /** The SITE this tenant markets AS (docs/131 §7) — its public identity. */
+  marketPropertyId: z.string().uuid().nullish(),
+  /** The site-chosen, globally-unique public handle → `/merchants/{handle}` (docs/131
+   *  §7). Lowercase slug shape; uniqueness is enforced globally in the service. */
+  handle: z
+    .string()
+    .min(2)
+    .max(63)
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Use lowercase letters, numbers and hyphens')
+    .nullish(),
   /** Per-tenant commission override (bps); platform-admin-set, gated in the route. */
   commissionBpsOverride: z.number().int().min(0).max(3000).nullish(),
 });

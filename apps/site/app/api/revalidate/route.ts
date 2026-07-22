@@ -25,8 +25,13 @@ import { NextResponse, type NextRequest } from 'next/server';
 const SECRET = process.env.SPARX_REVALIDATE_SECRET ?? '';
 // Coarse per-tenant tags the data layer attaches (lib/commerce.ts → `commerce:`,
 // lib/content.ts → `content:`, lib/site.ts → `site:` for the published Site
-// Builder snapshot + resolved nav menus).
-const SCOPES = ['commerce', 'content', 'site'] as const;
+// Builder snapshot + resolved nav menus, lib/builder.ts + lib/silica.ts →
+// `builder:` for published page/layout/frame trees and the compiled Surface sheet).
+//
+// `builder` is separate from `site` on purpose (docs/127 §6): they change on
+// different events, and a page publish — the most frequent write in the system —
+// should not evict the snapshot and nav reads alongside it.
+const SCOPES = ['commerce', 'content', 'site', 'builder'] as const;
 type Scope = (typeof SCOPES)[number];
 
 function timingSafeEqual(a: string, b: string): boolean {

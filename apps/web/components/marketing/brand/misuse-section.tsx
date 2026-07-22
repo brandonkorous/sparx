@@ -22,12 +22,13 @@ function Faux({
 }) {
   return (
     <span
+      className="text-[34px] leading-none font-bold tracking-[-0.03em]"
+      // SPECIMEN — the wordmark face, its ink, and the deliberately-WRONG
+      // treatments passed in via `style` (recolor / glow / stretch / rotate /
+      // low-contrast fill) are the SUBJECT of this section, not styling. They
+      // stay literal so a theme change can never repaint the counter-example.
       style={{
         fontFamily: "var(--font-wordmark, 'Inter', system-ui, sans-serif)",
-        fontWeight: 700,
-        fontSize: '34px',
-        letterSpacing: '-0.03em',
-        lineHeight: 1,
         color: inkColor,
         ...style,
       }}
@@ -80,15 +81,15 @@ export function MisuseSection() {
           lede="The wordmark earns its clarity from restraint. These are the treatments that break it — each one undoes the single detail the brand is built on."
         />
 
-        <div className="mkt-grid-3-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {DONTS.map((d, i) => (
             <Card key={d.caption} className="overflow-hidden">
               <CardBody className="flex flex-col p-0">
                 <div
-                  className="border-base-300 relative flex min-h-[128px] items-center justify-center overflow-hidden border-b px-6 py-10"
-                  style={{
-                    backgroundColor: i === 5 ? 'var(--color-primary)' : 'var(--color-base-200)',
-                  }}
+                  className={`border-base-300 relative flex min-h-[128px] items-center justify-center overflow-hidden border-b px-6 py-10 ${
+                    // Tile 6 stages the clash demo on a full Ember fill.
+                    i === 5 ? 'bg-primary' : 'bg-base-200'
+                  }`}
                 >
                   {d.demo}
                   {/* A real Badge in its natural shape — silica has no circle

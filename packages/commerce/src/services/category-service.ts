@@ -22,6 +22,7 @@ import { withTenant } from '@sparx/db';
 import type { Prisma, ProductCategory } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
+import { categorySiteVisibility } from './site-visibility';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
@@ -43,6 +44,9 @@ export interface CategoryRow {
   seoTitle: string | null;
   seoDescription: string | null;
   ogImageId: string | null;
+  /** Model B: web PROPERTIES this category is scoped to. EMPTY = all sites.
+   *  Populated by the single-category reads; the tree overview leaves it []. */
+  propertyIds: string[];
   createdAt: string;
   updatedAt: string;
 }
@@ -66,6 +70,13 @@ export interface TreeOptions {
   q?: string;
   /** `true` → featured only; `false` → not-featured only; omit → no filter. */
   featured?: boolean;
+  /** Model B: show only categories VISIBLE on this site (global + scoped-here).
+   *  Omit for every category across every site.
+   *
+   *  A filtered tree can lose a PARENT while keeping its child, so the builders
+   *  below already tolerate orphans — scoping is the same shape of gap as the
+   *  existing `q` filter, not a new one. */
+  propertyId?: string;
 }
 
 // ─── Reads ────────────────────────────────────────────────────────────
@@ -79,7 +90,10 @@ export async function tree(
   const filtering = q.trim().length > 0 || featured !== undefined;
   return withTenant(ctx, async (tx) => {
     const rows = await tx.productCategory.findMany({
-      where: { deletedAt: null },
+      where: {
+        deletedAt: null,
+        ...(opts.propertyId ? categorySiteVisibility(opts.propertyId) : {}),
+      },
       orderBy: [{ path: 'asc' }, { position: 'asc' }],
       include: { _count: { select: { products: true } } },
     });
@@ -91,7 +105,10 @@ export async function get(ctx: ServiceContext, categoryId: string): Promise<Cate
   const row = await withTenant(ctx, (tx) =>
     tx.productCategory.findFirst({
       where: { id: categoryId, deletedAt: null },
-      include: { _count: { select: { products: true } } },
+      include: {
+        _count: { select: { products: true } },
+        propertyLinks: { select: { propertyId: true } },
+      },
     })
   );
   if (!row) throw new CommerceNotFoundError('Category', categoryId);
@@ -102,7 +119,10 @@ export async function getByHandle(ctx: ServiceContext, handle: string): Promise<
   const row = await withTenant(ctx, (tx) =>
     tx.productCategory.findFirst({
       where: { handle, deletedAt: null },
-      include: { _count: { select: { products: true } } },
+      include: {
+        _count: { select: { products: true } },
+        propertyLinks: { select: { propertyId: true } },
+      },
     })
   );
   if (!row) throw new CommerceNotFoundError('Category', handle);
@@ -150,6 +170,14 @@ export async function create(
         ogImageId: input.ogImageId ?? null,
       },
     });
+
+    // Model B per-site scoping (docs/49 §3): no rows = visible on all sites.
+    if (input.propertyIds.length > 0) {
+      await tx.categoryProperty.createMany({
+        data: input.propertyIds.map((propertyId) => ({ propertyId, categoryId: created.id })),
+        skipDuplicates: true,
+      });
+    }
 
     await writeAuditLog({
       tx,
@@ -226,6 +254,17 @@ export async function update(
 
     if (pathRewrite) {
       await rewriteSubtreePaths(tx, categoryId, pathRewrite.oldPrefix, pathRewrite.newPrefix);
+    }
+
+    // Model B: the update sends the FULL replacement set — replace when present,
+    // leave untouched when omitted.
+    if (input.propertyIds !== undefined) {
+      await tx.categoryProperty.deleteMany({ where: { categoryId } });
+      if (input.propertyIds.length > 0) {
+        await tx.categoryProperty.createMany({
+          data: input.propertyIds.map((propertyId) => ({ propertyId, categoryId })),
+        });
+      }
     }
 
     await writeAuditLog({
@@ -415,7 +454,13 @@ export async function setProductCategories(
 
 // ─── Internal helpers ─────────────────────────────────────────────────
 
-type CategoryWithCount = ProductCategory & { _count: { products: number } };
+type CategoryWithCount = ProductCategory & {
+  _count: { products: number };
+  // Only the single-category reads (`get`/`getByHandle`) include this; the tree
+  // build omits it, so `propertyIds` falls back to [] there (the site-scope UI is
+  // per-category on the edit form, not on the tree overview).
+  propertyLinks?: { propertyId: string }[];
+};
 
 function toCategoryRow(c: CategoryWithCount): CategoryRow {
   return {
@@ -433,6 +478,7 @@ function toCategoryRow(c: CategoryWithCount): CategoryRow {
     seoTitle: c.seoTitle,
     seoDescription: c.seoDescription,
     ogImageId: c.ogImageId,
+    propertyIds: c.propertyLinks?.map((l) => l.propertyId) ?? [],
     createdAt: c.createdAt.toISOString(),
     updatedAt: c.updatedAt.toISOString(),
   };

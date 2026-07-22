@@ -85,6 +85,30 @@ export async function getEntryById(tenantSlug: string, id: string): Promise<ApiE
   }
 }
 
+/** Fetch MANY content entries by id in one request (docs/127 §7) — the batched form
+ *  of {@link getEntryById}, used to hydrate every CMS entry a builder tree pins.
+ *
+ *  This path used to be one HTTP round-trip per pin (parallelised, so latency was
+ *  bounded, but still N requests against api-rest per render) while the commerce
+ *  loader beside it batched by `ids:`. Returns a Map so callers index by id without
+ *  a second pass; unresolvable ids are simply absent, matching the per-pin null. */
+export async function getEntriesByIds(
+  tenantSlug: string,
+  ids: readonly string[]
+): Promise<Map<string, ApiEntry>> {
+  if (ids.length === 0) return new Map();
+  try {
+    const rows = await publicGet<ApiEntry[]>(
+      '/v1/public/content/entries/by-ids',
+      { tenant: tenantSlug, ids: [...ids].join(',') },
+      { tag: `entry:${tenantSlug}:ids` }
+    );
+    return new Map(rows.map((r) => [r.id, r]));
+  } catch {
+    return new Map();
+  }
+}
+
 export interface PageBody {
   title?: string;
   // `body` is the rich-text field the `page` content type defines (shape

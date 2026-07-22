@@ -45,6 +45,7 @@ import { listFulfillmentLabels, quoteOutboundRates, shippingService } from '@spa
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireOrderAccess, toOrderContext } from '../../lib/order-context.js';
+import { reachableSiteIds } from '../../lib/property.js';
 import { requireCommerceModule, toCommerceContext } from '../../lib/commerce-context.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -81,14 +82,22 @@ const ListQuery = z.object({
   // → the whole tenant; an id → orders placed on that site (null-origin orders
   // are excluded, so they only appear under "All sites").
   property: z.string().uuid().optional(),
+  // Free-text search over the order number and the buyer (name / company /
+  // email). The service has always accepted `q`; it was simply never exposed
+  // here, so every order list on the platform had a search box that searched
+  // whatever page was already loaded, or nothing at all.
+  q: z.string().max(255).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
-  sort_by: z.enum(['placedAt', 'updatedAt', 'createdAt']).optional(),
+  // `total` included so a list can answer "biggest orders first" from the
+  // server rather than sorting one page of rows in the browser.
+  sort_by: z.enum(['placedAt', 'updatedAt', 'createdAt', 'total']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
 });
 
 const orderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/orders', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireOrderAccess(request);
     const q = ListQuery.parse(request.query);
     const { items, total } = await orderService.list(toOrderContext(request), {
@@ -99,9 +108,14 @@ const orderRoutes: FastifyPluginAsync = (app) => {
       paymentStatus: q.payment_status,
       channel: q.channel,
       propertyId: q.property,
+      // Bound to the member's reachable sites (docs/131 §3.3) — a restricted
+      // member cannot list another business's orders by omitting ?property.
+      propertyIds: reachableSiteIds(auth),
+      q: q.q,
       take: q.take,
       skip: q.skip,
       sortBy: q.sort_by,
+      order: q.order,
     });
     return paged(items, { total, per_page: q.take ?? 50 });
   });

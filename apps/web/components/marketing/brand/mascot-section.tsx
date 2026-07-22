@@ -37,7 +37,7 @@ export function MascotSection() {
         />
 
         {/* Stage + picker */}
-        <div className="mkt-grid-2-1 items-stretch">
+        <div className="grid grid-cols-1 items-stretch gap-6 md:grid-cols-2">
           <Card className="bg-primary bg-soft">
             <CardBody className="flex min-h-[320px] items-center justify-center">
               <SparkMascot
@@ -129,11 +129,12 @@ function TonePlate({
   return (
     <div className="flex flex-col gap-2">
       <div
-        className="flex h-[84px] w-[84px] items-center justify-center rounded-lg"
-        style={{
-          background: bg,
-          border: border ? '1px solid var(--color-base-300)' : 'none',
-        }}
+        className={`flex size-[84px] items-center justify-center rounded-lg ${
+          border ? 'border-base-300 border' : ''
+        }`}
+        // SPECIMEN — `bg` is the surface this mascot tone is being demonstrated
+        // AGAINST, so the literal value is the subject of the plate.
+        style={{ background: bg }}
       >
         <SparkMascot expression="happy" size={56} tone={tone} bob={false} />
       </div>

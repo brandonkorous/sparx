@@ -15,12 +15,20 @@ export interface TestTenant {
   userId: string;
   email: string;
   slug: string;
+  /** The tenant's PRIMARY site, seeded exactly as real provisioning does
+   *  (`provision-tenant.ts`). A fixture without one builds a tenant that CANNOT
+   *  EXIST in production, and the failure surfaces far from its cause — as a
+   *  missing-issuer error deep inside invoice numbering. */
+  propertyId: string;
 }
 
 export interface TestContext {
   tenant: TestTenant;
   /** Service-layer ctx most service functions accept. */
   ctx: { tenantId: string; userId: string };
+  /** Shorthand for `tenant.propertyId` — the site anything site-scoped belongs
+   *  to. Hoisted onto the context because nearly every service call needs it. */
+  propertyId: string;
   /** Recording publisher swapped in for the test; .events asserts emissions. */
   publisher: RecordingPublisher;
 }
@@ -56,7 +64,18 @@ export async function createTestTenant(role = 'owner'): Promise<TestTenant> {
     return tx.user.findFirstOrThrow({ where: { tenantId: tenant.id, email } });
   });
 
-  return { tenantId: tenant.id, userId: user.id, email, slug };
+  // The primary site. `properties` is FORCE RLS, so this goes through a
+  // tenant-scoped exec like the user insert above.
+  const propertyId = await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenant.id}'`);
+    const row = await tx.property.create({
+      data: { tenantId: tenant.id, slug: 'primary', name: `CRM Test ${slug}`, isPrimary: true },
+      select: { id: true },
+    });
+    return row.id;
+  });
+
+  return { tenantId: tenant.id, userId: user.id, email, slug, propertyId };
 }
 
 export async function dropTestTenant(tenantId: string): Promise<void> {
@@ -72,6 +91,7 @@ export async function makeTestContext(role = 'owner'): Promise<TestContext> {
   return {
     tenant,
     ctx: { tenantId: tenant.tenantId, userId: tenant.userId },
+    propertyId: tenant.propertyId,
     publisher,
   };
 }

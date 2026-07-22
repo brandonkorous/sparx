@@ -2,10 +2,17 @@
 
 import { computeTotals, formatMoney, type InvoiceData } from './lib/invoice';
 
-const ink = '#18181b';
-const muted = '#71717a';
-
-/** Live, on-paper preview that mirrors the generated PDF. */
+/**
+ * Live, on-paper preview that mirrors the generated PDF.
+ *
+ * NOTE ON COLOR: this is a DOCUMENT mockup, not site chrome. The sheet is white
+ * and its ink is fixed because the PDF it mirrors is white with fixed ink — it
+ * must NOT flip with the visitor's light/dark theme, or the preview stops
+ * previewing. Those fidelity colors are therefore static Tailwind palette
+ * utilities (`bg-white`, `text-zinc-900`, `text-zinc-500`), never theme tokens
+ * and never inline hexes. Only the surrounding frame border/radius uses site
+ * tokens. `data.accent` stays inline: it is user-chosen data.
+ */
 export function InvoicePreview({
   data,
   title = 'INVOICE',
@@ -20,94 +27,54 @@ export function InvoicePreview({
   const fromLines = [data.businessAddress, data.businessEmail].filter(Boolean).join('\n');
 
   return (
-    <div
-      style={{
-        backgroundColor: '#ffffff',
-        border: '1px solid var(--color-base-300)',
-        borderRadius: 'var(--radius-lg)',
-        padding: '28px',
-        fontFamily: 'Arial, Helvetica, sans-serif',
-        color: ink,
-        overflowX: 'auto',
-      }}
-    >
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'flex-start',
-          gap: '16px',
-        }}
-      >
+    <div className="border-base-300 overflow-x-auto rounded-lg border bg-white p-7 font-[Arial,Helvetica,sans-serif] text-zinc-900">
+      <div className="flex items-start justify-between gap-4">
         <div>
           {data.logo ? (
-            <img
-              src={data.logo}
-              alt=""
-              style={{ height: '40px', maxWidth: '180px', objectFit: 'contain' }}
-            />
+            <img src={data.logo} alt="" className="h-10 max-w-[180px] object-contain" />
           ) : (
-            <strong style={{ fontSize: '17px' }}>{data.businessName || 'Your Business'}</strong>
+            <strong className="text-[17px]">{data.businessName || 'Your Business'}</strong>
           )}
         </div>
-        <div style={{ textAlign: 'right' }}>
-          <div
-            style={{
-              fontSize: '22px',
-              fontWeight: 700,
-              color: data.accent,
-              letterSpacing: '0.02em',
-            }}
-          >
+        <div className="text-right">
+          <div className="text-[22px] font-bold tracking-[0.02em]" style={{ color: data.accent }}>
             {title}
           </div>
-          <div style={{ fontSize: '12px', color: muted }}># {data.invoiceNumber || '0001'}</div>
+          <div className="text-xs text-zinc-500"># {data.invoiceNumber || '0001'}</div>
         </div>
       </div>
 
-      <div style={{ height: '2px', backgroundColor: data.accent, margin: '16px 0' }} />
+      <div className="my-4 h-0.5" style={{ backgroundColor: data.accent }} />
 
-      <div style={{ display: 'flex', gap: '32px', flexWrap: 'wrap' }}>
+      <div className="flex flex-wrap gap-8">
         <Block label="FROM" name={data.businessName} body={fromLines} />
         <Block label="BILL TO" name={data.clientName} body={data.clientAddress} />
       </div>
 
-      <div
-        style={{ display: 'flex', gap: '24px', marginTop: '14px', fontSize: '12px', color: muted }}
-      >
+      <div className="mt-3.5 flex gap-6 text-xs text-zinc-500">
         <span>Issued: {data.issueDate || '—'}</span>
         <span>
           {dateLabel}: {data.dueDate || '—'}
         </span>
       </div>
 
-      <table
-        style={{ width: '100%', borderCollapse: 'collapse', marginTop: '20px', fontSize: '13px' }}
-      >
+      <table className="mt-5 w-full border-collapse text-[13px]">
         <thead>
-          <tr
-            style={{
-              backgroundColor: '#f4f4f5',
-              color: muted,
-              fontSize: '10px',
-              letterSpacing: '0.04em',
-            }}
-          >
-            <th style={{ textAlign: 'left', padding: '7px 8px' }}>DESCRIPTION</th>
-            <th style={{ textAlign: 'right', padding: '7px 8px', width: '52px' }}>QTY</th>
-            <th style={{ textAlign: 'right', padding: '7px 8px', width: '90px' }}>UNIT</th>
-            <th style={{ textAlign: 'right', padding: '7px 8px', width: '96px' }}>AMOUNT</th>
+          {/* Uppercase column headers are invoice-document mimicry, not eyebrows. */}
+          <tr className="bg-zinc-100 text-[10px] tracking-[0.04em] text-zinc-500">
+            <th className="px-2 py-[7px] text-left">DESCRIPTION</th>
+            <th className="w-[52px] px-2 py-[7px] text-right">QTY</th>
+            <th className="w-[90px] px-2 py-[7px] text-right">UNIT</th>
+            <th className="w-24 px-2 py-[7px] text-right">AMOUNT</th>
           </tr>
         </thead>
         <tbody>
           {data.items.map((item) => (
-            <tr key={item.id} style={{ borderBottom: '1px solid #ededf0' }}>
-              <td style={{ padding: '8px', verticalAlign: 'top' }}>{item.description || '—'}</td>
-              <td style={{ padding: '8px', textAlign: 'right' }}>{item.quantity}</td>
-              <td style={{ padding: '8px', textAlign: 'right' }}>
-                {money(Number(item.unitPrice) || 0)}
-              </td>
-              <td style={{ padding: '8px', textAlign: 'right' }}>
+            <tr key={item.id} className="border-b border-zinc-200">
+              <td className="p-2 align-top">{item.description || '—'}</td>
+              <td className="p-2 text-right">{item.quantity}</td>
+              <td className="p-2 text-right">{money(Number(item.unitPrice) || 0)}</td>
+              <td className="p-2 text-right">
                 {money((Number(item.quantity) || 0) * (Number(item.unitPrice) || 0))}
               </td>
             </tr>
@@ -115,8 +82,8 @@ export function InvoicePreview({
         </tbody>
       </table>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '16px' }}>
-        <div style={{ width: '220px', fontSize: '13px' }}>
+      <div className="mt-4 flex justify-end">
+        <div className="w-[220px] text-[13px]">
           <Row label="Subtotal" value={money(totals.subtotal)} />
           {totals.discount > 0 ? (
             <Row label="Discount" value={`-${money(totals.discount)}`} />
@@ -124,20 +91,17 @@ export function InvoicePreview({
           {totals.taxAmount > 0 ? (
             <Row label={`Tax (${data.taxRate}%)`} value={money(totals.taxAmount)} />
           ) : null}
-          <div style={{ borderTop: '1px solid #d4d4d8', marginTop: '6px', paddingTop: '8px' }}>
+          {/* The totals rule is document structure, not decoration. */}
+          <div className="mt-1.5 border-t border-zinc-300 pt-2">
             <Row label="Total" value={money(totals.total)} bold accent={data.accent} />
           </div>
         </div>
       </div>
 
       {data.notes.trim() ? (
-        <div style={{ marginTop: '20px' }}>
-          <div style={{ fontSize: '10px', fontWeight: 700, color: muted, letterSpacing: '0.04em' }}>
-            NOTES
-          </div>
-          <p style={{ fontSize: '12px', color: muted, marginTop: '6px', whiteSpace: 'pre-wrap' }}>
-            {data.notes}
-          </p>
+        <div className="mt-5">
+          <div className="text-[10px] font-bold tracking-[0.04em] text-zinc-500">NOTES</div>
+          <p className="mt-1.5 text-xs whitespace-pre-wrap text-zinc-500">{data.notes}</p>
         </div>
       ) : null}
     </div>
@@ -146,23 +110,12 @@ export function InvoicePreview({
 
 function Block({ label, name, body }: { label: string; name: string; body: string }) {
   return (
-    <div style={{ minWidth: '160px' }}>
-      <div style={{ fontSize: '10px', fontWeight: 700, color: muted, letterSpacing: '0.04em' }}>
-        {label}
-      </div>
-      {name ? (
-        <div style={{ fontSize: '13px', fontWeight: 700, marginTop: '4px' }}>{name}</div>
-      ) : null}
+    <div className="min-w-[160px]">
+      {/* Field label — invoice-document mimicry. */}
+      <div className="text-[10px] font-bold tracking-[0.04em] text-zinc-500">{label}</div>
+      {name ? <div className="mt-1 text-[13px] font-bold">{name}</div> : null}
       {body ? (
-        <div
-          style={{
-            fontSize: '12px',
-            color: muted,
-            marginTop: '2px',
-            whiteSpace: 'pre-wrap',
-            lineHeight: 1.5,
-          }}
-        >
+        <div className="mt-0.5 text-xs leading-normal whitespace-pre-wrap text-zinc-500">
           {body}
         </div>
       ) : null}
@@ -181,23 +134,13 @@ function Row({
   bold?: boolean;
   accent?: string;
 }) {
+  const cell = bold ? 'text-[15px] font-bold' : 'text-[13px] font-normal';
   return (
-    <div style={{ display: 'flex', justifyContent: 'space-between', padding: '3px 0' }}>
+    <div className="flex justify-between py-[3px]">
+      <span className={`${cell} ${bold ? 'text-zinc-900' : 'text-zinc-500'}`}>{label}</span>
       <span
-        style={{
-          color: bold ? ink : muted,
-          fontWeight: bold ? 700 : 400,
-          fontSize: bold ? '15px' : '13px',
-        }}
-      >
-        {label}
-      </span>
-      <span
-        style={{
-          color: accent ?? ink,
-          fontWeight: bold ? 700 : 400,
-          fontSize: bold ? '15px' : '13px',
-        }}
+        className={`${cell} ${accent ? '' : 'text-zinc-900'}`}
+        style={accent ? { color: accent } : undefined}
       >
         {value}
       </span>

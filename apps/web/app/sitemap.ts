@@ -155,6 +155,15 @@ function staticPages(now: Date): MetadataRoute.Sitemap {
       changeFrequency: 'monthly' as const,
       priority: 0.9,
     },
+    // The second document for the `ai` module (the first, /ai, rides MODULE_ORDER
+    // above). /agentic is a standalone deep page — the MCP / agentic story — not
+    // a ModulePageSlug, so it needs its own entry.
+    {
+      url: `${BASE}/agentic`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    },
     {
       url: `${BASE}/features`,
       lastModified: now,

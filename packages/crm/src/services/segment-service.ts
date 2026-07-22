@@ -20,11 +20,21 @@ import { CrmNotFoundError } from '../errors';
 
 export async function list(
   ctx: ServiceContext,
-  args: { q?: string; includeArchived?: boolean; take?: number; skip?: number } = {}
+  args: {
+    q?: string;
+    includeArchived?: boolean;
+    /** Member's reachable sites (docs/131 §3.3); undefined = unrestricted. */
+    propertyIds?: string[];
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: Segment[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.SegmentWhereInput = {
       ...(args.includeArchived ? {} : { archivedAt: null }),
+      ...(args.propertyIds
+        ? { OR: [{ propertyId: { in: args.propertyIds } }, { propertyId: null }] }
+        : {}),
       ...(args.q
         ? {
             OR: [
@@ -62,6 +72,10 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Se
     const created = await tx.segment.create({
       data: {
         tenantId: ctx.tenantId,
+        // The site this audience draws from (docs/131 §5); undefined leaves it
+        // tenant-wide. The route defaults it to the site being worked in, so a
+        // segment authored while looking at one business targets that business.
+        propertyId: input.propertyId ?? null,
         name: input.name,
         slug: input.slug,
         description: input.description ?? null,
@@ -204,8 +218,12 @@ export async function bootstrapBuiltInSegments(ctx: ServiceContext): Promise<Seg
   return withTenant(ctx, async (tx) => {
     const seeded: Segment[] = [];
     for (const t of BUILT_IN_SEGMENT_TEMPLATES) {
-      const existing = await tx.segment.findUnique({
-        where: { tenantId_slug: { tenantId: ctx.tenantId, slug: t.slug } },
+      // Built-in segments are TENANT-WIDE (property_id null) — "Newsletter
+      // Subscribers" spans every business. findFirst, not findUnique: the unique
+      // is now (tenant, property, slug) NULLS NOT DISTINCT, and Prisma cannot
+      // reach a null-property row through a compound-unique key.
+      const existing = await tx.segment.findFirst({
+        where: { propertyId: null, slug: t.slug },
       });
       if (existing) {
         seeded.push(existing);
@@ -214,6 +232,7 @@ export async function bootstrapBuiltInSegments(ctx: ServiceContext): Promise<Seg
       const created = await tx.segment.create({
         data: {
           tenantId: ctx.tenantId,
+          propertyId: null,
           name: t.name,
           slug: t.slug,
           description: t.description,
@@ -249,13 +268,16 @@ export async function ensureBuiltInSegment(ctx: ServiceContext, slug: string): P
   const template = BUILT_IN_SEGMENT_TEMPLATES.find((t) => t.slug === slug);
   if (!template) throw new Error(`Unknown built-in segment template: ${slug}`);
   return withTenant(ctx, async (tx) => {
-    const existing = await tx.segment.findUnique({
-      where: { tenantId_slug: { tenantId: ctx.tenantId, slug } },
+    // Tenant-wide built-in — findFirst on the null-property row (see the note in
+    // bootstrapBuiltInSegments).
+    const existing = await tx.segment.findFirst({
+      where: { propertyId: null, slug },
     });
     if (existing) return existing;
     const created = await tx.segment.create({
       data: {
         tenantId: ctx.tenantId,
+        propertyId: null,
         name: template.name,
         slug: template.slug,
         description: template.description,

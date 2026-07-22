@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
-import { Container, Display, Dot, Spark } from '@/components/marketing/primitives';
+import { Card, CardBody, CardTitle } from '@wizeworks/silicaui-react';
+import { Display, Dot, Section, Spark } from '@/components/marketing/primitives';
 import { EarlyAccessForm } from './early-access-form';
 
 export const metadata: Metadata = {
@@ -25,125 +26,54 @@ const PERKS = [
 
 export default function EarlyAccessPage() {
   return (
-    <section
-      style={{
-        paddingTop: 'clamp(72px, 10vw, 140px)',
-        paddingBottom: 'clamp(72px, 10vw, 140px)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: 'var(--color-base-200)',
-      }}
-    >
-      <Container>
-        <div
-          className="mkt-stack-on-tablet"
-          style={{ alignItems: 'flex-start', gap: 'clamp(40px, 6vw, 80px)' }}
-        >
-          {/* ── Left: the pitch ─────────────────────────────────── */}
-          <div
-            style={{
-              flex: '1 1 420px',
-              minWidth: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '28px',
-            }}
-          >
-            <Display as="h1" size={80} lineHeight={76}>
-              Be first on sparx
-              <Spark />
-            </Display>
+    <Section surface="page" padding="lg">
+      <div className="flex flex-col items-start gap-[clamp(40px,6vw,80px)] lg:flex-row">
+        {/* ── Left: the pitch ─────────────────────────────────── */}
+        <div className="flex min-w-0 flex-[1_1_420px] flex-col gap-7">
+          <Display as="h1" size={80} lineHeight={76}>
+            Be first on sparx
+            <Spark />
+          </Display>
 
-            <p
-              style={{
-                fontFamily: 'var(--font-sans)',
-                fontSize: '19px',
-                lineHeight: '31px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                maxWidth: '560px',
-                margin: 0,
-              }}
-            >
-              sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B,
-              and AI in one platform that builds your site and keeps it. We&rsquo;re opening it up
-              gradually. Join the list and we&rsquo;ll bring you in.
-            </p>
+          <p className="text-lede-lg text-ink-muted m-0 max-w-[560px]">
+            sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B, and
+            AI in one platform that builds your site and keeps it. We&rsquo;re opening it up
+            gradually. Join the list and we&rsquo;ll bring you in.
+          </p>
 
-            <ul
-              style={{
-                listStyle: 'none',
-                margin: 0,
-                padding: 0,
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '14px',
-              }}
-            >
-              {PERKS.map((perk) => (
-                <li
-                  key={perk}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'flex-start',
-                    gap: '12px',
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '15px',
-                    lineHeight: '24px',
-                    color: 'var(--color-base-content)',
-                  }}
-                >
-                  <span style={{ display: 'inline-flex', paddingTop: '9px', flexShrink: 0 }}>
-                    <Dot />
-                  </span>
-                  {perk}
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* ── Right: the form card ────────────────────────────── */}
-          <div style={{ width: '100%', maxWidth: '440px', flexShrink: 0 }}>
-            <div
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '20px',
-                padding: 'clamp(24px, 4vw, 36px)',
-                backgroundColor: 'var(--color-base-100)',
-                border: '1px solid var(--color-base-300)',
-                borderRadius: '16px',
-                boxShadow: '0 12px 40px rgba(9, 9, 11, 0.06)',
-              }}
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontWeight: 500,
-                    fontSize: '20px',
-                    letterSpacing: '-0.015em',
-                    color: 'var(--color-base-content)',
-                  }}
-                >
-                  Join the waitlist
+          <ul className="m-0 flex list-none flex-col gap-3.5 p-0">
+            {PERKS.map((perk) => (
+              <li
+                key={perk}
+                className="text-body-sm text-base-content flex items-start gap-3 leading-6"
+              >
+                <span className="inline-flex shrink-0 pt-[9px]">
+                  <Dot />
                 </span>
-                <span
-                  style={{
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: '14px',
-                    lineHeight: '21px',
-                    color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                  }}
-                >
+                {perk}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {/* ── Right: the form card ────────────────────────────── */}
+        <div className="w-full max-w-[440px] shrink-0">
+          <Card className="shadow-lg">
+            <CardBody className="gap-5 p-[clamp(24px,4vw,36px)]">
+              <div className="flex flex-col gap-1.5">
+                <CardTitle className="text-h4 text-base-content font-medium tracking-[-0.015em]">
+                  Join the waitlist
+                </CardTitle>
+                <span className="text-small text-ink-muted">
                   Takes ten seconds. We&rsquo;ll only reach out when it matters.
                 </span>
               </div>
 
               <EarlyAccessForm />
-            </div>
-          </div>
+            </CardBody>
+          </Card>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

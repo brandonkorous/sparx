@@ -33,7 +33,7 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
           headlineSize={32}
         />
 
-        <div className="mkt-grid-3-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((feature) => (
             // The surface is silica's card (the plugin-emitted `card`/`card-body`
             // classes, not the React `Card` — this is a Server Component and the
@@ -52,7 +52,7 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
           ))}
         </div>
 
-        <div className="mkt-cluster justify-between gap-x-5 gap-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-4">
           <p className="text-body text-ink-muted m-0 max-w-[560px] font-sans">
             {shortLabel} is one module on the sparx platform — activate it alongside storefront,
             CRM, CMS, email, and B2B on one data layer and one bill. Only pay for what you run.

@@ -29,7 +29,9 @@ export interface PublishAuthEmailInput {
     | 'welcome-merchant'
     | 'partner-welcome'
     | 'email-verification'
-    | 'team-invitation';
+    | 'team-invitation'
+    | 'magic-link'
+    | 'login-otp';
   to: string;
   /** Template-specific props — shape enforced at render time by @sparx/email. */
   props: Record<string, unknown>;

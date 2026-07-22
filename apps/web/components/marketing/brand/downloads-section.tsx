@@ -19,35 +19,35 @@ const ASSETS: Asset[] = [
     format: 'SVG · vector',
     href: '/brand/sparx-wordmark.svg',
     bg: 'light',
-    preview: <OfficialWordmark variant="color" style={{ width: '170px' }} />,
+    preview: <OfficialWordmark variant="color" className="w-[170px]" />,
   },
   {
     name: 'Wordmark — reversed',
     format: 'SVG · for dark',
     href: '/brand/sparx-wordmark-light.svg',
     bg: 'dark',
-    preview: <OfficialWordmark variant="light" style={{ width: '170px' }} />,
+    preview: <OfficialWordmark variant="light" className="w-[170px]" />,
   },
   {
     name: 'Wordmark — black',
     format: 'SVG · one-color',
     href: '/brand/sparx-wordmark-black.svg',
     bg: 'light',
-    preview: <OfficialWordmark variant="black" style={{ width: '170px' }} />,
+    preview: <OfficialWordmark variant="black" className="w-[170px]" />,
   },
   {
     name: 'Wordmark — white',
     format: 'SVG · one-color',
     href: '/brand/sparx-wordmark-white.svg',
     bg: 'dark',
-    preview: <OfficialWordmark variant="white" style={{ width: '170px' }} />,
+    preview: <OfficialWordmark variant="white" className="w-[170px]" />,
   },
   {
     name: 'Wordmark — color',
     format: 'PNG · 512px',
     href: '/brand/sparx-wordmark.png',
     bg: 'light',
-    preview: <OfficialWordmark variant="color" style={{ width: '170px' }} />,
+    preview: <OfficialWordmark variant="color" className="w-[170px]" />,
   },
   {
     name: 'Monogram — color',
@@ -103,7 +103,7 @@ export function DownloadsSection() {
           </Text>
         </div>
 
-        <div className="mkt-grid-3-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {ASSETS.map((a) => (
             // A real <a> wearing the clickable-card classes, NOT
             // `<ClickableCard render={<a/>}>` — this is a Server Component, so a

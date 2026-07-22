@@ -61,6 +61,9 @@ describe('resolveSilicaEmailData — invoice template', () => {
       const doc = await tx.billingDocument.create({
         data: {
           tenantId: ctx.tenantId,
+          // Every document has an issuing site (docs/131 §3.6) — the fixture's
+          // primary, seeded by createTestTenant exactly as provisioning does.
+          propertyId: fixture.propertyId,
           workflowId: workflow.id,
           stageId: workflow.stages[0]!.id,
           customerId,

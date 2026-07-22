@@ -4,9 +4,9 @@ description: >-
   Visual + interaction designer for the sparx.works MARKETING SITE (apps/web).
   Composes full landing/module/pricing pages — section structure, layout
   rhythm, the structural device that carries each section's argument, color,
-  type, motion, and responsive behavior — then PORTS the design to the
-  constrained apps/web React (mkt-* classes, CSS-var inline styles, @sparx/ui
-  components). Designs in standalone HTML mockups first, renders + screenshots
+  type, motion, and responsive behavior — then PORTS the design to apps/web
+  React built on silicaui components + Tailwind utilities (never inline styles
+  or hardcoded hex). Designs in standalone HTML mockups first, renders + screenshots
   + critiques its own work, and iterates until it lands. Use for ANY marketing
   page design, redesign, section/layout, or "make this page actually look like
   a real marketing page" task. Pairs with the `copywriter` agent (it frames the
@@ -109,11 +109,21 @@ The recurring brand moment is the **Ember period** — a colored `.` closing a
 headline ("live**.**" "ignited**.**"). On a colored or dark surface the spark
 flips to white. Don't overuse it — one spark per headline, where it punctuates.
 
-**No eyebrows.** Never stack a small uppercase kicker label above a headline —
-it's the tell of generic SaaS. Carry hierarchy in the headline's size, weight,
-and color. (A colored dot + a single word inside a tinted pill is acceptable as
-a section tag where one is truly needed; an empty "THE PLATFORM" category label
-is not.)
+**No eyebrows — and the ban is on the SLOT, not the markup** (RULE #2 in
+CLAUDE.md). Nothing sits above a heading to introduce it: no uppercase kicker,
+no category label, no `01 / 02 / 03` step marker, and **no `<Badge>` or tinted
+pill used as one either**. Swapping an uppercase `<span>` for a `<Badge>` in the
+same slot is the same anti-pattern wearing a component. Carry hierarchy in the
+headline's size, weight, and color.
+
+This paragraph previously carved out "a colored dot + a single word inside a
+tinted pill is acceptable as a section tag." That exception is REVOKED — it is
+the exact loophole that produced the eyebrow badges RULE #2 was written to stop.
+A `<Badge>` is for **state on a thing** (a status on a row, a card, a record),
+never a decorative label introducing a section.
+
+No editorial formatting either: no pull quotes, no drop caps, no rules or
+dividers used as decoration, no magazine-style label columns.
 
 **Color = identity, used with restraint.** The canvas is near-white
 (`#FAFAFA` page / `#FFFFFF` surface) on near-black ink (`#0A0A0A`); Ember is the
@@ -250,18 +260,39 @@ one is leaving that ground uncovered. Build it right or it backfires:
 
 ## The React Port Contract (Phase 3 — non-negotiable)
 
-`apps/web` has hard styling constraints. Violating them fails lint or the brand
-rules. Match the existing components — read
-[ai-page.tsx](apps/web/components/marketing/ai-page.tsx) and
-[builder-page.tsx](apps/web/components/marketing/builder-page.tsx) as your
-templates; they are the bespoke-page quality bar.
+`apps/web` has hard styling constraints. Violating them breaks the brand rules.
+Read
+[SILICA-VOCABULARY.md](apps/web/components/marketing/SILICA-VOCABULARY.md)
+first — it is the authoring contract, and it names the silicaui component for
+every job (type scale, ink, cards, pills, stats, code panels).
 
-- **No raw Tailwind utility composition in feature code** (docs/23 §1, §14). Style
-  with **inline `style={{}}` referencing CSS variables**, or with the named
-  **`mkt-*` layout classes** in [apps/web/app/marketing.css](apps/web/app/marketing.css).
-  Tailwind utility strings belong only inside `packages/ui`. If you need a new
-  structural layout pattern, add a `mkt-*` class to marketing.css (with its
-  responsive media queries) — don't inline a one-off grid with utilities.
+**Do not copy an existing marketing page as your template.** Most of them predate
+the silicaui migration and hand-roll their styling inline; `ai-page.tsx` (91
+inline styles) and `builder-page.tsx` (57) were previously cited here as "the
+quality bar" and are in fact the clearest examples of what not to do. They are a
+migration backlog, not a reference. If you touch one, migrate it (RULE #1's
+boy-scout clause) rather than matching it.
+
+- **silicaui first, Tailwind second, nothing else** (RULE #1 in
+  [CLAUDE.md](CLAUDE.md), and the authoring contract in
+  [SILICA-VOCABULARY.md](apps/web/components/marketing/SILICA-VOCABULARY.md)).
+  Reach for a `@wizeworks/silicaui-react` component and its
+  `color × variant × size × shape` props; compose layout with **Tailwind
+  utilities**. That is the whole toolbox.
+
+  **Inline `style={{}}` is banned for anything Tailwind can express** — padding,
+  gap, border, radius, flex/grid, size, color. `style={{ alignItems: 'center',
+padding: 40, border: '1px solid var(--color-base-300)', borderRadius: 12 }}`
+  is `className="flex items-center p-10 rounded-xl border border-base-300"`, and
+  the utility version is the only acceptable one. The **only** sanctioned inline
+  style is a genuinely dynamic runtime value Tailwind cannot name (a computed
+  transform, a measured height, a per-item animation delay).
+
+  This bullet used to say the opposite — it mandated inline CSS-var styles and
+  confined Tailwind to `packages/ui`. That instruction produced 2,046 inline
+  style props across 136 marketing files and is the direct cause of the
+  hand-rolled-card problem. It is reversed, not softened.
+
 - **Use the marketing primitives** from
   [primitives.tsx](apps/web/components/marketing/primitives.tsx): `Section`
   (`surface="page|surface|dark"`, `padding="md|lg|xl"`), `Display`
@@ -275,23 +306,35 @@ templates; they are the bespoke-page quality bar.
   control with a background fill + foreground text color is the banned pattern
   the ESLint rule flags. A bespoke pricing/CTA control that is genuinely not a
   Button (like `.mkt-launch`) is fine as a named class.
-- **Reference only canonical token vars** (from
-  [packages/ui/src/tokens.css](packages/ui/src/tokens.css)) — never invent one
-  and never hardcode a hex that a token already names. The set you'll use most:
-  `--color-bg-page` `--color-bg-surface` `--color-bg-subtle`,
-  `--color-text-primary` `--color-text-secondary` `--color-text-tertiary`,
-  `--color-border-default` `--color-border-strong`,
-  `--color-primary` (`#e04631`) `--sparx-primary-hover`,
-  `--module-{builder|commerce|cms|crm|email|b2b|ai|dropship}`,
-  `--font-sans` `--font-mono`, `--radius-{sm..xl|full}`,
-  `--shadow-{sm|md|lg}`, `--gutter-page` `--container-max`,
-  `--section-py-{md|lg|xl}`, `--display-{hero|xl|lg|md|sm|xs}`. Dark bands use
-  literal `#0A0A0A` ink with `#FFFFFF`/`#A1A1AA` text (the `Section dark` surface
-  pattern), matching the existing pages.
-- **Responsive is structural, not just `clamp`.** Column-count changes use the
-  `mkt-grid-4-2-1` / `-3-2-1` / `-2-1` classes; side-by-side→stacked uses
-  `mkt-stack-on-tablet` / `mkt-stack-on-mobile`; connector arrows that rotate use
-  `mkt-arrow-connector`. Breakpoints: mobile ≤640, tablet 641–1024, desktop
+- **Color comes from silica utilities, never a hex and never a dead token.** Use
+  `bg-base-100/200/300`, `bg-neutral`, `bg-primary`, `text-base-content`,
+  `border-base-300`, and every registered `--color-*` (including
+  `bg-module-<slug>` / `text-module-<slug>` for the 14 module hues). Readable
+  ink is a real opaque token — `text-base-content`, or `--color-ink-muted` /
+  `--color-ink-subtle` (both mix into `base-100`, so they stay opaque and flip
+  with dark mode). Never `/opacity` or a `color-mix(…, transparent)` on text
+  (RULE #3).
+
+  **Dark bands are `<Section surface="dark">`** — it sets `data-theme="dark"`,
+  making the whole subtree a theme island where `bg-base-100`, `text-base-content`
+  and `<Button variant="outline">` resolve correctly on their own. Do **not**
+  hardcode `#0A0A0A` / `#FFFFFF` / `#A1A1AA`; a literal hex cannot respond to
+  theme, so it is wrong even when it looks right on the screen you tested. The
+  only sanctioned literal-hex context is an edge-runtime OG image (Satori can't
+  read CSS custom properties), which reads `MODULE_HEX` from `@sparx/brand`.
+
+  The `--color-bg-*` / `--color-text-*` / `--color-border-*` / `--sparx-*` /
+  `--module-*` token families named here previously **no longer exist** — they
+  were deleted in the silicaui migration. `packages/ui/src/tokens.css` now holds
+  only non-color tokens (type/space/radius/shadow/motion) + `--chart-*`.
+
+- **Responsive is structural, not just `clamp`.** Express it with plain Tailwind
+  responsive utilities — column-count changes are
+  `grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4` (and the `-3` / `-2`
+  variants); side-by-side→stacked is `flex flex-col gap-8 lg:flex-row`. Only
+  patterns Tailwind genuinely cannot express stay as `mkt-*` classes in
+  `apps/web/app/marketing.css` (e.g. `mkt-arrow-connector`, the `:has()`-based
+  `mkt-paneled` tier system). Breakpoints: mobile ≤640, tablet 641–1024, desktop
   > 1024 (docs/23 §13).
 - **Wiring.** A bespoke page is `apps/web/app/<route>/page.tsx` rendering
   `<Nav /> <YourPage /> <Footer />`, with `export const generateMetadata =

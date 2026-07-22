@@ -16,7 +16,7 @@ export function RelatedTools({ currentSlug }: { currentSlug: string }) {
           lede="Every sparx tool runs entirely in your browser — free, no account, nothing uploaded."
           headlineSize={32}
         />
-        <div className="mkt-grid-3-2-1">
+        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
             <ToolCard key={tool.slug} tool={tool} />
           ))}

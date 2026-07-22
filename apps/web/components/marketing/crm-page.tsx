@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, getModuleColor, Section, Spark } from './primitives';
+import { Display, getModuleColor, Section, Spark } from './primitives';
 import { CrmHero } from './crm-sections';
 import { CrmOneRecord } from './crm-devices';
 import { CrmTimeline } from './crm-timeline';
@@ -57,7 +57,6 @@ export function CrmPage() {
 }
 
 const M = getModuleColor('crm');
-const SANS = 'var(--font-sans)';
 
 // Page-specific FAQ. Real evaluation questions for sparx CRM, answered straight
 // and grounded in docs/11 (PRD) + docs/17 (billing) — no tier/plan language.
@@ -114,58 +113,24 @@ function CrmProof() {
   ];
   return (
     <Section surface="dark" padding="lg">
-      <div style={{ maxWidth: '760px' }}>
-        <Display size={46} lineHeight={48} color="#FFFFFF">
+      <div className="max-w-[760px]">
+        <Display size={46} lineHeight={48}>
           One customer, one truth, zero glue
           <Spark color={M.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: '22px 0 0',
-          }}
-        >
+        <p className="text-ink-muted text-lede mt-[22px] max-w-[640px]">
           Because the CRM reads the same database as orders, content, and email, the numbers
           reconcile by default. There&rsquo;s nothing to sync — so there&rsquo;s nothing to drift,
           dedupe, or argue with.
         </p>
       </div>
-      <div className="mkt-grid-4-2-1" style={{ marginTop: '56px', gap: 0 }}>
+      <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
-          <div
-            key={s.l}
-            style={{
-              padding: i === 0 ? '0' : '0 0 0 32px',
-              borderLeft: i === 0 ? 'none' : '1px solid #262626',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: 'clamp(36px, 5vw, 54px)',
-                letterSpacing: '-0.03em',
-                color: '#FFFFFF',
-                lineHeight: 1,
-              }}
-            >
+          <div key={s.l} className={i === 0 ? '' : 'border-base-300 border-l pl-8'}>
+            <div className="text-base-content text-[clamp(36px,5vw,54px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <div
-              style={{
-                marginTop: '12px',
-                fontFamily: SANS,
-                fontSize: '14.5px',
-                lineHeight: '22px',
-                color: '#A1A1AA',
-              }}
-            >
-              {s.l}
-            </div>
+            <div className="text-ink-muted text-small mt-3">{s.l}</div>
           </div>
         ))}
       </div>
@@ -178,49 +143,16 @@ function CrmPricing() {
   return (
     <Section padding="lg">
       <div
-        className={`mkt-stack-on-tablet ${M.bg} bg-soft`}
-        style={{
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          border: '1px solid var(--color-base-300)',
-          borderRadius: '14px',
-          gap: '32px',
-        }}
+        className={`flex flex-col gap-8 lg:flex-row ${M.bg} bg-soft border-base-300 items-center justify-between rounded-[14px] border p-10`}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', flex: 1 }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px' }}>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '56px',
-                letterSpacing: '-0.025em',
-                color: 'var(--color-base-content)',
-              }}
-            >
+        <div className="flex flex-1 flex-col gap-3">
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-base-content text-[56px] font-medium tracking-[-0.025em]">
               $49
             </span>
-            <span
-              style={{
-                fontFamily: SANS,
-                fontSize: '16px',
-                color: 'color-mix(in oklab, var(--color-base-content) 50%, transparent)',
-              }}
-            >
-              /mo
-            </span>
+            <span className="text-ink-subtle text-body">/mo</span>
           </div>
-          <p
-            style={{
-              fontFamily: SANS,
-              fontSize: '14px',
-              lineHeight: '22px',
-              color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              margin: 0,
-              maxWidth: '640px',
-            }}
-          >
+          <p className="text-ink-muted text-small max-w-[640px]">
             A flat $49/mo — profiles, activity, segments, pipeline, tasks, and automation, with no
             tiers, no per-seat charge, and no per-contact metering. It sits on the same database as
             your orders and content, so switch it on alongside whatever you already run. Adding CRM
@@ -228,13 +160,13 @@ function CrmPricing() {
             to begin.
           </p>
         </div>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="/pricing">
             <Button size="lg" variant="outline">
               See all plans →
             </Button>
           </a>
-          <Button size="lg" style={{ backgroundColor: '#0A0A0A' }}>
+          <Button color="neutral" size="lg">
             Activate CRM
           </Button>
         </div>
@@ -246,51 +178,28 @@ function CrmPricing() {
 // ── FINAL CTA (dark) ──────────────────────────────────────────────────────────
 function CrmCta() {
   return (
-    <section
-      style={{
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-        backgroundColor: '#0A0A0A',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '36px', alignItems: 'flex-start' }}
-      >
-        <Display size={88} lineHeight={84} color="#FFFFFF">
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-9">
+        <Display size={88} lineHeight={84}>
           Know every customer cold
           <Spark color={M.color} />
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: '30px',
-            color: '#A1A1AA',
-            maxWidth: '640px',
-            margin: 0,
-          }}
-        >
+        <p className="text-ink-muted text-lede max-w-[640px]">
           Turn CRM on and your customers arrive with their whole history already attached — orders,
           emails, quotes, conversations. No migration weekend, no contract; switch it off the day
           you stop, and your data stays yours.
         </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
-          <Button size="xl" style={{ backgroundColor: M.color }}>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button color="module-crm" size="xl">
             Activate CRM →
           </Button>
           <a href="#record">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               See a customer record
             </Button>
           </a>
         </div>
-      </Container>
-    </section>
+      </div>
+    </Section>
   );
 }

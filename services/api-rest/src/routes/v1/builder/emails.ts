@@ -61,11 +61,11 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
   // resolvePropertyId, an explicit path target must never silently fall back to
   // the primary site.
   app.get('/v1/builder/emails/site/:propertyId', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const ctx = toBuilderTenantContext(request);
     const { propertyId } = PropertyParam.parse(request.params);
-    await requireTenantProperty(ctx.tenantId, propertyId);
+    await requireTenantProperty(auth, propertyId);
     const emails = await emailService.listForProperty(ctx, propertyId);
     return ok({ emails });
   });
@@ -75,12 +75,12 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
   // existing override. The tenant default keeps sending for the site until the
   // override is published (getPublishedByKey's per-site fallback).
   app.post('/v1/builder/emails/site/:propertyId/customize', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireBuilderModule(request);
     const ctx = toBuilderTenantContext(request);
     const { propertyId } = PropertyParam.parse(request.params);
     const { key } = CustomizeBody.parse(request.body);
-    await requireTenantProperty(ctx.tenantId, propertyId);
+    await requireTenantProperty(auth, propertyId);
     const email = await emailService.customizeForSite(ctx, key, propertyId);
     return ok(email);
   });

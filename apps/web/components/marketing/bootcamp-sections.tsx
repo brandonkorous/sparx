@@ -1,5 +1,5 @@
 import { Button } from '@wizeworks/silicaui-react';
-import { Container, Display, Section, SectionHeader, Spark } from './primitives';
+import { Container, Display, Section, SectionHeader, Spark, Text } from './primitives';
 import type { FaqItem } from './faq';
 
 /**
@@ -11,29 +11,19 @@ import type { FaqItem } from './faq';
  * NOT a module hue. The four modules you build wear their own hues inside the arc.
  */
 
-const SANS = 'var(--font-sans)';
-const MONO = 'var(--font-mono)';
 // The bootcamp is a PLATFORM program, not the commerce module — so it wears the
 // sparx primary brand color, not a module hue (the /partners page does the same).
 const PRIMARY = 'var(--color-primary)';
-const PRIMARY_TINT = 'color-mix(in oklab, var(--color-primary) 15%, var(--color-base-100))';
-const PRIMARY_TEXT = 'var(--color-primary)';
 
 // ── HERO ────────────────────────────────────────────────────────────────────
 export function BootcampHero() {
   const chips = ['site', 'CRM', 'email', 'automation', 'one platform'];
   return (
-    <section
-      style={{
-        backgroundColor: PRIMARY_TINT,
-        paddingTop: 'clamp(56px, 8vw, 104px)',
-        paddingBottom: 'clamp(72px, 10vw, 120px)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-      }}
-    >
-      <Container style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-        <div style={{ maxWidth: '760px' }}>
+    // `bg-primary bg-soft` IS the former hand-rolled 15% color-mix tint — silica's
+    // own soft treatment, so it follows the theme instead of freezing one value.
+    <section className="bg-primary bg-soft px-page pt-[clamp(56px,8vw,104px)] pb-[clamp(72px,10vw,120px)]">
+      <Container className="flex flex-col gap-7">
+        <div className="max-w-[760px]">
           <Display as="h1" size={88} lineHeight={86}>
             Build your business.
             <br />
@@ -41,55 +31,35 @@ export function BootcampHero() {
             <Spark />
           </Display>
         </div>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: 'clamp(17px, 1.7vw, 20px)',
-            lineHeight: 1.55,
-            color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-            maxWidth: '600px',
-            margin: 0,
-          }}
-        >
+        <Text size={19} className="max-w-[600px]">
           In-person and virtual sessions, led by certified sparx partners. Build a real business
           &mdash; site, customers, email, automation &mdash; and graduate the day you hit publish.
-        </p>
-        <div className="mkt-cluster" style={{ gap: '12px' }}>
+        </Text>
+        <div className="flex flex-wrap items-center gap-3">
           <a href="#directory">
             <Button size="lg" color="primary">
               Find a bootcamp →
             </Button>
           </a>
           <a href="/partners">
-            <Button
-              size="lg"
-              variant="outline"
-              style={{
-                backgroundColor: 'transparent',
-                borderColor: 'color-mix(in oklab, var(--color-base-content) 30%, transparent)',
-                color: 'var(--color-base-content)',
-              }}
-            >
+            <Button size="lg" variant="outline">
               Are you a partner? Host one
             </Button>
           </a>
         </div>
-        <div
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '10px 22px',
-            marginTop: '12px',
-            fontFamily: MONO,
-            fontSize: '12.5px',
-            color: PRIMARY_TEXT,
-          }}
-        >
+        <div className="mt-3 flex flex-wrap gap-x-[22px] gap-y-2.5">
           {chips.map((c) => (
-            <span key={c} style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ width: 7, height: 7, borderRadius: 9999, backgroundColor: PRIMARY }} />
+            <Text
+              key={c}
+              as="span"
+              mono
+              size={12}
+              tone="none"
+              className="text-primary inline-flex items-center gap-2"
+            >
+              <span aria-hidden className="bg-primary size-[7px] rounded-full" />
               {c}
-            </span>
+            </Text>
           ))}
         </div>
       </Container>
@@ -120,40 +90,15 @@ export function BootcampWhoFor() {
         headline={<>Who it&rsquo;s for</>}
         lede="You don't need a business degree or a developer. You need an afternoon and something you want to build."
       />
-      <div className="mkt-grid-3-2-1" style={{ marginTop: '52px' }}>
+      <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {who.map((w) => (
           <div key={w.t}>
-            <span
-              style={{
-                display: 'block',
-                height: 3,
-                width: 44,
-                borderRadius: 2,
-                backgroundColor: PRIMARY,
-              }}
-            />
-            <h3
-              style={{
-                margin: '20px 0 0',
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '20px',
-                letterSpacing: '-0.02em',
-              }}
-            >
+            <Text as="h3" size={20} weight={500} tone="default" className="tracking-[-0.02em]">
               {w.t}
-            </h3>
-            <p
-              style={{
-                margin: '12px 0 0',
-                fontFamily: SANS,
-                fontSize: '15px',
-                lineHeight: '24px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-              }}
-            >
+            </Text>
+            <Text size={15} className="mt-3">
               {w.d}
-            </p>
+            </Text>
           </div>
         ))}
       </div>
@@ -179,30 +124,15 @@ export function BootcampFormats() {
         headline={<>Every format</>}
         lede="Hosted the way that fits your week. Filter the directory below by the one you want."
       />
-      <div className="mkt-formats" style={{ marginTop: '52px' }}>
+      <div className="mkt-formats mt-13">
         {formats.map((f) => (
-          <div key={f.nm} style={{ padding: '28px 24px' }}>
-            <div
-              style={{
-                fontFamily: SANS,
-                fontWeight: 500,
-                fontSize: '17px',
-                letterSpacing: '-0.01em',
-              }}
-            >
+          <div key={f.nm} className="px-6 py-7">
+            <Text as="div" size={17} weight={500} tone="default" className="tracking-[-0.01em]">
               {f.nm}
-            </div>
-            <div
-              style={{
-                fontFamily: SANS,
-                fontSize: '13.5px',
-                lineHeight: '20px',
-                color: 'color-mix(in oklab, var(--color-base-content) 70%, transparent)',
-                marginTop: '8px',
-              }}
-            >
+            </Text>
+            <Text as="div" size={14} className="mt-2">
               {f.ds}
-            </div>
+            </Text>
           </div>
         ))}
       </div>
@@ -213,56 +143,39 @@ export function BootcampFormats() {
 // ── HOST CTA (dark) ─────────────────────────────────────────────────────────
 export function BootcampHostCta() {
   return (
-    <section
-      style={{
-        backgroundColor: '#0A0A0A',
-        paddingTop: 'var(--section-py-xl)',
-        paddingBottom: 'var(--section-py-xl)',
-        paddingLeft: 'var(--gutter-page)',
-        paddingRight: 'var(--gutter-page)',
-      }}
-    >
-      <Container
-        style={{ display: 'flex', flexDirection: 'column', gap: '24px', alignItems: 'flex-start' }}
-      >
-        <Display size={60} lineHeight={60} color="#FFFFFF">
+    // A themed dark island — the whole `--color-base-*` ramp flips, so the ink
+    // below resolves on-brand with no `#0A0A0A`/`#FFFFFF`/`#A1A1AA` literals.
+    <Section surface="dark" padding="xl">
+      <div className="flex flex-col items-start gap-6">
+        <Display size={60} lineHeight={60}>
           Want to host a bootcamp
-          <span style={{ color: PRIMARY }}>?</span>
+          <span className="text-primary">?</span>
         </Display>
-        <p
-          style={{
-            fontFamily: SANS,
-            fontSize: '18px',
-            lineHeight: 1.6,
-            color: '#A1A1AA',
-            maxWidth: '560px',
-            margin: 0,
-          }}
-        >
+        <Text size={18} className="max-w-[560px]">
           Certified sparx partners run bootcamps, bring new businesses onto the platform, and earn
           on every one that publishes. Get certified and start hosting.
-        </p>
-        <div className="mkt-cluster" style={{ gap: '12px', marginTop: '10px' }}>
+        </Text>
+        <div className="mt-2.5 flex flex-wrap items-center gap-3">
           <a href="/partners">
             <Button size="xl" color="primary">
               Get certified →
             </Button>
           </a>
           <a href="/partners">
-            <Button
-              size="xl"
-              variant="outline"
-              style={{ backgroundColor: 'transparent', borderColor: '#2A2A2A', color: '#FFFFFF' }}
-            >
+            <Button size="xl" variant="outline">
               See the partner program
             </Button>
           </a>
         </div>
-        <span style={{ marginTop: '24px', fontFamily: MONO, fontSize: '12px', color: '#52525B' }}>
-          Powered by <span style={{ color: '#A1A1AA', fontWeight: 500 }}>sparx</span> · sparx.works
-        </span>
-      </Container>
-    </section>
+        <Text as="span" mono size={12} tone="subtle" className="mt-6">
+          Powered by{' '}
+          <Text as="span" mono size={12} weight={500}>
+            sparx
+          </Text>{' '}
+          · sparx.works
+        </Text>
+      </div>
+    </Section>
   );
 }
 

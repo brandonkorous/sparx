@@ -1,6 +1,7 @@
 // Invoicing — document workflows + their stages (docs/87 §3).
 //
-//   GET    /v1/invoicing/workflows                       → list (with stages)
+//   GET    /v1/invoicing/workflows                       → list (with stages),
+//                                                          paged + sortable
 //   POST   /v1/invoicing/workflows                       → create
 //   GET    /v1/invoicing/workflows/:id                   → fetch one (with stages)
 //   PATCH  /v1/invoicing/workflows/:id                   → update
@@ -21,9 +22,17 @@ const PathId = z.object({ id: z.string().uuid() });
 const StagePathIds = z.object({ id: z.string().uuid(), stageId: z.string().uuid() });
 const ListQuery = z.object({
   q: z.string().trim().min(1).max(200).optional(),
+  // `state` supersedes `include_archived`, which cannot express "archived only".
+  // The old flag stays for existing callers.
+  state: z.enum(['active', 'archived', 'all']).optional(),
   include_archived: z.coerce.boolean().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+  // Snake_case, matching every other list endpoint's sort parameter. Omitting
+  // it keeps the tenant's own arrangement (default workflow first, then their
+  // order), which is the only ordering here that means something.
+  sort_by: z.enum(['name', 'slug', 'stages', 'state', 'updatedAt', 'createdAt']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
 });
 
 const workflowRoutes: FastifyPluginAsync = (app) => {
@@ -34,8 +43,11 @@ const workflowRoutes: FastifyPluginAsync = (app) => {
     const { items, total } = await documentWorkflowService.listPaged(toInvoicingContext(request), {
       q: q.q,
       includeArchived: q.include_archived,
+      ...(q.state !== undefined ? { state: q.state } : {}),
       take: q.take,
       skip: q.skip,
+      ...(q.sort_by !== undefined ? { sortBy: q.sort_by } : {}),
+      ...(q.order !== undefined ? { order: q.order } : {}),
     });
     return paged(items, { total, per_page: q.take ?? 50 });
   });

@@ -2,23 +2,31 @@ import { describe, expect, it } from 'vitest';
 
 import { canonicalEqual, mergeByKey, mergeTree, mergeValue, resolverFrom } from './merge';
 
+// Silica element nodes — the only tree shape blueprints carry. `props` stands in
+// for any merge-visible field; `children` may hold nodes OR raw text, which is the
+// case the legacy BuilderNode merge never had to handle.
 interface N {
   id: string;
-  type: string;
+  kind: 'element';
+  tag: string;
   props: Record<string, unknown>;
-  children?: N[];
+  children?: (N | string)[];
 }
 const node = (
   id: string,
-  type: string,
+  tag: string,
   props: Record<string, unknown> = {},
-  children?: N[]
+  children?: (N | string)[]
 ): N => ({
   id,
-  type,
+  kind: 'element',
+  tag,
   props,
   ...(children ? { children } : {}),
 });
+/** Element children only, for assertions that index by id. */
+const kids = (n: N | undefined): N[] =>
+  (n?.children ?? []).filter((c): c is N => typeof c === 'object');
 
 describe('canonicalEqual', () => {
   it('is insensitive to key order and undefined-vs-absent', () => {
@@ -138,79 +146,97 @@ describe('mergeValue — nested objects (theme presentation / brand)', () => {
   });
 });
 
-describe('mergeTree — node-keyed builder-tree merge', () => {
-  const base = node('root', 'Section', { pad: 4 }, [
-    node('a', 'Heading', { text: 'Welcome' }),
-    node('b', 'Text', { text: 'Body' }),
+describe('mergeTree — node-keyed silica-tree merge', () => {
+  const base = node('root', 'section', { pad: 4 }, [
+    node('a', 'h2', { text: 'Welcome' }),
+    node('b', 'p', { text: 'Body' }),
   ]);
 
   it('applies independent edits to different nodes with no conflict', () => {
     // tenant edited node a; author edited node b
-    const current = node('root', 'Section', { pad: 4 }, [
-      node('a', 'Heading', { text: 'Howdy' }),
-      node('b', 'Text', { text: 'Body' }),
+    const current = node('root', 'section', { pad: 4 }, [
+      node('a', 'h2', { text: 'Howdy' }),
+      node('b', 'p', { text: 'Body' }),
     ]);
-    const incoming = node('root', 'Section', { pad: 4 }, [
-      node('a', 'Heading', { text: 'Welcome' }),
-      node('b', 'Text', { text: 'New body' }),
+    const incoming = node('root', 'section', { pad: 4 }, [
+      node('a', 'h2', { text: 'Welcome' }),
+      node('b', 'p', { text: 'New body' }),
     ]);
     const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
-    expect(merged.children?.find((c) => c.id === 'a')?.props.text).toBe('Howdy'); // tenant kept
-    expect(merged.children?.find((c) => c.id === 'b')?.props.text).toBe('New body'); // author applied
+    expect(kids(merged).find((c) => c.id === 'a')?.props.text).toBe('Howdy'); // tenant kept
+    expect(kids(merged).find((c) => c.id === 'b')?.props.text).toBe('New body'); // author applied
     expect(r.changes.every((c) => c.type === 'auto')).toBe(true);
   });
 
   it('conflicts when tenant and author edit the same node field (keeps tenant)', () => {
-    const current = node('root', 'Section', { pad: 4 }, [
-      node('a', 'Heading', { text: 'Howdy' }),
-      node('b', 'Text', { text: 'Body' }),
+    const current = node('root', 'section', { pad: 4 }, [
+      node('a', 'h2', { text: 'Howdy' }),
+      node('b', 'p', { text: 'Body' }),
     ]);
-    const incoming = node('root', 'Section', { pad: 4 }, [
-      node('a', 'Heading', { text: 'Greetings' }),
-      node('b', 'Text', { text: 'Body' }),
+    const incoming = node('root', 'section', { pad: 4 }, [
+      node('a', 'h2', { text: 'Greetings' }),
+      node('b', 'p', { text: 'Body' }),
     ]);
     const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
-    expect(merged.children?.find((c) => c.id === 'a')?.props.text).toBe('Howdy'); // tenant wins
+    expect(kids(merged).find((c) => c.id === 'a')?.props.text).toBe('Howdy'); // tenant wins
     expect(r.changes.filter((c) => c.type === 'conflict')).toHaveLength(1);
   });
 
   it('adds an author-added node', () => {
     const current = base;
-    const incoming = node('root', 'Section', { pad: 4 }, [
-      node('a', 'Heading', { text: 'Welcome' }),
-      node('b', 'Text', { text: 'Body' }),
-      node('c', 'Button', { label: 'Shop' }),
+    const incoming = node('root', 'section', { pad: 4 }, [
+      node('a', 'h2', { text: 'Welcome' }),
+      node('b', 'p', { text: 'Body' }),
+      node('c', 'button', { label: 'Shop' }),
     ]);
     const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
-    expect(merged.children?.map((c) => c.id)).toEqual(['a', 'b', 'c']);
+    expect(kids(merged).map((c) => c.id)).toEqual(['a', 'b', 'c']);
     expect(r.changes).toHaveLength(1);
     expect(r.changes[0]).toMatchObject({ type: 'auto', path: 'tree/c' });
   });
 
   it('removes a node the author dropped that the tenant never touched', () => {
     const current = base; // tenant untouched
-    const incoming = node('root', 'Section', { pad: 4 }, [
-      node('a', 'Heading', { text: 'Welcome' }),
-    ]);
+    const incoming = node('root', 'section', { pad: 4 }, [node('a', 'h2', { text: 'Welcome' })]);
     const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
-    expect(merged.children?.map((c) => c.id)).toEqual(['a']); // b removed
+    expect(kids(merged).map((c) => c.id)).toEqual(['a']); // b removed
+  });
+
+  // Silica text children have no id, so they cannot be keyed. These two cover the
+  // atomic fallback — the path that would silently DROP text if it were merged by
+  // id, since every string child would match nothing and vanish.
+  it('fast-forwards a text child the tenant never touched', () => {
+    const b = node('root', 'section', {}, [node('a', 'h2', {}, ['Welcome'])]);
+    const current = b;
+    const incoming = node('root', 'section', {}, [node('a', 'h2', {}, ['Welcome back'])]);
+    const r = mergeTree(b, current, incoming);
+    const heading = kids(r.merged as N).find((c) => c.id === 'a');
+    expect(heading?.children).toEqual(['Welcome back']);
+  });
+
+  it('keeps the tenant text when both sides edited it, and never loses the string', () => {
+    const b = node('root', 'section', {}, [node('a', 'h2', {}, ['Welcome'])]);
+    const current = node('root', 'section', {}, [node('a', 'h2', {}, ['Our shop'])]);
+    const incoming = node('root', 'section', {}, [node('a', 'h2', {}, ['Welcome back'])]);
+    const r = mergeTree(b, current, incoming);
+    const heading = kids(r.merged as N).find((c) => c.id === 'a');
+    expect(heading?.children).toEqual(['Our shop']);
+    expect(r.changes.some((c) => c.type === 'conflict')).toBe(true);
   });
 
   it('KEEPS a node the author dropped if the tenant edited it (never lose work, U3)', () => {
-    const current = node('root', 'Section', { pad: 4 }, [
-      node('a', 'Heading', { text: 'Welcome' }),
-      node('b', 'Text', { text: 'My custom body' }), // tenant edited b
+    const current = node('root', 'section', { pad: 4 }, [
+      node('a', 'h2', { text: 'Welcome' }),
+      node('b', 'p', { text: 'My custom body' }), // tenant edited b
     ]);
-    const incoming = node('root', 'Section', { pad: 4 }, [
-      node('a', 'Heading', { text: 'Welcome' }),
-    ]);
+    const incoming = node('root', 'section', { pad: 4 }, [node('a', 'h2', { text: 'Welcome' })]);
     const r = mergeTree(base, current, incoming);
     const merged = r.merged as N;
-    expect(merged.children?.find((c) => c.id === 'b')?.props.text).toBe('My custom body'); // kept
+    expect(kids(merged).find((c) => c.id === 'b')?.props.text).toBe('My custom body'); // kept
   });
 });
 

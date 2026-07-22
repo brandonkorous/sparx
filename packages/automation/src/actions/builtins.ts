@@ -13,6 +13,7 @@
 
 import type { ActionOutput, EffectInput, TenantCtx } from '../engine-types';
 import { webhookEgressGate } from '../gates/builtins';
+import { registerNotifyAction } from './notify';
 import { registerAction } from './registry';
 
 const WEBHOOK_TIMEOUT_MS = 10_000;
@@ -71,4 +72,9 @@ export function installBuiltinActions(): void {
     manifestNote: 'egress gate guards scheme + private-range SSRF before any outbound POST',
     execute: executeWebhook,
   });
+
+  // In-app notifications (docs/124 Phase 3). Platform-level and dependency-free
+  // — it writes through the tenant-scoped tx it is already handed — so it
+  // belongs with the built-ins rather than the module-wired seam.
+  registerNotifyAction();
 }

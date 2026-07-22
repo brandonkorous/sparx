@@ -1,0 +1,930 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx — AI concierge (/ai) mockup</title>
+    <!--
+      HOOK: The AI you hand your customers. An outward-facing concierge that greets
+      your website visitors, answers from your LIVE catalog and policies, and hands
+      off to a human the moment it's unsure — running on YOUR key, never sparx's.
+      Companion to /agentic (which points your OWN AI at your data, inward-facing).
+      Both = the one $49 AI module.
+
+      Differentiation from /agentic: /agentic owns the one SATURATED magenta flood
+      hero on the site. /ai (concierge) is the front-of-house tool, so it takes the
+      TINTED pink hero (the brand default for module pages) — same hue family,
+      distinctly softer. Ember/AI-pink is a SIGNAL throughout, never a wash.
+
+      SECTION DEVICES (each earns its layout, varied down the page):
+      1  Hero .............. tinted band, split: editorial + a live chat WIDGET on a
+                            tenant site (rotating business) — the product frame.
+      2  Lifecycle ........ horizontal flow that FORKS at the confidence gate:
+                            ask → read live data → (confident) answer | (unsure) human.
+      3  Grounded ......... split: a customer question ←→ the real records it reads,
+                            module-colored signals. "Live data, not a scraped FAQ."
+      4  BYOK (dark) ...... the legally load-bearing truth: runs on YOUR key. No key
+                            → every chat goes to a human. sparx supplies zero AI.
+      5  Handoff .......... two outcome windows: a confident answer vs. an escalation,
+                            + operating-hours away message. The fail-safe, shown.
+      6  Configure ........ a settings panel ←→ live widget preview. No-code control:
+                            greeting, tone, accent, hours.
+      7  Cross-link ....... band → /agentic: "the other half of the AI module."
+      8  Pricing .......... $49/mo, ONE module, BOTH tools (concierge + agentic).
+      9  FAQ .............. concierge-specific Q&A (ported to <Faq> JSON-LD in React).
+      10 Final CTA (dark) . close.
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --page: #fafafa;
+        --surface: #ffffff;
+        --ink: #0a0a0a;
+        --ink-2: #52525b;
+        --ink-3: #71717a;
+        --border: #e5e5e5;
+        --border-2: #d4d4d8;
+        --ai: #ec4899; /* module: ai */
+        --ai-tint: #fdf2f8;
+        --commerce: #f97316;
+        --crm: #06b6d4;
+        --email: #0ea5e9;
+        --builder: #6366f1;
+        --primary: #e04631; /* ember */
+        --sans: 'Geist', sans-serif;
+        --mono: 'Geist Mono', monospace;
+        --shadow: 0 14px 40px rgba(15, 15, 20, 0.06);
+        --shadow-lg: 0 24px 60px rgba(15, 15, 20, 0.1);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        font-family: var(--sans);
+        -webkit-font-smoothing: antialiased;
+      }
+      .wrap {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 0 clamp(20px, 5vw, 64px);
+      }
+      section {
+        padding: clamp(72px, 9vw, 132px) 0;
+      }
+      .band-surface {
+        background: var(--surface);
+        border-top: 1px solid var(--border);
+      }
+      .band-dark {
+        background: var(--ink);
+        color: #fff;
+      }
+      .spark {
+        color: var(--ai);
+      }
+      .spark-w {
+        color: #fff;
+      }
+      h1,
+      h2,
+      h3 {
+        font-weight: 500;
+        letter-spacing: -0.025em;
+        margin: 0;
+      }
+      .display {
+        font-size: clamp(40px, 6.4vw, 92px);
+        line-height: 0.98;
+        letter-spacing: -0.035em;
+      }
+      .h2 {
+        font-size: clamp(30px, 4vw, 52px);
+        line-height: 1.04;
+      }
+      .lede {
+        font-size: clamp(16px, 1.5vw, 20px);
+        line-height: 1.55;
+        color: var(--ink-2);
+        max-width: 640px;
+      }
+      .mono {
+        font-family: var(--mono);
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border-radius: 10px;
+        padding: 13px 22px;
+        font-family: var(--sans);
+        font-weight: 500;
+        font-size: 15px;
+        border: 1px solid transparent;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      .btn-dark {
+        background: var(--ink);
+        color: #fff;
+      }
+      .btn-out {
+        background: transparent;
+        border-color: var(--border-2);
+        color: var(--ink);
+      }
+      .btn-ai {
+        background: var(--ai);
+        color: #fff;
+      }
+      .cluster {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+      }
+      .dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+      }
+
+      /* ── HERO ── */
+      .hero {
+        background: var(--ai-tint);
+      }
+      .hero-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+        gap: 56px;
+        align-items: center;
+      }
+      .hero-copy {
+        display: flex;
+        flex-direction: column;
+        gap: 28px;
+        align-items: flex-start;
+      }
+      .hero-sub {
+        font-size: 12px;
+        color: var(--ink-3);
+      }
+
+      /* the chat widget frame */
+      .site-frame {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: var(--shadow-lg);
+        overflow: hidden;
+      }
+      .site-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 16px;
+        border-bottom: 1px solid var(--border);
+      }
+      .site-bar .u {
+        flex: 1;
+        margin-left: 8px;
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-3);
+      }
+      .tl {
+        width: 11px;
+        height: 11px;
+        border-radius: 999px;
+        background: var(--border-2);
+      }
+      .widget {
+        position: relative;
+        padding: 22px;
+        min-height: 360px;
+        background: linear-gradient(0deg, #fff, #fff);
+      }
+      .chat-panel {
+        max-width: 340px;
+        margin-left: auto;
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--shadow);
+        overflow: hidden;
+      }
+      .chat-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 14px 16px;
+        background: var(--ai);
+        color: #fff;
+      }
+      .chat-head .av {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.22);
+        display: grid;
+        place-items: center;
+        font-size: 15px;
+      }
+      .chat-head b {
+        font-weight: 500;
+        font-size: 14px;
+      }
+      .chat-head span {
+        font-size: 11.5px;
+        opacity: 0.85;
+      }
+      .chat-body {
+        padding: 16px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        background: #fbfbfb;
+      }
+      .bubble {
+        font-size: 13.5px;
+        line-height: 1.45;
+        padding: 10px 13px;
+        border-radius: 14px;
+        max-width: 88%;
+      }
+      .b-user {
+        align-self: flex-end;
+        background: var(--ink);
+        color: #fff;
+        border-bottom-right-radius: 4px;
+      }
+      .b-ai {
+        align-self: flex-start;
+        background: #fff;
+        border: 1px solid var(--border);
+        color: var(--ink);
+        border-bottom-left-radius: 4px;
+      }
+      .receipt {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 11.5px;
+        color: var(--ink-3);
+        padding-left: 2px;
+      }
+      .chat-input {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border-top: 1px solid var(--border);
+        background: #fff;
+      }
+      .chat-input .f {
+        flex: 1;
+        font-size: 12.5px;
+        color: var(--ink-3);
+        padding: 8px 12px;
+        border: 1px solid var(--border);
+        border-radius: 999px;
+      }
+      .chat-input .s {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        background: var(--ai);
+        color: #fff;
+        display: grid;
+        place-items: center;
+      }
+
+      /* ── LIFECYCLE FORK ── */
+      .flow {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+        margin-top: 48px;
+      }
+      .step {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 14px;
+        padding: 26px 24px;
+        position: relative;
+      }
+      .step .n {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--ink-3);
+      }
+      .step h3 {
+        font-size: 20px;
+        margin: 10px 0 8px;
+      }
+      .step p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--ink-2);
+      }
+      .fork {
+        margin-top: 16px;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .outcome {
+        border-radius: 14px;
+        padding: 24px;
+        border: 1px solid var(--border);
+      }
+      .outcome.good {
+        background: var(--ai-tint);
+        border-color: color-mix(in oklab, var(--ai) 30%, var(--border));
+      }
+      .outcome.human {
+        background: var(--surface);
+      }
+      .outcome .tag {
+        font-family: var(--mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--ink-3);
+      }
+      .outcome h3 {
+        font-size: 19px;
+        margin: 8px 0;
+      }
+      .outcome p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+        color: var(--ink-2);
+      }
+
+      /* ── GROUNDED SPLIT ── */
+      .split {
+        display: grid;
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+        gap: 40px;
+        margin-top: 48px;
+        align-items: center;
+      }
+      .records {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .rec {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+        padding: 16px 18px;
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+      }
+      .rec .lbl {
+        font-family: var(--mono);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--ink-3);
+      }
+      .rec .val {
+        font-size: 15px;
+        font-weight: 500;
+        margin-top: 3px;
+      }
+      .rec .sub {
+        font-size: 13px;
+        color: var(--ink-2);
+        margin-top: 2px;
+      }
+
+      /* ── generic grids ── */
+      .g3 {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+        margin-top: 48px;
+      }
+      .g2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        margin-top: 48px;
+      }
+      .tile {
+        border-radius: 14px;
+        padding: 26px 24px;
+      }
+      .tile h3 {
+        font-size: 17px;
+        margin: 0 0 8px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .tile p {
+        margin: 0;
+        font-size: 14px;
+        line-height: 1.5;
+      }
+      .tile-dark {
+        background: #141414;
+        border: 1px solid #262626;
+        color: #fff;
+      }
+      .tile-dark p {
+        color: #a1a1aa;
+      }
+
+      /* ── CONFIGURE ── */
+      .cfg-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        margin-top: 48px;
+        align-items: start;
+      }
+      .panel {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        padding: 24px;
+        box-shadow: var(--shadow);
+      }
+      .field {
+        margin-bottom: 16px;
+      }
+      .field label {
+        font-size: 12px;
+        color: var(--ink-3);
+        display: block;
+        margin-bottom: 6px;
+      }
+      .field .box {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 12px;
+        font-size: 14px;
+        color: var(--ink);
+        background: #fff;
+      }
+      .swatches {
+        display: flex;
+        gap: 8px;
+      }
+      .sw {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+      }
+      .sw.on {
+        outline: 2px solid var(--ink);
+        outline-offset: 2px;
+      }
+
+      /* ── cross-link + pricing ── */
+      .crosslink {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        gap: 24px;
+        align-items: center;
+        padding: 40px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--ai-tint);
+      }
+      .arrow {
+        font-size: 24px;
+        color: var(--ai);
+      }
+      .price {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 32px;
+        padding: 40px;
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        background: var(--ai-tint);
+      }
+      .price .amt {
+        font-size: 56px;
+        font-weight: 500;
+        letter-spacing: -0.025em;
+      }
+
+      @media (max-width: 1024px) {
+        .hero-grid,
+        .split,
+        .cfg-grid {
+          grid-template-columns: 1fr;
+          gap: 36px;
+        }
+        .flow,
+        .g3 {
+          grid-template-columns: 1fr;
+        }
+        .crosslink,
+        .price {
+          grid-template-columns: 1fr;
+          flex-direction: column;
+          text-align: left;
+        }
+        .arrow {
+          transform: rotate(90deg);
+        }
+      }
+      @media (max-width: 640px) {
+        .fork,
+        .g2 {
+          grid-template-columns: 1fr;
+        }
+        .chat-panel {
+          margin: 0 auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- ── 1 · HERO ────────────────────────────────────────────── -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1 class="display">
+            Answer every customer<br />the moment they ask<span class="spark">.</span>
+          </h1>
+          <p class="lede">
+            Your customers arrive with a question. Your concierge greets them, answers from your
+            real catalog and policies, and hands off to a person the second it&rsquo;s unsure.
+            Instant help at your front door, running on your own AI, never ours.
+          </p>
+          <div class="cluster">
+            <a class="btn btn-dark" href="#">Turn on your concierge →</a>
+            <a class="btn btn-out" href="#how">See how it answers</a>
+          </div>
+          <span class="mono hero-sub">Your key · your model · your customers&rsquo; questions</span>
+        </div>
+
+        <div class="hero-copy">
+          <div class="site-frame">
+            <div class="site-bar">
+              <span class="tl"></span><span class="tl"></span><span class="tl"></span>
+              <span class="u">flaxandfern.com</span>
+            </div>
+            <div class="widget">
+              <div class="chat-panel">
+                <div class="chat-head">
+                  <span class="av">✦</span>
+                  <div>
+                    <b>Flax &amp; Fern</b><br /><span>Ask us anything</span>
+                  </div>
+                </div>
+                <div class="chat-body">
+                  <div class="bubble b-user">Do you have the linen set in stone, and is it in stock?</div>
+                  <div class="bubble b-ai">
+                    Yes — the Linen Bedding Set comes in Stone, and it&rsquo;s in stock now. Orders
+                    over $150 ship free. Want the size guide?
+                  </div>
+                  <span class="receipt"
+                    ><span class="dot" style="background: var(--ai)"></span>Answered from Flax &amp;
+                    Fern&rsquo;s live catalog</span
+                  >
+                </div>
+                <div class="chat-input">
+                  <span class="f">Type a message…</span>
+                  <span class="s">↑</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 2 · LIFECYCLE FORK ──────────────────────────────────── -->
+    <section id="how" class="band-surface">
+      <div class="wrap">
+        <h2 class="h2">One question, four seconds<span class="spark">.</span></h2>
+        <p class="lede" style="margin-top: 20px">
+          No scripts to write, no decision trees to wire. It reads the question, looks things up in
+          your real data, and then either answers or gets a human. Every single time.
+        </p>
+        <div class="flow">
+          <div class="step">
+            <span class="dot" style="background: var(--ai)"></span>
+            <h3>A customer asks</h3>
+            <p>In plain English, in the chat on your site. No menu to navigate, no ticket to file.</p>
+          </div>
+          <div class="step">
+            <span class="dot" style="background: var(--ai)"></span>
+            <h3>It reads your live data</h3>
+            <p>
+              Up to four quick, read-only lookups against your real catalog, order status, and
+              policies. The same records your dashboard shows.
+            </p>
+          </div>
+          <div class="step">
+            <span class="dot" style="background: var(--ai)"></span>
+            <h3>It scores its answer</h3>
+            <p>
+              Every reply carries a confidence score. High enough, and it goes. Anything less, and
+              it forks to a person.
+            </p>
+          </div>
+        </div>
+        <div class="fork">
+          <div class="outcome good">
+            <span class="tag">Confident →</span>
+            <h3>Replies instantly</h3>
+            <p>
+              Grounded, on-brand, and in your customer&rsquo;s hands in seconds, day or night, at
+              any volume.
+            </p>
+          </div>
+          <div class="outcome human">
+            <span class="tag">Unsure →</span>
+            <h3>Hands it to your team</h3>
+            <p>
+              It says a person will follow up, and drops the conversation into your staff inbox. It
+              would rather get a human than guess.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 3 · GROUNDED ─────────────────────────────────────────── -->
+    <section>
+      <div class="wrap">
+        <h2 class="h2">Live data, not a scraped FAQ<span class="spark">.</span></h2>
+        <p class="lede" style="margin-top: 20px">
+          Most chatbots guess from a snapshot of your site crawled weeks ago. Yours reads the same
+          live records your dashboard shows, the moment they change. New price at 9:00, right answer
+          at 9:01.
+        </p>
+        <div class="split">
+          <div class="card" style="padding: 24px">
+            <span class="receipt" style="font-size: 12px"
+              ><span class="dot" style="background: var(--ink)"></span>A customer asks</span
+            >
+            <p style="font-size: 20px; font-weight: 500; line-height: 1.35; margin: 14px 0 0">
+              &ldquo;Is the pour-over kit back in stock, and what&rsquo;s your return window?&rdquo;
+            </p>
+          </div>
+          <div class="records">
+            <div class="rec">
+              <span class="dot" style="margin-top: 6px; background: var(--commerce)"></span>
+              <div>
+                <div class="lbl">Catalog · live</div>
+                <div class="val">Pour-Over Kit — 12 in stock</div>
+                <div class="sub">Reads your real inventory count, not a cached page.</div>
+              </div>
+            </div>
+            <div class="rec">
+              <span class="dot" style="margin-top: 6px; background: var(--builder)"></span>
+              <div>
+                <div class="lbl">Policy page · published</div>
+                <div class="val">Returns — 30 days, unopened</div>
+                <div class="sub">Quotes your own published policy, word for word.</div>
+              </div>
+            </div>
+            <div class="rec">
+              <span class="dot" style="margin-top: 6px; background: var(--crm)"></span>
+              <div>
+                <div class="lbl">Order status · on request</div>
+                <div class="val">Looks up order state, never guesses it</div>
+                <div class="sub">
+                  Account-specific details it can&rsquo;t verify get a human, always.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 4 · BYOK (dark) ─────────────────────────────────────── -->
+    <section class="band-dark">
+      <div class="wrap">
+        <h2 class="h2" style="max-width: 760px">
+          It runs on your AI. Never ours<span class="spark-w">.</span>
+        </h2>
+        <p class="lede" style="color: #a1a1aa; margin-top: 20px">
+          sparx doesn&rsquo;t sell you intelligence. You connect your own Anthropic or OpenAI key,
+          encrypted, and yours to revoke. Every conversation runs on your model, on your terms. This
+          is the floor, not a setting: sparx never answers your customers on a credential of its own.
+        </p>
+        <div class="g3">
+          <div class="tile tile-dark">
+            <h3><span class="dot" style="background: var(--ai)"></span>Your key, encrypted</h3>
+            <p>Paste your provider key once. It&rsquo;s encrypted at rest and only ever decrypted to answer.</p>
+          </div>
+          <div class="tile tile-dark">
+            <h3><span class="dot" style="background: var(--ai)"></span>Your model, your bill</h3>
+            <p>You pay your provider directly for usage. sparx charges a flat fee, with no per-message markup.</p>
+          </div>
+          <div class="tile tile-dark">
+            <h3><span class="dot" style="background: var(--ai)"></span>No key, no guessing</h3>
+            <p>Haven&rsquo;t connected one? Every chat goes straight to a person. There&rsquo;s no sparx fallback AI.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 5 · HANDOFF ─────────────────────────────────────────── -->
+    <section class="band-surface">
+      <div class="wrap">
+        <h2 class="h2">It knows when to get a human<span class="spark">.</span></h2>
+        <p class="lede" style="margin-top: 20px">
+          Below its confidence line, or on any whiff of uncertainty, it stops and hands off instead
+          of guessing. Off-hours, it leaves your away message and passes it along. Fail-safe by
+          design.
+        </p>
+        <div class="g2">
+          <div class="card" style="overflow: hidden">
+            <div style="padding: 20px">
+              <div class="bubble b-user" style="max-width: 90%">
+                What&rsquo;s the difference between the two pour-over kits?
+              </div>
+              <div class="bubble b-ai" style="margin-top: 12px; max-width: 90%">
+                The Classic kit is ceramic; the Pro adds a gooseneck kettle and a scale. Both ship
+                free over $150.
+              </div>
+              <span class="receipt" style="margin-top: 12px"
+                ><span class="dot" style="background: var(--ai)"></span>Answered · high confidence</span
+              >
+            </div>
+          </div>
+          <div class="card" style="overflow: hidden">
+            <div style="padding: 20px">
+              <div class="bubble b-user" style="max-width: 90%">
+                Can you refund order #1042 and reship to a new address?
+              </div>
+              <div class="bubble b-ai" style="margin-top: 12px; max-width: 90%">
+                I want to get this exactly right, so I&rsquo;m bringing in a teammate who can help.
+                They&rsquo;ll follow up shortly.
+              </div>
+              <span class="receipt" style="margin-top: 12px"
+                ><span class="dot" style="background: var(--crm)"></span>Handed to your team ·
+                account action</span
+              >
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 6 · CONFIGURE ───────────────────────────────────────── -->
+    <section>
+      <div class="wrap">
+        <h2 class="h2">Yours to shape, no code<span class="spark">.</span></h2>
+        <p class="lede" style="margin-top: 20px">
+          Set it up like any other setting. Write the greeting in your voice, pick a tone, match
+          your brand color, set your hours. No prompt engineering, no training data, no developer.
+        </p>
+        <div class="cfg-grid">
+          <div class="panel">
+            <div class="field">
+              <label>Greeting</label>
+              <div class="box">Hi! Ask us anything about our beans or your order.</div>
+            </div>
+            <div class="field">
+              <label>Away message (outside hours)</label>
+              <div class="box">We&rsquo;re closed right now. Leave a note and we&rsquo;ll reply first thing.</div>
+            </div>
+            <div class="field">
+              <label>Tone</label>
+              <div class="box">Warm · concise · first-name</div>
+            </div>
+            <div class="field">
+              <label>Accent color</label>
+              <div class="swatches">
+                <span class="sw on" style="background: var(--ai)"></span>
+                <span class="sw" style="background: var(--commerce)"></span>
+                <span class="sw" style="background: var(--crm)"></span>
+                <span class="sw" style="background: var(--builder)"></span>
+                <span class="sw" style="background: var(--ink)"></span>
+              </div>
+            </div>
+          </div>
+          <div class="chat-panel" style="margin: 0; max-width: 100%">
+            <div class="chat-head">
+              <span class="av">✦</span>
+              <div><b>North Loop Roasters</b><br /><span>Ask us anything</span></div>
+            </div>
+            <div class="chat-body">
+              <div class="bubble b-ai">Hi! Ask us anything about our beans or your order.</div>
+              <div class="bubble b-user">When&rsquo;s this month&rsquo;s roast shipping?</div>
+              <div class="bubble b-ai">
+                This month&rsquo;s washed Colombia ships Friday. Subscribers get it first.
+              </div>
+            </div>
+            <div class="chat-input">
+              <span class="f">Type a message…</span>
+              <span class="s">↑</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── 7 · CROSS-LINK ──────────────────────────────────────── -->
+    <section class="band-surface">
+      <div class="wrap">
+        <div class="crosslink">
+          <div>
+            <span class="mono" style="font-size: 12px; color: var(--ink-3)">This page — outward</span>
+            <h3 style="font-size: 22px; margin: 8px 0">The concierge faces your customers</h3>
+            <p style="font-size: 14px; color: var(--ink-2); margin: 0; max-width: 340px">
+              Answers your website visitors, grounded on your live data.
+            </p>
+          </div>
+          <span class="arrow">→</span>
+          <div>
+            <span class="mono" style="font-size: 12px; color: var(--ink-3)">Its twin — inward</span>
+            <h3 style="font-size: 22px; margin: 8px 0">The agentic line faces your team</h3>
+            <p style="font-size: 14px; color: var(--ink-2); margin: 0 0 12px; max-width: 340px">
+              Point the AI you already use at your own data over MCP.
+            </p>
+            <a class="btn btn-ai" href="#" style="padding: 10px 18px">Meet the agentic side →</a>
+          </div>
+        </div>
+        <p class="mono" style="font-size: 12px; color: var(--ink-3); margin: 16px 0 0; text-align: center">
+          Both tools · one $49 AI module
+        </p>
+      </div>
+    </section>
+
+    <!-- ── 8 · PRICING ─────────────────────────────────────────── -->
+    <section>
+      <div class="wrap">
+        <div class="price">
+          <div>
+            <div class="amt">$49<span style="font-size: 18px; color: var(--ink-3)">/mo</span></div>
+            <p style="font-size: 15px; color: var(--ink-2); margin: 12px 0 0; max-width: 560px">
+              One AI module, both tools: the customer-facing concierge <em>and</em> the agentic MCP
+              line for your own team. Bring your own key; you pay your provider for usage. Flat, on
+              one bill.
+            </p>
+          </div>
+          <div class="cluster">
+            <a class="btn btn-out" href="#">See all plans →</a>
+            <a class="btn btn-dark" href="#">Activate AI</a>
+          </div>
+        </div>
+        <p style="font-size: 13px; color: var(--ink-3); margin: 14px 0 0">
+          The chat widget itself is the Live Chat module ($19/mo): the surface your concierge lives
+          in, with your human staff inbox.
+        </p>
+      </div>
+    </section>
+
+    <!-- ── 9 · FAQ (abbreviated in mockup; full <Faq> in React) ── -->
+    <section class="band-surface">
+      <div class="wrap">
+        <h2 class="h2">Concierge questions<span class="spark">.</span></h2>
+        <p class="lede" style="margin-top: 16px">
+          BYOK, grounding, handoff, and how it fits your stack, answered straight.
+        </p>
+        <p style="color: var(--ink-3); margin-top: 24px">
+          [ Ported to the shared &lt;Faq&gt; component with FAQPage JSON-LD in React. ]
+        </p>
+      </div>
+    </section>
+
+    <!-- ── 10 · FINAL CTA (dark) ───────────────────────────────── -->
+    <section class="band-dark">
+      <div class="wrap">
+        <h2 class="display" style="max-width: 900px">
+          Put a concierge at your front door<span class="spark-w">.</span>
+        </h2>
+        <p class="lede" style="color: #a1a1aa; margin: 28px 0">
+          Connect your AI, write a greeting, and your customers get instant, grounded answers, with
+          a human always one step away. Turn it off any time. Your data stays.
+        </p>
+        <div class="cluster">
+          <a class="btn btn-ai" href="#">Turn on your concierge →</a>
+          <a class="btn btn-out" href="#" style="border-color: #2a2a2a; color: #fff">Read the setup guide</a>
+        </div>
+      </div>
+    </section>
+  </body>
+</html>
