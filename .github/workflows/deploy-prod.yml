@@ -70,7 +70,10 @@ jobs:
           IMAGE_BASE="$REGION-docker.pkg.dev/${{ env.PROJECT_ID }}/$AR_REPO"
           # Update only the Deployments that currently exist. Skipping unknown
           # services keeps the workflow green during phased rollouts.
-          for svc in web api-rest api-graphql api-mcp mcp-site dashboard workbench site market \
+          # dashboard decommissioned 2026-07-22 — the workbench replaced it at
+          # app.sparx.works. (The kubectl-get guard below would self-skip it once
+          # the Deployment is torn down, but drop it from the list too.)
+          for svc in web api-rest api-graphql api-mcp mcp-site workbench site market \
                      media-worker \
                      email-worker domain-worker dropship-worker billing-worker webhook-worker; do
             if kubectl get deployment "$svc" -n $NAMESPACE >/dev/null 2>&1; then

@@ -62,6 +62,10 @@ export async function projectProduct(
         },
         categoryLinks: { select: { categoryId: true } },
         collectionLinks: { select: { collectionId: true } },
+        // Product-option axes (Color, Size, …) → flat facet tokens. The values are the
+        // ones the product OFFERS across its options, so a "Color:Black" filter matches a
+        // product that has a Black variant.
+        options: { select: { name: true, values: { select: { value: true } } } },
         // Model B site scope (docs/49 §3) — which web properties this product is
         // visible on. Empty ⇒ global (all sites).
         propertyLinks: { select: { propertyId: true } },
@@ -131,6 +135,19 @@ export async function projectProduct(
       }
     }
 
+    // Flat "Name:Value" option tokens (Color:Black, Size:M) — the storefront facets on
+    // these and regroups the counts by the "Name:" prefix. Colons in a value would split
+    // the token, so guard against them (option values are short labels; a stray colon just
+    // gets stripped to keep the token parseable).
+    const optionFacets: string[] = [];
+    for (const opt of product.options) {
+      const name = opt.name.replace(/:/g, ' ').trim();
+      for (const val of opt.values) {
+        const value = val.value.replace(/:/g, ' ').trim();
+        if (name && value) optionFacets.push(`${name}:${value}`);
+      }
+    }
+
     const firstImageAssetId = product.images[0]?.mediaAssetId;
     let firstImageKey: string | undefined;
     if (firstImageAssetId) {
@@ -160,6 +177,7 @@ export async function projectProduct(
         product.collectionLinks.length > 0
           ? product.collectionLinks.map((l) => l.collectionId)
           : undefined,
+      option_facets: optionFacets.length > 0 ? optionFacets : undefined,
       // Model B (docs/49 §3): global products get the GLOBAL_SITE_SCOPE sentinel
       // so they match every site's storefront filter; scoped products carry their
       // property ids and match only those sites.

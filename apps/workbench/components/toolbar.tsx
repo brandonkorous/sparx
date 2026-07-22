@@ -29,8 +29,8 @@ import {
   NavbarEnd,
   NavbarStart,
   Tooltip,
-  useImperativeAlertDialog,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../lib/confirm';
 import {
   Check,
   ChevronDown,
@@ -43,7 +43,7 @@ import {
   Sun,
 } from 'lucide-react';
 import { signOut } from '@sparx/auth/client';
-import { Spark } from '@sparx/brand/react';
+import { Wordmark } from '@sparx/brand/react';
 import {
   switchSite,
   useFavorites,
@@ -88,7 +88,7 @@ export function Toolbar({
   onOpenLauncher,
 }: ToolbarProps) {
   const { controller } = useWorkbench();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const feedback = useFeedback();
   const { data: tenant } = useTenant();
   const { data: sites } = useSites();
@@ -138,8 +138,8 @@ export function Toolbar({
             centers on the SAME axis as its icons (x=24). Deliberately pinned to
             the COLLAPSED width: expanding the rail must not slide the brand
             mark sideways — it anchors the window, it isn't part of the rail. */}
-        <span className="flex w-12 shrink-0 justify-center">
-          <Spark className="size-5" aria-label="sparx" />
+        <span className="flex shrink-0 justify-center">
+          <Wordmark className="mx-2" size={38} aria-label="sparx" />
         </span>
 
         {/* Workspace — plain identity, not a control. The tenant is a fact of
@@ -203,7 +203,6 @@ export function Toolbar({
             swaps to the fill's content color on hover, and pinning the text
             breaks that contract into same-on-same. */}
         <Button
-          color="neutral"
           variant="ghost"
           size="sm"
           className="w-72 max-w-full justify-start gap-2 text-sm"
@@ -229,7 +228,6 @@ export function Toolbar({
 
         <Tooltip content={theme === 'light' ? 'Dark theme' : 'Light theme'}>
           <Button
-            color="neutral"
             variant="ghost"
             size="sm"
             shape="square"
@@ -247,13 +245,7 @@ export function Toolbar({
         <DropdownMenu>
           <Tooltip content={userName}>
             <DropdownMenuTrigger>
-              <Button
-                color="neutral"
-                variant="ghost"
-                size="sm"
-                shape="square"
-                aria-label={`Account — ${userName}`}
-              >
+              <Button variant="ghost" size="sm" shape="square" aria-label={`Account — ${userName}`}>
                 <Avatar size="xs" color="neutral" alt={userName}>
                   {initials(userName)}
                 </Avatar>
@@ -318,7 +310,6 @@ function StarButton({ surfaceKey, hasParams }: { surfaceKey: string | null; hasP
           silica Buttons drop pointer events when disabled, so wrap in a span. */}
       <span className="inline-flex">
         <Button
-          color="neutral"
           variant="ghost"
           size="sm"
           shape="square"

@@ -20,7 +20,6 @@ import {
   Plug,
   Settings,
   Shield,
-  Store,
   UserRound,
   Users,
 } from 'lucide-react';
@@ -36,7 +35,15 @@ import { TeamSurface } from '../../../surfaces/team';
 import { TeamMemberSurface } from '../../../surfaces/team/member';
 import { FeedbackListSurface } from '../../../surfaces/feedback/feedback-list';
 import { FeedbackThreadSurface } from '../../../surfaces/feedback/feedback-thread';
-import { stub } from './stub';
+import { NotificationsSurface } from '../../../surfaces/notifications/notifications';
+import { ModulesSurface } from '../../../surfaces/modules/modules-list';
+import { IndustrySurface } from '../../../surfaces/industry/industry';
+import { SampleDataSurface } from '../../../surfaces/sample-data/sample-data';
+import { IntegrationsListSurface } from '../../../surfaces/integrations/integrations-list';
+import { IntegrationDetailSurface } from '../../../surfaces/integrations/integration-detail';
+import { AiConnectionsSurface } from '../../../surfaces/ai-connections/ai-connections';
+import { SecuritySurface } from '../../../surfaces/security/security';
+import { PartnerAccessSurface } from '../../../surfaces/partner/partner-access';
 
 export const PLATFORM_SURFACES: SurfaceDefinition[] = [
   {
@@ -214,98 +221,116 @@ export const PLATFORM_SURFACES: SurfaceDefinition[] = [
     // is exactly what someone does when moving a site to a new domain.
     keywords: ['domain', 'dns', 'verify', 'connect'],
   },
-  stub({
+  {
     key: 'platform.settings.notifications',
     title: 'Notifications',
     module: 'platform',
     icon: Bell,
+    component: NotificationsSurface,
     section: 'Your business',
+    // One preferences record per account — a second copy is two editors racing
+    // to save the same settings.
+    singleton: true,
     order: 14,
     keywords: ['alerts', 'emails', 'digest'],
-    body: 'Choose what sparx tells you about, and whether it reaches you by email or only here.',
-  }),
+  },
 
   /* ── What sparx does ───────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'platform.settings.modules',
     title: 'Modules',
     module: 'platform',
     icon: Layers,
+    component: ModulesSurface,
     section: 'What sparx does',
+    // One list of everything switched on — a second copy shows the same state.
+    singleton: true,
     order: 20,
     keywords: ['features', 'turn on', 'activate', 'plan', 'add'],
-    body: 'Modules are the parts of sparx you have switched on. Turn one on and it appears in the rail; turn it off and it stops entirely.',
-  }),
-  stub({
+  },
+  {
     key: 'platform.settings.industry',
     title: 'Industry',
     module: 'platform',
     icon: Compass,
+    component: IndustrySurface,
     section: 'What sparx does',
+    // One line of work per business — a second copy is the same choice twice.
+    singleton: true,
     order: 21,
     keywords: ['vertical', 'trade', 'preset'],
-    body: 'Telling sparx what line of work you are in changes the wording and the starting setup to match it.',
-  }),
-  stub({
+  },
+  {
     key: 'platform.settings.sample-data',
     title: 'Sample data',
     module: 'platform',
     icon: FlaskConical,
+    component: SampleDataSurface,
     section: 'What sparx does',
+    // Account-wide status — a second copy shows the same counts and state.
+    singleton: true,
     order: 22,
     keywords: ['demo', 'test', 'example', 'seed'],
-    body: 'Fills your account with realistic made-up records so you can try things out before your real ones exist — and removes them again on request.',
-  }),
-  stub({
-    key: 'platform.marketplace',
-    title: 'Marketplace',
-    module: 'platform',
-    icon: Store,
-    section: 'What sparx does',
-    order: 23,
-    keywords: ['apps', 'add-ons', 'extensions', 'install'],
-    body: 'Extra tools built for sparx that you can add to your account.',
-  }),
-
+  },
   /* ── Connections & access ──────────────────────────────────────────────── */
-  stub({
+  {
     key: 'platform.settings.integrations',
     title: 'Integrations',
     module: 'platform',
     icon: Plug,
+    component: IntegrationsListSurface,
     section: 'Connections & access',
+    // One list of every connected service — a second copy is the same list.
+    singleton: true,
     order: 30,
-    keywords: ['connect', 'apps', 'accounting', 'shipping', 'sync'],
-    body: 'Connections to the other services you already use, so information moves between them and sparx on its own.',
-  }),
-  stub({
+    keywords: ['connect', 'apps', 'accounting', 'shipping', 'sync', 'payments', 'tax', 'carrier'],
+  },
+  {
+    // Unlisted: reached by opening a service from the list, or by Connect. Takes
+    // a {slug} to connect or an {id} to manage, so a launcher entry would have
+    // nothing to open.
+    key: 'platform.settings.integration',
+    title: 'Connection',
+    module: 'platform',
+    icon: Plug,
+    component: IntegrationDetailSurface,
+    listed: false,
+    keywords: ['connect', 'integration', 'provider'],
+  },
+  {
     key: 'platform.settings.ai',
     title: 'AI connections',
     module: 'platform',
     icon: KeyRound,
+    component: AiConnectionsSurface,
     section: 'Connections & access',
+    // One set of AI credentials per account — a second copy shows the same keys.
+    singleton: true,
     order: 31,
-    keywords: ['openai', 'anthropic', 'api key', 'byok', 'mcp'],
-    body: 'sparx never uses AI on your behalf without your own account. This is where you add the AI service you pay for, so the AI features can use it.',
-  }),
-  stub({
+    keywords: ['openai', 'anthropic', 'api key', 'byok', 'mcp', 'claude', 'ai account'],
+  },
+  {
     key: 'platform.settings.partner',
     title: 'Partner access',
     module: 'platform',
     icon: Handshake,
+    component: PartnerAccessSurface,
     section: 'Connections & access',
+    // One roster of who can reach the account — a second copy is the same list.
+    singleton: true,
     order: 32,
     keywords: ['agency', 'consultant', 'delegate'],
-    body: 'Lets an agency or consultant you trust work inside your account, with access you can withdraw at any time.',
-  }),
-  stub({
+  },
+  {
     key: 'platform.settings.security',
     title: 'Security',
     module: 'platform',
     icon: Shield,
+    component: SecuritySurface,
     section: 'Connections & access',
+    // One account's sign-in state — a second copy shows the same sessions.
+    singleton: true,
     order: 33,
     keywords: ['password', 'sessions', 'audit', 'login', '2fa'],
-    body: 'Sign-in rules, the devices currently signed in, and a record of who did what.',
-  }),
+  },
 ];

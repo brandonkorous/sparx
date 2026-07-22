@@ -43,9 +43,9 @@ import {
   Input,
   NativeSelect,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Archive, MapPin, Save, Warehouse } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -180,7 +180,7 @@ function LocationEditor({
   existing: Location | null;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const isNew = id === 'new';
 
   const create = useCreateLocation();

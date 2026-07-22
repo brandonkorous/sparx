@@ -245,10 +245,13 @@ interface PoLineLite {
   unitCostCents: number;
 }
 
-/** Post one received line: ledger movement (moving-average), receipt-line row,
- *  PO-line received bump, optional lot — plus, for any damaged-on-arrival units,
- *  the receive/damage write-off pair. Returns the post-commit event(s): one for
- *  the good arrival, and (when damaged > 0) two more for the damaged pair. */
+/** Post one received line: for any GOOD units, a ledger `receive` movement
+ *  (moving-average), the PO-line received bump, and an optional lot; for any
+ *  damaged-on-arrival units, the receive/damage write-off pair. A total-loss line
+ *  (good = 0, damaged > 0) skips the good movement, PO credit, and lot entirely —
+ *  only the damaged pair is written, so nothing joins sellable stock and the PO
+ *  stays open. Returns the post-commit event(s): one for the good arrival (when
+ *  good > 0), and (when damaged > 0) two more for the damaged pair. */
 async function applyReceiptLine(
   tx: TxClient,
   ctx: ServiceContext,
@@ -267,66 +270,88 @@ async function applyReceiptLine(
 ): Promise<ReceiptEvent[]> {
   const { receiptId, warehouseId, poLine, input } = params;
   const unitCostCents = input.unitCostCents ?? poLine.unitCostCents;
+  const good = input.quantity;
   const damaged = input.quantityDamaged ?? 0;
   const actorType = resolveActorType(ctx);
 
+  // A line must record SOME arrival. The schema already rejects a good=0 &&
+  // damaged=0 line; this is the defensive backstop so a bad caller can never
+  // write an empty receipt line or a zero-delta movement.
+  if (good <= 0 && damaged <= 0) {
+    throw new InventoryValidationError(
+      'A receipt line must record at least one unit received or damaged',
+      [{ field: 'lines', message: `line ${poLine.id} records no units` }]
+    );
+  }
+
+  // A lot traces SELLABLE stock, so it only belongs on a line with good units.
+  // On a fully-damaged (zero-good) line there is nothing to trace, so any lot
+  // code is dropped rather than minting an empty batch.
+  const lotNumber = good > 0 ? (input.lotNumber ?? null) : null;
+
   // The receipt line records the GOOD units only — `quantityReceived` is what
-  // became sellable stock. Damaged units are ledger-only (no receipt-line column).
+  // became sellable stock (0 on a total-loss line). Damaged units are ledger-only
+  // (no receipt-line column). The row always exists so the receipt shows the line
+  // and the damaged movements below have a stable id to key their idempotency on.
   const line = await tx.goodsReceiptLine.create({
     data: {
       tenantId: ctx.tenantId,
       goodsReceiptId: receiptId,
       purchaseOrderLineId: poLine.id,
       variantId: poLine.variantId,
-      quantityReceived: input.quantity,
+      quantityReceived: good,
       unitCostCents,
-      lotNumber: input.lotNumber ?? null,
+      lotNumber,
     },
     select: { id: true },
   });
 
-  const result = await applyMovement(tx, {
-    tenantId: ctx.tenantId,
-    variantId: poLine.variantId,
-    warehouseId,
-    delta: input.quantity,
-    reason: 'receive',
-    referenceType: 'GoodsReceipt',
-    referenceId: receiptId,
-    unitCostCents,
-    actorType,
-    actorId: ctx.userId ?? null,
-    idempotencyKey: `goods-receipt:${line.id}`,
-  });
-  if (result.movementId) {
-    await tx.goodsReceiptLine.update({
-      where: { id: line.id },
-      data: { movementId: result.movementId },
+  const events: ReceiptEvent[] = [];
+
+  // GOOD units — only when some arrived. A total-loss line writes NO good
+  // `receive` movement (so the moving-average is untouched — nothing costed came
+  // in as sellable), credits the PO line by 0 (the supplier still owes the whole
+  // line, so the PO stays open), and attaches no lot.
+  if (good > 0) {
+    const result = await applyMovement(tx, {
+      tenantId: ctx.tenantId,
+      variantId: poLine.variantId,
+      warehouseId,
+      delta: good,
+      reason: 'receive',
+      referenceType: 'GoodsReceipt',
+      referenceId: receiptId,
+      unitCostCents,
+      actorType,
+      actorId: ctx.userId ?? null,
+      idempotencyKey: `goods-receipt:${line.id}`,
+    });
+    if (result.movementId) {
+      await tx.goodsReceiptLine.update({
+        where: { id: line.id },
+        data: { movementId: result.movementId },
+      });
+    }
+
+    // Only GOOD units are credited against the PO line — damaged units leave the
+    // supplier owing the shortfall, so the PO stays open for them.
+    await tx.purchaseOrderLine.update({
+      where: { id: poLine.id },
+      data: { quantityReceived: { increment: good } },
+    });
+
+    if (lotNumber) {
+      await upsertLot(tx, ctx.tenantId, poLine.variantId, warehouseId, lotNumber, good);
+    }
+
+    events.push({
+      variantId: poLine.variantId,
+      warehouseId,
+      result,
+      delta: good,
+      reason: 'receive',
     });
   }
-
-  // Only GOOD units are credited against the PO line — damaged units leave the
-  // supplier owing the shortfall, so the PO stays open for them.
-  await tx.purchaseOrderLine.update({
-    where: { id: poLine.id },
-    data: { quantityReceived: { increment: input.quantity } },
-  });
-
-  // A lot traces sellable stock, so it accrues the good units only.
-  if (input.lotNumber) {
-    await upsertLot(
-      tx,
-      ctx.tenantId,
-      poLine.variantId,
-      warehouseId,
-      input.lotNumber,
-      input.quantity
-    );
-  }
-
-  const events: ReceiptEvent[] = [
-    { variantId: poLine.variantId, warehouseId, result, delta: input.quantity, reason: 'receive' },
-  ];
 
   // Damaged-on-arrival: two ledger facts in the same transaction. First the units
   // truthfully arrive (`receive` + at the same landed cost, so the moving-average

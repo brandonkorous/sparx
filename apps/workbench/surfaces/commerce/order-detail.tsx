@@ -28,9 +28,9 @@ import {
   Button,
   Heading,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { ExternalLink, Ban } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
@@ -177,7 +177,7 @@ function OrderIdentity({ order, siteName }: { order: Order; siteName: string | n
 export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const { data: order, isPending, isError, refetch } = useOrder(id);
   const { data: sites } = useSites();

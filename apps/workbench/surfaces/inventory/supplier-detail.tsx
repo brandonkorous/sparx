@@ -42,9 +42,9 @@ import {
   Input,
   Textarea,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Archive, ClipboardList, Plus, Save, Star, Trash2, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -185,7 +185,7 @@ function PurchasingLinks({
   currency: string;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const lookup = useVariantLookup();
   const upsert = useUpsertSupplierVariant(supplierId);
   const remove = useRemoveSupplierVariant(supplierId);
@@ -518,7 +518,7 @@ export function SupplierDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const isNew = id === 'new';
 
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const supplier = useSupplier(id);
   const create = useCreateSupplier();
   const update = useUpdateSupplier(id);

@@ -20,9 +20,12 @@ export {
 } from './time';
 export {
   type ResourceAvailability,
+  type ResourceOverride,
   type SlotComputationInput,
   type ComputedSlot,
   resourceFreeIntervals,
+  parseCustomHoursMeta,
+  buildResourceOverrides,
   computeSlots,
   getAvailability,
 } from './availability';

@@ -31,6 +31,7 @@ import {
 import { Archive, Plus, Truck } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { WelcomeEmptyState } from '../../components/welcome-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { supplierState, supplierTerms, useSuppliers } from './suppliers-data';
@@ -92,6 +93,18 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
     }
 
     if (rows.length === 0) {
+      const addSupplier = (
+        <Button
+          size="sm"
+          color="module"
+          onClick={() => {
+            ctx.open('inventory.suppliers.detail', { id: 'new' }, { target: 'tab' });
+          }}
+        >
+          <Plus className="size-4" aria-hidden />
+          New supplier
+        </Button>
+      );
       if (searching) {
         return (
           <EmptyState
@@ -101,27 +114,24 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         );
       }
+      // "No active suppliers" is a FILTER state — there are retired ones hidden —
+      // not first-run, so it keeps the plain glyph. Only a genuinely empty book
+      // (archived included and still none) earns the mascot welcome.
+      if (!includeArchived) {
+        return (
+          <EmptyState
+            icon={<Truck className="size-6" aria-hidden />}
+            title="No active suppliers"
+            description="Every supplier you buy from is retired, or you have not added one yet. Add a supplier to start ordering stock, or include archived ones to see retired records."
+            actions={addSupplier}
+          />
+        );
+      }
       return (
-        <EmptyState
-          icon={<Truck className="size-6" aria-hidden />}
-          title={includeArchived ? 'No suppliers yet' : 'No active suppliers'}
-          description={
-            includeArchived
-              ? 'A supplier is a business you buy stock from. Add your first one and you can raise purchase orders against it.'
-              : 'Every supplier you buy from is retired, or you have not added one yet. Add a supplier to start ordering stock, or include archived ones to see retired records.'
-          }
-          actions={
-            <Button
-              size="sm"
-              color="module"
-              onClick={() => {
-                ctx.open('inventory.suppliers.detail', { id: 'new' }, { target: 'tab' });
-              }}
-            >
-              <Plus className="size-4" aria-hidden />
-              New supplier
-            </Button>
-          }
+        <WelcomeEmptyState
+          title="No suppliers yet"
+          description="A supplier is a business you buy stock from. Add your first one and you can raise purchase orders against it."
+          actions={addSupplier}
         />
       );
     }
@@ -256,10 +266,11 @@ export function SuppliersListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      {/* Capped and centred, base-100 card lifted off the recessed pane. */}
-      <Card className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</Card>
+      {/* Full width — base-100 card lifted off the recessed pane. Matches the
+          house list convention: the table fills the pane. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
-      <div className="mx-auto w-full max-w-5xl shrink-0">
+      <div className="shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

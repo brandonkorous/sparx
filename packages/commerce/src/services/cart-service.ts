@@ -122,7 +122,7 @@ export async function claim(
   await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
       where: { id: input.cartId },
-      select: { id: true, customerId: true, channel: true, currency: true },
+      select: { id: true, customerId: true, channel: true, currency: true, propertyId: true },
     });
     if (!cart || cart.customerId) return;
     await tx.cart.update({
@@ -185,6 +185,7 @@ export async function addItem(
         channel: true,
         currency: true,
         customerId: true,
+        propertyId: true,
         customer: { select: { b2bAccountId: true } },
       },
     });
@@ -235,6 +236,9 @@ export async function addItem(
       customerId: cart.customerId ?? undefined,
       b2bAccountId,
       customerSegmentIds: [],
+      // Site the cart is on (docs/131 §4) — so a sibling business's price list can't
+      // price this line.
+      ...(cart.propertyId ? { propertyId: cart.propertyId } : {}),
     });
 
     // Configurator price adjustments are layered on top of the resolved
@@ -545,6 +549,7 @@ export async function merge(
       channel: target.channel,
       currency: target.currency,
       customerId: target.customerId,
+      propertyId: target.propertyId,
     });
 
     await writeAuditLog({
@@ -585,7 +590,7 @@ export async function repriceCart(ctx: ServiceContext, cartId: string): Promise<
   await withTenant(ctx, async (tx) => {
     const cart = await tx.cart.findFirst({
       where: { id: cartId },
-      select: { id: true, channel: true, currency: true, customerId: true },
+      select: { id: true, channel: true, currency: true, customerId: true, propertyId: true },
     });
     if (!cart) throw new CommerceNotFoundError('Cart', cartId);
     await repriceItems(tx, ctx, cart);
@@ -795,7 +800,13 @@ async function loadCart(tx: TxClient, cartId: string): Promise<CartWithRelations
 async function repriceItems(
   tx: TxClient,
   ctx: ServiceContext,
-  cart: { id: string; channel: string; currency: string; customerId: string | null }
+  cart: {
+    id: string;
+    channel: string;
+    currency: string;
+    customerId: string | null;
+    propertyId: string | null;
+  }
 ): Promise<void> {
   const items = await tx.cartItem.findMany({
     where: { cartId: cart.id },
@@ -824,6 +835,8 @@ async function repriceItems(
       customerId: cart.customerId ?? undefined,
       b2bAccountId,
       customerSegmentIds: [],
+      // Site the cart is on (docs/131 §4) — scopes the eligible price lists.
+      ...(cart.propertyId ? { propertyId: cart.propertyId } : {}),
     });
     // Configurator lines layer a fixed add-on adjustment on top of the
     // resolved base price (see addItem) — preserve it across a reprice.

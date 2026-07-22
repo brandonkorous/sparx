@@ -68,9 +68,9 @@ import {
   Input,
   Select,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { ChevronRight, CornerDownLeft, Layers, Plus, Puzzle, Trash2 } from 'lucide-react';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -486,7 +486,7 @@ function FitmentBody({
 }) {
   const productId = scope.productId;
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const fitment = useProductFitment(productId);
   const domainsQuery = useFitmentDomains();

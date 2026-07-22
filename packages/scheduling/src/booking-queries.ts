@@ -160,6 +160,14 @@ export async function getCalendar(
     resourceId?: string;
     serviceId?: string;
     includeReleased?: boolean;
+    /** The active site(s) the diary is scoped to; undefined = every site (an
+     *  unrestricted caller who asked for `?property=all`). A diary must not merge
+     *  two businesses' bookings — see "site IS the business". A booking's
+     *  `propertyId` is denormalized from its service and is only stamped once a
+     *  tenant runs MORE than one site, so a single-site tenant's bookings are all
+     *  null-property: the filter is "this site OR unscoped" (see below), not a bare
+     *  `IN`, so scoping never hides a single-site tenant's whole diary. */
+    propertyIds?: string[];
   }
 ): Promise<CalendarEvent[]> {
   const from = new Date(range.from);
@@ -170,6 +178,12 @@ export async function getCalendar(
         deletedAt: null,
         startAt: { lt: to },
         endAt: { gt: from },
+        // Active-site OR unscoped: a multi-site tenant's other businesses (their own
+        // non-null propertyId) drop out, while single-site / genuinely-shared
+        // (null-property) bookings always stay on the diary.
+        ...(range.propertyIds
+          ? { OR: [{ propertyId: { in: range.propertyIds } }, { propertyId: null }] }
+          : {}),
         ...(range.includeReleased ? {} : { status: { notIn: ['cancelled', 'no_show'] } }),
         ...(range.resourceId ? { resources: { some: { resourceId: range.resourceId } } } : {}),
         ...(range.serviceId ? { serviceId: range.serviceId } : {}),

@@ -41,9 +41,9 @@ import {
   Switch,
   Text,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
 import { Globe2, Link2Off, ServerCrash, Store } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -88,7 +88,7 @@ function listingState(listing: ChannelListing): {
 
 function ListingRow({ listing, productId }: { listing: ChannelListing; productId: string }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const setSync = useSetListingSync(productId);
   const unlink = useUnlinkListing(productId);
 

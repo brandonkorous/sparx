@@ -50,9 +50,9 @@ import {
   Input,
   Select,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Building2, Plus, ServerCrash, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -384,7 +384,7 @@ function TradePricingBody({
   productId: string;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const removeTier = useRemoveTierOverride(productId);
   const removeAccount = useRemoveAccountOverride(productId);
   const removeContract = useRemoveContractPrice(productId);

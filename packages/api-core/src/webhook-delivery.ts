@@ -24,6 +24,7 @@ import { createHmac } from 'node:crypto';
 import type { FastifyBaseLogger } from 'fastify';
 import type { Prisma, TxClient } from '@sparx/db';
 import { prisma, withTenant } from '@sparx/db';
+import { decryptWebhookSecret } from './webhook-secret-crypto.js';
 
 const WEBHOOK_DELIVERY_LOCK_KEY = ADVISORY_LOCKS.WEBHOOK_DELIVERY;
 const DEFAULT_INTERVAL_MS = 30_000;
@@ -134,7 +135,10 @@ async function attempt(row: PendingDelivery, logger: FastifyBaseLogger): Promise
     data: row.payload,
     delivered_at: new Date().toISOString(),
   });
-  const signature = createHmac('sha256', row.signing_secret).update(body).digest('hex');
+  // signing_secret comes off the row encrypted at rest (enc: bundle); decrypt
+  // to the raw whsec_ key before signing. Tolerant of legacy plaintext rows.
+  const signingSecret = decryptWebhookSecret(row.signing_secret);
+  const signature = createHmac('sha256', signingSecret).update(body).digest('hex');
 
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);

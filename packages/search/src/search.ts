@@ -95,7 +95,8 @@ export async function searchProducts(
     query_by_weights: '4,2,3,2,2',
     filter_by: buildProductFilter(input),
     facet_by:
-      input.facetBy ?? 'vendor,product_type,tags,fitment_makes,fitment_models,fitment_engines',
+      input.facetBy ??
+      'vendor,product_type,tags,option_facets,fitment_makes,fitment_models,fitment_engines',
     sort_by: input.sortBy ?? '_text_match:desc,best_seller_rank:asc,updated_at:desc',
     page: input.page ?? 1,
     per_page: input.perPage ?? 24,

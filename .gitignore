@@ -77,3 +77,8 @@ apps/dashboard/_marketplace-assets.mjs
 # regenerated automatically. They are ~duplicates of the .ai (multi-MB) and must
 # never be versioned.
 ~ai-*.tmp
+
+# Playwright/workbench auth-state saves (session tokens — never commit).
+# `.playwright-cli/` is already ignored; this covers custom state-save paths.
+wb-auth.json
+*-auth.json

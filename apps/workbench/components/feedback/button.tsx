@@ -28,7 +28,6 @@ export function FeedbackButton() {
   return (
     <Tooltip content={hasUnread ? `${label} — Shift-click to open alongside` : label}>
       <Button
-        color="neutral"
         variant="ghost"
         size="sm"
         shape="square"

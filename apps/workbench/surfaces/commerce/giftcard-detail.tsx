@@ -27,9 +27,9 @@ import {
   Select,
   Text,
   Textarea,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Minus, Plus } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -50,7 +50,13 @@ import {
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
-const CURRENCIES = { USD: 'US dollars', EUR: 'Euros', GBP: 'British pounds', CAD: 'Canadian dollars', AUD: 'Australian dollars' };
+const CURRENCIES = {
+  USD: 'US dollars',
+  EUR: 'Euros',
+  GBP: 'British pounds',
+  CAD: 'Canadian dollars',
+  AUD: 'Australian dollars',
+};
 
 function dollarsToCents(value: string): number | undefined {
   const trimmed = value.trim();
@@ -204,7 +210,9 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
                   aria-label="Currency"
                   value={currency}
                   items={CURRENCIES}
-                  onValueChange={setCurrency}
+                  onValueChange={(next) => {
+                    setCurrency(next as string);
+                  }}
                 />
                 <FieldDescription>
                   A card can only be spent on orders in the same currency.
@@ -266,7 +274,10 @@ function IssueGiftCard({ ctx }: { ctx: SurfaceContext }) {
             </Field>
           </FormSection>
 
-          <FormSection title="Expiry (optional)" description="Leave empty for a card that never expires.">
+          <FormSection
+            title="Expiry (optional)"
+            description="Leave empty for a card that never expires."
+          >
             <Field>
               <FieldLabel>Expires on</FieldLabel>
               <FieldControl
@@ -354,7 +365,7 @@ function ManageGiftCard({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 
 function GiftCardBody({ card }: { card: GiftCardDetail }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const adjust = useAdjustGiftCard();
 
   const [amount, setAmount] = useState('');

@@ -46,7 +46,6 @@ import {
   Warehouse,
 } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
-import { cell, createEntityListSurface } from '../../../surfaces/entity-list';
 import { OrderDetailSurface } from '../../../surfaces/commerce/order-detail';
 import { OrdersListSurface } from '../../../surfaces/commerce/orders-list';
 import { ProductDetailSurface } from '../../../surfaces/commerce/product-detail';
@@ -72,13 +71,35 @@ import { CheckoutSessionsListSurface } from '../../../surfaces/commerce/checkout
 import { CheckoutSessionDetailSurface } from '../../../surfaces/commerce/checkout-detail';
 import { SubscriptionsListSurface } from '../../../surfaces/commerce/subscriptions-list';
 import { SubscriptionDetailSurface } from '../../../surfaces/commerce/subscription-detail';
+import { ReviewsListSurface } from '../../../surfaces/commerce/reviews-list';
 import { ReviewsQueueSurface } from '../../../surfaces/commerce/reviews-queue';
+import { QaListSurface } from '../../../surfaces/commerce/qa-list';
 import { QaQueueSurface } from '../../../surfaces/commerce/qa-queue';
 import { WishlistsSurface } from '../../../surfaces/commerce/wishlists';
 import { ChannelsSurface } from '../../../surfaces/commerce/channels';
 import { MarketSurface } from '../../../surfaces/commerce/market';
-import { stub } from './stub';
-import { type NamedRow } from './rows';
+import { DiscountsListSurface } from '../../../surfaces/commerce/discounts-list';
+import { DiscountDetailSurface } from '../../../surfaces/commerce/discount-detail';
+import { GiftCardsListSurface } from '../../../surfaces/commerce/giftcards-list';
+import { GiftCardDetailSurface } from '../../../surfaces/commerce/giftcard-detail';
+import { AccountCreditSurface } from '../../../surfaces/commerce/account-credit';
+import { BundlesListSurface } from '../../../surfaces/commerce/bundles-list';
+import { BundleDetailSurface } from '../../../surfaces/commerce/bundle-detail';
+import { ConfiguratorListSurface } from '../../../surfaces/commerce/configurator-list';
+import { ConfiguratorTemplateDetailSurface } from '../../../surfaces/commerce/configurator-template-detail';
+import { ShippingSurface } from '../../../surfaces/commerce/shipping';
+import { ShippingZoneDetailSurface } from '../../../surfaces/commerce/shipping-zone-detail';
+import { ShippingProfileDetailSurface } from '../../../surfaces/commerce/shipping-profile-detail';
+import { TaxSurface } from '../../../surfaces/commerce/tax';
+import { TaxZoneDetailSurface } from '../../../surfaces/commerce/tax-zone-detail';
+import { PaymentProvidersSurface } from '../../../surfaces/commerce/payment-providers';
+import { PaymentProviderDetailSurface } from '../../../surfaces/commerce/payment-provider-detail';
+import { ReportsSurface } from '../../../surfaces/commerce/reports';
+import { CommerceSettingsSurface } from '../../../surfaces/commerce/commerce-settings';
+import { PriceListsListSurface } from '../../../surfaces/commerce/price-lists-list';
+import { PriceListDetailSurface } from '../../../surfaces/commerce/price-list-detail';
+import { FitmentListSurface } from '../../../surfaces/commerce/fitment-list';
+import { FitmentDomainDetailSurface } from '../../../surfaces/commerce/fitment-domain-detail';
 
 export const COMMERCE_SURFACES: SurfaceDefinition[] = [
   {
@@ -289,7 +310,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     component: CategoryDetailSurface,
     listed: false,
   },
-  stub({
+  {
     key: 'commerce.bundles.list',
     title: 'Bundles',
     module: 'commerce',
@@ -297,9 +318,17 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Catalog',
     order: 13,
     keywords: ['kits', 'packages', 'sets'],
-    body: 'Bundles sell several products together as one item, usually for less than buying them separately.',
-  }),
-  stub({
+    component: BundlesListSurface,
+  },
+  {
+    key: 'commerce.bundle.detail',
+    title: 'Bundle',
+    module: 'commerce',
+    icon: Blocks,
+    component: BundleDetailSurface,
+    listed: false,
+  },
+  {
     key: 'commerce.fitment.list',
     title: 'Fitment',
     module: 'commerce',
@@ -307,9 +336,19 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Catalog',
     order: 14,
     keywords: ['compatibility', 'fits', 'vehicles', 'models'],
-    body: 'Fitment records which products work with which machines or models, so shoppers only see parts that fit.',
-  }),
-  stub({
+    component: FitmentListSurface,
+    createSurface: 'commerce.fitment.domain.detail',
+    createLabel: 'New compatibility list',
+  },
+  {
+    key: 'commerce.fitment.domain.detail',
+    title: 'Compatibility list',
+    module: 'commerce',
+    icon: Puzzle,
+    component: FitmentDomainDetailSurface,
+    listed: false,
+  },
+  {
     key: 'commerce.configurator.list',
     title: 'Configurator',
     module: 'commerce',
@@ -317,20 +356,38 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Catalog',
     order: 15,
     keywords: ['options', 'custom', 'build'],
-    body: 'The configurator lets a shopper build a product to order by choosing options step by step.',
-  }),
+    component: ConfiguratorListSurface,
+  },
+  {
+    key: 'commerce.configurator-template.detail',
+    title: 'Build template',
+    module: 'commerce',
+    icon: Settings2,
+    component: ConfiguratorTemplateDetailSurface,
+    listed: false,
+  },
 
   /* ── Pricing ───────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'commerce.pricing.list',
-    title: 'Pricing',
+    title: 'Price lists',
     module: 'commerce',
     icon: Tag,
     section: 'Pricing',
     order: 20,
-    keywords: ['price lists', 'rules', 'markup'],
-    body: 'Pricing sets what you charge, including rules that change a price for certain customers or quantities.',
-  }),
+    keywords: ['price lists', 'trade', 'wholesale', 'rules'],
+    component: PriceListsListSurface,
+    createSurface: 'commerce.pricelist.detail',
+    createLabel: 'Add a price list',
+  },
+  {
+    key: 'commerce.pricelist.detail',
+    title: 'Price list',
+    module: 'commerce',
+    icon: Tag,
+    component: PriceListDetailSurface,
+    listed: false,
+  },
   {
     key: 'commerce.discounts.list',
     title: 'Discounts',
@@ -339,16 +396,15 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Pricing',
     order: 21,
     keywords: ['promotions', 'coupons', 'sale'],
-    component: createEntityListSurface<NamedRow>({
-      path: '/v1/commerce/discounts',
-      queryKey: ['commerce', 'discounts'],
-      rowId: (row) => row.id,
-      searchPlaceholder: 'Search discounts…',
-      emptyTitle: 'No discounts yet',
-      emptyBody: 'Discounts reduce the price at checkout, automatically or with a code.',
-      emptyIcon: Percent,
-      columns: [{ key: 'name', header: 'Name', render: (row) => cell.text(row.name ?? row.title) }],
-    }),
+    component: DiscountsListSurface,
+  },
+  {
+    key: 'commerce.discount.detail',
+    title: 'Discount',
+    module: 'commerce',
+    icon: Percent,
+    component: DiscountDetailSurface,
+    listed: false,
   },
   {
     key: 'commerce.giftcards.list',
@@ -357,18 +413,17 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     icon: Ticket,
     section: 'Pricing',
     order: 22,
-    component: createEntityListSurface<NamedRow>({
-      path: '/v1/commerce/gift-cards',
-      queryKey: ['commerce', 'gift-cards'],
-      rowId: (row) => row.id,
-      searchPlaceholder: 'Search gift cards…',
-      emptyTitle: 'No gift cards yet',
-      emptyBody: 'Gift cards let customers pre-pay an amount someone else can spend.',
-      emptyIcon: Ticket,
-      columns: [{ key: 'name', header: 'Name', render: (row) => cell.text(row.name ?? row.title) }],
-    }),
+    component: GiftCardsListSurface,
   },
-  stub({
+  {
+    key: 'commerce.giftcard.detail',
+    title: 'Gift card',
+    module: 'commerce',
+    icon: Ticket,
+    component: GiftCardDetailSurface,
+    listed: false,
+  },
+  {
     key: 'commerce.account-credit.list',
     title: 'Account credit',
     module: 'commerce',
@@ -376,8 +431,10 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Pricing',
     order: 23,
     keywords: ['store credit', 'balance'],
-    body: 'Account credit is money you put on a customer’s account for them to spend with you later.',
-  }),
+    // One self-contained pane: master list + in-pane customer panel (balance,
+    // grant form, ledger). No detail key — you grant with the balance in view.
+    component: AccountCreditSurface,
+  },
 
   /* ── In progress ───────────────────────────────────────────────────────── */
   {
@@ -455,24 +512,54 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     listed: false,
   },
   {
+    // The scalable moderation TABLE — the primary, nav-listed reviews surface.
+    // A card stack is unmanageable at hundreds of items a day, so triage, scan,
+    // sort, filter and bulk decisions live here; the one-at-a-time card flow is
+    // the `.queue` surface below, reached from this table's toolbar and rows.
     key: 'commerce.reviews.list',
     title: 'Reviews',
     module: 'commerce',
     icon: Star,
     section: 'After the sale',
     order: 41,
-    keywords: ['ratings', 'feedback', 'stars'],
-    component: ReviewsQueueSurface,
+    keywords: ['ratings', 'feedback', 'stars', 'moderation', 'queue'],
+    component: ReviewsListSurface,
   },
   {
+    // The heads-down card flow: the backlog one review at a time, inline reply +
+    // show/hide/delete, kept for focused moderation. Opened from the table — at
+    // the top of the backlog via "Work the queue", or focused on one review via
+    // a row click ({ focusId }). Not launcher-listed: it is reached THROUGH the
+    // table, never opened cold.
+    key: 'commerce.reviews.queue',
+    title: 'Reviews queue',
+    module: 'commerce',
+    icon: Star,
+    besideWidth: 0.4,
+    component: ReviewsQueueSurface,
+    listed: false,
+  },
+  {
+    // The scalable moderation TABLE for Q&A — the primary, nav-listed surface.
     key: 'commerce.qa.list',
     title: 'Questions & answers',
     module: 'commerce',
     icon: HelpCircle,
     section: 'After the sale',
     order: 42,
-    keywords: ['qa', 'questions', 'support'],
+    keywords: ['qa', 'questions', 'support', 'moderation', 'queue'],
+    component: QaListSurface,
+  },
+  {
+    // The heads-down Q&A card flow — the two-step answer-then-show semantics kept
+    // verbatim. Opened from the table's "Work the queue" or a focused row click.
+    key: 'commerce.qa.queue',
+    title: 'Questions queue',
+    module: 'commerce',
+    icon: HelpCircle,
+    besideWidth: 0.4,
     component: QaQueueSurface,
+    listed: false,
   },
   {
     key: 'commerce.wishlists.list',
@@ -506,7 +593,7 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     keywords: ['marketplace', 'listing'],
     component: MarketSurface,
   },
-  stub({
+  {
     key: 'commerce.shipping.list',
     title: 'Shipping',
     module: 'commerce',
@@ -514,9 +601,27 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Selling',
     order: 52,
     keywords: ['delivery', 'rates', 'carriers', 'postage'],
-    body: 'Shipping decides what delivery options a shopper sees and what each one costs them.',
-  }),
-  stub({
+    component: ShippingSurface,
+    createSurface: 'commerce.shipping.zone.detail',
+    createLabel: 'Add a delivery region',
+  },
+  {
+    key: 'commerce.shipping.zone.detail',
+    title: 'Delivery region',
+    module: 'commerce',
+    icon: Truck,
+    component: ShippingZoneDetailSurface,
+    listed: false,
+  },
+  {
+    key: 'commerce.shipping.profile.detail',
+    title: 'Delivery profile',
+    module: 'commerce',
+    icon: Truck,
+    component: ShippingProfileDetailSurface,
+    listed: false,
+  },
+  {
     key: 'commerce.tax.list',
     title: 'Tax',
     module: 'commerce',
@@ -524,11 +629,21 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Selling',
     order: 53,
     keywords: ['vat', 'sales tax', 'gst'],
-    body: 'Tax settings decide how much tax is added at checkout, based on what you sell and where you sell it.',
-  }),
+    component: TaxSurface,
+    createSurface: 'commerce.tax.zone.detail',
+    createLabel: 'Add a place',
+  },
+  {
+    key: 'commerce.tax.zone.detail',
+    title: 'Tax place',
+    module: 'commerce',
+    icon: Banknote,
+    component: TaxZoneDetailSurface,
+    listed: false,
+  },
 
   /* ── Reporting / Setup ─────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'commerce.reports',
     title: 'Reports',
     module: 'commerce',
@@ -536,9 +651,19 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Reporting',
     order: 60,
     keywords: ['analytics', 'sales report', 'revenue'],
-    body: 'Reports show how selling is going — revenue over time, best sellers, and where sales come from.',
-  }),
-  stub({
+    // Not a singleton on purpose: each instance owns its own date range, so two
+    // side by side is a real comparison, not a duplicate.
+    component: ReportsSurface,
+  },
+  {
+    key: 'commerce.provider.detail',
+    title: 'Payment provider',
+    module: 'commerce',
+    icon: Plug,
+    component: PaymentProviderDetailSurface,
+    listed: false,
+  },
+  {
     key: 'commerce.providers',
     title: 'Payment providers',
     module: 'commerce',
@@ -546,9 +671,9 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Setup',
     order: 70,
     keywords: ['stripe', 'paypal', 'gateway', 'payments'],
-    body: 'Payment providers are the services that actually take a customer’s money and pass it to you.',
-  }),
-  stub({
+    component: PaymentProvidersSurface,
+  },
+  {
     key: 'commerce.settings',
     title: 'Selling settings',
     module: 'commerce',
@@ -556,6 +681,8 @@ export const COMMERCE_SURFACES: SurfaceDefinition[] = [
     section: 'Setup',
     order: 71,
     keywords: ['configuration', 'options'],
-    body: 'The rules that apply to every sale — currency, checkout behaviour, and what a customer must provide.',
-  }),
+    // A second copy is meaningless — there is one set of selling settings.
+    singleton: true,
+    component: CommerceSettingsSurface,
+  },
 ];

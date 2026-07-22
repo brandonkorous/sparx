@@ -33,6 +33,7 @@ import {
 import { Cable, FileSpreadsheet, Link2, Plus, Server } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -136,22 +137,24 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
 
     if (rows.length === 0) {
       return (
-        <EmptyState
-          icon={<Link2 className="size-6" aria-hidden />}
-          title={narrowed ? 'Nothing matches that' : 'No stock sources yet'}
-          description={
-            narrowed
-              ? 'Try part of a source’s name, or switch the status back to “Any status”.'
-              : 'Connect a stock source when something outside sparx keeps the count — a spreadsheet you publish, another system, or a bridge on your own computers. Its numbers then flow in and become what you sell against.'
-          }
-          actions={
-            narrowed ? undefined : (
+        <ListEmptyState
+          filtered={narrowed}
+          noResults={{
+            icon: <Link2 className="size-6" aria-hidden />,
+            title: 'Nothing matches that',
+            description: 'Try part of a source’s name, or switch the status back to “Any status”.',
+          }}
+          firstRun={{
+            title: 'No stock sources yet',
+            description:
+              'Connect a stock source when something outside sparx keeps the count — a spreadsheet you publish, another system, or a bridge on your own computers. Its numbers then flow in and become what you sell against.',
+            actions: (
               <Button size="sm" color="module" onClick={addSource}>
                 <Plus className="size-4" aria-hidden />
                 Add a source
               </Button>
-            )
-          }
+            ),
+          }}
         />
       );
     }
@@ -287,9 +290,9 @@ export function SourcesListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      <div className="mx-auto min-h-0 w-full max-w-3xl flex-1 overflow-y-auto">{body()}</div>
+      <div className="min-h-0 flex-1 overflow-y-auto">{body()}</div>
 
-      <div className="mx-auto w-full max-w-3xl shrink-0">
+      <div className="shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

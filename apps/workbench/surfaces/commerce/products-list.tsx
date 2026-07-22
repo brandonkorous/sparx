@@ -39,6 +39,7 @@ import { ArrowDown, ArrowUp, Package, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
+import { ListEmptyState } from '../../components/list-empty-state';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
   formatDate,
@@ -301,25 +302,24 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
             Loading products…
           </p>
         ) : rows.length === 0 ? (
-          // "Nothing matches" and "you have none" are different facts, and
-          // inviting someone to add their first product when they have four
-          // hundred and mistyped a name is the worse of the two mistakes.
-          <EmptyState
-            icon={<Package className="size-6" aria-hidden />}
-            title={narrowed ? 'No products match that' : 'Nothing in your catalog yet'}
-            description={
-              narrowed
-                ? emptyAdvice(search.trim(), filter === 'all' ? null : active.label)
-                : 'A product is one thing you sell. Add your first one and it can be on your website within a minute.'
-            }
-            actions={
-              narrowed ? null : (
+          <ListEmptyState
+            filtered={narrowed}
+            noResults={{
+              icon: <Package className="size-6" aria-hidden />,
+              title: 'No products match that',
+              description: emptyAdvice(search.trim(), filter === 'all' ? null : active.label),
+            }}
+            firstRun={{
+              title: 'Nothing in your catalog yet',
+              description:
+                'A product is one thing you sell. Add your first one and it can be on your website within a minute.',
+              actions: (
                 <Button size="sm" color="module" onClick={create}>
                   <Plus className="size-4" aria-hidden />
                   Add a product
                 </Button>
-              )
-            }
+              ),
+            }}
           />
         ) : (
           <Table size="sm" hover>

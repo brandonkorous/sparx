@@ -159,10 +159,7 @@ const blueprintRoutes: FastifyPluginAsync = (app) => {
     // specific site, so the catalog reads the ACTIVE site's install rows (the
     // switcher's header, else primary) — a secondary site shows ITS own
     // installed/available badges, not the primary's.
-    const propertyId = await resolvePropertyId(
-      auth,
-      activePropertyHeader(request.headers)
-    );
+    const propertyId = await resolvePropertyId(auth, activePropertyHeader(request.headers));
     // The active site's install rows drive the per-card badges AND — for the
     // installed-only view — which catalog rows the list + count are scoped to, so
     // they must be read BEFORE the catalog query to build its `where`.

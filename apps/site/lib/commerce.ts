@@ -47,7 +47,7 @@ interface ErrorEnvelope {
 
 async function publicGet<T>(
   path: string,
-  query: Record<string, string | number | undefined>,
+  query: Record<string, string | number | string[] | undefined>,
   tags: string[],
   // A draft-preview token (`?sparxPreview=` on the PDP). When present we forward
   // it as `Authorization: Preview <jwt>` and skip the cache — a preview must
@@ -61,7 +61,14 @@ async function publicGet<T>(
   const propertySlug = await resolveActivePropertySlug();
   if (propertySlug && query.property === undefined) params.set('property', propertySlug);
   for (const [key, value] of Object.entries(query)) {
-    if (value !== undefined && value !== '') params.set(key, String(value));
+    if (value === undefined || value === '') continue;
+    // Array values become repeated params (?options=a&options=b) — the storefront's
+    // multi-select facets (option axes) send several under one key.
+    if (Array.isArray(value)) {
+      for (const v of value) if (v !== '') params.append(key, String(v));
+    } else {
+      params.set(key, String(value));
+    }
   }
   // Coarse per-tenant tag (`commerce:<slug>`) alongside the granular ones so a
   // single revalidateTag('commerce:<slug>') purge clears all of a tenant's
@@ -399,6 +406,11 @@ export interface ProductSearchFilters {
   fitmentModels?: string;
   fitmentEngines?: string;
   fitmentYear?: number;
+  /** Scope the faceted search to ONE collection / category by handle (browse-as-search). */
+  collection?: string;
+  category?: string;
+  /** Product-option facet selections as "Name:Value" tokens (e.g. ["Color:Black","Size:M"]). */
+  options?: string[];
   sort?: ProductSort;
   page?: number;
   perPage?: number;
@@ -419,7 +431,7 @@ export async function searchProducts(
   tenantSlug: string,
   filters: ProductSearchFilters = {}
 ): Promise<ProductSearchResult> {
-  const query: Record<string, string | number | undefined> = {
+  const query: Record<string, string | number | string[] | undefined> = {
     tenant: tenantSlug,
     q: filters.q,
     vendor: filters.vendor,
@@ -432,6 +444,9 @@ export async function searchProducts(
     fitmentModels: filters.fitmentModels,
     fitmentEngines: filters.fitmentEngines,
     fitmentYear: filters.fitmentYear,
+    collection: filters.collection,
+    category: filters.category,
+    options: filters.options,
     sort: filters.sort,
     page: filters.page,
     perPage: filters.perPage,

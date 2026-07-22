@@ -86,6 +86,18 @@ const partnerRoutes: FastifyPluginAsync = (app) => {
     return ok({ referralCode: partner.referralCode, referrals });
   });
 
+  // The partner's book of business — referred + consultant-managed accounts,
+  // unioned server-side (docs/114 §B.7). The consultant-access half is a per-user
+  // cross-org read, so this resolves it from the JWT actor, not the tenant.
+  app.get('/v1/partner/clients', async (request) => {
+    requireAnyRole(request, PARTNER_OPS);
+    const ctx = toPartnerContext(request);
+    const partner = await partnerService.get(ctx);
+    if (!partner) throw forbidden('This account is not a partner.');
+    const clients = await partnerService.listClients(ctx);
+    return ok(clients);
+  });
+
   app.get('/v1/partner/commissions', async (request) => {
     requireAnyRole(request, PARTNER_OPS);
     const commissions = await partnerService.listCommissions(toPartnerContext(request));

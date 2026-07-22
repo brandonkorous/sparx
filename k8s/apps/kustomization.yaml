@@ -7,7 +7,10 @@ resources:
   - api-graphql.yaml
   - api-mcp.yaml
   - mcp-site.yaml
-  - dashboard.yaml
+  # dashboard.yaml removed 2026-07-22 — the workbench replaced the dashboard at
+  # app.sparx.works. `kubectl apply -k` does NOT prune the dropped Deployment;
+  # run `bootstrap.yml -f components=dashboard-teardown` once to delete the
+  # orphaned in-cluster resources (same pattern as storefront-teardown).
   - workbench.yaml
   - site.yaml
   - market.yaml

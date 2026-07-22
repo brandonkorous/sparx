@@ -22,6 +22,7 @@
 
 import { registerSurfaces } from '../registry';
 import { PLATFORM_SURFACES } from './platform';
+import { ANALYTICS_SURFACES } from './analytics';
 import { INVOICING_SURFACES } from './invoicing';
 import { COMMERCE_SURFACES } from './commerce';
 import { CRM_SURFACES } from './crm';
@@ -32,11 +33,20 @@ import { CMS_SURFACES } from './cms';
 import { EMAIL_SURFACES } from './email';
 import { SCHEDULING_SURFACES } from './scheduling';
 import { FINANCE_SURFACES } from './finance';
+import { DROPSHIP_SURFACES } from './dropship';
+import { AUTOMATION_SURFACES } from './automations';
 import { SMALL_MODULE_SURFACES } from './small-modules';
 import { PARTNER_SURFACES } from './partner';
+import { ONBOARDING_SURFACES } from './onboarding';
 
 registerSurfaces([
   ...PLATFORM_SURFACES,
+  // Setup flows + the welcome checklist as REOPENABLE surfaces. First-run
+  // onboarding is a full-viewport gate (see workbench-shell), not these — these
+  // let an operator come back to setup afterward.
+  ...ONBOARDING_SURFACES,
+  // Cross-module dashboards — a platform-level landing, like Pulse.
+  ...ANALYTICS_SURFACES,
   ...INVOICING_SURFACES,
   ...COMMERCE_SURFACES,
   ...CRM_SURFACES,
@@ -47,6 +57,10 @@ registerSurfaces([
   ...EMAIL_SURFACES,
   ...SCHEDULING_SURFACES,
   ...FINANCE_SURFACES,
+  // Dropshipping — its own module block (suppliers, catalog, orders, profit).
+  ...DROPSHIP_SURFACES,
+  // Automations — the cross-module rule engine (rules, runs, reporting).
+  ...AUTOMATION_SURFACES,
   ...SMALL_MODULE_SURFACES,
   // Last on purpose: a partner is a different KIND of user, so its module sits
   // below the ones that describe the business itself.

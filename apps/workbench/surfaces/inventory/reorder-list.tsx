@@ -47,9 +47,9 @@ import {
   Table,
   Text,
   ToolbarSeparator,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   PackageCheck,
   PackageX,
@@ -157,7 +157,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const draft = useDraftReorder();
 
   const selectableRows = rows.filter((row) => row.supplierId !== null);
@@ -515,7 +515,7 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
           no permanent height. It is a base-100 card lifted onto the pane, matching
           the toolbar and the table — the house floating pattern. */}
       {selected.size > 0 ? (
-        <div className="bg-base-100 mx-auto flex w-full max-w-6xl shrink-0 flex-wrap items-center gap-3 rounded-lg p-2">
+        <div className="bg-base-100 flex shrink-0 flex-wrap items-center gap-3 rounded-lg p-2">
           <Text className="text-base">
             {plural(selected.size, 'item', 'items')} chosen ·{' '}
             {plural(orderCount, 'order', 'orders')} to draft
@@ -545,12 +545,10 @@ export function ReorderListSurface({ ctx }: { ctx: SurfaceContext }) {
         </div>
       ) : null}
 
-      {/* Capped and centred: torn onto a second monitor this pane is 2000px wide,
-          and an uncapped table strands the state badge a foot from the row it is
-          about. */}
-      <Card className="mx-auto min-h-0 w-full max-w-6xl flex-1 overflow-y-auto">{body()}</Card>
+      {/* Full width — matches the house list convention: the table fills the pane. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
-      <div className="mx-auto w-full max-w-6xl shrink-0">
+      <div className="shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

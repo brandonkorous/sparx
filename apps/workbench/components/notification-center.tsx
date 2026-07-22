@@ -52,7 +52,6 @@ export function NotificationCenter() {
       <Tooltip content={unreadCount > 0 ? `${String(unreadCount)} unread` : 'Notifications'}>
         <PopoverTrigger>
           <Button
-            color="neutral"
             variant="ghost"
             size="sm"
             shape="square"
@@ -101,7 +100,7 @@ export function NotificationCenter() {
             // be faded — it is decoration — but this sentence is the only thing
             // the panel actually says, so it takes a real ink token. Faded text
             // is for text not meant to be read; this is the opposite.
-            className="[&_.empty-state-description]:text-base-content [&_.empty-state-description]:text-sm py-6"
+            className="[&_.empty-state-description]:text-base-content py-6 [&_.empty-state-description]:text-sm"
             icon={<Bell className="size-5" aria-hidden />}
             // Empty is a WIN, and the words have to say so. The first draft read
             // "Nothing needs you" — which lands as *nobody needs you*, from a
@@ -145,7 +144,7 @@ export function NotificationCenter() {
             Pulse, and a panel that silently truncates without saying where the
             rest went is how the badge stopped being trustworthy in the first
             place. When there IS more, it says how much rather than hinting. */}
-        <div className="border-base-300 -mx-4 -mb-1 mt-1 border-t px-2 pt-2">
+        <div className="border-base-300 -mx-4 mt-1 -mb-1 border-t px-2 pt-2">
           <Button
             color="neutral"
             variant="ghost"

@@ -122,6 +122,17 @@ describe('billing_document scanner', () => {
     status: string;
   }): Promise<string> {
     const { tenantId } = opts;
+    // The issuing site — `propertyId` is required on a billing document (docs/131
+    // §3.6); every invoice is issued by a property.
+    const property = await ownerDb.property.create({
+      data: {
+        tenantId,
+        slug: `scan-${crypto.randomBytes(3).toString('hex')}`,
+        name: 'Site',
+        isPrimary: true,
+      },
+      select: { id: true },
+    });
     const customer = await ownerDb.customer.create({
       data: { tenantId, type: 'b2b', email: 'ar@example.com', firstName: 'Ada' },
       select: { id: true },
@@ -149,6 +160,7 @@ describe('billing_document scanner', () => {
     const doc = await ownerDb.billingDocument.create({
       data: {
         tenantId,
+        propertyId: property.id,
         workflowId: workflow.id,
         stageId: workflow.stages[0]!.id,
         customerId: customer.id,

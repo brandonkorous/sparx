@@ -36,7 +36,12 @@ import { StorefrontBuilderRuntime } from '@/components/storefront-builder-runtim
 import type { PublishedSilicaFrameDto } from '@sparx/builder-schemas';
 import { getPublishedSilicaFrame } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
-import { buildSilicaThemeCss, buildSilicaThemeCssFromTheme } from '@sparx/site-themes';
+import {
+  buildSilicaThemeCss,
+  buildSilicaThemeCssFromTheme,
+  brandFontHref,
+  themeFontFamilies,
+} from '@sparx/site-themes';
 import { listCollections } from '@/lib/commerce';
 import { getLegalFooterLinks } from '@/lib/legal';
 import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/builder';
@@ -154,33 +159,12 @@ function buildThemeCss(
   });
 }
 
-// ── Brand web fonts ──────────────────────────────────────────────────────────
-//
-// The compiled theme sets `--st-font-heading` / `--st-font-body` to the tenant's
-// brand families (e.g. 'Quicksand', 'Nunito'), but the families themselves must
-// be LOADED or the browser silently falls back to Geist. Build a single Google
-// Fonts stylesheet for whatever the tenant chose, skipping the bundled fallbacks
-// (Geist/Inter/system) which need no network load. Sourced from the compiled
-// snapshot (the source of truth) with the legacy theme columns as a backstop.
-const BUNDLED_FONTS = new Set([
-  'Geist',
-  'Geist Mono',
-  'Inter',
-  'system-ui',
-  'ui-sans-serif',
-  'sans-serif',
-  '-apple-system',
-]);
-
-function brandFontHref(families: (string | null | undefined)[]): string | null {
-  const uniq = Array.from(
-    new Set(families.map((f) => (f ?? '').trim()).filter((f) => f && !BUNDLED_FONTS.has(f)))
-  );
-  if (uniq.length === 0) return null;
-  return `https://fonts.googleapis.com/css2?${uniq
-    .map((f) => `family=${f.replace(/ /g, '+')}:wght@400;500;600;700;800`)
-    .join('&')}&display=swap`;
-}
+// Brand web fonts — the tenant's chosen families (e.g. 'Quicksand', 'Nunito')
+// must be LOADED or the browser silently falls back to Geist. `brandFontHref`
+// (@sparx/site-themes, shared with the Builder canvas so the two never drift)
+// builds one Google Fonts stylesheet for whatever the tenant chose; see its use
+// below with the compiled snapshot as the source of truth + theme columns as a
+// backstop.
 
 // Inline, before-paint script that resolves data-theme for policies that can't
 // be decided at SSR time (auto = prefers-color-scheme, toggle = cookie). Fixed
@@ -332,9 +316,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ? buildSilicaThemeCss(snapshot.compiledV2)
         : '';
 
-  // The tenant's brand fonts to load (compiled snapshot first, theme columns as a
-  // backstop). Without this the storefront renders every theme in the Geist fallback.
+  // The fonts to load, or the storefront renders every theme in the Geist fallback.
+  // The AUTHORED silica theme leads: a typeface/heading font picked in the builder's
+  // Design inspector lives ONLY in that theme (`--font-head` + `theme.fonts`), not the
+  // brand columns — so reading just the columns names the font but never loads it.
+  // Compiled snapshot + brand columns follow as the backstop for a brand-derived
+  // theme; `brandFontHref` de-dupes the overlap.
   const fontHref = brandFontHref([
+    ...(silicaActive && silicaFrame.theme ? themeFontFamilies(silicaFrame.theme) : []),
     snapshot?.compiledV2?.shared.fontHeading,
     snapshot?.compiledV2?.shared.fontBody,
     site?.theme?.fontHeading,

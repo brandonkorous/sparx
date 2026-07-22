@@ -84,6 +84,12 @@ const EnvSchema = z
     GOOGLE_OAUTH_CLIENT_ID: z.string().optional(),
     GOOGLE_OAUTH_CLIENT_SECRET: z.string().optional(),
     SEARCH_CONSOLE_TOKEN_KEY: z.string().optional(),
+    // 32-byte AES-256-GCM key (base64 or hex) encrypting outbound-webhook signing
+    // secrets (webhook_subscriptions.signing_secret) at rest — see
+    // @sparx/api-core/webhook-secret-crypto. When unset the secret is stored
+    // plaintext (dev/test); production MUST set it. Rotating it makes existing
+    // encrypted secrets undecryptable (subscriptions must be recreated).
+    WEBHOOK_SIGNING_SECRET_KEY: z.string().optional(),
     // Active domain registrar (docs/24). The registrar is abstracted behind the
     // @sparx/registrar `RegistrarClient` contract; this selects the provider.
     // 'godaddy' today; 'namecom' lands once its @sparx/namecom client is wired.
@@ -322,6 +328,14 @@ const EnvSchema = z
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ['SCHEDULING_CALENDAR_TOKEN_KEY'],
+        message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
+      });
+    }
+    // A provided webhook signing-secret key must decode to exactly 32 bytes.
+    if (data.WEBHOOK_SIGNING_SECRET_KEY && decodeKeyBytes(data.WEBHOOK_SIGNING_SECRET_KEY) !== 32) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['WEBHOOK_SIGNING_SECRET_KEY'],
         message: 'Must be a 32-byte key encoded as base64 (44 chars) or hex (64 chars).',
       });
     }

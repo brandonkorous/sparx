@@ -29,7 +29,7 @@ import {
 
 import { blogIndexPage } from './cms';
 import { featuredProducts, productGrid, shopHeader } from './commerce';
-import { HOST_KEYS, functionalShell } from './host-nodes';
+import { HOST_KEYS, functionalShell, hostCore } from './host-nodes';
 import { siteFooter, siteNavbar, type SiteChromeOptions } from './site-chrome';
 
 // ── Page content (sparx-authored, neutral copy) ──────────────────────────────
@@ -217,7 +217,15 @@ export function starterPages(opts: SiteChromeOptions = {}): Page[] {
     makePage('Home', '/', stampTree(pageBody(homeSections))),
     ...(commerceEnabled
       ? [
-          makePage('Shop', '/shop', stampTree(pageBody([shopHeader(), productGrid()]))),
+          // Shop = the faceted PLP core (docs/127 §8) under an editable header, so the
+          // shop-all page carries the same brand/type/tags/color/size facets + sort +
+          // pagination as /products, not a bare truncated grid. The core reads the URL for
+          // its filter state; the route renders it through the functional walk.
+          makePage(
+            'Shop',
+            '/shop',
+            stampTree(pageBody([shopHeader(), hostCore(HOST_KEYS.commercePlp)]))
+          ),
           // The cart is a FUNCTIONAL page (docs/122): an editable shell wrapping the
           // pinned `commerce.cart` core. Seeded so a commerce tenant's studio lists a
           // "Cart" page they can restyle/surround — the core stays put (locked: "host").

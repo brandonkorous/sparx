@@ -34,6 +34,8 @@ model User {
   tenant            Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   sessions          Session[]
   accounts          Account[]
+  // WebAuthn passkeys registered from this user's devices (03-auth-passkey.prisma).
+  passkeys          Passkey[]
   // Organizations & Teams (docs/114 Part A) — this user's memberships across
   // orgs (the "client accounts" list) + the invitations they sent as an admin.
   memberships       Member[]

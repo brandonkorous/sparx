@@ -45,9 +45,9 @@ import {
   Table,
   Textarea,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { ClipboardList, PackageCheck, PackageX } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -88,7 +88,7 @@ function outstandingFor(line: PurchaseOrderLine): number {
 
 function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPoId: string }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const createReceipt = useCreateReceipt();
 
   const [poId, setPoId] = useState(preTargetPoId);
@@ -161,13 +161,15 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
     };
   });
 
-  const receiving = parsed.filter((row) => row.received > 0);
-  const totalUnits = receiving.reduce((sum, row) => sum + row.received, 0);
-  // Damaged units are reported alongside the good units on a line, so a discrepancy
-  // only counts damage on a line that is actually being received.
-  const anyDiscrepancy = parsed.some(
-    (row) => row.received > 0 && (row.received !== row.outstanding || row.damaged > 0)
-  );
+  // A line is being booked when it records SOME arrival — good units, damaged
+  // units, or both. A total-loss line (0 good, some damaged) counts here even
+  // though nothing joins stock, so it can be posted and the loss recorded.
+  const toBook = parsed.filter((row) => row.received > 0 || row.damaged > 0);
+  const totalUnits = toBook.reduce((sum, row) => sum + row.received, 0);
+  const totalDamaged = toBook.reduce((sum, row) => sum + row.damaged, 0);
+  // Anything that is not "exactly what was outstanding, all good" is a discrepancy
+  // worth confirming — short, over, some damaged, or fully damaged.
+  const anyDiscrepancy = toBook.some((row) => row.received !== row.outstanding || row.damaged > 0);
   const anyInvalid = parsed.some((row) => {
     const entry = entries[row.line.id];
     if (!entry) return false;
@@ -177,8 +179,8 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
     );
   });
 
-  const dirty = receiving.length > 0 || note.trim() !== '' || reference.trim() !== '';
-  const canPost = poId !== '' && receiving.length > 0 && !anyInvalid && detail !== null;
+  const dirty = toBook.length > 0 || note.trim() !== '' || reference.trim() !== '';
+  const canPost = poId !== '' && toBook.length > 0 && !anyInvalid && detail !== null;
 
   useDirtySource(dirty, 'You have a delivery you have not booked in yet. Close anyway?');
 
@@ -186,9 +188,12 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
     if (!canPost || !detail) return;
 
     if (anyDiscrepancy) {
-      const shorts = parsed.filter((row) => row.received > 0 && row.received < row.outstanding);
-      const overs = parsed.filter((row) => row.received > row.outstanding);
-      const damaged = receiving.filter((row) => row.damaged > 0);
+      const shorts = toBook.filter((row) => row.received > 0 && row.received < row.outstanding);
+      const overs = toBook.filter((row) => row.received > row.outstanding);
+      // Fully-damaged (total-loss) lines vs lines that arrived partly damaged —
+      // named separately so a total loss reads truthfully.
+      const fullyDamaged = toBook.filter((row) => row.received === 0 && row.damaged > 0);
+      const partlyDamaged = toBook.filter((row) => row.received > 0 && row.damaged > 0);
       const notes: string[] = [];
       if (shorts.length > 0) {
         notes.push(`${String(shorts.length)} line(s) are short of what was outstanding`);
@@ -196,9 +201,15 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
       if (overs.length > 0) {
         notes.push(`${String(overs.length)} line(s) have more than was expected`);
       }
-      if (damaged.length > 0) {
+      if (fullyDamaged.length > 0) {
+        const units = fullyDamaged.reduce((sum, row) => sum + row.damaged, 0);
         notes.push(
-          `${String(damaged.length)} line(s) had damaged units — recorded and written off, not added to sellable stock or counted against the order`
+          `${String(units)} unit(s) across ${String(fullyDamaged.length)} line(s) arrived fully damaged — nothing received against the order; recorded and written off, and the order stays open for them`
+        );
+      }
+      if (partlyDamaged.length > 0) {
+        notes.push(
+          `${String(partlyDamaged.length)} line(s) had some damaged units — recorded and written off, not added to sellable stock or counted against the order`
         );
       }
       const ok = await confirm({
@@ -211,14 +222,17 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
       if (!ok) return;
     }
 
-    const lines: ReceiveLineInput[] = receiving.map((row) => ({
+    const lines: ReceiveLineInput[] = toBook.map((row) => ({
       purchaseOrderLineId: row.line.id,
+      // May be 0 on a total-loss line — the server writes only the damaged pair,
+      // credits the order by nothing, and leaves it open.
       quantity: row.received,
       // Damaged units ride the same line — the server records them arriving and
       // then writing them off, so they never join sellable stock or the order.
       ...(row.damaged > 0 ? { quantityDamaged: row.damaged } : {}),
-      // Only a line the buyer actually gave a batch code becomes a traceable lot.
-      ...(row.lot ? { lotNumber: row.lot } : {}),
+      // Only a line with good units and a batch code the buyer typed becomes a
+      // traceable lot — there is nothing to trace on a fully-damaged line.
+      ...(row.received > 0 && row.lot ? { lotNumber: row.lot } : {}),
     }));
 
     createReceipt.mutate(
@@ -233,9 +247,17 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
         onSuccess: (receipt) => {
           ctx.open('inventory.receiving.detail', { id: receipt.id }, { target: 'replace' });
           afterPaneChange(() => {
+            const description =
+              totalUnits > 0
+                ? `${String(totalUnits)} unit${totalUnits === 1 ? '' : 's'} added to your stock.${
+                    totalDamaged > 0
+                      ? ` ${String(totalDamaged)} damaged unit${totalDamaged === 1 ? '' : 's'} recorded and written off.`
+                      : ''
+                  }`
+                : `A total loss of ${String(totalDamaged)} damaged unit${totalDamaged === 1 ? '' : 's'} was recorded and written off. Nothing was added to stock and the order stays open.`;
             toast.add({
               title: `Delivery booked in as ${receipt.number}`,
-              description: `${String(totalUnits)} unit${totalUnits === 1 ? '' : 's'} added to your stock.`,
+              description,
               type: 'success',
             });
           });
@@ -387,7 +409,10 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                   </thead>
                   <tbody>
                     {parsed.map((row) => {
-                      const state = receiptLineState(row.received, row.outstanding);
+                      const state = receiptLineState(row.received, row.outstanding, row.damaged);
+                      // A fully-damaged line has nothing to trace, so its batch
+                      // field is switched off (and any typed code is not sent).
+                      const lotDisabled = row.received === 0 && row.damaged > 0;
                       return (
                         <tr key={row.line.id}>
                           <td className="w-full max-w-0">
@@ -421,11 +446,12 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                               color="module"
                               size="sm"
                               maxLength={63}
+                              disabled={lotDisabled}
                               aria-label={`Batch or lot number for ${row.line.variantSku ?? 'item'}`}
-                              placeholder="Leave blank"
+                              placeholder={lotDisabled ? 'Not applicable' : 'Leave blank'}
                               spellCheck={false}
                               className="w-32"
-                              value={entries[row.line.id]?.lot ?? ''}
+                              value={lotDisabled ? '' : (entries[row.line.id]?.lot ?? '')}
                               onChange={(event) => {
                                 setEntry(row.line.id, 'lot', event.target.value);
                               }}
@@ -461,8 +487,24 @@ function BookDelivery({ ctx, preTargetPoId }: { ctx: SurfaceContext; preTargetPo
                   <Text className="text-sm">
                     Booking in{' '}
                     <span className="font-semibold tabular-nums">{String(totalUnits)}</span> unit
-                    {totalUnits === 1 ? '' : 's'} across {String(receiving.length)} line
-                    {receiving.length === 1 ? '' : 's'}.
+                    {totalUnits === 1 ? '' : 's'} across {String(toBook.length)} line
+                    {toBook.length === 1 ? '' : 's'}.
+                    {totalDamaged > 0 ? (
+                      <>
+                        {' '}
+                        <span className="tabular-nums">{String(totalDamaged)}</span> damaged unit
+                        {totalDamaged === 1 ? '' : 's'} will be recorded and written off, not added
+                        to stock.
+                      </>
+                    ) : null}
+                  </Text>
+                ) : totalDamaged > 0 ? (
+                  <Text className="text-sm">
+                    No good units to add — booking a total loss of{' '}
+                    <span className="font-semibold tabular-nums">{String(totalDamaged)}</span>{' '}
+                    damaged unit{totalDamaged === 1 ? '' : 's'} across {String(toBook.length)} line
+                    {toBook.length === 1 ? '' : 's'}. Nothing is added to stock and the order stays
+                    open for these units.
                   </Text>
                 ) : (
                   <Text className="text-sm">

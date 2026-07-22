@@ -21,9 +21,9 @@ import {
   Heading,
   Text,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Link2Off, ServerCrash, Store } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -56,7 +56,7 @@ function ConnectionRow({
   channelName: string;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const disconnect = useDisconnectChannel();
   const state = connectionState(connection.status);
   const where = connection.shopName ? `${channelName} · ${connection.shopName}` : channelName;

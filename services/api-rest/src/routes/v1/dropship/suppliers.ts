@@ -55,17 +55,32 @@ function mimeFromImageUrl(url: string): string {
   }
 }
 
+// Sortable columns are a server-side WHITELIST (mirrors the invoicing list): a
+// client-supplied column that is not on the list is rejected by the enum, never
+// interpolated into an orderBy. Sorting lives on the server because the list
+// pages — sorting one loaded page and presenting it as the answer would hand
+// back "the newest supplier" from page 2.
+const SupplierSort = z.enum(['name', 'status', 'createdAt', 'lastSyncAt']);
+const CatalogSort = z.enum(['title', 'costPriceCents', 'importedAt']);
+const SortOrder = z.enum(['asc', 'desc']);
+
 const ListQuery = z.object({
   status: z.enum(['connecting', 'active', 'error', 'disconnected']).optional(),
   // When set, returns only connections enabled on this site — i.e. those scoped
   // to it OR scoped to no site at all (all-sites connections).
   propertyId: z.string().uuid().optional(),
+  // Name contains, case-insensitive — so the suppliers table can search.
+  q: z.string().max(255).optional(),
+  sort_by: SupplierSort.optional(),
+  order: SortOrder.optional(),
   take: z.coerce.number().int().min(1).max(250).default(50),
   skip: z.coerce.number().int().min(0).default(0),
 });
 
 const CatalogQuery = z.object({
   q: z.string().max(255).optional(),
+  sort_by: CatalogSort.optional(),
+  order: SortOrder.optional(),
   take: z.coerce.number().int().min(1).max(250).default(50),
   skip: z.coerce.number().int().min(0).default(0),
 });
@@ -141,6 +156,9 @@ function toSupplierView(s: {
   createdAt: Date;
   updatedAt: Date;
   siteScopes?: { propertyId: string }[];
+  // Populated only on the list read (`_count`); the single-supplier reads don't
+  // need it, so it stays optional and surfaces as null there.
+  _count?: { products: number };
 }) {
   const vendor = VENDOR_BY_TYPE.get(s.type as SupplierType);
   return {
@@ -162,6 +180,9 @@ function toSupplierView(s: {
     // Empty = enabled on every site (the default). A non-empty list restricts
     // the connection to those properties.
     siteScope: s.siteScopes?.map((x) => x.propertyId) ?? [],
+    // How many products from this supplier's catalog we hold — shown as a column
+    // on the suppliers table. Null on the single-supplier reads that don't count.
+    productCount: s._count?.products ?? null,
     createdAt: s.createdAt.toISOString(),
     updatedAt: s.updatedAt.toISOString(),
   };
@@ -349,7 +370,7 @@ async function resolveSiteScope(
   return unique;
 }
 
-function toDropshipProductView(dp: {
+export function toDropshipProductView(dp: {
   id: string;
   supplierProductId: string;
   title: string;
@@ -709,6 +730,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     const [suppliers, total] = await withTenant({ tenantId }, async (tx) => {
       const where: Prisma.DropshipSupplierWhereInput = { tenantId, deletedAt: null };
       if (query.status) where.status = query.status;
+      if (query.q) where.name = { contains: query.q, mode: 'insensitive' };
       // A site sees connections scoped to it OR scoped to no site (all-sites).
       if (query.propertyId) {
         where.OR = [
@@ -716,11 +738,17 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
           { siteScopes: { some: { propertyId: query.propertyId } } },
         ];
       }
+      const orderBy: Prisma.DropshipSupplierOrderByWithRelationInput = {
+        [query.sort_by ?? 'createdAt']: query.order ?? 'desc',
+      };
       return Promise.all([
         tx.dropshipSupplier.findMany({
           where,
-          include: { siteScopes: { select: { propertyId: true } } },
-          orderBy: { createdAt: 'desc' },
+          include: {
+            siteScopes: { select: { propertyId: true } },
+            _count: { select: { products: true } },
+          },
+          orderBy,
           take: query.take,
           skip: query.skip,
         }),
@@ -994,6 +1022,9 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
     const [products, total] = await withTenant({ tenantId }, async (tx) => {
       const where: Prisma.DropshipProductWhereInput = { tenantId, supplierId: id };
       if (query.q) where.title = { contains: query.q, mode: 'insensitive' };
+      const orderBy: Prisma.DropshipProductOrderByWithRelationInput = {
+        [query.sort_by ?? 'importedAt']: query.order ?? 'desc',
+      };
       return Promise.all([
         tx.dropshipProduct.findMany({
           where,
@@ -1011,7 +1042,7 @@ const dropshipSupplierRoutes: FastifyPluginAsync = async (app) => {
               },
             },
           },
-          orderBy: { importedAt: 'desc' },
+          orderBy,
           take: query.take,
           skip: query.skip,
         }),

@@ -35,7 +35,24 @@ const config = {
   // @sparx/api-client ships raw TypeScript (main points at src/index.ts), so it
   // must be transpiled rather than treated as a prebuilt dependency. workbench
   // is its first consumer — it had never been through a bundler before.
-  transpilePackages: ['@wizeworks/silicaui-react', '@sparx/brand', '@sparx/api-client'],
+  transpilePackages: [
+    '@wizeworks/silicaui-react',
+    '@wizeworks/silicaui-charts',
+    // The rich-text editor (bootcamp description) ships a client TipTap surface.
+    '@wizeworks/silicaui-editor',
+    '@sparx/brand',
+    '@sparx/api-client',
+    // The CMS block editor ships raw TypeScript/TSX (its exports point at
+    // ./src/*), so it must be transpiled rather than treated as prebuilt — and
+    // so must @sparx/ui, which it imports `cn` from and which also ships source.
+    '@sparx/cms-editor',
+    '@sparx/ui',
+    // The visual site builder (builder.studio) mounts silica's <Builder> over a
+    // sparx BuilderHost; these ship raw TypeScript from ./src.
+    '@sparx/builder-schemas',
+    '@sparx/silica-catalog',
+    '@sparx/site-themes',
+  ],
   typedRoutes: false,
   // Tenant media lives on a DIFFERENT origin from the workbench, so every
   // thumbnail is a remote image and `next/image` refuses one that is not

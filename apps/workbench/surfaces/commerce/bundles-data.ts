@@ -32,6 +32,45 @@ export const bundleKeys = {
 export type BundlePricingMode = 'sum_of_components' | 'fixed' | 'percent_off_sum';
 export type BundleInventoryMode = 'decrement_components' | 'decrement_bundle_sku';
 
+/* ── The list window ────────────────────────────────────────────────────── */
+
+/** Sort direction, shared by every server-sorted list. */
+export type SortDir = 'asc' | 'desc';
+
+/**
+ * The columns the bundles table may order by — EXACTLY the server's whitelist
+ * (`ListBundlesQuery.sort_by` in api-rest). A bundle has no name of its own, so
+ * `name` orders on the wrapper product's title; `components` orders on how many
+ * products are inside. Sorting lives on the server because a client-side sort of
+ * one loaded page silently presents that page as the whole answer.
+ */
+export type BundleSort = 'name' | 'pricingMode' | 'components' | 'updatedAt';
+
+export interface BundleListFilter {
+  q?: string;
+  sortBy: BundleSort;
+  order: SortDir;
+  take?: number;
+  skip?: number;
+}
+
+export function useBundles(filter: BundleListFilter) {
+  return useQuery({
+    queryKey: [...bundleKeys.all, 'list', filter] as const,
+    queryFn: () =>
+      api.list<Bundle>('/v1/commerce/bundles', {
+        ...(filter.q?.trim() ? { q: filter.q.trim() } : {}),
+        sort_by: filter.sortBy,
+        order: filter.order,
+        take: filter.take ?? 50,
+        ...(filter.skip ? { skip: filter.skip } : {}),
+      }),
+    // Hold the previous window on screen while the next loads, so paging and
+    // re-sorting don't blink the table out to empty and back.
+    placeholderData: (previous) => previous,
+  });
+}
+
 /* ── Queries ────────────────────────────────────────────────────────────── */
 
 export function useBundle(id: string) {
@@ -111,7 +150,8 @@ export interface CreateBundleInput {
 export function useCreateBundle() {
   const invalidate = useInvalidateBundles();
   return useMutation({
-    mutationFn: (input: CreateBundleInput) => api.post<{ id: string }>('/v1/commerce/bundles', input),
+    mutationFn: (input: CreateBundleInput) =>
+      api.post<{ id: string }>('/v1/commerce/bundles', input),
     onSuccess: (created) => {
       invalidate(created.id);
     },

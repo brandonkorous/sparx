@@ -1,7 +1,8 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
-import { mcp, organization } from 'better-auth/plugins';
+import { emailOTP, magicLink, mcp, oneTap, organization } from 'better-auth/plugins';
+import { passkey } from '@better-auth/passkey';
 import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
 import { authPrisma } from './prisma';
 import { publishAuthEmail } from './email-events';
@@ -174,6 +175,14 @@ function createAuth() {
       : {}),
 
     account: {
+      // Encrypt OAuth provider tokens (Google access/refresh/id) at rest via
+      // symmetric AES with BETTER_AUTH_SECRET. Without this Better Auth stores
+      // them PLAINTEXT in accounts.access_token/refresh_token/id_token — a DB
+      // leak would hand an attacker live Google credentials for every linked
+      // user. Backward-compatible: the read path (isLikelyEncrypted guard)
+      // returns any pre-existing plaintext token verbatim, so already-linked
+      // accounts keep working and only new writes are encrypted.
+      encryptOAuthTokens: true,
       // Link a Google sign-in to an existing user when the verified email
       // matches — so an email/password user who later clicks "Continue with
       // Google" lands on their existing tenant instead of spawning a duplicate.
@@ -314,6 +323,66 @@ function createAuth() {
         },
         ac,
         roles,
+      }),
+      // Passwordless — a one-time signed link, emailed. Same email bus as
+      // password-reset (publish `email.send`, email-worker renders + relays), so
+      // link latency never couples to the mail provider. The link lands on
+      // /api/auth's verify endpoint, which sets the session and redirects to the
+      // client-supplied callbackURL. A first-time email provisions a tenant via
+      // the same user.create hook as OAuth.
+      magicLink({
+        expiresIn: 60 * 15, // 15 minutes
+        // Hash the link token before it lands in verifications.value. The token
+        // IS a bearer credential — anyone who reads it can complete sign-in — so
+        // storing it plaintext (the plugin default) means a DB leak = account
+        // takeover. Hashed (one-way) is right here: we only ever compare the
+        // presented token, never reveal it.
+        storeToken: 'hashed',
+        sendMagicLink: async ({ email, url }) => {
+          await publishAuthEmail({
+            tenantId: '',
+            actorId: null,
+            template: 'magic-link',
+            to: email,
+            props: { magicUrl: url, expiresInMinutes: 15 },
+          });
+        },
+      }),
+      // Passwordless — a 6-digit code, emailed. Covers sign-in and verifying a new
+      // address. The user is waiting on the code, but it still rides the event bus
+      // (delivered within a second in practice) so there is one send path, not two.
+      emailOTP({
+        otpLength: 6,
+        expiresIn: 60 * 5, // 5 minutes
+        // Hash the code before it lands in verifications.value. The plugin
+        // default stores it PLAINTEXT — a DB read would expose every live
+        // sign-in code. Hashed (one-way) suffices because we only compare the
+        // presented code, never display it back.
+        storeOTP: 'hashed',
+        sendVerificationOTP: async ({ email, otp }) => {
+          await publishAuthEmail({
+            tenantId: '',
+            actorId: null,
+            template: 'login-otp',
+            to: email,
+            props: { code: otp, expiresInMinutes: 5 },
+          });
+        },
+      }),
+      // Google One Tap — the streamlined prompt, not just the button. Only when
+      // Google is configured (same env gate as the social provider); the server
+      // verifies the Google credential against that same OAuth client.
+      ...(googleId && googleSecret ? [oneTap()] : []),
+      // WebAuthn passkeys (docs/16 §3.5) — phishing-resistant, the strongest
+      // factor we offer. rpName is our display name; rpID + expected origin
+      // auto-derive from BETTER_AUTH_URL's hostname and the request Origin, so
+      // this follows whatever host the app is deployed on (override rpID via
+      // PASSKEY_RP_ID only if the auth URL host ever diverges from the app
+      // host). The private key never leaves the authenticator; the passkeys
+      // table stores only the PUBLIC key + credential id (nothing secret).
+      passkey({
+        rpName: 'sparx',
+        ...(process.env.PASSKEY_RP_ID ? { rpID: process.env.PASSKEY_RP_ID } : {}),
       }),
       // nextCookies() must stay LAST so it can flush Set-Cookie for the
       // plugins registered before it.

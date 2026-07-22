@@ -391,13 +391,67 @@ export async function cancelBooking(
   return cancelled;
 }
 
+/** One field's old→new pair, as recorded on a `booking.updated` history entry. */
+interface FieldChange {
+  from: unknown;
+  to: unknown;
+}
+
+/**
+ * The field-level old→new diff for an update, limited to the fields actually
+ * PRESENT in this request AND actually changed. This is what "save the old
+ * version" means for a note/parts/asset/location edit: the booking row itself
+ * only keeps the new value, so without this the prior value is lost.
+ *
+ * Scalars compare by value (a null-normalised equality); the two JSON fields
+ * (`assetRef`, `partsLinked`) compare by serialised shape.
+ */
+function diffBookingUpdate(
+  existing: Booking,
+  input: UpdateBookingInput
+): Record<string, FieldChange> {
+  const changes: Record<string, FieldChange> = {};
+
+  const scalar = (field: 'notes' | 'staffNotes' | 'workOrderId' | 'locationId') => {
+    const next = input[field];
+    if (next === undefined) return;
+    const from = existing[field] ?? null;
+    const to = next ?? null;
+    if (from !== to) changes[field] = { from, to };
+  };
+  scalar('notes');
+  scalar('staffNotes');
+  scalar('workOrderId');
+  scalar('locationId');
+
+  if (input.assetRef !== undefined) {
+    const from = existing.assetRef ?? null;
+    const to = input.assetRef ?? null;
+    if (JSON.stringify(from) !== JSON.stringify(to)) changes.assetRef = { from, to };
+  }
+  if (input.partsLinked !== undefined) {
+    const from = existing.partsLinked ?? [];
+    const to = input.partsLinked;
+    if (JSON.stringify(from) !== JSON.stringify(to)) changes.partsLinked = { from, to };
+  }
+
+  return changes;
+}
+
 /** Staff-side edits that don't move the booking in time (notes, parts, asset,
- *  location). Time changes go through rescheduleBooking so the EXCLUDE re-checks. */
-export async function updateBooking(tenantId: string, input: UpdateBookingInput): Promise<Booking> {
+ *  location). Time changes go through rescheduleBooking so the EXCLUDE re-checks.
+ *  The prior value of every changed field is captured to the audit trail as a
+ *  `booking.updated` event, so the history keeps the old version. */
+export async function updateBooking(
+  tenantId: string,
+  input: UpdateBookingInput,
+  actorId?: string
+): Promise<Booking> {
   const { id, assetRef, partsLinked, ...rest } = input;
-  return withTenant({ tenantId }, async (tx) => {
-    await loadBooking(tx, id);
-    return tx.booking.update({
+  const { booking, changes } = await withTenant({ tenantId }, async (tx) => {
+    const existing = await loadBooking(tx, id);
+    const changed = diffBookingUpdate(existing, input);
+    const updated = await tx.booking.update({
       where: { id },
       data: {
         ...rest,
@@ -407,7 +461,14 @@ export async function updateBooking(tenantId: string, input: UpdateBookingInput)
         ...(partsLinked !== undefined ? { partsLinked } : {}),
       },
     });
+    return { booking: updated, changes: changed };
   });
+  // Best-effort, and only when something actually moved — recordBookingEvent
+  // swallows its own failures so history never fails the edit it describes.
+  if (Object.keys(changes).length > 0) {
+    await recordBookingEvent(tenantId, id, 'booking.updated', actorId, { changes });
+  }
+  return booking;
 }
 
 export async function rescheduleBooking(

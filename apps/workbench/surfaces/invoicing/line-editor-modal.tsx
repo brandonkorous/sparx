@@ -33,8 +33,8 @@ import {
   Input,
   NativeSelect,
   Text,
-  useImperativeAlertDialog,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { MoneyInput } from './money-input';
@@ -71,7 +71,7 @@ export function LineEditorModal({
 }: LineEditorModalProps) {
   const isEdit = Boolean(line?.id ?? line?.description);
   const form = useLineForm({ open, line, lineTypes, markupRules, onSave });
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   // Declares the in-progress line to the PANE, so closing the whole pane while
   // this modal holds a typed line asks first. Without it the pane reads its

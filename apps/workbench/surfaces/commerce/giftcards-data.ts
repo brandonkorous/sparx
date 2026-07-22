@@ -54,6 +54,45 @@ export const giftCardKeys = {
   detail: (id: string) => [...giftCardKeys.all, id] as const,
 };
 
+/* ── The list window ────────────────────────────────────────────────────── */
+
+export type SortDir = 'asc' | 'desc';
+
+/** Columns the list may be ordered by. A SUBSET of the server whitelist
+ *  (`GiftCardSortField` in the discount service) — the ones this table exposes
+ *  a header for. */
+export type GiftCardSort = 'code' | 'balanceCents' | 'status' | 'expiresAt' | 'createdAt';
+
+export interface GiftCardsPageParams {
+  q?: string;
+  sortBy: GiftCardSort;
+  order: SortDir;
+  take: number;
+  skip: number;
+}
+
+/**
+ * One server-paged, server-sorted window of the gift-card list.
+ *
+ * The gift-card endpoint gained real paging (skip/take/total) so this can be a
+ * proper table like discounts. As there, the whole window is ONE query and the
+ * previous window stays put while the next loads.
+ */
+export function useGiftCardsList(params: GiftCardsPageParams) {
+  return useQuery({
+    queryKey: [...giftCardKeys.all, 'list', params],
+    queryFn: () =>
+      api.list<GiftCardRow>('/v1/commerce/gift-cards', {
+        ...(params.q?.trim() ? { q: params.q.trim() } : {}),
+        sort_by: params.sortBy,
+        order: params.order,
+        take: params.take,
+        skip: params.skip,
+      }),
+    placeholderData: (previous) => previous,
+  });
+}
+
 /** What a gift card is doing now, in plain words. */
 export function giftCardState(status: string): { label: string; tone: Tone; detail: string } {
   switch (status) {
@@ -74,7 +113,7 @@ export function giftCardState(status: string): { label: string; tone: Tone; deta
     case 'cancelled':
       return {
         label: 'Cancelled',
-        tone: 'error',
+        tone: 'danger',
         detail: 'It was cancelled and can no longer be spent.',
       };
     default:

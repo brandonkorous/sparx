@@ -2,20 +2,31 @@
 
 // The gift cards list.
 //
+// The workbench table standard (the same shape as the invoicing list): a real
+// <Table> with sortable headers backed by SERVER-SIDE sort, server-side paging
+// via <ListPagination>, and columns that disclose progressively with @container.
+//
 // A gift card is money with a code on it, so the two facts this list leads with
 // are exactly those: the code, and how much is left on it. Who it was for and
-// whether it can still be spent come next.
+// whether it can still be spent come next. Money columns are tabular-nums so the
+// figures line up as you scan down them.
 
 import { useState } from 'react';
-import { Badge, Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { Plus, Ticket } from 'lucide-react';
-import { useQuery } from '@sparx/query';
-import { api } from '../../lib/api/client';
+import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { ArrowDown, ArrowUp, Plus, Ticket } from 'lucide-react';
+import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { formatCents } from './products-data';
-import { giftCardState, type GiftCardRow } from './giftcards-data';
+import {
+  giftCardState,
+  useGiftCardsList,
+  type GiftCardRow,
+  type GiftCardSort,
+  type SortDir,
+} from './giftcards-data';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -27,23 +38,86 @@ function recipientLabel(row: GiftCardRow): string | null {
   const name = row.recipientName?.trim();
   if (name) return name;
   const email = row.recipientEmail?.trim();
-  return email || null;
+  if (email) return email;
+  return null;
+}
+
+/** When it stops working, in plain words. */
+function expiryLabel(iso: string | null): string {
+  if (!iso) return 'Never expires';
+  const when = new Date(iso);
+  if (Number.isNaN(when.getTime())) return '';
+  return when.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+function issuedLabel(iso: string): string {
+  const when = new Date(iso);
+  if (Number.isNaN(when.getTime())) return '';
+  return when.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
+  // Newest issued first — a card you just created shows up at the top.
+  const [sort, setSort] = useState<{ key: GiftCardSort; dir: SortDir }>({
+    key: 'createdAt',
+    dir: 'desc',
+  });
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useQuery({
-    queryKey: ['commerce', 'gift-cards', 'list', { q: search }],
-    queryFn: () =>
-      api.list<GiftCardRow>('/v1/commerce/gift-cards', {
-        ...(search.trim() ? { q: search.trim() } : {}),
-        take: 100,
-      }),
-    placeholderData: (previous) => previous,
+  const [pageSize, setPageSize] = useState<PageSize>(50);
+  const [page, setPage] = useState(1);
+  const [take, setTake] = useState<number>(50);
+  const skip = (page - 1) * pageSize;
+
+  const { data, isLoading, isFetching, dataUpdatedAt, error, refetch } = useGiftCardsList({
+    q: search,
+    sortBy: sort.key,
+    order: sort.dir,
+    take,
+    skip,
   });
 
   const rows = data?.items ?? [];
+  const total = data?.total;
+
+  const resetWindow = () => {
+    setPage(1);
+    setTake(pageSize);
+  };
+
+  const toggleSort = (key: GiftCardSort) => {
+    setSort((current) =>
+      current.key === key
+        ? { key, dir: current.dir === 'asc' ? 'desc' : 'asc' }
+        : // Money + dates descend (biggest / newest first); the code ascends.
+          { key, dir: key === 'code' || key === 'status' ? 'asc' : 'desc' }
+    );
+    resetWindow();
+  };
+
+  const header = (key: GiftCardSort, label: string, extra = '') => (
+    <th
+      className={extra}
+      aria-sort={sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+    >
+      <button
+        type="button"
+        className="link link-hover inline-flex items-center gap-1"
+        onClick={() => {
+          toggleSort(key);
+        }}
+      >
+        {label}
+        {sort.key === key ? (
+          sort.dir === 'asc' ? (
+            <ArrowUp className="size-3" aria-hidden />
+          ) : (
+            <ArrowDown className="size-3" aria-hidden />
+          )
+        ) : null}
+      </button>
+    </th>
+  );
 
   const open = (id: string, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.giftcard.detail', { id }, { target: targetFor(event) });
@@ -58,9 +132,13 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
             aria-label="Search gift cards"
             placeholder="Search by code or recipient…"
             value={search}
-            onValueChange={setSearch}
+            onValueChange={(next) => {
+              setSearch(next);
+              resetWindow();
+            }}
           />
         </div>
+
         <Button
           color="module"
           size="sm"
@@ -71,8 +149,9 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
           }}
         >
           <Plus className="size-4" aria-hidden />
-          Issue a gift card
+          <span className="hidden @lg:inline">Issue a gift card</span>
         </Button>
+
         <RefreshButton
           isFetching={isFetching}
           updatedAt={data ? dataUpdatedAt : undefined}
@@ -83,64 +162,113 @@ export function GiftCardsListSurface({ ctx }: { ctx: SurfaceContext }) {
       </PaneToolbar>
 
       <Card className="min-h-0 flex-1 overflow-y-auto">
-        {isError ? (
+        {error ? (
           <EmptyState
+            icon={<Ticket className="size-6" aria-hidden />}
             title="Could not load your gift cards"
             description="Something went wrong reaching the server. It may be temporary — try again in a moment."
           />
-        ) : isPending ? (
+        ) : isLoading ? (
           <p className="p-4 text-sm" role="status">
-            Loading…
+            Loading gift cards…
           </p>
         ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<Ticket className="size-6" aria-hidden />}
-            title={search.trim() ? 'Nothing matches that search' : 'No gift cards yet'}
-            description={
-              search.trim()
-                ? 'Try a different word, or clear the search box to see everything.'
-                : 'A gift card lets someone pre-pay an amount for another person to spend with you. Issue your first one to get started.'
-            }
+          <ListEmptyState
+            filtered={Boolean(search.trim())}
+            noResults={{
+              icon: <Ticket className="size-6" aria-hidden />,
+              title: 'Nothing matches that search',
+              description: 'Try a different word, or clear the search box to see everything.',
+            }}
+            firstRun={{
+              title: 'No gift cards yet',
+              description:
+                'A gift card lets someone pre-pay an amount for another person to spend with you. Issue your first one to get started.',
+            }}
           />
         ) : (
-          <ul className="flex flex-col p-1">
-            {rows.map((row) => {
-              const state = giftCardState(row.status);
-              const who = recipientLabel(row);
-              return (
-                <li key={row.id}>
-                  <button
-                    type="button"
-                    className="hover:bg-base-200 flex w-full flex-wrap items-center gap-2 rounded px-2 py-2 text-left"
+          <Table size="sm" hover>
+            <thead>
+              <tr>
+                {header('code', 'Code')}
+                {/* Recipient is a name OR an email OR nothing, so there is no one
+                    column to order it by — a plain, unsorted cell. */}
+                <th className="hidden @lg:table-cell">For</th>
+                {header('balanceCents', 'Balance', 'text-right')}
+                {header('status', 'State')}
+                {header('expiresAt', 'Expires', 'hidden @2xl:table-cell')}
+                {header('createdAt', 'Issued', 'hidden @3xl:table-cell text-right')}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((row) => {
+                const state = giftCardState(row.status);
+                const who = recipientLabel(row);
+                return (
+                  <tr
+                    key={row.id}
+                    className="cursor-pointer"
+                    tabIndex={0}
+                    role="button"
                     onClick={(event) => {
                       open(row.id, event);
                     }}
+                    onKeyDown={(event) => {
+                      if (event.key !== 'Enter' && event.key !== ' ') return;
+                      event.preventDefault();
+                      open(row.id, event);
+                    }}
                   >
-                    <span className="shrink-0 font-mono font-semibold">{row.code}</span>
-                    {who ? (
-                      <Text as="span" className="min-w-0 flex-1 truncate text-sm">
-                        {who}
-                      </Text>
-                    ) : (
-                      <span className="min-w-0 flex-1" />
-                    )}
-                    <Text as="span" className="shrink-0 font-semibold tabular-nums">
+                    <td className="font-mono font-semibold">{row.code}</td>
+                    <td className="hidden max-w-48 truncate text-sm @lg:table-cell">
+                      {who ?? '—'}
+                    </td>
+                    <td className="text-right font-semibold tabular-nums">
                       {formatCents(row.balanceCents, row.currency)}
-                    </Text>
-                    <Badge color={state.tone} variant="soft" size="sm">
-                      {state.label}
-                    </Badge>
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+                    </td>
+                    <td>
+                      <Badge color={state.tone} variant="soft" size="sm" title={state.detail}>
+                        {state.label}
+                      </Badge>
+                    </td>
+                    <td className="hidden text-sm @2xl:table-cell">{expiryLabel(row.expiresAt)}</td>
+                    <td className="hidden text-right text-sm @3xl:table-cell">
+                      {issuedLabel(row.createdAt)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </Table>
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click to open · Shift-click to open alongside · Alt-click to open in a new window
-      </p>
+      <div className="shrink-0">
+        <ListPagination
+          shown={rows.length}
+          firstRow={rows.length === 0 ? 0 : skip + 1}
+          total={total}
+          page={page}
+          pageSize={pageSize}
+          canLoadMore={take < MAX_TAKE}
+          busy={isFetching}
+          onLoadMore={() => {
+            setTake((current) => Math.min(current + pageSize, MAX_TAKE));
+          }}
+          onPageChange={(next) => {
+            setPage(next);
+            setTake(pageSize);
+          }}
+          onPageSizeChange={(size) => {
+            setPageSize(size);
+            setPage(1);
+            setTake(size);
+          }}
+        />
+        <p className="hidden px-1 pb-1 text-sm @xl:block">
+          Click to open · Shift-click alongside · Alt-click new window
+        </p>
+      </div>
     </div>
   );
 }

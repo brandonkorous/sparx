@@ -171,6 +171,15 @@ model Property {
   rollupDropshipDailyOrders     RollupDropshipDailyOrders[]
   rollupAutomationDailyRuns     RollupAutomationDailyRuns[]
 
+  // Per-site pricing (docs/131 §4): price lists apply via a junction (Discount
+  // shape). Markup + surcharge rules are deliberately tenant-wide — markup writes a
+  // variant's single shared list price, and a surcharge is a per-tenant payment fee.
+  priceListLinks PriceListProperty[]
+
+  // The site a tenant markets AS on sparx.market (docs/131 §7) — its public merchant
+  // identity is this property's, not the tenant's.
+  marketMerchantProfiles MarketMerchantProfile[]
+
   // Shopper-authored content (docs/131 §4), stamped with WHERE IT WAS WRITTEN
   // rather than inferred from the product — a product reaches sites through a
   // junction and can be listed on several, so the act of writing is the only

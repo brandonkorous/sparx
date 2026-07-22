@@ -63,9 +63,9 @@ import {
   TabsTab,
   Text,
   Textarea,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   ArrowDown,
   ArrowUp,
@@ -924,7 +924,7 @@ function TemplateEditor({
   onDeleted: () => void;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const remove = useDeleteConfiguratorTemplate(productId);
 
   const isNew = draft.id === NEW;

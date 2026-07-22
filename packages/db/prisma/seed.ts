@@ -3173,9 +3173,24 @@ interface OrderSpec {
   daysAgo: number;
   lineCount: number;
   shipFlat: number;
+  // Where the sale happened (24-crm-orders): the origin bucket + the marketplace
+  // slug when channel='marketplace'. Drives the Finance "Where money comes from"
+  // breakdown, so the specs deliberately spread across every channel.
+  channel: string;
+  source?: string | null;
+  // The processor that took the money (26-crm-order-payments): a gateway
+  // (stripe | paypal | square) settles to the bank and shows in Payouts; a manual
+  // tender (check | net_terms) is money received but never a deposit that arrives.
+  method: string;
+  // A declined attempt precedes this order's payment — seeds the failed rows the
+  // Payments feed must surface clearly. With paymentStatus 'unpaid' the decline
+  // stands alone (a checkout that never completed); with 'paid' a capture follows.
+  failedFirst?: boolean;
+  failureReason?: string;
 }
 // Lifecycle spread; the delivered/fulfilled ones (≥1 per buyer) back the
-// returns + verified reviews.
+// returns + verified reviews. Channel / method / failure fields additionally back
+// the Finance surfaces (payments, payouts, channels).
 const ORDER_SPECS: OrderSpec[] = [
   {
     customerIdx: 0,
@@ -3184,6 +3199,8 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 34,
     lineCount: 2,
     shipFlat: 14.5,
+    channel: 'storefront',
+    method: 'stripe',
   },
   {
     customerIdx: 0,
@@ -3192,6 +3209,8 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 12,
     lineCount: 1,
     shipFlat: 9.95,
+    channel: 'storefront',
+    method: 'stripe',
   },
   {
     customerIdx: 1,
@@ -3200,6 +3219,9 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 27,
     lineCount: 3,
     shipFlat: 0,
+    channel: 'marketplace',
+    source: 'etsy',
+    method: 'stripe',
   },
   {
     customerIdx: 2,
@@ -3208,6 +3230,9 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 19,
     lineCount: 2,
     shipFlat: 14.5,
+    channel: 'marketplace',
+    source: 'amazon',
+    method: 'stripe',
   },
   {
     customerIdx: 3,
@@ -3216,6 +3241,8 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 6,
     lineCount: 2,
     shipFlat: 14.5,
+    channel: 'storefront',
+    method: 'paypal',
   },
   {
     customerIdx: 4,
@@ -3224,6 +3251,10 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 4,
     lineCount: 1,
     shipFlat: 9.95,
+    channel: 'storefront',
+    method: 'stripe',
+    failedFirst: true,
+    failureReason: 'Card declined (insufficient funds) — retried and approved.',
   },
   {
     customerIdx: 5,
@@ -3232,6 +3263,8 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 2,
     lineCount: 2,
     shipFlat: 14.5,
+    channel: 'admin',
+    method: 'square',
   },
   {
     customerIdx: 1,
@@ -3240,6 +3273,10 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 1,
     lineCount: 1,
     shipFlat: 9.95,
+    channel: 'storefront',
+    method: 'stripe',
+    failedFirst: true,
+    failureReason: 'Card declined (do not honour) — checkout not completed.',
   },
   {
     customerIdx: 2,
@@ -3248,6 +3285,8 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 9,
     lineCount: 2,
     shipFlat: 14.5,
+    channel: 'storefront',
+    method: 'stripe',
   },
   {
     customerIdx: 3,
@@ -3256,6 +3295,29 @@ const ORDER_SPECS: OrderSpec[] = [
     daysAgo: 22,
     lineCount: 1,
     shipFlat: 9.95,
+    channel: 'marketplace',
+    source: 'etsy',
+    method: 'stripe',
+  },
+  {
+    customerIdx: 4,
+    status: 'delivered',
+    paymentStatus: 'paid',
+    daysAgo: 15,
+    lineCount: 4,
+    shipFlat: 0,
+    channel: 'b2b_portal',
+    method: 'net_terms',
+  },
+  {
+    customerIdx: 5,
+    status: 'fulfilled',
+    paymentStatus: 'paid',
+    daysAgo: 8,
+    lineCount: 2,
+    shipFlat: 0,
+    channel: 'b2b_portal',
+    method: 'check',
   },
 ];
 
@@ -3471,8 +3533,8 @@ async function seedDemoOrders(tenantId: string): Promise<void> {
           orderNumber: `SO-${1001 + i}`,
           status: spec.status,
           paymentStatus: spec.paymentStatus,
-          channel: 'storefront',
-          source: 'sparx_market',
+          channel: spec.channel,
+          source: spec.source ?? null,
           subtotal,
           taxTotal,
           shippingTotal: spec.shipFlat,
@@ -3517,6 +3579,73 @@ async function seedDemoOrders(tenantId: string): Promise<void> {
         placedAt,
         itemIds: order.items,
       });
+
+      // Payment ledger (26-crm-order-payments) — the rows the Finance Payments +
+      // Payouts surfaces read. A processorRef makes each row unique (the ledger's
+      // (tenant, processor, ref) constraint) AND idempotent across re-seeds.
+      const refBase = `seed-${1001 + i}`;
+
+      // A declined attempt, when the spec asks for one, timestamped just before
+      // the order so it sorts under the successful capture (or stands alone).
+      if (spec.failedFirst) {
+        await tx.orderPayment.create({
+          data: {
+            tenantId,
+            orderId: order.id,
+            processor: spec.method,
+            processorRef: `${refBase}-fail`,
+            amount: total,
+            currency: 'USD',
+            status: 'failed',
+            failureReason: spec.failureReason ?? 'Card declined.',
+            createdAt: new Date(placedAt.getTime() - 5 * 60_000),
+          },
+        });
+      }
+
+      // A refunded order captured money before it was reversed, so it belongs
+      // here too — `paid` is false for it (paymentStatus 'refunded'), which is
+      // exactly why the capture + its OrderRefund row were being skipped.
+      if (paid || refunded) {
+        // The captured (or later-refunded) payment. `net_terms` / `check` are
+        // captured money that never rides a gateway settlement, so Payouts skips
+        // them by design — they are still money-in on the Payments feed.
+        const capturedAt = daysAgoDate(spec.daysAgo);
+        const payment = await tx.orderPayment.create({
+          data: {
+            tenantId,
+            orderId: order.id,
+            processor: spec.method,
+            processorRef: `${refBase}-cap`,
+            amount: total,
+            currency: 'USD',
+            status: refunded ? 'refunded' : 'captured',
+            authorizedAt: capturedAt,
+            capturedAt,
+            createdAt: placedAt,
+          },
+          select: { id: true },
+        });
+
+        // A refunded order reverses its whole capture — a real OrderRefund row so
+        // the Payments feed can show "−$X of $Y refunded", not just a status word.
+        if (refunded) {
+          await tx.orderRefund.create({
+            data: {
+              tenantId,
+              orderId: order.id,
+              paymentId: payment.id,
+              amount: total,
+              currency: 'USD',
+              reason: 'Customer returned the order for a full refund.',
+              processorRef: `${refBase}-ref`,
+              status: 'completed',
+              refundedAt: daysAgoDate(spec.daysAgo - 2),
+              createdAt: daysAgoDate(spec.daysAgo - 2),
+            },
+          });
+        }
+      }
     }
 
     // Denormalized customer stats from settled (paid, non-cancelled) orders.
@@ -3901,6 +4030,18 @@ async function main(): Promise<void> {
     );
   }
 
+  // Demo Partner Program (docs/114 Part B) — makes the e2e tenant a live certified
+  // partner with referrals, commissions, payouts, clients and bootcamps so every
+  // workbench Partners surface shows real data. Idempotent; wrapped so a hiccup
+  // never blocks the rest of the seed.
+  try {
+    await seedDemoPartner(tenant.id);
+  } catch (err) {
+    console.warn(
+      `[seed] demo partner seed skipped: ${err instanceof Error ? err.message : String(err)}`
+    );
+  }
+
   // sparx-core marketplace catalog (docs/60) — platform data, independent of the
   // e2e tenant. Wrapped so a catalog hiccup never blocks the rest of the seed.
   try {
@@ -4071,6 +4212,322 @@ async function seedDemoFeedback(tenantId: string): Promise<void> {
     });
 
     console.log(`Seeded demo feedback for tenant ${tenantId}`);
+  });
+}
+
+// Demo Partner Program (docs/114 Part B) — makes the dev tenant a live, CERTIFIED
+// partner with a full book of business so every Partners surface in the workbench
+// shows real data end-to-end: the referral ledger, the client list (referred AND
+// consultant-managed), the commission + payout ledgers, the tier standing + KPIs,
+// a published bootcamp (plus a draft), and a filled public directory listing.
+//
+// Certified is deliberate: it is the only tier allowed to PUBLISH a bootcamp
+// (§B.5), so the seeded published cohort is valid and the create→publish flow is
+// exercisable against this tenant.
+//
+// Idempotent: the partner row upserts on its unique tenant_id; the referral /
+// commission / payout ledgers are cleared and rebuilt each run (dev data — a
+// deterministic rebuild beats reconciling individual rows); the client orgs,
+// consultant memberships and bootcamps upsert on their natural keys.
+async function seedDemoPartner(tenantId: string): Promise<void> {
+  const now = Date.now();
+  const daysAgo = (n: number) => new Date(now - n * 24 * 60 * 60 * 1000);
+  const daysAhead = (n: number) => new Date(now + n * 24 * 60 * 60 * 1000);
+
+  // ── The partner's book of business: bare client orgs. Ridgeline/Copperleaf/
+  //    Harbor are REFERRED (they signed up under the partner's link); Copperleaf
+  //    and Junegrass are also CONSULTANT-MANAGED (the owner holds access). Each is
+  //    a real Tenant + primary Property (the docs/49 invariant) so the partner
+  //    surfaces resolve them by name/slug through the org table.
+  const clientOrgs = [
+    { slug: 'ridgeline-outfitters', name: 'Ridgeline Outfitters' },
+    { slug: 'copperleaf-studio', name: 'Copperleaf Studio' },
+    { slug: 'harbor-and-main-coffee', name: 'Harbor & Main Coffee' },
+    { slug: 'junegrass-botanicals', name: 'Junegrass Botanicals' },
+  ] as const;
+
+  const orgIds: Record<string, string> = {};
+  for (const org of clientOrgs) {
+    const row = await prisma.tenant.upsert({
+      where: { slug: org.slug },
+      update: {},
+      create: {
+        slug: org.slug,
+        name: org.name,
+        email: `owner@${org.slug}.example`,
+        plan: 'starter',
+        status: 'active',
+        settings: {},
+      },
+    });
+    orgIds[org.slug] = row.id;
+
+    // properties is FORCE RLS — set the org's context for the WITH CHECK.
+    await prisma.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${row.id}'`);
+      await tx.property.upsert({
+        where: { tenantId_slug: { tenantId: row.id, slug: 'primary' } },
+        update: { name: org.name },
+        create: { tenantId: row.id, slug: 'primary', name: org.name, isPrimary: true },
+      });
+    });
+  }
+
+  // ── The partner capability row + the referral/commission/payout ledgers, all
+  //    under the partner org's own FORCE-RLS context.
+  const partnerId = await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+
+    const profile = {
+      tier: 'certified',
+      status: 'active',
+      displayName: 'WizeWorks Studio',
+      bio: 'A full-service sparx partner — we design, build and run content-and-commerce sites for growing businesses, then stay on as their team.',
+      websiteUrl: 'https://wizeworks.example',
+      kind: 'agency',
+      locationCity: 'Portland',
+      locationState: 'OR',
+      locationCountry: 'US',
+      isRemote: true,
+      specialties: ['ecommerce', 'b2b', 'design', 'seo'],
+      directoryVisible: true,
+      stripePayoutAccountId: 'acct_seeddemo_wizeworks',
+      payoutMinCents: 5000,
+      appliedAt: daysAgo(120),
+      approvedAt: daysAgo(110),
+      certifiedAt: daysAgo(40),
+    };
+
+    const partner = await tx.partner.upsert({
+      where: { tenantId },
+      update: profile,
+      create: { tenantId, referralCode: 'WIZEWORKS', ...profile },
+    });
+
+    // Rebuild the ledgers deterministically. Commissions first (they reference the
+    // payout run + referral rows via SetNull), then runs, then referrals.
+    await tx.partnerCommission.deleteMany({ where: { tenantId } });
+    await tx.partnerPayoutRun.deleteMany({ where: { tenantId } });
+    await tx.partnerReferral.deleteMany({ where: { tenantId } });
+
+    const referral = (data: {
+      slug: string;
+      signupDaysAgo: number;
+      firstPaymentDaysAgo: number | null;
+      commissionRate: number;
+      commissionType: 'one_time' | 'ongoing';
+      status: 'pending' | 'active' | 'churned' | 'forfeited';
+    }) => {
+      const referredTenantId = orgIds[data.slug];
+      if (!referredTenantId) throw new Error(`client org not seeded: ${data.slug}`);
+      return tx.partnerReferral.create({
+        data: {
+          tenantId,
+          partnerId: partner.id,
+          referredTenantId,
+          referralCode: 'WIZEWORKS',
+          signupAt: daysAgo(data.signupDaysAgo),
+          firstPaymentAt:
+            data.firstPaymentDaysAgo == null ? null : daysAgo(data.firstPaymentDaysAgo),
+          commissionRate: data.commissionRate,
+          commissionType: data.commissionType,
+          status: data.status,
+        },
+      });
+    };
+
+    const ridgeline = await referral({
+      slug: 'ridgeline-outfitters',
+      signupDaysAgo: 95,
+      firstPaymentDaysAgo: 88,
+      commissionRate: 0.05, // certified ongoing = 5% on managed accounts (§B.4)
+      commissionType: 'ongoing',
+      status: 'active',
+    });
+    const copperleaf = await referral({
+      slug: 'copperleaf-studio',
+      signupDaysAgo: 82,
+      firstPaymentDaysAgo: 80,
+      commissionRate: 0.3, // first-payment share (§B.4)
+      commissionType: 'one_time',
+      status: 'active',
+    });
+    // Signed up under the link but hasn't paid yet — the pending referral state.
+    await referral({
+      slug: 'harbor-and-main-coffee',
+      signupDaysAgo: 9,
+      firstPaymentDaysAgo: null,
+      commissionRate: 0.3,
+      commissionType: 'one_time',
+      status: 'pending',
+    });
+
+    // One settled payout run (May) that disbursed the two paid commissions below.
+    const paidCents = 4200 + 8900;
+    const payoutRun = await tx.partnerPayoutRun.create({
+      data: {
+        tenantId,
+        partnerId: partner.id,
+        periodStart: new Date('2026-05-01T00:00:00.000Z'),
+        periodEnd: new Date('2026-05-31T23:59:59.999Z'),
+        amountCents: paidCents,
+        currency: 'USD',
+        commissionCount: 2,
+        status: 'paid',
+        stripeTransferId: 'tr_seeddemo_2026_05',
+        paidAt: daysAgo(50),
+      },
+    });
+
+    await tx.partnerCommission.createMany({
+      data: [
+        // Paid — Copperleaf's first-payment share, disbursed in the May run.
+        {
+          tenantId,
+          partnerId: partner.id,
+          referralId: copperleaf.id,
+          amountCents: 8900,
+          createdAt: daysAgo(80),
+          currency: 'USD',
+          period: null,
+          kind: 'one_time',
+          status: 'paid',
+          payoutRunId: payoutRun.id,
+          stripeTransferId: 'tr_seeddemo_2026_05',
+          paidAt: daysAgo(50),
+        },
+        // Paid — Ridgeline's May recurring share, same run.
+        {
+          tenantId,
+          partnerId: partner.id,
+          referralId: ridgeline.id,
+          amountCents: 4200,
+          createdAt: daysAgo(51),
+          currency: 'USD',
+          period: '2026-05',
+          kind: 'ongoing',
+          status: 'paid',
+          payoutRunId: payoutRun.id,
+          stripeTransferId: 'tr_seeddemo_2026_05',
+          paidAt: daysAgo(50),
+        },
+        // Approved — June recurring, awaiting the next payout run.
+        {
+          tenantId,
+          partnerId: partner.id,
+          referralId: ridgeline.id,
+          amountCents: 4500,
+          createdAt: daysAgo(21),
+          currency: 'USD',
+          period: '2026-06',
+          kind: 'ongoing',
+          status: 'approved',
+        },
+        // Pending — July recurring, not yet approved.
+        {
+          tenantId,
+          partnerId: partner.id,
+          referralId: ridgeline.id,
+          amountCents: 4800,
+          createdAt: daysAgo(6),
+          currency: 'USD',
+          period: '2026-07',
+          kind: 'ongoing',
+          status: 'pending',
+        },
+      ],
+    });
+
+    console.log(`Seeded partner "${partner.displayName}" (${partner.tier}) for tenant ${tenantId}`);
+    return partner.id;
+  });
+
+  // ── Consultant access — the owner operates two of the client orgs. Copperleaf is
+  //    both referred AND managed (two badges); Junegrass is managed-only (access,
+  //    no referral). members is auth-layer RLS — write under each org's context.
+  const owner = await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    return tx.user.findFirst({ where: { tenantId, role: 'owner' } });
+  });
+
+  if (owner) {
+    const ownerId = owner.id;
+    for (const slug of ['copperleaf-studio', 'junegrass-botanicals'] as const) {
+      const orgId = orgIds[slug];
+      if (!orgId) continue;
+      await prisma.$transaction(async (tx) => {
+        await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${orgId}'`);
+        await tx.$executeRawUnsafe(`SET LOCAL app.user_id = '${ownerId}'`);
+        await tx.member.upsert({
+          where: { organizationId_userId: { organizationId: orgId, userId: ownerId } },
+          update: { memberType: 'consultant', status: 'active', role: 'admin' },
+          create: {
+            organizationId: orgId,
+            userId: ownerId,
+            role: 'admin',
+            memberType: 'consultant',
+            status: 'active',
+          },
+        });
+      });
+    }
+  }
+
+  // ── Bootcamps — one published (valid only because the host is Certified) and one
+  //    draft, so the list shows both states and the edit/publish flow is testable.
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+
+    await tx.bootcamp.upsert({
+      where: { slug: 'launch-your-store-in-a-weekend' },
+      update: { status: 'published', publishedAt: daysAgo(5), partnerId },
+      create: {
+        tenantId,
+        partnerId,
+        title: 'Launch Your Store in a Weekend',
+        slug: 'launch-your-store-in-a-weekend',
+        description:
+          '<p>A hands-on two-day cohort: leave with a live sparx site, a stocked catalog and your first checkout tested — no code, no jargon.</p>',
+        format: 'virtual',
+        locationCountry: 'US',
+        startsAt: daysAhead(21),
+        endsAt: daysAhead(22),
+        seatsTotal: 40,
+        seatsFilled: 12,
+        priceCents: 19900,
+        currency: 'USD',
+        registrationMode: 'internal',
+        status: 'published',
+        publishedAt: daysAgo(5),
+      },
+    });
+
+    await tx.bootcamp.upsert({
+      where: { slug: 'b2b-wholesale-foundations' },
+      update: { partnerId },
+      create: {
+        tenantId,
+        partnerId,
+        title: 'B2B Wholesale Foundations',
+        slug: 'b2b-wholesale-foundations',
+        description:
+          '<p>For agencies taking a client wholesale: price lists, net terms, approvals and the buyer portal, start to finish.</p>',
+        format: 'hybrid',
+        locationCity: 'Portland',
+        locationState: 'OR',
+        locationCountry: 'US',
+        startsAt: daysAhead(45),
+        endsAt: daysAhead(46),
+        seatsTotal: 25,
+        seatsFilled: 0,
+        priceCents: 24900,
+        currency: 'USD',
+        registrationMode: 'internal',
+        status: 'draft',
+      },
+    });
+
+    console.log(`Seeded partner bootcamps for tenant ${tenantId}`);
   });
 }
 

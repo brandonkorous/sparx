@@ -62,9 +62,9 @@ import {
   Input,
   Select,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { ChevronDown, ChevronUp, Plus, Shapes, Trash2, X } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { FormSection } from '../../components/form-section';
@@ -362,7 +362,7 @@ function problemWith(draft: OptionDraft[]): OptionProblem | null {
 
 export function ProductOptionsTab({ product }: { ctx: SurfaceContext; product: Product }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const options = useProductOptions(product.id);
   const variants = useProductVariants(product.id);

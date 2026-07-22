@@ -127,9 +127,9 @@
   --color-module-content: var(--color-primary-content);
 
   /* Surfaces */
-  --color-base-100: #0c1433;
+  --color-base-300: #0c1433;
   --color-base-200: #161f42;
-  --color-base-300: #242e57;
+  --color-base-100: #242e57;
 }
 
 /* ── Module identity palette ───────────────────────────────────────────────────

@@ -54,9 +54,9 @@ import {
   TabsTab,
   Text,
   Textarea,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Languages, Plus, Save, ServerCrash, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -196,7 +196,7 @@ function TranslationEditor({
   }) => void;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const saveTranslation = useSaveTranslation(productId);
   const removeTranslation = useDeleteTranslation(productId);
 

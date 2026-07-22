@@ -24,9 +24,9 @@ import {
   Heading,
   Input,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { ExternalLink, Save, Star, Trash2 } from 'lucide-react';
 import { useWorkbench } from '../../lib/workbench/context';
 import { useActiveSiteId, useModuleStates, switchSite } from '../../lib/api/shell-data';
@@ -211,7 +211,7 @@ function CreateSite({ ctx }: { ctx: SurfaceContext }) {
 
 function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const { controller } = useWorkbench();
   const { data: site, isError, isPending, refetch } = useSite(id);
   const { data: modules } = useModuleStates();

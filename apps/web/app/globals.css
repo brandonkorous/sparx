@@ -12,6 +12,7 @@
    semantic names during coexistence (identical values in light, so nothing
    shifts). Phase 3 deletes @sparx/ui/tokens.css and brand becomes sole. */
 @import '@sparx/brand/theme.css';
+@import '@sparx/brand/toast.css';
 @import '@sparx/ui/tokens.css';
 
 /* silicaui is the incoming component layer — a Tailwind v4 plugin whose semantic

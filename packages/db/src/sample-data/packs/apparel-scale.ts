@@ -182,6 +182,23 @@ const COLORS = [
 /** Rotating vendors, so the vendor facet has real spread. */
 const VENDORS = ['Northloom', 'Alder & Co', 'Terrace Goods', 'Fieldspun', 'Maren Supply'] as const;
 
+/** Swatch hex per colorway (for the storefront's color picker). */
+const SWATCH: Record<string, string> = {
+  Black: '#111111',
+  Sand: '#d8c3a5',
+  Olive: '#5a5a3c',
+  Slate: '#54606e',
+  Ecru: '#efe7d3',
+  Navy: '#1f2a44',
+  Rust: '#9c4a2f',
+  'Heather Grey': '#9aa0a6',
+  Forest: '#2f4a3a',
+  Clay: '#b0664a',
+};
+
+/** Apparel sizes for sized garments (tops/bottoms/outerwear). Accessories are one-size. */
+const SIZES = ['S', 'M', 'L'] as const;
+
 function slug(s: string): string {
   return s
     .toLowerCase()
@@ -205,16 +222,60 @@ export function apparelScaleProducts(): SampleProduct[] {
     const priceCents = garment.base + fabric.premium;
     const costCents = Math.round(priceCents * 0.42);
 
-    // Stock varies by index so the catalog isn't uniformly full — a handful sit low,
-    // most sit healthy — which makes the inventory + availability surfaces honest.
-    const received = 40 + (i % 6) * 18;
-    const sold = 6 + (i % 9) * 3;
-
     // Cross-link a slice into the merchandised collections too, so those grids aren't
     // frozen at their authored size and the "featured / sale" facets have depth.
     const collectionKeys = ['full-line'];
     if (i % 5 === 0) collectionKeys.push('sale');
     if (i % 7 === 0) collectionKeys.push('new-arrivals');
+
+    // Real variant axes so the storefront's Color/Size facets have data: every piece comes
+    // in its assigned colorway PLUS a neutral (Black, or Ecru when the piece IS black), and
+    // sized garments carry S/M/L. Accessories are one-size (Color only). Across the 90
+    // products the assigned colors spread the Color facet; the neutral gives a real choice.
+    const isSized = garment.category !== 'accessories';
+    const colors = [color, color === 'Black' ? 'Ecru' : 'Black'];
+    const options = [
+      {
+        name: 'Color',
+        displayType: 'swatch',
+        values: colors.map((c) => ({ value: c, swatchHex: SWATCH[c] ?? '#888888' })),
+      },
+      ...(isSized
+        ? [{ name: 'Size', displayType: 'segmented', values: SIZES.map((s) => ({ value: s })) }]
+        : []),
+    ];
+
+    // color × size (or color only) → variants, each with its own modest stock so some sit
+    // low and availability is honest. Deterministic quantities keyed off (i, variant index).
+    const variants = [];
+    let vn = 0;
+    for (const c of colors) {
+      for (const s of isSized ? SIZES : [null]) {
+        vn += 1;
+        const received = 14 + ((i + vn) % 6) * 8;
+        const sold = 2 + ((i + vn) % 7) * 2;
+        variants.push({
+          key: `fl-${i + 1}-v${vn}`,
+          sku: `FL-${String(i + 1).padStart(3, '0')}-${vn}`,
+          title: s ? `${c} / ${s}` : c,
+          priceCents,
+          costCents,
+          optionValues: s ? [c, s] : [c],
+          stock: [
+            {
+              warehouseKey: 'FULFILL',
+              reorderPoint: 8,
+              reorderQuantity: 40,
+              leadTimeDays: 21,
+              movements: [
+                { delta: received, reason: 'receive', daysAgo: 28 },
+                { delta: -sold, reason: 'sale', daysAgo: 6 },
+              ],
+            },
+          ],
+        });
+      }
+    }
 
     products.push({
       key: `fl-${i + 1}`,
@@ -231,29 +292,8 @@ export function apparelScaleProducts(): SampleProduct[] {
       categoryKeys: [garment.category],
       collectionKeys,
       emoji: garment.emoji,
-      // Single variant, no options — breadth, not depth. Title carries the colorway so
-      // the card + PDP read as a real SKU rather than a bare product.
-      variants: [
-        {
-          key: `fl-${i + 1}-v`,
-          sku: `FL-${String(i + 1).padStart(3, '0')}`,
-          title: color,
-          priceCents,
-          costCents,
-          stock: [
-            {
-              warehouseKey: 'FULFILL',
-              reorderPoint: 12,
-              reorderQuantity: 60,
-              leadTimeDays: 21,
-              movements: [
-                { delta: received, reason: 'receive', daysAgo: 28 },
-                { delta: -sold, reason: 'sale', daysAgo: 6 },
-              ],
-            },
-          ],
-        },
-      ],
+      options,
+      variants,
     });
   }
   return products;

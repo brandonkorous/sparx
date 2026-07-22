@@ -61,8 +61,7 @@ export interface CommerceSettingsInput {
 export function useUpdateCommerceSettings() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (input: CommerceSettingsInput) =>
-      api.patch('/v1/commerce/site/settings', input),
+    mutationFn: (input: CommerceSettingsInput) => api.patch('/v1/commerce/site/settings', input),
     onSuccess: () => {
       void queryClient.invalidateQueries({ queryKey: settingsKey });
     },

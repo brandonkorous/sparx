@@ -8,7 +8,13 @@
 // The engine owns the state machine + the booking on accept; the api-rest waitlist
 // tick drives auto-offer (checks live availability) + the offer email + expiry.
 
-import { withTenant, type Booking, type TxClient, type WaitlistEntry } from '@sparx/db';
+import {
+  withTenant,
+  type Booking,
+  type Prisma,
+  type TxClient,
+  type WaitlistEntry,
+} from '@sparx/db';
 import type { AcceptWaitlistInput, CreateWaitlistEntryInput } from '@sparx/scheduling-schemas';
 
 import { createBooking } from './booking-service';
@@ -58,6 +64,12 @@ export interface ListWaitlistOptions {
   serviceId?: string;
   status?: string;
   customerId?: string;
+  /** Free-text over the waiting customer's name/email + the service name. */
+  q?: string;
+  /** Page size (1–250, default 50). */
+  take?: number;
+  /** Rows to skip for paging (default 0). */
+  skip?: number;
 }
 
 export async function listWaitlist(
@@ -82,22 +94,65 @@ export interface WaitlistEntryDetail extends WaitlistEntry {
   customerEmail: string | null;
 }
 
-/** Like {@link listWaitlist} but joined with the service + customer display fields
- *  the dashboard needs — batch-loaded (no N+1). */
+/** The base WHERE the serviceId / status / customerId filters build. Search is
+ *  layered on top separately because it needs a customer-id lookup first. */
+function waitlistBaseWhere(opts: ListWaitlistOptions): Prisma.WaitlistEntryWhereInput {
+  return {
+    ...(opts.serviceId ? { serviceId: opts.serviceId } : {}),
+    ...(opts.status ? { status: opts.status } : {}),
+    ...(opts.customerId ? { customerId: opts.customerId } : {}),
+  };
+}
+
+/**
+ * Like {@link listWaitlist} but joined with the service + customer display fields
+ * the dashboard needs (batch-loaded, no N+1), and PAGED with a total count so it
+ * holds up past a handful of entries.
+ *
+ * Search runs in the DB `where`, never as a post-filter on the loaded page — so
+ * the count and the page agree. The `WaitlistEntry` model has no `customer`
+ * relation, so a name/email needle is first resolved to the matching customer
+ * ids, then OR-ed with a service-name match; both are real query predicates.
+ */
 export async function listWaitlistDetailed(
   tenantId: string,
   opts: ListWaitlistOptions = {}
-): Promise<WaitlistEntryDetail[]> {
+): Promise<{ rows: WaitlistEntryDetail[]; total: number }> {
+  const take = Math.min(Math.max(opts.take ?? 50, 1), 250);
+  const skip = Math.max(opts.skip ?? 0, 0);
+  const needle = opts.q?.trim();
   return withTenant({ tenantId }, async (tx) => {
-    const rows = await tx.waitlistEntry.findMany({
-      where: {
-        ...(opts.serviceId ? { serviceId: opts.serviceId } : {}),
-        ...(opts.status ? { status: opts.status } : {}),
-        ...(opts.customerId ? { customerId: opts.customerId } : {}),
-      },
-      orderBy: { createdAt: 'asc' },
-    });
-    if (rows.length === 0) return [];
+    const base = waitlistBaseWhere(opts);
+    let where: Prisma.WaitlistEntryWhereInput = base;
+    if (needle) {
+      const matched = await tx.customer.findMany({
+        where: {
+          OR: [
+            { firstName: { contains: needle, mode: 'insensitive' } },
+            { lastName: { contains: needle, mode: 'insensitive' } },
+            { email: { contains: needle, mode: 'insensitive' } },
+          ],
+        },
+        select: { id: true },
+        take: 500,
+      });
+      where = {
+        AND: [
+          base,
+          {
+            OR: [
+              { customerId: { in: matched.map((c) => c.id) } },
+              { service: { is: { name: { contains: needle, mode: 'insensitive' } } } },
+            ],
+          },
+        ],
+      };
+    }
+    const [rows, total] = await Promise.all([
+      tx.waitlistEntry.findMany({ where, orderBy: { createdAt: 'asc' }, take, skip }),
+      tx.waitlistEntry.count({ where }),
+    ]);
+    if (rows.length === 0) return { rows: [], total };
     const serviceIds = [...new Set(rows.map((r) => r.serviceId))];
     const customerIds = [...new Set(rows.map((r) => r.customerId))];
     const [services, customers] = await Promise.all([
@@ -112,7 +167,7 @@ export async function listWaitlistDetailed(
     ]);
     const svc = new Map(services.map((s) => [s.id, s.name]));
     const cust = new Map(customers.map((c) => [c.id, c]));
-    return rows.map((r) => {
+    const detailed = rows.map((r) => {
       const c = cust.get(r.customerId);
       const name = [c?.firstName, c?.lastName].filter(Boolean).join(' ');
       return {
@@ -122,6 +177,7 @@ export async function listWaitlistDetailed(
         customerEmail: c?.email ?? null,
       };
     });
+    return { rows: detailed, total };
   });
 }
 

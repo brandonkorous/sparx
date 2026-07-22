@@ -37,6 +37,7 @@ on:
           - workers-prune
           - storefront-teardown
           - mcp-storefront-teardown
+          - dashboard-teardown
           - cronjobs
           # Postal was deprecated 2026-05-29 (Postal's smtp_relays can't
           # auth to Mailgun by design — config_schema.rb:79 drops
@@ -185,7 +186,7 @@ jobs:
           kubectl rollout restart deployment/pgbouncer -n "$NAMESPACE"
           kubectl rollout status deployment/pgbouncer -n "$NAMESPACE" --timeout=5m
 
-      # Non-secret app env shared by api-rest, dashboard, and future services.
+      # Non-secret app env shared by api-rest, the workbench, and future services.
       # Pulls from k8s/sparx-prod/app-env-configmap.yaml.
       #
       # envFrom injects ConfigMap keys at POD START ONLY — k8s never restarts
@@ -204,7 +205,8 @@ jobs:
         run: |
           set -euo pipefail
           kubectl apply -f k8s/sparx-prod/app-env-configmap.yaml
-          # Selector tier=api|web matches the app manifests (api-rest, dashboard).
+          # Selector tier=api|web matches the app manifests (api-rest, workbench,
+          # web, site, market).
           for tier in api web; do
             if kubectl get deployment -n "$NAMESPACE" -l "tier=$tier" -o name | grep -q .; then
               kubectl rollout restart deployment -n "$NAMESPACE" -l "tier=$tier"
@@ -228,6 +230,9 @@ jobs:
             customer-auth-secret
             google-client-id
             google-client-secret
+            google-oauth-client-id
+            google-oauth-client-secret
+            search-console-token-key
             sparx-internal-jwt-secret
             sparx-internal-acquisition-token
             sparx-internal-cron-token
@@ -411,6 +416,27 @@ jobs:
           set -euo pipefail
           for kind in deployment service hpa pdb; do
             kubectl delete "$kind" mcp-storefront -n "$NAMESPACE" --ignore-not-found
+          done
+
+      # One-shot teardown of the decommissioned `dashboard` app. The workbench
+      # replaced it at app.sparx.works (Caddy now reverse-proxies the host to
+      # workbench, and the OAuth/internal surfaces were ported over), and
+      # dashboard.yaml was dropped from k8s/apps/kustomization.yaml — but
+      # `kubectl apply -k` does NOT prune the resources it dropped, so the old
+      # Deployment/Service/HPA/PDB linger and keep the idle pod running (wasting
+      # SSD quota). Delete them explicitly here.
+      #
+      # WHEN TO RUN: after `components=caddy` has re-applied the Caddyfile so
+      # app.sparx.works proxies to `workbench`, AND the workbench rollout with the
+      # ported OAuth/internal routes is live — running this earlier drops the
+      # backend Caddy is still routing app.sparx.works to. Idempotent via
+      # --ignore-not-found. NOT in all-platform — deliberate human-gated lever.
+      - name: Tear down decommissioned dashboard app
+        if: ${{ inputs.components == 'dashboard-teardown' }}
+        run: |
+          set -euo pipefail
+          for kind in deployment service hpa pdb; do
+            kubectl delete "$kind" dashboard -n "$NAMESPACE" --ignore-not-found
           done
 
       # Postal — self-hosted email server in its own namespace. Lives

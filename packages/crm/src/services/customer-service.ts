@@ -560,6 +560,25 @@ export async function bulkTag(
 // Address management
 // ─────────────────────────────────────────────────────────────────────────
 
+/** Every address on a customer, default-first then oldest-first. The single
+ *  `get` deliberately does NOT include addresses (it stays a cheap one-row read
+ *  used by every transport); a surface that needs the addresses asks for them
+ *  explicitly, exactly like the B2B account contacts read. 404s on an
+ *  unknown/soft-deleted customer so a stale link fails cleanly. */
+export async function listAddresses(
+  ctx: ServiceContext,
+  customerId: string
+): Promise<CustomerAddress[]> {
+  return withTenant(ctx, async (tx) => {
+    const customer = await tx.customer.findFirst({ where: { id: customerId, deletedAt: null } });
+    if (!customer) throw new CrmNotFoundError('Customer', customerId);
+    return tx.customerAddress.findMany({
+      where: { customerId },
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'asc' }],
+    });
+  });
+}
+
 export async function addAddress(
   ctx: ServiceContext,
   customerId: string,

@@ -9,7 +9,7 @@
 // show it. They are separate because you often want to answer privately first
 // and read it back before it goes public.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -31,6 +31,7 @@ import {
   useBulkModerateQuestions,
   useModerateQueueQuestion,
   usePendingQuestions,
+  useQueueQuestion,
   type QueueQuestion,
 } from './moderation-data';
 
@@ -88,11 +89,19 @@ function QuestionCard({
   ctx,
   selected,
   onToggleSelect,
+  highlighted,
+  pinned,
 }: {
   question: QueueQuestion;
   ctx: SurfaceContext;
   selected: boolean;
   onToggleSelect: (id: string, next: boolean) => void;
+  /** The item the queue was opened focused on — wears the module hue so the eye
+   *  lands on it after the scroll. */
+  highlighted?: boolean;
+  /** A focused item shown ABOVE the backlog because it is no longer pending, so
+   *  it is not part of the "select all waiting" set — its checkbox is dropped. */
+  pinned?: boolean;
 }) {
   const toast = useToast();
   const moderate = useModerateQueueQuestion();
@@ -132,16 +141,22 @@ function QuestionCard({
   };
 
   return (
-    <article className="border-base-300 bg-base-100 flex flex-col gap-3 rounded-lg border p-4">
+    <article
+      className={`bg-base-100 flex flex-col gap-3 rounded-lg border p-4 ${
+        highlighted ? 'border-module' : 'border-base-300'
+      }`}
+    >
       <div className="flex items-start gap-3">
-        <Checkbox
-          color="module"
-          checked={selected}
-          aria-label={`Select this question about ${product}`}
-          onChange={(event) => {
-            onToggleSelect(question.id, event.target.checked);
-          }}
-        />
+        {pinned ? null : (
+          <Checkbox
+            color="module"
+            checked={selected}
+            aria-label={`Select this question about ${product}`}
+            onChange={(event) => {
+              onToggleSelect(question.id, event.target.checked);
+            }}
+          />
+        )}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex flex-wrap items-center justify-between gap-2">
             <button
@@ -255,6 +270,21 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
   );
   const allSelected = rows.length > 0 && selectedIds.length === rows.length;
 
+  // The item the queue was opened focused on (a table row click passes it). If
+  // it is still in the pending backlog it is highlighted in place; if it has
+  // since been decided it is fetched and pinned above the backlog, so opening
+  // focused on ANY row works, not just a still-waiting one.
+  const focusId = typeof ctx.params.focusId === 'string' ? ctx.params.focusId : undefined;
+  const inBacklog = focusId !== undefined && rows.some((r) => r.id === focusId);
+  const focusedQuery = useQueueQuestion(focusId !== undefined && !inBacklog ? focusId : undefined);
+  const focused = focusId !== undefined && !inBacklog ? focusedQuery.data : undefined;
+  const focusPending = focusedQuery.isLoading;
+  const focusRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (focusId === undefined) return;
+    if (focused || inBacklog) focusRef.current?.scrollIntoView({ block: 'center' });
+  }, [focusId, focused, inBacklog]);
+
   const toggleSelect = (id: string, next: boolean) => {
     setSelected((current) => {
       const copy = new Set(current);
@@ -335,7 +365,7 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
             <p className="text-sm" role="status">
               Loading…
             </p>
-          ) : rows.length === 0 ? (
+          ) : rows.length === 0 && !focused && !focusPending ? (
             <EmptyState
               icon={<Check className="size-6" aria-hidden />}
               title="No questions waiting"
@@ -343,85 +373,112 @@ export function QaQueueSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           ) : (
             <>
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  Questions waiting for you
-                </Heading>
-                <Text className="text-sm">
-                  Shoppers asked these on your product pages. Answer the ones you can, then show
-                  them so the question and your answer help the next person deciding whether to buy.
-                </Text>
-              </div>
-
-              {selectedIds.length > 0 ? (
-                <div className="border-base-300 bg-base-100 sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-lg border p-3">
-                  <Text as="span" className="font-medium">
-                    {selectedIds.length === 1
-                      ? '1 selected'
-                      : `${String(selectedIds.length)} selected`}
-                  </Text>
-                  <Button
-                    size="sm"
-                    color="module"
-                    loading={bulkModerate.isPending}
-                    onClick={() => {
-                      bulkSetStatus('published', 'Shown');
-                    }}
-                  >
-                    <Check className="size-4" aria-hidden />
-                    Show
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    color="neutral"
-                    loading={bulkModerate.isPending}
-                    onClick={() => {
-                      bulkSetStatus('rejected', 'Hidden');
-                    }}
-                  >
-                    <EyeOff className="size-4" aria-hidden />
-                    Hide
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    color="neutral"
-                    className="ml-auto"
-                    onClick={clearSelection}
-                  >
-                    Clear
-                  </Button>
-                </div>
-              ) : (
-                <label className="flex w-fit items-center gap-2">
-                  <Checkbox
-                    color="module"
-                    checked={allSelected}
-                    aria-label="Select every waiting question"
-                    onChange={(event) => {
-                      setSelected(
-                        event.target.checked ? new Set(rows.map((r) => r.id)) : new Set()
-                      );
-                    }}
-                  />
-                  <Text as="span" className="text-sm">
-                    Select all
-                  </Text>
-                </label>
-              )}
-
-              <div className="flex flex-col gap-3">
-                {rows.map((question) => (
+              {focused ? (
+                <div ref={focusRef} className="flex flex-col gap-2">
+                  <Heading level={1} className="text-2xl font-semibold">
+                    This question
+                  </Heading>
                   <QuestionCard
-                    key={question.id}
-                    question={question}
+                    question={focused}
                     ctx={ctx}
-                    selected={selected.has(question.id)}
+                    selected={false}
                     onToggleSelect={toggleSelect}
+                    highlighted
+                    pinned
                   />
-                ))}
-              </div>
+                </div>
+              ) : null}
+
+              {rows.length === 0 ? (
+                focused ? (
+                  <Text className="text-sm">Nothing else is waiting for you right now.</Text>
+                ) : null
+              ) : (
+                <>
+                  <div className="flex flex-col gap-1">
+                    <Heading level={1} className="text-2xl font-semibold">
+                      Questions waiting for you
+                    </Heading>
+                    <Text className="text-sm">
+                      Shoppers asked these on your product pages. Answer the ones you can, then show
+                      them so the question and your answer help the next person deciding whether to
+                      buy.
+                    </Text>
+                  </div>
+
+                  {selectedIds.length > 0 ? (
+                    <div className="border-base-300 bg-base-100 sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-lg border p-3">
+                      <Text as="span" className="font-medium">
+                        {selectedIds.length === 1
+                          ? '1 selected'
+                          : `${String(selectedIds.length)} selected`}
+                      </Text>
+                      <Button
+                        size="sm"
+                        color="module"
+                        loading={bulkModerate.isPending}
+                        onClick={() => {
+                          bulkSetStatus('published', 'Shown');
+                        }}
+                      >
+                        <Check className="size-4" aria-hidden />
+                        Show
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        color="neutral"
+                        loading={bulkModerate.isPending}
+                        onClick={() => {
+                          bulkSetStatus('rejected', 'Hidden');
+                        }}
+                      >
+                        <EyeOff className="size-4" aria-hidden />
+                        Hide
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        color="neutral"
+                        className="ml-auto"
+                        onClick={clearSelection}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  ) : (
+                    <label className="flex w-fit items-center gap-2">
+                      <Checkbox
+                        color="module"
+                        checked={allSelected}
+                        aria-label="Select every waiting question"
+                        onChange={(event) => {
+                          setSelected(
+                            event.target.checked ? new Set(rows.map((r) => r.id)) : new Set()
+                          );
+                        }}
+                      />
+                      <Text as="span" className="text-sm">
+                        Select all
+                      </Text>
+                    </label>
+                  )}
+
+                  <div className="flex flex-col gap-3">
+                    {rows.map((question) => (
+                      <div key={question.id} ref={focusId === question.id ? focusRef : undefined}>
+                        <QuestionCard
+                          question={question}
+                          ctx={ctx}
+                          selected={selected.has(question.id)}
+                          onToggleSelect={toggleSelect}
+                          highlighted={focusId === question.id}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

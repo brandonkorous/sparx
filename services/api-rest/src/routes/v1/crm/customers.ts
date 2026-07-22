@@ -126,10 +126,7 @@ const customerRoutes: FastifyPluginAsync = (app) => {
       const siteCount = await withRequestTenant(request, (tx) => tx.property.count());
       if (siteCount > 1) {
         const header = request.headers['x-sparx-property-id'];
-        body.propertyId = await resolvePropertyId(
-          auth,
-          typeof header === 'string' ? header : null
-        );
+        body.propertyId = await resolvePropertyId(auth, typeof header === 'string' ? header : null);
       }
     }
     const customer = await customerService.create(toCrmContext(request), body);
@@ -172,6 +169,14 @@ const customerRoutes: FastifyPluginAsync = (app) => {
     await requireCrmModule(request);
     const result = await customerService.merge(toCrmContext(request), request.body);
     return ok(result);
+  });
+
+  app.get('/v1/crm/customers/:id/addresses', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const items = await customerService.listAddresses(toCrmContext(request), id);
+    return paged(items, { total: items.length, per_page: items.length || 1 });
   });
 
   app.post('/v1/crm/customers/:id/addresses', async (request, reply) => {

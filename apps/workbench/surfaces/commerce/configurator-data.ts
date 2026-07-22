@@ -48,17 +48,45 @@ export const templateKeys = {
   detail: (id: string) => [...templateKeys.all, id] as const,
 };
 
+/* ── The list window ────────────────────────────────────────────────────── */
+
+/** Sort direction, shared by every server-sorted list. */
+export type SortDir = 'asc' | 'desc';
+
+/**
+ * The columns the templates table may order by — EXACTLY the server's whitelist
+ * (`ListTemplatesQuery.sort_by` in api-rest). `product` orders on the owning
+ * product's title; `options` orders on how many questions a template asks.
+ * Sorting is server-side because a client-side sort of one loaded page silently
+ * presents that page as the whole answer.
+ */
+export type TemplateSort = 'name' | 'product' | 'status' | 'options' | 'updatedAt';
+
+export interface TemplateListFilter {
+  q?: string;
+  status?: string;
+  sortBy: TemplateSort;
+  order: SortDir;
+  take?: number;
+  skip?: number;
+}
+
 /* ── Queries ────────────────────────────────────────────────────────────── */
 
-export function useConfiguratorTemplates(filter: { q?: string; status?: string }) {
+export function useConfiguratorTemplates(filter: TemplateListFilter) {
   return useQuery({
     queryKey: [...templateKeys.all, 'list', filter] as const,
     queryFn: () =>
       api.list<ConfiguratorTemplateRow>('/v1/commerce/configurator-templates', {
         ...(filter.q?.trim() ? { q: filter.q.trim() } : {}),
         ...(filter.status ? { status: filter.status } : {}),
-        take: 100,
+        sort_by: filter.sortBy,
+        order: filter.order,
+        take: filter.take ?? 50,
+        ...(filter.skip ? { skip: filter.skip } : {}),
       }),
+    // Hold the previous window while the next loads, so paging and re-sorting
+    // don't blink the table out to empty and back.
     placeholderData: (previous) => previous,
   });
 }

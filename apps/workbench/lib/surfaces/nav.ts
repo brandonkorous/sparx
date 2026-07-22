@@ -64,7 +64,11 @@ const MODULE_LABELS: Partial<Record<WorkbenchModule, string>> = {
   scheduling: 'Scheduling',
   dropship: 'Dropshipping',
   automations: 'Automations',
-  seo: 'Search',
+  // SEO is the value-add itself — business owners know the term and pay for it,
+  // so the rail names it outright rather than softening it to "Search" (which
+  // also collided with the toolbar's global search). This is the one place the
+  // plain-language rule yields: the acronym IS the recognisable value here.
+  seo: 'SEO',
   chat: 'Messages',
   ai: 'AI',
   partner: 'Partners',

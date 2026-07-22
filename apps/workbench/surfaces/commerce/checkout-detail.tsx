@@ -22,9 +22,9 @@ import {
   EmptyState,
   Heading,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { CreditCard, ShoppingCart } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
@@ -98,7 +98,7 @@ function AddressBlock({ title, address }: { title: string; address: OrderAddress
 export function CheckoutSessionDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const { data, isPending, isError, refetch } = useCheckoutSession(id);
   const expire = useExpireCheckoutSession(id);

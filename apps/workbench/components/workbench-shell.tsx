@@ -10,9 +10,11 @@
 //
 // The shell also owns BOOT: the dock cannot mount until the active site is
 // known, because layouts are per-site (an invoice pane from Site A must never
-// be restored under Site B). One token fetch answers it, and the sites list
-// canonicalizes "no cookie yet" to the primary site so the layout key is stable
-// across the first visit and every later one.
+// be restored under Site B). The server reads the active-site cookie and hands
+// it down as `initialSiteKey`, so a returning operator's dock mounts on the
+// first paint with no token round trip; only a genuine first visit (no cookie)
+// falls back to the token fetch + sites list, which canonicalize "no cookie
+// yet" to the primary site so the layout key is stable ever after.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { SidebarProvider } from '@wizeworks/silicaui-react';
@@ -20,6 +22,7 @@ import { mintWindowId, openBus, type BusMessage } from '../lib/bus';
 import { applyThemeToDocument, readTheme, THEME_STORAGE_KEY, type Theme } from '../lib/theme';
 import { useActiveSiteId, useSites } from '../lib/api/shell-data';
 import { WorkbenchProvider } from '../lib/workbench/context';
+import { BackNavigation } from '../lib/workbench/nav-history';
 import { loadNavState, saveNavState } from '../lib/workbench/persistence';
 import { Dock } from '../lib/dock/dock';
 import { useIsCompact } from '../lib/use-compact';
@@ -29,14 +32,30 @@ import { StatusBar } from './status-bar';
 import { Toolbar } from './toolbar';
 import { Launcher } from './launcher';
 import { ModulePanel } from './module-panel';
+import { RecentsRecorder } from './recents-recorder';
 import { UpdateNotifier } from './update-notifier';
 import { FeedbackProvider } from './feedback/provider';
+import { PaneWaiting } from './pane-waiting';
 import type { WorkbenchModule } from './module-scope';
+import { useOnboarding } from '../lib/onboarding/api';
+import { isOnboardingFinished } from '../lib/onboarding/entry';
+import { OnboardingGate } from '../surfaces/onboarding/onboarding-gate';
 // Registers every surface. Must be imported before the dock mounts, since a
 // restored layout resolves surface keys synchronously while deserializing.
 import '../lib/surfaces/catalog';
 
-export function WorkbenchShell({ userName, userEmail }: { userName: string; userEmail: string }) {
+export function WorkbenchShell({
+  userName,
+  userEmail,
+  initialSiteKey,
+}: {
+  userName: string;
+  userEmail: string;
+  /** The active site read from the cookie server-side — the boot key when set,
+   *  so the dock mounts without waiting on the token fetch. Null on a first
+   *  visit (no cookie), where boot falls back to the token + sites resolution. */
+  initialSiteKey: string | null;
+}) {
   // Minted once per window. A popout gets its own id from the popout bootstrap.
   const windowIdRef = useRef<string | null>(null);
   windowIdRef.current ??= mintWindowId();
@@ -60,15 +79,28 @@ export function WorkbenchShell({ userName, userEmail }: { userName: string; user
   const { data: tokenState } = useActiveSiteId();
   const { data: sites, isError: sitesFailed } = useSites();
 
+  // ── First-run gate: has this tenant finished setup? ──────────────────────
+  // Onboarding is tenant-level, not site-level, so this resolves independently
+  // of the site key above and gates the entire shell (see the branch below).
+  const { data: onboarding, isError: onboardingError } = useOnboarding();
+
   // The cookie names a site, or nothing. Nothing means api-rest scopes to the
   // primary property, so the primary's id IS the honest key for that state —
   // using it keeps the layout in one slot whether or not the cookie exists yet.
   const siteKey = useMemo(() => {
-    if (tokenState === undefined) return null; // still booting
-    if (tokenState.propertyId) return tokenState.propertyId;
+    // The cookie names a site, and the server already read it (initialSiteKey);
+    // /api/token forwards the IDENTICAL cookie as propertyId, so the two are
+    // equal whenever both are present — trusting the server value first means
+    // the boot key is known on the first render for every returning operator,
+    // with nothing to flip once the token fetch confirms it.
+    const cookieSite = tokenState?.propertyId ?? initialSiteKey;
+    if (cookieSite) return cookieSite;
+    // No cookie anywhere: api-rest scopes to the primary property, so the
+    // primary's id is the honest, stable key — but resolving it needs the list.
+    if (tokenState === undefined) return null; // still booting, and no cookie hint
     if (sites) return sites.find((site) => site.isPrimary)?.id ?? sites[0]?.id ?? 'default';
     return sitesFailed ? 'default' : null; // sites still loading (or unreachable)
-  }, [tokenState, sites, sitesFailed]);
+  }, [tokenState, sites, sitesFailed, initialSiteKey]);
 
   // The site a feedback submission is about. Resolved here rather than inside
   // the feedback provider so it rides the same sites query the toolbar already
@@ -150,6 +182,27 @@ export function WorkbenchShell({ userName, userEmail }: { userName: string; user
     setLauncherOpen(true);
   }, []);
 
+  // ── First-run gate ────────────────────────────────────────────────────────
+  // Until the tenant finishes setup, onboarding owns the WHOLE viewport — there is
+  // no dock, rail, or toolbar yet, because there is nothing to arrange until there
+  // is a business to arrange. This sits above the compact/desktop split on purpose:
+  // the gate is one full-screen flow on every device, and it falls through the
+  // instant `finishedAt` lands (the flow invalidates the onboarding query, this
+  // re-reads it, and the shell below takes over with no reload). While the state is
+  // still loading we hold a neutral screen rather than flash the shell then yank it
+  // away from a tenant who has not onboarded. On ERROR we fail OPEN — a hiccup on
+  // this one endpoint must never brick the workbench for a tenant who has long
+  // since finished; the gate only shows on a state we actually read.
+  if (onboarding === undefined && !onboardingError) {
+    return <div className="bg-base-300 h-dvh w-full" aria-busy />;
+  }
+  if (onboarding && !isOnboardingFinished(onboarding)) {
+    // No WorkbenchProvider: the gate is not a pane and touches no controller,
+    // dock, or per-site layout — it runs on react-query + the root toast/confirm
+    // providers alone, so setup never spins up machinery it doesn't use.
+    return <OnboardingGate />;
+  }
+
   // Below 64rem the dock is not cramped, it is pointless — so the whole
   // presentation swaps rather than the layout shrinking. Everything below this
   // line is shared: same controller, same registry, same surfaces. Only the
@@ -170,9 +223,23 @@ export function WorkbenchShell({ userName, userEmail }: { userName: string; user
             onOpenLauncher={openLauncher}
           />
           <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
+          {/* Teaches the browser Back button to walk the compact shell's own
+              navigation — the nav drawer and launcher close first, then focus
+              steps back through the stack — instead of leaving the app. */}
+          <BackNavigation
+            launcher={launcherOpen}
+            module={null}
+            nav={navOpen}
+            onApply={(overlays) => {
+              setLauncherOpen(overlays.launcher);
+              setNavOpen(overlays.nav);
+            }}
+          />
           {/* Inside the provider: the notifier asks the controller what would be
               lost before it offers to reload. */}
           <UpdateNotifier />
+          {/* Listens for controller visits and records them to /v1/me/recents. */}
+          <RecentsRecorder />
         </FeedbackProvider>
       </WorkbenchProvider>
     );
@@ -182,20 +249,21 @@ export function WorkbenchShell({ userName, userEmail }: { userName: string; user
     <WorkbenchProvider windowId={windowId} role="main">
       <FeedbackProvider theme={theme} activeSite={activeSite}>
         <div className="bg-base-300 flex h-dvh w-full flex-col overflow-hidden">
-          {siteKey ? (
-            <Toolbar
-              userName={userName}
-              userEmail={userEmail}
-              theme={theme}
-              siteKey={siteKey}
-              onToggleTheme={toggleTheme}
-              onOpenLauncher={openLauncher}
-            />
-          ) : (
-            // Boot takes one same-origin fetch — a quiet strip beats a flash of
-            // toolbar with no workspace name popping in a beat later.
-            <div className="border-base-300 h-12 shrink-0 border-b" aria-hidden />
-          )}
+          {/* The chrome renders IMMEDIATELY, even before the site key resolves —
+            a present toolbar that fills in its workspace name a beat later reads
+            as loading; an absent one reads as broken. The switcher self-hides
+            until `sites` lands, and the workspace name holds a space until the
+            tenant query returns, so nothing here jumps. `default` matches the
+            rail's own boot fallback below; on the rare no-cookie first visit the
+            real key lands before anything is switchable. */}
+          <Toolbar
+            userName={userName}
+            userEmail={userEmail}
+            theme={theme}
+            siteKey={siteKey ?? 'default'}
+            onToggleTheme={toggleTheme}
+            onOpenLauncher={openLauncher}
+          />
 
           <div className="relative flex min-h-0 flex-1">
             <SidebarProvider
@@ -255,8 +323,16 @@ export function WorkbenchShell({ userName, userEmail }: { userName: string; user
 
             <main className="min-w-0 flex-1 p-1">
               {/* The dock waits for the site key — restoring Site A's layout and
-                then discovering we're on Site B would strand entity panes. */}
-              {siteKey ? <Dock siteKey={siteKey} /> : null}
+                then discovering we're on Site B would strand entity panes. With
+                the cookie handed down at SSR this is resolved on the first paint
+                for returning operators; only a genuine first visit lands here,
+                and it gets a spinner rather than an empty void so the shell
+                still reads as loading its work, not as broken chrome. */}
+              {siteKey ? (
+                <Dock siteKey={siteKey} />
+              ) : (
+                <PaneWaiting label="Loading your workspace" />
+              )}
             </main>
             <Launcher open={launcherOpen} onOpenChange={setLauncherOpen} />
           </div>
@@ -265,9 +341,25 @@ export function WorkbenchShell({ userName, userEmail }: { userName: string; user
             business pulse. Signals only; identity stays in the toolbar. */}
           <StatusBar />
 
+          {/* Teaches the browser Back button to walk the workbench's own
+            navigation — an open launcher or module panel closes first, then
+            focus steps back through the panes you were looking at — instead of
+            walking straight out of the app. */}
+          <BackNavigation
+            launcher={launcherOpen}
+            module={browsing}
+            nav={false}
+            onApply={(overlays) => {
+              setLauncherOpen(overlays.launcher);
+              setBrowsing((overlays.module as WorkbenchModule | null) ?? null);
+            }}
+          />
+
           {/* Inside the provider: the notifier asks the controller what would be
             lost before it offers to reload. */}
           <UpdateNotifier />
+          {/* Listens for controller visits and records them to /v1/me/recents. */}
+          <RecentsRecorder />
         </div>
       </FeedbackProvider>
     </WorkbenchProvider>

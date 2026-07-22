@@ -64,7 +64,7 @@ export async function getResource(tenantId: string, id: string): Promise<Schedul
 
 export async function listResources(
   tenantId: string,
-  opts: { kind?: string; locationId?: string; activeOnly?: boolean } = {}
+  opts: { kind?: string; locationId?: string; activeOnly?: boolean; propertyIds?: string[] } = {}
 ): Promise<SchedulingResource[]> {
   return withTenant({ tenantId }, (tx) =>
     tx.schedulingResource.findMany({
@@ -73,6 +73,20 @@ export async function listResources(
         ...(opts.kind ? { kind: opts.kind } : {}),
         ...(opts.locationId ? { locationId: opts.locationId } : {}),
         ...(opts.activeOnly ? { isActive: true } : {}),
+        // Site scope (Model B, docs/49 §3): a resource with NO `siteLinks` works
+        // every site (shared — e.g. an owner who covers both businesses), so it
+        // always shows; one WITH links shows only on the sites it is linked to. So
+        // a multi-site tenant's calendar lanes / resource pickers stop listing the
+        // other business's staff and bays, while single-site tenants (no link rows)
+        // are unaffected. Undefined = unscoped (an unrestricted `?property=all`).
+        ...(opts.propertyIds
+          ? {
+              OR: [
+                { siteLinks: { none: {} } },
+                { siteLinks: { some: { propertyId: { in: opts.propertyIds } } } },
+              ],
+            }
+          : {}),
       },
       orderBy: { name: 'asc' },
     })

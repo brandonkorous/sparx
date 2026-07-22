@@ -19,7 +19,7 @@
 // per-row are the same two verbs (publish / hide / delete); bulk just applies
 // one to a checked set in a single call.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Badge,
   Button,
@@ -30,9 +30,9 @@ import {
   Text,
   Textarea,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Check, EyeOff, MessageSquare, Reply, ServerCrash, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -44,6 +44,7 @@ import {
   useDeleteQueueReview,
   useModerateQueueReview,
   usePendingReviews,
+  useQueueReview,
   useRespondQueueReview,
   type QueueReview,
 } from './moderation-data';
@@ -108,14 +109,21 @@ function ReviewCard({
   ctx,
   selected,
   onToggleSelect,
+  highlighted,
+  pinned,
 }: {
   review: QueueReview;
   ctx: SurfaceContext;
   selected: boolean;
   onToggleSelect: (id: string, next: boolean) => void;
+  /** The item the queue was opened focused on — wears the module hue. */
+  highlighted?: boolean;
+  /** A focused item shown above the backlog because it is no longer pending; not
+   *  part of "select all waiting", so its checkbox is dropped. */
+  pinned?: boolean;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const moderate = useModerateQueueReview();
   const respond = useRespondQueueReview();
   const remove = useDeleteQueueReview();
@@ -173,16 +181,22 @@ function ReviewCard({
   };
 
   return (
-    <article className="border-base-300 bg-base-100 flex flex-col gap-3 rounded-lg border p-4">
+    <article
+      className={`bg-base-100 flex flex-col gap-3 rounded-lg border p-4 ${
+        highlighted ? 'border-module' : 'border-base-300'
+      }`}
+    >
       <div className="flex items-start gap-3">
-        <Checkbox
-          color="module"
-          checked={selected}
-          aria-label={`Select ${author}'s review of ${product}`}
-          onChange={(event) => {
-            onToggleSelect(review.id, event.target.checked);
-          }}
-        />
+        {pinned ? null : (
+          <Checkbox
+            color="module"
+            checked={selected}
+            aria-label={`Select ${author}'s review of ${product}`}
+            onChange={(event) => {
+              onToggleSelect(review.id, event.target.checked);
+            }}
+          />
+        )}
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex flex-wrap items-center justify-between gap-2">
             {/* The product this review is about, as a link into its full reviews
@@ -322,7 +336,7 @@ function ReviewCard({
 export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
   const reviews = usePendingReviews();
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const bulkModerate = useBulkModerateReviews();
   const bulkDelete = useBulkDeleteReviews();
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -333,6 +347,20 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
     [rows, selected]
   );
   const allSelected = rows.length > 0 && selectedIds.length === rows.length;
+
+  // The review the queue was opened focused on (a table row click passes it).
+  // Highlighted in place if still pending; fetched and pinned above the backlog
+  // if it has since been decided — so opening focused on ANY row works.
+  const focusId = typeof ctx.params.focusId === 'string' ? ctx.params.focusId : undefined;
+  const inBacklog = focusId !== undefined && rows.some((r) => r.id === focusId);
+  const focusedQuery = useQueueReview(focusId !== undefined && !inBacklog ? focusId : undefined);
+  const focused = focusId !== undefined && !inBacklog ? focusedQuery.data : undefined;
+  const focusPending = focusedQuery.isLoading;
+  const focusRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (focusId === undefined) return;
+    if (focused || inBacklog) focusRef.current?.scrollIntoView({ block: 'center' });
+  }, [focusId, focused, inBacklog]);
 
   const toggleSelect = (id: string, next: boolean) => {
     setSelected((current) => {
@@ -444,7 +472,7 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
             <p className="text-sm" role="status">
               Loading…
             </p>
-          ) : rows.length === 0 ? (
+          ) : rows.length === 0 && !focused && !focusPending ? (
             <EmptyState
               icon={<Check className="size-6" aria-hidden />}
               title="Nothing waiting"
@@ -452,99 +480,125 @@ export function ReviewsQueueSurface({ ctx }: { ctx: SurfaceContext }) {
             />
           ) : (
             <>
-              <div className="flex flex-col gap-1">
-                <Heading level={1} className="text-2xl font-semibold">
-                  Reviews waiting for you
-                </Heading>
-                <Text className="text-sm">
-                  These reviews are from across all your products and are not on your website yet.
-                  Publish the ones you’re happy with; hide anything that breaks your rules. A
-                  verified badge means the reviewer really bought the product.
-                </Text>
-              </div>
-
-              {selectedIds.length > 0 ? (
-                <div className="border-base-300 bg-base-100 sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-lg border p-3">
-                  <Text as="span" className="font-medium">
-                    {selectedIds.length === 1
-                      ? '1 selected'
-                      : `${String(selectedIds.length)} selected`}
-                  </Text>
-                  <Button
-                    size="sm"
-                    color="module"
-                    loading={bulkModerate.isPending}
-                    disabled={busy}
-                    onClick={() => {
-                      bulkSetStatus('approved', 'Published');
-                    }}
-                  >
-                    <Check className="size-4" aria-hidden />
-                    Publish
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    color="neutral"
-                    loading={bulkModerate.isPending}
-                    disabled={busy}
-                    onClick={() => {
-                      bulkSetStatus('rejected', 'Hidden');
-                    }}
-                  >
-                    <EyeOff className="size-4" aria-hidden />
-                    Hide
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    color="danger"
-                    loading={bulkDelete.isPending}
-                    disabled={busy}
-                    onClick={onBulkDelete}
-                  >
-                    <Trash2 className="size-4" aria-hidden />
-                    Delete
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    color="neutral"
-                    className="ml-auto"
-                    onClick={clearSelection}
-                  >
-                    Clear
-                  </Button>
-                </div>
-              ) : (
-                <label className="flex w-fit items-center gap-2">
-                  <Checkbox
-                    color="module"
-                    checked={allSelected}
-                    aria-label="Select every waiting review"
-                    onChange={(event) => {
-                      setSelected(
-                        event.target.checked ? new Set(rows.map((r) => r.id)) : new Set()
-                      );
-                    }}
-                  />
-                  <Text as="span" className="text-sm">
-                    Select all
-                  </Text>
-                </label>
-              )}
-
-              <div className="flex flex-col gap-3">
-                {rows.map((review) => (
+              {focused ? (
+                <div ref={focusRef} className="flex flex-col gap-2">
+                  <Heading level={1} className="text-2xl font-semibold">
+                    This review
+                  </Heading>
                   <ReviewCard
-                    key={review.id}
-                    review={review}
+                    review={focused}
                     ctx={ctx}
-                    selected={selected.has(review.id)}
+                    selected={false}
                     onToggleSelect={toggleSelect}
+                    highlighted
+                    pinned
                   />
-                ))}
-              </div>
+                </div>
+              ) : null}
+
+              {rows.length === 0 ? (
+                focused ? (
+                  <Text className="text-sm">Nothing else is waiting for you right now.</Text>
+                ) : null
+              ) : (
+                <>
+                  <div className="flex flex-col gap-1">
+                    <Heading level={1} className="text-2xl font-semibold">
+                      Reviews waiting for you
+                    </Heading>
+                    <Text className="text-sm">
+                      These reviews are from across all your products and are not on your website
+                      yet. Publish the ones you’re happy with; hide anything that breaks your rules.
+                      A verified badge means the reviewer really bought the product.
+                    </Text>
+                  </div>
+
+                  {selectedIds.length > 0 ? (
+                    <div className="border-base-300 bg-base-100 sticky top-0 z-10 flex flex-wrap items-center gap-2 rounded-lg border p-3">
+                      <Text as="span" className="font-medium">
+                        {selectedIds.length === 1
+                          ? '1 selected'
+                          : `${String(selectedIds.length)} selected`}
+                      </Text>
+                      <Button
+                        size="sm"
+                        color="module"
+                        loading={bulkModerate.isPending}
+                        disabled={busy}
+                        onClick={() => {
+                          bulkSetStatus('approved', 'Published');
+                        }}
+                      >
+                        <Check className="size-4" aria-hidden />
+                        Publish
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        color="neutral"
+                        loading={bulkModerate.isPending}
+                        disabled={busy}
+                        onClick={() => {
+                          bulkSetStatus('rejected', 'Hidden');
+                        }}
+                      >
+                        <EyeOff className="size-4" aria-hidden />
+                        Hide
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        color="danger"
+                        loading={bulkDelete.isPending}
+                        disabled={busy}
+                        onClick={onBulkDelete}
+                      >
+                        <Trash2 className="size-4" aria-hidden />
+                        Delete
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        color="neutral"
+                        className="ml-auto"
+                        onClick={clearSelection}
+                      >
+                        Clear
+                      </Button>
+                    </div>
+                  ) : (
+                    <label className="flex w-fit items-center gap-2">
+                      <Checkbox
+                        color="module"
+                        checked={allSelected}
+                        aria-label="Select every waiting review"
+                        onChange={(event) => {
+                          setSelected(
+                            event.target.checked ? new Set(rows.map((r) => r.id)) : new Set()
+                          );
+                        }}
+                      />
+                      <Text as="span" className="text-sm">
+                        Select all
+                      </Text>
+                    </label>
+                  )}
+
+                  <div className="flex flex-col gap-3">
+                    {rows.map((review) => (
+                      <div key={review.id} ref={focusId === review.id ? focusRef : undefined}>
+                        <ReviewCard
+                          review={review}
+                          ctx={ctx}
+                          selected={selected.has(review.id)}
+                          onToggleSelect={toggleSelect}
+                          highlighted={focusId === review.id}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </>
+              )}
             </>
           )}
         </div>

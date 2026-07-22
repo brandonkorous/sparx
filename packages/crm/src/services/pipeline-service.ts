@@ -19,7 +19,7 @@ import type { Pipeline, PipelineStage, Prisma } from '@sparx/db';
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
 import type { ServiceContext } from '../errors';
-import { CrmNotFoundError } from '../errors';
+import { CrmConflictError, CrmNotFoundError, CrmValidationError } from '../errors';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Pipelines
@@ -233,6 +233,100 @@ export async function updateStage(
     });
     return updated;
   });
+}
+
+/**
+ * Delete a stage from a pipeline.
+ *
+ * Two guards make this safe rather than destructive:
+ *   • A pipeline must keep at least one stage — deleting the last is refused
+ *     (409), because a deal has nowhere to live otherwise.
+ *   • A stage that still has open deals on it cannot just vanish: the caller must
+ *     name a DIFFERENT stage on the SAME pipeline to move those deals to, and the
+ *     move + delete run in one transaction. With no deals on it, the stage is
+ *     removed directly. Returns the pipeline with its remaining stages.
+ */
+export async function deleteStage(
+  ctx: ServiceContext,
+  args: { pipelineId: string; stageId: string; reassignToStageId?: string }
+): Promise<Pipeline & { stages: PipelineStage[] }> {
+  const result = await withTenant(ctx, async (tx) => {
+    const pipeline = await tx.pipeline.findUnique({
+      where: { id: args.pipelineId },
+      include: { stages: true },
+    });
+    if (!pipeline) throw new CrmNotFoundError('Pipeline', args.pipelineId);
+
+    const stage = pipeline.stages.find((s) => s.id === args.stageId);
+    if (!stage) throw new CrmNotFoundError('PipelineStage', args.stageId);
+
+    if (pipeline.stages.length <= 1) {
+      throw new CrmConflictError(
+        'A pipeline must keep at least one stage. Add another stage before removing this one.',
+        'stageId'
+      );
+    }
+
+    const dealsOnStage = await tx.deal.count({
+      where: { stageId: args.stageId, deletedAt: null },
+    });
+
+    let movedDeals = 0;
+    if (dealsOnStage > 0) {
+      if (!args.reassignToStageId) {
+        throw new CrmValidationError(
+          'This stage still has deals on it. Choose a stage to move them to before removing it.',
+          [{ field: 'reassignToStageId', message: 'required when the stage has deals' }]
+        );
+      }
+      if (args.reassignToStageId === args.stageId) {
+        throw new CrmValidationError('Choose a different stage to move the deals to.', [
+          { field: 'reassignToStageId', message: 'must differ from the stage being removed' },
+        ]);
+      }
+      const target = pipeline.stages.find((s) => s.id === args.reassignToStageId);
+      if (!target) throw new CrmNotFoundError('PipelineStage', args.reassignToStageId);
+
+      const moved = await tx.deal.updateMany({
+        where: { stageId: args.stageId, deletedAt: null },
+        data: { stageId: args.reassignToStageId },
+      });
+      movedDeals = moved.count;
+    }
+
+    await tx.pipelineStage.delete({ where: { id: args.stageId } });
+
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'crm.pipeline_stage.deleted',
+      entityType: 'PipelineStage',
+      entityId: args.stageId,
+      diff: {
+        before: { name: stage.name, pipelineId: args.pipelineId },
+        after: { movedDeals, reassignedTo: args.reassignToStageId ?? null },
+      },
+    });
+
+    const refreshed = await tx.pipeline.findUnique({
+      where: { id: args.pipelineId },
+      include: { stages: { orderBy: { sortOrder: 'asc' } } },
+    });
+    // Just deleted a stage on it, so it exists — narrow for the type checker.
+    if (!refreshed) throw new CrmNotFoundError('Pipeline', args.pipelineId);
+    return refreshed;
+  });
+
+  await publishCrmEvent({
+    tenantId: ctx.tenantId,
+    topic: 'crm.pipeline.updated',
+    payload: { pipelineId: args.pipelineId, change: 'stage_deleted' },
+    dedupeKey: `crm.pipeline.stage_deleted:${args.stageId}`,
+  });
+
+  return result;
 }
 
 /** Reorder stages atomically. Postgres' UNIQUE (pipeline_id, sort_order)

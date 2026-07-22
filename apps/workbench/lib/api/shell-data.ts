@@ -174,5 +174,52 @@ export function useToggleFavorite() {
   });
 }
 
+/* ── Recents ──────────────────────────────────────────────────────────────
+   Server-synced via /v1/me/recents, the same spine as favorites and the same
+   shared table the dashboard uses — with workbench surface keys as actionIds.
+   The dashboard records a visit on every route change; the workbench has no
+   routes, so a "visit" is an interactive controller.open() of a browsable
+   surface (see RecentsRecorder + WorkbenchController.onVisit). */
+
+export interface RecentRow {
+  actionId: string;
+  lastVisitedAt: string;
+}
+
+/** Most-recently-opened surfaces, newest first. `take` bounds the list the rail
+ *  shows — the endpoint sorts by lastVisitedAt desc server-side. */
+export function useRecents(take = 8) {
+  return useQuery({
+    queryKey: ['me', 'recents', take],
+    queryFn: () => api.get<RecentRow[]>(`/v1/me/recents?take=${take}`),
+    staleTime: 60_000,
+  });
+}
+
+/** Records one visit (upsert + bump lastVisitedAt). Fired from RecentsRecorder,
+ *  never called from a surface directly — a surface doesn't know it's being
+ *  "visited", the controller does. */
+export function useRecordVisit() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (actionId: string) => api.post('/v1/me/recents', { actionId }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['me', 'recents'] });
+    },
+  });
+}
+
+/** Clears the whole recents list — the group's only management affordance,
+ *  since individual recents are ephemeral by nature (they roll over). */
+export function useClearRecents() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: () => api.delete('/v1/me/recents'),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ['me', 'recents'] });
+    },
+  });
+}
+
 /* Feedback moved to ./feedback.ts — it outgrew a section here once it gained
    history, threads, replies, and the pulse. */

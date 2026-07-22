@@ -44,6 +44,7 @@ import {
 import { ClipboardCheck, ClipboardList, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, plural, useStockLocations } from './data';
@@ -150,18 +151,20 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
     if (rows.length === 0) {
       return (
-        <EmptyState
-          icon={<ClipboardCheck className="size-6" aria-hidden />}
-          title={narrowed ? 'Nothing matches that' : 'No stock counts yet'}
-          description={
-            narrowed
-              ? locationName
-                ? `No counts match those filters at ${locationName}. Clear the status, or switch back to every location.`
-                : 'No counts match those filters. Try clearing the status filter or a different location.'
-              : 'A stock count is where you count what is really on the shelf and put the numbers right. Start one, count each item, and apply it to correct your stock in one go.'
-          }
-          actions={
-            narrowed ? undefined : (
+        <ListEmptyState
+          filtered={narrowed}
+          noResults={{
+            icon: <ClipboardCheck className="size-6" aria-hidden />,
+            title: 'Nothing matches that',
+            description: locationName
+              ? `No counts match those filters at ${locationName}. Clear the status, or switch back to every location.`
+              : 'No counts match those filters. Try clearing the status filter or a different location.',
+          }}
+          firstRun={{
+            title: 'No stock counts yet',
+            description:
+              'A stock count is where you count what is really on the shelf and put the numbers right. Start one, count each item, and apply it to correct your stock in one go.',
+            actions: (
               <Button
                 size="sm"
                 color="module"
@@ -172,8 +175,8 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Plus className="size-4" aria-hidden />
                 Start a count
               </Button>
-            )
-          }
+            ),
+          }}
         />
       );
     }
@@ -335,11 +338,11 @@ export function CountsListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      {/* Capped and centred, base-100 card lifted off the recessed pane. Wide
-          enough that a floated pane can disclose every column. */}
-      <Card className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</Card>
+      {/* Full width — the base-100 card lifted off the recessed pane. Matches the
+          house list convention: the table fills the pane. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
-      <div className="mx-auto w-full max-w-5xl shrink-0">
+      <div className="shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

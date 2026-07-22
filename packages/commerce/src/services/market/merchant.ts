@@ -30,6 +30,9 @@ export interface MarketMerchantProfileView {
   headline: string | null;
   bannerMediaId: string | null;
   defaultCategory: string | null;
+  /** The site this tenant markets AS + its public handle (docs/131 §7). */
+  marketPropertyId: string | null;
+  handle: string | null;
   /** The effective commission (bps) this tenant pays — override or platform default. */
   commissionBps: number;
   /** Whether a custom override is set (vs the platform default). */
@@ -43,6 +46,8 @@ function toView(profile: {
   headline: string | null;
   bannerMediaId: string | null;
   defaultCategory: string | null;
+  marketPropertyId: string | null;
+  handle: string | null;
   commissionBpsOverride: number | null;
 }): MarketMerchantProfileView {
   return {
@@ -52,6 +57,8 @@ function toView(profile: {
     headline: profile.headline,
     bannerMediaId: profile.bannerMediaId,
     defaultCategory: profile.defaultCategory,
+    marketPropertyId: profile.marketPropertyId,
+    handle: profile.handle,
     commissionBps: resolveCommissionBps(profile.commissionBpsOverride, platformCommissionBps()),
     hasCommissionOverride: profile.commissionBpsOverride !== null,
   };
@@ -70,6 +77,8 @@ export async function getMerchantProfile(ctx: ServiceContext): Promise<MarketMer
       headline: null,
       bannerMediaId: null,
       defaultCategory: null,
+      marketPropertyId: null,
+      handle: null,
       commissionBpsOverride: null,
     }
   );
@@ -89,6 +98,15 @@ export async function updateMerchantProfile(
   const data = MarketMerchantProfileInput.parse(input);
 
   const result = await withTenant(ctx, async (tx) => {
+    // The marketed SITE (docs/131 §7): if named, it must be one of THIS tenant's own
+    // properties (RLS scopes the lookup, so a foreign id simply isn't found).
+    if (data.marketPropertyId) {
+      const owned = await tx.property.findFirst({
+        where: { id: data.marketPropertyId },
+        select: { id: true },
+      });
+      if (!owned) throw new CommerceValidationError('That site is not one of yours.');
+    }
     const base = {
       enabled: data.enabled,
       bio: data.bio ?? null,
@@ -96,16 +114,35 @@ export async function updateMerchantProfile(
       headline: data.headline ?? null,
       bannerMediaId: data.bannerMediaId ?? null,
       defaultCategory: data.defaultCategory ?? null,
+      // Only touch handle / market site when the caller sent them, so a plain
+      // enable/disable toggle never clears a previously-claimed handle.
+      ...(data.handle !== undefined ? { handle: data.handle } : {}),
+      ...(data.marketPropertyId !== undefined ? { marketPropertyId: data.marketPropertyId } : {}),
     };
     const overrideField =
       opts.allowCommissionOverride && data.commissionBpsOverride !== undefined
         ? { commissionBpsOverride: data.commissionBpsOverride }
         : {};
-    const profile = await tx.marketMerchantProfile.upsert({
-      where: { tenantId: ctx.tenantId },
-      create: { tenantId: ctx.tenantId, ...base, ...overrideField },
-      update: { ...base, ...overrideField },
-    });
+    // The handle is a GLOBAL namespace but market_merchant_profiles is RLS-scoped, so
+    // the app can't read another tenant's handle to pre-check — the DB unique index is
+    // the real backstop. Translate its violation into a friendly claim error (docs/131 §7).
+    const profile = await tx.marketMerchantProfile
+      .upsert({
+        where: { tenantId: ctx.tenantId },
+        create: { tenantId: ctx.tenantId, ...base, ...overrideField },
+        update: { ...base, ...overrideField },
+      })
+      .catch((err: unknown) => {
+        if (
+          err &&
+          typeof err === 'object' &&
+          'code' in err &&
+          (err as { code?: string }).code === 'P2002'
+        ) {
+          throw new CommerceValidationError('That marketplace handle is already taken.');
+        }
+        throw err;
+      });
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,

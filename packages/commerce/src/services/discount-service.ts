@@ -59,9 +59,32 @@ export interface DiscountRow {
   updatedAt: string;
 }
 
+/**
+ * Columns the discount list may be ordered by. This is the AUTHORITATIVE
+ * whitelist — the api-rest route's Zod enum mirrors it, and nothing outside this
+ * set ever reaches an `orderBy`. Sorting lives on the server because the list
+ * pages: sorting one loaded page in the client and presenting it as the answer
+ * would hand back "the biggest discount" from page 2.
+ */
+export type DiscountSortField =
+  | 'name'
+  | 'code'
+  | 'status'
+  | 'valueCents'
+  | 'valuePercent'
+  | 'createdAt'
+  | 'updatedAt';
+
 export async function listDiscounts(
   ctx: ServiceContext,
-  filter: { status?: string; q?: string; take?: number; skip?: number } = {}
+  filter: {
+    status?: string;
+    q?: string;
+    take?: number;
+    skip?: number;
+    sortBy?: DiscountSortField;
+    order?: 'asc' | 'desc';
+  } = {}
 ): Promise<{ items: DiscountRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.DiscountWhereInput = {
@@ -76,10 +99,17 @@ export async function listDiscounts(
           }
         : {}),
     };
+    // A user sort ends on `id` so paging stays deterministic when the chosen
+    // column ties (two discounts of the same value, say). With no sort the list
+    // keeps its resolution order — highest priority first, then most recent —
+    // which is the order that decides which promotion wins.
+    const orderBy: Prisma.DiscountOrderByWithRelationInput[] = filter.sortBy
+      ? [{ [filter.sortBy]: filter.order ?? 'asc' }, { id: 'asc' }]
+      : [{ priority: 'desc' }, { updatedAt: 'desc' }];
     const [rows, total] = await Promise.all([
       tx.discount.findMany({
         where,
-        orderBy: [{ priority: 'desc' }, { updatedAt: 'desc' }],
+        orderBy,
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
       }),
@@ -472,10 +502,31 @@ export async function issueGiftCard(
   return { id: result.id, code: result.code };
 }
 
+/**
+ * Columns the gift-card list may be ordered by. The AUTHORITATIVE whitelist,
+ * mirrored by the api-rest route's Zod enum. As with discounts, sorting is
+ * server-side because the list pages — a client sort of one window is a wrong
+ * answer the moment there is a second window.
+ */
+export type GiftCardSortField =
+  | 'code'
+  | 'balanceCents'
+  | 'initialBalanceCents'
+  | 'status'
+  | 'expiresAt'
+  | 'createdAt';
+
 export async function listGiftCards(
   ctx: ServiceContext,
-  filter: { status?: string; q?: string; take?: number } = {}
-): Promise<GiftCardSummary[]> {
+  filter: {
+    status?: string;
+    q?: string;
+    take?: number;
+    skip?: number;
+    sortBy?: GiftCardSortField;
+    order?: 'asc' | 'desc';
+  } = {}
+): Promise<{ items: GiftCardSummary[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.GiftCardWhereInput = {
       ...(filter.status ? { status: filter.status } : {}),
@@ -489,12 +540,21 @@ export async function listGiftCards(
           }
         : {}),
     };
-    const rows = await tx.giftCard.findMany({
-      where,
-      orderBy: { createdAt: 'desc' },
-      take: Math.min(filter.take ?? 100, 500),
-    });
-    return rows.map(serializeGiftCard);
+    // `id` is the deterministic tiebreaker so a page boundary never repeats or
+    // skips a card when the sorted column ties. Default: newest issued first.
+    const orderBy: Prisma.GiftCardOrderByWithRelationInput[] = filter.sortBy
+      ? [{ [filter.sortBy]: filter.order ?? 'asc' }, { id: 'asc' }]
+      : [{ createdAt: 'desc' }, { id: 'asc' }];
+    const [rows, total] = await Promise.all([
+      tx.giftCard.findMany({
+        where,
+        orderBy,
+        take: Math.min(filter.take ?? 50, 250),
+        skip: filter.skip ?? 0,
+      }),
+      tx.giftCard.count({ where }),
+    ]);
+    return { items: rows.map(serializeGiftCard), total };
   });
 }
 

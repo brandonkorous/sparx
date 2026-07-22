@@ -79,10 +79,66 @@ export interface CollectionDetail {
   updatedAt: string;
 }
 
+/**
+ * One collection as the LIST surface shows it — the flat summary the
+ * `GET /v1/commerce/collections` window returns, not the full editable detail.
+ */
+export interface CollectionSummary {
+  id: string;
+  name: string;
+  handle: string;
+  type: CollectionType;
+  productCount: number;
+  featured: boolean;
+  updatedAt: string;
+}
+
+/** Sort direction shared by every server-sorted list. */
+export type SortDir = 'asc' | 'desc';
+
+/** The columns the collections table can sort by — EXACTLY the server's Zod
+ *  whitelist in `ListCollectionsQuery`. An off-list key would be rejected. */
+export type CollectionSort = 'name' | 'type' | 'productCount' | 'updatedAt';
+
+export interface CollectionsPageParams {
+  q?: string;
+  /** Narrow to one fill mode. Omit for both. */
+  type?: CollectionType;
+  sortBy: CollectionSort;
+  order: SortDir;
+  take: number;
+  skip: number;
+}
+
 export const collectionKeys = {
   all: ['commerce', 'collections'] as const,
+  page: (params: CollectionsPageParams) => ['commerce', 'collections', 'page', params] as const,
   detail: (id: string) => [...collectionKeys.all, id] as const,
 };
+
+/**
+ * The collections TABLE window — one server query per visible window, server
+ * sorted and paged. Never a client sort of a loaded page: sorting a single
+ * window and presenting it as the whole answer is the exact bug the server sort
+ * exists to prevent (ask for the biggest collection, get the biggest one on page
+ * three). `placeholderData` keeps the current rows on screen while the next
+ * window loads, so paging and re-sorting don't blink out to empty and back.
+ */
+export function useCollectionsPage(params: CollectionsPageParams) {
+  return useQuery({
+    queryKey: collectionKeys.page(params),
+    queryFn: () =>
+      api.list<CollectionSummary>('/v1/commerce/collections', {
+        ...(params.q?.trim() ? { q: params.q.trim() } : {}),
+        ...(params.type ? { type: params.type } : {}),
+        sort_by: params.sortBy,
+        order: params.order,
+        take: params.take,
+        skip: params.skip,
+      }),
+    placeholderData: (previous) => previous,
+  });
+}
 
 /* ── Reading the stored rule set safely ─────────────────────────────────── */
 

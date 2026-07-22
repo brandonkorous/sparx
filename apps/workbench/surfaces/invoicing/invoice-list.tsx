@@ -31,6 +31,7 @@ import {
 import { ArrowDown, ArrowUp, FileText, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { api } from '../../lib/api/client';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
@@ -277,16 +278,17 @@ export function InvoiceListSurface({ ctx }: { ctx: SurfaceContext }) {
             Loading invoices…
           </p>
         ) : rows.length === 0 ? (
-          <EmptyState
-            icon={<FileText className="size-6" aria-hidden />}
-            title={
-              search || activeStatus !== 'all' ? 'Nothing matches those filters' : 'No invoices yet'
-            }
-            description={
-              search || activeStatus !== 'all'
-                ? 'Try a different word, or switch back to All.'
-                : 'When you create your first invoice it will show up here.'
-            }
+          <ListEmptyState
+            filtered={Boolean(search) || activeStatus !== 'all'}
+            noResults={{
+              icon: <FileText className="size-6" aria-hidden />,
+              title: 'Nothing matches those filters',
+              description: 'Try a different word, or switch back to All.',
+            }}
+            firstRun={{
+              title: 'No invoices yet',
+              description: 'When you create your first invoice it will show up here.',
+            }}
           />
         ) : (
           <Table size="sm" hover>

@@ -40,6 +40,7 @@ import {
 import { ArrowLeftRight, ArrowRight, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { useStockLocations } from './data';
 import {
@@ -142,24 +143,24 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
     if (rows.length === 0) {
       return (
-        <EmptyState
-          icon={<ArrowLeftRight className="size-6" aria-hidden />}
-          title={
-            narrowed ? 'Nothing matches that' : 'No stock has been moved between locations yet'
-          }
-          description={
-            narrowed
-              ? emptyAdvice(search.trim(), statusLabel, locationName)
-              : 'A transfer moves stock from one of your locations to another and keeps a record of it in motion. Start one when you need to send stock somewhere else.'
-          }
-          actions={
-            narrowed ? undefined : (
+        <ListEmptyState
+          filtered={narrowed}
+          noResults={{
+            icon: <ArrowLeftRight className="size-6" aria-hidden />,
+            title: 'Nothing matches that',
+            description: emptyAdvice(search.trim(), statusLabel, locationName),
+          }}
+          firstRun={{
+            title: 'No stock has been moved between locations yet',
+            description:
+              'A transfer moves stock from one of your locations to another and keeps a record of it in motion. Start one when you need to send stock somewhere else.',
+            actions: (
               <Button size="sm" color="module" onClick={openNew}>
                 <Plus className="size-4" aria-hidden />
                 New transfer
               </Button>
-            )
-          }
+            ),
+          }}
         />
       );
     }
@@ -317,12 +318,10 @@ export function TransfersListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      {/* Capped and centred: torn onto a second monitor this pane is 2000px
-          wide, and an uncapped table would put the state badge a foot from the
-          reference it belongs to. */}
-      <Card className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</Card>
+      {/* Full width — matches the house list convention: the table fills the pane. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
-      <div className="mx-auto w-full max-w-5xl shrink-0">
+      <div className="shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

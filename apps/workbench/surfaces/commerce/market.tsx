@@ -26,9 +26,9 @@ import {
   Select,
   Switch,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { MARKET_CATEGORIES } from '@sparx/commerce-schemas';
 import { ServerCrash, ShoppingBag } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -84,7 +84,7 @@ function ProductRow({
   onToggleSelect: (id: string, next: boolean) => void;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const setListing = useSetProductListing();
 
   const failed = (title: string) => (error: unknown) => {
@@ -207,7 +207,7 @@ function EnrolledBody({ profile, ctx }: { profile: MarketProfile; ctx: SurfaceCo
   const products = useMarketProducts();
   const settlement = useMarketSettlement();
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const bulk = useBulkSetListing();
   const setParticipation = useSetMarketParticipation();
   const [selected, setSelected] = useState<Set<string>>(new Set());

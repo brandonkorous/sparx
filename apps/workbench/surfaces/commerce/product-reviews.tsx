@@ -44,9 +44,9 @@ import {
   Text,
   Textarea,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   Check,
   EyeOff,
@@ -150,7 +150,7 @@ function ReviewCard({
   productId: string;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const moderate = useModerateReview(productId);
   const respond = useRespondToReview(productId);
   const remove = useDeleteReview(productId);

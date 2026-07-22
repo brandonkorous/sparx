@@ -18,6 +18,7 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { writeAudit } from '@sparx/api-core/audit';
+import { decryptWebhookSecret, storeWebhookSecret } from '@sparx/api-core/webhook-secret-crypto';
 
 const EVENT_KEYS = [
   'content.entry.created',
@@ -42,10 +43,12 @@ const CreateBody = z.object({
 const UpdateBody = CreateBody.partial();
 const PathId = z.object({ id: z.string().uuid() });
 
-function redact(secret: string): string {
-  // Show first 8 chars + ellipsis. Sufficient for the dashboard to identify
-  // which subscription a leaked secret belongs to, no more.
-  return `${secret.slice(0, 8)}…`;
+function redact(stored: string): string {
+  // Decrypt first — the column holds an `enc:` bundle at rest — then show the
+  // first 8 chars of the plaintext `whsec_…` so the dashboard can identify
+  // which subscription a secret belongs to, no more. Tolerant of legacy
+  // plaintext rows (decrypt returns them as-is).
+  return `${decryptWebhookSecret(stored).slice(0, 8)}…`;
 }
 
 const webhookRoutes: FastifyPluginAsync = (app) => {
@@ -66,8 +69,8 @@ const webhookRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'admin');
     const input = CreateBody.parse(request.body);
 
+    const secret = `whsec_${randomBytes(32).toString('hex')}`;
     const created = await withRequestTenant(request, async (tx) => {
-      const secret = `whsec_${randomBytes(32).toString('hex')}`;
       const row = await tx.webhookSubscription.create({
         data: {
           tenantId: auth.tenantId,
@@ -75,7 +78,8 @@ const webhookRoutes: FastifyPluginAsync = (app) => {
           url: input.url,
           events: input.events,
           active: input.active ?? true,
-          signingSecret: secret,
+          // Encrypted at rest (enc: bundle) when a key is configured.
+          signingSecret: storeWebhookSecret(secret),
         },
       });
       await writeAudit(tx, request, auth, {
@@ -90,8 +94,9 @@ const webhookRoutes: FastifyPluginAsync = (app) => {
     reply.code(201);
     return ok({
       ...created,
-      // First and only time the full secret is returned.
-      signingSecret: created.signingSecret,
+      // First and only time the full secret is returned — the plaintext we just
+      // generated, never the stored ciphertext.
+      signingSecret: secret,
     });
   });
 

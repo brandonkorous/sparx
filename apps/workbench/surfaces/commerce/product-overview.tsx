@@ -42,9 +42,9 @@ import {
   Text,
   Textarea,
   Input,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Package, Trash2 } from 'lucide-react';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { afterPaneChange } from '../../lib/defer';
@@ -150,7 +150,7 @@ function buildPatch(draft: Draft, saved: Draft): ProductPatch {
 
 export function ProductOverviewTab({ ctx, product }: { ctx: SurfaceContext; product: Product }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const { data: facets } = useProductFacets();
   const { data: sites } = useSites();
   const { data: activeSite } = useActiveSiteId();

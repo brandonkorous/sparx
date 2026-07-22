@@ -18,6 +18,7 @@ import { Search, Columns2, ExternalLink, Save } from 'lucide-react';
 import { Button, Heading, Kbd, Text } from '@wizeworks/silicaui-react';
 import type { SurfaceContext } from '../lib/surfaces/registry';
 import { useWorkbench } from '../lib/workbench/context';
+import { WelcomeBanner } from './onboarding/welcome/welcome-banner';
 
 interface Gesture {
   icon: typeof Search;
@@ -69,6 +70,11 @@ export function HomeSurface({ ctx }: { ctx: SurfaceContext }) {
   return (
     <div className="@container h-full overflow-y-auto">
       <div className="mx-auto max-w-2xl px-6 py-10 @[40rem]:px-8 @[40rem]:py-12">
+        {/* The post-setup nudge — renders nothing once the checklist is done or
+            the window has passed, so it never crowds the teaching content. */}
+        <div className="mb-6 empty:mb-0">
+          <WelcomeBanner ctx={ctx} />
+        </div>
         <Heading level={1} className="text-2xl">
           Your workbench
         </Heading>

@@ -87,6 +87,14 @@ async function seedAccountWithInvoice(opts: {
   });
   createdTenants.push(tenant.id);
 
+  // The issuing business — every billing document is issued by a site (docs/131
+  // §3.6), and `propertyId` is required (the per-site `numberSeq` sequence hangs
+  // off it).
+  const property = await ownerDb.property.create({
+    data: { tenantId: tenant.id, slug, name: slug, isPrimary: true },
+    select: { id: true },
+  });
+
   const account = await ownerDb.b2BAccount.create({
     data: {
       tenantId: tenant.id,
@@ -126,6 +134,7 @@ async function seedAccountWithInvoice(opts: {
   const doc = await ownerDb.billingDocument.create({
     data: {
       tenantId: tenant.id,
+      propertyId: property.id,
       workflowId: workflow.id,
       stageId: stage.id,
       b2bAccountId: account.id,

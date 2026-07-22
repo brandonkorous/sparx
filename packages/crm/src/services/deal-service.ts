@@ -38,6 +38,14 @@ export interface ListDealsFilter {
   skip?: number;
 }
 
+// The stage a deal sits on and the customer it is for, pulled alongside so a
+// list can name both without a per-row fetch. Additive — a consumer that ignores
+// the nested objects is unaffected.
+const dealSubjectInclude = {
+  stage: { select: { name: true, stageType: true } },
+  customer: { select: { firstName: true, lastName: true, company: true, email: true } },
+} satisfies Prisma.DealInclude;
+
 export async function list(
   ctx: ServiceContext,
   filter: ListDealsFilter = {}
@@ -63,6 +71,7 @@ export async function list(
     const [items, total] = await Promise.all([
       tx.deal.findMany({
         where,
+        include: dealSubjectInclude,
         orderBy: { updatedAt: 'desc' },
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
@@ -74,7 +83,9 @@ export async function list(
 }
 
 export async function get(ctx: ServiceContext, dealId: string): Promise<Deal> {
-  const deal = await withTenant(ctx, (tx) => tx.deal.findUnique({ where: { id: dealId } }));
+  const deal = await withTenant(ctx, (tx) =>
+    tx.deal.findUnique({ where: { id: dealId }, include: dealSubjectInclude })
+  );
   if (deal?.deletedAt !== null) throw new CrmNotFoundError('Deal', dealId);
   return deal;
 }
@@ -343,6 +354,48 @@ export async function moveStage(
   }
 
   return deal;
+}
+
+/**
+ * Soft-delete a deal — for a mistake, not the normal close.
+ *
+ * The everyday way a deal leaves the board is `moveStage` to a Won/Lost stage,
+ * which keeps it in the pipeline's history. This is the escape hatch for a deal
+ * that should never have existed: it stamps `deletedAt`, so it drops out of every
+ * list (all reads already filter `deletedAt: null`) while the row and its
+ * activity trail survive. Mirrors `customerService.softDelete`.
+ */
+export async function softDelete(ctx: ServiceContext, dealId: string): Promise<Deal> {
+  const result = await withTenant(ctx, async (tx) => {
+    const before = await tx.deal.findUnique({ where: { id: dealId } });
+    if (before?.deletedAt !== null) throw new CrmNotFoundError('Deal', dealId);
+    const updated = await tx.deal.update({
+      where: { id: dealId },
+      data: { deletedAt: new Date() },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: ctx.userId ? 'user' : 'system',
+      action: 'crm.deal.deleted',
+      entityType: 'Deal',
+      entityId: updated.id,
+      diff: { before: { title: before.title }, after: { deletedAt: updated.deletedAt } },
+    });
+    return updated;
+  });
+
+  // No `crm.deal.deleted` topic exists; the generic updated event carries the
+  // change so consumers (projection, search reindex) drop the row.
+  await publishCrmEvent({
+    tenantId: ctx.tenantId,
+    topic: 'crm.deal.updated',
+    payload: { dealId: result.id, change: 'deleted' },
+    dedupeKey: `crm.deal.deleted:${result.id}`,
+  });
+
+  return result;
 }
 
 // ─────────────────────────────────────────────────────────────────────────

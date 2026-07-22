@@ -42,6 +42,7 @@ import {
 import { EyeOff, Plus, Warehouse } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import {
@@ -149,20 +150,21 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
 
     if (rows.length === 0) {
       return (
-        <EmptyState
-          icon={<Warehouse className="size-6" aria-hidden />}
-          title={narrowed ? 'Nothing matches that' : 'No locations yet'}
-          description={
-            narrowed
-              ? emptyAdvice(search.trim(), typeLabel, includeClosed)
-              : `A location is any place you keep stock — a warehouse, a shop, a garage, a van. Set up your first and you can start counting what is in it.${
-                  includeClosed
-                    ? ''
-                    : ' If you have closed a location before, switch on “Show closed” to see it.'
-                }`
-          }
-          actions={
-            narrowed ? undefined : (
+        <ListEmptyState
+          filtered={narrowed}
+          noResults={{
+            icon: <Warehouse className="size-6" aria-hidden />,
+            title: 'Nothing matches that',
+            description: emptyAdvice(search.trim(), typeLabel, includeClosed),
+          }}
+          firstRun={{
+            title: 'No locations yet',
+            description: `A location is any place you keep stock — a warehouse, a shop, a garage, a van. Set up your first and you can start counting what is in it.${
+              includeClosed
+                ? ''
+                : ' If you have closed a location before, switch on “Show closed” to see it.'
+            }`,
+            actions: (
               <Button
                 size="sm"
                 color="module"
@@ -173,8 +175,8 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Plus className="size-4" aria-hidden />
                 New location
               </Button>
-            )
-          }
+            ),
+          }}
         />
       );
     }
@@ -331,12 +333,11 @@ export function LocationsListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      {/* Capped and centred — torn onto a second monitor this pane is 2000px
-          wide, and uncapped the table puts the State badge a foot from the name
-          it belongs to. The base-100 card lifts the rows off the recessed pane. */}
-      <Card className="mx-auto min-h-0 w-full max-w-5xl flex-1 overflow-y-auto">{body()}</Card>
+      {/* Full width — the base-100 card lifts the rows off the recessed pane.
+          Matches the house list convention: the table fills the pane. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
-      <div className="mx-auto w-full max-w-5xl shrink-0">
+      <div className="shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

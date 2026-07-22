@@ -30,9 +30,9 @@ import {
   Select,
   Switch,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Plus, Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -84,7 +84,13 @@ function toDraft(zone: TaxZone): Draft {
 }
 
 function emptyDraft(): Draft {
-  return { country: 'US', region: '', nexusType: 'physical', registrationNumber: '', isActive: true };
+  return {
+    country: 'US',
+    region: '',
+    nexusType: 'physical',
+    registrationNumber: '',
+    isActive: true,
+  };
 }
 
 export function TaxZoneDetailSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -101,7 +107,9 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
         <Alert color="error" variant="soft" className="max-w-md">
           <AlertContent>
             <AlertTitle>Could not load this tax place</AlertTitle>
-            <AlertDescription>This is a problem reaching the server. Nothing has been lost.</AlertDescription>
+            <AlertDescription>
+              This is a problem reaching the server. Nothing has been lost.
+            </AlertDescription>
           </AlertContent>
           <Button
             size="sm"
@@ -132,7 +140,7 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?: TaxZone }) {
   const isNew = id === 'new';
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const create = useCreateTaxZone();
   const update = useUpdateTaxZone(id);
@@ -265,9 +273,9 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
                 Add a tax place
               </Heading>
               <Text>
-                Set up somewhere you have to collect tax. Choose the country (and a state or province
-                if the tax is set there), then add the rate. Nothing is charged until you switch the
-                place on.
+                Set up somewhere you have to collect tax. Choose the country (and a state or
+                province if the tax is set there), then add the rate. Nothing is charged until you
+                switch the place on.
               </Text>
             </div>
           ) : (
@@ -401,7 +409,9 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
             description="What percentage is added. You can add more than one (a state and a county tax, say) and they add together."
           >
             {isNew ? (
-              <Text className="text-sm">Add this place first (use Add above), then set its rate here.</Text>
+              <Text className="text-sm">
+                Add this place first (use Add above), then set its rate here.
+              </Text>
             ) : (
               <ZoneTaxRatesEditor zoneId={id} />
             )}
@@ -436,7 +446,7 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
   const rates = useZoneTaxRates(zoneId);
   const create = useCreateTaxRate();
   const remove = useDeleteTaxRate();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const toast = useToast();
 
   const [name, setName] = useState('');
@@ -445,7 +455,11 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
 
   const rows = rates.data ?? [];
   const percentValue = Number(percent);
-  const percentValid = percent.trim() !== '' && Number.isFinite(percentValue) && percentValue >= 0 && percentValue <= 100;
+  const percentValid =
+    percent.trim() !== '' &&
+    Number.isFinite(percentValue) &&
+    percentValue >= 0 &&
+    percentValue <= 100;
   const canAdd = name.trim() !== '' && percentValid;
 
   const failure = create.isError
@@ -513,7 +527,9 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
           Loading…
         </Text>
       ) : rows.length === 0 ? (
-        <Text className="text-sm">No rate set yet — nothing is charged here until you add one below.</Text>
+        <Text className="text-sm">
+          No rate set yet — nothing is charged here until you add one below.
+        </Text>
       ) : (
         <div className="flex flex-col">
           {rows.map((rate) => (
@@ -608,11 +624,19 @@ function ZoneTaxRatesEditor({ zoneId }: { zoneId: string }) {
               />
             }
           />
-          <FieldDescription>Some places tax the delivery charge too. Leave off if unsure.</FieldDescription>
+          <FieldDescription>
+            Some places tax the delivery charge too. Leave off if unsure.
+          </FieldDescription>
         </Field>
 
         <div className="flex justify-end">
-          <Button size="sm" color="module" loading={create.isPending} disabled={!canAdd} onClick={add}>
+          <Button
+            size="sm"
+            color="module"
+            loading={create.isPending}
+            disabled={!canAdd}
+            onClick={add}
+          >
             <Plus className="size-4" aria-hidden />
             Add this rate
           </Button>

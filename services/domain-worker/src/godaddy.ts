@@ -3,12 +3,11 @@
 // are needed here — the full client lives in the @sparx/godaddy package.
 //
 // NOTE: this is a standalone copy that has NOT yet been migrated to the
-// @sparx/registrar `RegistrarClient` contract (unlike api-rest / api-mcp), and
-// its record set has drifted from the contract's (Mailgun SPF + p=none DMARC
-// here vs _spf.sparx.email + p=quarantine in @sparx/registrar). Before name.com
-// goes live this worker must move onto the contract too — otherwise a DNS-config
-// retry for a name.com-registered domain would still call GoDaddy. Reconciling
-// the two record sets is part of that follow-up.
+// @sparx/registrar `RegistrarClient` contract (unlike api-rest / api-mcp).
+// Before name.com goes live this worker must move onto the contract too —
+// otherwise a DNS-config retry for a name.com-registered domain would still
+// call GoDaddy. At that point this copy of buildSparxDnsRecords should be
+// deleted in favour of the contract's.
 
 import { env } from './env.js';
 
@@ -64,24 +63,15 @@ export async function configureDNS(domain: string, records: DnsRecord[]): Promis
   await gd('PUT', `/v1/domains/${encodeURIComponent(domain)}/records`, records);
 }
 
-export function buildSparxDnsRecords(dkimPublicKey: string): DnsRecord[] {
+// WEB records only. Email-authentication records (SPF, DKIM, DMARC) are owned
+// by the Mailgun sending-domain flow, which sets the correct per-domain SPF
+// (`include:mailgun.org`), `mx._domainkey` DKIM, and DMARC at domain
+// verification. Seeding SPF here too would put a second `v=spf1` record on the
+// domain — an SPF permerror. The old SPF/DKIM/DMARC/MX set was Postal-era.
+export function buildSparxDnsRecords(): DnsRecord[] {
   const cnameTarget = env.SPARX_CNAME_TARGET;
   return [
     { type: 'CNAME', name: '@', data: cnameTarget, ttl: 3600 },
     { type: 'CNAME', name: 'www', data: cnameTarget, ttl: 3600 },
-    { type: 'TXT', name: '@', data: 'v=spf1 include:mailgun.org ~all', ttl: 3600 },
-    {
-      type: 'TXT',
-      name: 'sparx._domainkey',
-      data: `v=DKIM1; k=rsa; p=${dkimPublicKey}`,
-      ttl: 3600,
-    },
-    {
-      type: 'TXT',
-      name: '_dmarc',
-      data: 'v=DMARC1; p=none; rua=mailto:postmaster@sparx.email',
-      ttl: 3600,
-    },
-    { type: 'MX', name: '@', data: 'mail.sparx.email', ttl: 3600, priority: 10 },
   ];
 }

@@ -16,17 +16,31 @@ import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
 import { BuilderRenderer } from '@/components/builder-renderer';
-import { SilicaBody } from '@/components/silica-chrome';
+import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
+import { storefrontHostRenderer } from '@/components/silica-host-cores';
 
 export const dynamic = 'force-dynamic';
 
 interface SlugPageProps {
   params: Promise<{ slug: string[] }>;
-  searchParams?: Promise<{ sparxPreview?: string; sparxSitePreview?: string }>;
+  // The full URL params — a page may embed a host core (the faceted PLP on /shop) that
+  // reads facet/sort/page state from the URL, so this is no longer just the preview tokens.
+  searchParams?: Promise<Record<string, string | string[] | undefined>>;
 }
 
 function buildSlug(parts: string[]): string {
   return parts.map((p) => decodeURIComponent(p)).join('/');
+}
+
+const one = (v: string | string[] | undefined): string | undefined => (Array.isArray(v) ? v[0] : v);
+
+/** Does the tree embed a pinned host core (`kind:"host"`)? Such a page renders through the
+ *  React walk (so the core mounts live) rather than the HTML-string path. */
+function treeHasHostNode(node: unknown): boolean {
+  if (!node || typeof node !== 'object') return false;
+  const n = node as { kind?: string; children?: unknown[] };
+  if (n.kind === 'host') return true;
+  return Array.isArray(n.children) && n.children.some(treeHasHostNode);
 }
 
 export async function generateMetadata({ params, searchParams }: SlugPageProps): Promise<Metadata> {
@@ -34,8 +48,8 @@ export async function generateMetadata({ params, searchParams }: SlugPageProps):
   if (!site) return {};
   const slug = buildSlug((await params).slug);
   const sp = await searchParams;
-  const previewToken = sp?.sparxPreview;
-  const sitePreview = sp?.sparxSitePreview;
+  const previewToken = one(sp?.sparxPreview);
+  const sitePreview = one(sp?.sparxSitePreview);
 
   // The silica engine's published page owns this slug (docs/118 Stage 6) — title it
   // from its name / SEO, and skip the paths below. Per-page silica SEO lands with
@@ -150,7 +164,7 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
 
   const slug = buildSlug((await params).slug);
   const sp = (await searchParams) ?? {};
-  const previewToken = sp.sparxPreview;
+  const previewToken = one(sp.sparxPreview);
 
   // The silica engine's published page owns this slug (docs/118 Stage 6) and wins
   // over every path below. Rendered end to end through `renderSilicaBody`, its
@@ -162,7 +176,7 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
   // silica engine owns — which is every page today — saw PUBLISHED output, while the
   // sparx-tier fallback below honoured drafts. Same feature, different behaviour
   // depending on which tier happened to own the page.
-  const sitePreview = sp.sparxSitePreview;
+  const sitePreview = one(sp.sparxSitePreview);
   const silicaPage = await getPublishedSilicaPage(
     site.slug,
     slug,
@@ -173,6 +187,25 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,
     });
+    // A page that embeds a pinned host core (e.g. the faceted PLP on /shop) renders through
+    // the React walk so the core mounts live and can read the route's search params for its
+    // facet/sort/page state; a pure-content page keeps the faster HTML-string path. Bindings
+    // resolve either way via `host`.
+    if (treeHasHostNode(silicaPage.root)) {
+      const renderHost = storefrontHostRenderer({
+        site,
+        propertySlug: (await resolveActivePropertySlug()) ?? undefined,
+        searchParams: sp,
+      });
+      return (
+        <SilicaFunctionalBody
+          root={silicaPage.root}
+          symbols={silicaPage.symbols}
+          host={host}
+          renderHost={renderHost}
+        />
+      );
+    }
     return <SilicaBody root={silicaPage.root} symbols={silicaPage.symbols} host={host} />;
   }
 
@@ -206,7 +239,7 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
   const activePropertySlug = (await resolveActivePropertySlug()) ?? undefined;
   const [page, snapshot] = await Promise.all([
     getPageBySlug(site.slug, slug, previewToken ? { previewToken } : {}),
-    getPublishedSite(site.slug, sp.sparxSitePreview, activePropertySlug),
+    getPublishedSite(site.slug, sitePreview, activePropertySlug),
   ]);
   const sections = sectionsForPage(snapshot, slug);
 

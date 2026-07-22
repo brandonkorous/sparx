@@ -46,9 +46,9 @@ import {
   Table,
   Text,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   ClipboardCheck,
   ClipboardList,
@@ -532,7 +532,7 @@ function CountSession({
   onRefresh: () => void;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const enter = useEnterCounts(count.id);
   const submit = useSubmitCount(count.id);

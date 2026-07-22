@@ -58,7 +58,9 @@ export function VariantPicker({
       </div>
 
       {isError ? (
-        <Text className="text-sm">Your products could not be loaded just now. Try again in a moment.</Text>
+        <Text className="text-sm">
+          Your products could not be loaded just now. Try again in a moment.
+        </Text>
       ) : isPending ? (
         <Text className="text-sm" role="status">
           Loading your products…

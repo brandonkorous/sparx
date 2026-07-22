@@ -15,9 +15,11 @@
 // a reset is triggered — and this owns the rest.
 
 import { Component, Suspense, useEffect, type ErrorInfo, type ReactNode } from 'react';
-import { AlertTriangle, Loader2 } from 'lucide-react';
-import { Button, useImperativeAlertDialog } from '@wizeworks/silicaui-react';
+import { AlertTriangle } from 'lucide-react';
+import { Button } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../lib/confirm';
 import { ModuleScope } from './module-scope';
+import { PaneWaiting } from './pane-waiting';
 import { getSurface } from '../lib/surfaces/registry';
 import { useSurfaceContext, useWorkbench } from '../lib/workbench/context';
 import { DirtyScope } from '../lib/workbench/dirty';
@@ -66,15 +68,6 @@ export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error
   }
 }
 
-export function PaneLoading() {
-  return (
-    <div className="flex h-full items-center justify-center">
-      <Loader2 className="size-5 animate-spin" aria-hidden />
-      <span className="sr-only">Loading</span>
-    </div>
-  );
-}
-
 export function MissingSurface({ surface }: { surface: string }) {
   return (
     <div className="flex h-full flex-col items-center justify-center gap-2 p-6 text-center">
@@ -96,7 +89,7 @@ export function MissingSurface({ surface }: { surface: string }) {
  */
 export function PaneConfirmBridge({ paneId }: { paneId: string }) {
   const { controller } = useWorkbench();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   useEffect(
     () =>
@@ -160,7 +153,7 @@ export function SurfaceMount({
     <DirtyScope paneId={paneId}>
       <PaneConfirmBridge paneId={paneId} />
       <PaneErrorBoundary onReset={onReset}>
-        <Suspense fallback={<PaneLoading />}>
+        <Suspense fallback={<PaneWaiting />}>
           <SurfaceBody paneId={paneId} />
         </Suspense>
       </PaneErrorBoundary>

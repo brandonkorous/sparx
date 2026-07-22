@@ -26,13 +26,13 @@ export function addUtcDays(d: Date, n: number): Date {
 export function utcDateKey(d: Date): string {
   return d.toISOString().slice(0, 10);
 }
-function eachUtcDay(from: Date, to: Date): Date[] {
+export function eachUtcDay(from: Date, to: Date): Date[] {
   const out: Date[] = [];
   const end = startOfUtcDay(to).getTime();
   for (let d = startOfUtcDay(from); d.getTime() <= end; d = addUtcDays(d, 1)) out.push(d);
   return out;
 }
-function bucketStartFor(dateKey: string, grain: 'week' | 'month'): string {
+export function bucketStartFor(dateKey: string, grain: 'week' | 'month'): string {
   const d = new Date(`${dateKey}T00:00:00.000Z`);
   if (grain === 'month') {
     return utcDateKey(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)));

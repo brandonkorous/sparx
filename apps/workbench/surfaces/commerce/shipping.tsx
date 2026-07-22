@@ -85,17 +85,17 @@ function ProfileRow({ profile, onOpen }: { profile: ShippingProfile; onOpen: Row
         ) : null}
       </span>
       <Text as="span" className="shrink-0 text-sm tabular-nums">
-        {count === 0 ? 'All other products' : count === 1 ? '1 product' : `${String(count)} products`}
+        {count === 0
+          ? 'All other products'
+          : count === 1
+            ? '1 product'
+            : `${String(count)} products`}
       </Text>
     </button>
   );
 }
 
-type RowOpen = (
-  surface: string,
-  id: string,
-  event: { shiftKey: boolean; altKey: boolean }
-) => void;
+type RowOpen = (surface: string, id: string, event: { shiftKey: boolean; altKey: boolean }) => void;
 
 export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
   const zones = useShippingZones();

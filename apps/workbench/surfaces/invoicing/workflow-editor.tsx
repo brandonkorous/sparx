@@ -2,48 +2,54 @@
 
 // One workflow — its name, and the stages a document travels through.
 //
-// Create and edit are the same surface (`{id:'new'}` → `{id}`), per the app's
-// pane rule: a workflow is a durable thing you come back to, and building one is
-// minutes of work with real content to lose, so it could never have been a
-// modal. Saving a new one retargets this pane at the saved workflow rather than
-// opening a second tab, so the operator keeps working in the pane they were
-// already in.
+// The body is a TWO-PANE working surface, the sibling of the automations editor:
+// on the LEFT a stage canvas draws the workflow as a vertical pipeline of nodes (a
+// Settings node, then each stage in order); on the RIGHT an inspector edits
+// whichever node is selected. Only one node's editor is open at a time — the
+// canvas is the readable map of the customer's journey, the inspector is where you
+// change one thing. On a narrow pane the two stack and a Flow/Properties switch
+// flips between them. This is a workflow, so it should FEEL like one.
 //
-// Explicit save, last-write-wins, one button — the platform rule for every
-// editor. The whole workflow including its stage list is one draft, and
-// ./workflow-save.ts turns that draft into the four separate writes the API
-// actually needs. That is the entire reason a diff exists: reordering the stages
-// and renaming two of them is ONE thing the operator did.
+// Create and edit are the same surface (`{id:'new'}` → `{id}`), per the app's pane
+// rule: a workflow is a durable thing you come back to, and building one is minutes
+// of work with real content to lose, so it could never have been a modal. Saving a
+// new one retargets this pane at the saved workflow rather than opening a second
+// tab, so the operator keeps working in the pane they were already in.
+//
+// Explicit save, last-write-wins, one button — the platform rule for every editor.
+// Invoicing workflows are NOT versioned: there is no draft/publish here, unlike
+// automations. The parity with automations is the two-pane canvas+inspector feel,
+// not the versioning toolbar. The whole workflow including its stage list is one
+// draft, and ./workflow-save.ts turns that draft into the four separate writes the
+// API actually needs — reordering the stages and renaming two of them is ONE thing
+// the operator did.
 
 import { useEffect, useState } from 'react';
 import { useMutation } from '@sparx/query';
+import { arrayMove } from '@dnd-kit/sortable';
 import {
   Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
   Badge,
   Button,
-  Checkbox,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Field,
-  FieldControl,
-  FieldDescription,
-  FieldLabel,
-  Input,
-  Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Archive, ArrowRight, MoreHorizontal, Save } from 'lucide-react';
-import { EditorLayout, EDITOR_RAIL_STICKY } from '../../components/editor-layout';
-import { FormSection } from '../../components/form-section';
+import { Archive, MoreHorizontal, Save } from 'lucide-react';
+import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { StageList } from './stage-list';
-import { stageTone, type DocumentWorkflowDetail } from './types';
+import { StageCanvas, SETTINGS_NODE } from './stage-canvas';
+import { StageInspector } from './stage-inspector';
+import type { DocumentWorkflowDetail } from './types';
 import {
+  blankStage,
   emptyWorkflowDraft,
   slugify,
   toWorkflowDraft,
@@ -51,54 +57,10 @@ import {
   useInvalidateWorkflows,
   useWorkflow,
   workflowErrorMessage,
+  type StageDraft,
   type WorkflowDraft,
 } from './workflow-data';
 import { saveWorkflow, WorkflowValidationError } from './workflow-save';
-
-/** The rail: the stage sequence as a customer would meet it, which is the one
- *  reading of this screen the form itself cannot give. The form is six fields
- *  per stage in a vertical list; this is the shape of the journey. */
-function CustomerView({ draft }: { draft: WorkflowDraft }) {
-  const named = draft.stages.filter((stage) => stage.customerLabel.trim() !== '');
-
-  return (
-    <section className={`card bg-base-100 flex flex-col gap-3 p-4 ${EDITOR_RAIL_STICKY}`}>
-      <Text className="text-base font-semibold">What your customers see</Text>
-      {named.length === 0 ? (
-        <Text className="text-sm">
-          Name your stages and the journey a customer takes appears here.
-        </Text>
-      ) : (
-        <ol className="flex flex-col gap-2">
-          {named.map((stage, index) => (
-            <li key={stage.key} className="flex items-start gap-2">
-              {index > 0 ? (
-                <ArrowRight className="mt-1 size-4 shrink-0" aria-hidden />
-              ) : (
-                <span className="mt-1 inline-block size-4 shrink-0" aria-hidden />
-              )}
-              <span className="flex min-w-0 flex-col gap-1">
-                <span className="flex flex-wrap items-center gap-2">
-                  <span className="text-base font-semibold">{stage.customerLabel.trim()}</span>
-                  <Badge color={stageTone(stage.stageType)} variant="soft" size="sm">
-                    {stage.stageType}
-                  </Badge>
-                </span>
-                {stage.numberOnEnter ? (
-                  <Text className="text-sm">
-                    Numbered {stage.numberPrefix.trim() || ''}
-                    000001 onwards
-                  </Text>
-                ) : null}
-                {stage.locksEditing ? <Text className="text-sm">No further edits</Text> : null}
-              </span>
-            </li>
-          ))}
-        </ol>
-      )}
-    </section>
-  );
-}
 
 export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : 'new';
@@ -108,13 +70,13 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
   const invalidate = useInvalidateWorkflows();
   const archive = useArchiveWorkflow();
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const [draft, setDraft] = useState<WorkflowDraft>(emptyWorkflowDraft);
   const [dirty, setDirty] = useState(false);
   // Once the operator has typed a reference name of their own, the name field
-  // stops overwriting it — otherwise fixing a typo in the title silently
-  // rewrites a slug that may already be linked to from elsewhere.
+  // stops overwriting it — otherwise fixing a typo in the title silently rewrites
+  // a slug that may already be linked to from elsewhere.
   const [slugTouched, setSlugTouched] = useState(false);
   /**
    * The workflow as the server last confirmed it — the baseline the save diff
@@ -122,13 +84,17 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
    *
    * Held in state rather than read straight off the query, and that is
    * load-bearing. A save CREATES stages, which means the ids in `draft` and the
-   * stage list in the baseline are both stale the instant it returns. Waiting
-   * for the invalidated query to come back and fix them leaves a window where a
-   * second save still sees `id: null` on stages that now exist — and creates
-   * every one of them a second time. `saveWorkflow` returns the reconciled
-   * workflow precisely so both can be corrected synchronously here.
+   * stage list in the baseline are both stale the instant it returns. Waiting for
+   * the invalidated query to come back and fix them leaves a window where a second
+   * save still sees `id: null` on stages that now exist — and creates every one of
+   * them a second time. `saveWorkflow` returns the reconciled workflow precisely
+   * so both can be corrected synchronously here.
    */
   const [original, setOriginal] = useState<DocumentWorkflowDetail | null>(null);
+
+  // Which node the inspector is editing: the Settings node, or a stage by its key.
+  const [selectedId, setSelectedId] = useState<string>(SETTINGS_NODE);
+  const [mobilePane, setMobilePane] = useState<'flow' | 'edit'>('flow');
 
   useDirtySource(dirty, 'This workflow has unsaved changes. Close it anyway?');
 
@@ -140,8 +106,8 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     ctx.setTitle(next.name);
   };
 
-  // Guarded on `dirty` so a background refetch can never overwrite what someone
-  // is part-way through typing.
+  // Guarded on `dirty` so a background refetch can never overwrite what someone is
+  // part-way through typing.
   useEffect(() => {
     if (!workflow || dirty) return;
     adopt(workflow);
@@ -149,24 +115,72 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [workflow]);
 
+  useEffect(() => {
+    ctx.setTitle(draft.name.trim() || (isNew ? 'New workflow' : 'Workflow'));
+  }, [ctx, draft.name, isNew]);
+
+  const update = (patch: Partial<WorkflowDraft>) => {
+    setDraft((current) => ({ ...current, ...patch }));
+    setDirty(true);
+  };
+
+  // ── Selection ──
+  const selectNode = (nodeId: string) => {
+    setSelectedId(nodeId);
+    setMobilePane('edit');
+  };
+
+  // ── Stage list operations (the canvas drives these callbacks) ──
+  const setStages = (next: StageDraft[]) => {
+    update({ stages: next });
+  };
+
+  function insertStage(atIndex: number) {
+    const stage = blankStage();
+    const clamped = Math.min(Math.max(atIndex, 0), draft.stages.length);
+    const next = [...draft.stages];
+    next.splice(clamped, 0, stage);
+    setStages(next);
+    selectNode(stage.key);
+  }
+
+  function moveStage(from: number, to: number) {
+    setStages(arrayMove(draft.stages, from, to));
+  }
+
+  function patchStage(key: string, changes: Partial<StageDraft>) {
+    setStages(draft.stages.map((stage) => (stage.key === key ? { ...stage, ...changes } : stage)));
+  }
+
+  function removeStage(key: string) {
+    const index = draft.stages.findIndex((stage) => stage.key === key);
+    if (index < 0) return;
+    setStages(draft.stages.filter((stage) => stage.key !== key));
+    if (selectedId === key) {
+      const neighbour = draft.stages[index + 1] ?? draft.stages[index - 1];
+      setSelectedId(neighbour ? neighbour.key : SETTINGS_NODE);
+    }
+  }
+
+  // ── Settings callbacks ──
+  const onName = (value: string) => {
+    update(slugTouched ? { name: value } : { name: value, slug: slugify(value) });
+  };
+  const onSlug = (value: string) => {
+    setSlugTouched(true);
+    update({ slug: slugify(value) });
+  };
+
   const save = useMutation({
     mutationFn: () => saveWorkflow({ id, draft, original }),
     onSuccess: (saved) => {
       setDirty(false);
-      // Re-adopting regenerates the stage rows' session keys, so any expanded
-      // row collapses. That is a fair price for the draft and the baseline both
-      // being exactly what the server now holds.
       adopt(saved);
       invalidate();
       toast.add({ title: isNew ? 'Workflow created' : 'Workflow saved', type: 'success' });
       if (isNew) ctx.open('invoicing.workflow.edit', { id: saved.id }, { target: 'replace' });
     },
   });
-
-  const update = (patch: Partial<WorkflowDraft>) => {
-    setDraft((current) => ({ ...current, ...patch }));
-    setDirty(true);
-  };
 
   const onArchive = async () => {
     if (!original) return;
@@ -208,7 +222,7 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
 
   if (isError) {
     return (
-      <div className="p-4">
+      <div className={PANE_SHELL}>
         <Alert color="danger" variant="soft">
           This workflow could not be loaded. It may have been archived, or this is a problem
           reaching the server.
@@ -219,15 +233,23 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
 
   if (isPending && !isNew) {
     return (
-      <p className="p-4 text-sm" role="status">
-        Loading…
-      </p>
+      <div className={PANE_SHELL}>
+        <p className="p-4 text-sm" role="status">
+          Loading…
+        </p>
+      </div>
     );
   }
 
+  // The stage map is the gray canvas the cards sit ON (base-200); the inspector to
+  // its right is the raised working surface (base-100). Matches the automations
+  // two-tone map + inspector split.
+  const flowPane = 'bg-base-200 min-h-0 overflow-y-auto';
+  const paneCard = 'card bg-base-100 min-h-0 overflow-y-auto';
+
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Editor actions" wrap>
+      <PaneToolbar label="Workflow editor actions">
         {original?.archivedAt ? (
           <Badge color="neutral" variant="soft" size="sm">
             Archived
@@ -238,11 +260,17 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
             Default
           </Badge>
         ) : null}
-        <div className="flex-1" />
+
         {original ? (
           <DropdownMenu>
             <DropdownMenuTrigger>
-              <Button size="sm" variant="ghost" color="neutral" aria-label="More actions">
+              <Button
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                className="ml-auto shrink-0"
+                aria-label="More actions"
+              >
                 <MoreHorizontal className="size-4" aria-hidden />
               </Button>
             </DropdownMenuTrigger>
@@ -261,109 +289,71 @@ export function WorkflowEditorSurface({ ctx }: { ctx: SurfaceContext }) {
         <Button
           color="module"
           size="sm"
+          className={original ? 'shrink-0' : 'ml-auto shrink-0'}
           disabled={!dirty || save.isPending}
+          loading={save.isPending}
           onClick={() => {
             save.mutate();
           }}
         >
           <Save className="size-4" aria-hidden />
-          {save.isPending ? 'Saving…' : 'Save'}
+          Save
         </Button>
       </PaneToolbar>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className="p-4">
-          <EditorLayout
-            banner={
-              failure ? (
-                <Alert color="danger" variant="soft">
-                  {failure}
-                </Alert>
-              ) : null
-            }
-            main={
-              <>
-                <FormSection
-                  title="Workflow"
-                  description="A workflow is the path a document takes, and who sees what along the way."
-                >
-                  <Field>
-                    <FieldLabel>Name</FieldLabel>
-                    <FieldControl
-                      render={
-                        <Input
-                          color="module"
-                          value={draft.name}
-                          placeholder="Service / Repair"
-                          onChange={(event) => {
-                            const name = event.target.value;
-                            update(slugTouched ? { name } : { name, slug: slugify(name) });
-                          }}
-                        />
-                      }
-                    />
-                    <FieldDescription>
-                      How your team picks this when starting a new document.
-                    </FieldDescription>
-                  </Field>
+      {failure ? (
+        <Alert color="danger" variant="soft" className="shrink-0">
+          <AlertContent>
+            <AlertTitle>{isNew ? 'Cannot create this yet' : 'Cannot save this yet'}</AlertTitle>
+            <AlertDescription>{failure}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
 
-                  <Field>
-                    <FieldLabel>Reference name</FieldLabel>
-                    <FieldControl
-                      render={
-                        <Input
-                          color="module"
-                          value={draft.slug}
-                          placeholder="service-repair"
-                          onChange={(event) => {
-                            setSlugTouched(true);
-                            update({ slug: slugify(event.target.value) });
-                          }}
-                        />
-                      }
-                    />
-                    <FieldDescription>
-                      A short version with no spaces, used behind the scenes. Filled in from the
-                      name — change it only if you have a reason to.
-                    </FieldDescription>
-                  </Field>
+      {/* Narrow-pane switch — hidden once the two panes fit side by side. */}
+      <div className="flex shrink-0 gap-1 @3xl:hidden">
+        {(['flow', 'edit'] as const).map((pane) => (
+          <Button
+            key={pane}
+            size="sm"
+            variant={mobilePane === pane ? 'soft' : 'ghost'}
+            color={mobilePane === pane ? 'module' : 'neutral'}
+            onClick={() => {
+              setMobilePane(pane);
+            }}
+          >
+            {pane === 'flow' ? 'Flow' : 'Properties'}
+          </Button>
+        ))}
+      </div>
 
-                  <label className="flex items-start gap-2">
-                    <Checkbox
-                      color="module"
-                      className="mt-1"
-                      checked={draft.isDefault}
-                      aria-label="Use this workflow by default"
-                      onChange={(event) => {
-                        update({ isDefault: event.target.checked });
-                      }}
-                    />
-                    <span className="flex flex-col gap-0.5">
-                      <Text as="span">Use this one by default</Text>
-                      <Text as="span" className="text-sm">
-                        New documents start on this workflow unless someone picks another. Only one
-                        workflow can be the default — turning this on turns it off elsewhere.
-                      </Text>
-                    </span>
-                  </label>
-                </FormSection>
-
-                <FormSection
-                  title="Stages"
-                  description="The steps a document moves through, in order. Drag a stage, or use the arrows, to change where it sits."
-                >
-                  <StageList
-                    stages={draft.stages}
-                    onChange={(stages) => {
-                      update({ stages });
-                    }}
-                  />
-                </FormSection>
-              </>
-            }
-            rail={<CustomerView draft={draft} />}
+      <div className="grid min-h-0 flex-1 grid-cols-1 gap-2 @3xl:grid-cols-[minmax(0,1fr)_24rem]">
+        <div className={`${mobilePane === 'flow' ? 'block' : 'hidden'} @3xl:block ${flowPane}`}>
+          <StageCanvas
+            name={draft.name}
+            slug={draft.slug}
+            isDefault={draft.isDefault}
+            stages={draft.stages}
+            selectedId={selectedId}
+            onSelect={selectNode}
+            onInsertStage={insertStage}
+            onMoveStage={moveStage}
           />
         </div>
+
+        <aside className={`${mobilePane === 'edit' ? 'block' : 'hidden'} @3xl:block ${paneCard}`}>
+          <StageInspector
+            selectedId={selectedId}
+            draft={draft}
+            onName={onName}
+            onSlug={onSlug}
+            onDefault={(value) => {
+              update({ isDefault: value });
+            }}
+            onStagePatch={patchStage}
+            onStageRemove={removeStage}
+          />
+        </aside>
       </div>
     </div>
   );

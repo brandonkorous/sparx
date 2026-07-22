@@ -33,6 +33,12 @@ const ListBundlesQuery = z.object({
   product_id: z.string().uuid().optional(),
   pricing_mode: z.string().optional(),
   inventory_mode: z.string().optional(),
+  // Server-side sort. The enum IS the whitelist — an off-list column is a 400,
+  // never a silently-ignored param, because a client-side sort of one paged
+  // window presents a wrong answer as the answer. Mirrors BundleSort in
+  // configurator-service. `name` orders on the wrapper product's title.
+  sort_by: z.enum(['name', 'pricingMode', 'components', 'updatedAt']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -40,6 +46,10 @@ const ListBundlesQuery = z.object({
 const ListTemplatesQuery = z.object({
   q: z.string().optional(),
   status: z.string().optional(),
+  // Server-side sort whitelist — mirrors TemplateSort in configurator-service.
+  // `product` orders on the owning product's title; off-list columns 400.
+  sort_by: z.enum(['name', 'product', 'status', 'options', 'updatedAt']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -186,6 +196,8 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
       bundleProductId: q.product_id,
       pricingMode: q.pricing_mode,
       inventoryMode: q.inventory_mode,
+      sortBy: q.sort_by,
+      order: q.order,
       take: q.take,
       skip: q.skip,
     });
@@ -235,6 +247,8 @@ const fitmentRoutes: FastifyPluginAsync = async (app) => {
       {
         ...(q.q ? { q: q.q } : {}),
         ...(q.status ? { status: q.status } : {}),
+        sortBy: q.sort_by,
+        order: q.order,
         take: q.take,
         skip: q.skip,
       }

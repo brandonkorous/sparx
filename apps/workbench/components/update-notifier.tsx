@@ -20,7 +20,8 @@
 
 import { useEffect, useRef } from 'react';
 import { queryKeys, useQuery } from '@sparx/query';
-import { useImperativeAlertDialog, useToast } from '@wizeworks/silicaui-react';
+import { useToast } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../lib/confirm';
 import { useWorkbench } from '../lib/workbench/context';
 
 const CURRENT_VERSION = process.env.NEXT_PUBLIC_APP_VERSION ?? 'dev';
@@ -49,7 +50,7 @@ function describe(titles: string[]): string {
 export function UpdateNotifier(): null {
   const { controller, role } = useWorkbench();
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   // The toast is raised from an effect that must not re-run when these identities
   // change — a fresh toast on every render would stack duplicates behind the id.
   const actionRef = useRef<() => void>(() => undefined);

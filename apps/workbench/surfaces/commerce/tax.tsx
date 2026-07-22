@@ -186,7 +186,8 @@ export function TaxSurface({ ctx }: { ctx: SurfaceContext }) {
 
               <Text className="px-1 text-sm">
                 Customers who don&apos;t pay tax — resellers, charities, wholesale accounts — are
-                handled on their own customer record, not here, so their certificate stays with them.
+                handled on their own customer record, not here, so their certificate stays with
+                them.
               </Text>
 
               <p className="px-1 text-xs">

@@ -26,9 +26,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
   Tooltip,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   Check,
   ChevronDown,
@@ -84,7 +84,7 @@ interface StageControlProps {
 export function StageControl({ doc, stages }: StageControlProps) {
   const queryClient = useQueryClient();
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const advance = useMutation({
     mutationFn: (stageId: string) =>
@@ -200,7 +200,7 @@ interface DocumentActionsProps {
 export function DocumentActions({ doc, stage, ctx }: DocumentActionsProps) {
   const queryClient = useQueryClient();
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const paymentLink = useMutation({
     mutationFn: () =>

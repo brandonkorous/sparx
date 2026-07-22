@@ -361,12 +361,10 @@ export function LotsListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      {/* Capped and centred — torn onto a second monitor this pane is 2000px
-          wide, and an uncapped table puts the state badge a foot from the code
-          it belongs to. */}
-      <Card className="mx-auto min-h-0 w-full max-w-6xl flex-1 overflow-y-auto">{body()}</Card>
+      {/* Full width — matches the house list convention: the table fills the pane. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
-      <div className="mx-auto w-full max-w-6xl shrink-0">
+      <div className="shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

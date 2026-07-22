@@ -111,7 +111,12 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
     (await resolveActivePropertySlug()) ?? undefined
   );
   const forcedKey = one(sp.sparxSitePreview) ? one(sp.sparxLayoutKey) : undefined;
-  const sections = resolveTemplateSections(snapshot, 'commerce:collection', collection.id, forcedKey);
+  const sections = resolveTemplateSections(
+    snapshot,
+    'commerce:collection',
+    collection.id,
+    forcedKey
+  );
 
   // Page size comes from the product-grid section's config (default 24 = today).
   const gridSection = sections.find((s) => s.sectionType === 'collection-products');

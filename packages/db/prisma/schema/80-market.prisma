@@ -95,10 +95,15 @@ model MarketListing {
 // ── GLOBAL projection: the merchant directory ───────────────────────────────────
 
 model MarketMerchant {
-  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId String @map("tenant_id") @db.Uuid
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // The SITE this merchant IS (docs/131 §7) — informational on the public projection;
+  // its name/logo/socials are this property's. Nullable for the backfill window.
+  propertyId String? @map("property_id") @db.Uuid
 
-  // The tenant slug → `/merchants/{slug}`. Globally unique (tenant slugs already are).
+  // The merchant's site-chosen GLOBAL handle → `/merchants/{slug}` (docs/131 §7). The
+  // column keeps its name for back-compat, but the VALUE is now the profile's `handle`,
+  // never the tenant slug — so two sibling businesses no longer share a URL prefix.
   slug         String  @db.VarChar(63)
   // The customer-facing merchant name (Property.name — NOT the legal Tenant.name).
   name         String  @db.VarChar(255)
@@ -135,6 +140,18 @@ model MarketMerchantProfile {
   id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId String @map("tenant_id") @db.Uuid
 
+  // The SITE this tenant markets AS (docs/131 §7). The marketplace merchant is a
+  // business, never "Korous Family Inc." the tenant — so its public identity (name,
+  // logo, socials) is a specific Property's, not the tenant's. Defaults to the primary
+  // site; nullable only for the backfill window.
+  marketPropertyId String? @map("market_property_id") @db.Uuid
+  // The site-chosen, GLOBALLY-UNIQUE public handle → `/merchants/{handle}` (docs/131
+  // §7 DECISION). Replaces the old "slug = tenant slug", which coupled sibling
+  // businesses in the URL and disclosed a shared owner. Defaults to the market site's
+  // slug; the operator can claim any free handle. Nullable for the backfill window;
+  // the unique index tolerates nulls, non-null handles are globally unique.
+  handle           String? @db.VarChar(63)
+
   // Whether this tenant participates in sparx.market — the first-party channel's
   // "connection" toggle. Off → its products never project, even if flagged.
   enabled               Boolean @default(false)
@@ -153,9 +170,13 @@ model MarketMerchantProfile {
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
-  tenant Tenant @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // SetNull: if the marketed site is deleted the profile survives (the operator
+  // re-points it), rather than the tenant silently vanishing from the marketplace.
+  marketProperty Property? @relation(fields: [marketPropertyId], references: [id], onDelete: SetNull)
 
   @@unique([tenantId], map: "market_merchant_profiles_tenant_unique")
+  @@unique([handle], map: "market_merchant_profiles_handle_unique")
   @@map("market_merchant_profiles")
 }
 

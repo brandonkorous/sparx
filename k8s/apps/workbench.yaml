@@ -1,6 +1,7 @@
 # apps/workbench — production manifest. Next.js standalone server on port 3000.
-# Shares the sparx-app-env ConfigMap and sparx-app-secrets Secret with api-rest
-# and the dashboard (DATABASE_URL, SPARX_INTERNAL_JWT_SECRET, etc.).
+# Serves app.sparx.works (it replaced the dashboard; Caddy reverse-proxies the
+# host here). Shares the sparx-app-env ConfigMap and sparx-app-secrets Secret with
+# api-rest (DATABASE_URL, SPARX_INTERNAL_JWT_SECRET, etc.).
 # Image is substituted at deploy time by the GitHub Actions workflow.
 ---
 apiVersion: apps/v1
@@ -56,12 +57,12 @@ spec:
               value: '3000'
             - name: HOSTNAME
               value: 0.0.0.0
-            # MUST override the ConfigMap's shared value (https://app.sparx.works).
-            # Better Auth derives its baseURL, callback origins, and cookie scope
-            # from this — left at the dashboard's origin, every workbench sign-in
-            # 403s as a cross-origin request. Per-pod `env` beats `envFrom`.
-            - name: BETTER_AUTH_URL
-              value: https://workbench.sparx.works
+            # No per-pod BETTER_AUTH_URL override: the workbench now serves
+            # app.sparx.works, so it inherits the ConfigMap's shared
+            # https://app.sparx.works — the same origin Better Auth uses for its
+            # baseURL, callback origins, cookie scope, and the MCP OAuth consent
+            # redirect. (Previously overridden to workbench.sparx.works when it ran
+            # on its own host beside the dashboard.)
           securityContext:
             runAsNonRoot: true
             runAsUser: 1001

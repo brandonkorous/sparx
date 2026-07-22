@@ -7,26 +7,52 @@ import {
   CalendarDays,
   Clock,
   Hourglass,
+  Link2,
   Repeat,
   ShieldCheck,
   Users,
 } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
-import { stub } from './stub';
+
+import { CalendarSurface } from '../../../surfaces/scheduling/calendar';
+import { CalendarConnectionsSurface } from '../../../surfaces/scheduling/calendar-connections';
+import { BookingsListSurface } from '../../../surfaces/scheduling/bookings-list';
+import { BookingDetailSurface } from '../../../surfaces/scheduling/bookings-detail';
+import { SeriesListSurface } from '../../../surfaces/scheduling/series-list';
+import { SeriesDetailSurface } from '../../../surfaces/scheduling/series-detail';
+import { WaitlistSurface } from '../../../surfaces/scheduling/waitlist-list';
+import { ServicesListSurface } from '../../../surfaces/scheduling/services-list';
+import { ServiceDetailSurface } from '../../../surfaces/scheduling/service-detail';
+import { ResourcesListSurface } from '../../../surfaces/scheduling/resources-list';
+import { ResourceDetailSurface } from '../../../surfaces/scheduling/resource-detail';
+import { AvailabilitySurface } from '../../../surfaces/scheduling/availability-settings';
+import { PoliciesListSurface } from '../../../surfaces/scheduling/policies-list';
+import { PolicyDetailSurface } from '../../../surfaces/scheduling/policy-detail';
+import { SchedulingReportsSurface } from '../../../surfaces/scheduling/reports';
 
 export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
-  stub({
+  /* ── Diary ─────────────────────────────────────────────────────────────── */
+  {
     key: 'scheduling.calendar',
     title: 'Calendar',
     module: 'scheduling',
     icon: CalendarDays,
     order: 1,
     keywords: ['diary', 'schedule', 'week', 'day', 'agenda'],
-    body: 'Everything booked in, laid out by day and week.',
-  }),
+    component: CalendarSurface,
+  },
+  {
+    key: 'scheduling.calendar.connections',
+    title: 'Linked calendars',
+    module: 'scheduling',
+    icon: Link2,
+    component: CalendarConnectionsSurface,
+    listed: false,
+    besideWidth: 0.42,
+  },
 
   /* ── Bookings ──────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'scheduling.bookings.list',
     title: 'Bookings',
     module: 'scheduling',
@@ -34,9 +60,20 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     section: 'Bookings',
     order: 10,
     keywords: ['appointments', 'jobs', 'reservations'],
-    body: 'Every appointment as a list you can search — who, what, when, and whether it is confirmed.',
-  }),
-  stub({
+    component: BookingsListSurface,
+    createSurface: 'scheduling.bookings.detail',
+    createLabel: 'Take a booking',
+  },
+  {
+    key: 'scheduling.bookings.detail',
+    title: (params) => (params.id === 'new' ? 'New booking' : 'Booking'),
+    module: 'scheduling',
+    icon: CalendarClock,
+    component: BookingDetailSurface,
+    listed: false,
+    besideWidth: 0.5,
+  },
+  {
     key: 'scheduling.series.list',
     title: 'Repeating bookings',
     module: 'scheduling',
@@ -44,9 +81,20 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     section: 'Bookings',
     order: 11,
     keywords: ['recurring', 'series', 'weekly', 'contract'],
-    body: 'Appointments that happen on a regular pattern — every Tuesday, or the first of each month.',
-  }),
-  stub({
+    component: SeriesListSurface,
+    createSurface: 'scheduling.series.detail',
+    createLabel: 'Repeating booking',
+  },
+  {
+    key: 'scheduling.series.detail',
+    title: (params) => (params.id === 'new' ? 'New repeating booking' : 'Repeating booking'),
+    module: 'scheduling',
+    icon: Repeat,
+    component: SeriesDetailSurface,
+    listed: false,
+    besideWidth: 0.5,
+  },
+  {
     key: 'scheduling.waitlist',
     title: 'Waiting list',
     module: 'scheduling',
@@ -54,11 +102,11 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     section: 'Bookings',
     order: 12,
     keywords: ['waitlist', 'cancellations', 'standby'],
-    body: 'People who want a slot that is full, so a cancellation can be filled instead of lost.',
-  }),
+    component: WaitlistSurface,
+  },
 
   /* ── Setup ─────────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'scheduling.services.list',
     title: 'Services',
     module: 'scheduling',
@@ -66,9 +114,20 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     section: 'Setup',
     order: 20,
     keywords: ['what you offer', 'duration', 'price'],
-    body: 'What people can book you for, how long each one takes, and what it costs.',
-  }),
-  stub({
+    component: ServicesListSurface,
+    createSurface: 'scheduling.services.detail',
+    createLabel: 'New service',
+  },
+  {
+    key: 'scheduling.services.detail',
+    title: (params) => (params.id === 'new' ? 'New service' : 'Service'),
+    module: 'scheduling',
+    icon: Briefcase,
+    component: ServiceDetailSurface,
+    listed: false,
+    besideWidth: 0.5,
+  },
+  {
     key: 'scheduling.resources.list',
     title: 'People & equipment',
     module: 'scheduling',
@@ -76,9 +135,20 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     section: 'Setup',
     order: 21,
     keywords: ['resources', 'staff', 'rooms', 'bays', 'vehicles'],
-    body: 'Whatever a booking uses up — a member of staff, a room, a bay, a machine. Two bookings cannot claim the same one.',
-  }),
-  stub({
+    component: ResourcesListSurface,
+    createSurface: 'scheduling.resources.detail',
+    createLabel: 'Add one',
+  },
+  {
+    key: 'scheduling.resources.detail',
+    title: (params) => (params.id === 'new' ? 'New resource' : 'Resource'),
+    module: 'scheduling',
+    icon: Users,
+    component: ResourceDetailSurface,
+    listed: false,
+    besideWidth: 0.45,
+  },
+  {
     key: 'scheduling.availability',
     title: 'Availability',
     module: 'scheduling',
@@ -86,9 +156,10 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     section: 'Setup',
     order: 22,
     keywords: ['opening hours', 'working hours', 'holidays', 'time off'],
-    body: 'The hours you can be booked, and the days you cannot — holidays, closures, time off.',
-  }),
-  stub({
+    component: AvailabilitySurface,
+    singleton: true,
+  },
+  {
     key: 'scheduling.policies',
     title: 'Booking rules',
     module: 'scheduling',
@@ -96,18 +167,29 @@ export const SCHEDULING_SURFACES: SurfaceDefinition[] = [
     section: 'Setup',
     order: 23,
     keywords: ['policies', 'cancellation', 'deposit', 'notice', 'no show'],
-    body: 'How much notice you need, what happens on a cancellation, and whether a deposit is taken up front.',
-  }),
+    component: PoliciesListSurface,
+    createSurface: 'scheduling.policies.detail',
+    createLabel: 'New rule set',
+  },
+  {
+    key: 'scheduling.policies.detail',
+    title: (params) => (params.id === 'new' ? 'New rule set' : 'Rule set'),
+    module: 'scheduling',
+    icon: ShieldCheck,
+    component: PolicyDetailSurface,
+    listed: false,
+    besideWidth: 0.5,
+  },
 
   /* ── Reporting ─────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'scheduling.reports',
     title: 'Reports',
     module: 'scheduling',
     icon: BarChart3,
     section: 'Reporting',
     order: 30,
-    keywords: ['utilisation', 'no shows', 'busiest'],
-    body: 'How full your diary runs, when you are busiest, and how often people fail to turn up.',
-  }),
+    keywords: ['utilisation', 'no shows', 'busiest', 'analytics', 'bookings', 'revenue'],
+    component: SchedulingReportsSurface,
+  },
 ];

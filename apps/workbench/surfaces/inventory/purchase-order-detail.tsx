@@ -49,9 +49,9 @@ import {
   Table,
   Textarea,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   Ban,
   CheckCircle2,
@@ -184,7 +184,7 @@ function LineEditor({
   const open = editing !== null;
   const existing = editing?.line ?? null;
   const isEdit = existing !== null;
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const supplierVariants = useSupplierVariants(supplierId);
   const lookup = useVariantLookup();
@@ -548,7 +548,7 @@ export function PurchaseOrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const isNew = id === 'new';
 
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const po = usePurchaseOrder(id);
   const locationsQuery = useStockLocations();
   const suppliers = useSuppliers({ includeArchived: false, take: 250, skip: 0 });

@@ -59,9 +59,9 @@ import {
   RadioOption,
   Select,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { ChevronLeft, ChevronRight, ImageOff, Star, Trash2, Upload } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -184,7 +184,7 @@ function bindingSummary(
 
 export function ProductMediaTab({ product }: { ctx: SurfaceContext; product: Product }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const media = useProductMedia(product.id);
   const variantsQuery = useProductVariants(product.id);

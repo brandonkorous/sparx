@@ -359,17 +359,12 @@ export function StockListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      {/* Capped and centred. Torn onto a second monitor this pane is 2000px
-          wide, and an uncapped table puts the state badge a foot away from the
-          product it is about — the eye has to travel the whole width to join
-          two facts about one row. */}
-      <Card className="mx-auto min-h-0 w-full max-w-6xl flex-1 overflow-y-auto">{body()}</Card>
+      {/* Full width — matches the house list convention: the table fills the pane. */}
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
       {/* Sits on the pane, not in the card — it describes the table rather than
           being part of it, which is what the recessed surface says. */}
-      {/* Capped to the same width as the table, or the range readout ends up
-          under empty pane rather than under the rows it counts. */}
-      <div className="mx-auto w-full max-w-6xl shrink-0">
+      <div className="shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

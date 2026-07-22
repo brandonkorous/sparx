@@ -50,9 +50,9 @@ import {
   Text,
   Textarea,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   ArrowRight,
   Ban,
@@ -541,7 +541,7 @@ export function TransferDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const locationsQuery = useStockLocations();
 
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const save = useSaveTransfer();
   const dispatch = useDispatchTransfer();

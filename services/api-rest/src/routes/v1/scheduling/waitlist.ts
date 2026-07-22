@@ -3,7 +3,7 @@
 // offer by booking a concrete time in their window. The api-rest waitlist tick
 // drives auto-offer + the offer email; these routes are the manual/admin surface.
 //
-//   GET    /v1/scheduling/waitlist             → list (filter by service / status)
+//   GET    /v1/scheduling/waitlist             → list (search + filter + paging)
 //   POST   /v1/scheduling/waitlist             → add an entry
 //   POST   /v1/scheduling/waitlist/:id/offer    → offer a freed slot (TTL)
 //   POST   /v1/scheduling/waitlist/:id/accept   → accept → book the slot
@@ -12,7 +12,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import type { WaitlistEntry } from '@sparx/db';
-import { ok } from '@sparx/api-core/envelope';
+import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import {
   AcceptWaitlistInput,
@@ -37,6 +37,9 @@ const ListQuery = z.object({
   serviceId: z.string().uuid().optional(),
   status: z.string().max(20).optional(),
   customerId: z.string().uuid().optional(),
+  q: z.string().trim().min(1).max(200).optional(),
+  take: z.coerce.number().int().min(1).max(250).default(50),
+  skip: z.coerce.number().int().min(0).default(0),
 });
 
 function waitlistView(e: WaitlistEntry) {
@@ -69,8 +72,13 @@ const schedulingWaitlistRoutes: FastifyPluginAsync = async (app) => {
     await requireSchedulingModule(request);
     const { tenantId } = toSchedulingContext(request);
     const q = ListQuery.parse(request.query);
-    const rows = await listWaitlistDetailed(tenantId, q);
-    return ok(rows.map(detailView));
+    const { rows, total } = await listWaitlistDetailed(tenantId, q);
+    return paged(rows.map(detailView), {
+      page: Math.floor(q.skip / q.take) + 1,
+      per_page: q.take,
+      total,
+      total_pages: Math.max(1, Math.ceil(total / q.take)),
+    });
   });
 
   app.post('/v1/scheduling/waitlist', async (request, reply) => {

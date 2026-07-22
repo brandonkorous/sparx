@@ -15,7 +15,10 @@
 import Image from 'next/image';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
-import { ScopedProductBrowser, type SearchParams } from '@/components/products/scoped-product-browser';
+import {
+  ScopedProductBrowser,
+  type SearchParams,
+} from '@/components/products/scoped-product-browser';
 import { getCollection } from '@/lib/commerce';
 import { mediaUrl } from '@/lib/media';
 import type { ResolvedSite } from '@/lib/site-context';

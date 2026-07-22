@@ -58,29 +58,21 @@ export async function handleDomainPurchased(
   // Step 1: retry DNS configuration if the purchase flow's configureDNS failed.
   // Only attempt when status is still pending_ssl (not yet tried by this worker).
   if (!dnsConfigured && row.status === 'pending_ssl') {
-    if (!row.dkimPublicKey) {
-      logger.warn(
-        { domain },
-        'no DKIM public key on domain row; advancing to verifying without DNS retry'
-      );
+    logger.info({ domain }, 'retrying GoDaddy DNS configuration');
+    try {
+      await configureDNS(domain, buildSparxDnsRecords());
       await prisma.domain.update({ where: { host: domain }, data: { status: 'verifying' } });
-    } else {
-      logger.info({ domain }, 'retrying GoDaddy DNS configuration');
-      try {
-        await configureDNS(domain, buildSparxDnsRecords(row.dkimPublicKey));
-        await prisma.domain.update({ where: { host: domain }, data: { status: 'verifying' } });
-        logger.info({ domain }, 'DNS configuration retry succeeded');
-      } catch (err) {
-        if (err instanceof GoDaddyError) {
-          logger.warn(
-            { domain, httpStatus: err.status },
-            'GoDaddy DNS config retry failed; triggering Pub/Sub retry'
-          );
-        } else {
-          logger.error({ domain, err }, 'unexpected error during DNS config retry');
-        }
-        throw err;
+      logger.info({ domain }, 'DNS configuration retry succeeded');
+    } catch (err) {
+      if (err instanceof GoDaddyError) {
+        logger.warn(
+          { domain, httpStatus: err.status },
+          'GoDaddy DNS config retry failed; triggering Pub/Sub retry'
+        );
+      } else {
+        logger.error({ domain, err }, 'unexpected error during DNS config retry');
       }
+      throw err;
     }
   }
 

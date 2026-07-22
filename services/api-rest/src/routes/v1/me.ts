@@ -111,13 +111,25 @@ const meRoutes: FastifyPluginAsync = async (app) => {
         where: { id: auth.actorId },
         select: { preferences: true },
       });
-      const current = parsePreferences(before?.preferences ?? null);
-      const merged = { ...current, ...input };
+      // Overlay the view defaults onto the WHOLE existing blob rather than
+      // rewriting it: `users.preferences` also holds other per-user settings
+      // this endpoint does not own (e.g. notification preferences under
+      // `notifications`, see routes/v1/notification-preferences.ts). Replacing
+      // the object with only the view keys silently dropped those.
+      const base =
+        before?.preferences &&
+        typeof before.preferences === 'object' &&
+        !Array.isArray(before.preferences)
+          ? (before.preferences as Record<string, unknown>)
+          : {};
+      const merged = { ...base, ...input };
       await tx.user.update({
         where: { id: auth.actorId },
         data: { preferences: merged },
       });
-      return merged;
+      // Return only the keys this endpoint owns — the response contract is the
+      // view defaults, not the whole blob.
+      return parsePreferences(merged);
     });
     return ok(next);
   });

@@ -31,6 +31,14 @@ export interface ListTasksFilter {
   skip?: number;
 }
 
+// The subject a task is "about", pulled alongside so a list can name it without
+// a per-row fetch. Only the identity fields a caller renders — additive, so a
+// consumer that ignores them is unaffected.
+const taskSubjectInclude = {
+  customer: { select: { firstName: true, lastName: true, company: true, email: true } },
+  deal: { select: { title: true } },
+} satisfies Prisma.TaskInclude;
+
 export async function list(
   ctx: ServiceContext,
   filter: ListTasksFilter = {}
@@ -50,6 +58,7 @@ export async function list(
     const [items, total] = await Promise.all([
       tx.task.findMany({
         where,
+        include: taskSubjectInclude,
         orderBy: [{ status: 'asc' }, { dueAt: 'asc' }],
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
@@ -61,7 +70,9 @@ export async function list(
 }
 
 export async function get(ctx: ServiceContext, taskId: string): Promise<Task> {
-  const task = await withTenant(ctx, (tx) => tx.task.findUnique({ where: { id: taskId } }));
+  const task = await withTenant(ctx, (tx) =>
+    tx.task.findUnique({ where: { id: taskId }, include: taskSubjectInclude })
+  );
   if (!task) throw new CrmNotFoundError('Task', taskId);
   return task;
 }

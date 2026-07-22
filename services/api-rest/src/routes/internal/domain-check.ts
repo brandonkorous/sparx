@@ -80,6 +80,19 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   'www.sparx.market',
   'sparx.exchange',
   'www.sparx.exchange',
+  // silicaui.com — first-party marketing + docs site, a co-tenant in the
+  // `silicaui` namespace (static Next.js export served by nginx). It is NOT a
+  // sparx tenant property, so resolveSiteByHost can't authorize it; it has to be
+  // a static platform host here or on-demand TLS 403s it. On-demand (rather than
+  // kanNINJA-style explicit managed blocks) is deliberate: the shared Caddy is a
+  // single replica on a Recreate rollout, so every boot has a ~15-60s window with
+  // no registered LB backend, and certmagic fires all its startup issuance
+  // attempts inside it — a first cert can never be obtained at boot. On-demand
+  // defers issuance to the first HTTPS request, which lands on the warm,
+  // LB-registered pod, so the challenge succeeds and renewals (also request/
+  // maintenance time, never boot) stay healthy.
+  'silicaui.com',
+  'www.silicaui.com',
 ]);
 
 const domainCheckRoutes: FastifyPluginAsync = (app) => {

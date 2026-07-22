@@ -48,7 +48,6 @@ jobs:
             api-rest
             api-graphql
             api-mcp
-            dashboard
             workbench
             site
             media-worker

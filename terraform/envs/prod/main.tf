@@ -311,6 +311,27 @@ module "secrets" {
     # land. Redirect URI: ${BETTER_AUTH_URL}/api/auth/callback/google.
     "google-client-id",
     "google-client-secret",
+    # ── Connector OAuth (Search Console · Google Calendar · Google Shopping) ──
+    # A SEPARATE Google OAuth 2.0 *Web* client from the Better Auth social login
+    # above. The connectors request read-only data scopes (Search Console's
+    # webmasters.readonly, Calendar) and register per-app redirect URIs — e.g. the
+    # workbench-hosted https://workbench.sparx.works/seo/search-console/callback —
+    # whereas the social client only does staff sign-in at
+    # ${BETTER_AUTH_URL}/api/auth/callback/google. api-rest reads this pair from
+    # sparx-app-secrets as GOOGLE_OAUTH_CLIENT_ID / _SECRET; the connector stays
+    # inert (isSearchConsoleConfigured() === false) until both land. Add the values
+    # out-of-band once the client exists in the GCP console:
+    #   gcloud secrets versions add google-oauth-client-id     --data-file=- <<< "<client id>"
+    #   gcloud secrets versions add google-oauth-client-secret --data-file=- <<< "<client secret>"
+    "google-oauth-client-id",
+    "google-oauth-client-secret",
+    # Search Console token-encryption key (docs/50 §7) — AES-256-GCM key encrypting
+    # the stored GSC OAuth grant on search_console_connections. Bound by api-rest
+    # (k8s) + the search-console-sync CronJob. Same pattern as channels-token-key /
+    # provider-secret-key — generate + add a version now (it gates nothing else):
+    #   gcloud secrets versions add search-console-token-key --data-file=- \
+    #     <<< "$(openssl rand -base64 32)"
+    "search-console-token-key",
     # Mailgun HTTP API key — the email-worker Cloud Run service binds it
     # (serverless.tf). Declared here so the TF that references it also owns it.
     "mailgun-api-key",
@@ -347,9 +368,10 @@ module "secrets" {
     # partner approval — generate + add a version now:
     #   gcloud secrets versions add channels-token-key --data-file=- \
     #     <<< "$(openssl rand -base64 32)"
-    # The per-channel platform OAuth client SECRETS (google-oauth-client-secret,
-    # meta-app-secret, pinterest-app-secret) land here when each partner app is
-    # approved — they don't exist until then.
+    # The remaining per-channel platform OAuth client SECRETS (meta-app-secret,
+    # pinterest-app-secret) land here when each partner app is approved — they
+    # don't exist until then. (google-oauth-client-secret is now declared above —
+    # the same shared Google Web client backs Search Console + Google Shopping.)
     "channels-token-key",
     # Provider-installation secret-encryption key (docs/09) — AES-256-GCM key
     # encrypting tenant-pasted provider credentials (e.g. a Shippo API token)

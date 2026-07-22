@@ -1,0 +1,74 @@
+/* ── Toast, corrected to the platform's callout language ──────────────────────
+   Shared silica correction, imported by every app right after theme.css. Kept
+   here (next to the tokens it reads) rather than duplicated into five globals,
+   because "our toasts look like they don't belong" is one platform-wide brand
+   decision, not five app-local ones.
+
+   silicaui ships a toast as a SOLID color-per-type fill — `[data-type="success"]`
+   sets `--toast-bg: var(--color-success)` with white ink on top — plus a drop
+   shadow. That's the generic library-default look, and it breaks two binding
+   house rules at once:
+
+     • RULE #3 — soft/tinted is a DELIBERATE signal, not a default. Readable
+       content never sits on a wall of saturated color; semantic meaning is a
+       SOFT tint + a colored accent, with real-ink text. (A solid `--color-success`
+       BACKGROUND is the anti-pattern — the token itself is correct; the treatment
+       is what's wrong.)
+     • No shadows as a visual device — separate a floating surface with an edge,
+       a base-tone shift, and radius, not a `box-shadow`.
+
+   So we retune silica's own `--toast-*` custom properties (its sanctioned theming
+   seam) rather than rewriting the component. The queue, timeout, focus handling,
+   swipe-to-dismiss and enter/leave animation all stay silica's. A toast becomes
+   what it should have been: a lifted CARD in the base ramp, the semantic hue
+   carried by the leading icon + a hairline edge, matching `<Alert variant="soft">`
+   and the notification-center rows.
+
+   These rules are intentionally UNLAYERED so they win over silica's layered
+   component CSS (same mechanism as the `.field-description` correction each app
+   already carries). Do not wrap them in `@layer`. */
+
+/* A plain (typeless) toast is a lifted card in the base ramp — base-100 surface
+   over the base-200 page ground, sealed by a hairline and radius, no shadow. */
+.toast {
+  --toast-bg: var(--color-base-100);
+  --toast-fg: var(--color-base-content);
+  border-color: var(--color-base-300);
+  box-shadow: none;
+}
+
+/* Semantic toasts: a SOFT tint of the type's hue (mirrors silica's `bg-soft`,
+   ~15% into the surface — theme-aware, so it adapts to dark mode), real-ink
+   text, and a soft colored edge. The saturated hue moves to the icon below. */
+.toast[data-type] {
+  --toast-accent: var(--color-primary);
+  --toast-bg: color-mix(in oklab, var(--toast-accent) 15%, var(--color-base-100));
+  --toast-fg: var(--color-base-content);
+  border-color: color-mix(in oklab, var(--toast-accent) 40%, transparent);
+}
+
+.toast[data-type='success'] {
+  --toast-accent: var(--color-success);
+}
+.toast[data-type='error'] {
+  --toast-accent: var(--color-error);
+}
+.toast[data-type='warning'] {
+  --toast-accent: var(--color-warning);
+}
+.toast[data-type='info'] {
+  --toast-accent: var(--color-info);
+}
+
+/* The leading type icon now carries the color the background used to shout —
+   full strength, against the soft tint. */
+.toast[data-type] > svg {
+  color: var(--toast-accent);
+}
+
+/* The description is text a person is meant to READ, so it takes full ink —
+   never silica's 0.9 fade (hierarchy here is the 600-weight title above it,
+   not a faded body). */
+.toast-description {
+  opacity: 1;
+}

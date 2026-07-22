@@ -12,11 +12,45 @@ const EntryParam = z.object({ entryId: z.string().uuid() });
 const TierParam = z.object({ tierId: z.string().uuid() });
 const ProductIdParam = z.object({ productId: z.string().uuid() });
 
+// Sort columns are a server-side WHITELIST (mirrors the discount service's
+// `DiscountSortField`). A client-supplied column that is not on the list is
+// rejected by the enum, never interpolated into an orderBy — Zod answers a bad
+// `sort_by` with a 422. Sorting lives on the server because both lists page.
+const SortOrder = z.enum(['asc', 'desc']);
+const DiscountSort = z.enum([
+  'name',
+  'code',
+  'status',
+  'valueCents',
+  'valuePercent',
+  'createdAt',
+  'updatedAt',
+]);
+const GiftCardSort = z.enum([
+  'code',
+  'balanceCents',
+  'initialBalanceCents',
+  'status',
+  'expiresAt',
+  'createdAt',
+]);
+
 const ListDiscountsQuery = z.object({
   status: z.string().optional(),
   q: z.string().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+  sort_by: DiscountSort.optional(),
+  order: SortOrder.optional(),
+});
+
+const ListGiftCardsQuery = z.object({
+  status: z.string().optional(),
+  q: z.string().optional(),
+  take: z.coerce.number().int().min(1).max(250).optional(),
+  skip: z.coerce.number().int().min(0).optional(),
+  sort_by: GiftCardSort.optional(),
+  order: SortOrder.optional(),
 });
 
 const ListPriceListsQuery = z.object({
@@ -88,6 +122,25 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     await requireCommerceModule(request);
     const { id } = PathId.parse(request.params);
     return ok(await pricingService.listEntries(toCommerceContext(request), id));
+  });
+
+  // Write MANY entries for ONE list in a single request (upsert on variant +
+  // quantity). This is the authoring write side the workbench price-list editor
+  // uses: a list can carry hundreds of prices, and a request per entry is the
+  // N+1 storm the client data layer forbids. The list id comes from the path;
+  // the body carries only the entries. Distinct path (`/entries/bulk`) + method
+  // from the reads above, so no route collides.
+  app.post('/v1/commerce/price-lists/:id/entries/bulk', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    const body = (request.body ?? {}) as { entries?: unknown };
+    return ok(
+      await pricingService.bulkSetEntries(toCommerceContext(request), {
+        priceListId: id,
+        entries: body.entries ?? [],
+      })
+    );
   });
 
   // Every price-list entry for ONE product, across all its lists — the inverse
@@ -185,6 +238,8 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
       ...(q.q ? { q: q.q } : {}),
       take: q.take,
       skip: q.skip,
+      ...(q.sort_by ? { sortBy: q.sort_by } : {}),
+      ...(q.order ? { order: q.order } : {}),
     });
     return paged(items, { total, per_page: q.take ?? 50 });
   });
@@ -227,17 +282,21 @@ const pricingRoutes: FastifyPluginAsync = async (app) => {
     return ok({ id, archived: true });
   });
 
-  // Gift cards
+  // Gift cards — a real paged list (skip/take/total + server-side sort), the
+  // same shape as discounts, so the workbench table pages and sorts correctly.
   app.get('/v1/commerce/gift-cards', async (request) => {
     requireRole(request, 'viewer');
     await requireCommerceModule(request);
-    const q = request.query as Record<string, string | undefined>;
-    return ok(
-      await discountService.listGiftCards(toCommerceContext(request), {
-        q: q?.q,
-        take: q?.take ? Number(q.take) : undefined,
-      })
-    );
+    const q = ListGiftCardsQuery.parse(request.query);
+    const { items, total } = await discountService.listGiftCards(toCommerceContext(request), {
+      ...(q.status ? { status: q.status } : {}),
+      ...(q.q ? { q: q.q } : {}),
+      take: q.take,
+      skip: q.skip,
+      ...(q.sort_by ? { sortBy: q.sort_by } : {}),
+      ...(q.order ? { order: q.order } : {}),
+    });
+    return paged(items, { total, per_page: q.take ?? 50 });
   });
 
   app.post('/v1/commerce/gift-cards', async (request, reply) => {

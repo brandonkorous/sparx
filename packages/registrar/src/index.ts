@@ -7,13 +7,11 @@
 //   - the `RegistrarClient` interface every provider implements,
 //   - the shared wire types those methods exchange,
 //   - `RegistrarError` (the neutral error every provider throws), and
-//   - the registrar-NEUTRAL DNS/DKIM helpers (the sparx record set + keypair).
+//   - the registrar-NEUTRAL DNS helper (the sparx record set).
 //
 // It depends on no provider. Providers (`@sparx/godaddy`, future `@sparx/namecom`)
 // depend on THIS — never the other way round — so the workspace graph stays
 // acyclic. Selection happens in each service's composition root, not here.
-
-import { generateKeyPairSync } from 'node:crypto';
 
 // ─── Error ─────────────────────────────────────────────────────────────────
 
@@ -85,9 +83,9 @@ export interface DnsRecord {
 
 /**
  * Every registrar provider implements this. Methods cover the registrar's API
- * operations only — building the sparx DNS record set and the DKIM keypair are
- * caller concerns (see the neutral helpers below), not provider behavior, so a
- * new provider only has to translate these calls to its own API.
+ * operations only — building the sparx DNS record set is a caller concern (see
+ * the neutral helper below), not provider behavior, so a new provider only has
+ * to translate these calls to its own API.
  *
  * Providers MUST throw `RegistrarError` (not a provider-specific error) so
  * callers stay provider-agnostic.
@@ -169,48 +167,25 @@ export const DEFAULT_TLDS = [
 
 // ─── Registrar-neutral helpers ─────────────────────────────────────────────────
 //
-// These build sparx's DESIRED state (the record set we want, a DKIM keypair).
-// They are identical no matter which registrar applies them, so they live with
-// the contract rather than inside any one provider.
+// This builds sparx's DESIRED state for a purchased domain: the WEB records
+// that point the domain at sparx hosting. It is identical no matter which
+// registrar applies it, so it lives with the contract rather than inside any
+// one provider.
+//
+// Email-authentication records (SPF, DKIM, DMARC) are intentionally NOT here.
+// They are owned entirely by the Mailgun sending-domain flow
+// (@sparx/email-platform domain-service + @sparx/email admin/mailgun-domains),
+// which provisions the correct per-domain records — `v=spf1 include:mailgun.org`,
+// a `mx._domainkey` DKIM key, and DMARC — when the tenant verifies their sending
+// domain. Seeding our own SPF here would put a SECOND `v=spf1` record on the
+// domain the moment they verify, and a domain may have exactly one — two is an
+// SPF permerror that fails authentication outright. The old SPF/DKIM/DMARC/MX
+// set here pointed at decommissioned Postal infra.
 
-/** The canonical sparx DNS record set for a purchased domain (docs/24 §3). */
-export function buildSparxDnsRecords(dkimPublicKey: string): DnsRecord[] {
+/** The canonical sparx WEB DNS record set for a purchased domain (docs/24 §3). */
+export function buildSparxDnsRecords(): DnsRecord[] {
   return [
     { type: 'CNAME', name: '@', data: 'customers.sparx.zone', ttl: 600 },
     { type: 'CNAME', name: 'www', data: 'customers.sparx.zone', ttl: 600 },
-    { type: 'TXT', name: '@', data: 'v=spf1 include:_spf.sparx.email ~all', ttl: 3600 },
-    {
-      type: 'TXT',
-      name: 'sparx._domainkey',
-      data: `v=DKIM1; k=rsa; p=${dkimPublicKey}`,
-      ttl: 3600,
-    },
-    {
-      type: 'TXT',
-      name: '_dmarc',
-      data: 'v=DMARC1; p=quarantine; rua=mailto:dmarc@sparx.email',
-      ttl: 3600,
-    },
-    { type: 'MX', name: '@', data: 'mail.sparx.email', ttl: 3600, priority: 10 },
   ];
-}
-
-/**
- * Generate an RSA-2048 DKIM keypair. Returns:
- *   - publicKey: stripped PEM ready for the DKIM TXT `p=` value
- *   - privateKey: PKCS8 PEM for signing outbound mail
- */
-export function generateDkimKeypair(): { publicKey: string; privateKey: string } {
-  const { publicKey: pubPem, privateKey: privPem } = generateKeyPairSync('rsa', {
-    modulusLength: 2048,
-    publicKeyEncoding: { type: 'spki', format: 'pem' },
-    privateKeyEncoding: { type: 'pkcs8', format: 'pem' },
-  });
-
-  const dkimPublicKey = pubPem
-    .replace('-----BEGIN PUBLIC KEY-----', '')
-    .replace('-----END PUBLIC KEY-----', '')
-    .replace(/\s+/g, '');
-
-  return { publicKey: dkimPublicKey, privateKey: privPem };
 }

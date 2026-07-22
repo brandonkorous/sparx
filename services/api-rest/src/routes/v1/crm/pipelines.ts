@@ -8,6 +8,9 @@
 //   POST   /v1/crm/pipelines/:id/stages               → create a stage
 //   POST   /v1/crm/pipelines/:id/stages/reorder       → batch-reorder stages
 //   PATCH  /v1/crm/pipelines/:id/stages/:stageId      → update a stage
+//   DELETE /v1/crm/pipelines/:id/stages/:stageId      → delete a stage (optionally
+//                                                        ?reassign_to_stage_id=… to
+//                                                        move its deals first)
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
@@ -27,6 +30,9 @@ const ListQuery = z.object({
   include_archived: z.coerce.boolean().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
+});
+const DeleteStageQuery = z.object({
+  reassign_to_stage_id: z.string().uuid().optional(),
 });
 
 const pipelineRoutes: FastifyPluginAsync = (app) => {
@@ -110,6 +116,19 @@ const pipelineRoutes: FastifyPluginAsync = (app) => {
     const { stageId } = StagePathIds.parse(request.params);
     const stage = await pipelineService.updateStage(toCrmContext(request), stageId, request.body);
     return ok(stage);
+  });
+
+  app.delete('/v1/crm/pipelines/:id/stages/:stageId', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id, stageId } = StagePathIds.parse(request.params);
+    const { reassign_to_stage_id } = DeleteStageQuery.parse(request.query);
+    const pipeline = await pipelineService.deleteStage(toCrmContext(request), {
+      pipelineId: id,
+      stageId,
+      ...(reassign_to_stage_id ? { reassignToStageId: reassign_to_stage_id } : {}),
+    });
+    return ok(pipeline);
   });
   return Promise.resolve();
 };

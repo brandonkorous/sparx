@@ -54,9 +54,9 @@ import {
   Input,
   Select,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { ChevronDown, ChevronRight, Plus, Undo2, X } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { useTabSave } from './product-tab-save';
@@ -246,7 +246,7 @@ function suggestSlotSku(product: Product, slot: Slot, taken: Set<string>): strin
 
 export function ProductVariantsTab({ product }: { ctx: SurfaceContext; product: Product }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const options = useProductOptions(product.id);
   // Retired versions come back too: they still hold their code against the

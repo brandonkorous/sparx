@@ -1,0 +1,41 @@
+// WebAuthn passkeys (Better Auth `@better-auth/passkey` plugin, docs/16 §3.5).
+//
+// One row per registered credential (a user may enroll several — laptop
+// Touch ID, phone, a hardware key). Purely per-user auth data, no tenant_id;
+// treated like `sessions` / `accounts` for RLS (ENABLE, user_isolation policy,
+// but NOT FORCE — passkey authentication looks a credential up by
+// `credentialID` BEFORE any session/user context exists, so the auth service
+// must reach it as `sparx_owner`).
+//
+// Field names mirror the plugin's schema verbatim (publicKey, credentialID,
+// counter, deviceType, backedUp, transports, aaguid) — the Prisma adapter
+// keys on the model's JS field names, so these must not be renamed. Columns
+// map to snake_case to match house style.
+
+model Passkey {
+  id           String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  // Author-supplied label ("MacBook Touch ID"), optional.
+  name         String?  @db.VarChar(255)
+  // Base64url COSE public key returned at registration.
+  publicKey    String   @map("public_key") @db.Text
+  userId       String   @map("user_id") @db.Uuid
+  // Base64url WebAuthn credential id. Globally unique per registration; the
+  // authentication flow resolves the passkey by this value.
+  credentialID String   @unique @map("credential_id") @db.Text
+  // Signature counter, bumped on each successful assertion (clone detection).
+  counter      Int      @default(0)
+  // "singleDevice" | "multiDevice".
+  deviceType   String   @map("device_type") @db.VarChar(50)
+  // Whether the credential is backed up / synced (e.g. iCloud Keychain).
+  backedUp     Boolean  @default(false) @map("backed_up")
+  // Comma-joined transports ("internal,hybrid"), optional.
+  transports   String?  @db.Text
+  // Authenticator AAGUID, optional.
+  aaguid       String?  @db.VarChar(255)
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("passkeys")
+}

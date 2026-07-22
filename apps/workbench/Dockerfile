@@ -80,6 +80,15 @@ RUN pnpm --filter @sparx/db db:generate
 ARG APP_VERSION=dev
 ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
 
+# PostHog product analytics — browser-side only (NEXT_PUBLIC_*), so it's inlined
+# into the client bundle at build time. CI passes these to every image
+# (build-images.yml); a build without the key simply ships PostHog disabled (the
+# provider bails on `if (!key) return`). HOST defaults to PostHog US cloud.
+ARG NEXT_PUBLIC_POSTHOG_KEY
+ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
+ARG NEXT_PUBLIC_POSTHOG_HOST=https://us.i.posthog.com
+ENV NEXT_PUBLIC_POSTHOG_HOST=$NEXT_PUBLIC_POSTHOG_HOST
+
 RUN pnpm --filter @sparx/workbench build
 
 # ----- Production runner -----

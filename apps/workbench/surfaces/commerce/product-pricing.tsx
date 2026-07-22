@@ -52,9 +52,9 @@ import {
   Input,
   Select,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Plus, Tags, Trash2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { MoneyInput } from '../invoicing/money-input';
@@ -190,7 +190,7 @@ function ruleSummary(rule: MarkupRule): string {
 
 export function ProductPricingTab({ product }: { ctx: SurfaceContext; product: Product }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const variantsQuery = useProductVariants(product.id);
   const optionsQuery = useProductOptions(product.id);
@@ -849,7 +849,7 @@ function BulkTiers({
   onRetry: () => void;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const create = useCreateBulkTier(productId);
   const remove = useDeleteBulkTier(productId);
 

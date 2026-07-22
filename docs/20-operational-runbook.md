@@ -1,8 +1,8 @@
 # WizeWorks Platform — Operational Runbook
 
-**Version:** 1.2  
+**Version:** 1.3  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-07-21
 
 ---
 
@@ -214,6 +214,54 @@ kubectl -n wizeworks-prod set resources deployment/api-rest --limits=memory=2Gi
 # Root cause: memory leak
 # Check for unclosed DB connections, event listeners, large payload handling
 ```
+
+### Connecting Google Search Console (SEO connector)
+
+**Purpose:** Bring the SEO module's organic-search data (clicks, impressions, position, top queries) live. The connector — OAuth flow, AES-256-GCM token storage, nightly sync — is fully built in `api-rest` and the workbench Search Console surface; it stays inert (`GET /v1/seo/search-console/status` → `configured: false`) until three env values are populated. `api-rest` reads them from `sparx-app-secrets` via `envFrom`, so no manifest change is needed once the values exist.
+
+**Env values (Secret Manager name → env var):**
+
+| Secret Manager               | Env var                      | What it is                                                                                                                                  |
+| ---------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| `google-oauth-client-id`     | `GOOGLE_OAUTH_CLIENT_ID`     | Google OAuth 2.0 **Web** client (shared with Calendar + Google Shopping; **separate** from the Better Auth `google-client-id` login client) |
+| `google-oauth-client-secret` | `GOOGLE_OAUTH_CLIENT_SECRET` | its secret                                                                                                                                  |
+| `search-console-token-key`   | `SEARCH_CONSOLE_TOKEN_KEY`   | 32-byte AES-256-GCM key encrypting stored GSC grants                                                                                        |
+
+All three are declared in `terraform/envs/prod/main.tf` (`module.secrets.secret_ids`) and synced by the bootstrap `app-secrets` component + `k8s/scripts/sync-secrets.ps1`.
+
+**1 — Google Cloud Console (one-time, manual):**
+
+- APIs & Services → **enable the Google Search Console API** (webmasters).
+- Create (or reuse) an **OAuth 2.0 Web client**. Add both **Authorized redirect URIs**:
+  - `http://localhost:3011/seo/search-console/callback` (local — the workbench dev port)
+  - `https://workbench.sparx.works/seo/search-console/callback` (prod)
+- Scope is `webmasters.readonly` — **sensitive**. For prod, set the consent screen **Internal** (Workspace org) or submit for verification; for local, add the operator as a **Test user**.
+
+**2 — Populate the secret values (out-of-band; values never live in git):**
+
+```bash
+gcloud secrets versions add google-oauth-client-id     --data-file=- <<< "<client id>"
+gcloud secrets versions add google-oauth-client-secret --data-file=- <<< "<client secret>"
+gcloud secrets versions add search-console-token-key   --data-file=- <<< "$(openssl rand -base64 32)"
+```
+
+**3 — Apply + sync (drives, does not bypass, the pipeline):**
+
+```bash
+# Create the Secret Manager containers (first time only) via the platform-apply workflow,
+# then hydrate sparx-app-secrets + roll the pods that mount it:
+gh workflow run bootstrap.yml -f components=app-secrets
+```
+
+**4 — Local dev:** add the same three to `services/api-rest/.env` (gitignored) and restart `api-rest`.
+
+**Verify:** `GET /v1/seo/search-console/status` returns `{ configured: true }`; the workbench Search Console surface shows the connect flow instead of "not available".
+
+**Common causes of a stuck connect:**
+
+- Redirect URI mismatch → the URI registered in the Google client must match the calling app's `origin` + `/seo/search-console/callback` **exactly** (scheme, host, port).
+- No refresh token returned → the grant was already consented; remove sparx from the Google account's third-party access and reconnect (the flow requests `prompt=consent` + `access_type=offline`).
+- `configured: false` after populating secrets → the `app-secrets` sync didn't roll `api-rest`, or a secret name is misspelled (must match the kebab names above, which map to `SCREAMING_SNAKE`).
 
 ---
 

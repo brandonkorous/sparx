@@ -59,9 +59,9 @@ import {
   TabsPanel,
   TabsTab,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { ExternalLink } from 'lucide-react';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -378,7 +378,7 @@ const TABS: { value: string; label: string; what: string; plan: string }[] = [
 
 function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const { data: product, isPending, isError, refetch } = useProduct(id);
   const { data: domains } = useDomains();
   const { data: activeSite } = useActiveSiteId();

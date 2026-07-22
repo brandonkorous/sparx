@@ -157,9 +157,18 @@ export interface ReceiptLineState {
 /**
  * How a received quantity compares to what was still outstanding on the line, in
  * plain words. `outstanding` is ordered minus already received — what this
- * delivery could reasonably complete.
+ * delivery could reasonably complete. `damaged` (default 0) is only needed to
+ * name the total-loss case: a line with 0 good units but some damaged ones is a
+ * fully-damaged arrival — nothing joins stock and the order stays open for it.
  */
-export function receiptLineState(received: number, outstanding: number): ReceiptLineState {
+export function receiptLineState(
+  received: number,
+  outstanding: number,
+  damaged = 0
+): ReceiptLineState {
+  if (received <= 0 && damaged > 0) {
+    return { label: 'All damaged — nothing added to stock', tone: 'danger' };
+  }
   if (received <= 0) return { label: 'Not receiving now', tone: 'neutral' };
   if (received === outstanding) return { label: 'Completes this line', tone: 'success' };
   if (received < outstanding) {

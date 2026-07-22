@@ -35,6 +35,13 @@ const ListCollectionsQuery = z.object({
 
   type: z.enum(['manual', 'rules']).optional(),
   include_archived: z.coerce.boolean().optional(),
+
+  // Server-side sort. The whitelist IS the set of orderable columns — an
+  // off-list value is rejected here rather than silently ignored, so the client
+  // can never ask the table to sort by something the server won't honour.
+  sort_by: z.enum(['name', 'type', 'productCount', 'updatedAt']).optional(),
+  order: z.enum(['asc', 'desc']).optional(),
+
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -131,6 +138,8 @@ const categoryRoutes: FastifyPluginAsync = async (app) => {
       q: q.q,
       type: q.type,
       propertyId,
+      sortBy: q.sort_by,
+      order: q.order,
       take: q.take,
       skip: q.skip,
     });

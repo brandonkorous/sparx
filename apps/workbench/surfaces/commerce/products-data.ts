@@ -2742,6 +2742,9 @@ export interface CategoryChoice {
   /** Ancestor names, root first, INCLUDING this one. */
   trail: string[];
   productCount: number;
+  /** Whether the category is flagged featured. Carried through so the category
+   *  LIST can badge it; the parent picker simply ignores it. */
+  featured: boolean;
 }
 
 /**
@@ -2768,7 +2771,13 @@ export function flattenCategories(nodes: CategoryNode[] | undefined): CategoryCh
   const walk = (list: CategoryNode[], trail: string[]) => {
     for (const node of list) {
       const here = [...trail, node.name];
-      out.push({ id: node.id, name: node.name, trail: here, productCount: node.productCount });
+      out.push({
+        id: node.id,
+        name: node.name,
+        trail: here,
+        productCount: node.productCount,
+        featured: node.featured,
+      });
       walk(node.children, here);
     }
   };

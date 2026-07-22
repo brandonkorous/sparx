@@ -29,9 +29,9 @@ import {
   NumberField,
   Select,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Plus, Trash2, X } from 'lucide-react';
 import type { CreateShippingRateInput } from '@sparx/commerce-schemas';
 import { MoneyInput } from '../invoicing/money-input';
@@ -107,7 +107,8 @@ function toWire(value: number, unit: BandUnit): number {
 }
 
 function rateSummary(rate: ShippingRate): string {
-  if (rate.type === 'flat') return rate.amountCents != null ? money(rate.amountCents, rate.currency) : '—';
+  if (rate.type === 'flat')
+    return rate.amountCents != null ? money(rate.amountCents, rate.currency) : '—';
   if (rate.type === 'free_above_threshold') {
     const base = rate.amountCents != null ? money(rate.amountCents, rate.currency) : '—';
     const over = rate.freeAboveCents != null ? money(rate.freeAboveCents, rate.currency) : '—';
@@ -139,7 +140,8 @@ function RateComposer({
   };
 
   const unit = bandUnit(draft.type);
-  const isBand = draft.type === 'by_price' || draft.type === 'by_weight' || draft.type === 'by_item_count';
+  const isBand =
+    draft.type === 'by_price' || draft.type === 'by_weight' || draft.type === 'by_item_count';
   const nameError = draft.name.trim() === '';
   const profileError = draft.profileId === '';
 
@@ -204,7 +206,14 @@ function RateComposer({
         <Text as="span" className="font-semibold">
           New delivery option
         </Text>
-        <Button size="sm" variant="ghost" color="neutral" shape="square" aria-label="Cancel" onClick={onDone}>
+        <Button
+          size="sm"
+          variant="ghost"
+          color="neutral"
+          shape="square"
+          aria-label="Cancel"
+          onClick={onDone}
+        >
           <X className="size-4" aria-hidden />
         </Button>
       </div>
@@ -232,7 +241,9 @@ function RateComposer({
             />
           }
         />
-        <FieldDescription>The name of this option at checkout, e.g. Standard or Express.</FieldDescription>
+        <FieldDescription>
+          The name of this option at checkout, e.g. Standard or Express.
+        </FieldDescription>
       </Field>
 
       {profiles.length > 1 ? (
@@ -323,7 +334,9 @@ function RateComposer({
                 />
               }
             />
-            <FieldDescription>Orders at or above this total get this delivery free.</FieldDescription>
+            <FieldDescription>
+              Orders at or above this total get this delivery free.
+            </FieldDescription>
           </Field>
         </div>
       ) : null}
@@ -331,8 +344,8 @@ function RateComposer({
       {isBand ? (
         <div className="flex flex-col gap-3">
           <Text className="text-sm">
-            Set a price for each range of {unitLabel}. Leave the &ldquo;up to&rdquo; box empty on the
-            last step to mean &ldquo;and above&rdquo;.
+            Set a price for each range of {unitLabel}. Leave the &ldquo;up to&rdquo; box empty on
+            the last step to mean &ldquo;and above&rdquo;.
           </Text>
           {draft.bands.map((band, index) => (
             <div
@@ -476,12 +489,7 @@ function BandNumber({
     return (
       <div className="flex flex-col gap-1">
         <span className="text-sm font-medium">{label}</span>
-        <MoneyInput
-          aria-label={label}
-          color="module"
-          value={value}
-          onValueChange={onChange}
-        />
+        <MoneyInput aria-label={label} color="module" value={value} onValueChange={onChange} />
       </div>
     );
   }
@@ -507,7 +515,7 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
   const rates = useZoneRates(zoneId);
   const profiles = useShippingProfiles();
   const remove = useDeleteShippingRate();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const toast = useToast();
   const [adding, setAdding] = useState(false);
 
@@ -519,7 +527,8 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
     void (async () => {
       const ok = await confirm({
         title: `Remove ${rate.name}?`,
-        description: 'Shoppers in this region will no longer see this delivery option. This cannot be undone.',
+        description:
+          'Shoppers in this region will no longer see this delivery option. This cannot be undone.',
         confirmLabel: 'Remove it',
         cancelLabel: 'Keep it',
         color: 'danger',
@@ -608,8 +617,8 @@ export function ZoneRatesEditor({ zoneId }: { zoneId: string }) {
             <AlertContent>
               <AlertTitle>Add a product group first</AlertTitle>
               <AlertDescription>
-                A delivery option needs a product group to apply to. Add one from the Shipping screen,
-                then come back.
+                A delivery option needs a product group to apply to. Add one from the Shipping
+                screen, then come back.
               </AlertDescription>
             </AlertContent>
           </Alert>

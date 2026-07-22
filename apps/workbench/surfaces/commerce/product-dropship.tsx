@@ -35,9 +35,9 @@ import {
   Heading,
   Text,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { PackageCheck, RefreshCcw, ServerCrash, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -103,7 +103,7 @@ function SupplierCard({
   productId: string;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const reimport = useReimportFromSupplier(productId);
   const [busyId, setBusyId] = useState<string | null>(null);
 

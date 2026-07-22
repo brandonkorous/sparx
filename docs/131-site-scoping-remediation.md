@@ -1,6 +1,6 @@
 # 131 — Site Scoping: the operational layer
 
-Version: 1.5.0
+Version: 1.10.0
 Author: Brandon Korous
 Last Updated: 2026-07-20
 
@@ -151,6 +151,32 @@ the rollup read off, the PDP reverts to the tenant-wide blend and the test fails
 The non-scoped `by-ids` hydrate keeps the tenant-wide columns — it has no site
 context. Recorded at `review-service.ts` `recomputeProductRating`.
 
+`ProductFitment` and `Bundle` are **done — no column, by analysis.** Both are
+ATTRIBUTES of a product, not independently site-scoped things, so they inherit the
+product's scope through the `ProductProperty` junction (already per-site) exactly as
+`ShippingRate` inherits from its zone/profile and `ProductAnswer` from its question:
+
+- **`ProductFitment`** — "this brake pad fits a 2015 F-150" is true wherever the
+  product is listed; a fitment cannot belong to one site while its product shows on
+  three. A `property_id` here would be a second source of truth able to contradict
+  the product's junction.
+- **`Bundle`** — 1:1 with its wrapper product (`@@unique([bundleProductId])`). A
+  bundle IS a product plus composition rules; its visibility is its wrapper's. There
+  is no independent public bundle read — bundles resolve through the (site-scoped)
+  wrapper product.
+- **`FitmentDomain` / `FitmentNode`** — the vehicle/species/brand vocabulary TREE,
+  a tenant-wide LIBRARY like `Taxonomy` (shared, no column).
+
+The enforcement half, which "no column" does NOT excuse: the storefront fitment
+narrowing filter must only offer domains THIS site's catalog uses, or a donut site
+under the same tenant as a machine shop renders a "Vehicles" filter — a
+cross-business exposure. So `GET /v1/public/commerce/fitment/domains` now scopes its
+index to domains with at least one fitment on a product visible on the active site
+(the empty-means-all product-visibility rule, inside `withTenant`). Single-site
+tenants are unaffected (their products are visible everywhere). The node drill within
+a shown domain stays the shared tree — its per-level product lists are already
+site-scoped, so an empty branch simply shows no products.
+
 `Author`, `Taxonomy`, `TaxonomyTerm` are **done** (migration 20261227). Three
 models that scope three different ways, which is the point rather than an
 accident:
@@ -207,29 +233,62 @@ SIGNED OAuth state to the callback — it cannot be re-derived there, because th
 callback has no signal for which site the operator was on, and guessing would
 authenticate one business as another.
 
-### DECISION NEEDED — sparx.market merchant identity (not started)
+### sparx.market merchant identity: a site-chosen global handle — v1 BUILT (migration 20270107)
 
-`MarketMerchantProfile` / `MarketMerchant` / `MarketListing` are the remaining
-marketplace models, and they are **blocked on a product call**, not on effort.
-The problem: the merchant projection's `slug` drives a GLOBALLY-UNIQUE public URL
-(`/merchants/{slug}`), and today that slug IS the tenant slug (globally unique by
-construction). Making each site its own merchant — which §7's principle requires,
-so "Korous Family Inc." is not the seller for both donuts and brake pads — means
-each site needs its own globally-unique merchant slug, and `Property.slug` is
-only unique WITHIN a tenant (every tenant's primary is `'primary'`).
+`MarketMerchantProfile` / `MarketMerchant` / `MarketListing` are the marketplace
+models. The merchant projection's `slug` drives a GLOBALLY-UNIQUE public URL
+(`/merchants/{slug}`), and it USED to be the tenant slug (globally unique by
+construction). That made "Korous Family Inc." the seller for both donuts and brake
+pads and coupled the two businesses' URLs — the exact disclosure the rest of this
+remediation fights.
 
-So this needs a decision on the public URL shape before any code:
+The two shapes considered:
 
-- **Namespaced:** `/merchants/{tenantSlug}-{siteSlug}` (or the primary keeps the
-  bare tenant slug and additional sites get a suffix). Safe, ugly.
+- **Namespaced:** `/merchants/{tenantSlug}-{siteSlug}`. Collision-free by
+  construction, no claim flow — but it reintroduces the exact coupling the rest of
+  this remediation fights: two sibling businesses share a URL prefix, disclosing
+  they are one owner (the §3.6 invoice-numbering concern, in the address bar).
 - **Site-chosen global handle:** each market-participating site claims a unique
-  merchant handle, enforced globally. Cleaner URLs, adds a claim/collision flow.
+  merchant handle, enforced globally. `/merchants/bobs-parts` and
+  `/merchants/savory-donuts` are independent identities with nothing linking them.
 
-It also touches the 328-line projection worker (per-site profile → per-site
-projection rows → per-listing merchant attribution), so it is a real slice, not a
-column add. Deliberately left for that decision rather than half-scoped — a
-schema that says per-site while the worker still writes one row per tenant would
-be worse than the honest tenant-wide state it is in now.
+**Decision: the site-chosen global handle.** It is the only option consistent with
+the principle the whole remediation turns on — a site is an independent business,
+and its public identity must not leak that it shares an owner. The namespaced shape
+is a disclosure leak wearing a URL. The usual objection to a global handle is the
+back-compat cost of an existing `/merchants/{tenantSlug}` space, but **there are no
+production tenants**, so there is nothing to preserve and no reason to ship the
+coupled shape first (the §8 "now is the moment" point). The handle DEFAULTS to the
+site's slug, is globally unique (a claim/collision check on set + edit), and lives
+on `MarketMerchantProfile` as its own column — never derived from tenant or property
+slug, which are the wrong scope.
+
+**v1, BUILT (migration 20270107).** `MarketMerchantProfile` gains a globally-unique
+`handle` (the DB unique index is the real backstop — the table is RLS-scoped, so the
+app cannot pre-read another tenant's handle; a collision surfaces as a friendly
+"handle already taken" on the claim) plus `marketPropertyId`, the SITE the tenant
+markets AS. The projection worker (`market/projection.ts`) now sources the merchant's
+name/logo/socials from that site (never the tenant) and writes the `handle` into
+`MarketMerchant.slug` / `MarketListing.merchant_slug` — so `/merchants/{handle}` is a
+site identity with nothing linking siblings. The "visit their store" link keeps the
+tenant/site storefront slug (a different URL from the marketplace page). The backfill
+seeds `handle = tenant slug` + `marketPropertyId = primary`, preserving every existing
+URL; operators re-claim a cleaner handle from the profile editor. Guarded by
+`market-merchant-handle.test.ts` (asserts the projection uses the handle + marketed
+site name, and that a second tenant cannot claim the same handle) — migration-gated,
+so RUN post-migration.
+
+**Deliberately deferred to a v2 layer (NOT this slice): one merchant PER SITE per
+tenant.** v1 keeps one marketplace merchant per tenant, tied to a chosen site — which
+fixes the actual defect (the URL/identity is a site's, not the tenant's). Letting a
+tenant run SEVERAL of its sites as separate marketplace merchants additionally
+requires multiplying listings per `(product, participating-site)` (a product visible
+on two market sites becomes two listings under two merchants) and relaxing the
+`MarketMerchant`/`MarketMerchantProfile` tenant-unique to `(tenant, property)`. That is
+a larger, additive change on top of this foundation, not a correction of it — the v1
+schema (nullable `marketPropertyId`, `MarketMerchant.propertyId`) is already shaped to
+grow into it. It stays a clear flag rather than a rushed multiplication of the
+projection worker.
 
 `Page` and `ContentType` are **done** (migration 20261230), and `NavigationItem`
 needed no work. Details:
@@ -247,44 +306,112 @@ needed no work. Details:
   the same pattern as ProductAnswer / ShippingRate / ChannelProductMapping. The
   P1 list should not have named it separately.
 
-### DECISION NEEDED — the sitebuilder layout/theme group (49)
+### DECISION — the sitebuilder layout/theme group (49): split CONFIRMED
 
 The doc's P1 list lumped six models together —
 `SiteTheme`/`SiteLayoutDefault`/`SiteLayoutAssignment`/`PageLayout`/`SiteSection`/
 `SiteLayoutBlock` — as "tenant-scoped while `SiteConfig`/`SiteVersion` beside them
 are property-scoped." Working through them, that grouping is wrong and hides a
-real conflict:
+real conflict. The library-vs-application split, now CONFIRMED by auditing the
+models (all six carry no `property_id` today):
 
-- **`SiteTheme` (and the section tier) are DELIBERATELY tenant-wide.** The
-  property schema states it outright at `08-property.prisma`: "The saved-theme
+- **`SiteTheme` (and the section tier) are DELIBERATELY tenant-wide — confirmed.**
+  The property schema states it outright at `08-property.prisma`: "The saved-theme
   LIBRARY (SiteTheme) + the legacy section tier stay tenant-wide and do NOT
   relate here." A theme is a reusable design you save once and apply to any
   site — the same call as MediaAsset in §7 (shared library, per-site usage).
-  Scoping it would break reuse and directly reverse a written decision, so it
-  needs the same deliberate override §7 required, not a silent column.
-- **`PageLayout` / `SiteSection` / `TenantSectionDefinition` are also libraries**
-  — reusable layout and section definitions, tenant-wide for the same reason.
+  Scoping it would break reuse and directly reverse a written decision. **It stays
+  tenant-wide; no change.**
+- **`PageLayout` / `SiteSection` / `TenantSectionDefinition` are also libraries —
+  confirmed tenant-wide, no change** for the same reason.
 - **`SiteLayoutDefault` / `SiteLayoutAssignment` are the genuinely per-site
-  ones** — they decide WHICH layout renders for a site's target or a specific
-  item, and two sites sharing a PageLayout library can legitimately want
-  different defaults. These want `propertyId` (+ tenant fallback on resolution).
+  ones** — they map a target (`SiteLayoutDefault`) or a target+item
+  (`SiteLayoutAssignment`) to a `PageLayout`, i.e. they decide WHICH layout from the
+  shared library renders where. Two sites sharing a PageLayout library can
+  legitimately want different defaults, so these — and ONLY these two — get
+  `propertyId`.
 
-I did NOT scope any of them, deliberately. The library-vs-application split needs
-confirming, and the per-site half (`SiteLayoutDefault`/`Assignment`) resolves
-against a read path that interlocks with `SiteConfig` (already per-site) and the
-in-flight builder rebuild (docs/98) — a half-migration of a live builder
-subsystem is worse than a clear flag. This is decision #4, alongside the market
-merchant slug.
+**Decision on the per-site pair: nullable `propertyId` + tenant-fallback
+resolution, gated on the builder rebuild — NOT executed now.** The scoping shape is
+settled: add a nullable `property_id` to both; move the unique to
+`(tenant, property_id, target_id)` / `(tenant, property_id, target_id, item_ref)`
+with NULLS NOT DISTINCT; resolution reads the active site's row first and falls back
+to the tenant-wide (null) row — the same shared-null pattern `NavigationMenu` already
+uses. What blocks EXECUTION is not the decision but the ground: the resolution read
+path lives in `packages/builder/src/services/assignment-service.ts` — the NEW
+package of the in-flight builder rebuild (docs/98), which coexists with legacy
+`packages/sitebuilder/` and took parallel commits this same session. A schema column
+without the resolution change is this doc's own #1 anti-pattern ("the column exists
+≠ the leak is closed"), and doing the resolution change means editing a subsystem
+that is actively being rebuilt by other work — a half-migration into a moving target.
+So this lands as one slice WHEN the builder rebuild settles onto a single assignment
+service, not before. The decision is made; only the timing is held.
 
-**The rest of P1 is untouched** — the sitebuilder group above (pending the
-decision), plus a handful of
-remaining customer-facing commerce (`Bundle`, `PriceList`/`MarkupRule`/
-`SurchargeRule`, fitment, reviews/questions/wishlists), the whole 16-model
-scheduling module, and marketplace & channels. Scheduling is the largest coherent
-chunk and has a live prerequisite: its own TODO at `78-scheduling.prisma:462`
-about reconciling with a shared locations table, which this decision forces.
-`SchedulingResource` is the one model there wanting a junction rather than a
-column — a person can genuinely work both businesses.
+The **scheduling module is DONE** (migration 20261228, `_scheduling_per_site`) —
+the doc previously listed it as the largest untouched chunk, which is now stale. It
+exercises BOTH patterns in one place because its models genuinely differ:
+
+- **Direct column** where a thing belongs to one business — `scheduling_services`
+  (what a business offers), `scheduling_booking_policies` (its promise to customers),
+  `scheduling_intake_forms` (its questions), and `bookings` (denormalized from the
+  service AT BOOKING TIME so history stays correct if the service is later re-scoped).
+- **Junction** where one thing serves several — `scheduling_resource_properties` (a
+  RESOURCE is often a PERSON, and the owner who bakes then machines genuinely works
+  both businesses; a column would split them in two) and `scheduling_location_properties`
+  (a location is a PLACE, and one place can host several sites — empty = every site,
+  the ProductProperty convention, so existing rows need no backfill). Enforcement
+  lives in `packages/scheduling` (`booking-queries.ts`, `booking-service.ts`,
+  `services.ts`). The `BusinessLocation` shared-locations question the old TODO
+  flagged was answered here, by the junction.
+
+`ProductFitment` / `Bundle` are done by analysis (no column — see above). **What
+genuinely remains** is a smaller set than the doc once implied: the
+`PriceList`/`MarkupRule`/`SurchargeRule` pricing family, and marketplace & channels
+(the merchant-handle slice decided above).
+
+### DECISION — the pricing family (36): patterns set, one charge-critical slice
+
+`PriceList` / `MarkupRule` / `SurchargeRule` were the last unscoped commerce group.
+Working through them model by model — which is the point of this remediation, not a
+formality — only ONE genuinely decomposes per-site, and the other two revealed why a
+blanket "scope everything" would have shipped incoherent pricing:
+
+- **`PriceList` → JUNCTION (`PriceListProperty`, empty = all sites) — BUILT**
+  (migration 20270106). A price list is a commercial targeting rule an owner can
+  legitimately run across a same-catalog portfolio (a "Contractor tier" on both a
+  retail storefront and a wholesale portal is ONE list), and a column cannot express
+  "sites A and B but not C" — the same reason `Discount` took a junction. It already
+  carries channel / segment / B2B / collection targeting; site is one more axis, and
+  empty-means-all keeps every existing list global with zero backfill. It is resolved
+  per (variant, site, customer) at read/cart time, so the site genuinely changes the
+  price — this is the charge-critical one.
+- **`MarkupRule` → TENANT-WIDE, no column.** Discovered while implementing: a catalog
+  markup writes a VARIANT's single `priceCents`, and a variant is one shared row — it
+  cannot hold two per-site prices, so per-site catalog markup is incoherent. The
+  per-site price difference is `PriceList`'s job; markup operates on the shared
+  catalog, its `scope` (which variants) doing the partitioning.
+- **`SurchargeRule` → TENANT-WIDE, no column.** A card-fee pass-through rides
+  per-TENANT payment processing (one merchant account — `TenantPaymentConfig`), so the
+  fee is shared; its `paymentMethods` / `appliesTo` axes differentiate it, not the
+  site, and the checkout session carries no site to enforce on anyway.
+
+**The enforcement is charge-critical** — the price list is the one thing here that
+decides what a customer is actually CHARGED. It lands in the `resolve()` waterfall:
+`pickEligiblePriceList` (`pricing-service.ts`) gains a
+`propertyLinks: { none: {} } OR { some: { propertyId } }` clause,
+`PriceResolutionRequest` + `resolveCart` gain `propertyId`, and every real charge
+path threads the site — the cart (`cart-service` reprices, from `Cart.propertyId`) and
+the PDP "your price" (`public/commerce.ts`, the active site). Absent a site (admin /
+preview) the filter is skipped, so the default stays backward-compatible. Because a
+wrong filter here over- or under-charges a real order AND it is migration-gated (the
+junction does not exist until 20270106 is applied), it MUST ship with
+`price-list-per-site.test.ts` RUN post-migration — never trusted from a typecheck.
+The remaining `@sparx/commerce` typecheck error (`propertyLinks` on the where) is the
+expected stale-client symptom, resolving on `prisma generate`.
+
+The only piece now genuinely open is **marketplace & channels** (the merchant-handle
+slice decided above), which coordinates with the channel work rather than landing on
+top of it.
 
 ### Not done as specified: `ChatMessage.property_id`
 
@@ -800,13 +927,13 @@ resolved up front:
 The critical realization from grounding the decision in the schema: **the null
 semantics are NOT uniform**, so a single rule would have been wrong.
 
-| Rollup | Site source | Grain | Null bucket |
-| --- | --- | --- | --- |
-| Commerce revenue | `Order.property_id` (nullable) | per-site | orphaned — per-site read EXCLUDES; all-sites includes |
-| Invoicing collected/billed | `BillingDocument.property_id` (NOT NULL, Restrict) | per-site | **none** — site can't be deleted while billed; composite PK |
-| Dropship | storefront `Order` via `DropshipOrder.order` (nullable) | per-site | orphaned — same as commerce |
-| Automation runs | `AutomationRun.property_id` (nullable) | per-site | **SHARED** — null = tenant-wide automation; per-site read INCLUDES it |
-| Inventory valuation | none (tenant stock pool) | tenant-only | N/A |
+| Rollup                     | Site source                                             | Grain       | Null bucket                                                           |
+| -------------------------- | ------------------------------------------------------- | ----------- | --------------------------------------------------------------------- |
+| Commerce revenue           | `Order.property_id` (nullable)                          | per-site    | orphaned — per-site read EXCLUDES; all-sites includes                 |
+| Invoicing collected/billed | `BillingDocument.property_id` (NOT NULL, Restrict)      | per-site    | **none** — site can't be deleted while billed; composite PK           |
+| Dropship                   | storefront `Order` via `DropshipOrder.order` (nullable) | per-site    | orphaned — same as commerce                                           |
+| Automation runs            | `AutomationRun.property_id` (nullable)                  | per-site    | **SHARED** — null = tenant-wide automation; per-site read INCLUDES it |
+| Inventory valuation        | none (tenant stock pool)                                | tenant-only | N/A                                                                   |
 
 Shape (mirrors `ProductReviewRollup` §4): the three nullable-property rollups get a
 surrogate `id` PK + a `NULLS NOT DISTINCT` unique over `(tenant, property, day)`

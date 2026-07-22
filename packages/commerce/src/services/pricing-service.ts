@@ -742,6 +742,7 @@ export async function resolve(ctx: ServiceContext, rawInput: unknown): Promise<P
       currency: input.currency,
       customerSegmentIds: input.customerSegmentIds,
       b2bAccountId: input.b2bAccountId,
+      propertyId: input.propertyId,
       asOf,
     });
     if (priceList) {
@@ -829,6 +830,8 @@ export async function resolveCart(
     customerId?: string;
     b2bAccountId?: string;
     customerSegmentIds?: string[];
+    /** The site the cart is on (docs/131 §4), threaded to every line's price. */
+    propertyId?: string;
     lines: { variantId: string; quantity: number }[];
   }
 ): Promise<PricedLine[]> {
@@ -842,6 +845,7 @@ export async function resolveCart(
         customerId: input.customerId,
         b2bAccountId: input.b2bAccountId,
         customerSegmentIds: input.customerSegmentIds ?? [],
+        ...(input.propertyId ? { propertyId: input.propertyId } : {}),
       })
     );
   }
@@ -857,6 +861,10 @@ async function pickEligiblePriceList(
     currency: string;
     customerSegmentIds: string[];
     b2bAccountId?: string;
+    /** The site this price is for (docs/131 §4). A list is eligible when it has no
+     *  site links (all sites) OR is linked to this one. Undefined = no site filter
+     *  (admin/preview). */
+    propertyId?: string;
     asOf: Date;
   }
 ): Promise<PriceList | null> {
@@ -878,6 +886,17 @@ async function pickEligiblePriceList(
             { customerSegmentId: null, b2bAccountId: null },
           ],
         },
+        // Site scoping (docs/131 §4): empty links = every site, else only this site.
+        ...(filter.propertyId
+          ? [
+              {
+                OR: [
+                  { propertyLinks: { none: {} } },
+                  { propertyLinks: { some: { propertyId: filter.propertyId } } },
+                ],
+              },
+            ]
+          : []),
       ],
     },
     orderBy: [{ priority: 'desc' }, { updatedAt: 'desc' }],

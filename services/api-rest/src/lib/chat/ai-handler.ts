@@ -28,6 +28,7 @@ import { SITE_TOOLS, toAnthropicTools, SiteApiClient, SiteApiError } from '@spar
 
 import { resolveActivePropertyName, resolvePrimaryPropertyId } from '../property.js';
 import { getActivePersona } from '../ai/prompt-templates.js';
+import { resolveAiProviderCredential } from '../ai/credentials.js';
 import { createTenantLlmRouter, DEFAULT_MODEL_BY_PROVIDER } from '../ai/llm-router.js';
 import { env } from '../../env.js';
 import { conversationService } from './index.js';
@@ -124,9 +125,19 @@ export async function handleInboundForAI(
 
     const config = await getChatConfig(ctx.tenantId);
 
+    // The provider + key come from the tenant's account-wide AI credential
+    // (Settings → AI connections) first, falling back to a legacy chat-scoped
+    // key for tenants that connected before the credential moved to the
+    // account. Either way sparx holds no key of its own.
+    const platformCredential = await resolveAiProviderCredential(ctx.tenantId);
+    const provider: AiProvider | null = platformCredential?.provider ?? config.aiProvider;
+    const apiKey =
+      platformCredential?.apiKey ??
+      (config.aiApiKeyEncrypted ? decryptProviderSecret(config.aiApiKeyEncrypted) : null);
+
     // AI enabled, but the tenant hasn't connected their own provider + key
     // yet → a human must handle it. sparx has no fallback credential.
-    if (!config.aiEnabled || !config.aiProvider || !config.aiApiKeyEncrypted) {
+    if (!config.aiEnabled || !provider || !apiKey) {
       await escalateToHuman(ctx, conversationId, logger, 'ai_disabled');
       return;
     }
@@ -153,14 +164,13 @@ export async function handleInboundForAI(
       .find((m) => m.senderType === 'customer');
     if (!lastCustomer) return; // nothing to answer
 
-    const apiKey = decryptProviderSecret(config.aiApiKeyEncrypted);
     const decision = await askAssistant(
       ctx.tenantId,
       // The site this conversation is on decides which business the assistant
       // believes it works for (docs/131 §3.5 + §3.7). Null only for a
       // dashboard-sourced thread, where a tenant-wide persona is correct.
       conversation.propertyId ?? null,
-      config.aiProvider,
+      provider,
       apiKey,
       conversation.messages,
       logger

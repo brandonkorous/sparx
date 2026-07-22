@@ -151,8 +151,7 @@ export function useCaptureCredentials() {
 export function useDeleteCredentials() {
   const invalidate = useInvalidatePayments();
   return useMutation({
-    mutationFn: (gatewayId: string) =>
-      api.delete(`/v1/commerce/payments/credentials/${gatewayId}`),
+    mutationFn: (gatewayId: string) => api.delete(`/v1/commerce/payments/credentials/${gatewayId}`),
     onSuccess: () => {
       void invalidate();
     },

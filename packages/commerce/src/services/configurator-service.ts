@@ -63,6 +63,30 @@ export interface BundleDetail extends BundleRow {
   components: BundleComponentRow[];
 }
 
+/** Sort direction shared by every server-sorted commerce list. */
+export type SortDir = 'asc' | 'desc';
+
+/**
+ * The columns a bundle list may be ordered by — this is the WHITELIST, and the
+ * route's Zod enum mirrors it exactly. A bundle has no name of its own, so
+ * `name` orders on the wrapper product's title (the relation the list displays);
+ * `components` orders on the component count via Prisma's relation `_count`.
+ */
+export type BundleSort = 'name' | 'pricingMode' | 'components' | 'updatedAt';
+
+function bundleOrderBy(sortBy: BundleSort, order: SortDir): Prisma.BundleOrderByWithRelationInput {
+  switch (sortBy) {
+    case 'name':
+      return { bundleProduct: { title: order } };
+    case 'pricingMode':
+      return { pricingMode: order };
+    case 'components':
+      return { components: { _count: order } };
+    case 'updatedAt':
+      return { updatedAt: order };
+  }
+}
+
 export async function listBundles(
   ctx: ServiceContext,
   filter: {
@@ -76,6 +100,9 @@ export async function listBundles(
     bundleProductId?: string;
     pricingMode?: string;
     inventoryMode?: string;
+    /** Whitelisted column to order by (defaults to most-recently-changed). */
+    sortBy?: BundleSort;
+    order?: SortDir;
     take?: number;
     skip?: number;
   } = {}
@@ -98,7 +125,7 @@ export async function listBundles(
           bundleProduct: { select: { title: true } },
           _count: { select: { components: true } },
         },
-        orderBy: { updatedAt: 'desc' },
+        orderBy: bundleOrderBy(filter.sortBy ?? 'updatedAt', filter.order ?? 'desc'),
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
       }),
@@ -369,9 +396,42 @@ export async function listTemplatesForProduct(
   });
 }
 
+/**
+ * The columns a template list may be ordered by — the WHITELIST, mirrored by the
+ * route's Zod enum. `product` orders on the owning product's title (the relation
+ * the list displays); `options` orders on the question count via relation
+ * `_count`.
+ */
+export type TemplateSort = 'name' | 'product' | 'status' | 'options' | 'updatedAt';
+
+function templateOrderBy(
+  sortBy: TemplateSort,
+  order: SortDir
+): Prisma.ConfigurationTemplateOrderByWithRelationInput {
+  switch (sortBy) {
+    case 'name':
+      return { name: order };
+    case 'product':
+      return { product: { title: order } };
+    case 'status':
+      return { status: order };
+    case 'options':
+      return { options: { _count: order } };
+    case 'updatedAt':
+      return { updatedAt: order };
+  }
+}
+
 export async function listAllTemplates(
   ctx: ServiceContext,
-  filter: { q?: string; status?: string; take?: number; skip?: number } = {}
+  filter: {
+    q?: string;
+    status?: string;
+    sortBy?: TemplateSort;
+    order?: SortDir;
+    take?: number;
+    skip?: number;
+  } = {}
 ): Promise<{ items: ConfigurationTemplateRow[]; total: number }> {
   return withTenant(ctx, async (tx) => {
     const where: Prisma.ConfigurationTemplateWhereInput = {
@@ -392,7 +452,7 @@ export async function listAllTemplates(
           product: { select: { title: true } },
           _count: { select: { options: true, rules: true, addOns: true } },
         },
-        orderBy: { updatedAt: 'desc' },
+        orderBy: templateOrderBy(filter.sortBy ?? 'updatedAt', filter.order ?? 'desc'),
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
       }),

@@ -36,9 +36,9 @@ import {
   Switch,
   Text,
   Textarea,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Trash2 } from 'lucide-react';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -187,7 +187,7 @@ function CategoryEditor({
 }) {
   const isNew = id === 'new';
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const { data: sites } = useSites();
   const { data: activeSite } = useActiveSiteId();

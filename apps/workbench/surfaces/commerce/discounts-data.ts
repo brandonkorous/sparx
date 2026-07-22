@@ -84,6 +84,50 @@ export const discountKeys = {
   detail: (id: string) => [...discountKeys.all, id] as const,
 };
 
+/* ── The list window ────────────────────────────────────────────────────── */
+
+export type SortDir = 'asc' | 'desc';
+
+/** Columns the list may be ordered by. A SUBSET of the server whitelist
+ *  (`DiscountSortField` in the discount service) — the ones this table exposes
+ *  a header for. The server rejects anything off its list, so a typo here fails
+ *  loudly rather than silently sorting by nothing. */
+export type DiscountSort = 'name' | 'code' | 'status' | 'updatedAt';
+
+export interface DiscountsPageParams {
+  q?: string;
+  /** `active` | `draft` | `archived`; omitted = every discount. */
+  status?: string;
+  sortBy: DiscountSort;
+  order: SortDir;
+  take: number;
+  skip: number;
+}
+
+/**
+ * One server-paged, server-sorted window of the discount list.
+ *
+ * `placeholderData` keeps the previous window on screen while the next loads, so
+ * paging and re-sorting never blink the table out to empty and back. The whole
+ * window is ONE query — never accumulated pages, never a client-side sort of a
+ * loaded window (which would sort one page and call it the answer).
+ */
+export function useDiscountsList(params: DiscountsPageParams) {
+  return useQuery({
+    queryKey: [...discountKeys.all, 'list', params],
+    queryFn: () =>
+      api.list<DiscountRow>('/v1/commerce/discounts', {
+        ...(params.q?.trim() ? { q: params.q.trim() } : {}),
+        ...(params.status && params.status !== 'all' ? { status: params.status } : {}),
+        sort_by: params.sortBy,
+        order: params.order,
+        take: params.take,
+        skip: params.skip,
+      }),
+    placeholderData: (previous) => previous,
+  });
+}
+
 /* ── The state a shopper actually sees ──────────────────────────────────── */
 
 /**
@@ -191,7 +235,7 @@ export function parseDiscountInput(
   candidate: unknown
 ): { ok: true; value: DiscountInput } | { ok: false; error: string } {
   const parsed = CreateDiscountInputSchema.safeParse(candidate);
-  if (parsed.success) return { ok: true, value: parsed.data as DiscountInput };
+  if (parsed.success) return { ok: true, value: parsed.data };
   const first = parsed.error.issues[0];
   return { ok: false, error: first?.message ?? 'One of the fields is not filled in correctly.' };
 }

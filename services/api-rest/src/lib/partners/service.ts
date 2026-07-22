@@ -31,6 +31,20 @@ export interface PartnerContext {
   userId: string | null;
 }
 
+/** One client in a partner's book of business — a referred account, a managed
+ *  (consultant-access) account, or both. The non-sensitive client-facing
+ *  projection returned by `listClients`. */
+export interface PartnerClientRow {
+  orgId: string;
+  name: string;
+  referred: boolean;
+  managed: boolean;
+  referralStatus: string | null;
+  firstPaymentAt: Date | null;
+  commissionType: string | null;
+  slug: string | null;
+}
+
 export function toPartnerContext(request: FastifyRequest): PartnerContext {
   const auth = requireAuth(request);
   return { tenantId: auth.tenantId, userId: auth.actorId };
@@ -180,6 +194,69 @@ export const partnerService = {
     );
     const names = await resolveOrgNames(rows.map((r) => r.referredTenantId));
     return rows.map((r) => ({ ...r, referredOrgName: names.get(r.referredTenantId) ?? null }));
+  },
+
+  /** A partner's book of business (docs/114 §B.7): the UNION of two relationships
+   *  that are otherwise disconnected —
+   *    • referral attribution (partner-scoped `partner_referrals`): who signed up
+   *      under the partner's link, and what it earns; and
+   *    • consultant access (auth-layer `members` where member_type=consultant):
+   *      the client orgs the OPERATING user can actually enter and manage.
+   *  A client can be one or both. Referrals seed the map (they carry the earning
+   *  relationship); consultant memberships flip `managed` on and add access-only
+   *  clients. The membership read is per-USER and cross-org, so it goes through
+   *  `withSystem` (RLS-escaped) exactly like `resolveOrgNames` above — a partner
+   *  operator is legitimately entitled to know which client accounts they hold
+   *  access to. Returns only the non-sensitive client-facing projection. */
+  async listClients(ctx: PartnerContext): Promise<PartnerClientRow[]> {
+    const referrals = await this.listReferrals(ctx);
+    const consultancies = ctx.userId
+      ? await withSystem((tx) =>
+          tx.member.findMany({
+            where: { userId: ctx.userId ?? undefined, memberType: 'consultant', status: 'active' },
+            select: {
+              organizationId: true,
+              organization: { select: { name: true, slug: true } },
+            },
+          })
+        )
+      : [];
+
+    const byId = new Map<string, PartnerClientRow>();
+
+    for (const r of referrals) {
+      byId.set(r.referredTenantId, {
+        orgId: r.referredTenantId,
+        name: r.referredOrgName ?? r.referredTenantId,
+        referred: true,
+        managed: false,
+        referralStatus: r.status,
+        firstPaymentAt: r.firstPaymentAt,
+        commissionType: r.commissionType,
+        slug: null,
+      });
+    }
+
+    for (const c of consultancies) {
+      const existing = byId.get(c.organizationId);
+      if (existing) {
+        existing.managed = true;
+        existing.slug = c.organization.slug;
+      } else {
+        byId.set(c.organizationId, {
+          orgId: c.organizationId,
+          name: c.organization.name,
+          referred: false,
+          managed: true,
+          referralStatus: null,
+          firstPaymentAt: null,
+          commissionType: null,
+          slug: c.organization.slug,
+        });
+      }
+    }
+
+    return [...byId.values()].sort((a, b) => a.name.localeCompare(b.name));
   },
 
   listCommissions(ctx: PartnerContext) {

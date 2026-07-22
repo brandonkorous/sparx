@@ -30,9 +30,9 @@ import {
   Button,
   Heading,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { PackageCheck } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
@@ -155,7 +155,7 @@ export function ReturnDetailSurface({ ctx }: { ctx: SurfaceContext }) {
 
 function ReturnDetailBody({ detail }: { detail: ReturnDetail }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   // The order backs two things the return row cannot: the line prices shown
   // against each item, and a sensible starting figure for the refund. A return

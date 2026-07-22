@@ -31,6 +31,7 @@ import {
 import { ClipboardList, Plus } from 'lucide-react';
 import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './data';
@@ -128,16 +129,18 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
     if (rows.length === 0) {
       return (
-        <EmptyState
-          icon={<ClipboardList className="size-6" aria-hidden />}
-          title={narrowed ? 'No orders match that' : 'No purchase orders yet'}
-          description={
-            narrowed
-              ? emptyAdvice()
-              : 'A purchase order is what you send a supplier to buy stock. Start one, add the items and quantities, and place it when you are ready.'
-          }
-          actions={
-            narrowed ? undefined : (
+        <ListEmptyState
+          filtered={narrowed}
+          noResults={{
+            icon: <ClipboardList className="size-6" aria-hidden />,
+            title: 'No orders match that',
+            description: emptyAdvice(),
+          }}
+          firstRun={{
+            title: 'No purchase orders yet',
+            description:
+              'A purchase order is what you send a supplier to buy stock. Start one, add the items and quantities, and place it when you are ready.',
+            actions: (
               <Button
                 size="sm"
                 color="module"
@@ -148,8 +151,8 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
                 <Plus className="size-4" aria-hidden />
                 New purchase order
               </Button>
-            )
-          }
+            ),
+          }}
         />
       );
     }
@@ -297,9 +300,9 @@ export function PurchaseOrdersListSurface({ ctx }: { ctx: SurfaceContext }) {
         />
       </PaneToolbar>
 
-      <Card className="mx-auto min-h-0 w-full max-w-6xl flex-1 overflow-y-auto">{body()}</Card>
+      <Card className="min-h-0 flex-1 overflow-y-auto">{body()}</Card>
 
-      <div className="mx-auto w-full max-w-6xl shrink-0">
+      <div className="shrink-0">
         <ListPagination
           shown={rows.length}
           firstRow={rows.length === 0 ? 0 : skip + 1}

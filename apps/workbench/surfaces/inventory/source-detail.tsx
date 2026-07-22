@@ -50,9 +50,9 @@ import {
   Text,
   Textarea,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   Cable,
   Check,
@@ -180,7 +180,7 @@ function canPairBridge(role: string | undefined): boolean {
  */
 function PairingKeyDialog({ result, onClose }: { result: EnrollResult; onClose: () => void }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const [copied, setCopied] = useState(false);
   const [saved, setSaved] = useState(false);
 
@@ -321,7 +321,7 @@ function SourceEditor({
   isFetching?: boolean;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const create = useCreateSource();
   const update = useUpdateSource();
   const remove = useDeleteSource();

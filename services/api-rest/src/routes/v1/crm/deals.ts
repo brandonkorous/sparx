@@ -7,6 +7,8 @@
 //   GET    /v1/crm/deals/forecast             → weighted forecast
 //   GET    /v1/crm/deals/:id                  → fetch one
 //   PATCH  /v1/crm/deals/:id                  → update
+//   DELETE /v1/crm/deals/:id                  → soft-delete (for a mistake; the
+//                                               normal close is move-stage to Won/Lost)
 //   POST   /v1/crm/deals/:id/move-stage       → move to a new stage
 
 import type { FastifyPluginAsync } from 'fastify';
@@ -94,6 +96,14 @@ const dealRoutes: FastifyPluginAsync = async (app) => {
     const { id } = PathId.parse(request.params);
     const deal = await dealService.update(toCrmContext(request), id, request.body);
     return ok(deal);
+  });
+
+  app.delete('/v1/crm/deals/:id', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    await dealService.softDelete(toCrmContext(request), id);
+    reply.code(204);
   });
 
   app.post('/v1/crm/deals/:id/move-stage', async (request) => {

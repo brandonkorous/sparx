@@ -27,9 +27,9 @@ import {
   Switch,
   Text,
   Textarea,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -122,7 +122,7 @@ function ProfileEditor({
 }) {
   const isNew = id === 'new';
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const create = useCreateShippingProfile();
   const update = useUpdateShippingProfile(id);
@@ -266,8 +266,8 @@ function ProfileEditor({
               </Heading>
               <Text>
                 Group together products that ship the same way — bulky freight, anything needing a
-                signature — so you can price their delivery on its own. You add products to the group
-                from each product later.
+                signature — so you can price their delivery on its own. You add products to the
+                group from each product later.
               </Text>
             </div>
           ) : (

@@ -8,19 +8,13 @@
 // switching between them. A site is a workspace, not a record.
 
 import { useMemo, useState } from 'react';
-import {
-  Badge,
-  Button,
-  Card,
-  EmptyState,
-  SearchInput,
-  Table,
-  useImperativeAlertDialog,
-} from '@wizeworks/silicaui-react';
+import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { ExternalLink, Globe, Plus } from 'lucide-react';
 import { ListPagination, type PageSize } from '../../components/list-pagination';
 import { useWorkbench } from '../../lib/workbench/context';
 import { RefreshButton } from '../../components/refresh-button';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { switchSite } from '../../lib/api/shell-data';
@@ -43,7 +37,7 @@ function canonicalHost(domains: Domain[]): string | null {
 
 export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const { controller } = useWorkbench();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const { data: sites, isPending, isError, isFetching, dataUpdatedAt, refetch } = useSites();
   const { data: domains } = useDomains();
   const { data: active } = useActiveSiteId();
@@ -240,23 +234,17 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
           // "Nothing matched" and "you have none" are different situations, and
           // telling someone to create their first site when they have twelve
           // and simply mistyped is the more annoying of the two mistakes.
-          <EmptyState
-            icon={<Globe className="size-6" aria-hidden />}
-            // Quote the search back rather than describing it. Someone who
-            // mistyped cannot see their own typo in a sentence that says "no
-            // sites match that" — they can see it instantly next to the word
-            // they actually typed. Same treatment as the team roster.
-            title={needle ? `No sites match "${search.trim()}"` : 'No sites yet'}
-            description={
-              needle
-                ? 'Try part of the name, the handle, or the web address.'
-                : 'A site is one website — its own name, pages, and web address. Your business can run as many as it needs.'
-            }
-            // Only the search case gets a way out, because only the search case
-            // is recoverable — there is no button that conjures a first site,
-            // and the toolbar already carries "New site" for that.
-            actions={
-              needle ? (
+          <ListEmptyState
+            filtered={Boolean(needle)}
+            noResults={{
+              icon: <Globe className="size-6" aria-hidden />,
+              // Quote the search back rather than describing it — someone who
+              // mistyped sees the typo next to the word they typed, not in a
+              // sentence. Same treatment as the team roster. Only this case gets
+              // a way out, because only this case is recoverable.
+              title: `No sites match "${search.trim()}"`,
+              description: 'Try part of the name, the handle, or the web address.',
+              actions: (
                 <Button
                   color="neutral"
                   variant="soft"
@@ -267,8 +255,15 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
                 >
                   Show all sites
                 </Button>
-              ) : undefined
-            }
+              ),
+            }}
+            firstRun={{
+              // No action: nothing conjures a first site, and the toolbar
+              // already carries "New site".
+              title: 'No sites yet',
+              description:
+                'A site is one website — its own name, pages, and web address. Your business can run as many as it needs.',
+            }}
           />
         ) : (
           <Table size="sm" hover>

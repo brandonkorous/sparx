@@ -75,8 +75,8 @@ export const SPARK_PATH =
 // body letters (s p a r) render in `currentColor` so they flip with the
 // surrounding ink; the "x" is always the brand spark color.
 
-export const WORDMARK_VIEWBOX = '0 0 380.55 160' as const;
-export const WORDMARK_ASPECT = 380.55 / 160; // ~2.378:1
+export const WORDMARK_VIEWBOX = '0 0 400 160' as const;
+export const WORDMARK_ASPECT = 400 / 160; // ~2.378:1
 
 /** The "s", "p", "a", "r" body letters — drawn in `currentColor`. */
 export const WORDMARK_BODY_PATHS = [

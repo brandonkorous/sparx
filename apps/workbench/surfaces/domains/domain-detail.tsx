@@ -35,9 +35,9 @@ import {
   Input,
   Select,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Check, Copy, ExternalLink, Link2, RefreshCw, Star, Trash2 } from 'lucide-react';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -306,7 +306,7 @@ function ConnectDomain({ ctx }: { ctx: SurfaceContext }) {
 
 function ManageDomain({ ctx, id }: { ctx: SurfaceContext; id: string }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const { data: domain, isPending, isError, refetch } = useDomain(id);
   const { data: sites } = useSites();
 

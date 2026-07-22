@@ -33,9 +33,9 @@ import {
   Switch,
   Text,
   Textarea,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Power, Trash2 } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -251,7 +251,7 @@ function DiscountEditor({
 }) {
   const isNew = id === 'new';
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const create = useCreateDiscount();
   const update = useUpdateDiscount(id);
@@ -290,7 +290,8 @@ function DiscountEditor({
   const codeError =
     draft.hasCode && draft.code.trim() === '' ? 'Enter the code shoppers will type.' : null;
   const percentError =
-    draft.type === 'percent' && (draft.percentValue.trim() === '' || Number(draft.percentValue) <= 0)
+    draft.type === 'percent' &&
+    (draft.percentValue.trim() === '' || Number(draft.percentValue) <= 0)
       ? 'Enter how many percent to take off.'
       : null;
   const amountError =
@@ -499,7 +500,9 @@ function DiscountEditor({
               {nameError && touched ? (
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
-                <FieldDescription>For you — how you tell one discount from another.</FieldDescription>
+                <FieldDescription>
+                  For you — how you tell one discount from another.
+                </FieldDescription>
               )}
             </Field>
 
@@ -722,7 +725,9 @@ function DiscountEditor({
                   />
                 }
               />
-              <FieldDescription>Only a customer&apos;s very first order can use it.</FieldDescription>
+              <FieldDescription>
+                Only a customer&apos;s very first order can use it.
+              </FieldDescription>
             </Field>
           </FormSection>
 

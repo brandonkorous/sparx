@@ -15,6 +15,7 @@ import { api } from '../lib/api/client';
 import type { OpenTarget, SurfaceContext } from '../lib/surfaces/registry';
 import { RefreshButton } from '../components/refresh-button';
 import { PaneToolbar, PANE_SHELL } from '../components/pane-toolbar';
+import { ListEmptyState } from '../components/list-empty-state';
 
 export interface ListColumn<T> {
   key: string;
@@ -133,14 +134,17 @@ export function createEntityListSurface<T>(config: EntityListConfig<T>) {
               Loading…
             </p>
           ) : rows.length === 0 ? (
-            <EmptyState
-              icon={Icon ? <Icon className="size-6" aria-hidden /> : undefined}
-              title={search ? 'Nothing matches that search' : config.emptyTitle}
-              description={
-                search
-                  ? 'Try a different word, or clear the search box to see everything.'
-                  : config.emptyBody
-              }
+            <ListEmptyState
+              filtered={Boolean(search)}
+              noResults={{
+                icon: Icon ? <Icon className="size-6" aria-hidden /> : undefined,
+                title: 'Nothing matches that search',
+                description: 'Try a different word, or clear the search box to see everything.',
+              }}
+              firstRun={{
+                title: config.emptyTitle,
+                description: config.emptyBody,
+              }}
             />
           ) : (
             <Table size="sm" hover>

@@ -40,9 +40,9 @@ import {
   NativeSelect,
   Text,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   Boxes,
   CalendarClock,
@@ -110,7 +110,7 @@ function Fact({
 
 function SerialRosterRow({ serial }: { serial: SerialRow }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const update = useUpdateSerialStatus();
   const state = serialStatusState(serial.status);
 
@@ -315,7 +315,7 @@ export function LotDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
 
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const lot = useLot(id);
   const clearRecall = useClearRecall();
 

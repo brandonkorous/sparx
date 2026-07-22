@@ -1,32 +1,76 @@
 // Site — designing what visitors actually see.
+//
+// Six nav rows, mirroring the tested dashboard shape (docs/40 + the dashboard
+// builder manifest): the two builders lead (Editor · Email), then the design
+// assets (Site · Blueprints · Saved pieces), then the Forms inbox. There is NO
+// separate "pages" or "email designs" list — the silica <Builder> owns page
+// selection + site layout (header/footer/menus), and the email studio owns its
+// own email switcher — so listing those separately would duplicate a picker the
+// editor already ships.
 
 import { Component, Globe, Inbox, LayoutTemplate, Mail, Pencil } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
-import { stub } from './stub';
+import { StudioSurface } from '../../../surfaces/builder/studio/studio-surface';
+import { SiteIdentitySurface } from '../../../surfaces/builder/site-identity';
+import { BlueprintsListSurface } from '../../../surfaces/builder/blueprints-list';
+import { BlueprintDetailSurface } from '../../../surfaces/builder/blueprint-detail';
+import { SavedPiecesListSurface } from '../../../surfaces/builder/saved-pieces-list';
+import { SavedPieceDetailSurface } from '../../../surfaces/builder/saved-piece-detail';
+import { EmailEditorSurface } from '../../../surfaces/builder/email/email-editor';
+import { FormSubmissionsListSurface } from '../../../surfaces/builder/form-submissions-list';
+import { SubmissionDetailSurface } from '../../../surfaces/builder/submission-detail';
 
 export const BUILDER_SURFACES: SurfaceDefinition[] = [
-  stub({
+  // ── The two builders lead — the module's primary, unsectioned surfaces ──
+  {
     key: 'builder.studio',
     title: 'Editor',
     module: 'builder',
     icon: Pencil,
     order: 1,
-    keywords: ['design', 'edit site', 'studio', 'drag and drop', 'layout'],
-    body: 'The visual editor where you build and change your pages by dragging pieces around.',
-  }),
+    // 'header'/'footer'/'menu' land here now: site layout is edited on the
+    // editor's canvas, not a separate surface.
+    keywords: [
+      'design',
+      'edit site',
+      'studio',
+      'drag and drop',
+      'layout',
+      'pages',
+      'header',
+      'footer',
+      'menu',
+    ],
+    // The visual editor — silica `<Builder>`. Owns page selection AND site layout;
+    // opened blank (first page) or with `{ pageId }` / `{ componentId }`.
+    component: StudioSurface,
+  },
+  {
+    key: 'builder.email',
+    title: 'Email designs',
+    module: 'builder',
+    icon: Mail,
+    order: 2,
+    keywords: ['newsletter', 'template', 'campaign design', 'email'],
+    // The email studio — silica `<EmailBuilder>` with a built-in switcher +
+    // new/rename/delete/fork/publish. One surface, no separate list.
+    component: EmailEditorSurface,
+  },
 
   /* ── Design ────────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'builder.site',
-    title: 'Pages & layout',
+    title: 'Site',
     module: 'builder',
     icon: Globe,
     section: 'Design',
     order: 10,
-    keywords: ['navigation', 'header', 'footer', 'menu', 'structure'],
-    body: 'The pages your site has, and the header, footer, and menus that wrap around every one of them.',
-  }),
-  stub({
+    keywords: ['identity', 'name', 'tagline', 'logo', 'favicon', 'social', 'brand'],
+    // The active site's IDENTITY: name, tagline, logo, favicon, social links —
+    // per-site (a non-primary site edits its own override).
+    component: SiteIdentitySurface,
+  },
+  {
     key: 'builder.blueprints',
     title: 'Blueprints',
     module: 'builder',
@@ -34,9 +78,18 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     section: 'Design',
     order: 11,
     keywords: ['templates', 'starters', 'themes'],
-    body: 'Ready-made site designs you can start from instead of building a page from nothing.',
-  }),
-  stub({
+    component: BlueprintsListSurface,
+  },
+  {
+    key: 'builder.blueprint',
+    title: 'Blueprint',
+    module: 'builder',
+    icon: LayoutTemplate,
+    component: BlueprintDetailSurface,
+    // Opened from the gallery with `{ key }`.
+    listed: false,
+  },
+  {
     key: 'builder.components',
     title: 'Saved pieces',
     module: 'builder',
@@ -44,21 +97,21 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     section: 'Design',
     order: 12,
     keywords: ['components', 'blocks', 'reusable', 'sections'],
-    body: 'Parts of a page you built once and want to reuse — change it here and it changes everywhere it appears.',
-  }),
-  stub({
-    key: 'builder.email',
-    title: 'Email designs',
+    // Plainer than the dashboard's "Components" on purpose — the audience is
+    // non-technical business owners.
+    component: SavedPiecesListSurface,
+  },
+  {
+    key: 'builder.component',
+    title: 'Saved piece',
     module: 'builder',
-    icon: Mail,
-    section: 'Design',
-    order: 13,
-    keywords: ['newsletter', 'template', 'campaign design'],
-    body: 'The same editor, pointed at the emails you send instead of the pages you publish.',
-  }),
+    icon: Component,
+    component: SavedPieceDetailSurface,
+    listed: false,
+  },
 
   /* ── Forms ─────────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'builder.forms',
     title: 'Form submissions',
     module: 'builder',
@@ -66,6 +119,14 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     section: 'Forms',
     order: 20,
     keywords: ['contact', 'enquiries', 'leads', 'messages'],
-    body: 'What people typed into the forms on your site — contact requests, enquiries, sign-ups.',
-  }),
+    component: FormSubmissionsListSurface,
+  },
+  {
+    key: 'builder.submission',
+    title: 'Submission',
+    module: 'builder',
+    icon: Inbox,
+    component: SubmissionDetailSurface,
+    listed: false,
+  },
 ];

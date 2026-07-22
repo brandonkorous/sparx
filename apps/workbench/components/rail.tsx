@@ -40,7 +40,7 @@
 // tightens with it so the icons sit in a column rather than a corridor.
 
 import { useEffect, useState } from 'react';
-import { LayoutGrid, PanelLeftIcon, Trash2 } from 'lucide-react';
+import { LayoutGrid, PanelLeftIcon, Trash2, X } from 'lucide-react';
 import {
   Button,
   Dialog,
@@ -64,15 +64,28 @@ import {
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
+  SidebarGroupLabel,
   SidebarItem,
   Tooltip,
-  useImperativeAlertDialog,
   useSidebar,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../lib/confirm';
 import { ModuleScope, type WorkbenchModule } from './module-scope';
 import { afterMenuClose, deferTick } from '../lib/defer';
-import { useVisibleNav } from '../lib/surfaces/use-visible-nav';
+import {
+  useClearRecents,
+  useFavorites,
+  useRecents,
+  useToggleFavorite,
+} from '../lib/api/shell-data';
+import { getSurface, resolveTitle, type SurfaceDefinition } from '../lib/surfaces/registry';
+import {
+  moduleIsVisible,
+  useKnownModules,
+  useReachableModules,
+  useVisibleNav,
+} from '../lib/surfaces/use-visible-nav';
 import { useWorkbench } from '../lib/workbench/context';
 import {
   clearLayout,
@@ -95,7 +108,7 @@ interface RailProps {
 
 export function Rail({ browsing, siteKey, expanded, onBrowse }: RailProps) {
   const { controller } = useWorkbench();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const toast = useToast();
   // The shell's SidebarProvider, reached the same way SidebarTrigger reaches
   // it. Null outside a provider, which is why the call below is optional.
@@ -104,6 +117,47 @@ export function Rail({ browsing, siteKey, expanded, onBrowse }: RailProps) {
   // about which modules exist, and they would the moment the gating rule was
   // written down twice.
   const visibleNav = useVisibleNav();
+
+  // ── Favorites + recents ──────────────────────────────────────────────────
+  // Both ride the shared /v1/me spine (the same table the dashboard uses) with
+  // surface keys as actionIds. The rail renders only the ids that name a
+  // surface THIS operator can reach: dashboard-only ids, unlisted child
+  // surfaces, and surfaces whose module is off or restricted all resolve to
+  // null and drop out — the same gate the module list and launcher use.
+  const { data: favorites } = useFavorites();
+  const { data: recents } = useRecents();
+  const toggleFavorite = useToggleFavorite();
+  const clearRecents = useClearRecents();
+  const reachable = useReachableModules();
+  const known = useKnownModules();
+
+  const resolveVisible = (actionId: string): SurfaceDefinition | null => {
+    const definition = getSurface(actionId);
+    if (!definition || definition.listed === false) return null;
+    if (!moduleIsVisible(definition.module, reachable, known)) return null;
+    return definition;
+  };
+
+  const favoriteSurfaces = (favorites ?? [])
+    .map((favorite) => resolveVisible(favorite.actionId))
+    .filter((definition): definition is SurfaceDefinition => definition !== null);
+
+  // A favorited surface is already pinned above; showing it again under Recent
+  // is noise, so recents exclude anything already starred.
+  const favoriteKeys = new Set(favoriteSurfaces.map((definition) => definition.key));
+  const recentSurfaces = (recents ?? [])
+    .map((recent) => resolveVisible(recent.actionId))
+    .filter(
+      (definition): definition is SurfaceDefinition =>
+        definition !== null && !favoriteKeys.has(definition.key)
+    );
+
+  // A tab open in the focused group — the same destination the launcher's Enter
+  // and the module panel's row click use. The rail is a launch shortcut, not a
+  // second place surfaces live, so it opens exactly where they'd expect.
+  const openSurface = (definition: SurfaceDefinition) => {
+    controller.open(definition.key);
+  };
 
   // Workspaces are STATE, not a render-time localStorage read — a read
   // during render never updates, so a workspace saved a second ago wouldn't
@@ -221,6 +275,66 @@ export function Rail({ browsing, siteKey, expanded, onBrowse }: RailProps) {
               </ModuleScope>
             ))}
           </SidebarGroup>
+
+          {/* Favorites — the operator's curated shortcuts. Starred from the
+              toolbar (the focused pane) or removed here; either way this group
+              only appears once something's in it, so an operator who's starred
+              nothing never sees an empty heading. */}
+          {favoriteSurfaces.length > 0 && (
+            <SidebarGroup>
+              <SidebarGroupLabel>Favorites</SidebarGroupLabel>
+              {favoriteSurfaces.map((definition) => (
+                <SurfaceRow
+                  key={definition.key}
+                  definition={definition}
+                  expanded={expanded}
+                  onOpen={() => {
+                    openSurface(definition);
+                  }}
+                  removeLabel={`Remove ${resolveTitle(definition, {})} from favorites`}
+                  onRemove={() => {
+                    toggleFavorite.mutate({ actionId: definition.key, favorited: true });
+                  }}
+                />
+              ))}
+            </SidebarGroup>
+          )}
+
+          {/* Recents — automatic history, newest first. No per-row remove: a
+              recent is ephemeral by nature and rolls over on its own; the only
+              management it earns is clearing the lot, which rides the label so
+              it's out of the launch path. Label (and Clear) hide when the rail
+              collapses to icons — collapsed, this is purely for relaunching. */}
+          {recentSurfaces.length > 0 && (
+            <SidebarGroup>
+              <SidebarGroupLabel>
+                <span className="flex w-full items-center justify-between gap-2">
+                  Recent
+                  <Button
+                    color="neutral"
+                    variant="ghost"
+                    size="xs"
+                    disabled={clearRecents.isPending}
+                    onClick={() => {
+                      clearRecents.mutate();
+                    }}
+                  >
+                    Clear
+                  </Button>
+                </span>
+              </SidebarGroupLabel>
+              {recentSurfaces.map((definition) => (
+                <SurfaceRow
+                  key={definition.key}
+                  definition={definition}
+                  expanded={expanded}
+                  onOpen={() => {
+                    openSurface(definition);
+                  }}
+                />
+              ))}
+            </SidebarGroup>
+          )}
         </SidebarContent>
 
         <SidebarFooter className={expanded ? undefined : 'px-1.5'}>
@@ -334,6 +448,73 @@ export function Rail({ browsing, siteKey, expanded, onBrowse }: RailProps) {
           });
         }}
       />
+    </ModuleScope>
+  );
+}
+
+/**
+ * One favorite or recent row. A launch shortcut, not a navigation position — it
+ * never carries an `active` state; clicking opens the surface where any other
+ * open would land it. The icon wears the surface's MODULE hue (Selling orange,
+ * Customers cyan) via its own scope, so a mixed list of shortcuts stays
+ * colour-coded to what each one actually opens — the same signal the module
+ * strip above carries.
+ *
+ * The remove control (favorites only) is an absolute SIBLING of the row, not
+ * silica's `trailing` slot: SidebarItem renders as a <button> once it has an
+ * onClick, and `trailing` lives INSIDE it — a real control there is a
+ * button-in-a-button (invalid HTML, hydration error). Overlaid on the row's
+ * right edge and revealed on hover, it's a sibling that receives its own click.
+ * Only shown expanded — the collapsed icon rail has no room, and is for
+ * relaunching, not curating.
+ */
+function SurfaceRow({
+  definition,
+  expanded,
+  onOpen,
+  onRemove,
+  removeLabel,
+}: {
+  definition: SurfaceDefinition;
+  expanded: boolean;
+  onOpen: () => void;
+  onRemove?: () => void;
+  removeLabel?: string;
+}) {
+  const Icon = definition.icon;
+  const title = resolveTitle(definition, {});
+  return (
+    <ModuleScope module={definition.module}>
+      <div className="group relative">
+        <Tooltip content={title} side="right" disabled={expanded}>
+          <SidebarItem
+            icon={<Icon className="text-module size-5" aria-hidden />}
+            aria-label={title}
+            onClick={onOpen}
+          >
+            {title}
+          </SidebarItem>
+        </Tooltip>
+        {onRemove && expanded && (
+          <Button
+            color="neutral"
+            variant="ghost"
+            size="xs"
+            shape="square"
+            aria-label={removeLabel}
+            // Hover/focus-reveal so a curated list doesn't read as a column of
+            // delete buttons. Keyboard reaches it (always in tab order);
+            // focus-visible paints it the moment it's focused.
+            className="absolute top-1/2 right-1 -translate-y-1/2 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+            onClick={(event) => {
+              event.stopPropagation();
+              onRemove();
+            }}
+          >
+            <X className="size-3.5" aria-hidden />
+          </Button>
+        )}
+      </div>
     </ModuleScope>
   );
 }

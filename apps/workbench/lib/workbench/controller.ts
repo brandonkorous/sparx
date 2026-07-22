@@ -41,6 +41,11 @@ export class WorkbenchController {
    *  modal) holding uncommitted state. See ./dirty.tsx for why. */
   private readonly guards = new Map<string, Map<string, DirtyGuard>>();
   private readonly listeners = new Set<() => void>();
+  /** Fired when a browsable surface is deliberately opened or re-focused — the
+   *  recents recorder listens here. Separate from `listeners` (the render
+   *  store): a visit is a discrete event, not a change to the pane snapshot, so
+   *  it must not ride the same channel useSyncExternalStore reads. */
+  private readonly visitListeners = new Set<(surfaceKey: string) => void>();
   private activePaneId: string | null = null;
   /** Per-pane async confirms, registered by each pane's window boundary so the
    *  dialog renders in the WINDOW the pane lives in (not always the opener). */
@@ -70,6 +75,15 @@ export class WorkbenchController {
     this.listeners.add(listener);
     return () => this.listeners.delete(listener);
   };
+
+  /** Subscribe to visits — one call per interactive foreground open of a
+   *  browsable surface. Returns a disposer. Only the surface KEY is passed:
+   *  recents share the favorites vocabulary (surface keys, no params), so an
+   *  entity pane records nothing — see the guard in `open()`. */
+  onVisit(listener: (surfaceKey: string) => void): () => void {
+    this.visitListeners.add(listener);
+    return () => this.visitListeners.delete(listener);
+  }
 
   private emit(): void {
     this.snapshotCache = null;
@@ -134,6 +148,19 @@ export class WorkbenchController {
 
     const descriptor = createDescriptor(surface, params);
     const key = descriptorKey(descriptor);
+
+    // Record the visit BEFORE the dedupe branch, so re-opening an already-open
+    // surface still bumps it up the recents list — re-focusing "Orders" is as
+    // much a visit as opening it fresh. Three exclusions, all deliberate:
+    //   • background loads (focus:false) aren't visits — nobody looked at them;
+    //   • unlisted child surfaces (a preview only reachable from a parent)
+    //     aren't destinations someone would want to return to directly;
+    //   • entity panes (params present) can't be recorded, because recents are
+    //     surface keys with no params — the SAME rule the toolbar star obeys.
+    const isEntityPane = Boolean(params && Object.keys(params).length > 0);
+    if (options?.focus !== false && definition.listed !== false && !isEntityPane) {
+      for (const listener of this.visitListeners) listener(definition.key);
+    }
 
     for (const [existingId, existing] of this.descriptors) {
       if (descriptorKey(existing) !== key) continue;
@@ -290,17 +317,22 @@ export class WorkbenchController {
    * a dirty pane asks first, through its own window's dialog. window.confirm is
    * the fallback only for a pane whose boundary never registered (should not
    * happen — but silently discarding unsaved work must not be the failure mode).
+   *
+   * Resolves to whether the pane actually closed — false means the operator kept
+   * it. A batch caller (close-others, close-to-the-right) reads that to STOP at
+   * the first pane someone chose to keep, rather than closing past it.
    */
-  async requestClose(paneId: string): Promise<void> {
+  async requestClose(paneId: string): Promise<boolean> {
     const guard = this.dirtyGuardFor(paneId);
     if (guard) {
       const confirm = this.confirmDelegates.get(paneId);
       const ok = confirm
         ? await confirm(guard.message)
         : typeof window !== 'undefined' && window.confirm(guard.message);
-      if (!ok) return;
+      if (!ok) return false;
     }
     this.close(paneId);
+    return true;
   }
 
   /** Closes unconditionally. Surfaces closing THEMSELVES (a deleted draft's

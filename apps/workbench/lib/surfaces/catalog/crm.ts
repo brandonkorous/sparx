@@ -12,9 +12,21 @@ import {
   Workflow,
 } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
-import { cell, createEntityListSurface } from '../../../surfaces/entity-list';
-import { stub } from './stub';
-import type { CustomerRow, NamedRow } from './rows';
+import { CustomersListSurface } from '../../../surfaces/crm/customers-list';
+import { CustomerDetailSurface } from '../../../surfaces/crm/customer-detail';
+import { WholesaleAccountsListSurface } from '../../../surfaces/crm/accounts-list';
+import { AccountDetailSurface } from '../../../surfaces/crm/account-detail';
+import { SegmentsListSurface } from '../../../surfaces/crm/segments-list';
+import { SegmentDetailSurface } from '../../../surfaces/crm/segment-detail';
+import { DuplicatesSurface } from '../../../surfaces/crm/duplicates';
+import { DealsListSurface } from '../../../surfaces/crm/deals-list';
+import { DealDetailSurface } from '../../../surfaces/crm/deal-detail';
+import { PipelinesListSurface } from '../../../surfaces/crm/pipelines-list';
+import { PipelineDetailSurface } from '../../../surfaces/crm/pipeline-detail';
+import { TasksListSurface } from '../../../surfaces/crm/tasks-list';
+import { TaskDetailSurface } from '../../../surfaces/crm/task-detail';
+import { CustomerOrdersSurface } from '../../../surfaces/crm/customer-orders';
+import { CrmReportsSurface } from '../../../surfaces/crm/reports';
 
 export const CRM_SURFACES: SurfaceDefinition[] = [
   /* ── People ────────────────────────────────────────────────────────────── */
@@ -26,20 +38,19 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     section: 'People',
     order: 10,
     keywords: ['contacts', 'buyers', 'clients'],
-    component: createEntityListSurface<CustomerRow>({
-      path: '/v1/crm/customers',
-      queryKey: ['crm', 'customers'],
-      rowId: (row) => row.id,
-      searchPlaceholder: 'Search customers…',
-      emptyTitle: 'No customers yet',
-      emptyBody: 'Everyone who buys from you or gets added by hand appears here.',
-      emptyIcon: Users,
-      columns: [
-        { key: 'name', header: 'Name', render: (row) => cell.text(row.name) },
-        { key: 'email', header: 'Email', render: (row) => cell.text(row.email) },
-        { key: 'company', header: 'Company', render: (row) => cell.text(row.company) },
-      ],
-    }),
+    component: CustomersListSurface,
+    createSurface: 'crm.customer.detail',
+    createLabel: 'Add a customer',
+  },
+  {
+    key: 'crm.customer.detail',
+    title: 'Customer',
+    module: 'crm',
+    icon: Users,
+    component: CustomerDetailSurface,
+    // Opened from the list ({id:'new'} to add, {id} to manage). Adding one is
+    // the same surface as managing one, so it is a pane, not a launcher entry.
+    listed: false,
   },
   {
     key: 'crm.accounts.list',
@@ -49,18 +60,19 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     section: 'People',
     order: 11,
     keywords: ['b2b', 'trade', 'companies'],
-    component: createEntityListSurface<NamedRow>({
-      path: '/v1/crm/b2b-accounts',
-      queryKey: ['crm', 'b2b-accounts'],
-      rowId: (row) => row.id,
-      searchPlaceholder: 'Search accounts…',
-      emptyTitle: 'No wholesale accounts yet',
-      emptyBody: 'Businesses that buy from you at agreed prices live here.',
-      emptyIcon: Building2,
-      columns: [{ key: 'name', header: 'Name', render: (row) => cell.text(row.name) }],
-    }),
+    component: WholesaleAccountsListSurface,
+    createSurface: 'crm.account.detail',
+    createLabel: 'Add an account',
   },
-  stub({
+  {
+    key: 'crm.account.detail',
+    title: 'Wholesale account',
+    module: 'crm',
+    icon: Building2,
+    component: AccountDetailSurface,
+    listed: false,
+  },
+  {
     key: 'crm.segments.list',
     title: 'Segments',
     module: 'crm',
@@ -68,9 +80,19 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     section: 'People',
     order: 12,
     keywords: ['groups', 'lists', 'audience'],
-    body: 'A segment is a saved group of customers who share something — big spenders, or everyone who hasn’t bought in a year.',
-  }),
-  stub({
+    component: SegmentsListSurface,
+    createSurface: 'crm.segment.detail',
+    createLabel: 'New segment',
+  },
+  {
+    key: 'crm.segment.detail',
+    title: 'Segment',
+    module: 'crm',
+    icon: Filter,
+    component: SegmentDetailSurface,
+    listed: false,
+  },
+  {
     key: 'crm.duplicates.list',
     title: 'Duplicates',
     module: 'crm',
@@ -78,8 +100,8 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     section: 'People',
     order: 13,
     keywords: ['merge', 'cleanup', 'same person'],
-    body: 'Duplicates finds the same person entered twice so you can merge them into one record.',
-  }),
+    component: DuplicatesSurface,
+  },
 
   /* ── Sales ─────────────────────────────────────────────────────────────── */
   {
@@ -90,18 +112,19 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     section: 'Sales',
     order: 20,
     keywords: ['pipeline', 'opportunities'],
-    component: createEntityListSurface<NamedRow>({
-      path: '/v1/crm/deals',
-      queryKey: ['crm', 'deals'],
-      rowId: (row) => row.id,
-      searchPlaceholder: 'Search deals…',
-      emptyTitle: 'No deals yet',
-      emptyBody: 'Deals track a sale you are working on, from first contact to close.',
-      emptyIcon: Target,
-      columns: [{ key: 'name', header: 'Name', render: (row) => cell.text(row.name ?? row.title) }],
-    }),
+    component: DealsListSurface,
+    createSurface: 'crm.deal.detail',
+    createLabel: 'New deal',
   },
-  stub({
+  {
+    key: 'crm.deal.detail',
+    title: 'Deal',
+    module: 'crm',
+    icon: Target,
+    component: DealDetailSurface,
+    listed: false,
+  },
+  {
     key: 'crm.pipelines.list',
     title: 'Pipelines',
     module: 'crm',
@@ -109,8 +132,18 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     section: 'Sales',
     order: 21,
     keywords: ['stages', 'process'],
-    body: 'A pipeline is the set of stages a deal moves through, so you can name your own way of winning work.',
-  }),
+    component: PipelinesListSurface,
+    createSurface: 'crm.pipeline.detail',
+    createLabel: 'New pipeline',
+  },
+  {
+    key: 'crm.pipeline.detail',
+    title: 'Pipeline',
+    module: 'crm',
+    icon: Workflow,
+    component: PipelineDetailSurface,
+    listed: false,
+  },
   {
     key: 'crm.tasks.list',
     title: 'Tasks',
@@ -119,20 +152,19 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     section: 'Sales',
     order: 22,
     keywords: ['todo', 'follow up', 'reminders'],
-    component: createEntityListSurface<NamedRow>({
-      path: '/v1/crm/tasks',
-      queryKey: ['crm', 'tasks'],
-      rowId: (row) => row.id,
-      searchPlaceholder: 'Search tasks…',
-      emptyTitle: 'No tasks yet',
-      emptyBody: 'Things you need to do for a customer or deal show up here.',
-      emptyIcon: ListChecks,
-      columns: [
-        { key: 'title', header: 'Task', render: (row) => cell.text(row.title ?? row.name) },
-      ],
-    }),
+    component: TasksListSurface,
+    createSurface: 'crm.task.detail',
+    createLabel: 'New task',
   },
-  stub({
+  {
+    key: 'crm.task.detail',
+    title: 'Task',
+    module: 'crm',
+    icon: ListChecks,
+    component: TaskDetailSurface,
+    listed: false,
+  },
+  {
     key: 'crm.orders.list',
     title: 'Customer orders',
     module: 'crm',
@@ -140,11 +172,13 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     section: 'Sales',
     order: 23,
     keywords: ['history', 'purchases'],
-    body: 'The same orders as Selling, seen from the customer’s side — what this person has bought from you.',
-  }),
+    // Commerce order data seen from the CRM side — reuses the commerce order data
+    // layer and opens the real order detail. Wears the Commerce hue.
+    component: CustomerOrdersSurface,
+  },
 
   /* ── Reporting ─────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'crm.reports',
     title: 'Reports',
     module: 'crm',
@@ -152,6 +186,7 @@ export const CRM_SURFACES: SurfaceDefinition[] = [
     section: 'Reporting',
     order: 30,
     keywords: ['analytics', 'retention', 'value'],
-    body: 'Reports show how your customer base is doing — who is worth the most, and who is drifting away.',
-  }),
+    // Each instance owns its own pipeline selection, so it is not a singleton.
+    component: CrmReportsSurface,
+  },
 ];

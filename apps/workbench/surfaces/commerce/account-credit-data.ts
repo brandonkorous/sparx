@@ -59,7 +59,10 @@ export interface AccountCreditLedger {
 export function customerName(customer: CustomerLite | null): string {
   if (!customer) return 'A customer';
   const full = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
-  return full || customer.company || customer.email || 'A customer';
+  if (full) return full;
+  if (customer.company?.trim()) return customer.company;
+  if (customer.email?.trim()) return customer.email;
+  return 'A customer';
 }
 
 /** How a ledger line reads to a person. */
@@ -90,13 +93,40 @@ export const accountCreditKeys = {
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
 
-export function useAccountCredits(search: string) {
+export type SortDir = 'asc' | 'desc';
+
+/** Columns the balances list may be ordered by. A SUBSET of the server whitelist
+ *  (`AccountCreditSort` in the commerce-list route) — the ones this table exposes
+ *  a header for. The server rejects anything off its list, so a typo here fails
+ *  loudly with a 422 rather than silently ordering by nothing. */
+export type AccountCreditSort = 'balanceCents' | 'updatedAt' | 'firstName' | 'lastName' | 'email';
+
+export interface AccountCreditsPageParams {
+  q?: string;
+  sortBy: AccountCreditSort;
+  order: SortDir;
+  take: number;
+  skip: number;
+}
+
+/**
+ * One server-paged, server-sorted window of the balances list.
+ *
+ * `placeholderData` keeps the previous window on screen while the next loads, so
+ * paging and re-sorting never blink the list out to empty and back. The whole
+ * window is ONE query — never accumulated pages, never a client-side sort of a
+ * loaded window (which would sort one page and present it as the answer).
+ */
+export function useAccountCredits(params: AccountCreditsPageParams) {
   return useQuery({
-    queryKey: [...accountCreditKeys.all, 'list', { q: search }] as const,
+    queryKey: [...accountCreditKeys.all, 'list', params] as const,
     queryFn: () =>
       api.list<AccountCreditRow>('/v1/commerce/account-credit', {
-        ...(search.trim() ? { q: search.trim() } : {}),
-        take: 100,
+        ...(params.q?.trim() ? { q: params.q.trim() } : {}),
+        sort_by: params.sortBy,
+        order: params.order,
+        take: params.take,
+        skip: params.skip,
       }),
     placeholderData: (previous) => previous,
   });

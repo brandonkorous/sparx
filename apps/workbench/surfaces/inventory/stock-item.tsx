@@ -50,9 +50,9 @@ import {
   NativeSelect,
   Text,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import {
   ClipboardCheck,
   History,
@@ -140,7 +140,7 @@ function CountForm({
   onDone: () => void;
 }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const record = useRecordCount();
 
   const [warehouseId, setWarehouseId] = useState(

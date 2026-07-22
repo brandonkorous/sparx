@@ -1,25 +1,26 @@
 // The faceted, sortable, paginated product LISTING — the one implementation, shared by
 // every browse surface (docs/127 §8). The `/products` PLP renders it whole-catalog; the
-// collection and category detail pages render it SCOPED (to a collection's membership or
-// a category's browse-node rollup) by passing `scope`. Before this, only `/products` had
-// facets — a collection page was a bare grid. Now the same facet panel, sort toolbar,
-// grid, and pagination back all three, so narrowing "hoodies under $80, in stock" works
-// inside a collection exactly as it does across the catalog.
+// collection and category detail pages render it SCOPED (to a collection's membership or a
+// category's browse-node rollup) by passing `scope`. All three go through Typesense, so the
+// facet panel is DATA-DERIVED: brand, type, tags, and each product-option axis (Color,
+// Size, …) come back as live facet COUNTS from the tenant's own catalog — nothing hardcoded
+// — alongside the generic fitment drill and price / availability.
 //
-// All state lives in the URL (`?sort=&minPrice=&inStock=&fl0=…&page=`), so every variant
-// is a distinct, SSR-cacheable page and the facet form/pager are plain links + a GET form
-// — no client JS required. `basePath` points the facet form + pager at the current route
-// so filters stay on THIS surface; `scope` is threaded into the listing query.
+// All state lives in the URL (`?sort=&minPrice=&inStock=&vendor=&options=…&fl0=&page=`), so
+// every variant is a distinct, SSR-cacheable page and the facet form/pager are plain links
+// + a GET form — no client JS. `basePath` points the facet form + pager at the current
+// route so filters stay on THIS surface; `scope` narrows the search to a collection/category.
 
-import { FacetPanel, type FacetValues, type FitmentLevel } from '@/components/facet-panel';
+import { BrowseFacets, type BrowseFacetValues } from '@/components/products/browse-facets';
+import type { FitmentLevel } from '@/components/facet-panel';
 import { Pagination } from '@/components/pagination';
 import { ProductGrid } from '@/components/product-grid';
 import { SortSelect } from '@/components/sort-select';
 import {
   listFitmentDomains,
   listFitmentNodes,
-  listProducts,
-  type ProductListFilters,
+  searchProducts,
+  type ProductSearchFilters,
   type ProductSort,
   type PublicFitmentDomain,
   type PublicFitmentNode,
@@ -28,9 +29,7 @@ import type { ResolvedSite } from '@/lib/site-context';
 
 export type SearchParams = Record<string, string | string[] | undefined>;
 
-/** What the listing is scoped to. Omitted → the whole catalog (the PLP). A collection
- *  handle → that collection's members; a category handle → that category's browse-node
- *  rollup (self + descendants). Exactly one is meaningful at a time. */
+/** What the listing is scoped to. Omitted → the whole catalog (the PLP). */
 export interface BrowseScope {
   collection?: string;
   category?: string;
@@ -38,6 +37,12 @@ export interface BrowseScope {
 
 function one(v: string | string[] | undefined): string | undefined {
   return Array.isArray(v) ? v[0] : v;
+}
+
+/** A repeatable param → a trimmed string list (option-axis selections arrive this way). */
+function many(v: string | string[] | undefined): string[] {
+  if (v === undefined) return [];
+  return (Array.isArray(v) ? v : [v]).map((s) => s.trim()).filter(Boolean);
 }
 
 // Dollar string → integer cents, ignoring junk.
@@ -53,15 +58,20 @@ const PER_PAGE = 24;
 // order: level 0 = the domain's top-level nodes; each subsequent level loads the children
 // of the node selected at the previous level (read from fl0, fl1, …). Stops once a level
 // has no selection or the picked node is a leaf. Returns the resolved chain plus the
-// deepest selected node (its name drives the product filter).
+// deepest selected node and its level index (which drives the fitment filter bucket).
 async function resolveFitmentLevels(
   tenantSlug: string,
   domain: PublicFitmentDomain,
   sp: SearchParams
-): Promise<{ levels: FitmentLevel[]; selectedNode: PublicFitmentNode | null }> {
+): Promise<{
+  levels: FitmentLevel[];
+  selectedNode: PublicFitmentNode | null;
+  selectedDepth: number;
+}> {
   const levelDims = domain.dimensions.filter((d) => d.kind === 'level');
   const levels: FitmentLevel[] = [];
   let selectedNode: PublicFitmentNode | null = null;
+  let selectedDepth = -1;
   let parentId: string | undefined;
 
   for (let i = 0; i < levelDims.length; i++) {
@@ -77,11 +87,12 @@ async function resolveFitmentLevels(
 
     if (!picked) break;
     selectedNode = picked;
+    selectedDepth = i;
     if (picked.childCount === 0) break; // leaf — no deeper tier to drill
     parentId = picked.id;
   }
 
-  return { levels, selectedNode };
+  return { levels, selectedNode, selectedDepth };
 }
 
 export async function ScopedProductBrowser({
@@ -91,7 +102,7 @@ export async function ScopedProductBrowser({
   scope,
   /** Optional page heading rendered above the two-column layout. The PLP passes its
    *  query-dependent title; the collection/category cores render their own richer header
-   *  (hero, breadcrumbs) and omit this. */
+   *  and omit this. */
   heading,
 }: {
   site: ResolvedSite;
@@ -101,24 +112,29 @@ export async function ScopedProductBrowser({
   heading?: string;
 }) {
   const sp = searchParams;
-  const q = one(sp.q);
+  const q = (one(sp.q) ?? '').trim();
   const sort = (one(sp.sort) ?? 'relevance') as ProductSort;
   const minPrice = one(sp.minPrice);
   const maxPrice = one(sp.maxPrice);
   const inStock = one(sp.inStock) === 'true';
-  const fitmentDomain = one(sp.fitmentDomain);
+  const vendor = one(sp.vendor);
+  const productType = one(sp.productType);
+  const tag = one(sp.tag);
+  const options = many(sp.options);
+  const fitmentDomainSlug = one(sp.fitmentDomain);
   const page = Math.max(1, Number(one(sp.page) ?? '1') || 1);
 
-  // Load the fitment domains, resolve the active one + its level drill chain so the facet
-  // panel can render domain-appropriate labels and range widgets.
+  // Resolve the fitment domain + drill chain so the panel can render the applicability
+  // filter and the deepest selection can narrow the search.
   const domains = await listFitmentDomains(site.slug).catch<PublicFitmentDomain[]>(() => []);
-  const activeDomain = domains.find((d) => d.slug === fitmentDomain) ?? domains[0] ?? null;
-  const { levels, selectedNode } = activeDomain
+  const activeDomain = domains.find((d) => d.slug === fitmentDomainSlug) ?? domains[0] ?? null;
+  const { levels, selectedNode, selectedDepth } = activeDomain
     ? await resolveFitmentLevels(site.slug, activeDomain, sp)
-    : { levels: [], selectedNode: null };
+    : { levels: [], selectedNode: null, selectedDepth: -1 };
 
-  // The deepest selected node's NAME narrows the catalog (the API matches it against node
-  // ancestry). The first `range` value (year/weight/size) narrows numerically.
+  // The deepest selected node narrows by its depth bucket (0 → makes, 1 → models, 2+ →
+  // engines — the same depth buckets the index projection uses). A `range` value narrows
+  // numerically.
   const rangeDims = activeDomain?.dimensions.filter((d) => d.kind === 'range') ?? [];
   const fitmentRanges: Record<string, string> = {};
   for (const dim of rangeDims) {
@@ -127,32 +143,41 @@ export async function ScopedProductBrowser({
   }
   const primaryRange = rangeDims.map((d) => fitmentRanges[d.key]).find((v) => v) ?? undefined;
 
-  const filters: ProductListFilters = {
+  const fitmentName = selectedNode?.name;
+  const filters: ProductSearchFilters = {
     ...(q ? { q } : {}),
     sort,
-    ...(minPrice ? { minPriceCents: dollarsToCents(minPrice) } : {}),
-    ...(maxPrice ? { maxPriceCents: dollarsToCents(maxPrice) } : {}),
-    ...(inStock ? { inStock: true } : {}),
-    ...(selectedNode ? { fitmentNodeName: selectedNode.name } : {}),
-    ...(primaryRange ? { fitmentRangeValue: Number(primaryRange) } : {}),
-    // The scope — narrows the whole listing to a collection's members or a category's
-    // rollup. Omitted for the whole-catalog PLP.
     ...(scope?.collection ? { collection: scope.collection } : {}),
     ...(scope?.category ? { category: scope.category } : {}),
+    ...(vendor ? { vendor } : {}),
+    ...(productType ? { productType } : {}),
+    ...(tag ? { tag } : {}),
+    ...(options.length > 0 ? { options } : {}),
+    ...(inStock ? { inStock: true } : {}),
+    ...(minPrice ? { minPriceCents: dollarsToCents(minPrice) } : {}),
+    ...(maxPrice ? { maxPriceCents: dollarsToCents(maxPrice) } : {}),
+    ...(fitmentName && selectedDepth === 0 ? { fitmentMakes: fitmentName } : {}),
+    ...(fitmentName && selectedDepth === 1 ? { fitmentModels: fitmentName } : {}),
+    ...(fitmentName && selectedDepth >= 2 ? { fitmentEngines: fitmentName } : {}),
+    ...(primaryRange ? { fitmentYear: Number(primaryRange) } : {}),
     page,
     perPage: PER_PAGE,
   };
-  const result = await listProducts(site.slug, filters);
+  const result = await searchProducts(site.slug, filters);
 
   const totalPages = Math.max(1, Math.ceil(result.total / result.perPage));
   const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
 
-  const facetValues: FacetValues = {
-    q,
+  const facetValues: BrowseFacetValues = {
+    q: q || undefined,
     sort,
+    vendor,
+    productType,
+    tag,
     minPrice,
     maxPrice,
     inStock,
+    options,
     ...(activeDomain ? { fitmentDomain: activeDomain.slug } : {}),
     fitmentRanges,
   };
@@ -167,12 +192,13 @@ export async function ScopedProductBrowser({
 
       <div className="st-plp">
         <aside>
-          <FacetPanel
+          <BrowseFacets
             action={basePath}
+            facets={result.facets}
+            values={facetValues}
             domains={domains}
             activeDomain={activeDomain}
             levels={levels}
-            values={facetValues}
           />
         </aside>
 

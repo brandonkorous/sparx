@@ -1,3 +1,4 @@
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getSession } from '@sparx/auth';
 import { WorkbenchShell } from '../components/workbench-shell';
@@ -13,10 +14,19 @@ export default async function WorkbenchPage() {
   const session = await getSession();
   if (!session) redirect('/sign-in');
 
+  // Read the active-site cookie server-side and hand it down as the boot key.
+  // /api/token forwards this SAME cookie as `propertyId`, and the shell already
+  // trusts that value as the per-site layout key — so surfacing it at SSR lets
+  // the dock and toolbar mount on the first paint instead of after a token
+  // round trip, for everyone who has picked a site before (the common case).
+  const cookieStore = await cookies();
+  const initialSiteKey = cookieStore.get('sparx_active_property')?.value ?? null;
+
   return (
     <WorkbenchShell
       userName={displayName(session.user.name, session.user.email)}
       userEmail={session.user.email}
+      initialSiteKey={initialSiteKey}
     />
   );
 }

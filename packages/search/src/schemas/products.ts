@@ -34,6 +34,13 @@ export function productsSchema(
       { name: 'tags', type: 'string[]', facet: true, optional: true },
       { name: 'category_ids', type: 'string[]', facet: true, optional: true },
       { name: 'collection_ids', type: 'string[]', facet: true, optional: true },
+      // Product-OPTION axes as flat "Name:Value" facet tokens (e.g. "Color:Black",
+      // "Size:M") — the storefront facets a product by the variant axes it offers, and
+      // groups the counts back by the "Name:" prefix. Distinct from FITMENT below (what a
+      // product FITS); these are its own variant options. Added as an OPTIONAL field so it
+      // lands on the live collection via the ensure-schema alter path (no drop), then
+      // populated by a reindex.
+      { name: 'option_facets', type: 'string[]', facet: true, optional: true },
 
       // Multi-site scope (docs/49 §3 Model B). A GLOBAL product carries the
       // `GLOBAL_SITE_SCOPE` sentinel; a site-scoped product carries its property
@@ -86,6 +93,9 @@ export interface ProductSearchDocument {
   tags?: string[];
   category_ids?: string[];
   collection_ids?: string[];
+  /** Flat "Name:Value" product-option tokens (e.g. ["Color:Black","Size:M"]) — the
+   *  variant axes this product offers, faceted so the storefront can filter by them. */
+  option_facets?: string[];
   // Model B site scope (docs/49 §3). `[GLOBAL_SITE_SCOPE]` = global (all sites);
   // otherwise the property ids the product is scoped to.
   property_ids?: string[];

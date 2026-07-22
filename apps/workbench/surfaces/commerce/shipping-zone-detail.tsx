@@ -29,9 +29,9 @@ import {
   Select,
   Switch,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Trash2 } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
@@ -113,7 +113,7 @@ function ZoneLoader({ ctx, id }: { ctx: SurfaceContext; id: string }) {
 function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?: ShippingZone }) {
   const isNew = id === 'new';
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const create = useCreateShippingZone();
   const update = useUpdateShippingZone(id);
@@ -222,7 +222,11 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
     <div className={PANE_SHELL}>
       <PaneToolbar label="Delivery region actions">
         {!isNew ? (
-          <Badge color={zone && zone.rateCount > 0 ? 'success' : 'warning'} variant="soft" size="sm">
+          <Badge
+            color={zone && zone.rateCount > 0 ? 'success' : 'warning'}
+            variant="soft"
+            size="sm"
+          >
             {zone && zone.rateCount > 0
               ? `${String(zone.rateCount)} delivery option${zone.rateCount === 1 ? '' : 's'}`
               : 'No delivery options'}
@@ -288,7 +292,9 @@ function ZoneEditor({ ctx, id, zone }: { ctx: SurfaceContext; id: string; zone?:
               {nameError && touched ? (
                 <FieldStatus status="error">{nameError}</FieldStatus>
               ) : (
-                <FieldDescription>A name only you see, to tell your regions apart.</FieldDescription>
+                <FieldDescription>
+                  A name only you see, to tell your regions apart.
+                </FieldDescription>
               )}
             </Field>
 

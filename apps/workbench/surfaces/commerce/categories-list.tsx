@@ -8,14 +8,30 @@
 // from the one screen meant to manage them, so this list is hand-written: it
 // FLATTENS the tree and shows each category as its full trail, so a person can
 // reach and open any of them.
+//
+// It is rendered as a <Table> for visual consistency with the other commerce
+// lists — but UNLIKE them it does NOT server-page or server-sort, and that is
+// deliberate, not an oversight. The categories endpoint returns the COMPLETE
+// tree in one response (parent pickers depend on that), so there is no paged
+// window that a client-side sort could misrepresent: filtering and sorting the
+// whole set in the browser is the correct, honest thing here. Hence no
+// <ListPagination>, and every column sort keeps each row's full trail so the
+// hierarchy stays legible however it is ordered.
 
 import { useMemo, useState } from 'react';
-import { Button, Card, EmptyState, SearchInput, Text } from '@wizeworks/silicaui-react';
-import { Plus, Tags } from 'lucide-react';
+import { Badge, Button, Card, EmptyState, SearchInput, Table } from '@wizeworks/silicaui-react';
+import { ArrowDown, ArrowUp, Plus, Tags } from 'lucide-react';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import { flattenCategories, useCategoryTree, type CategoryChoice } from './categories-data';
+
+// Sorting is CLIENT-SIDE over the full tree (see the file header). `null` is the
+// natural tree order — depth-first, parents before children — which is the
+// meaningful default and cannot be expressed as a single column.
+type CatSortKey = 'name' | 'productCount';
+type SortDir = 'asc' | 'desc';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -25,14 +41,65 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
 
 export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
+  const [sort, setSort] = useState<{ key: CatSortKey; dir: SortDir } | null>(null);
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useCategoryTree();
 
   const all = useMemo(() => flattenCategories(data), [data]);
-  const matches = useMemo(() => {
+
+  const filtered = useMemo(() => {
     const needle = search.trim().toLowerCase();
     if (needle === '') return all;
     return all.filter((category) => category.trail.join(' › ').toLowerCase().includes(needle));
   }, [all, search]);
+
+  // Sorting a COPY, never the flatten in place. With no active sort the rows keep
+  // their natural tree order. Sorting the Category column orders by the full
+  // trail string, so siblings stay together and every row still reads as its
+  // whole path.
+  const rows = useMemo(() => {
+    if (!sort) return filtered;
+    const copy = [...filtered];
+    copy.sort((a, b) => {
+      const cmp =
+        sort.key === 'name'
+          ? a.trail.join(' › ').localeCompare(b.trail.join(' › '))
+          : a.productCount - b.productCount;
+      return sort.dir === 'asc' ? cmp : -cmp;
+    });
+    return copy;
+  }, [filtered, sort]);
+
+  const toggleSort = (key: CatSortKey) => {
+    setSort((current) =>
+      current?.key === key
+        ? { key, dir: current.dir === 'asc' ? 'desc' : 'asc' }
+        : { key, dir: key === 'productCount' ? 'desc' : 'asc' }
+    );
+  };
+
+  const header = (key: CatSortKey, label: string, extra = '') => (
+    <th
+      className={extra}
+      aria-sort={sort?.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+    >
+      <button
+        type="button"
+        className="link link-hover inline-flex items-center gap-1"
+        onClick={() => {
+          toggleSort(key);
+        }}
+      >
+        {label}
+        {sort?.key === key ? (
+          sort.dir === 'asc' ? (
+            <ArrowUp className="size-3" aria-hidden />
+          ) : (
+            <ArrowDown className="size-3" aria-hidden />
+          )
+        ) : null}
+      </button>
+    </th>
+  );
 
   const open = (category: CategoryChoice, event: { shiftKey: boolean; altKey: boolean }) => {
     ctx.open('commerce.category.detail', { id: category.id }, { target: targetFor(event) });
@@ -60,7 +127,7 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
           }}
         >
           <Plus className="size-4" aria-hidden />
-          Add a category
+          <span className="hidden @lg:inline">Add a category</span>
         </Button>
         <RefreshButton
           isFetching={isFetching}
@@ -81,47 +148,70 @@ export function CategoriesListSurface({ ctx }: { ctx: SurfaceContext }) {
           <p className="p-4 text-sm" role="status">
             Loading…
           </p>
-        ) : matches.length === 0 ? (
-          <EmptyState
-            icon={<Tags className="size-6" aria-hidden />}
-            title={search ? 'Nothing matches that search' : 'No categories yet'}
-            description={
-              search
-                ? 'Try a different word, or clear the search box to see everything.'
-                : 'Categories are the aisles of your website menu — the structure shoppers browse down. Add your first one to get started.'
-            }
+        ) : rows.length === 0 ? (
+          <ListEmptyState
+            filtered={Boolean(search)}
+            noResults={{
+              icon: <Tags className="size-6" aria-hidden />,
+              title: 'Nothing matches that search',
+              description: 'Try a different word, or clear the search box to see everything.',
+            }}
+            firstRun={{
+              title: 'No categories yet',
+              description:
+                'Categories are the aisles of your website menu — the structure shoppers browse down. Add your first one to get started.',
+            }}
           />
         ) : (
-          <ul className="flex flex-col p-1">
-            {matches.map((category) => (
-              <li key={category.id}>
-                <button
-                  type="button"
-                  className="hover:bg-base-200 flex w-full items-center gap-3 rounded px-2 py-2 text-left"
+          <Table size="sm" hover>
+            <thead>
+              <tr>
+                {header('name', 'Category')}
+                <th className="hidden @lg:table-cell">Featured</th>
+                {header('productCount', 'Products', 'text-right')}
+              </tr>
+            </thead>
+            <tbody>
+              {rows.map((category) => (
+                <tr
+                  key={category.id}
+                  className="cursor-pointer"
+                  tabIndex={0}
+                  role="button"
                   onClick={(event) => {
                     open(category, event);
                   }}
+                  onKeyDown={(event) => {
+                    if (event.key !== 'Enter' && event.key !== ' ') return;
+                    event.preventDefault();
+                    open(category, event);
+                  }}
                 >
-                  <span className="min-w-0 flex-1">
-                    {category.trail.slice(0, -1).map((ancestor) => (
-                      <span key={ancestor}>{ancestor} › </span>
-                    ))}
-                    <span className="font-semibold">{category.name}</span>
-                  </span>
-                  <Text as="span" className="shrink-0 text-sm tabular-nums">
-                    {category.productCount === 1
-                      ? '1 product'
-                      : `${String(category.productCount)} products`}
-                  </Text>
-                </button>
-              </li>
-            ))}
-          </ul>
+                  <td>
+                    <span className="min-w-0">
+                      {category.trail.slice(0, -1).map((ancestor, index) => (
+                        <span key={`${category.id}:${String(index)}`}>{ancestor} › </span>
+                      ))}
+                      <span className="font-semibold">{category.name}</span>
+                    </span>
+                  </td>
+                  <td className="hidden @lg:table-cell">
+                    {category.featured ? (
+                      <Badge color="warning" variant="soft" size="sm">
+                        Featured
+                      </Badge>
+                    ) : null}
+                  </td>
+                  <td className="text-right tabular-nums">{String(category.productCount)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
         )}
       </Card>
 
-      <p className="shrink-0 px-1 text-xs">
-        Click to open · Shift-click to open alongside · Alt-click to open in a new window
+      <p className="shrink-0 px-1 text-sm">
+        Click to open · Shift-click alongside · Alt-click new window
       </p>
     </div>
   );

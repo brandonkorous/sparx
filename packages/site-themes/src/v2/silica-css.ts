@@ -100,6 +100,14 @@ export function silicaSharedVars(s: SharedTokensV2): Record<string, string> {
     // Body copy → silica's `--font-sans`.
     '--font-sans': fontStack(s.fontBody),
     // ── Residuals silica's standard token set doesn't model ──────────────────
+    // NOTE: deliberately NOT emitting silica's `--font-head` here. An AUTHORED theme
+    // sets `--font-head` itself (silica's Design inspector — often `var(--font-sans)`
+    // for "headings inherit the body face"), and the storefront injects THIS compiled
+    // block ALONGSIDE the authored one; emitting `--font-head` from the brand column
+    // here overrides the author's heading choice (regressed a site whose author set
+    // headings to inherit the body font → forced them to the brand column instead).
+    // `--font-heading` is a sparx-only residual for the app chrome's own `h1..h6`
+    // CSS, which predates silica's `--font-head` and doesn't collide with it.
     '--font-heading': fontStack(s.fontHeading),
     '--container-max': containerLength(s.containerWidth),
   };

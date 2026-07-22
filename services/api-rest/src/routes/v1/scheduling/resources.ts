@@ -21,6 +21,7 @@ import {
   deleteResource,
 } from '@sparx/scheduling';
 import { requireSchedulingModule, toSchedulingContext } from '../../../lib/scheduling-context.js';
+import { resolveListScopeIds } from '../../../lib/property.js';
 import { resourceFeedUrl } from '../../../lib/scheduling-ical.js';
 
 const PathId = z.object({ id: z.string().uuid() });
@@ -28,15 +29,25 @@ const ListQuery = z.object({
   kind: z.enum(['staff', 'asset', 'table', 'space', 'equipment']).optional(),
   locationId: z.string().uuid().optional(),
   activeOnly: z.coerce.boolean().optional(),
+  // Absent ⇒ the active site (`x-sparx-property-id`); `all` ⇒ every site this
+  // member may reach. A resource picker / calendar lane shows one business's
+  // people + equipment, not the tenant's whole roster.
+  property: z.string().optional(),
 });
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; route registration is sync.
 const schedulingResourceRoutes: FastifyPluginAsync = async (app) => {
   app.get('/v1/scheduling/resources', async (request) => {
     await requireSchedulingModule(request);
+    const auth = requireRole(request, 'viewer');
     const { tenantId } = toSchedulingContext(request);
     const query = ListQuery.parse(request.query);
-    const rows = await listResources(tenantId, query);
+    const propertyIds = await resolveListScopeIds(
+      auth,
+      query.property,
+      request.headers['x-sparx-property-id']
+    );
+    const rows = await listResources(tenantId, { ...query, propertyIds });
     return ok(rows.map(resourceView));
   });
 

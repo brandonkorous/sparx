@@ -1,8 +1,10 @@
 // The clause catalog — the atoms of the natural-language "story" onboarding. Each
-// clause is one phrase the owner can speak ("order online", "publish a blog") that
-// maps to a module (and optionally a commerce fulfillment config or an inline object
-// slot). The composer assembles clauses into self-organizing sentences; this file is
-// the data-as-code contract behind that grammar.
+// clause is one phrase the owner can speak ("order online", "remember every customer")
+// that maps to a module (and optionally a commerce fulfillment config or an inline
+// object slot). Phrasing is FIRST-PERSON and plain — how an owner actually talks about
+// their business, not a feature name — so the assembled story reads like a story. The
+// composer assembles clauses into self-organizing sentences; this file is the
+// data-as-code contract behind that grammar.
 //
 // Client-safe: pure data + framework-agnostic helpers, no React, no server import —
 // it ships in the composer's browser bundle, is read by the server action that
@@ -29,11 +31,11 @@ export interface Clause {
   place: ClauseVoice;
   /** Customer-voice phrasing ("order online") — set for `cust` clauses. */
   cust?: string;
-  /** Owner-voice phrasing ("publish a blog") — set for `owner` clauses. */
+  /** Owner-voice phrasing ("share what I know on a blog") — set for `owner` clauses. */
   owner?: string;
   /** Commerce fulfillment method, if this clause configures one. */
   cfg?: Fulfillment;
-  /** Inline editable object slot placeholder ("branded swag" → "offer dropshipped ___"). */
+  /** Inline editable object slot placeholder ("branded swag" → "have a supplier ship ___"). */
   slot?: string;
 }
 
@@ -44,15 +46,20 @@ export const CLAUSE: Record<string, Clause> = {
   ship: { mod: 'commerce', place: 'cust', cust: 'have it shipped', cfg: 'ship' },
   pickup: { mod: 'commerce', place: 'cust', cust: 'pick up locally', cfg: 'pickup' },
   delivery: { mod: 'commerce', place: 'cust', cust: 'get local delivery', cfg: 'delivery' },
-  chat: { mod: 'chat', place: 'cust', cust: 'ask questions on the page' },
-  blog: { mod: 'cms', place: 'owner', owner: 'publish a blog' },
-  crm: { mod: 'crm', place: 'owner', owner: 'keep every customer in one place' },
-  email: { mod: 'email', place: 'owner', owner: 'email my customers' },
-  inventory: { mod: 'inventory', place: 'owner', owner: 'track stock across locations' },
-  invoicing: { mod: 'invoicing', place: 'owner', owner: 'send estimates and invoices' },
-  ai: { mod: 'ai', place: 'owner', owner: 'let my AI assistant help run it' },
-  wholesale: { mod: 'b2b', place: 'owner', owner: 'sell wholesale to other businesses' },
-  dropship: { mod: 'dropship', place: 'owner', owner: 'offer dropshipped', slot: 'branded swag' },
+  chat: { mod: 'chat', place: 'cust', cust: 'message me with questions' },
+  blog: { mod: 'cms', place: 'owner', owner: 'share what I know on a blog' },
+  crm: { mod: 'crm', place: 'owner', owner: 'remember every customer' },
+  email: { mod: 'email', place: 'owner', owner: 'stay in touch with my customers' },
+  inventory: { mod: 'inventory', place: 'owner', owner: 'always know what’s in stock' },
+  invoicing: { mod: 'invoicing', place: 'owner', owner: 'send an invoice and get paid' },
+  ai: { mod: 'ai', place: 'owner', owner: 'let an AI assistant help me run it' },
+  wholesale: { mod: 'b2b', place: 'owner', owner: 'supply other businesses' },
+  dropship: {
+    mod: 'dropship',
+    place: 'owner',
+    owner: 'have a supplier ship',
+    slot: 'branded swag',
+  },
 };
 
 /** The platform's clause groups. Menus render FLAT (no section headers) — this just

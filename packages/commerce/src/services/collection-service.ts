@@ -49,6 +49,11 @@ export interface CollectionDetail extends CollectionSummary {
   createdAt: string;
 }
 
+/** The columns the collections list can order by — EXACTLY the route's Zod
+ *  whitelist. `productCount` orders on the live member-count relation, not a
+ *  stored column. */
+export type CollectionSort = 'name' | 'type' | 'productCount' | 'updatedAt';
+
 export interface ListCollectionsFilter {
   type?: 'manual' | 'rules';
   featured?: boolean;
@@ -56,8 +61,34 @@ export interface ListCollectionsFilter {
   /** Model B: show only collections VISIBLE on this site (global + scoped-here).
    *  Omit for every collection across every site. */
   propertyId?: string;
+  /** Server-side sort — the list can page, so ordering has to happen here rather
+   *  than over a loaded window (which would sort one page and call it the answer).
+   *  Omit for the default "most recently changed first". */
+  sortBy?: CollectionSort;
+  order?: 'asc' | 'desc';
   take?: number;
   skip?: number;
+}
+
+/** Map a whitelisted sort key onto a Prisma order clause. `productCount` orders
+ *  by the related member rows' count; everything else is a plain column. Default
+ *  is newest-touched first, the list's long-standing behaviour. */
+function collectionOrderBy(
+  sortBy: CollectionSort | undefined,
+  order: 'asc' | 'desc'
+): Prisma.ProductCollectionOrderByWithRelationInput {
+  switch (sortBy) {
+    case 'name':
+      return { name: order };
+    case 'type':
+      return { type: order };
+    case 'productCount':
+      return { products: { _count: order } };
+    case 'updatedAt':
+      return { updatedAt: order };
+    default:
+      return { updatedAt: 'desc' };
+  }
 }
 
 // ─── Reads ────────────────────────────────────────────────────────────
@@ -86,7 +117,7 @@ export async function list(
     const [rows, total] = await Promise.all([
       tx.productCollection.findMany({
         where,
-        orderBy: { updatedAt: 'desc' },
+        orderBy: collectionOrderBy(filter.sortBy, filter.order ?? 'asc'),
         take: Math.min(filter.take ?? 50, 250),
         skip: filter.skip ?? 0,
         include: { _count: { select: { products: true } } },

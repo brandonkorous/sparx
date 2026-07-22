@@ -25,9 +25,9 @@ import {
   Heading,
   Text,
   Timestamp,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { CreditCard, Pause, Play, Repeat2, Square } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -61,7 +61,7 @@ function Figure({ value, label }: { value: string; label: string }) {
 
 function DetailBody({ sub }: { sub: SubscriptionDetail }) {
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
   const pause = usePauseSubscription(sub.id);
   const resume = useResumeSubscription(sub.id);
   const cancel = useCancelSubscription(sub.id);

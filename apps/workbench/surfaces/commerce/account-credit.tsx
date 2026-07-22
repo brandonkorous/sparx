@@ -27,14 +27,15 @@ import {
   Input,
   SearchInput,
   Select,
+  Table,
   Text,
   Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { UserPlus, Wallet, X } from 'lucide-react';
+import { ArrowDown, ArrowUp, UserPlus, Wallet, X } from 'lucide-react';
 import { afterPaneChange } from '../../lib/defer';
+import { ListPagination, MAX_TAKE, type PageSize } from '../../components/list-pagination';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
-import { FormSection } from '../../components/form-section';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents } from './products-data';
@@ -46,7 +47,9 @@ import {
   useAccountCredits,
   useCustomerSearch,
   useGrantAccountCredit,
+  type AccountCreditSort,
   type CustomerLite,
+  type SortDir,
 } from './account-credit-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
@@ -72,8 +75,76 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
   );
   const [finding, setFinding] = useState(false);
 
-  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccountCredits(search);
+  // Highest balance first — the question this list exists to answer, and the
+  // server's own default. Sorting is server-side because the list pages: a
+  // client-side sort of one loaded window would order that page and present it
+  // as the whole answer.
+  const [sort, setSort] = useState<{ key: AccountCreditSort; dir: SortDir }>({
+    key: 'balanceCents',
+    dir: 'desc',
+  });
+
+  const [pageSize, setPageSize] = useState<PageSize>(50);
+  const [page, setPage] = useState(1);
+  const [take, setTake] = useState<number>(50);
+  const skip = (page - 1) * pageSize;
+
+  const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useAccountCredits({
+    q: search,
+    sortBy: sort.key,
+    order: sort.dir,
+    take,
+    skip,
+  });
   const rows = data?.items ?? [];
+  const total = data?.total;
+
+  /** Anything that changes which rows match returns to the first window —
+   *  staying on page 5 of a result set that now has one page shows nothing. */
+  const resetWindow = () => {
+    setPage(1);
+    setTake(pageSize);
+  };
+
+  const toggleSort = (key: AccountCreditSort) => {
+    setSort((current) =>
+      current.key === key
+        ? { key, dir: current.dir === 'asc' ? 'desc' : 'asc' }
+        : // Text ascends (A–Z), money descends (largest first).
+          { key, dir: key === 'balanceCents' ? 'desc' : 'asc' }
+    );
+    resetWindow();
+  };
+
+  const header = (key: AccountCreditSort, label: string, extra = '') => (
+    <th
+      className={extra}
+      aria-sort={sort.key === key ? (sort.dir === 'asc' ? 'ascending' : 'descending') : 'none'}
+    >
+      <button
+        type="button"
+        className="link link-hover inline-flex items-center gap-1"
+        onClick={() => {
+          toggleSort(key);
+        }}
+      >
+        {label}
+        {sort.key === key ? (
+          sort.dir === 'asc' ? (
+            <ArrowUp className="size-3" aria-hidden />
+          ) : (
+            <ArrowDown className="size-3" aria-hidden />
+          )
+        ) : null}
+      </button>
+    </th>
+  );
+
+  const select = (row: (typeof rows)[number]) => {
+    if (!row.customer) return;
+    setSelected({ customer: row.customer, currency: row.currency });
+    setFinding(false);
+  };
 
   return (
     <div className={PANE_SHELL}>
@@ -84,7 +155,10 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
             aria-label="Search customers with store credit"
             placeholder="Search customers with credit…"
             value={search}
-            onValueChange={setSearch}
+            onValueChange={(next) => {
+              setSearch(next);
+              resetWindow();
+            }}
           />
         </div>
         <Button
@@ -158,36 +232,73 @@ export function AccountCreditSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
                 }
               />
             ) : (
-              <ul className="flex flex-col p-1">
-                {rows.map((row) => (
-                  <li key={row.id}>
-                    <button
-                      type="button"
-                      className="hover:bg-base-200 flex w-full flex-wrap items-center gap-2 rounded px-3 py-2 text-left"
+              // The workbench table standard, but a row still SELECTS its
+              // customer inline — store credit is a balance on a person, not an
+              // editable record with a detail pane, so a click reveals the
+              // grant form + history below rather than opening anywhere.
+              <Table size="sm" hover>
+                <thead>
+                  <tr>
+                    {header('lastName', 'Customer')}
+                    {header('email', 'Email', 'hidden @md:table-cell')}
+                    {header('balanceCents', 'Balance', 'text-right')}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr
+                      key={row.id}
+                      className="cursor-pointer"
+                      tabIndex={0}
+                      role="button"
                       onClick={() => {
-                        if (row.customer) {
-                          setSelected({ customer: row.customer, currency: row.currency });
-                          setFinding(false);
-                        }
+                        select(row);
+                      }}
+                      onKeyDown={(event) => {
+                        if (event.key !== 'Enter' && event.key !== ' ') return;
+                        event.preventDefault();
+                        select(row);
                       }}
                     >
-                      <span className="min-w-0 flex-1 font-semibold">
+                      <td className="max-w-48 truncate font-medium">
                         {customerName(row.customer)}
-                      </span>
-                      {row.customer?.email ? (
-                        <Text as="span" className="hidden min-w-0 truncate text-sm @md:inline">
-                          {row.customer.email}
-                        </Text>
-                      ) : null}
-                      <Text as="span" className="shrink-0 font-semibold tabular-nums">
+                      </td>
+                      <td className="hidden max-w-56 truncate text-sm @md:table-cell">
+                        {row.customer?.email ?? '—'}
+                      </td>
+                      <td className="text-right font-medium tabular-nums">
                         {formatCents(row.balanceCents, row.currency)}
-                      </Text>
-                    </button>
-                  </li>
-                ))}
-              </ul>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </Table>
             )}
           </Card>
+
+          {!isError && !isPending && rows.length > 0 ? (
+            <ListPagination
+              shown={rows.length}
+              firstRow={skip + 1}
+              total={total}
+              page={page}
+              pageSize={pageSize}
+              canLoadMore={take < MAX_TAKE}
+              busy={isFetching}
+              onLoadMore={() => {
+                setTake((current) => Math.min(current + pageSize, MAX_TAKE));
+              }}
+              onPageChange={(next) => {
+                setPage(next);
+                setTake(pageSize);
+              }}
+              onPageSizeChange={(size) => {
+                setPageSize(size);
+                setPage(1);
+                setTake(size);
+              }}
+            />
+          ) : null}
         </div>
       </div>
     </div>

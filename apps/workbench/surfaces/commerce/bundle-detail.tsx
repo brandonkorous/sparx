@@ -26,9 +26,9 @@ import {
   Select,
   Switch,
   Text,
-  useImperativeAlertDialog,
   useToast,
 } from '@wizeworks/silicaui-react';
+import { useConfirm } from '../../lib/confirm';
 import { Blocks, Trash2 } from 'lucide-react';
 import { useQuery } from '@sparx/query';
 import { api } from '../../lib/api/client';
@@ -37,7 +37,7 @@ import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { formatCents, type ProductRow } from './products-data';
+import { type ProductRow } from './products-data';
 import { VariantPicker } from './variant-picker';
 import {
   bundleErrorMessage,
@@ -185,7 +185,7 @@ function BundleEditor({
 }) {
   const isNew = id === 'new';
   const toast = useToast();
-  const confirm = useImperativeAlertDialog();
+  const confirm = useConfirm();
 
   const create = useCreateBundle();
   const update = useUpdateBundle(id);
@@ -219,8 +219,10 @@ function BundleEditor({
 
   /* ── Validation ───────────────────────────────────────────────────────── */
 
-  const productError = isNew && draft.bundleProductId === '' ? 'Choose the product this bundle is sold as.' : null;
-  const componentsError = draft.components.length === 0 ? 'Add at least one product to the bundle.' : null;
+  const productError =
+    isNew && draft.bundleProductId === '' ? 'Choose the product this bundle is sold as.' : null;
+  const componentsError =
+    draft.components.length === 0 ? 'Add at least one product to the bundle.' : null;
   const fixedError =
     draft.pricingMode === 'fixed' && dollarsToCents(draft.fixedPriceDollars) === undefined
       ? 'Enter the flat price for the set.'
@@ -284,8 +286,7 @@ function BundleEditor({
         pricingMode: draft.pricingMode,
         fixedPriceCents:
           draft.pricingMode === 'fixed' ? (dollarsToCents(draft.fixedPriceDollars) ?? null) : null,
-        percentOffSum:
-          draft.pricingMode === 'percent_off_sum' ? Number(draft.percentOffSum) : null,
+        percentOffSum: draft.pricingMode === 'percent_off_sum' ? Number(draft.percentOffSum) : null,
         inventoryMode: draft.inventoryMode,
         components: componentsPayload(),
       },
@@ -378,8 +379,8 @@ function BundleEditor({
                 Add a bundle
               </Heading>
               <Text>
-                A bundle sells several products together as one item. Pick the product it is sold as,
-                add the products that go inside, and choose how it is priced.
+                A bundle sells several products together as one item. Pick the product it is sold
+                as, add the products that go inside, and choose how it is priced.
               </Text>
             </div>
           ) : (
@@ -490,7 +491,10 @@ function BundleEditor({
                             aria-label={`How many of ${component.label}`}
                             value={String(component.defaultQuantity)}
                             onChange={(event) => {
-                              const value = Math.max(1, Math.round(Number(event.target.value) || 1));
+                              const value = Math.max(
+                                1,
+                                Math.round(Number(event.target.value) || 1)
+                              );
                               set(
                                 'components',
                                 draft.components.map((c, i) =>
@@ -501,7 +505,7 @@ function BundleEditor({
                           />
                         </div>
                       </label>
-                      <label className="flex items-center gap-2">
+                      <div className="flex items-center gap-2">
                         <Switch
                           color="module"
                           size="sm"
@@ -519,8 +523,8 @@ function BundleEditor({
                         <Text as="span" className="text-sm">
                           Required
                         </Text>
-                      </label>
-                      <label className="flex items-center gap-2">
+                      </div>
+                      <div className="flex items-center gap-2">
                         <Switch
                           color="module"
                           size="sm"
@@ -538,7 +542,7 @@ function BundleEditor({
                         <Text as="span" className="text-sm">
                           Can be swapped
                         </Text>
-                      </label>
+                      </div>
                     </div>
                   </li>
                 ))}
@@ -706,7 +710,9 @@ function WrapperProductPicker({ onPick }: { onPick: (product: ProductRow) => voi
         />
       </div>
       {isError ? (
-        <Text className="text-sm">Your products could not be searched just now. Try again in a moment.</Text>
+        <Text className="text-sm">
+          Your products could not be searched just now. Try again in a moment.
+        </Text>
       ) : isPending ? (
         <Text className="text-sm" role="status">
           Searching…
