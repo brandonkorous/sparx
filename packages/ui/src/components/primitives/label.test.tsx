@@ -14,6 +14,6 @@ describe('Label', () => {
     render(<Label required>Store name</Label>);
     const asterisk = screen.getByText('*');
     expect(asterisk).toHaveAttribute('aria-hidden');
-    expect(asterisk.className).toMatch(/text-\[var\(--color-danger\)\]/);
+    expect(asterisk.className).toMatch(/text-danger/);
   });
 });

@@ -18,6 +18,6 @@ describe('Input', () => {
 
   it('applies the danger border on variant="error"', () => {
     render(<Input variant="error" aria-label="email" />);
-    expect(screen.getByRole('textbox').className).toMatch(/border-\[var\(--color-danger\)\]/);
+    expect(screen.getByRole('textbox').className).toMatch(/border-danger/);
   });
 });

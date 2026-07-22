@@ -32,6 +32,6 @@ describe('Select', () => {
   it('applies the danger border on variant="error"', () => {
     render(<Fixture variant="error" />);
     const trigger = screen.getByRole('combobox');
-    expect(trigger.className).toMatch(/border-\[var\(--color-danger\)\]/);
+    expect(trigger.className).toMatch(/border-danger/);
   });
 });
