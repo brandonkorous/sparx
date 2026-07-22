@@ -40,6 +40,22 @@ COPY packages/modules/package.json packages/modules/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
 COPY packages/cms-editor/package.json packages/cms-editor/
 COPY packages/ui/package.json packages/ui/
+# The surface layer's schema + catalog deps and their transitive @sparx closure.
+# The workbench is no longer "deliberately few" deps — its ~66 surfaces import
+# the commerce/crm/automation/story/marketplace/cms/sitebuilder schemas, the
+# silica catalog, site themes, and blueprints directly. Every member must be
+# present or the filtered install leaves a dangling symlink the build can't
+# resolve (the Module-not-found class of failure).
+COPY packages/automation-schemas/package.json packages/automation-schemas/
+COPY packages/blueprints/package.json packages/blueprints/
+COPY packages/cms-schemas/package.json packages/cms-schemas/
+COPY packages/commerce-schemas/package.json packages/commerce-schemas/
+COPY packages/crm-schemas/package.json packages/crm-schemas/
+COPY packages/marketplace-schemas/package.json packages/marketplace-schemas/
+COPY packages/silica-catalog/package.json packages/silica-catalog/
+COPY packages/site-themes/package.json packages/site-themes/
+COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
+COPY packages/story-schemas/package.json packages/story-schemas/
 # Root postinstall runs `pnpm --filter @sparx/db db:generate`, which needs
 # both the schema source AND the prisma config file (the multi-file schema
 # lives in prisma/schema/, declared in prisma.config.ts).
@@ -66,6 +82,16 @@ COPY packages/modules packages/modules
 COPY packages/builder-schemas packages/builder-schemas
 COPY packages/cms-editor packages/cms-editor
 COPY packages/ui packages/ui
+COPY packages/automation-schemas packages/automation-schemas
+COPY packages/blueprints packages/blueprints
+COPY packages/cms-schemas packages/cms-schemas
+COPY packages/commerce-schemas packages/commerce-schemas
+COPY packages/crm-schemas packages/crm-schemas
+COPY packages/marketplace-schemas packages/marketplace-schemas
+COPY packages/silica-catalog packages/silica-catalog
+COPY packages/site-themes packages/site-themes
+COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
+COPY packages/story-schemas packages/story-schemas
 COPY apps/workbench apps/workbench
 
 # Generate Prisma client (@sparx/auth imports @sparx/db which re-exports it).
