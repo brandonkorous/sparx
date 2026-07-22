@@ -25,6 +25,7 @@ import {
   AlertTitle,
   Badge,
   Button,
+  ChatTypingIndicator,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -71,6 +72,7 @@ import {
   type ChatMessage,
   type ConversationDetail,
 } from './data';
+import { emitTyping, useChatLive, useTypingIndicator } from './live';
 
 /* ── The "who you're talking to" card ─────────────────────────────────────── */
 
@@ -229,6 +231,8 @@ function Composer({ id, disabled }: { id: string; disabled: boolean }) {
         disabled={disabled}
         onChange={(event) => {
           setBody(event.target.value);
+          // Let the visitor's widget show "Agent is typing" — throttled in live.ts.
+          if (event.target.value.trim() !== '') emitTyping(id);
         }}
         onKeyDown={(event) => {
           // Enter sends, Shift+Enter is a new line — the chat convention.
@@ -295,6 +299,11 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
   const id = typeof ctx.params.id === 'string' ? ctx.params.id : '';
   const toast = useToast();
   const confirm = useConfirm();
+
+  // Hold the socket open for this thread and join its room, so inbound messages,
+  // status changes, and the visitor's typing arrive live rather than on a poll.
+  useChatLive(id);
+  const otherTyping = useTypingIndicator(id === '' ? undefined : id);
 
   const { data, isPending, isError, refetch } = useConversation(id);
   const { data: sites } = useSites();
@@ -563,6 +572,11 @@ export function ChatThreadSurface({ ctx }: { ctx: SurfaceContext }) {
               <MessageBubble key={message.id} message={message} customerName={data.customerName} />
             ))
           )}
+          {otherTyping ? (
+            <li>
+              <ChatTypingIndicator side="start" name={`${conversationName(data)} is typing`} />
+            </li>
+          ) : null}
         </ol>
 
         <Composer id={id} disabled={isSpam} />

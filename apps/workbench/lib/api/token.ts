@@ -112,6 +112,19 @@ export async function resolveToken(): Promise<string> {
   return state.token;
 }
 
+/**
+ * The freshest cached token WITHOUT awaiting a refresh — for the chat socket's
+ * synchronous handshake `auth` callback, which socket.io calls on every
+ * (re)connect and can't await. Null before the first fetch; the socket primes
+ * the cache with getTokenState() before it connects, and every pane's polling
+ * keeps the token live thereafter, so a reconnect reads a valid token here. When
+ * it is momentarily stale the handshake fails, api-rest's retry kicks in, and
+ * the next poll refreshes the cache for the following attempt.
+ */
+export function peekToken(): string | null {
+  return current?.token ?? null;
+}
+
 /** Drops the cached token — call after sign-out or on a hard 401 from api-rest. */
 export function clearToken(): void {
   current = null;

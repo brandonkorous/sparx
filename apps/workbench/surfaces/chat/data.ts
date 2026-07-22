@@ -11,19 +11,20 @@
 // on the team is around. The helpers at the bottom translate the backend's terse
 // enums into that language once, so every surface says the same thing.
 //
-// LIVE UPDATES — poll, not socket. There is a real chat WebSocket in api-rest
-// (`/ws/chat`), but the workbench has no socket client wired today and adding one
-// is a deliberate, approvable step (a new dependency + a cross-window connection
-// to manage on tear-off). So this mirrors the app's existing awareness layer
-// (lib/api/activity.ts, lib/api/jobs.ts): a brisk refetch on the OPEN thread so
-// inbound messages append within seconds, and a gentler one on the inbox so new
-// conversations and unread counts surface without hunting for reload. Wiring the
-// socket is a clean follow-up — the query keys below are the seam it would push
-// into.
+// LIVE UPDATES — socket first, poll as the fallback. The chat WebSocket in
+// api-rest (`/ws/chat`) is now wired here: live.ts holds ONE socket and pushes
+// every server event straight into the ['chat', …] cache below (that is the seam
+// these query keys were built to be). The polling stays as a safety net for a
+// missed broadcast or a dropped connection — RELAXED while the socket is healthy
+// (isChatLive()) and TIGHTENED the instant it drops, so freshness never depends
+// on the socket alone. This still mirrors the app's awareness layer
+// (lib/api/activity.ts, lib/api/jobs.ts); the socket just makes the common case
+// instant instead of up-to-a-poll late.
 
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
 import { api } from '../../lib/api/client';
+import { isChatLive } from './live-status';
 
 /* ── Domain shapes (mirror services/api-rest/src/lib/chat) ────────────────── */
 
@@ -218,14 +219,27 @@ export const CHAT_KEYS = {
   activity: ['chat', 'analytics', 'activity'] as const,
 };
 
-/* ── Poll cadences ────────────────────────────────────────────────────────── */
+/* ── Poll cadences (the socket's fallback) ────────────────────────────────── */
 
-/** The inbox: a minute of latency on a new conversation is invisible, but a busy
- *  triage session wants unread counts to move without a manual reload. */
+// Two cadences each: the FALLBACK one when the socket is down (the old live-ish
+// clock), and a RELAXED safety-net one while it is connected — the socket is
+// carrying freshness then, so this only has to catch a rare missed broadcast.
+// Deliberately never `false`: a slow poll under a healthy socket is cheap
+// insurance, and it means a subtly-wrong connection flag degrades to "a little
+// late", never to "silently stuck".
 const INBOX_POLL_MS = 15_000;
-/** The open thread: an inbound message should land visibly — a live-ish clock
- *  that stands in for the socket until it is wired. */
+const INBOX_POLL_LIVE_MS = 60_000;
 const THREAD_POLL_MS = 5_000;
+const THREAD_POLL_LIVE_MS = 20_000;
+
+/** The active inbox refetch interval — relaxed while the socket is connected. */
+function inboxPollInterval(): number {
+  return isChatLive() ? INBOX_POLL_LIVE_MS : INBOX_POLL_MS;
+}
+/** The active open-thread refetch interval — relaxed while the socket is connected. */
+function threadPollInterval(): number {
+  return isChatLive() ? THREAD_POLL_LIVE_MS : THREAD_POLL_MS;
+}
 
 /* ── Reads ────────────────────────────────────────────────────────────────── */
 
@@ -244,7 +258,7 @@ export function useConversations(filter: ConversationsFilter) {
         ...(filter.take ? { take: filter.take } : {}),
         ...(filter.skip ? { skip: filter.skip } : {}),
       }),
-    refetchInterval: INBOX_POLL_MS,
+    refetchInterval: inboxPollInterval,
     placeholderData: (previous) => previous,
   });
 }
@@ -257,7 +271,7 @@ export function useConversation(id: string) {
     queryFn: () =>
       api.get<ConversationDetail>(`/v1/chat/conversations/${id}`, { message_take: 200 }),
     enabled: id !== '',
-    refetchInterval: THREAD_POLL_MS,
+    refetchInterval: threadPollInterval,
   });
 }
 

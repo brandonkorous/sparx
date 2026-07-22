@@ -31,7 +31,13 @@ export function buildAuthorizationServerMetadata(origin: string): Record<string,
     authorization_endpoint: `${auth}/mcp/authorize`,
     token_endpoint: `${auth}/mcp/token`,
     registration_endpoint: `${auth}/mcp/register`,
-    jwks_uri: `${auth}/mcp/jwks`,
+    // No jwks_uri: this AS issues OPAQUE access tokens (validated by api-mcp via
+    // a DB lookup in verifyMcpOAuthToken, never signature verification) and signs
+    // id_tokens with HS256 (a shared client secret, not an asymmetric keypair).
+    // Neither scheme has a public key to publish, so there is no JWKS document —
+    // the mcp() plugin serves no /mcp/jwks route. jwks_uri is optional in RFC 8414;
+    // advertising it here only pointed strict clients at a 404. (It was carried
+    // over from the dashboard, where it was likewise dead.)
     scopes_supported: [...MCP_ALL_OAUTH_SCOPES],
     response_types_supported: ['code'],
     response_modes_supported: ['query'],

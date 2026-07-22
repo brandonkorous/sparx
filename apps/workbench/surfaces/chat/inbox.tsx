@@ -41,6 +41,7 @@ import {
   type ConversationStatus,
   type ConversationSummary,
 } from './data';
+import { useChatLive } from './live';
 
 /** Same modifier contract as every other list in the app. */
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
@@ -124,6 +125,11 @@ function ConversationRow({
 }
 
 export function ChatInboxSurface({ ctx }: { ctx: SurfaceContext }) {
+  // Hold the chat socket open while the inbox is on screen: every staff socket
+  // joins the tenant room, so new conversations and unread counts arrive live
+  // here even before a thread is opened.
+  useChatLive();
+
   const [search, setSearch] = useState('');
   const [statusValue, setStatusValue] = useState('all');
   const [mine, setMine] = useState(false);
