@@ -8,3 +8,4 @@ export * from './refs';
 export * from './validate';
 export * from './registry';
 export * from './merge';
+export * from './capture';
