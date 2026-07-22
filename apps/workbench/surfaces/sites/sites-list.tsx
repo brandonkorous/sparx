@@ -95,7 +95,7 @@ export function SitesListSurface({ ctx }: { ctx: SurfaceContext }) {
       if (!ok) return;
     }
     setSwitching(site.id);
-    switchSite(controller, activeId ?? 'default', site.id);
+    await switchSite(controller, activeId ?? 'default', site.id);
   };
 
   if (isError) {

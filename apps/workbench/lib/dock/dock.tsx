@@ -208,6 +208,10 @@ export function Dock({ siteKey }: { siteKey: string }) {
   // one we don't. Browsers ignore the custom string and show their own wording.
   useEffect(() => {
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      // A site switch reloads on purpose after its own consent dialog — don't
+      // prompt again, or the native dialog cancels the reload and the switch
+      // half-applies (cookie moved, page didn't). See controller.markIntentionalUnload.
+      if (controller.isUnloadIntentional()) return;
       if (!controller.hasUnsavedWork()) return;
       event.preventDefault();
       event.returnValue = '';

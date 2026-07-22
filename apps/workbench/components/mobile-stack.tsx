@@ -75,6 +75,8 @@ export function MobileStack({ siteKey }: { siteKey: string }) {
   // Same last line of defence the dock keeps for a hard browser nav.
   useEffect(() => {
     const onBeforeUnload = (event: BeforeUnloadEvent) => {
+      // See dock.tsx: an intentional site-switch reload must not be re-prompted.
+      if (controller.isUnloadIntentional()) return;
       if (!controller.hasUnsavedWork()) return;
       event.preventDefault();
       event.returnValue = '';

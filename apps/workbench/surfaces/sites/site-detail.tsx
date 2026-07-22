@@ -325,7 +325,7 @@ function ManageSite({ ctx, id }: { ctx: SurfaceContext; id: string }) {
       });
       if (!ok) return;
     }
-    switchSite(controller, activeSite?.propertyId ?? 'default', site.id);
+    await switchSite(controller, activeSite?.propertyId ?? 'default', site.id);
   };
 
   const onDelete = async () => {
