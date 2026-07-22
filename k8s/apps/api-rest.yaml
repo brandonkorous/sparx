@@ -66,6 +66,17 @@ spec:
               value: '3000'
             - name: LOG_LEVEL
               value: info
+            # api-rest loads its ~50-package workspace graph at boot via runtime
+            # tsx (no precompiled bundle), so its boot heap outgrew Node's default
+            # cgroup-derived ceiling (~256MB in a 512Mi container) and the process
+            # died with "JavaScript heap out of memory" before Fastify listened
+            # (crash-looped every rollout since ~v1.151). Reclaim the container
+            # memory Node was leaving unused: cap old-space at 384MB (75% of the
+            # 512Mi limit; ~128MB left for tsx's transpiled sources + native
+            # buffers). If boot still OOMs at 384, 512Mi is genuinely too small —
+            # raise the memory limit rather than this value.
+            - name: NODE_OPTIONS
+              value: '--max-old-space-size=384'
             # Typesense — api-rest's /v1/search/* read path queries the
             # in-cluster Typesense (ClusterIP Service named `typesense`, the
             # @sparx/search default host). The key matches the secret
