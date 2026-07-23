@@ -13,24 +13,15 @@
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
-import { prisma, type Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { recordRevision, serializeEntry } from '@sparx/cms';
+import { serializeEntry, getLegalChecklistTx, createLegalPageTx } from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { conflict, notFound } from '@sparx/api-core/errors';
-import {
-  LEGAL_TEMPLATES,
-  getLegalTemplate,
-  requiredLegalKinds,
-  legalEntryBody,
-  type LegalKind,
-} from '@sparx/legal-templates';
+import { LEGAL_KINDS, type LegalKind } from '@sparx/legal-templates';
 import { resolvePropertyId, type SiteActor } from '../../lib/property.js';
-
-type Json = Prisma.InputJsonValue;
 
 /** The active site (docs/49 Phase 6c) — the `x-sparx-property-id` the dashboard
  *  switcher sets, else the tenant's primary. Drives which site's placements the
@@ -40,188 +31,48 @@ function activeProperty(request: FastifyRequest, actor: SiteActor) {
   return resolvePropertyId(actor, typeof requested === 'string' ? requested : null);
 }
 
-const LEGAL_KINDS = LEGAL_TEMPLATES.map((t) => t.legalKind) as [LegalKind, ...LegalKind[]];
-
-async function commerceEnabled(tenantId: string): Promise<boolean> {
-  const t = await prisma.tenant.findUnique({ where: { id: tenantId }, select: { settings: true } });
-  const modules = (t?.settings as { modules?: Record<string, { enabled?: boolean }> } | null)
-    ?.modules;
-  return Boolean(modules?.commerce?.enabled);
-}
-
-type ChecklistState = 'complete' | 'missing' | 'draft' | 'stale' | 'unplaced';
-
 const legalRoutes: FastifyPluginAsync = (app) => {
   // ── Checklist ───────────────────────────────────────────────────────────
   app.get('/v1/legal/checklist', async (request) => {
     const auth = requireRole(request, 'viewer');
-    const commerce = await commerceEnabled(auth.tenantId);
-    const required = new Set(requiredLegalKinds({ commerceEnabled: commerce }));
-
-    const { entries, placedEntryIds } = await withRequestTenant(request, async (tx) => {
-      const rows = await tx.contentEntry.findMany({
-        where: { typeKey: 'page', legalKind: { not: null }, deletedAt: null },
-        select: {
-          id: true,
-          slug: true,
-          status: true,
-          legalKind: true,
-          legalTemplateVersion: true,
-          legalDisclaimerAckAt: true,
-          updatedAt: true,
-        },
-      });
-      const placements = await tx.siteDocPlacement.findMany({
-        where: { placement: 'footer', enabled: true, entryId: { not: null } },
-        select: { entryId: true },
-      });
-      return {
-        entries: rows,
-        placedEntryIds: new Set(placements.map((p) => p.entryId)),
-      };
-    });
-
-    const byKind = new Map(entries.map((e) => [e.legalKind, e]));
-
-    const items = LEGAL_TEMPLATES.map((t) => {
-      const entry = byKind.get(t.legalKind);
-      const placed = entry ? placedEntryIds.has(entry.id) : false;
-      let state: ChecklistState;
-      if (!entry) state = 'missing';
-      else if (entry.status !== 'published') state = 'draft';
-      else if ((entry.legalTemplateVersion ?? 0) < t.templateVersion) state = 'stale';
-      else if (!placed) state = 'unplaced';
-      else state = 'complete';
-      return {
-        legalKind: t.legalKind,
-        title: t.title,
-        defaultSlug: t.defaultSlug,
-        required: required.has(t.legalKind),
-        state,
-        entry: entry
-          ? {
-              id: entry.id,
-              slug: entry.slug,
-              status: entry.status,
-              updatedAt: entry.updatedAt.toISOString(),
-              templateVersion: entry.legalTemplateVersion,
-              currentVersion: t.templateVersion,
-              acknowledged: entry.legalDisclaimerAckAt !== null,
-              placed,
-            }
-          : null,
-      };
-    });
-
-    const requiredItems = items.filter((i) => i.required);
-    const completeRequired = requiredItems.filter((i) => i.state === 'complete').length;
-
-    return ok({
-      items,
-      completeness: {
-        requiredTotal: requiredItems.length,
-        requiredComplete: completeRequired,
-      },
-    });
+    const result = await withRequestTenant(request, (tx) => getLegalChecklistTx(tx, auth.tenantId));
+    return ok(result);
   });
 
   // ── Instantiate a starter template → draft page (+ footer placement) ──────
+  // The instantiation logic lives in @sparx/cms's legal-service (createLegalPageTx), so
+  // the MCP `create_legal_page` tool scaffolds a draft through the exact same path.
   app.post('/v1/legal/pages', async (request, reply) => {
     const auth = requireRole(request, 'editor');
-    const { legalKind } = z.object({ legalKind: z.enum(LEGAL_KINDS) }).parse(request.body);
-    const template = getLegalTemplate(legalKind);
-    if (!template) throw notFound('Legal template', legalKind);
+    const { legalKind } = z
+      .object({ legalKind: z.enum(LEGAL_KINDS as unknown as [LegalKind, ...LegalKind[]]) })
+      .parse(request.body);
 
-    const created = await withRequestTenant(request, async (tx) => {
-      const existing = await tx.contentEntry.findFirst({
-        where: { typeKey: 'page', legalKind, deletedAt: null },
-        select: { id: true },
-      });
-      if (existing) {
-        throw conflict(`A ${template.title} page already exists.`);
-      }
-      // Slug collision with a non-legal page at the same slug → 409.
-      const slugClash = await tx.contentEntry.findFirst({
-        where: { typeKey: 'page', slug: template.defaultSlug, deletedAt: null },
-        select: { id: true },
-      });
-      if (slugClash) {
-        throw conflict(`A page with slug "${template.defaultSlug}" already exists.`);
-      }
-
-      const body = legalEntryBody(template);
-      const entry = await tx.contentEntry.create({
-        data: {
-          tenantId: auth.tenantId,
-          typeKey: 'page',
-          slug: template.defaultSlug,
-          status: 'draft',
-          body: body as unknown as Json,
-          legalKind: template.legalKind,
-          legalTemplateVersion: template.templateVersion,
-        },
-      });
-
-      await recordRevision(tx, {
-        tenantId: auth.tenantId,
-        entryId: entry.id,
-        body,
-        seoJson: {},
-        status: entry.status,
-        kind: 'manual',
-        authorId: auth.actorId,
-        summary: 'Created from legal starter template',
-      });
-
-      // Tenant-wide footer placement (docs/49 Phase 6c — propertyId null = every
-      // site). Find-or-create scoped to null so a site-specific placement of the
-      // same page never blocks the default tenant-wide one.
-      const existingPlacement = await tx.siteDocPlacement.findFirst({
-        where: {
-          placement: 'footer',
-          sourceKind: 'cms_entry',
-          entryId: entry.id,
-          propertyId: null,
-        },
-        select: { id: true },
-      });
-      if (!existingPlacement) {
-        const maxPos = await tx.siteDocPlacement.aggregate({
-          where: { placement: 'footer' },
-          _max: { position: true },
-        });
-        await tx.siteDocPlacement.create({
-          data: {
-            tenantId: auth.tenantId,
-            placement: 'footer',
-            sourceKind: 'cms_entry',
-            entryId: entry.id,
-            legalKind: template.legalKind,
-            label: template.title,
-            columnKey: 'legal',
-            position: (maxPos._max.position ?? -1) + 1,
-          },
-        });
-      }
-
+    const { entry, events } = await withRequestTenant(request, async (tx) => {
+      const result = await createLegalPageTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        legalKind
+      );
       await writeAudit(tx, request, auth, {
         action: 'content.entry.created',
         entityType: 'content_entry',
-        entityId: entry.id,
-        after: { typeKey: entry.typeKey, slug: entry.slug, legalKind: entry.legalKind },
+        entityId: result.entry.id,
+        after: {
+          typeKey: result.entry.typeKey,
+          slug: result.entry.slug,
+          legalKind: result.entry.legalKind,
+        },
       });
-      return entry;
+      return result;
     });
 
-    await publish(request.log, 'content.entry.created', auth.tenantId, auth.actorId, {
-      entryId: created.id,
-      typeKey: created.typeKey,
-      slug: created.slug,
-      status: created.status,
-    });
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
 
     reply.code(201);
-    return ok(serializeEntry(created));
+    return ok(serializeEntry(entry));
   });
 
   // ── Acknowledge the starter-text disclaimer (docs/42 §3.4) ────────────────

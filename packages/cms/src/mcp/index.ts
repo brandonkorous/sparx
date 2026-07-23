@@ -10,9 +10,11 @@ export type { CmsMcpScope, CmsMcpCtx, McpToolDefinition, AnyMcpTool } from './re
 
 import { readTools } from './read-tools.js';
 import { writeTools } from './write-tools.js';
+import { legalTools } from './legal-tools.js';
 
 export * from './read-tools.js';
 export * from './write-tools.js';
+export * from './legal-tools.js';
 
 /** The full CMS tool set the MCP server publishes. */
-export const cmsMcpTools = [...readTools, ...writeTools];
+export const cmsMcpTools = [...readTools, ...writeTools, ...legalTools];

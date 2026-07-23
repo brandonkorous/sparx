@@ -14,3 +14,4 @@ export * from './references.js';
 export * from './service-support.js';
 export * from './entries-service.js';
 export * from './content-types-service.js';
+export * from './legal-service.js';

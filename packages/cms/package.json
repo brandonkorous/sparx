@@ -29,6 +29,7 @@
     "@sparx/cms-schemas": "workspace:*",
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@sparx/legal-templates": "workspace:*",
     "zod": "^4.4.3"
   },
   "devDependencies": {
