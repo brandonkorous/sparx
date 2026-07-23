@@ -3,15 +3,23 @@
 // The canvas preview for a pinned functional core (a `kind:"host"` node).
 //
 // silica's `renderHostNode` hook asks the host to DRAW a host node on the canvas.
-// Two kinds of answer:
-//   · site.brand — the tenant's REAL mark, inline (logo and/or name), read from the
-//     resolver root `site.identity` that preview-data overlays. NOT a skeleton: the
-//     whole point of the core is "your logo shows up automatically", so a grey box
-//     here would be worse than useless — and the data is already in the root.
-//   · every other core (cart, checkout, search, PLP, booking…) — a labelled,
-//     non-interactive SKELETON: the real widget is a live transaction that can't run
-//     on a canvas (no cart/session/Stripe), so we show its FOOTPRINT so the author
-//     can style around it.
+// Two kinds of answer, and the split is about SIZE, not importance:
+//
+//   · CHROME cores (brand, theme toggle, legal links) — drawn at their REAL size,
+//     inline. These live in a navbar or a footer column, and their whole promise is
+//     "the platform keeps this filled in for you". A dashed labelled card in a header
+//     row is not a preview of them, it is a lie about their footprint: a 24px icon
+//     button rendered as a 120px-tall bordered box with three grey bars blows the
+//     navbar apart and the author ends up styling around a shape that will never
+//     exist. Draw the actual control.
+//   · TRANSACTION cores (cart, checkout, search, PLP, booking…) — a labelled,
+//     non-interactive SKELETON. The real widget is a live transaction that can't run
+//     on a canvas (no cart/session/Stripe), and it legitimately occupies a page-sized
+//     block, so showing its FOOTPRINT is the honest preview.
+//
+// Nothing here is interactive: every chrome preview renders as a <span>, never a real
+// <button>/<a>, so a click selects the node in the builder instead of firing the
+// control (and a preview toggle can never flip the workbench's own theme).
 //
 // Without this, silica falls back to its own grey "host component" placeholder box —
 // which is exactly the bug this fixes.
@@ -74,6 +82,59 @@ function BrandMark({ root, node }: { root: unknown; node: HostNode }) {
   );
 }
 
+/** The light/dark switch at its real size — the storefront mounts an icon button, so
+ *  the canvas draws an icon button. A `<span>` carrying the button classes rather than
+ *  a `<button>`: it must not be clickable on the canvas (selection belongs to the
+ *  builder) and it has no state to show, so the moon glyph stands for the control the
+ *  way a light-mode visitor first sees it.
+ *
+ *  Always drawn, even under a single-theme appearance policy that would hide it live —
+ *  a node you cannot see is a node you cannot place, and the palette hint already says
+ *  when it appears. Same call the Builder-path `ThemeToggle` canvas node makes. */
+function ThemeToggleMark({ hint }: { hint: string }) {
+  return (
+    <span className="btn btn-ghost btn-sm" title={hint}>
+      <svg
+        width="18"
+        height="18"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+      </svg>
+    </span>
+  );
+}
+
+/** The legal-links column at its real size — a heading plus the links themselves.
+ *
+ *  The labels are REPRESENTATIVE, not the tenant's own: unlike `site.brand`, whose data
+ *  is already in the canvas resolver root, legal placements are a separate read the
+ *  studio doesn't make. Three of the six kinds, in the order the checklist lists them,
+ *  so the author sees the column's true shape and rhythm. What actually renders is
+ *  whatever they've published (and nothing at all until they publish one) — the `title`
+ *  says so, and so does the palette hint. */
+function LegalLinksColumn({ heading, hint }: { heading: string; hint: string }) {
+  return (
+    // Its own flex column rather than `display:contents`, which generates no box and
+    // so would swallow the tooltip. Nesting a column inside the node's own column
+    // costs nothing visually.
+    <span className="flex flex-col gap-3" title={hint}>
+      {heading ? <h3 className="text-base-content text-sm font-semibold">{heading}</h3> : null}
+      {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((label) => (
+        <span key={label} className="text-base-content text-sm">
+          {label}
+        </span>
+      ))}
+    </span>
+  );
+}
+
 /** Build the studio's `renderHostNode`, closing over the canvas resolver root so the
  *  brand core can draw the tenant's real mark. Every other core draws a labelled
  *  skeleton keyed by its `component`; a registered-but-unhandled key still renders a
@@ -82,10 +143,22 @@ export function makeRenderHostNode(root: unknown): RenderHostNode {
   return function renderHostNode(node) {
     const meta = HOST_COMPONENTS.find((c) => c.key === node.component);
     const label = meta?.label ?? node.component;
-    // The brand sits inline in the navbar; wrapping it in a labelled dashed box would
-    // misrepresent its real footprint, so it gets no CoreFrame.
+    // Chrome cores draw at their real size — a dashed CoreFrame in a navbar row or a
+    // footer column misrepresents their footprint badly enough to make the surrounding
+    // layout unstylable. See the header note.
     if (node.component === HOST_KEYS.siteBrand) {
       return <BrandMark root={root} node={node} />;
+    }
+    if (node.component === HOST_KEYS.siteThemeToggle) {
+      return <ThemeToggleMark hint={meta?.hint ?? label} />;
+    }
+    if (node.component === HOST_KEYS.siteLegalLinks) {
+      return (
+        <LegalLinksColumn
+          heading={typeof node.props?.heading === 'string' ? node.props.heading : 'Legal'}
+          hint={meta?.hint ?? label}
+        />
+      );
     }
     return (
       <CoreFrame label={label}>

@@ -73,11 +73,71 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
   it('only placement-owned cores are unpinned; every transaction core stays pinned', () => {
     // A tripwire, not a style rule: a core that wraps a live transaction the tenant must
     // not be able to delete has to stay pinned. The unpinned set is exactly the cores whose
-    // PLACEMENT the tenant legitimately owns — the brand mark and the theme toggle (neither
-    // is a transaction). If a THIRD name appears here, either a functional core just became
-    // deletable or a new placement-owned core landed — both are worth a human look.
+    // PLACEMENT the tenant legitimately owns — the brand mark, the theme toggle and the
+    // legal links (none is a transaction). If a FOURTH name appears here, either a
+    // functional core just became deletable or a new placement-owned core landed — both
+    // are worth a human look.
     const unpinned = HOST_COMPONENTS.filter((c) => c.pinned === false).map((c) => c.key);
-    expect(unpinned).toEqual([HOST_KEYS.siteBrand, HOST_KEYS.siteThemeToggle]);
+    expect(unpinned).toEqual([
+      HOST_KEYS.siteBrand,
+      HOST_KEYS.siteThemeToggle,
+      HOST_KEYS.siteLegalLinks,
+    ]);
+  });
+});
+
+// ─── The footer's legal links ───────────────────────────────────────────────
+//
+// This locks a shipped bug: the footer hardcoded `Privacy → /privacy-policy` and
+// `Terms → /terms-of-service`, so EVERY site built on the starter advertised two legal
+// pages that do not exist until the tenant creates them in Content → Legal pages. A
+// brand-new site shipped with two guaranteed 404s in its footer, and the tenant had no
+// way to know — the links look right in the builder.
+//
+// It fails the other way too: a tenant who publishes a cookie policy or a returns
+// policy gets no link to either, because the frame was stamped before those pages
+// existed. Static links cannot track a document set the tenant owns; only a live core
+// can, which is why the fix is `site.legal-links` and not a longer hardcoded list.
+
+/** Every host-core key in a chrome tree. */
+function hostKeys(node: unknown): string[] {
+  const out: string[] = [];
+  const visit = (n: unknown): void => {
+    if (Array.isArray(n)) return n.forEach(visit);
+    if (!n || typeof n !== 'object') return;
+    const rec = n as { kind?: string; component?: string; children?: unknown[] };
+    if (rec.kind === 'host' && rec.component) out.push(rec.component);
+    if (rec.children) rec.children.forEach(visit);
+  };
+  visit(node);
+  return out;
+}
+
+describe('siteFooter — legal links are live, never hardcoded', () => {
+  it('mounts the legal-links core instead of authoring the links', () => {
+    expect(hostKeys(siteFooter({ commerceEnabled: true }))).toContain(HOST_KEYS.siteLegalLinks);
+    // …on a content-only site too. Legal obligations are not a commerce feature.
+    expect(hostKeys(siteFooter({ commerceEnabled: false }))).toContain(HOST_KEYS.siteLegalLinks);
+  });
+
+  it('links to NO legal page directly — those routes may not exist', () => {
+    // The regression tripwire. Any href that looks like a legal document means someone
+    // re-authored the column and re-introduced the 404s.
+    const legalish = hrefs(siteFooter({ commerceEnabled: true })).filter((h) =>
+      /privacy|terms|cookie|returns?|shipping|refund/i.test(h)
+    );
+    expect(legalish).toEqual([]);
+  });
+
+  it('carries the registered heading default, matching a palette insert', () => {
+    // Same contract as the brand mark's `show`: a seeded core must behave identically to
+    // one dragged from the palette, or the storefront falls back to its own default and
+    // the two drift.
+    const core = find(
+      siteFooter(),
+      (n) => n.kind === 'host' && n.component === HOST_KEYS.siteLegalLinks
+    );
+    expect(core?.props).toEqual({ heading: 'Legal' });
   });
 });
 

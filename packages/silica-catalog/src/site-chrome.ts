@@ -220,8 +220,9 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
               ],
             }),
             // Same source as the navbar's two renderings, so header and footer can
-            // never advertise different destinations.
-            footerColumn('Explore', navDestinations(opts)),
+            // never advertise different destinations. Search is appended footer-side
+            // only — a utility destination, not something the header needs a slot for.
+            footerColumn('Explore', [...navDestinations(opts), ['Search', '/search']]),
             ...(commerceEnabled
               ? [
                   footerColumn('Account', [
@@ -231,11 +232,13 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
                   ]),
                 ]
               : []),
-            footerColumn('More', [
-              ['Search', '/search'],
-              ['Privacy', '/privacy-policy'],
-              ['Terms', '/terms-of-service'],
-            ]),
+            // Legal — a LIVE host core, not authored links. This column used to be a
+            // hardcoded `Privacy → /privacy-policy` + `Terms → /terms-of-service` pair,
+            // which meant every site built on this starter shipped two footer links to
+            // pages that don't exist until the tenant creates them in Content → Legal
+            // pages. The core renders the documents they have ACTUALLY published, and
+            // renders nothing at all until there are any (see `HOST_KEYS.siteLegalLinks`).
+            hostCore(HOST_KEYS.siteLegalLinks),
           ],
         }
       ),

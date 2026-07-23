@@ -117,6 +117,25 @@ export const HOST_KEYS = {
    *  site gets a working toggle the shipped `theme-toggle` behavior can't provide (that one
    *  persists to localStorage, not the cookie the storefront reads). Not pinned. */
   siteThemeToggle: 'site.theme-toggle',
+  /** The site's LEGAL LINKS — privacy / terms / cookie-policy / returns / shipping /
+   *  refund, exactly the documents the tenant has actually published, read live from
+   *  their doc placements.
+   *
+   *  A host core rather than authored anchors because the links are DATA the tenant
+   *  owns elsewhere, and a static tree gets them wrong in both directions. The starter
+   *  footer used to HARDCODE `/privacy-policy` + `/terms-of-service`, so every silica
+   *  site promised two legal pages the tenant may never have created — a guaranteed
+   *  404 in the footer of a brand-new site. The inverse is just as bad: a tenant who
+   *  publishes a cookie policy and a returns policy gets no link to either, because the
+   *  frame was stamped before those pages existed.
+   *
+   *  It also needs a conditional a bound tree cannot express (the same reason
+   *  `site.brand` has `show`): with nothing published it must render NOTHING — heading
+   *  included — rather than an empty "Legal" column. Mirrors the default storefront
+   *  footer, which appends its Legal column only when `getLegalFooterLinks` is
+   *  non-empty. Not pinned: the tenant owns where the links sit (a footer column, a
+   *  bottom bar, beside the copyright). */
+  siteLegalLinks: 'site.legal-links',
 } as const;
 
 export type HostComponentKey = (typeof HOST_KEYS)[keyof typeof HOST_KEYS];
@@ -289,6 +308,29 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     hint: 'A light/dark switch for visitors. Appears only when your site offers both themes (Appearance: toggle) — otherwise it stays hidden. Place it in your header.',
     defaultClass: 'inline-flex items-center',
     // Not pinned: the tenant owns whether and where a theme switch sits in their chrome.
+    pinned: false,
+  },
+  {
+    key: HOST_KEYS.siteLegalLinks,
+    label: 'Legal links',
+    category: 'brand',
+    icon: 'article',
+    hint: 'Links to the legal pages you have published — privacy, terms, cookies, returns. Always current, and hidden entirely until you publish one. Put it in your footer.',
+    // A footer link column: the heading + its links stacked, matching the hand-authored
+    // columns beside it.
+    defaultClass: 'flex flex-col gap-3',
+    props: [
+      {
+        name: 'heading',
+        label: 'Heading',
+        type: 'text',
+        // Blank renders the links with no heading — for a bottom bar or a copyright row,
+        // where a column title would be wrong.
+        default: 'Legal',
+      },
+    ],
+    // Not pinned: the tenant owns their footer layout. Pinning would leave an
+    // undeletable empty box on a site with no legal pages published yet.
     pinned: false,
   },
   {

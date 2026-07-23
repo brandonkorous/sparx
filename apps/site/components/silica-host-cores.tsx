@@ -28,7 +28,9 @@ import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
 import { ArticleBody } from '@/components/cms/article-body';
 import { ModeToggle } from '@/components/mode-toggle';
+import { LegalFooterLinks, toLegalHeading } from '@/components/legal-footer-links';
 import { mediaUrl } from '@/lib/media';
+import type { LegalLink } from '@/lib/legal';
 import type { ResolvedSite } from '@/lib/site-context';
 
 /** Route-supplied context a core may need beyond its author-set `node.props` — the
@@ -57,6 +59,11 @@ export interface HostCoreContext {
    *  theme-toggle host mount the real cookie-backed switch — and render nothing unless
    *  the policy (`toggle`) actually offers both light and dark. */
   appearance?: { policy: string; initial: 'light' | 'dark' };
+  /** The tenant's published legal-document placements, for the legal-links core.
+   *  Passed as DATA rather than fetched by the core because the layout already reads
+   *  them for the default footer — the silica frame and the default footer resolve the
+   *  same list once, so the two chromes can never disagree about what is published. */
+  legalLinks?: LegalLink[];
 }
 
 /** Build the storefront `HostRenderer` for a route — a single switch over the pinned
@@ -121,6 +128,16 @@ export function storefrontHostRenderer(ctx: HostCoreContext): HostRenderer {
         return ctx.appearance?.policy === 'toggle' ? (
           <ModeToggle initial={ctx.appearance.initial} />
         ) : null;
+      case HOST_KEYS.siteLegalLinks:
+        // The tenant's published legal pages, resolved from doc placements by the
+        // layout. Renders nothing until at least one is published — which is why the
+        // starter footer can stop hardcoding /privacy-policy and /terms-of-service.
+        return (
+          <LegalFooterLinks
+            links={ctx.legalLinks ?? []}
+            heading={toLegalHeading(node.props?.heading)}
+          />
+        );
       case HOST_KEYS.siteBrand:
         // The brand mark — resolved straight off the site the route already has, so the
         // header always reflects what's in Site settings right now. `show` is the

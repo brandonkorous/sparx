@@ -44,7 +44,7 @@ import {
   themeFontFamilies,
 } from '@sparx/site-themes';
 import { listCollections } from '@/lib/commerce';
-import { getLegalFooterLinks } from '@/lib/legal';
+import { getLegalFooterLinks, type LegalLink } from '@/lib/legal';
 import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/builder';
 import { loadSiteData } from '@/lib/builder-data';
 import { ConsentManager } from '@/components/consent/consent-manager';
@@ -436,8 +436,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // footer above is default or nav-menu-driven, since legal links are
   // compliance-driven, not editorial. Omitted entirely when nothing is
   // published yet.
+  //
+  // Hoisted out of the `if` because a SILICA frame needs the same list: its footer
+  // carries a `site.legal-links` host core instead of a hand-authored column, and it
+  // must resolve to exactly what the default footer would have shown. One fetch, both
+  // chromes — they can't drift.
+  let legalLinks: LegalLink[] = [];
   if (site && !builderLayout) {
-    const legalLinks = await getLegalFooterLinks(site.slug, activePropertySlug ?? undefined);
+    legalLinks = await getLegalFooterLinks(site.slug, activePropertySlug ?? undefined);
     if (legalLinks.length > 0) {
       footerColumns = [
         ...footerColumns,
@@ -567,6 +573,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                           // So a `site.theme-toggle` host in the frame mounts the real
                           // cookie-backed switch — and hides itself unless the policy is `toggle`.
                           appearance: { policy, initial: initialTheme },
+                          // So a `site.legal-links` host in the frame's footer lists the
+                          // legal pages this tenant has actually published (and nothing
+                          // when they have none) instead of hardcoded links that 404.
+                          legalLinks,
                         })}
                       >
                         {children}
