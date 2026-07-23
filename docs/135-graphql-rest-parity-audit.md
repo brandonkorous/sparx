@@ -7,7 +7,7 @@ Last Updated: 2026-07-22
 > **Status (2026-07-22): documented, build deferred.** The decisions in §9 are made — **Pothos**
 > code-first, and the parity build is **sequenced to ride along with the future REST DDD split**, not
 > undertaken now. Rationale: the split reorganizes `api-rest`'s routes around domain boundaries and
-> the `@sparx/<domain>` services; GraphQL resolvers wrap those *same* services, so building both
+> the `@sparx/<domain>` services; GraphQL resolvers wrap those _same_ services, so building both
 > together lands the thin resolvers once instead of twice. This doc is the standing backlog to execute
 > at that time. See §8.
 
@@ -48,7 +48,7 @@ REST routes are **thin**. Every domain route delegates to service objects in a r
 cms, billing, dropship, scheduling, automation, builder, channels, email, forms, media, payments,
 search).
 
-**Consequence:** closing parity is *write SDL + thin resolvers over the existing service tier*, not
+**Consequence:** closing parity is _write SDL + thin resolvers over the existing service tier_, not
 re-implementing business logic. The pattern is already proven twice (CRM thin, CMS inline). The work
 is high-volume and mechanical, not deep — which is exactly why it should be generated, not
 hand-written (§6).
@@ -60,13 +60,15 @@ hand-written (§6).
 Single Mercurius instance at `POST /v1/graphql`, hand-written SDL, auth via `@sparx/api-core/auth`.
 
 ### CMS content — 🟡 partial (6 queries / 5 mutations)
+
 `contentTypes`, `contentType`, `entries`, `entry`, `entryBySlug`, `revisions` ·
 `createEntry`, `updateEntry`, `publishEntry`, `unpublishEntry`, `deleteEntry`.
 Missing vs REST content surface: preview-token issue/revoke, content reports (summary/cadence/recent),
-content-analytics (top-content), revision *restore*, content-type schema authoring (`PUT …/schema`).
+content-analytics (top-content), revision _restore_, content-type schema authoring (`PUT …/schema`).
 Resolvers here **inline** their logic (don't wrap a single service fn).
 
 ### CRM — ✅ full (20 queries / 29 mutations)
+
 Customers, B2B accounts, pipelines, stages, deals, deal forecast, deal↔order/quote attachments,
 activities, tasks (+overdue/today), segments (+members/preview/recompute), reports (snapshot, funnel,
 win-loss, acquisition). Resolvers are genuinely thin over `@sparx/crm`.
@@ -76,58 +78,58 @@ win-loss, acquisition). Resolvers are genuinely thin over `@sparx/crm`.
 
 ## 4. Coverage math
 
-| Bucket | Domains | REST endpoints | GraphQL |
-|---|---|---:|---|
-| Covered | CRM | 60 | ✅ full |
-| Partial | CMS content | 22 | 🟡 ~13 |
-| **Missing** | 25 domains (below) | **~950** | ❌ none |
-| Excluded by design | webhooks, byte/render, OAuth, dev, public storefront runtime | ~230 | n/a (§7) |
+| Bucket             | Domains                                                      | REST endpoints | GraphQL  |
+| ------------------ | ------------------------------------------------------------ | -------------: | -------- |
+| Covered            | CRM                                                          |             60 | ✅ full  |
+| Partial            | CMS content                                                  |             22 | 🟡 ~13   |
+| **Missing**        | 25 domains (below)                                           |       **~950** | ❌ none  |
+| Excluded by design | webhooks, byte/render, OAuth, dev, public storefront runtime |           ~230 | n/a (§7) |
 
 ---
 
 ## 5. Parity backlog (missing domains, by priority)
 
-Priority = how central the domain's *entities* are to "an alternate to the REST data API." Each row
+Priority = how central the domain's _entities_ are to "an alternate to the REST data API." Each row
 is a resolver package to build (SDL + thin resolvers over the named `@sparx/*` service). Endpoint
 counts are the REST surface being mirrored; the GraphQL field count will be lower (reports collapse to
 queries, bulk/lifecycle actions to mutations).
 
 ### Tier 1 — core commerce/ops data (defines "alternate to REST")
 
-| Domain | REST | Service pkg | Entities → GraphQL |
-|---|---:|---|---|
-| Commerce catalog | ~232 | `@sparx/commerce` | products, variants, options, images, translations, categories, collections, price-lists, discounts, gift-cards, account-credit, markup/surcharge rules, shipping/tax zones+rates, providers, returns, subscriptions, reviews, Q&A, wishlists, fitment, bundles, configurators, storefront settings, commerce reports |
-| Orders | 18 | `@sparx/commerce` | orders, payments, fulfillments, shipping labels/tracking, refunds |
-| Inventory | 104 | `@sparx/inventory` | levels, locations, sources, lots/serials/recalls, suppliers, purchase-orders, receipts, reorder, counts, transfers, movements, sync/agent, reports |
-| B2B | 40 | `@sparx/commerce` (b2b) | accounts, fleets, overrides, pricing-tiers, price resolution, quotes, AR invoices, approval rules/queue, holds, reports |
-| Invoicing | 45 | `@sparx/billing` | documents (+lines/snapshots/payments/convert), workflows+stages, line-types, templates, aging, reports |
-| Scheduling | 57 | `@sparx/scheduling` | services, resources, availability, bookings (+lifecycle), policies, calendar connections, series, waitlist, classes/attendees, reports |
+| Domain           | REST | Service pkg             | Entities → GraphQL                                                                                                                                                                                                                                                                                                   |
+| ---------------- | ---: | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Commerce catalog | ~232 | `@sparx/commerce`       | products, variants, options, images, translations, categories, collections, price-lists, discounts, gift-cards, account-credit, markup/surcharge rules, shipping/tax zones+rates, providers, returns, subscriptions, reviews, Q&A, wishlists, fitment, bundles, configurators, storefront settings, commerce reports |
+| Orders           |   18 | `@sparx/commerce`       | orders, payments, fulfillments, shipping labels/tracking, refunds                                                                                                                                                                                                                                                    |
+| Inventory        |  104 | `@sparx/inventory`      | levels, locations, sources, lots/serials/recalls, suppliers, purchase-orders, receipts, reorder, counts, transfers, movements, sync/agent, reports                                                                                                                                                                   |
+| B2B              |   40 | `@sparx/commerce` (b2b) | accounts, fleets, overrides, pricing-tiers, price resolution, quotes, AR invoices, approval rules/queue, holds, reports                                                                                                                                                                                              |
+| Invoicing        |   45 | `@sparx/billing`        | documents (+lines/snapshots/payments/convert), workflows+stages, line-types, templates, aging, reports                                                                                                                                                                                                               |
+| Scheduling       |   57 | `@sparx/scheduling`     | services, resources, availability, bookings (+lifecycle), policies, calendar connections, series, waitlist, classes/attendees, reports                                                                                                                                                                               |
 
 ### Tier 2 — content, marketing, site
 
-| Domain | REST | Service pkg | Notes |
-|---|---:|---|---|
-| Builder | 72 | `@sparx/builder` | pages, layouts, silica site, components/symbols, archetypes, emails, governance, analytics. Op-log autosave (`PUT /site`) is REST-shaped — expose reads + publish/release/restore as GraphQL. |
-| Site (sitebuilder) | 67 | `@sparx/sitebuilder` | layout slots, sections, assignments, page-layouts, definitions, themes, saved-themes, publish/rollback/schedule, blueprints, navigation, presets, brand |
-| Email | 25 | `@sparx/email*` | settings, domains, suppressions, broadcasts (+send/schedule/cancel), analytics |
-| Content (finish) | 9 | `@sparx/cms` | preview-tokens, reports, content-analytics, revision restore, schema authoring |
-| SEO | 15 | `@sparx/seo-audit` | audit/audits, reports, organic (search-console reads). OAuth exchange stays REST (§7). |
-| Automation | 15 | `@sparx/automation` | automations, versions/publish/restore, runs, reports |
-| Media | 8 | `@sparx/media` | assets read/patch/delete + reports. Upload presign/complete stays REST (§7). |
-| Authors / Redirects / Forms / Taxonomies | 24 | cms / seo / forms | straightforward CRUD |
-| Channels / Market | 16 | `@sparx/channels` | connections, mappings, merchant profile/products/settlement. OAuth callback stays REST. |
-| Dropship | 22 | `@sparx/dropship` | suppliers, catalog import, products, order routing, analytics/reports |
-| Finance | 8 | `@sparx/commerce`/`billing` | payments/payouts/receivables/channels ledgers (read-only) |
+| Domain                                   | REST | Service pkg                 | Notes                                                                                                                                                                                         |
+| ---------------------------------------- | ---: | --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Builder                                  |   72 | `@sparx/builder`            | pages, layouts, silica site, components/symbols, archetypes, emails, governance, analytics. Op-log autosave (`PUT /site`) is REST-shaped — expose reads + publish/release/restore as GraphQL. |
+| Site (sitebuilder)                       |   67 | `@sparx/sitebuilder`        | layout slots, sections, assignments, page-layouts, definitions, themes, saved-themes, publish/rollback/schedule, blueprints, navigation, presets, brand                                       |
+| Email                                    |   25 | `@sparx/email*`             | settings, domains, suppressions, broadcasts (+send/schedule/cancel), analytics                                                                                                                |
+| Content (finish)                         |    9 | `@sparx/cms`                | preview-tokens, reports, content-analytics, revision restore, schema authoring                                                                                                                |
+| SEO                                      |   15 | `@sparx/seo-audit`          | audit/audits, reports, organic (search-console reads). OAuth exchange stays REST (§7).                                                                                                        |
+| Automation                               |   15 | `@sparx/automation`         | automations, versions/publish/restore, runs, reports                                                                                                                                          |
+| Media                                    |    8 | `@sparx/media`              | assets read/patch/delete + reports. Upload presign/complete stays REST (§7).                                                                                                                  |
+| Authors / Redirects / Forms / Taxonomies |   24 | cms / seo / forms           | straightforward CRUD                                                                                                                                                                          |
+| Channels / Market                        |   16 | `@sparx/channels`           | connections, mappings, merchant profile/products/settlement. OAuth callback stays REST.                                                                                                       |
+| Dropship                                 |   22 | `@sparx/dropship`           | suppliers, catalog import, products, order routing, analytics/reports                                                                                                                         |
+| Finance                                  |    8 | `@sparx/commerce`/`billing` | payments/payouts/receivables/channels ledgers (read-only)                                                                                                                                     |
 
 ### Tier 3 — platform, tenant, AI, misc
 
-| Domain | REST | Notes |
-|---|---:|---|
-| Tenant-admin | 56 | tenant, business, modules, onboarding, team, members/invites, properties, domains, `me/*`, brand |
-| AI | 44 | ai reports, prompt-templates, tool-policies, api-keys, credentials, mcp-connections; chat conversations/analytics/quick-replies/settings; analytics dashboards/query; dashboard home |
-| Platform | 43 | component catalog, saved-views, partner practice + bootcamps, webhook *subscriptions* (webhook *ingress* excluded) |
-| Misc | 30 | legal, feedback, jobs, activity/audit, sample-data, industry-starters, universal search |
-| Notifications | 7 | inbox, read, preferences, push subscriptions |
+| Domain        | REST | Notes                                                                                                                                                                                |
+| ------------- | ---: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Tenant-admin  |   56 | tenant, business, modules, onboarding, team, members/invites, properties, domains, `me/*`, brand                                                                                     |
+| AI            |   44 | ai reports, prompt-templates, tool-policies, api-keys, credentials, mcp-connections; chat conversations/analytics/quick-replies/settings; analytics dashboards/query; dashboard home |
+| Platform      |   43 | component catalog, saved-views, partner practice + bootcamps, webhook _subscriptions_ (webhook _ingress_ excluded)                                                                   |
+| Misc          |   30 | legal, feedback, jobs, activity/audit, sample-data, industry-starters, universal search                                                                                              |
+| Notifications |    7 | inbox, read, preferences, push subscriptions                                                                                                                                         |
 
 **Tier totals:** T1 ≈ 496 · T2 ≈ 316 · T3 ≈ 180 (≈ 950 missing endpoints).
 
@@ -175,7 +177,7 @@ These are not GraphQL-shaped; excluding them is deliberate, not a gap:
 
 **This work is not undertaken standalone.** It executes as part of the planned **REST DDD
 restructure** of `api-rest`. That split reorganizes routes around domain boundaries and hardens the
-`@sparx/<domain>` service tier; because GraphQL resolvers are thin wrappers over that *same* tier,
+`@sparx/<domain>` service tier; because GraphQL resolvers are thin wrappers over that _same_ tier,
 each domain gets its Pothos resolver module built **in the same pass** that carves out its REST
 domain module — the thin-wrapper work is done once, not twice, and both surfaces are guaranteed to
 share one code path per domain.
@@ -207,6 +209,7 @@ more drift to migrate later.
    derived from the `*-schemas` Zod packages as part of the Pothos migration. Revisit at split time.
 
 ### Prerequisite when this is picked up
+
 - Confirm the REST DDD split has a written plan/doc; link it here and align the domain sequence (§8).
 - Two REST hygiene items surfaced by this audit, worth folding into the split: `partner/bootcamps.ts`
   hard-codes a `/v1/partner` prefix but is **not registered** in `partner/index.ts` (confirm it's
