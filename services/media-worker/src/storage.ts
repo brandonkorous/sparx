@@ -43,9 +43,14 @@ export function variantKey(
   assetId: string,
   format: string,
   width: number,
-  ext: string
+  ext: string,
+  // A social crop aspect (docs/133 §8) — '1:1' | '4:5' | '9:16' | '16:9'. When set,
+  // the colon is made filename-safe ('9:16' → '9x16') and folded into the key so a
+  // crop never collides with the ordinary scale-to-width variant.
+  aspect?: string
 ): string {
   // Mirror of api-rest's variantKey() so the asset detail endpoint can
-  // re-derive any variant URL from (tenantId, assetId, format, width).
-  return `${tenantId}/variants/${assetId}/${format}-${width}.${ext}`;
+  // re-derive any variant URL from (tenantId, assetId, format, width[, aspect]).
+  const suffix = aspect ? `${format}-${aspect.replace(':', 'x')}-${width}` : `${format}-${width}`;
+  return `${tenantId}/variants/${assetId}/${suffix}.${ext}`;
 }

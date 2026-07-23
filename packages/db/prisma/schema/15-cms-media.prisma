@@ -38,12 +38,23 @@ model MediaAsset {
 }
 
 model MediaVariant {
-  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  tenantId  String   @map("tenant_id") @db.Uuid
-  assetId   String   @map("asset_id") @db.Uuid
-  format    String   @db.VarChar(20)
-  width     Int
-  height    Int
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  assetId  String @map("asset_id") @db.Uuid
+  format   String @db.VarChar(20)
+  width    Int
+  height   Int
+
+  // The social aspect crop this variant is, or NULL for the ordinary
+  // scale-to-width ("fit inside", no crop) variant (docs/133 §8). One of the four
+  // core crop ratios — '1:1' (feed square) | '4:5' (feed portrait) | '9:16'
+  // (story/reel) | '16:9' (landscape) — a focal-point-aware cover crop the media
+  // worker derives so a post's image arrives correctly framed on each platform
+  // without the tenant cropping it by hand. The composer previews these + exposes
+  // the draggable focal point (media_assets.focal_point_x/y); the social-worker
+  // picks the crop nearest each target platform's required ratio.
+  aspect String? @db.VarChar(12)
+
   byteSize  BigInt   @map("byte_size")
   key       String   @db.VarChar(1024)
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
@@ -51,7 +62,12 @@ model MediaVariant {
   tenant Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   asset  MediaAsset @relation(fields: [assetId], references: [id], onDelete: Cascade)
 
-  @@unique([assetId, format, width])
+  // A crop adds `aspect` to the identity so a `1:1` and a `4:5` at the same width
+  // coexist. Hand-edited to NULLS NOT DISTINCT in the migration so the ordinary
+  // scale-to-width variants (aspect IS NULL) stay uniquely constrained per
+  // (asset, format, width) — the plain compound unique treats every NULL as
+  // distinct and would let duplicates through.
+  @@unique([assetId, format, width, aspect], map: "media_variants_asset_format_width_aspect_unique")
   @@index([tenantId, assetId])
   @@map("media_variants")
 }

@@ -15,11 +15,20 @@
 import { withTenant } from '@sparx/db';
 import { downloadObject, uploadVariant, variantKey } from './storage.js';
 import { transcode } from './transcode.js';
+import { cropSocialAspects } from './crop.js';
 
 export interface ProcessResult {
   status: 'ready' | 'failed' | 'skipped';
   variantCount: number;
   errorMessage?: string;
+}
+
+export interface ProcessOptions {
+  // Recrop-only pass (docs/133 §8): the asset is already `ready`; regenerate JUST its
+  // social aspect crops from the current focal point (e.g. after the tenant nudged it,
+  // or when media is first attached to a post). Leaves the base variants + status
+  // untouched. The default (false) is the full upload pass.
+  cropsOnly?: boolean;
 }
 
 export async function processAsset(
@@ -29,7 +38,8 @@ export async function processAsset(
     info: (obj: object, msg?: string) => void;
     warn: (obj: object, msg?: string) => void;
     error: (obj: object, msg?: string) => void;
-  }
+  },
+  opts: ProcessOptions = {}
 ): Promise<ProcessResult> {
   // media_assets is FORCE-RLS, so the load MUST run inside the tenant context
   // (from the event's tenantId) — a bare prisma query has no `current_tenant_id()`
@@ -43,6 +53,18 @@ export async function processAsset(
     logger.warn({ assetId }, 'asset missing or soft-deleted; skipping');
     return { status: 'skipped', variantCount: 0 };
   }
+
+  // Recrop-only pass: the asset is already processed; just refresh its social crops
+  // from the current focal point. A crops-only request for an asset that never
+  // finished its base pass is a no-op (the base pass will crop when it runs).
+  if (opts.cropsOnly) {
+    if (asset.status !== 'ready') {
+      logger.warn({ assetId, status: asset.status }, 'recrop for a non-ready asset; skipping');
+      return { status: 'skipped', variantCount: 0 };
+    }
+    return regenerateCrops(asset, logger);
+  }
+
   if (asset.status !== 'uploading') {
     logger.warn({ assetId, status: asset.status }, 'asset not in uploading state; skipping');
     return { status: 'skipped', variantCount: 0 };
@@ -55,13 +77,34 @@ export async function processAsset(
     logger.info({ assetId, bytes: original.length }, 'transcoding');
     const result = await transcode(original, asset.mimeType);
 
-    logger.info({ assetId, variants: result.variants.length }, 'uploading variants');
-    await Promise.all(
-      result.variants.map((v) => {
-        const key = variantKey(asset.tenantId, asset.id, v.format, v.width, v.ext);
-        return uploadVariant(key, v.contentType, v.body);
-      })
+    // Social aspect crops (docs/133 §8) alongside the responsive base variants —
+    // framed to the asset's focal point so a post's image arrives correctly cropped
+    // on every platform without the tenant doing it by hand.
+    const crops = await cropSocialAspects(original, asset.mimeType, {
+      x: asset.focalPointX,
+      y: asset.focalPointY,
+    });
+
+    logger.info(
+      { assetId, variants: result.variants.length, crops: crops.length },
+      'uploading variants'
     );
+    await Promise.all([
+      ...result.variants.map((v) =>
+        uploadVariant(
+          variantKey(asset.tenantId, asset.id, v.format, v.width, v.ext),
+          v.contentType,
+          v.body
+        )
+      ),
+      ...crops.map((c) =>
+        uploadVariant(
+          variantKey(asset.tenantId, asset.id, 'jpeg', c.width, c.ext, c.aspect),
+          c.contentType,
+          c.body
+        )
+      ),
+    ]);
 
     // Single transaction so all the rows land atomically — the worker
     // either ships a complete set of variants OR leaves the asset in
@@ -81,6 +124,20 @@ export async function processAsset(
           },
         });
       }
+      for (const c of crops) {
+        await tx.mediaVariant.create({
+          data: {
+            tenantId: asset.tenantId,
+            assetId: asset.id,
+            format: 'jpeg',
+            aspect: c.aspect,
+            width: c.width,
+            height: c.height,
+            byteSize: BigInt(c.body.length),
+            key: variantKey(asset.tenantId, asset.id, 'jpeg', c.width, c.ext, c.aspect),
+          },
+        });
+      }
       await tx.mediaAsset.update({
         where: { id: asset.id },
         data: {
@@ -94,8 +151,9 @@ export async function processAsset(
       });
     });
 
-    logger.info({ assetId, variantCount: result.variants.length }, 'asset ready');
-    return { status: 'ready', variantCount: result.variants.length };
+    const variantCount = result.variants.length + crops.length;
+    logger.info({ assetId, variantCount }, 'asset ready');
+    return { status: 'ready', variantCount };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     logger.error({ assetId, err: message }, 'processing failed');
@@ -106,5 +164,71 @@ export async function processAsset(
       });
     });
     return { status: 'failed', variantCount: 0, errorMessage: message };
+  }
+}
+
+// Regenerate ONLY the social aspect crops for an already-`ready` asset from its
+// current focal point (docs/133 §8). Leaves the base variants + asset row untouched.
+// A raster asset yields the four crops; a non-image (SVG/video) yields none, and any
+// stale crop rows are cleared either way. Best-effort: a failure here does NOT flip
+// the asset to `failed` (its base variants are fine) — it logs + reports skipped so a
+// redelivery retries.
+async function regenerateCrops(
+  asset: {
+    id: string;
+    tenantId: string;
+    key: string;
+    mimeType: string;
+    focalPointX: number;
+    focalPointY: number;
+  },
+  logger: {
+    info: (obj: object, msg?: string) => void;
+    warn: (obj: object, msg?: string) => void;
+    error: (obj: object, msg?: string) => void;
+  }
+): Promise<ProcessResult> {
+  try {
+    const original = await downloadObject(asset.key);
+    const crops = await cropSocialAspects(original, asset.mimeType, {
+      x: asset.focalPointX,
+      y: asset.focalPointY,
+    });
+
+    await Promise.all(
+      crops.map((c) =>
+        uploadVariant(
+          variantKey(asset.tenantId, asset.id, 'jpeg', c.width, c.ext, c.aspect),
+          c.contentType,
+          c.body
+        )
+      )
+    );
+
+    await withTenant({ tenantId: asset.tenantId }, async (tx) => {
+      // Replace only the crop rows (aspect IS NOT NULL) — base variants stay.
+      await tx.mediaVariant.deleteMany({ where: { assetId: asset.id, aspect: { not: null } } });
+      for (const c of crops) {
+        await tx.mediaVariant.create({
+          data: {
+            tenantId: asset.tenantId,
+            assetId: asset.id,
+            format: 'jpeg',
+            aspect: c.aspect,
+            width: c.width,
+            height: c.height,
+            byteSize: BigInt(c.body.length),
+            key: variantKey(asset.tenantId, asset.id, 'jpeg', c.width, c.ext, c.aspect),
+          },
+        });
+      }
+    });
+
+    logger.info({ assetId: asset.id, crops: crops.length }, 'social crops regenerated');
+    return { status: 'ready', variantCount: crops.length };
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    logger.error({ assetId: asset.id, err: message }, 'recrop failed');
+    return { status: 'skipped', variantCount: 0, errorMessage: message };
   }
 }

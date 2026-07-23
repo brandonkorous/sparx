@@ -97,6 +97,10 @@ interface VariantRow {
   height: number;
   byteSize: bigint;
   key: string;
+  // Set on a social aspect crop (docs/133 §8) — '1:1' | '4:5' | '9:16' | '16:9';
+  // null for the ordinary scale-to-width variant. Lets the composer pick the crop
+  // matching each platform's aspect for its live preview.
+  aspect: string | null;
 }
 
 function serializeAsset(row: AssetRow, variants: VariantRow[] = []) {
@@ -142,6 +146,7 @@ function serializeAsset(row: AssetRow, variants: VariantRow[] = []) {
       format: v.format,
       width: v.width,
       height: v.height,
+      aspect: v.aspect,
       byte_size: v.byteSize.toString(),
       url: storage.publicUrl(v.key),
     })),
@@ -258,6 +263,12 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
         },
       });
 
+      // The focal point drives the social aspect crops (docs/133 §8) — a real move on
+      // a ready image means the baked crops are stale and must be regenerated.
+      const focalMoved =
+        after.focalPointX !== existing.focalPointX || after.focalPointY !== existing.focalPointY;
+      const recrop = focalMoved && after.status === 'ready' && after.mimeType.startsWith('image/');
+
       await writeAudit(tx, request, auth, {
         action: 'media.asset.updated',
         entityType: 'media_asset',
@@ -276,8 +287,21 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
         where: { assetId: id },
         orderBy: [{ format: 'asc' }, { width: 'asc' }],
       });
-      return { asset: after, variants: vs };
+      return { asset: after, variants: vs, recrop };
     });
+
+    // Regenerate the social crops off the request path (docs/133 §8) — the media
+    // worker consumes this on its existing media.uploaded subscription and, seeing
+    // `reason: 'recrop'`, refreshes ONLY the aspect crops from the new focal point.
+    if (updated.recrop) {
+      await publish(request.log, 'media.uploaded', auth.tenantId, auth.actorId, {
+        assetId: updated.asset.id,
+        key: updated.asset.key,
+        mimeType: updated.asset.mimeType,
+        byteSize: updated.asset.byteSize.toString(),
+        reason: 'recrop',
+      });
+    }
 
     return ok(serializeAsset(updated.asset, updated.variants));
   });

@@ -392,9 +392,15 @@ export function variantKey(
   assetId: string,
   format: string,
   width: number,
-  ext: string
+  ext: string,
+  // A social crop aspect (docs/133 §8) — folds a filename-safe ratio ('9:16' →
+  // '9x16') into the key so a crop never collides with the scale-to-width variant.
+  // MUST match media-worker's variantKey() byte-for-byte (the worker writes the
+  // object; this side re-derives its URL).
+  aspect?: string
 ): string {
-  return `${tenantId}/variants/${assetId}/${format}-${width}.${ext}`;
+  const suffix = aspect ? `${format}-${aspect.replace(':', 'x')}-${width}` : `${format}-${width}`;
+  return `${tenantId}/variants/${assetId}/${suffix}.${ext}`;
 }
 
 // Marketplace storage prefixes (docs/85 §6) — the parent "directories" the keys

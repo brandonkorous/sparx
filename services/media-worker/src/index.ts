@@ -27,6 +27,10 @@ interface MediaUploadedEvent {
     key: string;
     mimeType: string;
     byteSize: string;
+    // Set to 'recrop' when the event is a focal-point / attach-time request to
+    // refresh JUST the social aspect crops of an already-processed asset (docs/133
+    // §8). Absent on a genuine upload — those run the full base transcode + crop pass.
+    reason?: 'recrop';
   };
 }
 
@@ -132,7 +136,9 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
   }
 
   try {
-    const result = await processAsset(event.data.assetId, event.tenantId, logger);
+    const result = await processAsset(event.data.assetId, event.tenantId, logger, {
+      cropsOnly: event.data.reason === 'recrop',
+    });
     logger.info({ messageId, assetId: event.data.assetId, ...result }, 'message processed');
     // processAsset records 'failed' to the MediaAsset row internally; ack
     // regardless so the message doesn't recycle forever. Manual re-enqueue
