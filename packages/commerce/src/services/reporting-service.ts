@@ -1740,7 +1740,10 @@ export async function attributionBreakdown(
     // defensive against a stray empty-string source ever appearing.
     const merged = new Map<string, { orders: number; revenueCents: number }>();
     for (const g of groups) {
-      const key = g.attributionSource || 'unattributed';
+      const key =
+        g.attributionSource && g.attributionSource.length > 0
+          ? g.attributionSource
+          : 'unattributed';
       const prev = merged.get(key) ?? { orders: 0, revenueCents: 0 };
       merged.set(key, {
         orders: prev.orders + g._count._all,
