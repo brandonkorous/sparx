@@ -51,6 +51,12 @@ export const ActionType = z.enum([
   // thresholds live in the action config so the Locked seed's definition shows
   // them (docs/81 §3.1, docs/84 Slice F2).
   'b2b.escalate_overdue',
+  // Social posting (docs/133 §9) — draft a native social post from the triggering
+  // entity (a published product/article, a schedule) into the approval inbox, or
+  // straight to scheduled when the automation is set to auto-approve. Calls no
+  // platform API itself: it writes a SocialPost + its fan-out targets; the
+  // scheduled drain + social-worker publish it, so the module-active gate suffices.
+  'social.post',
   // Platform / control flow
   'platform.webhook',
   // In-app notification (docs/124 Phase 3) — write a Notification row for the

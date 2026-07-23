@@ -85,6 +85,9 @@ export const ADVISORY_LOCKS = {
   /** services/api-rest — module provisioning reconcile (was colliding with
    *  SCHEDULING_SERIES). */
   MODULE_PROVISIONING_RECONCILE: 4242_4254,
+  /** services/api-rest — social scheduled-post drain (docs/133 §7): flips due
+   *  `scheduled` social posts to `publishing` + emits `social.post.due`. */
+  SOCIAL_SCHEDULED_PUBLISH: 4242_4255,
 } as const;
 
 export type AdvisoryLockName = keyof typeof ADVISORY_LOCKS;

@@ -29,6 +29,7 @@ export type CommerceTopic = Extract<
   EventType,
   | 'product.created'
   | 'product.updated'
+  | 'product.published'
   | 'product.deleted'
   | 'variant.created'
   | 'variant.updated'

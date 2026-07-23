@@ -216,6 +216,12 @@ model Property {
   // no relation here.
   channelConnections ChannelConnection[]
 
+  // Social posting (docs/133 §5) — a connected account speaks for one business, so
+  // the connection is per-site (like a sales channel); SocialPost is per-site too.
+  // SocialTarget/SocialPostTarget inherit their site from the connection/post.
+  socialConnections SocialConnection[]
+  socialPosts       SocialPost[]
+
   // Legacy CMS (docs/131 §4). Pages take a direct propertyId (a slug is a URL,
   // like redirects); ContentType is a nullable vocabulary like Taxonomy (its
   // entries carry the real per-site scope via ContentEntryProperty).

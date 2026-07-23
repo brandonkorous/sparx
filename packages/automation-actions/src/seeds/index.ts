@@ -50,6 +50,7 @@ import {
 import { CHAT_NO_RESPONSE_ALERT, CHAT_SATISFACTION_SURVEY } from './chat.js';
 import { INVENTORY_AUTO_REORDER } from './inventory.js';
 import { FORM_HANDLE_SUBMISSIONS } from './forms.js';
+import { SOCIAL_ANNOUNCE_BLOG, SOCIAL_ANNOUNCE_PRODUCT } from './social.js';
 import {
   NOTIFY_PAYMENT_FAILED,
   NOTIFY_STOCK_DEPLETED,
@@ -65,7 +66,7 @@ export interface SystemAutomationSeed {
 
 /**
  * Every platform-seeded system automation, grouped by owning module — the full
- * catalog (docs/90 §3b). 26 seeds: the no-email defaults (tags, tasks, notes,
+ * catalog (docs/90 §3b). 28 seeds: the no-email defaults (tags, tasks, notes,
  * internal staff alerts, the paused inventory auto-reorder) + the locked B2B
  * dunning + the 14 email-sending defaults that reference a provisioned
  * Builder-email template by `key`. An email seed
@@ -117,6 +118,11 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   // have a form. Its actions self-gate per the form's own toggles; the CRM step
   // rides the crm gate so it no-ops until CRM is on.
   { module: null, spec: FORM_HANDLE_SUBMISSIONS },
+  // Social (docs/133 §11) — starter posts, seeded PAUSED. Install on Social
+  // activation; each drafts into the Approvals inbox once the tenant connects an
+  // account, picks targets, and turns the rule on.
+  { module: 'social', spec: SOCIAL_ANNOUNCE_PRODUCT },
+  { module: 'social', spec: SOCIAL_ANNOUNCE_BLOG },
 ];
 
 /**

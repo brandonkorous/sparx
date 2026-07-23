@@ -664,6 +664,98 @@ module "channel_sync_worker_cloudrun" {
   ]
 }
 
+# ─── social-worker ─────────────────────────────────────────────────────────
+#
+# Publishes each due social post's targets to their platforms (docs/133). Consumes
+# social.post.due (emitted by the api-rest publish-now path + the Slice 5 scheduled
+# drain), resolves + refreshes the per-tenant OAuth grant, renders per platform, and
+# records each per-target result — then publishes social.post.published / .failed.
+#
+# SECRET SEQUENCING (mirrors channel-sync-worker): social-token-key is a generated
+# 32-byte key, bound now (not gated on any partner). The platform OAuth client secret
+# used for token REFRESH (google-oauth-client-secret; later meta/linkedin) + the
+# non-secret client IDs (GOOGLE_OAUTH_CLIENT_ID) + MEDIA_PUBLIC_BASE_URL are added at
+# go-live, the same approval gate that flips a platform connectable. A pure no-op
+# (scale-to-zero) until a tenant connects an account and publishes.
+
+resource "google_service_account" "social_worker" {
+  account_id   = "sparx-social-worker"
+  display_name = "Sparx social-worker (Cloud Run)"
+  description  = "Runtime SA for the social-worker Cloud Run service. Reads the DB URL + social token key from Secret Manager, publishes posts to social platforms, and publishes social.post.published/failed."
+}
+
+# pubsub.publisher because this worker PUBLISHES the result events
+# (social.post.published / social.post.failed).
+resource "google_project_iam_member" "social_worker_roles" {
+  for_each = toset([
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+    "roles/pubsub.publisher",
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.social_worker.email}"
+}
+
+module "social_worker_cloudrun" {
+  source = "../../modules/cloud-run-worker"
+
+  name                  = "social-worker"
+  project_id            = var.project_id
+  region                = var.region
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/social-worker:latest"
+  service_account_email = google_service_account.social_worker.email
+  vpc_connector_id      = google_vpc_access_connector.workers.id
+
+  # Light: a Prisma read + one platform API call per target per event. Scale-to-zero
+  # until a tenant publishes.
+  min_instance_count    = 0
+  max_instance_count    = 10
+  container_concurrency = 8
+  cpu                   = "1"
+  memory                = "512Mi"
+  timeout_seconds       = 120
+
+  env_vars = {
+    NODE_ENV          = "production"
+    SERVICE_NAME      = "social-worker"
+    LOG_LEVEL         = "info"
+    PUBSUB_INVOKER_SA = google_service_account.pubsub_invoker.email
+    GCP_PROJECT_ID    = var.project_id
+    # Added at go-live: the non-secret platform OAuth client IDs used for token
+    # refresh (GOOGLE_OAUTH_CLIENT_ID; later META_APP_ID / LINKEDIN_CLIENT_ID) +
+    # MEDIA_PUBLIC_BASE_URL (the public origin a platform fetches post images from).
+    # Until MEDIA_PUBLIC_BASE_URL is set, posts publish text-only (media skipped).
+  }
+
+  secrets = [
+    {
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
+    },
+    {
+      name      = "SOCIAL_TOKEN_KEY"
+      secret_id = "social-token-key"
+    },
+    # google-oauth-client-secret (token refresh) binds at go-live, the same gate that
+    # flips google_business connectable — can't bind a secret value before it exists.
+  ]
+
+  pubsub_topic                 = "social.post.due"
+  pubsub_subscription_name     = "social.post.due.social-worker-cloudrun"
+  pubsub_invoker_sa_email      = google_service_account.pubsub_invoker.email
+  pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
+  pubsub_max_delivery_attempts = 5
+
+  depends_on = [
+    module.pubsub,
+    google_project_iam_member.social_worker_roles,
+    google_service_account_iam_member.pubsub_invoker_token_creator,
+  ]
+}
+
 # ─── legal-seed-worker ────────────────────────────────────────────────────
 #
 # Seeds a new tenant's starter legal pages (privacy/terms/cookie-policy/

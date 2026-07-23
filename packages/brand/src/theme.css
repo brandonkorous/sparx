@@ -228,6 +228,11 @@
   --color-module-finance-content: #052e16; /* white fails AA on this fill */
   --color-module-partner: #6d28d9; /* violet-700, one notch deeper than chat */
   --color-module-partner-content: #ffffff;
+  /* Social posting — a true blue (blue-600), the hue business owners map to social
+     platforms. Within the blue family but distinct from Builder indigo (violet-lean)
+     and Email sky (cyan-lean); white ink clears AA on it. */
+  --color-module-social: #2563eb; /* blue-600 */
+  --color-module-social-content: #ffffff;
   /* The platform "module" is not a module — it is the account itself (Start here,
      Pulse, Business details, Team, Domains), so it wears the BRAND, not a hue of
      its own. Aliased rather than copied: sparx Ember is defined once, above, and
@@ -335,6 +340,10 @@
 [data-module='partner'] {
   --color-module: var(--color-module-partner);
   --color-module-content: var(--color-module-partner-content);
+}
+[data-module='social'] {
+  --color-module: var(--color-module-social);
+  --color-module-content: var(--color-module-social-content);
 }
 [data-module='platform'] {
   --color-module: var(--color-module-platform);

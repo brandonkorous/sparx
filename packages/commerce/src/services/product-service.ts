@@ -513,6 +513,7 @@ export async function update(
 ): Promise<ProductDetail> {
   const input = UpdateProductInput.parse(rawInput);
 
+  let becameActive = false;
   const result = await withTenant(ctx, async (tx) => {
     const before = await tx.product.findFirst({
       where: { id: productId, deletedAt: null },
@@ -533,6 +534,7 @@ export async function update(
 
     const statusChanging = input.status !== undefined && input.status !== before.status;
     const becomingActive = statusChanging && input.status === 'active';
+    becameActive = becomingActive;
 
     const updated = await tx.product.update({
       where: { id: productId },
@@ -671,6 +673,15 @@ export async function update(
     data: { productId: result.id, handle: result.handle, status: result.status },
   });
 
+  if (becameActive) {
+    await publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      topic: 'product.published',
+      data: { productId: result.id, handle: result.handle },
+    });
+  }
+
   return toProductDetail(result);
 }
 
@@ -781,7 +792,17 @@ export async function bulkUpdateStatus(
 ): Promise<{ updated: number }> {
   const input = BulkUpdateProductStatusInput.parse(rawInput);
 
-  const result = await withTenant(ctx, async (tx) => {
+  const { result, activatedHandles } = await withTenant(ctx, async (tx) => {
+    // The subset that genuinely transitions INTO `active` — read BEFORE the write
+    // so an already-active product doesn't re-announce (product.published below).
+    const activating =
+      input.status === 'active'
+        ? await tx.product.findMany({
+            where: { id: { in: input.productIds }, status: { not: 'active' }, deletedAt: null },
+            select: { id: true, handle: true },
+          })
+        : [];
+
     const updateResult = await tx.product.updateMany({
       where: { id: { in: input.productIds }, deletedAt: null },
       data: {
@@ -801,7 +822,10 @@ export async function bulkUpdateStatus(
         diff: { after: { status: input.status } },
       });
     }
-    return { updated: updateResult.count };
+    return {
+      result: { updated: updateResult.count },
+      activatedHandles: new Map(activating.map((p) => [p.id, p.handle])),
+    };
   });
 
   await Promise.all(
@@ -811,6 +835,18 @@ export async function bulkUpdateStatus(
         actorId: ctx.userId ?? null,
         topic: 'product.updated',
         data: { productId, change: 'status', status: input.status },
+      })
+    )
+  );
+
+  // Announce only the products that actually went live in this batch.
+  await Promise.all(
+    [...activatedHandles].map(([productId, handle]) =>
+      publishCommerceEvent({
+        tenantId: ctx.tenantId,
+        actorId: ctx.userId ?? null,
+        topic: 'product.published',
+        data: { productId, handle },
       })
     )
   );
@@ -925,12 +961,18 @@ async function transitionStatus(
   nextStatus: ProductStatus,
   auditAction: string
 ): Promise<void> {
+  let becameActive = false;
   const result = await withTenant(ctx, async (tx) => {
     const before = await tx.product.findFirst({
       where: { id: productId, deletedAt: null },
     });
     if (!before) throw new CommerceNotFoundError('Product', productId);
     if (before.status === nextStatus) return before;
+
+    // Reaching here means the status genuinely changed; a move INTO `active` is a
+    // real publish moment (emitted below as product.published, distinct from the
+    // noisy product.updated).
+    becameActive = nextStatus === 'active';
 
     const updated = await tx.product.update({
       where: { id: productId },
@@ -965,6 +1007,15 @@ async function transitionStatus(
     topic: 'product.updated',
     data: { productId: result.id, change: 'status', status: result.status },
   });
+
+  if (becameActive) {
+    await publishCommerceEvent({
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      topic: 'product.published',
+      data: { productId: result.id, handle: result.handle },
+    });
+  }
 }
 
 async function ensureUniqueHandle(

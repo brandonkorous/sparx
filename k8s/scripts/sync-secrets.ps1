@@ -27,6 +27,9 @@ $secretKeys = @(
     "google-oauth-client-id",
     "google-oauth-client-secret",
     "search-console-token-key",
+    # Social-posting token-encryption key (docs/133 §5) — api-rest encrypts the
+    # per-tenant social OAuth grants on connect. Maps to SOCIAL_TOKEN_KEY.
+    "social-token-key",
     "sparx-internal-jwt-secret",
     "stripe-secret-key",
     "stripe-webhook-secret",

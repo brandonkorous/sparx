@@ -1,0 +1,231 @@
+// Social posting module (docs/133) — connect the tenant's OWN social accounts
+// (Facebook Page, Instagram, Threads, LinkedIn, Google Business Profile, X,
+// TikTok, Pinterest, YouTube) and publish native posts to them, on a schedule,
+// by automation, or on demand. FREE, cross-cutting module — gated on its own flag
+// (no separate fee), NOT folded into commerce the way channels are.
+//
+//   SocialConnection  — one per (tenant, site, platform): the OAuth grant to one
+//                       connected account. Tokens are AES-256-GCM ENCRYPTED on the
+//                       row (never plaintext), boxed via @sparx/social/crypto with
+//                       SOCIAL_TOKEN_KEY — the SAME row-cipher pattern channels
+//                       uses (docs/106 §4.6). SEPARATE from ChannelConnection: a
+//                       Meta *posting* grant and a Meta *feed/shop* grant are
+//                       different OAuth scope sets on the same account (docs/133 §6).
+//   SocialTarget      — a concrete destination under a connection (a specific
+//                       Facebook Page, IG account, LinkedIn org page, GBP location).
+//                       One OAuth grant can manage several — the tenant picks which.
+//   SocialPost        — the composed, platform-agnostic post (text + media refs +
+//                       link) with its draft→approve→schedule→publish lifecycle.
+//   SocialPostTarget  — the fan-out join: one row per target a post publishes to,
+//                       carrying the per-channel override AND the per-target result.
+//                       Each target succeeds/fails independently (hence the post's
+//                       `partially_published` state). Holds the published permalink,
+//                       so it stores a FK-LESS targetId + denormalized name/platform
+//                       (like ChannelShopLink) — publish history must survive a later
+//                       account disconnect that cascades the SocialTarget away.
+//
+// All four are tenant-scoped (FORCE RLS, canonical tenant_isolation). Site scope
+// follows docs/131 §4: a connection belongs to ONE business/site (an Instagram for
+// Bob's Parts is not Savory Donuts'), so SocialConnection + SocialPost carry a
+// nullable property_id (null = the tenant's one site); SocialTarget inherits its
+// site from the connection and SocialPostTarget from the post (no property_id).
+// Owned by @sparx/social, driven by the social-worker + the api-rest OAuth routes.
+
+model SocialConnection {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // The site whose brand this account speaks for (docs/131 §4). A connected social
+  // account belongs to ONE business — mirrors ChannelConnection. Nullable so a
+  // single-site tenant's connection stays valid as-is (null = the tenant's one
+  // site); the manage UI defaults new connections to the working site.
+  propertyId String? @map("property_id") @db.Uuid
+
+  // facebook_page | instagram | threads | linkedin | google_business | x |
+  // tiktok | pinterest | youtube (docs/133 §4).
+  platform String @db.VarChar(40)
+
+  // active | expired | revoked (docs/133 §6). `expired` when a refresh fails —
+  // surfaces a "reconnect" prompt rather than a silent publish failure.
+  status String @default("active") @db.VarChar(20)
+
+  // The connected account's own id + display, captured after the OAuth handshake.
+  externalId  String? @map("external_id") @db.VarChar(255)
+  displayName String? @map("display_name") @db.VarChar(255)
+  avatarUrl   String? @map("avatar_url") @db.Text
+
+  // OAuth tokens, AES-256-GCM ciphertext (`iv.tag.cipher` base64) — NEVER plaintext
+  // (docs/133 §5). Boxed/unboxed via @sparx/social/crypto with SOCIAL_TOKEN_KEY (a
+  // dedicated key, not the channels key — blast-radius isolation). Text, not
+  // VarChar: a boxed refresh token can exceed a 512 budget. Null until the
+  // handshake completes.
+  accessTokenEnc  String?   @map("access_token_enc") @db.Text
+  refreshTokenEnc String?   @map("refresh_token_enc") @db.Text
+  tokenExpiresAt  DateTime? @map("token_expires_at") @db.Timestamptz
+
+  // Granted OAuth scopes — surfaces a re-auth prompt when the required set grows.
+  scopes String[] @default([]) @db.VarChar(120)
+
+  // Last connect/refresh error [{ at, code, message }] for the manage UI.
+  lastError Json? @map("last_error")
+  metadata  Json  @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant  Tenant         @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  // Cascade: a connection is one business's link to its own account, holding that
+  // account's OAuth tokens. It goes with the site.
+  property Property?     @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  targets  SocialTarget[]
+
+  // One connection per platform per SITE for now (multi-account relaxes this to
+  // (tenant, property, platform, external_id) later). The migration SQL hand-edits
+  // this to NULLS NOT DISTINCT so at most one tenant-wide (property NULL) connection
+  // per platform too — the plain compound unique would let unlimited
+  // (tenant, NULL, 'instagram') rows coexist.
+  @@unique([tenantId, propertyId, platform], map: "social_connections_tenant_property_platform_unique")
+  @@index([tenantId, status])
+  @@index([tenantId, propertyId])
+  @@map("social_connections")
+}
+
+// NOTE: SocialTarget carries NO property_id (docs/131 §4 pattern) — a target exists
+// only under a connection, and the connection is site-scoped, so the target's site
+// is its connection's. The `(connection_id, external_target_id)` unique binds it.
+model SocialTarget {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  connectionId String @map("connection_id") @db.Uuid
+
+  // Denormalized from the connection for query convenience (a target row is often
+  // read without its connection — mirrors ChannelProductMapping carrying `channel`).
+  platform String @db.VarChar(40)
+
+  // The destination's id on the platform (the Facebook Page id, GBP location id,
+  // LinkedIn org urn) + its human name for display + the composer picker.
+  externalTargetId String  @map("external_target_id") @db.VarChar(255)
+  name             String  @db.VarChar(255)
+  avatarUrl        String? @map("avatar_url") @db.Text
+
+  // Whether this target is an active publish destination (a tenant may attach a
+  // Page but pause posting to it without disconnecting the whole account).
+  enabled  Boolean @default(true)
+  metadata Json    @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant     Tenant           @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  connection SocialConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  // One row per destination per connection.
+  @@unique([connectionId, externalTargetId], map: "social_targets_connection_external_unique")
+  @@index([tenantId, platform])
+  @@index([connectionId])
+  @@map("social_targets")
+}
+
+model SocialPost {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  // The site this post speaks for (docs/131 §4). Nullable = the tenant's one site.
+  propertyId String? @map("property_id") @db.Uuid
+
+  // The composed, platform-agnostic source. `body` is the base text; per-target
+  // adaptations live on SocialPostTarget.
+  body String  @db.Text
+  link String? @db.Text
+
+  // Media asset ids (from @sparx/media) attached to the post. FK-less String[]: the
+  // media lifecycle is independent, and a deleted asset simply drops from the render
+  // rather than blocking the post. The renderer resolves these to CDN URLs per
+  // target (with per-platform aspect variants — docs/133 §8).
+  mediaAssetIds String[] @default([]) @map("media_asset_ids") @db.Uuid
+
+  // draft | pending_approval | scheduled | publishing | published |
+  // partially_published | failed (docs/133 §7).
+  status String @default("draft") @db.VarChar(24)
+
+  // Where this post came from (docs/133 §8): manual | product | content | campaign |
+  // automation. `sourceRef` is the originating entity id (a product/content id) for
+  // the source mapper + later attribution; null for a plain brand post.
+  source    String  @default("manual") @db.VarChar(20)
+  sourceRef String? @map("source_ref") @db.VarChar(255)
+
+  scheduledAt DateTime? @map("scheduled_at") @db.Timestamptz
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+
+  // The approval gate (docs/133 §7). Approving is a staff permission; the ids are
+  // staff user ids, FK-less (a staff user removal must not delete brand history).
+  approvedById String?   @map("approved_by_id") @db.Uuid
+  approvedAt   DateTime? @map("approved_at") @db.Timestamptz
+  createdById  String?   @map("created_by_id") @db.Uuid
+
+  metadata Json @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property?          @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  targets  SocialPostTarget[]
+
+  @@index([tenantId, status])
+  @@index([tenantId, propertyId])
+  // Drives the scheduled drain's cross-tenant scan (status='scheduled' AND
+  // scheduled_at <= now()) mirroring find_due_scheduled_entries — see the RLS
+  // migration's find_due_social_posts() SECURITY DEFINER function.
+  @@index([status, scheduledAt])
+  @@map("social_posts")
+}
+
+model SocialPostTarget {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+  postId   String @map("post_id") @db.Uuid
+
+  // The destination this row publishes to. FK-LESS (a plain uuid, no relation): the
+  // published permalink + external id below are permanent history that must survive
+  // a later account disconnect (which cascades the SocialTarget away). name +
+  // platform are denormalized so the row stays self-describing without the target.
+  socialTargetId String @map("social_target_id") @db.Uuid
+  targetName     String @map("target_name") @db.VarChar(255)
+  platform       String @db.VarChar(40)
+
+  // Per-channel overrides (docs/133 §8). textOverride adapts the base body for this
+  // platform; mediaOverride swaps assets / focal points; firstComment is e.g. the
+  // hashtag block posted as the first comment on IG/LinkedIn.
+  textOverride  String? @map("text_override") @db.Text
+  mediaOverride Json?   @map("media_override")
+  firstComment  String? @map("first_comment") @db.Text
+
+  // pending | publishing | published | failed | skipped (docs/133 §7). Each target
+  // resolves independently — the parent post is `partially_published` when some
+  // published and some failed.
+  status String @default("pending") @db.VarChar(20)
+
+  // The result the platform returns on success — the published post id + its public
+  // URL. Kept as permanent history (see the FK-less note above).
+  externalId String? @map("external_id") @db.VarChar(255)
+  permalink  String? @db.Text
+
+  // Failure detail + the per-target retry budget (docs/133 §7). attemptCount backs
+  // the per-connection exponential backoff in the worker.
+  error        String? @db.Text
+  attemptCount Int     @default(0) @map("attempt_count")
+
+  publishedAt DateTime? @map("published_at") @db.Timestamptz
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant Tenant     @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  post   SocialPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  // One row per (post, target) — the idempotency anchor (`postId:socialTargetId`)
+  // the worker publishes with, so a replay is a no-op on a target already posted to.
+  @@unique([postId, socialTargetId], map: "social_post_targets_post_target_unique")
+  @@index([tenantId, status])
+  @@index([postId])
+  @@map("social_post_targets")
+}

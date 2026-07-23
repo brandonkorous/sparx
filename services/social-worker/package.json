@@ -1,0 +1,32 @@
+{
+  "name": "@sparx/social-worker",
+  "version": "0.0.0",
+  "private": true,
+  "description": "sparx social-worker. Receives social.post.due events via Pub/Sub push (Cloud Run HTTP entrypoint) and publishes each due post's targets to their platforms (Google Business Profile, …) via @sparx/social adapters. Resolves + refreshes the per-tenant OAuth grant, renders per platform, records each per-target result, and publishes social.post.published / social.post.failed. No-ops safely when the token key is unset.",
+  "type": "module",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "tsx watch --clear-screen=false src/index.ts",
+    "start": "node --import tsx src/index.ts",
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.19.3",
+    "@sparx/db": "workspace:*",
+    "@sparx/events": "workspace:*",
+    "@sparx/social": "workspace:*",
+    "pino": "^9.5.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "dotenv": "^16.4.7",
+    "tsx": "^4.19.2",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

@@ -47,6 +47,11 @@ export type EventType =
   // Catalog
   | 'product.created'
   | 'product.updated'
+  // A product transitions INTO the `active` (live) status — the "new product went
+  // live" moment, distinct from the noisy `product.updated` that fires on every
+  // edit. Emitted by publish() / bulk status→active / update→active. The social
+  // module's "Announce new product" automation triggers on this (docs/133 §9).
+  | 'product.published'
   | 'product.deleted'
   | 'variant.created'
   | 'variant.updated'

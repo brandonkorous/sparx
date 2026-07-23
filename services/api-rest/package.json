@@ -39,6 +39,7 @@
     "@sparx/builder": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/channels": "workspace:*",
+    "@sparx/social": "workspace:*",
     "@sparx/cms": "workspace:*",
     "@sparx/cms-editor": "workspace:*",
     "@sparx/cms-schemas": "workspace:*",

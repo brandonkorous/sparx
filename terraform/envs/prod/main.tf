@@ -78,6 +78,11 @@ module "pubsub" {
     # Commerce — catalog + inventory fan-in to commerce-indexer
     "product.created"    = ["commerce-indexer"]
     "product.updated"    = ["commerce-indexer"]
+    # A product went live (draft→active). Topic-only: no idle pull subscription —
+    # the automation engine's "Announce new product" trigger rides the publish()
+    # tee to automation.trigger (docs/133 §9), and the search index already
+    # re-projects off product.updated.
+    "product.published"  = []
     "product.deleted"    = ["commerce-indexer"]
     "variant.created"    = ["commerce-indexer"]
     "variant.updated"    = ["commerce-indexer"]
@@ -386,6 +391,14 @@ module "secrets" {
     # don't exist until then. (google-oauth-client-secret is now declared above —
     # the same shared Google Web client backs Search Console + Google Shopping.)
     "channels-token-key",
+    # Social token-encryption key (docs/133 §5) — AES-256-GCM key encrypting the
+    # per-tenant social-posting OAuth grants stored on social_connections. Bound by
+    # the social-worker (serverless.tf) AND api-rest (k8s). DELIBERATELY SEPARATE from
+    # channels-token-key (blast-radius isolation). NOT gated on any partner approval —
+    # generate + add a version now:
+    #   gcloud secrets versions add social-token-key --data-file=- \
+    #     <<< "$(openssl rand -base64 32)"
+    "social-token-key",
     # Provider-installation secret-encryption key (docs/09) — AES-256-GCM key
     # encrypting tenant-pasted provider credentials (e.g. a Shippo API token)
     # stored on provider_installations.configEncrypted. Bound by api-rest only

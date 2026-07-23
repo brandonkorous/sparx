@@ -448,6 +448,230 @@ function attachmentNames(value: unknown): string[] {
   return out;
 }
 
+// ─── announceable entities: product + content (event) ────────────────────────
+//
+// A "published product" / "published article" trigger drafts a social post
+// (social.post action). Both resolvers fill a shared `announce.*` namespace —
+// title, summary, absolute URL, hero image, source type/ref — so the social.post
+// executor is entity-agnostic (docs/133 §9). They ALSO fill entity-specific
+// `product.*` / `content.*` fields so a rule can still condition on them.
+
+/** The site's canonical public base URL: its canonical/active domain, else the
+ *  `<slug>.sparx.zone` subdomain. Resolves against the given site, or the tenant's
+ *  primary site when the entity isn't pinned to one. Best-effort — null if the
+ *  tenant somehow has no site (the drafted post then carries no link, and the
+ *  human reviewer adds one). Reads the non-RLS `domains` dispatch table + the
+ *  tenant-scoped `properties`, both through ctx.tx. */
+async function resolvePropertyBaseUrl(
+  ctx: TenantCtx,
+  propertyId: string | null
+): Promise<string | null> {
+  const property = propertyId
+    ? await ctx.tx.property.findUnique({
+        where: { id: propertyId },
+        select: { id: true, slug: true },
+      })
+    : await ctx.tx.property.findFirst({
+        where: { isPrimary: true },
+        select: { id: true, slug: true },
+      });
+  if (!property) return null;
+  const domain = await ctx.tx.domain.findFirst({
+    where: { propertyId: property.id, status: { in: ['active', 'verified'] } },
+    // Canonical host first; a real custom/purchased domain before the subdomain
+    // ('custom' < 'purchased' < 'subdomain' alphabetically).
+    orderBy: [{ isCanonical: 'desc' }, { type: 'asc' }],
+    select: { host: true },
+  });
+  const host = domain?.host ?? `${property.slug}.sparx.zone`;
+  return `https://${host}`;
+}
+
+function asRecord(value: unknown): Record<string, unknown> {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : {};
+}
+
+/** First non-empty string among the candidates, else null. */
+function firstString(...values: unknown[]): string | null {
+  for (const v of values) {
+    if (typeof v === 'string' && v.trim().length > 0) return v.trim();
+  }
+  return null;
+}
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** First candidate that looks like a media-asset uuid, else null (so a URL string
+ *  or rich media object in a content body never lands in mediaAssetIds). */
+function firstUuid(...values: unknown[]): string | null {
+  for (const v of values) {
+    if (typeof v === 'string' && UUID_RE.test(v)) return v;
+  }
+  return null;
+}
+
+/** Strip HTML tags + collapse whitespace, then truncate for a post summary. Tags
+ *  become a space (so block boundaries don't fuse words), then any space left
+ *  sitting before punctuation is closed up (`packable</b>,` → `packable,`). */
+function summarize(html: string, max = 200): string {
+  const text = html
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .replace(/\s+([,.;:!?])/g, '$1')
+    .trim();
+  return text.length > max ? `${text.slice(0, max - 1).trimEnd()}…` : text;
+}
+
+export interface ProductAnnounceRow {
+  id: string;
+  title: string;
+  handle: string;
+  status: string;
+  description: string | null;
+}
+
+/** Pure `announce.*` + `product.*` field map for a published product. */
+export function productAnnounceFields(
+  p: ProductAnnounceRow,
+  url: string | null,
+  imageAssetId: string | null,
+  propertyId: string | null
+): ResolvedFields {
+  const summary = summarize(p.description ?? '');
+  return {
+    'product.id': p.id,
+    'product.title': p.title,
+    'product.handle': p.handle,
+    'product.status': p.status,
+    'product.url': url,
+    'announce.title': p.title,
+    'announce.summary': summary,
+    'announce.url': url,
+    'announce.imageAssetId': imageAssetId,
+    'announce.sourceType': 'product',
+    'announce.sourceRef': p.id,
+    'announce.propertyId': propertyId,
+  };
+}
+
+async function hydrateProduct(ctx: TenantCtx, productId: string): Promise<ResolvedFields> {
+  const p = await ctx.tx.product.findUnique({
+    where: { id: productId },
+    select: {
+      id: true,
+      title: true,
+      handle: true,
+      status: true,
+      description: true,
+      ogImageId: true,
+      images: {
+        where: { variantId: null },
+        orderBy: [{ isPrimary: 'desc' }, { position: 'asc' }],
+        take: 1,
+        select: { mediaAssetId: true },
+      },
+      propertyLinks: { select: { propertyId: true } },
+    },
+  });
+  if (!p) return {};
+  // Pin the post to a single site only when the product is scoped to exactly one
+  // (no links = visible on all sites → the tenant's primary site).
+  const propertyId = p.propertyLinks.length === 1 ? p.propertyLinks[0]!.propertyId : null;
+  const base = await resolvePropertyBaseUrl(ctx, propertyId);
+  const url = base ? `${base}/products/${encodeURIComponent(p.handle)}` : null;
+  const imageAssetId = p.ogImageId ?? p.images[0]?.mediaAssetId ?? null;
+  return productAnnounceFields(p, url, imageAssetId, propertyId);
+}
+
+export interface ContentAnnounceRow {
+  id: string;
+  slug: string | null;
+  typeKey: string;
+  status: string;
+  body: unknown;
+  seoJson: unknown;
+}
+
+/** Build the article's public URL from its content type's `urlPattern`
+ *  (e.g. `/blog/:slug`). Falls back to `<base>/<slug>` when the pattern is
+ *  slug-less, and null when there's no base or slug. Pure. */
+export function buildContentUrl(
+  baseUrl: string | null,
+  urlPattern: string | null,
+  slug: string | null
+): string | null {
+  if (!baseUrl || !slug) return null;
+  const encoded = encodeURIComponent(slug);
+  let path: string;
+  if (urlPattern?.includes(':slug')) {
+    path = urlPattern.replace(':slug', encoded);
+  } else if (urlPattern) {
+    path = `${urlPattern.replace(/\/$/, '')}/${encoded}`;
+  } else {
+    path = `/${encoded}`;
+  }
+  return `${baseUrl}${path.startsWith('/') ? path : `/${path}`}`;
+}
+
+/** Pure `announce.*` + `content.*` field map for a published content entry. Title
+ *  + summary + hero image are read defensively from the entry body / SEO bag,
+ *  since a content type's field keys are author-defined (title is the near-universal
+ *  convention — entries-service slugs off body.title). */
+export function contentAnnounceFields(
+  e: ContentAnnounceRow,
+  urlPattern: string | null,
+  baseUrl: string | null,
+  propertyId: string | null
+): ResolvedFields {
+  const body = asRecord(e.body);
+  const seo = asRecord(e.seoJson);
+  const title = firstString(body.title, seo.title, e.slug) ?? 'New update';
+  const summary = summarize(
+    firstString(seo.description, seo.metaDescription, body.excerpt, body.summary) ?? ''
+  );
+  const url = buildContentUrl(baseUrl, urlPattern, e.slug);
+  const imageAssetId = firstUuid(seo.ogImageId, body.image, body.coverImage, body.heroImage);
+  return {
+    'content.id': e.id,
+    'content.title': title,
+    'content.slug': e.slug,
+    'content.typeKey': e.typeKey,
+    'content.url': url,
+    'announce.title': title,
+    'announce.summary': summary,
+    'announce.url': url,
+    'announce.imageAssetId': imageAssetId,
+    'announce.sourceType': 'content',
+    'announce.sourceRef': e.id,
+    'announce.propertyId': propertyId,
+  };
+}
+
+async function hydrateContentEntry(ctx: TenantCtx, entryId: string): Promise<ResolvedFields> {
+  const e = await ctx.tx.contentEntry.findUnique({
+    where: { id: entryId },
+    select: {
+      id: true,
+      slug: true,
+      typeKey: true,
+      status: true,
+      body: true,
+      seoJson: true,
+      propertyLinks: { select: { propertyId: true } },
+    },
+  });
+  if (!e) return {};
+  const type = await ctx.tx.contentType.findFirst({
+    where: { key: e.typeKey },
+    select: { urlPattern: true },
+  });
+  const propertyId = e.propertyLinks.length === 1 ? e.propertyLinks[0]!.propertyId : null;
+  const base = await resolvePropertyBaseUrl(ctx, propertyId);
+  return contentAnnounceFields(e, type?.urlPattern ?? null, base, propertyId);
+}
+
 // ─── registration ─────────────────────────────────────────────────────────────
 
 // Billing-document events (CRM publishes `crm.billing_document.*`). Quotes are
@@ -496,6 +720,13 @@ export function installEntityResolvers(): void {
   for (const ev of FORM_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateFormSubmission(ctx, str(p.submissionId ?? p.id)));
   }
+
+  // Announceable entities (docs/133 §9) — feed the social.post action's `announce.*`
+  // namespace. A product going live / an article publishing → draft a social post.
+  registerResolver('product.published', (ctx, p) => hydrateProduct(ctx, str(p.productId ?? p.id)));
+  registerResolver('content.entry.published', (ctx, p) =>
+    hydrateContentEntry(ctx, str(p.entryId ?? p.id))
+  );
 
   // ── scheduled scanners ──────────────────────────────────────────────────────
 

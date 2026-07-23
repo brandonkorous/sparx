@@ -1,0 +1,210 @@
+// Social posts API (docs/133 §5, §7) — compose, list, edit, publish-now, delete. A
+// sub-plugin of the social routes (a connection and a post are different resources
+// with different lifecycles). Gated on the `social` module.
+//
+//   POST   /v1/social/posts             → create a draft + its fan-out targets   (editor)
+//   GET    /v1/social/posts             → list (optional ?status=)               (viewer)
+//   GET    /v1/social/posts/:id         → one post + per-target status           (viewer)
+//   PATCH  /v1/social/posts/:id         → edit a draft                           (editor)
+//   POST   /v1/social/posts/:id/submit  → send a draft to the approval inbox     (editor)
+//   POST   /v1/social/posts/:id/schedule→ schedule for a future time             (editor)
+//   POST   /v1/social/posts/:id/approve → approve → scheduled or publish now      (admin)
+//   POST   /v1/social/posts/:id/reject  → reject → back to draft                  (admin)
+//   POST   /v1/social/posts/:id/publish → publish now (→ social.post.due)         (admin)
+//   DELETE /v1/social/posts/:id         → delete                                  (admin)
+//
+// The role split IS the approval permission (docs/133 §15.3): editors compose,
+// schedule, and submit; admins approve, publish, and push to the live brand accounts.
+//
+// Publishing itself (token resolve, render, platform I/O) is the social-worker's job:
+// the api-rest side only flips post state and emits the event the worker consumes —
+// `social.post.due` when a post is publishing now, `social.post.scheduled` when it is
+// queued for a future time (the scheduled drain later re-emits `social.post.due`).
+
+import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
+import { z } from 'zod';
+import { publish } from '@sparx/api-core/pubsub';
+import { ok } from '@sparx/api-core/envelope';
+import { requireRole } from '@sparx/api-core/auth';
+import { notFound } from '@sparx/api-core/errors';
+import { requireSocialModule, toSocialContext } from '../../../lib/social-context.js';
+import {
+  createSocialPost,
+  deleteSocialPost,
+  getSocialPost,
+  listSocialPosts,
+  markPostPublishing,
+  updateSocialPost,
+} from '../../../lib/social-posts.js';
+import {
+  approveSocialPost,
+  rejectSocialPost,
+  scheduleSocialPost,
+  submitForApproval,
+  type LifecycleResult,
+} from '../../../lib/social-lifecycle.js';
+
+const PathId = z.object({ id: z.string().uuid() });
+const ListQuery = z.object({ status: z.string().max(24).optional() });
+const ScheduleBody = z.object({ scheduledAt: z.string().datetime() });
+
+const CreateBody = z.object({
+  propertyId: z.string().uuid().nullish(),
+  body: z.string().min(1).max(63206),
+  link: z.string().url().nullish(),
+  mediaAssetIds: z.array(z.string().uuid()).max(20).optional(),
+  source: z.enum(['manual', 'product', 'content', 'campaign', 'automation']).optional(),
+  sourceRef: z.string().max(255).nullish(),
+  targets: z
+    .array(
+      z.object({
+        targetId: z.string().uuid(),
+        textOverride: z.string().max(63206).optional(),
+        firstComment: z.string().max(2000).optional(),
+      })
+    )
+    .min(1),
+});
+
+const UpdateBody = z.object({
+  body: z.string().min(1).max(63206).optional(),
+  link: z.string().url().nullish(),
+  mediaAssetIds: z.array(z.string().uuid()).max(20).optional(),
+});
+
+/** Emit the Pub/Sub event a lifecycle transition asks for: `social.post.due` when the
+ *  post is publishing now (the worker drains it), `social.post.scheduled` when it is
+ *  queued for a future time. Kept on the route (mirrors publish-now) so the lifecycle
+ *  helpers stay free of publisher plumbing. */
+async function emitLifecycle(
+  request: FastifyRequest,
+  tenantId: string,
+  actorId: string,
+  postId: string,
+  result: LifecycleResult
+): Promise<void> {
+  if (result.emitDue) {
+    await publish(request.log, 'social.post.due', tenantId, actorId, { postId });
+  } else if (result.emitScheduled) {
+    await publish(request.log, 'social.post.scheduled', tenantId, actorId, {
+      postId,
+      scheduledAt: result.post.scheduledAt,
+    });
+  }
+}
+
+// eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync signature
+const socialPostRoutes: FastifyPluginAsync = async (app) => {
+  app.post('/v1/social/posts', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'editor');
+    const body = CreateBody.parse(request.body);
+    const post = await createSocialPost(toSocialContext(request), {
+      propertyId: body.propertyId ?? null,
+      body: body.body,
+      link: body.link ?? null,
+      mediaAssetIds: body.mediaAssetIds,
+      source: body.source,
+      sourceRef: body.sourceRef ?? null,
+      targets: body.targets,
+    });
+    return reply.status(201).send(ok(post));
+  });
+
+  app.get('/v1/social/posts', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'viewer');
+    const { status } = ListQuery.parse(request.query);
+    const posts = await listSocialPosts(toSocialContext(request), { status });
+    return reply.send(ok({ posts }));
+  });
+
+  app.get('/v1/social/posts/:id', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'viewer');
+    const { id } = PathId.parse(request.params);
+    const post = await getSocialPost(toSocialContext(request), id);
+    if (!post) throw notFound('post', id);
+    return reply.send(ok(post));
+  });
+
+  app.patch('/v1/social/posts/:id', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const patch = UpdateBody.parse(request.body);
+    const post = await updateSocialPost(toSocialContext(request), id, {
+      body: patch.body,
+      link: patch.link,
+      mediaAssetIds: patch.mediaAssetIds,
+    });
+    if (!post) throw notFound('post', id);
+    return reply.send(ok(post));
+  });
+
+  // ── lifecycle ────────────────────────────────────────────────────────────────
+
+  app.post('/v1/social/posts/:id/submit', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const post = await submitForApproval(toSocialContext(request), id);
+    if (!post) throw notFound('post', id);
+    return reply.send(ok(post));
+  });
+
+  app.post('/v1/social/posts/:id/schedule', async (request, reply) => {
+    await requireSocialModule(request);
+    const auth = requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const { scheduledAt } = ScheduleBody.parse(request.body);
+    const ctx = toSocialContext(request);
+    const result = await scheduleSocialPost(ctx, id, new Date(scheduledAt));
+    if (!result) throw notFound('post', id);
+    await emitLifecycle(request, ctx.tenantId, auth.actorId, id, result);
+    return reply.send(ok(result.post));
+  });
+
+  app.post('/v1/social/posts/:id/approve', async (request, reply) => {
+    await requireSocialModule(request);
+    const auth = requireRole(request, 'admin');
+    const { id } = PathId.parse(request.params);
+    const ctx = toSocialContext(request);
+    const result = await approveSocialPost(ctx, id);
+    if (!result) throw notFound('post', id);
+    await emitLifecycle(request, ctx.tenantId, auth.actorId, id, result);
+    return reply.send(ok(result.post));
+  });
+
+  app.post('/v1/social/posts/:id/reject', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'admin');
+    const { id } = PathId.parse(request.params);
+    const post = await rejectSocialPost(toSocialContext(request), id);
+    if (!post) throw notFound('post', id);
+    return reply.send(ok(post));
+  });
+
+  app.post('/v1/social/posts/:id/publish', async (request, reply) => {
+    await requireSocialModule(request);
+    const auth = requireRole(request, 'admin');
+    const { id } = PathId.parse(request.params);
+    const ctx = toSocialContext(request);
+    const result = await markPostPublishing(ctx, id);
+    if (!result) throw notFound('post', id);
+    // Hand the drain to the social-worker (heavy platform I/O off the request path).
+    await publish(request.log, 'social.post.due', ctx.tenantId, auth.actorId, { postId: id });
+    return reply.send(ok({ publishing: true, postId: id, targetCount: result.targetCount }));
+  });
+
+  app.delete('/v1/social/posts/:id', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'admin');
+    const { id } = PathId.parse(request.params);
+    const deleted = await deleteSocialPost(toSocialContext(request), id);
+    if (!deleted) throw notFound('post', id);
+    return reply.status(204).send();
+  });
+};
+
+export default socialPostRoutes;

@@ -18,6 +18,7 @@ import {
 } from './lib/module-provisioning.js';
 import { env } from './env.js';
 import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
+import { startSocialScheduledLoop } from './lib/social-scheduled.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
 import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
@@ -87,6 +88,11 @@ async function main(): Promise<void> {
   // pods via Postgres advisory lock — see lib/scheduled-publish.ts.
   const stopScheduledPublish = startScheduledPublishLoop(app.log);
 
+  // Background tick that flips due `scheduled` social posts to `publishing` and
+  // emits `social.post.due` for the social-worker to drain (docs/133 §7). Singleton
+  // across pods via its own advisory lock — see lib/social-scheduled.ts.
+  const stopSocialScheduled = startSocialScheduledLoop(app.log);
+
   // Background tick that publishes Site Builder drafts whose scheduled
   // publish time has passed. Singleton across pods via its own advisory
   // lock — see lib/sitebuilder-publish.ts.
@@ -146,6 +152,7 @@ async function main(): Promise<void> {
   const shutdown = (signal: NodeJS.Signals): void => {
     app.log.info({ signal }, 'shutdown received');
     stopScheduledPublish();
+    stopSocialScheduled();
     stopSitebuilderPublish();
     stopWebhookDelivery();
     stopEmailDispatch();

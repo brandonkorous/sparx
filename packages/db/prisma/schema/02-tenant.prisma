@@ -112,6 +112,13 @@ model Tenant {
   channelConnections     ChannelConnection[]
   channelProductMappings ChannelProductMapping[]
 
+  // Social posting module (docs/133) — connected accounts, their destinations, the
+  // composed posts, and the per-target fan-out rows.
+  socialConnections SocialConnection[]
+  socialTargets     SocialTarget[]
+  socialPosts       SocialPost[]
+  socialPostTargets SocialPostTarget[]
+
   // sparx.market (docs/106 §4.7) — the first-party marketplace. The two GLOBAL
   // projections (MarketListing / MarketMerchant) are FK-less by design and do NOT
   // relate here; only the tenant-scoped truth tables do.

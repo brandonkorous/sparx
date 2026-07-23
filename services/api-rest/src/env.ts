@@ -231,6 +231,13 @@ const EnvSchema = z
     //                                 (Orders API + a Restricted Data Token for buyer PII); gated
     //                                 additionally on Amazon's restricted-PII security audit.
     CHANNELS_TOKEN_KEY: z.string().optional(),
+    // Social-posting token-encryption key (docs/133, the `social` module) — AES-256-GCM
+    // key (32 bytes, base64 or hex) encrypting the per-tenant social OAuth grants stored
+    // on social_connections. DELIBERATELY SEPARATE from CHANNELS_TOKEN_KEY (blast-radius
+    // isolation). Optional: absent → the social connect flow reports `coming_soon` and
+    // refuses to store a grant, exactly like channels without its key. Rotating it
+    // invalidates every stored social grant (tenants reconnect).
+    SOCIAL_TOKEN_KEY: z.string().optional(),
     // Provider-installation secret-encryption key (docs/09 provider marketplace) —
     // AES-256-GCM key encrypting tenant-pasted provider credentials (e.g. a Shippo
     // API token) at rest, keyed by PROVIDER_SECRET_KEY (32 bytes, base64 or hex;
