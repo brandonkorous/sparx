@@ -1,9 +1,18 @@
 # 126 — Builder op protocol: granular edits, real collaboration, immutable publish
 
-Version: 1.7.0
+Version: 1.8.0
 Author: Brandon Korous
 Last Updated: 2026-07-22
 
+> **1.8.0 — Live relay for agent writes: the agent is just another editor (§4.5).** An
+> operator with the studio open now sees an agent's MCP writes fold into their canvas as
+> they land — the same `ops:relay` → `applyRemoteOps` path a human edit takes. Scripted
+> writes synthesize the matching op (`page.create`/`page.delete`/`theme.set`); a body/frame
+> REPLACE, which has no faithful delta op, offers a reload instead of clobbering. Crosses
+> api-mcp → the socket via the socket.io **Redis backplane** (no new infra — api-rest has no
+> Pub/Sub ingress). The workbench Save now emits its own ops too, so humans co-edit live as
+> well. All of it rides on the §4.4 explicit-delete floor.
+>
 > **1.7.0 — Deletion is now explicit (§4.4).** `sync` no longer deletes a page just
 > because it is absent from the payload — the assumption that broke the instant authoring
 > went concurrent (operator in the studio while an agent writes over MCP), silently
@@ -419,7 +428,56 @@ authoring **safe** (no page vanishes) even before live-sync makes it **pleasant*
 open editor folds in the agent's pages as they land). The relay narrows the stale-roster
 window; it can never close it, because a client can always Save in the gap between a
 remote write and hearing about it — so the floor is required regardless. Presence ("an
-agent is editing this site") and relaying MCP writes onto `ops:relay` are the next layer.
+agent is editing this site") and relaying MCP writes onto `ops:relay` are §4.5.
+
+### 4.5 The agent is just another editor — live relay for scripted writes — **SHIPPED**
+
+§4.1–4.4 make concurrent authoring SAFE. This makes it LIVE: an operator with the studio
+open sees an agent's MCP writes fold into their canvas as they land, not on the next
+reload. The governing idea is that **an agent is just another editor** — the same
+`ops:relay` → `applyRemoteOps` path a human co-editor's edit takes, with no client code
+that knows or cares the author was an agent.
+
+**A scripted write has no op stream, so it synthesizes one.** The interactive engine emits
+causal ops; an MCP tool produces a terminal tree. So the silica write wrappers
+(`upsertPage`/`removePage`/`setTheme`…) synthesize the matching op and append it to the
+log through the same `sync(ops)` path a human save uses (`silica-ops.ts`):
+
+| MCP write     | op                                | folds in via                                                                      |
+| ------------- | --------------------------------- | --------------------------------------------------------------------------------- |
+| create a page | `page.create`                     | `pages.push` — non-destructive, leaves the operator's other pages + unsaved edits |
+| delete a page | `page.delete`                     | splice                                                                            |
+| set theme     | `theme.set` (+ `savedThemes.set`) | replace site-global theme                                                         |
+
+**The honest limit — body/frame REPLACE has no faithful op.** `page.create` is insert-only
+(the reducer drops it on an existing id) and a scripted body is re-stamped with fresh node
+ids, so there is no stable correspondence to diff. The only op that could carry it is
+`site.replace`, which CLOBBERS the whole document on the receiver. So replacing an existing
+page body or the frame relays a **reload hint**, not an op: the co-editor is offered a
+"reload to see it" (a refetch + `replaceState` remount), never a forced overwrite of their
+in-progress work. Creating/deleting/theming — the dominant agent pattern — fold in live.
+
+**Crossing api-mcp → the socket: the Redis emitter, not Pub/Sub.** The relay socket lives
+in api-rest; the MCP write runs in api-mcp. The transport is **`@socket.io/redis-emitter`
+into the socket.io Redis backplane api-rest's `/ws/builder` server already runs** — api-mcp
+emits `ops:relay` + a `builder:agentActivity` (presence pulse + reload hints) straight into
+the site's room, and api-rest fans it out with **zero forwarding code** (the adapter
+delivers it). Pub/Sub was the first pick and was reversed once it turned out api-rest has
+**no Pub/Sub ingress at all** (it consumes via an in-memory bus; only Cloud Run workers
+receive Pub/Sub, via push) — so Pub/Sub would have needed a new subscription + a subscriber
+role for api-rest, where the Redis path needs no new infra. The write's relay rides back
+from the tool on a **non-enumerable side-channel** (`relay.ts`) so it never reaches the
+model, exactly as the REST route strips `relay` from its HTTP response. api-mcp already
+hydrates `REDIS_URL` from the shared ConfigMap, so there is no k8s or Terraform change.
+
+**Humans get it too.** The workbench Save now sends the ops silica emitted since the last
+save (buffered, one idempotent batch id, `baseSeq` advisory) alongside the snapshot; the
+existing sync-route broadcast relays them, so a human co-editor's canvas folds them in the
+same way. The sender suppresses its own echo by batch id.
+
+**The floor still holds underneath.** A relayed `page.create` joins the client's
+save-baseline (§4.4) so a later local delete of it is still expressed; the relay is the
+pleasant layer, the explicit-delete floor is the safe one.
 
 ---
 

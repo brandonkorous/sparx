@@ -32,6 +32,7 @@ import type { Theme } from '../lib/theme';
 import { useFeedback } from './feedback/provider';
 import { MobileStack } from './mobile-stack';
 import { MobileNav } from './mobile-nav';
+import { BillingBanner } from './billing/billing-banner';
 
 interface MobileShellProps {
   userName: string;
@@ -153,6 +154,10 @@ export function MobileShell({
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
+
+      {/* Billing lifecycle banner (docs/17 §6) — same escalation as desktop, in the
+          one column beneath the header. */}
+      <BillingBanner />
 
       {/* Same gate as the dock: the stack must not restore Site A's panes and
           then discover we are on Site B. */}

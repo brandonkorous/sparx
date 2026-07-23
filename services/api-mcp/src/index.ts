@@ -6,6 +6,7 @@ import { registerCommerceConsumers } from '@sparx/commerce/consumers';
 import { env } from './env.js';
 import { createApp } from './app.js';
 import { preconnectAudit } from './audit.js';
+import { closeBuilderRelay } from './builder-relay.js';
 
 async function main(): Promise<void> {
   const app = await createApp();
@@ -29,8 +30,7 @@ async function main(): Promise<void> {
 
   const shutdown = (signal: NodeJS.Signals): void => {
     app.log.info({ signal }, 'shutdown received');
-    app
-      .close()
+    Promise.all([app.close(), closeBuilderRelay()])
       .then(() => process.exit(0))
       .catch((err: unknown) => {
         app.log.error({ err }, 'graceful shutdown failed');

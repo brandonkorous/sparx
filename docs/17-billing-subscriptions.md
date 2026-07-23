@@ -1,8 +1,8 @@
 # sparx Platform — Billing & Subscriptions
 
-**Version:** 2.5
+**Version:** 2.6
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-12
+**Last Updated:** 2026-07-22
 
 ---
 
@@ -133,7 +133,32 @@ No custom billing UI — the Stripe Customer Portal is embedded into sparx dashb
 
 Modules are chosen up front in onboarding (docs/15 §3), so the trial is about _keeping_ them, not picking them. The whole lifecycle is deliberately humane: the public site rides out a grace window, **only the public site ever locks** (the owner is never shut out of the dashboard), and **data is retained throughout**.
 
-**Build status:** designed and locked (2026-06-11); deferred until the onboarding UI is concrete. No Stripe subscription code exists yet — this is greenfield.
+**Build status:** BUILT (2026-07-22). The lifecycle is now a lived, enforced feature —
+independent of whether Stripe billing has been provisioned, because the trial clock
+lives on the tenant row, not in Stripe:
+
+- **Trial starts at signup**, not at module-select. `@sparx/auth` `provisionTenant`
+  stamps `subscriptionStatus = 'trialing'` + `trialEndsAt = now + 14d` on every new
+  tenant. So the trial is real the moment an account exists, with or without Stripe.
+- **One pure gate resolves the phase.** `resolveBillingPhase(tenant, now)` in
+  `@sparx/billing` (`gate.ts`) maps the tenant's billing columns → `trialing | active |
+grace | suspended | exempt` + a day countdown. No Stripe call, no DB read — the same
+  function runs on the public-site hot path and in the dashboard. Platform tenant
+  (`SPARX_PLATFORM_TENANT_ID`) + enterprise plans resolve `exempt`.
+- **Public site suspends at day 21.** `apps/site` reads `billingPhase` off the cached
+  tenant payload and serves the neutral "site unavailable" overlay when `suspended`
+  (short-circuiting all storefront chrome + data reads). Grace keeps the site live.
+- **Dashboard banner ladder + trial chip** live in the workbench chrome
+  (`components/billing/*`, `lib/billing/notice.ts`) — quiet chip → dismissible heads-up
+  → persistent countdown → grace → suspended. The owner is never locked out.
+- **Stripe aligns to our clock.** When a module is toggled while billing is configured,
+  `syncModuleItems` creates the subscription with `trial_end` pinned to the tenant's
+  stamped `trialEndsAt` (not a fresh 14 days), and `end_behavior: 'pause'`. The webhook
+  reconciles `paused`/`resumed`/`past_due`/`canceled` back onto the row.
+
+Remaining work is OPS only (provision the Stripe sandbox/live objects + secrets) — see
+[docs/92 §7](92-billing-stripe-go-live.md). Trials + enforcement work today without it;
+Stripe just turns on the ability to CHARGE at trial end.
 
 ### Day 0 — Trial starts (no card)
 

@@ -25,6 +25,13 @@ export interface BuilderWebsocketHandle {
   close(): Promise<void>;
 }
 
+/** The Redis adapter key that scopes this server's cross-process channel (docs/126 §4.5).
+ *  Distinct from chat's default `socket.io` key so the two never share a channel — and,
+ *  crucially, so api-mcp's `@socket.io/redis-emitter` can target THIS server's rooms
+ *  precisely when it relays an agent's write. Any process emitting into `/ws/builder`
+ *  rooms MUST construct its emitter with this exact key. */
+export const BUILDER_ADAPTER_KEY = 'sio-builder';
+
 export async function attachBuilderWebsocket(
   httpServer: HttpServer,
   log: FastifyBaseLogger
@@ -52,7 +59,9 @@ export async function attachBuilderWebsocket(
     const subClient = pubClient.duplicate();
     pubClient.on('error', (err) => log.error({ err }, 'builder redis pub error'));
     subClient.on('error', (err) => log.error({ err }, 'builder redis sub error'));
-    io.adapter(createAdapter(pubClient, subClient));
+    // Distinct key (see BUILDER_ADAPTER_KEY) so this channel is the builder server's
+    // alone — chat never processes builder messages, and api-mcp's emitter targets it.
+    io.adapter(createAdapter(pubClient, subClient, { key: BUILDER_ADAPTER_KEY }));
     closeRedis = async () => {
       pubClient.disconnect();
       subClient.disconnect();

@@ -18,6 +18,7 @@ import {
 } from '@sparx/modules';
 
 import { getBillingStripe, isBillingConfigured } from './client';
+import { isPlatformTenant, resolveBillingPhase, type BillingPhaseView } from './gate';
 import {
   MODULE_MONTHLY_CENTS,
   TRIAL_PERIOD_DAYS,
@@ -49,6 +50,24 @@ function interval(raw: string | null | undefined): BillingInterval {
 
 function tsToDate(seconds: number | null | undefined): Date | null {
   return typeof seconds === 'number' ? new Date(seconds * 1000) : null;
+}
+
+// Stripe requires an absolute `trial_end` to be at least 48h in the future on
+// subscription create; keep a safety margin above that.
+const MIN_TRIAL_END_MS = 49 * 60 * 60 * 1000;
+
+/** Stripe trial params that honour the SIGNUP-stamped trial clock. When a valid
+ *  future `trialEndsAt` exists, pin Stripe to that exact instant (`trial_end`) so
+ *  the trial is never re-extended by picking modules later. Otherwise fall back to
+ *  a fresh `trial_period_days` window (a tenant subscribing well after signup, or a
+ *  missing stamp). */
+function trialParams(
+  trialEndsAt: Date | null
+): { trial_end: number } | { trial_period_days: number } {
+  if (trialEndsAt && trialEndsAt.getTime() - Date.now() >= MIN_TRIAL_END_MS) {
+    return { trial_end: Math.floor(trialEndsAt.getTime() / 1000) };
+  }
+  return { trial_period_days: TRIAL_PERIOD_DAYS };
 }
 
 /** Reverse the price catalog: which module (if any) a Stripe price id bills for.
@@ -92,6 +111,7 @@ export async function syncModuleItems(input: SubscriptionSyncInput): Promise<Bil
       stripeCustomerId: true,
       stripeSubscriptionId: true,
       billingInterval: true,
+      trialEndsAt: true,
     },
   });
   if (!tenant) return { applied: false };
@@ -125,8 +145,18 @@ export async function syncModuleItems(input: SubscriptionSyncInput): Promise<Bil
     const sub = await stripe.subscriptions.create({
       customer: customerId,
       items,
-      trial_period_days: TRIAL_PERIOD_DAYS,
-      trial_settings: { end_behavior: { missing_payment_method: 'cancel' } },
+      // ONE trial clock. The trial starts at SIGNUP (@sparx/auth stamps
+      // tenants.trial_ends_at), so align Stripe to that instant rather than
+      // starting a fresh 14 days here — otherwise picking modules mid-onboarding
+      // would silently extend the trial by however long signup→module-select took.
+      // Stripe requires an absolute `trial_end` ≥ ~48h out; fall back to a fresh
+      // 14-day window only if the stamp is missing or too close to expiry.
+      ...trialParams(tenant.trialEndsAt),
+      // Day 14, no card → PAUSE (docs/17 §6): paid module features gate in the
+      // dashboard, but the public site rides out its 7-day grace window before
+      // suspending. NOT 'cancel' — cancelling would tear down the items + module
+      // flags immediately and skip grace entirely.
+      trial_settings: { end_behavior: { missing_payment_method: 'pause' } },
       collection_method: 'charge_automatically',
       metadata: { sparx_tenant_id: input.tenantId },
     });
@@ -238,6 +268,10 @@ export interface BillingStateView {
    *  hides self-serve plan editing. Flagged in `settings.billing.planType`; the
    *  per-module breakdown above is informational only for these tenants. */
   planType: 'standard' | 'enterprise';
+  /** Where the tenant sits in the Trial → Grace → Suspend lifecycle (docs/17 §6) —
+   *  the banner ladder + site overlay read this. Computed from the same columns,
+   *  so it never needs Stripe. */
+  billing: BillingPhaseView;
 }
 
 /** A read-only snapshot for the billing settings UI. Never calls Stripe — the
@@ -267,6 +301,14 @@ export async function getBillingState(tenantId: string): Promise<BillingStateVie
   const planType: 'standard' | 'enterprise' =
     billingSettings?.planType === 'enterprise' ? 'enterprise' : 'standard';
 
+  const billing = resolveBillingPhase({
+    subscriptionStatus: tenant?.subscriptionStatus ?? null,
+    trialEndsAt: tenant?.trialEndsAt ?? null,
+    currentPeriodEnd: tenant?.currentPeriodEnd ?? null,
+    planType,
+    exempt: isPlatformTenant(tenantId),
+  });
+
   return {
     configured: isBillingConfigured(),
     billingActive: Boolean(tenant?.stripeSubscriptionId),
@@ -278,6 +320,7 @@ export async function getBillingState(tenantId: string): Promise<BillingStateVie
     planModules,
     planTotalCents: planModules.reduce((s, m) => s + m.monthlyCents, 0),
     planType,
+    billing,
   };
 }
 

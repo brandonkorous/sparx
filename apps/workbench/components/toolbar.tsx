@@ -60,6 +60,7 @@ import { useWorkbench } from '../lib/workbench/context';
 import { FeedbackButton } from './feedback/button';
 import { useFeedback } from './feedback/provider';
 import { NotificationCenter } from './notification-center';
+import { TrialChip } from './billing/trial-chip';
 import { launchTour } from '../lib/tour/first-run-tour';
 
 interface ToolbarProps {
@@ -223,6 +224,8 @@ export function Toolbar({
       </NavbarCenter>
 
       <NavbarEnd className="gap-1">
+        <TrialChip />
+
         <span data-tour="favorite-star" className="inline-flex">
           <StarButton
             surfaceKey={activeDescriptor?.surface ?? null}

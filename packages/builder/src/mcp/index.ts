@@ -19,6 +19,7 @@ export * from './layout-tools';
 export * from './silica-read-tools';
 export * from './silica-write-tools';
 export * from './silica-blocks';
+export { readRelay, withRelay, type BuilderRelaySideChannel } from './relay';
 
 export const builderMcpTools = [
   ...readTools,

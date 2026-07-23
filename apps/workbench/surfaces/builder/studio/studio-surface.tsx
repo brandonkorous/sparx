@@ -67,6 +67,7 @@ import {
 import { themeFontFamilies } from '@sparx/site-themes';
 import { applyBrandOverride, tenantTheme, type BrandColumns } from './brand-theme';
 import { useCanvasBrandFonts } from './canvas-fonts';
+import { BuilderLiveSync } from './builder-live';
 import { buildStudioHost } from './host';
 import { makeRenderHostNode } from './host-cores';
 import { buildPreviewRoot, type SitePreviewData } from './preview-data';
@@ -108,6 +109,14 @@ export function StudioSurface({ ctx }: { ctx: SurfaceContext }) {
   useEffect(() => {
     ctx.setTitle('Editor');
   }, [ctx]);
+
+  // Live "reload to see the agent's change" (docs/126 §4.5): refetch the site, then bump a
+  // nonce so the editor remounts on the fresh load. Bumping AFTER the refetch settles means
+  // the remount reads the new snapshot, not the stale cache.
+  const [reloadNonce, setReloadNonce] = useState(0);
+  const reload = useCallback(() => {
+    void site.refetch().finally(() => setReloadNonce((n) => n + 1));
+  }, [site]);
 
   // A failed SITE read replaces the editor — never a blank canvas over a starter
   // seed that Save would then persist on top of the real site.
@@ -161,6 +170,9 @@ export function StudioSurface({ ctx }: { ctx: SurfaceContext }) {
 
   return (
     <StudioEditor
+      // Remount (fresh load) when the operator accepts a live "reload to see the agent's
+      // change" — the faithful response to a body/frame REPLACE that has no delta op.
+      key={reloadNonce}
       ctx={ctx}
       propertyId={propertyId}
       storedSite={site.data ?? null}
@@ -170,6 +182,7 @@ export function StudioSurface({ ctx }: { ctx: SurfaceContext }) {
       config={config.data ?? null}
       property={property.data ?? null}
       sitePreview={sitePreview.data ?? null}
+      onReload={reload}
       moduleFlags={{
         commerce: modules.data?.find((m) => m.slug === 'commerce')?.enabled ?? true,
         scheduling: modules.data?.find((m) => m.slug === 'scheduling')?.enabled ?? false,
@@ -189,6 +202,7 @@ interface EditorProps {
   config: SiteConfigDto | null;
   property: ActiveProperty | null;
   sitePreview: SitePreviewData | null;
+  onReload: () => void;
   moduleFlags: { commerce: boolean; scheduling: boolean; cms: boolean };
 }
 
@@ -202,6 +216,7 @@ function StudioEditor({
   config,
   property,
   sitePreview,
+  onReload,
   moduleFlags,
 }: EditorProps) {
   const toast = useToast();
@@ -280,6 +295,13 @@ function StudioEditor({
   // the current set after each successful save.
   const baselineIdsRef = useRef<Set<string>>(new Set((storedSite?.pages ?? []).map((p) => p.id)));
 
+  // Batch ids THIS client authored, so live-sync skips the echo of its own relayed ops.
+  const ownBatchesRef = useRef<Set<string>>(new Set());
+  // The ops silica emitted since the last save, and the idempotency id they'll flush
+  // under — sent with the next Save so co-editors fold this operator's edits in live.
+  const opsBufferRef = useRef<Op[]>([]);
+  const batchIdRef = useRef<string | null>(null);
+
   // The host: the resolver over the canvas data root (placeholder records with the
   // tenant's REAL site.identity/site.social overlaid, so a bound Wordmark/logo/name
   // resolves to the actual brand) + the tenant's data sources + the commerce/site
@@ -309,12 +331,20 @@ function StudioEditor({
 
   useDirtySource(dirty, 'Your site has unsaved changes. Close it anyway?');
 
-  const onChange = useCallback((next: Site, _ops: readonly Op[], _meta: OpMeta) => {
+  const onChange = useCallback((next: Site, ops: readonly Op[], _meta: OpMeta) => {
     seededRef.current = true;
     // Re-load fonts only when the theme reference actually changes (a typeface/
     // heading pick), not on every content edit.
     if (next.theme !== siteRef.current.theme) setThemeFonts(themeFontFamilies(next.theme));
     siteRef.current = next;
+    // Buffer this edit's ops (docs/126 §4.5). Explicit-save holds them until Save, then
+    // sends them alongside the snapshot so a human co-editor's canvas folds them in live —
+    // the same relay path an agent's write takes. One batch id spans the whole buffer so a
+    // retried save stays idempotent; minted lazily on the first op after a save.
+    if (ops.length) {
+      batchIdRef.current ??= `wb-${crypto.randomUUID()}`;
+      opsBufferRef.current.push(...ops);
+    }
     setDirty(true);
   }, []);
 
@@ -325,7 +355,15 @@ function StudioEditor({
     // ONLY deletions this save may perform. Anything else absent from `currentIds`
     // (e.g. a page an agent just created over MCP) is not ours to delete.
     const deletedPageIds = [...baselineIdsRef.current].filter((id) => !currentIds.has(id));
-    await sync.mutateAsync(toSyncInput(next, deletedPageIds));
+    const ops = opsBufferRef.current;
+    const batchId = ops.length > 0 ? batchIdRef.current : null;
+    // Record our own batch so live-sync skips its echo when the relay comes back around.
+    if (batchId) ownBatchesRef.current.add(batchId);
+    await sync.mutateAsync(toSyncInput(next, deletedPageIds, ops, batchId));
+    // Committed — drop the buffer (a failed save threw above, keeping ops + batch id for a
+    // retry under the SAME id, so the op log never double-appends).
+    opsBufferRef.current = [];
+    batchIdRef.current = null;
     // The server now holds our current set (having deleted only what we named); advance
     // the baseline so the next removal is computed against the truth, not the load.
     baselineIdsRef.current = currentIds;
@@ -418,6 +456,14 @@ function StudioEditor({
         onPublish={onPublish}
         toolbarSlot={
           <div className="flex items-center gap-2">
+            {propertyId ? (
+              <BuilderLiveSync
+                propertyId={propertyId}
+                baselineIdsRef={baselineIdsRef}
+                ownBatchesRef={ownBatchesRef}
+                onReload={onReload}
+              />
+            ) : null}
             <Badge color={status.tone} variant="soft" size="sm">
               {status.label}
             </Badge>
@@ -476,16 +522,26 @@ function ApplyInitialPage({ pageId }: { pageId: string }) {
   return null;
 }
 
-/** Map the whole extracted `Site` onto the sync wire shape. Single-author,
- *  explicit-save semantics: the full roster goes every time (last-write-wins), no
- *  ops, no optimistic-concurrency map. Deletions are stated EXPLICITLY via
- *  `deletedPageIds` — the server never infers a removal from an absent page, so a
- *  page an agent authored over MCP while this editor was open survives the save. */
-function toSyncInput(site: Site, deletedPageIds: string[]): SiteSyncInput {
+/** Map the whole extracted `Site` onto the sync wire shape. The full roster goes every
+ *  time (the snapshot stays authoritative, last-write-wins). Deletions are stated
+ *  EXPLICITLY via `deletedPageIds` — the server never infers a removal from an absent
+ *  page, so a page an agent authored over MCP while this editor was open survives the
+ *  save. `ops` (when present) ride ALONGSIDE the snapshot: the server appends them to the
+ *  log and relays them, so a co-editor folds this operator's edits in live (docs/126
+ *  §4.5) — additive, never a replacement for the authoritative snapshot. */
+function toSyncInput(
+  site: Site,
+  deletedPageIds: string[],
+  ops: readonly Op[] = [],
+  batchId: string | null = null
+): SiteSyncInput {
   return {
     pages: site.pages.map((p) => ({ id: p.id, name: p.name, slug: p.slug, root: p.root })),
     pageIds: site.pages.map((p) => p.id),
     ...(deletedPageIds.length > 0 ? { deletedPageIds } : {}),
+    ...(ops.length > 0 && batchId
+      ? { ops: ops as unknown as SiteSyncInput['ops'], batchId, baseSeq: 0 }
+      : {}),
     ...(site.frame ? { frame: { root: site.frame.root } } : {}),
     ...(site.symbols ? { symbols: site.symbols } : {}),
     ...(site.theme ? { theme: site.theme } : {}),

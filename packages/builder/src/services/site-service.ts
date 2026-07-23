@@ -53,6 +53,7 @@ import { invalidatePublishedStylesheet } from './surface-css-service';
 import { dropOwnerTx, reindexTreeTx } from './node-index-service';
 import { createReleaseTx, recordArtifactTx, type ManifestEntry } from './artifact-service';
 import { appendOpsTx } from './op-log-service';
+import { newOpBatch, pageCreateOp, pageDeleteOp, savedThemesSetOp, themeSetOp } from './silica-ops';
 import { BuilderConflictError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
 
@@ -1012,19 +1013,52 @@ export async function publish(ctx: PropertyContext): Promise<{ id: string; hash:
 
 // ── Single-item safe writers (the Builder MCP silica tools) ───────────────────
 //
-// `sync()` is a WHOLE-SITE reconcile: any page missing from its payload gets
-// DELETED (docs/118 — the editor always hands back the complete `Site`, so a
-// missing page unambiguously means "the author removed it"). An MCP tool that
-// authors one page — or one theme edit — at a time must never build a
-// single-item payload and call `sync()` directly: that would delete every other
-// page on the site. These wrappers load the CURRENT site, splice in the one
-// change, and sync the whole result back, so a single-item write is safe by
-// construction. They reuse `load`/`sync` verbatim — no reconciliation logic is
-// duplicated here.
+// `sync()` is a WHOLE-SITE reconcile. An MCP tool that authors one page — or one
+// theme edit — at a time must never build a single-item payload and call `sync()`
+// directly. These wrappers load the CURRENT site, splice in the one change, and sync
+// the whole result back, so a single-item write is safe by construction. They reuse
+// `load`/`sync` verbatim — no reconciliation logic is duplicated here.
+//
+// Each wrapper also SYNTHESIZES the matching silica op (docs/126 §4.5) so an agent's
+// write folds into a co-editor's open canvas LIVE via `applyRemoteOps`, exactly like a
+// human edit — a new page relays as `page.create`, a removal as `page.delete`, a theme
+// as `theme.set`. A change with no faithful delta op (replacing an existing page BODY or
+// the FRAME — no `page.setRoot` exists, and the re-stamped tree shares no node ids to
+// diff) carries a `reloadHint` instead: the co-editor is prompted to reload that page,
+// never force-overwritten. The returned {@link SilicaWriteChange} tells the transport
+// (api-mcp) what to broadcast.
 
 /** The empty site a property with no silica pages yet starts from. */
 function emptySite(): StoredSilicaSite {
   return { pages: [] };
+}
+
+/** What one scripted (MCP) write did, for the transport to relay to co-editors
+ *  (docs/126 §4.5). `relay` is the just-appended op batch (batchId + seq + ops) — the
+ *  transport emits it as an ordinary `ops:relay`, so a co-editor folds it in through the
+ *  exact same `applyRemoteOps` path a human edit takes; null when nothing live-appliable
+ *  was appended. `reloadHints` names the pages — or the `'frame'` sentinel — whose content
+ *  was REPLACED with no faithful op, so a co-editor is prompted to reload them rather than
+ *  have their own in-progress edits overwritten. */
+export interface SilicaWriteChange {
+  relay: SiteSyncResult['relay'];
+  reloadHints: string[];
+}
+
+/** Sync a spliced whole-site payload from a scripted writer, appending any synthesized
+ *  ops under a fresh idempotency batch, and report what a co-editor should do about it.
+ *  Centralizes the op/batch plumbing so each wrapper only decides its op + reload hint. */
+async function syncScripted(
+  ctx: PropertyContext,
+  site: object,
+  opts: { ops?: BuilderOpEnvelope[]; reloadHints?: string[] } = {}
+): Promise<SilicaWriteChange> {
+  const ops = opts.ops ?? [];
+  const { relay } = await sync(ctx, {
+    ...site,
+    ...(ops.length > 0 ? { ops, batchId: newOpBatch() } : {}),
+  });
+  return { relay, reloadHints: opts.reloadHints ?? [] };
 }
 
 /** A silica `Site` always needs at least one page (its own schema requires it —
@@ -1049,7 +1083,7 @@ function requireAtLeastOnePage(current: StoredSilicaSite): void {
 export async function upsertPage(
   ctx: PropertyContext,
   input: { id?: string; name: string; slug: string; sections: SilicaNode[] }
-): Promise<{ id: string }> {
+): Promise<{ id: string; change: SilicaWriteChange }> {
   const current = (await load(ctx)) ?? emptySite();
   const id = input.id ?? defaultMakeId();
   const root = stampTree(pageBody(input.sections));
@@ -1058,8 +1092,13 @@ export async function upsertPage(
   const pages = exists
     ? current.pages.map((p) => (p.id === id ? nextPage : p))
     : [...current.pages, nextPage];
-  await sync(ctx, { ...current, pages });
-  return { id };
+  // A NEW page relays as `page.create` — the reducer `pages.push`es it, so it folds into
+  // a co-editor's canvas without touching their other pages. REPLACING an existing body
+  // has no faithful delta op (fresh ids, no `page.setRoot`), so it carries a reload hint.
+  const change = exists
+    ? await syncScripted(ctx, { ...current, pages }, { reloadHints: [id] })
+    : await syncScripted(ctx, { ...current, pages }, { ops: [pageCreateOp(nextPage)] });
+  return { id, change };
 }
 
 /** Replace ONE page's body with a COMPLETE root, leaving the rest of the site
@@ -1072,22 +1111,26 @@ export async function setPageRoot(
   ctx: PropertyContext,
   pageId: string,
   root: SilicaNode
-): Promise<void> {
+): Promise<SilicaWriteChange | null> {
   const current = await load(ctx);
-  if (!current) return;
+  if (!current) return null;
   const pages = current.pages.map((p) => (p.id === pageId ? { ...p, root } : p));
-  if (pages.every((p, i) => p === current.pages[i])) return; // no such page — nothing to write
-  await sync(ctx, { ...current, pages });
+  if (pages.every((p, i) => p === current.pages[i])) return null; // no such page — nothing to write
+  // A whole-root replace has no live delta op — a co-editor reloads this page.
+  return syncScripted(ctx, { ...current, pages }, { reloadHints: [pageId] });
 }
 
 /** Remove ONE page, leaving the rest of the site untouched. A silica `Site`
  *  cannot have zero pages, so removing the last one is refused with a clear
  *  message rather than left to fail inside `sync`'s schema validation. */
-export async function removePage(ctx: PropertyContext, pageId: string): Promise<void> {
+export async function removePage(
+  ctx: PropertyContext,
+  pageId: string
+): Promise<SilicaWriteChange | null> {
   const current = await load(ctx);
-  if (!current) return;
+  if (!current) return null;
   const pages = current.pages.filter((p) => p.id !== pageId);
-  if (pages.length === current.pages.length) return;
+  if (pages.length === current.pages.length) return null;
   if (pages.length === 0) {
     throw new BuilderValidationError(
       `Cannot remove page ${pageId} — it is the site's only page. A site needs at least one page; replace its content with upsert_silica_page instead of deleting it.`
@@ -1097,32 +1140,49 @@ export async function removePage(ctx: PropertyContext, pageId: string): Promise<
   // absent from the payload (that would delete pages a concurrent operator/agent added
   // and this snapshot never saw). `deletedPageIds` names the one page this call removes;
   // every other page — including any the operator authored meanwhile — is left intact.
-  await sync(ctx, { ...current, pages, deletedPageIds: [pageId] });
+  // It relays as `page.delete`, so a co-editor's canvas drops the page live.
+  return syncScripted(
+    ctx,
+    { ...current, pages, deletedPageIds: [pageId] },
+    { ops: [pageDeleteOp(pageId)] }
+  );
 }
 
 /** Replace the site's FRAME (chrome) — the shared navbar/Outlet/footer every
- *  page renders through — leaving pages/theme/symbols untouched. */
-export async function setFrame(ctx: PropertyContext, input: { root: SilicaNode }): Promise<void> {
+ *  page renders through — leaving pages/theme/symbols untouched. The frame tree is
+ *  reached only by node ops, and a scripted whole-frame swap has no faithful delta, so
+ *  a co-editor is prompted to reload the frame rather than have theirs overwritten. */
+export async function setFrame(
+  ctx: PropertyContext,
+  input: { root: SilicaNode }
+): Promise<SilicaWriteChange> {
   const current = (await load(ctx)) ?? emptySite();
   requireAtLeastOnePage(current);
-  await sync(ctx, { ...current, frame: { root: input.root } });
+  return syncScripted(ctx, { ...current, frame: { root: input.root } }, { reloadHints: ['frame'] });
 }
 
 /** Replace the site's authored THEME (and optionally its saved-theme library),
  *  leaving pages/frame/symbols untouched. Passing `savedThemes` REPLACES the
  *  whole library (including `[]` to clear it); omitting it leaves the existing
- *  library alone, mirroring `sync`'s own nullish-vs-absent contract. */
+ *  library alone, mirroring `sync`'s own nullish-vs-absent contract. Relays as
+ *  `theme.set` (+ `savedThemes.set`) — both fold into a co-editor's canvas live. */
 export async function setTheme(
   ctx: PropertyContext,
   input: { theme: SilicaTheme; savedThemes?: SilicaTheme[] }
-): Promise<void> {
+): Promise<SilicaWriteChange> {
   const current = (await load(ctx)) ?? emptySite();
   requireAtLeastOnePage(current);
-  await sync(ctx, {
-    ...current,
-    theme: input.theme,
-    ...(input.savedThemes !== undefined ? { savedThemes: input.savedThemes } : {}),
-  });
+  const ops: BuilderOpEnvelope[] = [themeSetOp(input.theme)];
+  if (input.savedThemes !== undefined) ops.push(savedThemesSetOp(input.savedThemes));
+  return syncScripted(
+    ctx,
+    {
+      ...current,
+      theme: input.theme,
+      ...(input.savedThemes !== undefined ? { savedThemes: input.savedThemes } : {}),
+    },
+    { ops }
+  );
 }
 
 // ── Blueprint install (docs/54 + docs/118 Phase 3) ────────────────────────────

@@ -77,8 +77,13 @@ export default stripeBillingWebhookRoutes;
 
 async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<void> {
   switch (event.type) {
+    // A trial that ends with no card pauses (end_behavior: 'pause', docs/17 §6);
+    // adding a card resumes it. Stripe also emits `updated` for both, but handle
+    // the explicit events too so the tenant's phase reconciles promptly either way.
     case 'customer.subscription.created':
     case 'customer.subscription.updated':
+    case 'customer.subscription.paused':
+    case 'customer.subscription.resumed':
     case 'customer.subscription.deleted': {
       const tenantId = await reconcileFromSubscription(event.data.object);
       log.info(

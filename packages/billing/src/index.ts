@@ -16,6 +16,15 @@ export {
 export { getBillingStripe, isBillingConfigured, resetBillingStripeForTesting } from './client';
 
 export {
+  resolveBillingPhase,
+  isPlatformTenant,
+  GRACE_PERIOD_DAYS,
+  type BillingPhase,
+  type BillingPhaseInput,
+  type BillingPhaseView,
+} from './gate';
+
+export {
   syncModuleItems,
   createPortalSession,
   getBillingState,

@@ -1,8 +1,8 @@
 # sparx Platform — Stripe Integration Map & Go-Live Tracker
 
-**Version:** 1.4
+**Version:** 1.5
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-18
+**Last Updated:** 2026-07-22
 
 ---
 
@@ -30,8 +30,15 @@ inventories every Stripe object we need, maps what the connected account has tod
 sequences the remaining code + ops into checklists. When an item lands, flip its box
 here. (Commerce payments — Part B — now live in docs/94.)
 
-**Connected account at evaluation time:** `acct_1TgMUkCP0shAXvn5` — _Sparx sandbox_
-(test mode). Empty: 0 products, 0 prices, 0 billing-portal configurations.
+**Connected sandbox (verified 2026-07-22):** `acct_1Tn6PfFY8gqB2fvj` — _sparx sandbox_
+(test mode). **PROVISIONED** — all 13 products, 26 prices (monthly + annual; lookup keys
+`sparx_<slug>_monthly` / `_annual`; amounts match `MODULE_MONTHLY_CENTS` plus the $750
+hosting price), and the `sparx_managed` billing-portal configuration
+(`bpc_1Tn9MZFY8gqB2fvjd0yNjUBB`) all exist — the `provision-stripe` script has been run
+here. Still to confirm (the Stripe MCP can't list these): the **webhook endpoint**
+registration + its signing secret, and whether the running api-rest env points
+`STRIPE_SECRET_KEY` / `STRIPE_PRICE_*` / `STRIPE_WEBHOOK_SECRET_BILLING` at THIS account.
+(Supersedes the earlier empty `acct_1TgMUkCP0shAXvn5` sandbox.)
 
 Status legend: ✅ done · 🟡 partial (built with a known gap) · ⬜ not started ·
 🔧 manual ops (Brandon, not code).
@@ -66,20 +73,22 @@ Part B Connect surface. Part A is no longer subscriptions-only; see **§11**.
 
 ## 1. Status dashboard
 
-| Area                                           | Status | Note                                                                                                                                     |
-| ---------------------------------------------- | :----: | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| Billing engine (`@sparx/billing`)              |   ✅   | Customer/subscription sync, webhook reconcile, portal, state read — built                                                                |
-| ~~Phase 7 transaction fee~~                    |   ❌   | **REMOVED** — no tiers, only modules. sparx Pay's flat 0.5% (charge-time `application_fee`) is the only payment fee (docs/94 §8)         |
-| Module Products + Prices in Stripe             |   ⬜   | 10 products, ~19 prices — none exist yet (§4)                                                                                            |
-| Billing **webhook endpoint** + secret          |   ⬜   | None — subscription/invoice events won't reach us (§6)                                                                                   |
-| Billing **portal configuration**               |   ⬜   | None — `POST /v1/billing/portal` will error until one exists (§6)                                                                        |
-| Secret Manager values                          |  🔧⬜  | `STRIPE_SECRET_KEY`, price IDs, webhook secret (§7)                                                                                      |
-| DB migration `20260813000000_platform_billing` |   ⬜   | Author-complete; not yet applied via DB Migrate workflow                                                                                 |
-| `syncModuleItems` cancel-on-empty              |   ✅   | One item per billable module; cancels the subscription when the last module is disabled (no fee anchor)                                  |
-| Domain registration charge (card-on-file)      |   ⬜   | First non-subscription Part A charge; off-session PI on the tenant's saved PM — seams disabled + checkout gated until card-on-file (§11) |
-| Phase 3 trial banner / choose-plan             |   ✅   | C4 — trial/past-due/cancel banner; plan+interval switch via portal `subscription_update`                                                 |
-| Phase 8 enterprise provisioning                |   ✅   | C5 — Enterprise dashboard card + `settings.billing.planType` flag + runbook (§10)                                                        |
-| Stripe-flow behaviour tests                    |   ✅   | `service.behavior.test.ts` mocks Stripe+DB: subscription create, cancel-on-empty, reconcile flags                                        |
+| Area                                               | Status | Note                                                                                                                                                                                        |
+| -------------------------------------------------- | :----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Billing engine (`@sparx/billing`)                  |   ✅   | Customer/subscription sync, webhook reconcile, portal, state read — built                                                                                                                   |
+| ~~Phase 7 transaction fee~~                        |   ❌   | **REMOVED** — no tiers, only modules. sparx Pay's flat 0.5% (charge-time `application_fee`) is the only payment fee (docs/94 §8)                                                            |
+| Module Products + Prices in Stripe                 |   ✅   | Verified 2026-07-22 in `acct_1Tn6PfFY8gqB2fvj`: 13 products + 26 prices, correct lookup_keys + amounts (§4)                                                                                 |
+| Billing **webhook endpoint** + secret              |   ⬜   | None — subscription/invoice events won't reach us (§6)                                                                                                                                      |
+| Billing **portal configuration**                   |   ✅   | Verified 2026-07-22: `bpc_1Tn9MZFY8gqB2fvjd0yNjUBB` (`sparx_managed`), plan-switch + card update + cancel-at-period-end (§6)                                                                |
+| Secret Manager values                              |  🔧⬜  | `STRIPE_SECRET_KEY`, price IDs, webhook secret (§7)                                                                                                                                         |
+| DB migration `20260813000000_platform_billing`     |   ⬜   | Author-complete; not yet applied via DB Migrate workflow                                                                                                                                    |
+| `syncModuleItems` cancel-on-empty                  |   ✅   | One item per billable module; cancels the subscription when the last module is disabled (no fee anchor)                                                                                     |
+| Domain registration charge (card-on-file)          |   ⬜   | First non-subscription Part A charge; off-session PI on the tenant's saved PM — seams disabled + checkout gated until card-on-file (§11)                                                    |
+| Phase 3 trial banner / choose-plan                 |   ✅   | C4 — trial/past-due/cancel banner; plan+interval switch via portal `subscription_update`                                                                                                    |
+| **Trial → Grace → Suspend lifecycle** (docs/17 §6) |   ✅   | Trial stamped at SIGNUP (`provisionTenant`); `resolveBillingPhase` gate; `apps/site` suspend overlay; workbench banner ladder + chip. Works WITHOUT Stripe — the clock is on the tenant row |
+| Trial `end_behavior` + Stripe clock alignment      |   ✅   | `syncModuleItems` now `missing_payment_method: 'pause'` (was `'cancel'`); pins `trial_end` to the signup-stamped `trialEndsAt`; webhook handles `paused`/`resumed`                          |
+| Phase 8 enterprise provisioning                    |   ✅   | C5 — Enterprise dashboard card + `settings.billing.planType` flag + runbook (§10)                                                                                                           |
+| Stripe-flow behaviour tests                        |   ✅   | `service.behavior.test.ts` mocks Stripe+DB: subscription create, cancel-on-empty, reconcile flags                                                                                           |
 
 ---
 
@@ -228,8 +237,20 @@ Plus two non-module prices:
 - 🔧⬜ Apply `20260813000000_platform_billing` via the DB Migrate workflow (Cloud SQL
   is private-IP — pipeline only).
 - 🔧⬜ Roll consumers so the new env reaches `api-rest` (bootstrap app-env).
-- 🔧⬜ Smoke test in sandbox: toggle a module → subscription item appears; place a
-  test order → meter event recorded → preview invoice shows the fee.
+- 🔧⬜ Smoke test in sandbox: onboard a new tenant → toggle a paid module → a Stripe
+  subscription appears **trialing** with `trial_end` matching the tenant's
+  `trialEndsAt` and `end_behavior: pause`; add a test card in the portal → status
+  → `active`; let a sandbox trial lapse → the subscription pauses and the workbench
+  banner escalates.
+
+> **The trial + enforcement are already LIVE without any of the above** (docs/17 §6):
+> the clock is stamped on the tenant row at signup and `resolveBillingPhase` gates the
+> workbench banner + the public-site suspend overlay with no Stripe dependency. This
+> checklist only turns on the ability to **charge** (and to auto-pause via Stripe at
+> trial end). Until it's done, trials run and enforce; they simply can't convert to
+> paid. The public-site suspend/lift honours the tenant payload's cache (`tenant:<slug>`,
+> 300 s TTL) — a reactivated site returns within that window; wiring a billing event to
+> the cache-revalidation-worker for near-instant lift is an optional follow-up.
 
 ---
 

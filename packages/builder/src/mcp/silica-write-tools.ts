@@ -20,6 +20,7 @@ import { checkTreeClasses } from '@sparx/silica-catalog';
 import * as siteService from '../services/site-service';
 import { BuilderValidationError } from '../errors';
 import { toPropertyContext, withSite } from './context';
+import { withRelay } from './relay';
 import type { McpToolDefinition } from './registry';
 
 const propertyIdArg = z
@@ -70,7 +71,12 @@ export const upsertSilicaPage: McpToolDefinition = {
       propertyId?: string;
     };
     const pctx = await toPropertyContext(ctx, propertyId);
-    const result = await siteService.upsertPage(pctx, { id, name, slug, sections });
+    const { id: savedId, change } = await siteService.upsertPage(pctx, {
+      id,
+      name,
+      slug,
+      sections,
+    });
     // Report classes that will emit NO CSS (docs: vocabulary-check). Advisory, not a
     // rejection: the page is already saved and the rest of it is fine, so refusing the
     // write would be a worse trade than telling the author what silently broke. This is
@@ -78,10 +84,14 @@ export const upsertSilicaPage: McpToolDefinition = {
     // Tailwind, so a bad class produces no error, no warning, and no visual clue until
     // someone loads the page and notices the layout is subtly wrong.
     const classIssues = sections.flatMap((s) => checkTreeClasses(s));
-    return withSite(pctx, {
-      ...result,
-      ...(classIssues.length ? { warnings: classIssues } : {}),
-    });
+    // Relay the write to any co-editor with this site open (docs/126 §4.5): a NEW page
+    // rides `change.relay` as `ops:relay` and folds into their canvas live; a body
+    // REPLACE carries a reload hint. `withRelay` is non-enumerable, so the agent's result
+    // is unchanged — the relay is transport-only.
+    return withRelay(
+      withSite(pctx, { id: savedId, ...(classIssues.length ? { warnings: classIssues } : {}) }),
+      { propertyId: pctx.site.id, relay: change.relay, reloadHints: change.reloadHints }
+    );
   },
 };
 
@@ -96,8 +106,13 @@ export const deleteSilicaPage: McpToolDefinition = {
   run: async (ctx, input) => {
     const { pageId, propertyId } = input as { pageId: string; propertyId?: string };
     const pctx = await toPropertyContext(ctx, propertyId);
-    await siteService.removePage(pctx, pageId);
-    return withSite(pctx, { deleted: pageId });
+    const change = await siteService.removePage(pctx, pageId);
+    // Relays as `page.delete` — a co-editor's canvas drops the page live.
+    return withRelay(withSite(pctx, { deleted: pageId }), {
+      propertyId: pctx.site.id,
+      relay: change?.relay ?? null,
+      reloadHints: change?.reloadHints ?? [],
+    });
   },
 };
 
@@ -120,8 +135,14 @@ export const setSilicaFrame: McpToolDefinition = {
       );
     }
     const pctx = await toPropertyContext(ctx, propertyId);
-    await siteService.setFrame(pctx, { root });
-    return withSite(pctx, { ok: true });
+    const change = await siteService.setFrame(pctx, { root });
+    // A whole-frame swap has no live delta op — a co-editor is prompted to reload the
+    // frame (via `reloadHints`) rather than have their own chrome edits overwritten.
+    return withRelay(withSite(pctx, { ok: true }), {
+      propertyId: pctx.site.id,
+      relay: change.relay,
+      reloadHints: change.reloadHints,
+    });
   },
 };
 
@@ -145,8 +166,13 @@ export const setSilicaTheme: McpToolDefinition = {
       propertyId?: string;
     };
     const pctx = await toPropertyContext(ctx, propertyId);
-    await siteService.setTheme(pctx, { theme, savedThemes });
-    return withSite(pctx, { ok: true });
+    const change = await siteService.setTheme(pctx, { theme, savedThemes });
+    // Relays as `theme.set` (+ `savedThemes.set`) — both fold into a co-editor's canvas.
+    return withRelay(withSite(pctx, { ok: true }), {
+      propertyId: pctx.site.id,
+      relay: change.relay,
+      reloadHints: change.reloadHints,
+    });
   },
 };
 

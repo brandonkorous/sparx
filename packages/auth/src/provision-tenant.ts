@@ -76,16 +76,32 @@ export interface ProvisionTenantInput {
  * (authPrisma connects as sparx_owner, which IS subject to FORCE RLS). The GUC
  * is transaction-local, so it never leaks past the caller's commit.
  */
+// The free trial length in days (docs/17 §6). MUST match @sparx/billing's
+// TRIAL_PERIOD_DAYS — provisioning is the AUTHORITATIVE clock (it stamps
+// tenants.trial_ends_at at signup); billing aligns Stripe to this persisted value
+// when the subscription is later created. Kept local so the signup path (bundled
+// into Next server actions) doesn't pull the Stripe SDK closure via @sparx/billing.
+const TRIAL_PERIOD_DAYS = 14;
+
 export async function provisionTenant(
   tx: Prisma.TransactionClient,
   input: ProvisionTenantInput
 ): Promise<{ tenantId: string; propertyId: string }> {
   const acq = input.acquisition;
+  // Every tenant starts a 14-day, no-card trial the moment it's born (docs/17 §6).
+  // This is the trial CLOCK — enforcement (the dashboard banner ladder + the public
+  // site suspend overlay) reads `trialEndsAt`/`subscriptionStatus` off this row, so
+  // the trial is a lived, enforced feature independent of whether Stripe billing has
+  // been provisioned yet. The platform's own tenant is exempted downstream by the
+  // billing gate (isPlatformTenant), so stamping it here is harmless.
+  const trialEndsAt = new Date(Date.now() + TRIAL_PERIOD_DAYS * 24 * 60 * 60 * 1000);
   const tenant = await tx.tenant.create({
     data: {
       name: input.name,
       slug: input.slug,
       email: input.email,
+      subscriptionStatus: 'trialing',
+      trialEndsAt,
       // Attribution (docs/80 §8.3) — written once. Denormalized channel/source/
       // campaign drive the acquisition report; the full snapshots ride along for
       // model recompute.

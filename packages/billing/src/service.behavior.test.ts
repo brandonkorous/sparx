@@ -113,6 +113,52 @@ describe('syncModuleItems', () => {
     expect(createArg.items.map((i) => i.price)).toEqual(['price_commerce_m']);
   });
 
+  it('pauses (not cancels) at trial end, and pins Stripe to the signup trial clock', async () => {
+    process.env.STRIPE_PRICE_COMMERCE_MONTHLY = 'price_commerce_m';
+    const trialEndsAt = new Date(Date.now() + 12 * 24 * 60 * 60 * 1000); // 12 days out
+    h.tenantFindUnique.mockResolvedValue({
+      id: 't1',
+      stripeCustomerId: 'cus_abc',
+      stripeSubscriptionId: null,
+      billingInterval: 'monthly',
+      trialEndsAt,
+    });
+
+    await syncModuleItems({ tenantId: 't1', email: 'a@b.co', enabledModules: ['commerce'] });
+
+    const createArg = h.stub.value!.subscriptions.create.mock.calls[0]![0] as {
+      trial_end?: number;
+      trial_period_days?: number;
+      trial_settings?: { end_behavior?: { missing_payment_method?: string } };
+    };
+    // Day-14 lapse pauses the sub (site rides grace), never cancels.
+    expect(createArg.trial_settings?.end_behavior?.missing_payment_method).toBe('pause');
+    // Aligned to the signup clock (absolute trial_end), NOT a fresh 14-day window —
+    // so picking modules mid-onboarding can't silently re-extend the trial.
+    expect(createArg.trial_end).toBe(Math.floor(trialEndsAt.getTime() / 1000));
+    expect(createArg.trial_period_days).toBeUndefined();
+  });
+
+  it('falls back to a fresh trial window when the signup clock is missing/too close', async () => {
+    process.env.STRIPE_PRICE_COMMERCE_MONTHLY = 'price_commerce_m';
+    h.tenantFindUnique.mockResolvedValue({
+      id: 't1',
+      stripeCustomerId: 'cus_abc',
+      stripeSubscriptionId: null,
+      billingInterval: 'monthly',
+      trialEndsAt: null,
+    });
+
+    await syncModuleItems({ tenantId: 't1', email: 'a@b.co', enabledModules: ['commerce'] });
+
+    const createArg = h.stub.value!.subscriptions.create.mock.calls[0]![0] as {
+      trial_end?: number;
+      trial_period_days?: number;
+    };
+    expect(createArg.trial_period_days).toBe(14);
+    expect(createArg.trial_end).toBeUndefined();
+  });
+
   it('cancels the subscription when the last billable module is disabled', async () => {
     h.tenantFindUnique.mockResolvedValue({
       id: 't1',

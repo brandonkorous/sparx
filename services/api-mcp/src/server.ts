@@ -15,7 +15,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { isModuleEnabled, type ModuleSlug } from '@sparx/auth';
 import type { McpAuthContext } from './auth.js';
+import { readRelay } from '@sparx/builder/mcp';
 import { recordToolInvocation } from './audit.js';
+import { relayAgentWrite } from './builder-relay.js';
 import { loadDisabledTools } from './tool-policy.js';
 import { ALL_MCP_TOOLS, isSiteScopableTool, type AnyMcpTool } from './tool-registry.js';
 
@@ -166,6 +168,11 @@ async function dispatch(
   try {
     const parsed = tool.input.parse(input);
     const result = await tool.run(ctx, parsed);
+    // A builder write rides a non-enumerable relay side-channel on its result (docs/126
+    // §4.5). Emit it to any operator with this site's studio open — fire-and-forget, and
+    // invisible to the model (`JSON.stringify` below skips the non-enumerable key).
+    const relay = readRelay(result);
+    if (relay) relayAgentWrite(relay);
     void recordToolInvocation({
       tenantId: auth.tenantId,
       userId: auth.userId,

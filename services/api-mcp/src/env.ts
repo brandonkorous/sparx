@@ -24,6 +24,12 @@ const EnvSchema = z.object({
   // Enables the real Pub/Sub bridge for CRM customer writes made via MCP
   // tools. Unset (dev) → the bridge is a no-op and writes stay on the stub.
   GCP_PROJECT_ID: z.string().optional(),
+  // The cluster Redis (same instance api-rest's socket.io adapter uses). When set,
+  // a builder write made via MCP is relayed into the site's editor room over the
+  // socket.io Redis backplane (docs/126 §4.5), so an operator with the studio open
+  // sees the agent's change fold in live. Unset (dev, or no co-editing) → no relay;
+  // the write still persists and the explicit-delete floor keeps it safe.
+  REDIS_URL: z.string().optional(),
   // Active domain registrar for the domain MCP tools (docs/24). Selects the
   // provider behind the @sparx/registrar `RegistrarClient` contract. 'godaddy'
   // today; 'namecom' once its @sparx/namecom client is wired.

@@ -43,6 +43,10 @@ const WEBHOOK_EVENTS: Stripe.WebhookEndpointCreateParams.EnabledEvent[] = [
   'customer.subscription.created',
   'customer.subscription.updated',
   'customer.subscription.deleted',
+  // Trial-end pause + reactivate resume (docs/17 §6) — the lifecycle phase reads
+  // the reconciled status, so these must reach us.
+  'customer.subscription.paused',
+  'customer.subscription.resumed',
   'customer.subscription.trial_will_end',
   'invoice.payment_succeeded',
   'invoice.payment_failed',

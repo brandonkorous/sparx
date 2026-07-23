@@ -23,6 +23,20 @@ export interface BillModule {
   monthlyCents: number;
 }
 
+/** Where the tenant sits in the Trial → Grace → Suspend lifecycle (docs/17 §6).
+ *  Mirror of @sparx/billing's BillingPhase/BillingPhaseView — redeclared here so
+ *  the workbench doesn't import the server billing package for a wire shape. */
+export type BillingPhase = 'trialing' | 'active' | 'grace' | 'suspended' | 'exempt';
+export interface BillingPhaseView {
+  phase: BillingPhase;
+  /** Whole days left in the current countdown (trial or grace); null when not
+   *  counting down. */
+  daysLeft: number | null;
+  trialEndsAt: string | null;
+  /** ISO moment the public site goes offline (end of grace). */
+  suspendsAt: string | null;
+}
+
 export interface Bill {
   configured: boolean;
   billingActive: boolean;
@@ -34,6 +48,8 @@ export interface Bill {
   planModules: BillModule[];
   planTotalCents: number;
   planType: 'standard' | 'enterprise';
+  /** Lifecycle phase + countdown — drives the topbar trial chip + banner ladder. */
+  billing: BillingPhaseView;
   card: BillCard | null;
 }
 

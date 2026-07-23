@@ -29,10 +29,21 @@ export interface BuilderPresence {
 
 export interface ServerToClientEvents {
   /** Another author's persisted ops. `batchId` lets the originator skip its own echo;
-   *  `seq` is the log's new high-water mark, which the receiver `ackSeq`s after applying. */
+   *  `seq` is the log's new high-water mark, which the receiver `ackSeq`s after applying.
+   *  An AGENT'S write arrives here too (docs/126 §4.5) — a scripted write in api-mcp
+   *  synthesizes the same ops and emits them into this room over the Redis backplane, so
+   *  a human co-editor folds an agent's page in through the identical `applyRemoteOps`
+   *  path, with no client code that knows or cares the author was an agent. */
   'ops:relay': (payload: { batchId: string; seq: number; ops: RelayOp[] }) => void;
   /** The full set of editors in the site right now — sent on join and on every change. */
   'presence:list': (editors: BuilderPresence[]) => void;
+  /** An AGENT is authoring this site right now (docs/126 §4.5). Distinct from
+   *  `presence:list` because an agent holds no socket — it is a transient signal the
+   *  client shows as an "⚡ an assistant is editing" indicator (with its own client-side
+   *  fade), plus `reloadHints`: pages — or the `'frame'` sentinel — the agent REPLACED
+   *  with no live-appliable op, which the client offers to reload rather than force over
+   *  the operator's in-progress edits. */
+  'builder:agentActivity': (payload: { actor: { name: string }; reloadHints: string[] }) => void;
   error: (payload: { message: string }) => void;
 }
 

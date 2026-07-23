@@ -30,6 +30,7 @@ import { MobileShell } from './mobile-shell';
 import { Rail } from './rail';
 import { StatusBar } from './status-bar';
 import { Toolbar } from './toolbar';
+import { BillingBanner } from './billing/billing-banner';
 import { Launcher } from './launcher';
 import { ModulePanel } from './module-panel';
 import { RecentsRecorder } from './recents-recorder';
@@ -266,6 +267,11 @@ export function WorkbenchShell({
             onToggleTheme={toggleTheme}
             onOpenLauncher={openLauncher}
           />
+
+          {/* Billing lifecycle banner (docs/17 §6) — spans the full width beneath the
+              toolbar so it shows on every surface. Self-hides for a paid/exempt
+              tenant; escalates trial → grace → suspended otherwise. */}
+          <BillingBanner />
 
           <div className="relative flex min-h-0 flex-1">
             <SidebarProvider

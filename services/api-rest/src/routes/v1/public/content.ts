@@ -27,6 +27,7 @@ import { readPublicConsentConfig } from '../../../lib/consent.js';
 import { parseBrandOverride, mergeBrandIdentity } from '../../../lib/property-brand.js';
 import { resolvePublicPropertyId, contentSiteVisibilityWhere } from '../../../lib/property.js';
 import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
+import { resolveBillingPhase, isPlatformTenant } from '@sparx/billing';
 
 // `property` (a stable site slug) scopes content to one web PROPERTY (docs/49
 // Model B). The storefront passes it for non-primary sites; omitted → primary.
@@ -421,7 +422,19 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     const query = z.object({ property: z.string().min(1).max(63).optional() }).parse(request.query);
     const tenant = await prisma.tenant.findUnique({
       where: { slug: params.slug },
-      select: { id: true, slug: true, name: true, settings: true, socials: true },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        settings: true,
+        socials: true,
+        // Billing lifecycle columns — the storefront reads the resolved `billingPhase`
+        // (below) to serve the suspend overlay when a lapsed tenant's site goes dark
+        // (docs/17 §6). Cheap columns already on the row we're fetching.
+        subscriptionStatus: true,
+        trialEndsAt: true,
+        currentPeriodEnd: true,
+      },
     });
     if (!tenant) throw notFound('Tenant', params.slug);
     if (tenant.id === '00000000-0000-0000-0000-000000000000') {
@@ -597,6 +610,21 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       disabledModules: Array.isArray(propertyRow?.moduleScope)
         ? (propertyRow.moduleScope as string[]).filter((v) => typeof v === 'string')
         : [],
+      // Billing lifecycle phase (docs/17 §6). ONLY the phase string is exposed —
+      // never the trial/grace DATES — so this public payload leaks no billing
+      // timeline. The storefront serves the suspend overlay iff this is 'suspended';
+      // every other phase renders the site normally (grace keeps the site live).
+      billingPhase: resolveBillingPhase({
+        subscriptionStatus: tenant.subscriptionStatus,
+        trialEndsAt: tenant.trialEndsAt,
+        currentPeriodEnd: tenant.currentPeriodEnd,
+        planType:
+          (tenant.settings as { billing?: { planType?: string } } | null)?.billing?.planType ===
+          'enterprise'
+            ? 'enterprise'
+            : 'standard',
+        exempt: isPlatformTenant(tenant.id),
+      }).phase,
     });
   });
   return Promise.resolve();

@@ -28,6 +28,7 @@ import { RevealController } from '@/components/reveal-controller';
 import { MotionController } from '@/components/motion-controller';
 import { SiteHeader, type NavItem } from '@/components/site-header';
 import { SiteFooter, type FooterColumn } from '@/components/site-footer';
+import { SiteSuspended } from '@/components/site-suspended';
 import { BuilderSiteChrome } from '@/components/builder-renderer';
 import { SilicaChrome } from '@/components/silica-chrome';
 import { storefrontHostRenderer } from '@/components/silica-host-cores';
@@ -86,6 +87,15 @@ export async function generateMetadata(): Promise<Metadata> {
   if (!site) {
     return {
       title: 'Store not found',
+      robots: { index: false, follow: false },
+      icons: { icon: '/sparx-icon.svg' },
+    };
+  }
+  // A suspended site (docs/17 §6) serves the overlay, not its content — so it must
+  // NOT be indexed while dark (and its title must not leak the tenant/billing state).
+  if (site.billingPhase === 'suspended') {
+    return {
+      title: 'Temporarily unavailable',
       robots: { index: false, follow: false },
       icons: { icon: '/sparx-icon.svg' },
     };
@@ -233,6 +243,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     resolveActivePropertySlug(),
     headers(),
   ]);
+
+  // Billing suspended (docs/17 §6): serve the "site unavailable" overlay as the
+  // WHOLE document and short-circuit ALL storefront chrome + data reads below. A
+  // lapsed tenant is rare, so paying the one tenant fetch (already done above) and
+  // nothing else is the cheap, correct path. Reactivating flips billingPhase back
+  // and the site returns unchanged. Grace/trialing/active all render normally.
+  if (site?.billingPhase === 'suspended') {
+    return <SiteSuspended />;
+  }
   // Live Chat (docs/56, docs/69 A-4) — the floating widget mounts only when the
   // tenant has the `chat` module active. The widget is a client component, so it
   // talks to the browser-reachable public API origin (NEXT_PUBLIC_API_URL), not

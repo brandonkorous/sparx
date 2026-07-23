@@ -247,6 +247,17 @@ export function useSyncSite() {
   });
 }
 
+/** The op log's current high-water sequence (docs/126 §4.5). Read once at mount so the
+ *  live socket can `catchup` from where the loaded snapshot stands — closing the gap
+ *  between the HTTP load and the socket join. Degrades to 0 (catch up from the start) on
+ *  failure; the reducer drops already-applied ops, so an over-broad catch-up is safe. */
+export function getSiteSeq(): Promise<number> {
+  return api
+    .get<{ seq: number }>('/v1/builder/site/seq')
+    .then((r) => r.seq)
+    .catch(() => 0);
+}
+
 /** Snapshot every silica draft tree → published, sealing a release. */
 export function usePublishSite() {
   const queryClient = useQueryClient();

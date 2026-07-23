@@ -76,7 +76,18 @@ export interface ResolvedSite {
   // Whether the always-on "Made with sparx" footer credit renders for this site.
   // Defaults true; a future merchant toggle can hide it.
   showSparxCredit: boolean;
+  // Billing lifecycle phase (docs/17 §6). The layout serves the "site unavailable"
+  // overlay when this is 'suspended'; every other phase renders the site normally
+  // (a tenant in the grace window keeps a live site). Only the PHASE crosses the
+  // wire — never the trial/grace dates — so nothing about the tenant's billing
+  // timeline is public. Defaults 'active' for an older api-rest that omits it, so a
+  // storefront is NEVER dark on missing data.
+  billingPhase: SiteBillingPhase;
 }
+
+/** Mirror of @sparx/billing's BillingPhase — redeclared locally so the storefront
+ *  image doesn't pull the billing/Stripe closure just for a string union. */
+export type SiteBillingPhase = 'trialing' | 'active' | 'grace' | 'suspended' | 'exempt';
 
 // `ResolvedSite.name` is the customer-facing SITE name, NOT the tenant's legal/
 // org name. The API returns `propertyName` (the active site, else the tenant's
@@ -88,7 +99,11 @@ export interface ResolvedSite {
 // `propertyName`.
 interface TenantApiResponse {
   success: boolean;
-  data?: ResolvedSite & { businessName?: string | null; propertyName?: string | null };
+  data?: Omit<ResolvedSite, 'billingPhase'> & {
+    businessName?: string | null;
+    propertyName?: string | null;
+    billingPhase?: SiteBillingPhase;
+  };
   error?: { code: string; message: string };
 }
 
@@ -294,6 +309,9 @@ export const resolveSite = cache(async (): Promise<ResolvedSite | null> => {
       // Defaults true so a storefront on an older api-rest (pre-`showSparxCredit`)
       // keeps showing the credit — the badge is always-on by default.
       showSparxCredit: data.showSparxCredit ?? true,
+      // Defaults 'active' on an older api-rest that omits it — a site is NEVER
+      // suspended on missing data (only an explicit 'suspended' darkens it).
+      billingPhase: data.billingPhase ?? 'active',
     };
   } catch {
     return null;
