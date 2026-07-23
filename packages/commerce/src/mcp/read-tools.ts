@@ -280,6 +280,20 @@ const getChannelComparison: McpToolDefinition = {
     ),
 };
 
+const getSalesByTrafficSource: McpToolDefinition = {
+  name: 'get_sales_by_traffic_source',
+  description:
+    "Revenue and order count by the traffic source that produced each sale — search engines, social media, other websites, or direct — over a date range, each with its share of total. Includes an explicit 'unattributed' bucket for sales with no matching same-day web visit (staff, B2B, phone/POS, subscription renewal, or a visit on a different day), plus a count of orders in the window placed before attribution tracking existed. This is the answer to 'which of the things I do actually makes money'. Range defaults to the last 30 days.",
+  scope: 'read:commerce',
+  confirmation: false,
+  input: z.object({ range: OptionalDateRange }),
+  run: (ctx, input) =>
+    reportingService.attributionBreakdown(
+      ctx,
+      (input as { range?: { from: string; to: string } }).range
+    ),
+};
+
 const getChannelTopProducts: McpToolDefinition = {
   name: 'get_channel_top_products',
   description:
@@ -306,6 +320,7 @@ export const readTools: AnyMcpTool[] = [
   getChannelRevenue,
   getChannelComparison,
   getChannelTopProducts,
+  getSalesByTrafficSource,
   getTopCustomers,
   getConversionFunnel,
   getAbandonedCarts,

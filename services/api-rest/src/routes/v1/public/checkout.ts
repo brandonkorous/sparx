@@ -30,6 +30,7 @@ import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 
 import { assertCartToken, publicCommerceContext } from '../../../lib/public-commerce-context.js';
+import { resolveOrderAttribution } from '../../../lib/attribution.js';
 
 const SessionParam = z.object({ sessionId: z.string().uuid() });
 
@@ -328,6 +329,23 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
       sessionId,
       idempotencyKey: body.idempotencyKey ?? randomUUID(),
     });
+
+    // Session attribution (docs/128): match this buyer's visitor-day hash to their
+    // earliest pageview today and stamp the derived source onto the order. POST-
+    // commit and self-guarded — the order is already placed, so this can never
+    // block or fail the sale. Skipped for held B2B orders (no web-traffic
+    // attribution, docs/128 §5) and for idempotent retries of an already-placed
+    // order (only the fresh placement resolves; re-resolving would be a no-op
+    // anyway since resolvedAt is already set).
+    if (result.freshlyPlaced && !result.pendingApproval) {
+      await resolveOrderAttribution({
+        tenantId,
+        orderId: result.orderId,
+        ip: request.ip,
+        userAgent: request.headers['user-agent'] ?? '',
+        now: new Date(),
+      });
+    }
 
     return ok(result);
   });

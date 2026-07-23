@@ -191,6 +191,16 @@ const SALES_DASHBOARD: DashboardConfig = {
       emptyHint: 'Your sales split by how the order was placed.',
     },
     {
+      metric: 'commerce.revenue.by_attribution',
+      shape: 'breakdown',
+      title: 'What brings in sales',
+      span: 2,
+      limit: 6,
+      centerLabel: 'revenue',
+      emptyHint:
+        'Your sales split by what brought the buyer to your site — search, social, or a link. Sales placed before this was switched on, and any without a matching same-day visit, show as “Unattributed”.',
+    },
+    {
       metric: 'commerce.products.top',
       shape: 'list',
       title: 'Best sellers',

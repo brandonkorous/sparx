@@ -77,6 +77,23 @@ model Order {
   internalNote String? @map("internal_note") @db.Text
   metadata     Json    @default("{}")
 
+  // Marketing attribution (docs/128) — where the WEB traffic that produced this
+  // order came from, derived ONCE at checkout by matching the buyer's visitor-day
+  // hash to their earliest pageview that day. DISTINCT from `channel`/`source`
+  // above (those are the SALES channel: storefront / b2b_portal / marketplace).
+  // All nullable: an order with no matching same-day web traffic — staff, B2B,
+  // POS, phone, subscription renewal, or a visit on a different day — is normal,
+  // not an error, and reports render it as an explicit "unattributed" bucket.
+  // No visitor hash is ever stored, only the DERIVED class/host/path, so the
+  // consent-free privacy model (docs/128 §2) is preserved. `resolvedAt`
+  // distinguishes "looked and found nothing" from "never looked" — a backfill
+  // needs it to know which orders it still owes work to. Vocabulary matches
+  // SiteAnalyticsEvent.source so reports need no mapping table.
+  attributionSource       String?   @map("attribution_source") @db.VarChar(20) // search | direct | social | referral
+  attributionReferrerHost String?   @map("attribution_referrer_host") @db.VarChar(255) // e.g. "instagram.com"; null for direct
+  attributionLandingPath  String?   @map("attribution_landing_path") @db.VarChar(2048) // first path this visitor saw that day
+  attributionResolvedAt   DateTime? @map("attribution_resolved_at") @db.Timestamptz
+
   // Set when this order was created by accepting a BillingDocument (a quote) —
   // the real FK replacing the old Quote.convertedToOrderId / metadata-string
   // pointer. This is the ONE physical column for the relation; BillingDocument's

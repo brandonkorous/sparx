@@ -156,6 +156,41 @@ export const COMMERCE_SALES_METRICS: readonly MetricDefinition[] = [
     },
   },
   {
+    id: 'commerce.revenue.by_attribution',
+    module: 'commerce',
+    label: 'Revenue by traffic source',
+    unit: 'currency',
+    grains: ALL_GRAINS,
+    shapes: ['breakdown'],
+    additive: true,
+    scope: 'tenant',
+    async resolve(ctx): Promise<MetricData> {
+      // Where today's buyers came from (docs/128) — the referrer half of "traffic
+      // sources". Plain-language labels (an owner does not think in "referral");
+      // `unattributed` is the honest bucket for sales with no matching same-day web
+      // visit (staff / B2B / POS / phone / renewal, or a visit on another day).
+      const SOURCE_LABEL: Record<string, string> = {
+        search: 'Search engines',
+        social: 'Social media',
+        referral: 'Other websites',
+        direct: 'Direct / typed-in',
+        unattributed: 'Unattributed',
+      };
+      const breakdown = await ctx.run((tx) =>
+        reportingService.attributionBreakdown(svc(ctx, tx), serviceRange(ctx))
+      );
+      const rows = ctx.limit ? breakdown.bySource.slice(0, ctx.limit) : breakdown.bySource;
+      return {
+        rows: rows.map((r) => ({
+          key: r.source,
+          label: SOURCE_LABEL[r.source] ?? r.source,
+          value: r.revenueCents,
+          sharePct: r.sharePct,
+        })),
+      };
+    },
+  },
+  {
     id: 'commerce.products.top',
     module: 'commerce',
     label: 'Best sellers',

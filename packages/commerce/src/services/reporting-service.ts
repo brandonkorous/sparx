@@ -1684,6 +1684,98 @@ export async function channelBreakdown(
   });
 }
 
+// ─── Attribution breakdown — "where today's buyers came from" (docs/128) ──────
+//
+// The referrer/traffic-source half that channelBreakdown above flagged as needing
+// event capture. Orders + revenue split by the order's derived `attribution_source`
+// (search | direct | social | referral), with a NULL source folded into an
+// explicit `unattributed` bucket. Honest by construction (docs/128 §5): a sale
+// with no matching same-day web traffic — staff / B2B / POS / phone / renewal, or
+// a visit on a different day — belongs in `unattributed`, never dropped or zeroed.
+// `unresolvedOrders` counts rows never scanned (attribution_resolved_at IS NULL —
+// placed before attribution shipped), so the UI can caveat the cutover window
+// rather than imply those sales genuinely had no source. Live aggregate.
+
+export interface AttributionRow {
+  source: string; // search | direct | social | referral | unattributed
+  orders: number;
+  revenueCents: number;
+  sharePct: number;
+}
+
+export interface AttributionBreakdown {
+  rangeLabel: string;
+  totalOrders: number;
+  totalRevenueCents: number;
+  bySource: AttributionRow[];
+  // Orders in the window with attribution_resolved_at IS NULL — never looked at
+  // (pre-cutover, or a resolver that never ran). A subset of the `unattributed`
+  // bucket, surfaced so the UI states the cutover limit plainly (docs/128 §8).
+  unresolvedOrders: number;
+  currency: string;
+}
+
+export async function attributionBreakdown(
+  ctx: ServiceContext,
+  range?: DateRange
+): Promise<AttributionBreakdown> {
+  const to = range ? new Date(range.to) : new Date();
+  const from = range
+    ? new Date(range.from)
+    : new Date(Date.now() - CHANNEL_DEFAULT_DAYS * 86_400_000);
+  const label = range ? rangeLabel(range) : `Last ${CHANNEL_DEFAULT_DAYS} days`;
+
+  return withTenant(ctx, async (tx) => {
+    const baseWhere = { placedAt: { gte: from, lte: to }, status: { not: 'cancelled' } };
+
+    const groups = await tx.order.groupBy({
+      by: ['attributionSource'],
+      where: baseWhere,
+      _count: { _all: true },
+      _sum: { total: true },
+    });
+
+    // Collapse the null-source group into the explicit `unattributed` key. groupBy
+    // yields at most one null group, so a plain map suffices, but reduce-merge is
+    // defensive against a stray empty-string source ever appearing.
+    const merged = new Map<string, { orders: number; revenueCents: number }>();
+    for (const g of groups) {
+      const key = g.attributionSource || 'unattributed';
+      const prev = merged.get(key) ?? { orders: 0, revenueCents: 0 };
+      merged.set(key, {
+        orders: prev.orders + g._count._all,
+        revenueCents: prev.revenueCents + decimalToCents(g._sum.total),
+      });
+    }
+
+    const totalRevenueCents = [...merged.values()].reduce((s, r) => s + r.revenueCents, 0);
+    const totalOrders = [...merged.values()].reduce((s, r) => s + r.orders, 0);
+
+    const bySource: AttributionRow[] = [...merged.entries()]
+      .map(([source, r]) => ({
+        source,
+        orders: r.orders,
+        revenueCents: r.revenueCents,
+        sharePct:
+          totalRevenueCents > 0 ? +((r.revenueCents / totalRevenueCents) * 100).toFixed(1) : 0,
+      }))
+      .sort((a, b) => b.revenueCents - a.revenueCents);
+
+    const unresolvedOrders = await tx.order.count({
+      where: { ...baseWhere, attributionResolvedAt: null },
+    });
+
+    return {
+      rangeLabel: label,
+      totalOrders,
+      totalRevenueCents,
+      bySource,
+      unresolvedOrders,
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
+
 // ─── Channel revenue consolidation (docs/27 §8, docs/106 §4.4) ────────────────
 //
 // The richer sibling of channelBreakdown: it CONSOLIDATES every sales channel —
