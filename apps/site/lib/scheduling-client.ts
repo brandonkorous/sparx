@@ -31,6 +31,9 @@ export interface BookingConfirmation {
    *  a clientSecret to confirm with the gateway's card element. Null otherwise. */
   deposit?: {
     clientSecret: string;
+    /** Present when the tenant runs its own Stripe account (`stripe_direct`) — the
+     *  intent is on THEIR account, so the browser must load Stripe.js with THEIR key. */
+    publishableKey?: string;
     amountCents: number;
     type: DepositType;
   } | null;

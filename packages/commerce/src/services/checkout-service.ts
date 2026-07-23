@@ -355,6 +355,11 @@ export interface CreatePaymentIntentResult {
   providerSlug: string;
   /** Inline (Stripe-family) gateways — confirm in the browser with Elements. */
   clientSecret?: string;
+  /** The publishable key the browser must load Stripe.js with, when it isn't the
+   *  platform's. Present for `stripe_direct` (the intent is on the merchant's own
+   *  account); absent for sparx Pay / sparx.market, where the storefront's build-time
+   *  key is already the right account. */
+  publishableKey?: string;
   /** Hosted-redirect gateways (Square / Authorize.net / 1stPay / custom, docs/111 D4)
    *  — the vendor page the storefront sends the shopper to. When a token also rides in
    *  `clientSecret` (Authorize.net Accept Hosted), the storefront POSTs it. */
@@ -479,6 +484,7 @@ export async function createPaymentIntent(
     paymentRef: intent.id,
     providerSlug,
     ...(intent.clientSecret ? { clientSecret: intent.clientSecret } : {}),
+    ...(intent.publishableKey ? { publishableKey: intent.publishableKey } : {}),
     ...(intent.redirectUrl ? { redirectUrl: intent.redirectUrl } : {}),
     amountCents: session.totalCents,
     currency: session.currency,

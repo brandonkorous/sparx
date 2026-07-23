@@ -36,6 +36,16 @@ export class StripeDirectGateway implements PaymentGateway {
     return getPaymentSecretReader().read(credentialRef(tenantId, STRIPE_DIRECT_ID, field));
   }
 
+  /** Same resolution as `cred`, but null instead of throwing — for a field the flow
+   *  can degrade without (the publishable key on a legacy GSM-provisioned tenant). */
+  private async optionalCred(tenantId: string, field: string): Promise<string | null> {
+    try {
+      return await this.cred(tenantId, field);
+    } catch {
+      return null;
+    }
+  }
+
   private async stripeFor(tenantId: string): Promise<Stripe> {
     return stripeForKey(await this.cred(tenantId, 'secret_key'));
   }
@@ -61,7 +71,17 @@ export class StripeDirectGateway implements PaymentGateway {
         ...params.metadata,
       },
     });
-    return toPaymentIntent(intent);
+
+    // The intent lives on the MERCHANT's account, so the browser must confirm it with
+    // the MERCHANT's publishable key — the storefront's build-time platform key would
+    // fail with "No such payment_intent". Captured as a non-secret credential field
+    // (catalog.ts `publishable_key`), so it rides back with the intent.
+    const publishableKey = await this.optionalCred(params.tenantId, 'publishable_key');
+
+    return {
+      ...toPaymentIntent(intent),
+      ...(publishableKey ? { publishableKey } : {}),
+    };
   }
 
   // Confirm / capture / cancel for Stripe Direct are driven client-side (Stripe.js

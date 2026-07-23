@@ -6,7 +6,10 @@
 // the storefront checkout's payment step — a card hold authorizes (manual capture,
 // charged only on a no-show/late cancel), a deposit/prepay charges immediately.
 //
-// Publishable key from NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY (shared with checkout).
+// Publishable key: the booking API's own `deposit.publishableKey` when the tenant runs
+// its own Stripe account (`stripe_direct` — the intent lives there, so only that
+// account's key can confirm it), else sparx's build-time platform key, which is the
+// right one for sparx Pay. Same resolution as the checkout payment step.
 
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { loadStripe, type Stripe } from '@stripe/stripe-js';
@@ -16,13 +19,18 @@ import { Alert, Button } from '@wizeworks/silicaui-react';
 
 import type { DepositType } from '../../lib/scheduling-client';
 
-const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
+const PLATFORM_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
 
-// loadStripe should run once across mounts.
-let stripePromise: Promise<Stripe | null> | null = null;
-function getStripe(): Promise<Stripe | null> {
-  stripePromise ??= loadStripe(PUBLISHABLE_KEY);
-  return stripePromise;
+// loadStripe should run once per account across mounts — keyed so two tenants on
+// different Stripe accounts can't be handed each other's publishable key.
+const stripePromises = new Map<string, Promise<Stripe | null>>();
+function getStripe(publishableKey: string): Promise<Stripe | null> {
+  let promise = stripePromises.get(publishableKey);
+  if (!promise) {
+    promise = loadStripe(publishableKey);
+    stripePromises.set(publishableKey, promise);
+  }
+  return promise;
 }
 
 function money(cents: number): string {
@@ -37,6 +45,9 @@ const INTRO: Record<DepositType, string> = {
 
 export interface BookingDepositStepProps {
   clientSecret: string;
+  /** The tenant's own Stripe publishable key, when the deposit intent is on their
+   *  account rather than sparx's. Falls back to the platform key when absent. */
+  publishableKey?: string;
   amountCents: number;
   type: DepositType;
   serviceName: string;
@@ -45,14 +56,16 @@ export interface BookingDepositStepProps {
 
 export function BookingDepositStep({
   clientSecret,
+  publishableKey,
   amountCents,
   type,
   serviceName,
   onPaid,
 }: BookingDepositStepProps) {
-  const stripe = useMemo(() => getStripe(), []);
+  const key = publishableKey ?? PLATFORM_PUBLISHABLE_KEY;
+  const stripe = useMemo(() => (key ? getStripe(key) : null), [key]);
 
-  if (!PUBLISHABLE_KEY) {
+  if (!stripe) {
     return (
       <Alert color="danger">
         Payments aren’t configured for this site yet (missing Stripe publishable key).

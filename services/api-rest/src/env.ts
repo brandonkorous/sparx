@@ -238,6 +238,22 @@ const EnvSchema = z
     // refuses to store a grant, exactly like channels without its key. Rotating it
     // invalidates every stored social grant (tenants reconnect).
     SOCIAL_TOKEN_KEY: z.string().optional(),
+    // Social-posting platform OAuth apps (docs/133 §6, docs/134). Each adapter reads
+    // these directly via process.env; declared here as the canonical env inventory. A
+    // platform stays `coming_soon` until BOTH its id + secret are set (no code change).
+    // Google Business Profile + YouTube reuse GOOGLE_OAUTH_CLIENT_ID/_SECRET (above);
+    // Facebook Pages + Instagram + Threads share the ONE Meta app (META_APP_ID/_SECRET
+    // below) — Threads adds its own THREADS_APP_ID/_SECRET on the same verification;
+    // Pinterest reuses PINTEREST_APP_ID/_SECRET (below, shared with the channels catalog
+    // app). TikTok's CONTENT-POSTING app (TIKTOK_CLIENT_KEY/_SECRET) is distinct from the
+    // channels TikTok-Shop app (TIKTOK_APP_KEY/_SECRET). X is intentionally unshipped
+    // (paid-tier posting API — no adapter until it's committed).
+    LINKEDIN_CLIENT_ID: z.string().optional(),
+    LINKEDIN_CLIENT_SECRET: z.string().optional(),
+    THREADS_APP_ID: z.string().optional(),
+    THREADS_APP_SECRET: z.string().optional(),
+    TIKTOK_CLIENT_KEY: z.string().optional(),
+    TIKTOK_CLIENT_SECRET: z.string().optional(),
     // Provider-installation secret-encryption key (docs/09 provider marketplace) —
     // AES-256-GCM key encrypting tenant-pasted provider credentials (e.g. a Shippo
     // API token) at rest, keyed by PROVIDER_SECRET_KEY (32 bytes, base64 or hex;

@@ -288,6 +288,9 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
       paymentRef: intent.paymentRef,
       providerSlug: intent.providerSlug,
       ...(intent.clientSecret ? { clientSecret: intent.clientSecret } : {}),
+      // Only set for stripe_direct — the merchant's own key, which the browser needs
+      // to confirm an intent that lives on the merchant's account (docs/94 §7).
+      ...(intent.publishableKey ? { publishableKey: intent.publishableKey } : {}),
       ...(intent.redirectUrl ? { redirectUrl: intent.redirectUrl } : {}),
       amountCents: intent.amountCents,
       currency: intent.currency,

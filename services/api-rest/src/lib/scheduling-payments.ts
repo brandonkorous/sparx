@@ -38,6 +38,9 @@ export interface DepositCreationResult {
   /** True when a deposit/hold was created and a clientSecret is returned. */
   required: boolean;
   clientSecret?: string;
+  /** The publishable key the widget must load Stripe.js with, when the intent isn't
+   *  on sparx's own account (a `stripe_direct` tenant). Absent for sparx Pay. */
+  publishableKey?: string;
   amountCents?: number;
   type?: DepositType;
 }
@@ -156,6 +159,7 @@ export async function createBookingDeposit(
     return {
       required: true,
       clientSecret: intent.clientSecret,
+      ...(intent.publishableKey ? { publishableKey: intent.publishableKey } : {}),
       amountCents: plan.amountCents,
       type: plan.type,
     };

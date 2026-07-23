@@ -197,6 +197,9 @@ export function BookingWidget({
     return (
       <BookingDepositStep
         clientSecret={pendingDeposit.deposit.clientSecret}
+        {...(pendingDeposit.deposit.publishableKey
+          ? { publishableKey: pendingDeposit.deposit.publishableKey }
+          : {})}
         amountCents={pendingDeposit.deposit.amountCents}
         type={pendingDeposit.deposit.type}
         serviceName={pendingDeposit.serviceName}

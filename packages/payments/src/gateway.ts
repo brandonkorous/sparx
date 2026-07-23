@@ -18,6 +18,13 @@ export interface PaymentIntent {
   /** For `redirect` checkout gateways (Square / Authorize.net / 1stPay / custom): the
    *  vendor-hosted payment page the storefront sends the shopper to. Empty for inline. */
   redirectUrl?: string;
+  /** The publishable/client key the BROWSER must mount its card form with, when it
+   *  isn't the platform's own. A `client_secret` is only confirmable by the Stripe.js
+   *  instance loaded with the publishable key of the account that ISSUED it — so a
+   *  `stripe_direct` tenant (intent on the merchant's own account) has to ship theirs
+   *  per-request. Omitted for sparx Pay + sparx.market, whose intents live on the
+   *  platform account the storefront's build-time key already matches. */
+  publishableKey?: string;
   /** Amount in cents. */
   amount: number;
   currency: string;

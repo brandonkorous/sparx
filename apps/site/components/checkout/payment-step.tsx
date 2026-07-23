@@ -28,13 +28,23 @@ const NET_TERMS_OPTIONS = [
   { value: 'net90', label: 'Net 90' },
 ] as const;
 
-const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
+// sparx's own publishable key, inlined at BUILD time (see apps/site/Dockerfile).
+// Correct for sparx Pay, whose intents are destination charges on sparx's platform
+// account. A `stripe_direct` tenant's intent lives on the merchant's account and
+// comes back with its own `publishableKey`, which wins below.
+const PLATFORM_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
 
-// Memoize the Stripe.js loader across mounts (loadStripe should run once).
-let stripePromise: Promise<Stripe | null> | null = null;
-function getStripe(): Promise<Stripe | null> {
-  stripePromise ??= loadStripe(PUBLISHABLE_KEY);
-  return stripePromise;
+// Memoize the Stripe.js loader per key (loadStripe should run once per account) —
+// keyed, not a single slot, so two tenants on different Stripe accounts in the same
+// browser session don't hand each other's Elements the wrong publishable key.
+const stripePromises = new Map<string, Promise<Stripe | null>>();
+function getStripe(publishableKey: string): Promise<Stripe | null> {
+  let promise = stripePromises.get(publishableKey);
+  if (!promise) {
+    promise = loadStripe(publishableKey);
+    stripePromises.set(publishableKey, promise);
+  }
+  return promise;
 }
 
 export interface PaymentStepProps {
@@ -177,7 +187,12 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const stripe = useMemo(() => getStripe(), []);
+  // The merchant's own key when the gateway sent one, else sparx's platform key.
+  const publishableKey = intent?.publishableKey ?? PLATFORM_PUBLISHABLE_KEY;
+  const stripe = useMemo(
+    () => (publishableKey ? getStripe(publishableKey) : null),
+    [publishableKey]
+  );
 
   if (error) {
     return (
@@ -205,7 +220,7 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
     return <RedirectPay intent={intent} session={session} onBack={onBack} />;
   }
 
-  if (!PUBLISHABLE_KEY) {
+  if (!stripe) {
     return (
       <Alert color="danger">
         Payments aren’t configured for this store yet (missing Stripe publishable key).

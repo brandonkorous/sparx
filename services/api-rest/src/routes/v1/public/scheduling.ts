@@ -274,6 +274,7 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
         deposit: deposit.required
           ? {
               clientSecret: deposit.clientSecret,
+              ...(deposit.publishableKey ? { publishableKey: deposit.publishableKey } : {}),
               amountCents: deposit.amountCents,
               type: deposit.type,
             }
