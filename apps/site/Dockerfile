@@ -62,6 +62,18 @@ COPY apps/site apps/site
 # an installed devDep of site-ui (the filtered install above is not --prod).
 RUN pnpm --filter @sparx/site-ui build
 
+# Stripe.js publishable key. `NEXT_PUBLIC_*` is INLINED INTO THE CLIENT BUNDLE AT
+# BUILD TIME — setting it on the running pod does nothing, so it has to arrive as a
+# build-arg here (wired from the repo variable in build-images.yml). Without it the
+# checkout's Payment Element never mounts and every tenant storefront shows
+# "Payments aren't configured for this store yet". This is the PLATFORM key: sparx
+# Pay's intents are destination charges on sparx's own account, so the platform key
+# is the right one to confirm them with. A `stripe_direct` tenant's intent lives on
+# THEIR account and is confirmed with THEIR publishable key, which the payment-intent
+# response carries per-request (see packages/payments/src/gateways/stripe-direct.ts).
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+
 # next.config.mjs has `output: 'standalone'` and outputFileTracingRoot
 # pointing at the monorepo root for this to work.
 RUN pnpm --filter @sparx/site build

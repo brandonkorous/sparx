@@ -133,10 +133,17 @@ jobs:
           file: ${{ steps.dockerfile.outputs.path }}
           push: true
           provenance: false
+          # Every NEXT_PUBLIC_* value is INLINED into the client bundle at build
+          # time, so it has to be a build-arg — setting it on the pod is too late.
+          # These are repo VARIABLES (Settings → Variables), not secrets: a Stripe
+          # publishable key is public by design and ships in the browser bundle.
+          # A Dockerfile that doesn't declare a matching ARG just ignores it.
           build-args: |
             APP_VERSION=${{ steps.tags.outputs.app_version }}
             NEXT_PUBLIC_POSTHOG_KEY=${{ vars.NEXT_PUBLIC_POSTHOG_KEY }}
             NEXT_PUBLIC_POSTHOG_HOST=${{ vars.NEXT_PUBLIC_POSTHOG_HOST || 'https://us.i.posthog.com' }}
+            NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=${{ vars.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY }}
+            NEXT_PUBLIC_MARKET_STRIPE_PUBLISHABLE_KEY=${{ vars.NEXT_PUBLIC_MARKET_STRIPE_PUBLISHABLE_KEY }}
           tags: |
             ${{ steps.tags.outputs.sha_tag }}
             ${{ steps.tags.outputs.version_tag }}

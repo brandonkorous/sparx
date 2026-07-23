@@ -315,6 +315,19 @@ module "secrets" {
     "customer-auth-secret",
     "stripe-secret-key",
     "stripe-webhook-secret",
+    # Stripe webhook signing secrets — ONE PER ENDPOINT, and the code reads them by
+    # endpoint-specific name, NOT the generic `stripe-webhook-secret` above:
+    #   stripe-webhook-secret-sparx-pay → STRIPE_WEBHOOK_SECRET_SPARX_PAY, verifying
+    #     POST /v1/public/webhooks/sparx-pay (the Connect destination-charge endpoint
+    #     that flips an order to paid). While unset, that route logs a warning and
+    #     200-ACKS WITHOUT PROCESSING — cards are charged, orders stay unpaid, and no
+    #     confirmation email is sent. Silent, so it must be populated before go-live.
+    #   stripe-webhook-secret-billing → STRIPE_WEBHOOK_SECRET_BILLING, verifying the
+    #     platform module-billing endpoint (@sparx/billing). Same fail-silent shape.
+    # Value comes from Stripe → Developers → Webhooks → <endpoint> → signing secret
+    # (`whsec_…`), added out-of-band via `gcloud secrets versions add`.
+    "stripe-webhook-secret-sparx-pay",
+    "stripe-webhook-secret-billing",
     "godaddy-api-key-ote",
     "godaddy-api-secret-ote",
     "godaddy-api-key-prod",
@@ -399,6 +412,30 @@ module "secrets" {
     #   gcloud secrets versions add social-token-key --data-file=- \
     #     <<< "$(openssl rand -base64 32)"
     "social-token-key",
+    # Per-platform social-posting OAuth apps (docs/133 §6, docs/134). Each platform's
+    # id + secret; api-rest (k8s, sparx-app-secrets) reads them as e.g.
+    # LINKEDIN_CLIENT_ID / _SECRET, and the social-worker binds the SECRET halves for
+    # token refresh (serverless.tf) as each app is approved. CONTAINERS are declared
+    # now (empty = free, no active version) so provisioning is a one-liner the instant
+    # an app clears review; the platform stays coming_soon until BOTH halves land — no
+    # code change. Google Business Profile + YouTube reuse google-oauth-client-id/_secret
+    # (above); X is intentionally omitted (paid-tier posting API — no adapter until it's
+    # committed). Add values out-of-band, e.g.:
+    #   gcloud secrets versions add linkedin-client-secret --data-file=- <<< "<secret>"
+    # LinkedIn org posts (Phase 1 — lightest approval).
+    "linkedin-client-id",
+    "linkedin-client-secret",
+    # Meta (Phase 2) — Facebook Pages + Instagram share ONE app; Threads rides the same
+    # verification but has its own app credentials. All gated on Meta App Review.
+    "meta-app-id",
+    "meta-app-secret",
+    "threads-app-id",
+    "threads-app-secret",
+    # Pinterest + TikTok (Phase 3) — each its own app + content-API approval.
+    "pinterest-app-id",
+    "pinterest-app-secret",
+    "tiktok-client-key",
+    "tiktok-client-secret",
     # Provider-installation secret-encryption key (docs/09) — AES-256-GCM key
     # encrypting tenant-pasted provider credentials (e.g. a Shippo API token)
     # stored on provider_installations.configEncrypted. Bound by api-rest only

@@ -672,11 +672,22 @@ module "channel_sync_worker_cloudrun" {
 # records each per-target result — then publishes social.post.published / .failed.
 #
 # SECRET SEQUENCING (mirrors channel-sync-worker): social-token-key is a generated
-# 32-byte key, bound now (not gated on any partner). The platform OAuth client secret
-# used for token REFRESH (google-oauth-client-secret; later meta/linkedin) + the
-# non-secret client IDs (GOOGLE_OAUTH_CLIENT_ID) + MEDIA_PUBLIC_BASE_URL are added at
-# go-live, the same approval gate that flips a platform connectable. A pure no-op
-# (scale-to-zero) until a tenant connects an account and publishes.
+# 32-byte key, bound now (not gated on any partner). The platform OAuth client SECRETS
+# used for token REFRESH bind at go-live, per platform, the SAME approval gate that
+# flips that platform connectable — a Cloud Run env-from-secret binding requires the
+# secret VERSION to already exist, so we cannot bind them empty (it breaks the deploy).
+# Each secret CONTAINER is declared now in module.secrets (main.tf), so go-live is just
+# `gcloud secrets versions add <name>` + uncommenting its binding below:
+#   google-oauth-client-secret  → GOOGLE_OAUTH_CLIENT_SECRET  (Google Business + YouTube)
+#   linkedin-client-secret      → LINKEDIN_CLIENT_SECRET
+#   meta-app-secret             → META_APP_SECRET             (Facebook Pages + Instagram)
+#   threads-app-secret          → THREADS_APP_SECRET
+#   pinterest-app-secret        → PINTEREST_APP_SECRET
+#   tiktok-client-secret        → TIKTOK_CLIENT_SECRET
+# Refresh also needs the matching non-secret client IDs (GOOGLE_OAUTH_CLIENT_ID /
+# LINKEDIN_CLIENT_ID / META_APP_ID / THREADS_APP_ID / PINTEREST_APP_ID / TIKTOK_CLIENT_KEY)
+# + MEDIA_PUBLIC_BASE_URL (the public origin a platform fetches post media from) — add
+# them to env_vars at go-live. A pure no-op (scale-to-zero) until a tenant publishes.
 
 resource "google_service_account" "social_worker" {
   account_id   = "sparx-social-worker"
@@ -739,8 +750,10 @@ module "social_worker_cloudrun" {
       name      = "SOCIAL_TOKEN_KEY"
       secret_id = "social-token-key"
     },
-    # google-oauth-client-secret (token refresh) binds at go-live, the same gate that
-    # flips google_business connectable — can't bind a secret value before it exists.
+    # The per-platform token-REFRESH client secrets bind here at go-live (one block per
+    # platform, uncommented once its `gcloud secrets versions add` lands) — see the
+    # SECRET SEQUENCING checklist in this service's header comment. Left unbound now
+    # because a Cloud Run env-from-secret binding requires an existing secret version.
   ]
 
   pubsub_topic                 = "social.post.due"

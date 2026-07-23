@@ -41,6 +41,17 @@ COPY packages/commerce-schemas packages/commerce-schemas
 COPY packages/crm-schemas packages/crm-schemas
 COPY apps/market apps/market
 
+# Stripe.js publishable key — inlined into the client bundle at BUILD time, so it
+# must arrive as a build-arg (a pod env var is too late). sparx.market is
+# merchant-of-record: its charges are direct charges on sparx's own platform
+# account, so the platform key is the correct one. The market-specific override
+# exists for a separate market-facing Stripe account; it falls back to the shared
+# platform key in apps/market/components/checkout/payment-step.tsx.
+ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+ARG NEXT_PUBLIC_MARKET_STRIPE_PUBLISHABLE_KEY
+ENV NEXT_PUBLIC_MARKET_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_MARKET_STRIPE_PUBLISHABLE_KEY
+
 # next.config.mjs has `output: 'standalone'` and outputFileTracingRoot pointing
 # at the monorepo root for this to work.
 RUN pnpm --filter @sparx/market build

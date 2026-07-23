@@ -239,8 +239,21 @@ jobs:
             sparx-internal-operator-token
             stripe-secret-key
             stripe-webhook-secret
+            stripe-webhook-secret-sparx-pay
+            stripe-webhook-secret-billing
             channels-token-key
             provider-secret-key
+            social-token-key
+            linkedin-client-id
+            linkedin-client-secret
+            meta-app-id
+            meta-app-secret
+            threads-app-id
+            threads-app-secret
+            pinterest-app-id
+            pinterest-app-secret
+            tiktok-client-key
+            tiktok-client-secret
             godaddy-api-key-ote
             godaddy-api-secret-ote
             godaddy-api-key-prod
