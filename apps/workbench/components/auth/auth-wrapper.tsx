@@ -16,8 +16,8 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { KeyRound, LogIn, Mail, UserPlus } from 'lucide-react';
-import { authClient, emailOtp, signIn } from '@sparx/auth/client';
+import { KeyRound, LogIn, Mail, ShieldCheck, UserPlus } from 'lucide-react';
+import { authClient, emailOtp, signIn, twoFactor } from '@sparx/auth/client';
 import {
   Alert,
   Button,
@@ -40,10 +40,29 @@ const OTP_LENGTH = 6;
 /** Platform legal pages — served by the marketing site, opened in a new tab. */
 const LEGAL_BASE = 'https://sparx.works/legal';
 
+/** How many characters a backup code is (server: backupCodeOptions.length). */
+const BACKUP_CODE_LENGTH = 10;
+
 type Mode = 'signIn' | 'signUp';
 /** The card body swaps between the method form and each mid-flow confirmation. */
-type View = 'form' | 'otp' | 'linkSent' | 'forgotPassword' | 'resetSent';
-type Pending = null | 'password' | 'sendCode' | 'verifyCode' | 'link' | 'passkey' | 'reset';
+type View = 'form' | 'otp' | 'linkSent' | 'forgotPassword' | 'resetSent' | 'twoFactor';
+type Pending =
+  | null
+  | 'password'
+  | 'sendCode'
+  | 'verifyCode'
+  | 'link'
+  | 'passkey'
+  | 'reset'
+  | 'twoFactor';
+
+/** Whether a sign-in response is really "correct credentials, now prove the
+ *  second factor". Better Auth answers `{ twoFactorRedirect: true }` in place of
+ *  a session; we read it defensively because the flag only exists on the
+ *  two-factor branch of the response union. */
+function needsSecondFactor(data: unknown): boolean {
+  return (data as { twoFactorRedirect?: boolean } | null)?.twoFactorRedirect === true;
+}
 
 /** The required "I agree to the policies" row shown in create-account mode. It
  *  sits ABOVE every sign-up method so it visibly governs all of them (Google,
@@ -116,6 +135,15 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
   const [code, setCode] = useState('');
   const [agreeLegal, setAgreeLegal] = useState(false);
 
+  // Second-factor challenge state. `useBackupCode` swaps the challenge between
+  // the app's 6-digit code and a 10-character backup code — same step, same
+  // card, because "I don't have my phone" is a branch of the same question, not
+  // a different screen. `trustDevice` defaults OFF: skipping the second factor
+  // for a month is a real weakening of it, so it is something the operator opts
+  // into, never something we assume on their behalf.
+  const [useBackupCode, setUseBackupCode] = useState(false);
+  const [trustDevice, setTrustDevice] = useState(false);
+
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState<Pending>(null);
 
@@ -140,6 +168,20 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
     setPassword('');
     setCode('');
     setAgreeLegal(false);
+    setUseBackupCode(false);
+    setTrustDevice(false);
+  }
+
+  /** Hand off to the second-factor challenge. The password is cleared on the
+   *  way — it has already done its job, and holding it in state through a step
+   *  that can sit open for minutes buys nothing. */
+  function challengeSecondFactor() {
+    setPassword('');
+    setCode('');
+    setUseBackupCode(false);
+    setError(null);
+    setPending(null);
+    setView('twoFactor');
   }
 
   // Passkey conditional UI: arm the browser's autofill so a returning operator can
@@ -207,6 +249,13 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
       return;
     }
 
+    // Right password, but the account asks for a second step — no session has
+    // been issued yet, so this is a continuation of signing in, not a success.
+    if (needsSecondFactor(result.data)) {
+      challengeSecondFactor();
+      return;
+    }
+
     finish();
   }
 
@@ -240,6 +289,32 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
     const result = await signIn.emailOtp({ email, otp: code });
     if (result.error) {
       setError('That code did not match, or it has expired. Request a new one.');
+      setPending(null);
+      return;
+    }
+    if (needsSecondFactor(result.data)) {
+      challengeSecondFactor();
+      return;
+    }
+    finish();
+  }
+
+  /** Complete the second-factor challenge with either an authenticator code or
+   *  a backup code. Both end the same way — a session, and the app. */
+  async function onVerifyTwoFactor(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setError(null);
+    setPending('twoFactor');
+    const result = useBackupCode
+      ? await twoFactor.verifyBackupCode({ code, trustDevice })
+      : await twoFactor.verifyTotp({ code, trustDevice });
+    if (result.error) {
+      setError(
+        useBackupCode
+          ? 'That backup code did not work. Each code can only be used once — try another one.'
+          : 'That code did not work. Codes change every 30 seconds, so check your app for the current one.'
+      );
+      setCode('');
       setPending(null);
       return;
     }
@@ -366,6 +441,106 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
               Resend code
             </Button>
           </div>
+        </form>
+      </AuthShell>
+    );
+  }
+
+  // ── Second-factor challenge view ─────────────────────────────────────────────
+  // Reached only after the password (or emailed code) has already been accepted.
+  // There is no "back to sign in" here on purpose: going back would suggest the
+  // first step can be retried around this one, which it cannot.
+  if (view === 'twoFactor') {
+    const expectedLength = useBackupCode ? BACKUP_CODE_LENGTH : OTP_LENGTH;
+    return (
+      <AuthShell
+        tabs={[{ id: 'twoFactor', label: 'Two-step verification', icon: ShieldCheck }]}
+        activeTab="twoFactor"
+      >
+        <form onSubmit={onVerifyTwoFactor} className="flex flex-col gap-5">
+          <div className="flex flex-col gap-1">
+            <h2 className="text-xl font-semibold">
+              {useBackupCode ? 'Use a backup code' : 'Enter the code from your app'}
+            </h2>
+            <Text className="text-base-content/70 text-sm">
+              {useBackupCode
+                ? 'Enter one of the backup codes you saved when you turned on two-step verification. Each code works once.'
+                : 'Open your authenticator app and enter the 6-digit code it shows for sparx. The code changes every 30 seconds.'}
+            </Text>
+          </div>
+
+          {error ? (
+            <Alert color="danger" variant="soft" role="alert">
+              {error}
+            </Alert>
+          ) : null}
+
+          <Field>
+            <FieldLabel>{useBackupCode ? 'Backup code' : 'Verification code'}</FieldLabel>
+            <FieldControl
+              // A backup code is alphanumeric, so only the app code gets the
+              // numeric keypad + one-time-code autofill.
+              {...(useBackupCode
+                ? { autoComplete: 'off' as const }
+                : {
+                    inputMode: 'numeric' as const,
+                    autoComplete: 'one-time-code' as const,
+                    pattern: '[0-9]*',
+                  })}
+              maxLength={expectedLength}
+              required
+              className="text-center text-lg tracking-[0.4em]"
+              value={code}
+              onChange={(event) => {
+                const next = useBackupCode
+                  ? event.target.value.trim()
+                  : event.target.value.replace(/\D/g, '');
+                setCode(next.slice(0, expectedLength));
+              }}
+            />
+          </Field>
+
+          <div className="flex items-start gap-2">
+            <Checkbox
+              id="trustDevice"
+              className="mt-0.5"
+              checked={trustDevice}
+              onChange={(event) => {
+                setTrustDevice(event.target.checked);
+              }}
+            />
+            <label htmlFor="trustDevice" className="text-base-content text-sm">
+              Don&rsquo;t ask again on this device for 30 days.
+              <span className="block">
+                Only tick this on a device that is yours and that other people cannot use.
+              </span>
+            </label>
+          </div>
+
+          <Button
+            type="submit"
+            color="primary"
+            disabled={busy || code.length < expectedLength}
+            loading={pending === 'twoFactor'}
+          >
+            Verify and sign in
+          </Button>
+
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            disabled={busy}
+            onClick={() => {
+              setUseBackupCode((prev) => !prev);
+              setCode('');
+              setError(null);
+            }}
+          >
+            {useBackupCode
+              ? 'Use my authenticator app instead'
+              : 'I don’t have my phone — use a backup code'}
+          </Button>
         </form>
       </AuthShell>
     );

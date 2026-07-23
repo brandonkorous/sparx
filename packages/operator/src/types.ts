@@ -11,6 +11,11 @@ export interface OperatorIdentity {
   email: string;
   name: string | null;
   capabilities: OperatorCapability[];
+  /** Whether this operator has completed authenticator-app MFA setup. MFA is
+   *  mandatory for operators (docs/16 §2.4) — `requireOperator()` sends anyone
+   *  false here to the setup screen and nowhere else — so in practice every
+   *  identity that reaches a console surface has this true. */
+  twoFactorEnabled: boolean;
 }
 
 /** Response of the Slice-1 round-trip probe `GET /internal/operator/whoami`.

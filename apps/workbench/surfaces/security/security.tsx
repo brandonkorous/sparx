@@ -11,21 +11,21 @@
 //
 // The queries the toolbar's Refresh reloads (devices + activity) are owned HERE
 // and passed down, so one control refreshes the whole pane rather than each card
-// growing its own. Password change is a mutation with no list to refresh, so it
-// stays entirely inside its card.
+// growing its own. Password change and two-step verification are mutations with
+// no list to refresh, so they stay entirely inside their cards.
 //
-// Two-step verification is named honestly and nothing more: the platform has no
-// second-factor system yet, so this promises nothing it cannot do — no toggle,
-// no dead "Enable" button, just what is coming and why it is not here.
+// Two-step verification sits directly under the password because it is the same
+// question — how you prove it is you — and reads as the answer to the weakness
+// the card above it has.
 
 import { useEffect, useState } from 'react';
 import { Heading, Text } from '@wizeworks/silicaui-react';
-import { Clock } from 'lucide-react';
+import { useSession } from '@sparx/auth/client';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
-import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { PasswordCard } from './password-card';
+import { TwoFactorCard } from './two-factor-card';
 import { SessionsCard } from './sessions-card';
 import { ActivityCard } from './activity-card';
 import { ACTIVITY_PAGE, useActivity, useSessions } from './security-data';
@@ -37,6 +37,14 @@ export function SecuritySurface({ ctx }: { ctx: SurfaceContext }) {
 
   const sessions = useSessions();
   const activity = useActivity(activityLimit);
+
+  // Whether two-step verification is on is a fact about the SESSION's user, not
+  // a separate fetch — Better Auth carries `twoFactorEnabled` on the user and
+  // re-issues the session when the flag flips, so reading it here keeps the card
+  // honest without a query that could disagree with the cookie.
+  const { data: session } = useSession();
+  const twoFactorEnabled =
+    (session?.user as { twoFactorEnabled?: boolean } | undefined)?.twoFactorEnabled === true;
 
   useEffect(() => {
     ctx.setTitle('Security');
@@ -74,18 +82,7 @@ export function SecuritySurface({ ctx }: { ctx: SurfaceContext }) {
 
           <PasswordCard />
 
-          <FormSection title="Two-step verification">
-            <div className="flex items-start gap-3">
-              <Clock className="text-base-content mt-0.5 size-5 shrink-0" aria-hidden />
-              <Text className="text-sm">
-                Two-step verification asks for a second thing — a code from your phone — on top of
-                your password, so knowing your password alone is not enough to sign in. It is not
-                available in sparx yet. When it is, you will turn it on from here; until then, a
-                strong, unique password and signing out devices you do not recognise are your best
-                protection.
-              </Text>
-            </div>
-          </FormSection>
+          <TwoFactorCard enabled={twoFactorEnabled} />
 
           <SessionsCard
             sessions={sessions.data}

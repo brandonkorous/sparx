@@ -1,7 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { prismaAdapter } from 'better-auth/adapters/prisma';
 import { nextCookies } from 'better-auth/next-js';
-import { emailOTP, magicLink, mcp, oneTap, organization } from 'better-auth/plugins';
+import { emailOTP, magicLink, mcp, oneTap, organization, twoFactor } from 'better-auth/plugins';
 import { passkey } from '@better-auth/passkey';
 import { createAuthMiddleware, getSessionFromCtx } from 'better-auth/api';
 import { authPrisma } from './prisma';
@@ -383,6 +383,34 @@ function createAuth() {
       passkey({
         rpName: 'sparx',
         ...(process.env.PASSKEY_RP_ID ? { rpID: process.env.PASSKEY_RP_ID } : {}),
+      }),
+      // Authenticator-app two-step verification (docs/16 §2.4). The second
+      // factor a person can set up on any phone with any authenticator app —
+      // the complement to passkeys, which are stronger but need a device that
+      // supports them. Sign-in with a password now answers `twoFactorRedirect`
+      // instead of a session when this is on; the challenge is completed at
+      // /two-factor/verify-totp (or verify-backup-code) before a session
+      // exists at all.
+      //
+      // Three settings here are load-bearing:
+      //   • storeBackupCodes: 'encrypted' — the plugin default is PLAIN, which
+      //     would leave ten working account-recovery credentials per user
+      //     readable in the database. Encrypted (not hashed) because the owner
+      //     can re-display their unused codes; a one-way hash forecloses that.
+      //   • skipVerificationOnEnable stays FALSE (the default, stated for the
+      //     record) — enabling requires typing a code the app actually
+      //     generated, so a mis-scanned QR can never lock someone out of their
+      //     own business.
+      //   • allowPasswordless: true — a Google / magic-link / passkey operator
+      //     has no password to re-enter, and without this they could not turn
+      //     two-step verification on at all. Password is still demanded from
+      //     anyone who HAS one, so this loosens nothing for password accounts.
+      twoFactor({
+        issuer: 'sparx',
+        allowPasswordless: true,
+        skipVerificationOnEnable: false,
+        totpOptions: { digits: 6, period: 30 },
+        backupCodeOptions: { amount: 10, length: 10, storeBackupCodes: 'encrypted' },
       }),
       // nextCookies() must stay LAST so it can flush Set-Cookie for the
       // plugins registered before it.

@@ -1,7 +1,12 @@
 'use client';
 
 import { createAuthClient } from 'better-auth/react';
-import { emailOTPClient, inferAdditionalFields, magicLinkClient } from 'better-auth/client/plugins';
+import {
+  emailOTPClient,
+  inferAdditionalFields,
+  magicLinkClient,
+  twoFactorClient,
+} from 'better-auth/client/plugins';
 import { passkeyClient } from '@better-auth/passkey/client';
 import type { Auth } from './server';
 
@@ -23,8 +28,23 @@ import type { Auth } from './server';
 // the portable workbench image), so each app wires One Tap itself rather than
 // baking a client-id into this shared singleton.
 
+// twoFactorClient adds the authenticator-app methods (`twoFactor.enable` /
+// `getTotpUri` / `verifyTotp` / `generateBackupCodes` / `disable`). It is
+// deliberately configured with NEITHER `twoFactorPage` nor
+// `onTwoFactorRedirect`: both hijack the browser on the app's behalf, and
+// `twoFactorPage` does it with a full page reload that throws away the
+// half-filled sign-in card. Without them the plugin simply hands back
+// `{ twoFactorRedirect: true }` from `signIn.email`, and the caller swaps to its
+// own challenge step in place — see apps/workbench's AuthWrapper.
 export const authClient = createAuthClient({
-  plugins: [inferAdditionalFields<Auth>(), magicLinkClient(), emailOTPClient(), passkeyClient()],
+  plugins: [
+    inferAdditionalFields<Auth>(),
+    magicLinkClient(),
+    emailOTPClient(),
+    passkeyClient(),
+    twoFactorClient(),
+  ],
 });
 
-export const { signIn, signUp, signOut, useSession, getSession, emailOtp, passkey } = authClient;
+export const { signIn, signUp, signOut, useSession, getSession, emailOtp, passkey, twoFactor } =
+  authClient;

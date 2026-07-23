@@ -1,5 +1,6 @@
 import { betterAuth } from 'better-auth';
 import { nextCookies } from 'better-auth/next-js';
+import { twoFactor } from 'better-auth/plugins';
 import { operatorPool } from './db';
 import { publishOperatorEmail } from './email';
 
@@ -15,9 +16,11 @@ import { publishOperatorEmail } from './email';
 //   • Its own secret + cookie namespace, so an operator session and a tenant
 //     session can never be confused for one another.
 //   • Shorter sessions + a higher password floor than the tenant instance.
-//   • twoFactor-READY: MFA is deferred platform-wide (D8); when the plugin
-//     lands, add twoFactor() below + its wize_admin table. Until then Cloudflare
-//     Access + IP allowlist on admin.wize.works is the compensating control.
+//   • MFA is MANDATORY here, not optional as it is for tenant staff (docs/16
+//     §2.4). The plugin is registered below; `requireOperator()` in ./next is
+//     what enforces it — an operator with no enrollment can hold a session but
+//     reaches nothing except the setup screen. Cloudflare Access + the IP
+//     allowlist on admin.wize.works remain in front of all of it.
 
 declare global {
   var __sparxOperatorAuth: ReturnType<typeof createOperatorAuth> | undefined;
@@ -83,7 +86,24 @@ function createOperatorAuth() {
     },
 
     plugins: [
-      // twoFactor() lands here when MFA graduates (D8).
+      // Authenticator-app MFA for operators (docs/16 §2.4). Deliberately
+      // STRICTER than the tenant instance's copy of this plugin:
+      //   • no `allowPasswordless` — every operator is an email+password
+      //     account, so enabling, disabling, or re-reading backup codes always
+      //     costs the password. There is no passwordless operator to
+      //     accommodate, so the looser branch is simply not offered.
+      //   • its own table in wize_admin, so an operator enrollment shares
+      //     nothing with a tenant staff enrollment.
+      // storeBackupCodes: 'encrypted' overrides a PLAIN default — without it,
+      // ten working cross-tenant recovery credentials per operator would sit
+      // readable in the database.
+      twoFactor({
+        issuer: 'sparx operations',
+        twoFactorTable: 'platform_operator_two_factors',
+        skipVerificationOnEnable: false,
+        totpOptions: { digits: 6, period: 30 },
+        backupCodeOptions: { amount: 10, length: 10, storeBackupCodes: 'encrypted' },
+      }),
       // nextCookies() must stay LAST so it can flush Set-Cookie for the plugins
       // registered before it.
       nextCookies(),

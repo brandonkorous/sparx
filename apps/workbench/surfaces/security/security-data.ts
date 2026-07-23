@@ -18,9 +18,10 @@
 //     turns the shared audit_logs table into sentences with resolved actor
 //     names. It rides the same token/client as every other pane.
 //
-// Nothing here fakes two-step verification: the platform has no `twoFactor`
-// plugin yet (see docs/brain/architecture/better-auth.md), so the surface says
-// so honestly rather than drawing a toggle that does nothing.
+// Two-step verification is Better Auth's as well (the `twoFactor` plugin, wired
+// in packages/auth/src/server.ts), so it rides the same same-origin authClient
+// as passwords and sessions — see the two-factor section at the foot of this
+// file.
 
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { authClient } from '@sparx/auth/client';
@@ -145,6 +146,123 @@ export function useChangePassword() {
     onSuccess: () => {
       // Revoking other sessions changes the device list.
       void queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
+    },
+  });
+}
+
+/* ── Two-step verification (Better Auth `twoFactor` plugin) ─────────────────
+
+   Turning it on is a THREE-step handshake, and the order is the whole safety of
+   it: `enable` mints the secret and hands back the setup URI + backup codes but
+   leaves the account unprotected; only `verifyTotp` — with a code the operator
+   read off their own phone — flips it on. So a mis-scanned QR fails at the last
+   step and costs nothing, instead of locking someone out of their business.
+
+   Every one of these endpoints takes the account password. The server makes it
+   OPTIONAL only for accounts that have none (Google / magic-link / passkey
+   operators — `allowPasswordless` on the server plugin), which is why the UI
+   asks `useHasPassword` first rather than showing everyone a field half of them
+   cannot fill. */
+
+/** Whether this account signs in with a password at all. Better Auth records a
+ *  `credential` account row for password users and a provider row (google, …)
+ *  for the rest; an operator can have both. Drives whether the two-step forms
+ *  ask for a password, because the server requires one exactly when it exists. */
+export function useHasPassword() {
+  return useQuery({
+    queryKey: ['security', 'has-password'],
+    queryFn: async (): Promise<boolean> => {
+      const { data, error } = await authClient.listAccounts();
+      if (error) throw new Error(error.message ?? 'Could not check how you sign in.');
+      const rows = (data ?? []) as { providerId?: string }[];
+      return rows.some((row) => row.providerId === 'credential');
+    },
+    staleTime: 5 * 60_000,
+  });
+}
+
+export interface TwoFactorSetup {
+  /** `otpauth://` URI — what the QR encodes and what an authenticator app reads. */
+  totpURI: string;
+  /** Shown ONCE, at setup. They are encrypted at rest, and re-displaying them
+   *  later needs the password again, so this array is the operator's only
+   *  frictionless chance to save them. */
+  backupCodes: string[];
+}
+
+/** Step 1 of turning it on: mint the secret + backup codes. Two-step verification
+ *  is NOT active when this resolves — `useVerifyTwoFactor` completes it. */
+export function useEnableTwoFactor() {
+  return useMutation({
+    mutationFn: async (password: string): Promise<TwoFactorSetup> => {
+      const { data, error } = await authClient.twoFactor.enable(
+        password === '' ? {} : { password }
+      );
+      if (error) {
+        throw new Error(
+          error.message ?? 'Could not start setting up two-step verification. Please try again.'
+        );
+      }
+      const result = data as { totpURI?: string; backupCodes?: string[] } | null;
+      if (!result?.totpURI) throw new Error('The setup code did not come back. Please try again.');
+      return { totpURI: result.totpURI, backupCodes: result.backupCodes ?? [] };
+    },
+  });
+}
+
+/** Step 2: prove a code from the app. On success the server marks the enrollment
+ *  verified, flips `twoFactorEnabled`, and issues a fresh session — so the
+ *  session query is invalidated to pick the new flag up. */
+export function useVerifyTwoFactor() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (code: string) => {
+      const { error } = await authClient.twoFactor.verifyTotp({ code });
+      if (error) {
+        throw new Error(
+          error.message ??
+            'That code did not work. Codes change every 30 seconds — check your app for the current one.'
+        );
+      }
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
+    },
+  });
+}
+
+/** Turn two-step verification off. Removes the enrollment AND the backup codes,
+ *  so re-enabling later is a fresh setup with a new secret — an old QR
+ *  screenshot is worthless afterwards. */
+export function useDisableTwoFactor() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (password: string) => {
+      const { error } = await authClient.twoFactor.disable(password === '' ? {} : { password });
+      if (error) {
+        throw new Error(
+          error.message ?? 'Could not turn two-step verification off. Check your password.'
+        );
+      }
+    },
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SESSIONS_KEY });
+    },
+  });
+}
+
+/** Mint a fresh set of backup codes, invalidating the old ones. The right move
+ *  after using some, or after losing the list. */
+export function useRegenerateBackupCodes() {
+  return useMutation({
+    mutationFn: async (password: string): Promise<string[]> => {
+      const { data, error } = await authClient.twoFactor.generateBackupCodes(
+        password === '' ? {} : { password }
+      );
+      if (error) {
+        throw new Error(error.message ?? 'Could not create new backup codes. Please try again.');
+      }
+      return (data as { backupCodes?: string[] } | null)?.backupCodes ?? [];
     },
   });
 }

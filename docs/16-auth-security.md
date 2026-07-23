@@ -1,8 +1,8 @@
 # sparx Platform — Authentication, Multi-Tenancy & Security
 
-**Version:** 2.4
+**Version:** 2.5
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-07-23
 
 ---
 
@@ -109,7 +109,14 @@ Rotation: Old key valid for configurable overlap window
 
 ### Layer 4 — Platform Operator (WizeWorks Staff) — SHIPPED as the read-only admin console
 
-> **Reconciled 2026-07-22 (docs-vs-built audit):** This tier is **no longer deferred** — it shipped as the WizeWorks operations console (`apps/admin`, `app/(console)/sparx/*`), built exactly along the "Design for when it ships" lines below **except impersonation**: operators authenticate against a **separate WizeWorks Better Auth staff instance** (no `tid`, not a tenant `users` row), permissions are **capability-scoped and default-deny** (`support:read`, `billing:read`, `module:toggle`, …), and every cross-tenant read **and** write routes through audited api-rest `/internal/operator/*` endpoints (no ambient `BYPASSRLS`; the admin DB role only sees `wize_admin`). **Tenant impersonation was deliberately NOT built** (decision **D7**): there is no `impersonation_grants` table and no `tenant:impersonate` capability — operators get a **read-only account view** with representation parity instead, and the tenant app is untouched. **MFA status (precise):** passkeys, email OTP, and magic link are wired in `packages/auth` (`@better-auth/passkey`, `emailOTP`, `magicLink`), but **authenticator-app TOTP (the `twoFactor` plugin) is still NOT implemented**, and the "MFA mandatory for operators" requirement below is **not yet enforced**. The prose below is retained as the design rationale.
+> **Reconciled 2026-07-22 (docs-vs-built audit):** This tier is **no longer deferred** — it shipped as the WizeWorks operations console (`apps/admin`, `app/(console)/sparx/*`), built exactly along the "Design for when it ships" lines below **except impersonation**: operators authenticate against a **separate WizeWorks Better Auth staff instance** (no `tid`, not a tenant `users` row), permissions are **capability-scoped and default-deny** (`support:read`, `billing:read`, `module:toggle`, …), and every cross-tenant read **and** write routes through audited api-rest `/internal/operator/*` endpoints (no ambient `BYPASSRLS`; the admin DB role only sees `wize_admin`). **Tenant impersonation was deliberately NOT built** (decision **D7**): there is no `impersonation_grants` table and no `tenant:impersonate` capability — operators get a **read-only account view** with representation parity instead, and the tenant app is untouched. **MFA status (updated 2026-07-23 — now SHIPPED):** passkeys, email OTP, and magic link were already wired in `packages/auth` (`@better-auth/passkey`, `emailOTP`, `magicLink`); **authenticator-app TOTP now is too**, on both auth instances, and the "MFA mandatory for operators" requirement below **is enforced**. Specifically:
+
+- **Tenant staff — offered.** `twoFactor()` in `packages/auth/src/server.ts`, storage in `two_factors` (migration `20270114000000_two_factor_totp`, ENABLE-not-FORCE RLS like `passkeys`). Turned on from the workbench Security pane; sign-in gains a challenge step with a backup-code fallback and an opt-in 30-day trusted device.
+- **Operators — MANDATORY.** `twoFactor()` in `packages/operator-auth/src/server.ts` over its own `wize_admin.platform_operator_two_factors` table (migration `20270114000001_operator_two_factor`). Enforcement is at the gate, not in a banner: `requireOperator()` redirects any operator without a completed enrollment to `/two-factor-setup` and nowhere else, so a password-only operator session reaches no console surface. The setup route is the single `allowUnenrolled` caller.
+- **Backup codes are stored ENCRYPTED on both instances** (`storeBackupCodes: 'encrypted'`). The plugin's default is plain text, so this override is load-bearing, not decorative — and the same class of fix as the existing `storeToken: 'hashed'` / `storeOTP: 'hashed'` settings on magic link and email OTP.
+- Enabling always requires proving a generated code first (`skipVerificationOnEnable: false`), so a mis-scanned QR cannot lock anyone out.
+
+The prose below is retained as the design rationale.
 
 WizeWorks employees who operate the **platform itself** — support engineers answering a tenant ticket, finance reading cross-tenant revenue, growth reading acquisition by channel — are a **fundamentally different principal** from a tenant staff member. A tenant staff member belongs to exactly one tenant and must never see another tenant's data; a platform operator's entire job is the cross-tenant view.
 
