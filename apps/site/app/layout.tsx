@@ -564,6 +564,9 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         renderHost={storefrontHostRenderer({
                           site,
                           ...(activePropertySlug ? { propertySlug: activePropertySlug } : {}),
+                          // So a `site.theme-toggle` host in the frame mounts the real
+                          // cookie-backed switch — and hides itself unless the policy is `toggle`.
+                          appearance: { policy, initial: initialTheme },
                         })}
                       >
                         {children}

@@ -17,6 +17,13 @@ const API_BASE = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 // x-forwarded-for / x-real-ip carry the real client IP (set by Caddy) through to
 // api-rest, whose `trustProxy` reads it — so per-IP rate limits (e.g. the public
 // forms endpoint, docs/115) bucket by visitor, not by this proxy pod's IP.
+//
+// user-agent is forwarded for the SAME reason the IP is: session attribution
+// (docs/128) recomputes the visitor hash — sha(salt:day:tenant:ip:UA) — in the
+// checkout-complete handler and matches it against the pageview beacon's hash.
+// The beacon hits api-rest directly (real browser UA); without forwarding the UA
+// here, checkout would recompute against this proxy's fetch UA and never match,
+// silently zeroing attribution. It is also the honest UA for api-rest's bot drop.
 const FORWARD_REQUEST_HEADERS = [
   'content-type',
   'x-cart-token',
@@ -24,6 +31,7 @@ const FORWARD_REQUEST_HEADERS = [
   'cookie',
   'x-forwarded-for',
   'x-real-ip',
+  'user-agent',
 ];
 
 async function forward(request: NextRequest, path: string[]): Promise<NextResponse> {

@@ -70,13 +70,14 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
     expect(hostCore(HOST_KEYS.siteBrand).locked).toBeUndefined();
   });
 
-  it('the brand is the ONLY unpinned core in the registry', () => {
-    // A tripwire, not a style rule: every other core wraps a live transaction the
-    // tenant must not be able to delete. If this fails, either a functional core just
-    // became deletable, or a second improvability-only core landed and this comment
-    // needs rewriting — both are worth a human look.
+  it('only placement-owned cores are unpinned; every transaction core stays pinned', () => {
+    // A tripwire, not a style rule: a core that wraps a live transaction the tenant must
+    // not be able to delete has to stay pinned. The unpinned set is exactly the cores whose
+    // PLACEMENT the tenant legitimately owns — the brand mark and the theme toggle (neither
+    // is a transaction). If a THIRD name appears here, either a functional core just became
+    // deletable or a new placement-owned core landed — both are worth a human look.
     const unpinned = HOST_COMPONENTS.filter((c) => c.pinned === false).map((c) => c.key);
-    expect(unpinned).toEqual([HOST_KEYS.siteBrand]);
+    expect(unpinned).toEqual([HOST_KEYS.siteBrand, HOST_KEYS.siteThemeToggle]);
   });
 });
 
@@ -165,10 +166,16 @@ describe('siteNavbar — reachable on a phone', () => {
     const inlineRow = find(nav, (n) => typeof n.class === 'string' && n.class.includes('sm:flex'));
 
     const unique = (xs: string[]) => [...new Set(xs)].sort();
-    expect(unique(hrefs(menu))).toEqual(unique(hrefs(inlineRow)));
+    // The phone menu carries the same DESTINATIONS as the desktop row, plus the account
+    // sign-in link — a shopper on a phone reaches their account from the menu, whereas the
+    // desktop surfaces sign-in in the header's right-hand cluster instead of the nav row.
+    const ACCOUNT = '/account/login';
+    const destOnly = (xs: string[]) => unique(xs.filter((h) => h !== ACCOUNT));
+    expect(destOnly(hrefs(menu))).toEqual(destOnly(hrefs(inlineRow)));
+    expect(hrefs(menu)).toContain(ACCOUNT);
     // The footer's Explore column is built from the same source list.
     expect(unique(hrefs(siteFooter(opts)))).toEqual(
-      expect.arrayContaining(unique(hrefs(inlineRow)))
+      expect.arrayContaining(destOnly(hrefs(inlineRow)))
     );
   });
 

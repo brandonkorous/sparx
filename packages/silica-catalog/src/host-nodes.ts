@@ -107,6 +107,16 @@ export const HOST_KEYS = {
    *  Per-record: the route hands the entry's doc to the storefront renderer, so the
    *  core needs no props — the author places it, and the routed post fills it. */
   cmsArticleBody: 'cms.article-body',
+  /** A light/dark theme toggle — a button that flips the site between its light and dark
+   *  palettes. A host core, not an authored button, for two reasons a static silica tree
+   *  cannot meet: it is INTERACTIVE (client state + the `sparx_theme` cookie the SSR
+   *  no-flash script reads), and it must AUTO-HIDE unless the tenant's appearance policy
+   *  actually offers both themes (`toggle`) — under any single-theme / device-follow
+   *  policy it renders nothing. Place it in the frame's navbar; the storefront mounts the
+   *  real cookie-backed control (the same one the default header uses), so a silica-framed
+   *  site gets a working toggle the shipped `theme-toggle` behavior can't provide (that one
+   *  persists to localStorage, not the cookie the storefront reads). Not pinned. */
+  siteThemeToggle: 'site.theme-toggle',
 } as const;
 
 export type HostComponentKey = (typeof HOST_KEYS)[keyof typeof HOST_KEYS];
@@ -269,6 +279,16 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     ],
     // NOT pinned — the tenant owns where their own brand sits. See HOST_KEYS.siteBrand
     // for why it is a host core anyway.
+    pinned: false,
+  },
+  {
+    key: HOST_KEYS.siteThemeToggle,
+    label: 'Theme toggle (light / dark)',
+    category: 'brand',
+    icon: 'settings',
+    hint: 'A light/dark switch for visitors. Appears only when your site offers both themes (Appearance: toggle) — otherwise it stays hidden. Place it in your header.',
+    defaultClass: 'inline-flex items-center',
+    // Not pinned: the tenant owns whether and where a theme switch sits in their chrome.
     pinned: false,
   },
   {

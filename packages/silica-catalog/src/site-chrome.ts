@@ -150,14 +150,34 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
                   {
                     children: [
                       el('div', 'flex flex-col gap-1', {
-                        children: destinations.map(([label, href]) =>
-                          navLink(label, href, 'rounded-btn px-3 py-2 hover:bg-base-200')
-                        ),
+                        children: [
+                          ...destinations.map(([label, href]) =>
+                            navLink(label, href, 'rounded-btn px-3 py-2 hover:bg-base-200')
+                          ),
+                          // Sign-in reaches the phone menu too, so a shopper on a phone can
+                          // get to their account (the desktop link is hidden below `sm`).
+                          navLink(
+                            'Sign in',
+                            '/account/login',
+                            'rounded-btn px-3 py-2 hover:bg-base-200'
+                          ),
+                        ],
                       }),
                     ],
                   }
                 ),
               ],
+            }),
+            // A light/dark switch — a host core, so it mounts the real cookie-backed
+            // control and AUTO-HIDES unless the tenant turns on the `toggle` appearance
+            // policy. Costs nothing on a single-theme site (renders nothing); lights up
+            // the moment both palettes are offered.
+            hostCore(HOST_KEYS.siteThemeToggle),
+            // Account entry point — the shopper sign-in / create-account page. Every site
+            // has it (Layer-2 shopper auth); a ghost link so it sits quietly beside the CTA.
+            el('a', 'btn btn-ghost btn-sm', {
+              attrs: { href: '/account/login' },
+              text: 'Sign in',
             }),
             // A real link, not a <button>. This was `atom('Button', …)`, which lowers
             // to a `<button type="button">` with no handler — the site's most

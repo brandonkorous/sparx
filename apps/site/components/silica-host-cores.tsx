@@ -27,6 +27,7 @@ import { BookingServiceDetail } from '@/components/booking/booking-service-detai
 import { AccountAuth, toAuthMode } from '@/components/account/account-auth';
 import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
 import { ArticleBody } from '@/components/cms/article-body';
+import { ModeToggle } from '@/components/mode-toggle';
 import { mediaUrl } from '@/lib/media';
 import type { ResolvedSite } from '@/lib/site-context';
 
@@ -52,6 +53,10 @@ export interface HostCoreContext {
    *  resolved the template for — re-reading it here would be a second round trip for a
    *  document we have in hand. */
   articleDoc?: unknown;
+  /** The tenant's appearance policy + the SSR-resolved initial theme. Lets the
+   *  theme-toggle host mount the real cookie-backed switch — and render nothing unless
+   *  the policy (`toggle`) actually offers both light and dark. */
+  appearance?: { policy: string; initial: 'light' | 'dark' };
 }
 
 /** Build the storefront `HostRenderer` for a route — a single switch over the pinned
@@ -107,6 +112,15 @@ export function storefrontHostRenderer(ctx: HostCoreContext): HostRenderer {
         // inside a max-w-3xl, py-10 doubled). The brand core forwards it because it renders
         // an inline mark whose own sizing classes matter; a prose block just fills its shell.
         return <ArticleBody doc={ctx.articleDoc} />;
+      case HOST_KEYS.siteThemeToggle:
+        // The light/dark switch — mounted only when the site actually offers both themes
+        // (appearance policy `toggle`). Any single-theme or device-follow policy renders
+        // nothing, matching the default header's own gate. It flips `data-theme` + writes
+        // the `sparx_theme` cookie the layout's no-flash script reads, so a silica-framed
+        // site gets the same working toggle the default header has.
+        return ctx.appearance?.policy === 'toggle' ? (
+          <ModeToggle initial={ctx.appearance.initial} />
+        ) : null;
       case HOST_KEYS.siteBrand:
         // The brand mark — resolved straight off the site the route already has, so the
         // header always reflects what's in Site settings right now. `show` is the

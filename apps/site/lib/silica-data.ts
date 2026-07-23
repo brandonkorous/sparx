@@ -22,6 +22,7 @@ import {
   type SilicaNode,
   type SilicaResolver,
 } from '@sparx/builder-schemas';
+import { PLACEHOLDER_IMAGE } from '@sparx/silica-catalog';
 
 import {
   listCollectionProducts,
@@ -91,7 +92,11 @@ function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<s
     price: price != null ? price / 100 : null,
     compareAtPrice: compareAtPrice != null ? compareAtPrice / 100 : null,
     description: p.description ?? '',
-    image: url ? { url, alt: p.title } : null,
+    // Keep the { url, alt } shape even with no media (empty url) rather than null: the
+    // host `format` maps an empty-url image to the placeholder tile, so an imageless
+    // product renders "an image goes here" instead of the silica Image component's
+    // broken-image glyph (see makeFormat).
+    image: { url: url ?? '', alt: p.title },
     // Bound by the buy box's hidden field, so its <form> submit carries a real
     // cart line. Empty string (not null) when the product has no live variant:
     // the hidden input renders `value=""`, the field is `required`, and the
@@ -130,7 +135,9 @@ export function productToSilicaRecord(
     price: price != null ? price / 100 : null,
     compareAtPrice: compareAtPrice != null ? compareAtPrice / 100 : null,
     description: p.description ?? '',
-    image: url ? { url, alt: primary?.alt ?? p.title } : null,
+    // Empty-url object, never null — the host `format` turns it into the placeholder
+    // tile (see makeFormat / toSilicaProduct).
+    image: { url: url ?? '', alt: primary?.alt ?? p.title },
     // The add-to-cart form's hidden field; empty string (not null) when the product
     // has no live variant, so `onAction`'s empty-variant guard blocks the submit.
     variantId: defaultVariant?.id ?? '',
@@ -182,16 +189,21 @@ function toSilicaEntry(
   const b = { ...(entry.body ?? {}) };
   if (typeof b.featuredImage === 'string') {
     const url = mediaUrl(b.featuredImage, tenantSlug);
-    b.featuredImage = url ? { url, alt: typeof b.title === 'string' ? b.title : '' } : null;
+    // Empty-url object, never null — the host `format` maps it to the placeholder tile
+    // so a post with no featured image shows a neutral tile, not a broken-image glyph
+    // (see makeFormat). An ABSENT featuredImage stays absent and keeps the card's own
+    // authored placeholder via the unknown-ref path.
+    b.featuredImage = { url: url ?? '', alt: typeof b.title === 'string' ? b.title : '' };
   }
   b.slug = entry.slug ?? '';
   b.url = entryUrl(type, entry.slug);
   // The publish date lives on the ROW, not in the body, so a card that wants to date
-  // itself has nothing to bind without this. Pre-formatted for display: a binding
-  // resolves to a string and there is no formatter in the tree to turn an ISO stamp
-  // into something a reader wants to see.
+  // itself has nothing to bind without this. `date` (pre-formatted for display) is the
+  // field the silica CMS composites bind — matching the single-record projection
+  // (`postToBuilderRecord`), so the SAME `date` ref resolves on both a blog index card
+  // and the post's detail masthead. `publishedAt` keeps the raw ISO for any datetime use.
   b.publishedAt = entry.published_at ?? '';
-  b.publishedOn = entry.published_at ? formatEntryDate(entry.published_at) : '';
+  b.date = entry.published_at ? formatEntryDate(entry.published_at) : '';
   return b;
 }
 
@@ -236,6 +248,15 @@ function makeFormat(currency: string, locale: string) {
   const fmt = new Intl.NumberFormat(locale, { style: 'currency', currency });
   return (value: unknown, binding: NodeBinding): unknown => {
     if (typeof value === 'number' && /price/i.test(binding.path ?? '')) return fmt.format(value);
+    // An image/file field with no media resolves to an empty-url object (the projections
+    // keep the { url, alt } shape rather than null so this is detectable here). silica's
+    // `defaultSilicaFormat` maps it to `undefined` — which a raw <img> element treats as
+    // "keep the authored src", but the silica Image COMPONENT (every card uses it) sets
+    // `src = String(value ?? '')` = "" and renders the browser's broken-image glyph. Hand
+    // it the shared placeholder tile so an imageless record reads as "an image goes here".
+    if (value && typeof value === 'object' && 'url' in value && !(value as { url?: unknown }).url) {
+      return PLACEHOLDER_IMAGE;
+    }
     return defaultSilicaFormat(value, binding);
   };
 }
