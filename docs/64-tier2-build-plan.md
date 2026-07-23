@@ -1,8 +1,8 @@
 # sparx Platform — Tier 2 Module Build Plan
 
-**Version:** 1.0
+**Version:** 1.0.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-09
+**Last Updated:** 2026-07-22
 
 ---
 
@@ -10,7 +10,15 @@
 
 This doc is the sequenced build plan for the four Tier 2 modules: Domain Purchase, B2B/Wholesale, Dropship, and Inventory Sync. All four are specced (see linked PRDs); this doc translates them into actionable, phased implementation slices ordered by dependency and client priority.
 
-**Context:** The platform is pre-live. Tier 1 work (Checkout/Payment, Onboarding completion, MCP/AI) is running in parallel by other agents. Tier 2 work can proceed in parallel on its own branch(es). Billing/Stripe is explicitly deferred — where a phase touches payment (Domain Purchase), stub the Stripe charge with a placeholder that can be wired later.
+> **Reconciled 2026-07-22 (docs-vs-built audit):** two "Context" assumptions below are now obsolete.
+> **Stripe payments are live** — full Stripe Connect is implemented, so the "stub the Stripe charge"
+> guidance no longer applies (real PaymentIntents/Connect, not placeholders). And **Dropship has a
+> full backend** — `packages/dropship` (`SupplierAdapter` + `createAdapter()` + `applyPricingRule()`
+>
+> - `VENDOR_CATALOG`) and `services/dropship-worker` shipped (docs/14 §2). Treat the phase tables
+>   below as the historical plan, not current status.
+
+**Context:** The platform is pre-live. Tier 1 work (Checkout/Payment, Onboarding completion, MCP/AI) is running in parallel by other agents. Tier 2 work can proceed in parallel on its own branch(es). ~~Billing/Stripe is explicitly deferred — where a phase touches payment (Domain Purchase), stub the Stripe charge with a placeholder that can be wired later.~~ **(Superseded — Stripe Connect payments are built and live.)**
 
 **Build constraints (from CLAUDE.md):**
 
@@ -180,7 +188,7 @@ Extend `@sparx/customer-auth` (not Better Auth — see docs/27) with B2B account
 ## Module 3 — Dropship (docs/14)
 
 **Spec:** [docs/14-dropship-integration-prd.md](14-dropship-integration-prd.md)
-**Existing foundation:** `apps/app/src/app/(dashboard)/commerce/dropship/` layout + manifest. No backend implementation.
+**Status (2026-07-22):** **Built and live** — full backend shipped: `packages/dropship` (adapters + registry + pricing rules + `VENDOR_CATALOG`), `services/dropship-worker` (order routing + catalog sync), API routes, and the operator UI. The phases below are the historical plan.
 **Module flag:** `dropship`
 
 ### Phase 1 — Connector framework + data model

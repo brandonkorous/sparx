@@ -1,10 +1,12 @@
 # sparx Platform — WizeWorks Admin Portal Spec
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-07-22
 
 ---
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** This portal is **BUILT** — the sparx operations console ships in `apps/admin` at `app/(console)/sparx/*` (tenants, users, billing, domains, sites, metrics, partners, feedback, support), backed by audited api-rest `/internal/operator/*` endpoints and a separate WizeWorks Better Auth staff instance. It is **no longer a planned/empty placeholder.** One deliberate design change from this spec: the interactive **"Impersonate tenant"** tool (§3, §4) was **replaced by a READ-ONLY account view** (build-plan decision **D7** — no `tenant:impersonate` capability, no impersonation token, no change to the tenant app). Operators understand an account through representation parity (the tenant's own formatters/labels/statuses, rendered read-only), never by assuming a tenant session. Capability model + full decisions live in [docs/apps/admin/build-plan.md](apps/admin/build-plan.md).
 
 ## 1. Overview
 
@@ -40,7 +42,7 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 
 - List all tenants (search by name, domain, email, plan)
 - Tenant detail: modules active, MRR, storage used, last login
-- Impersonate tenant (staff sees their dashboard, audit-logged)
+- Read-only **account view** (representation parity; the tenant's own data as they see it) — **replaces impersonation** (decision D7)
 - Suspend/unsuspend tenant
 - Manually activate/deactivate modules
 - View tenant's full billing history
@@ -106,7 +108,18 @@ Staff never share accounts. Every action is audit-logged with staff member ID, t
 
 ---
 
-## 4. The Impersonation Tool
+## 4. The Impersonation Tool — SUPERSEDED by the read-only account view (D7)
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** Interactive impersonation was
+> **deliberately not built.** Decision **D7** removed it as the highest-blast-radius
+> path in the design: there is no `impersonation_grants` table, no `tenant:impersonate`
+> capability, and no change to the tenant app. Instead, operators get a **read-only
+> account view** — every tenant surface in `apps/admin` reuses the tenant's own
+> formatters/labels/status derivations (or api-rest returns tenant-shaped payloads) so
+> the operator reads the data exactly as the tenant sees it, without ever holding a
+> tenant session. Cross-tenant reads **and** writes route through audited api-rest
+> `/internal/operator/*` calls, and every view logs an action-level audit row. The
+> original impersonation design is preserved below for historical context only.
 
 Most important support feature. Staff can view any tenant's dashboard as if they were that tenant:
 
@@ -137,20 +150,23 @@ Impersonation is read-only by default. Super admins can enable write access for 
 
 ## 6. Implementation Checklist
 
-- [ ] apps/admin created in monorepo
-- [ ] Better Auth WizeWorks organization setup
-- [ ] Staff role definitions (super_admin, sparx_admin, billing_admin, support, developer)
-- [ ] Tenant list + search
-- [ ] Tenant detail page
-- [ ] Impersonation flow with audit logging
-- [ ] Suspend/unsuspend tenant
-- [ ] Platform metrics dashboard
-- [ ] Module adoption rates
-- [ ] Domain management view
-- [ ] Billing operations (failed payments, refunds, coupons)
-- [ ] Cross-product financial dashboard
+> **Reconciled 2026-07-22 (docs-vs-built audit):** The sparx console is built in
+> `apps/admin/app/(console)/sparx/*`. Impersonation was replaced by the read-only
+> account view (D7). Cross-product (kanNINJA/HelpNinja) sections remain future scope.
+
+- [x] apps/admin created in monorepo
+- [x] Better Auth WizeWorks staff instance setup
+- [x] Staff roles as **capability bundles** (not hardcoded role checks) — see build-plan D5
+- [x] Tenant list + search
+- [x] Tenant detail page
+- [x] ~~Impersonation flow~~ → **read-only account view** with action-level audit logging (D7)
+- [x] Suspend/unsuspend tenant
+- [x] Platform metrics dashboard
+- [x] Module adoption rates
+- [x] Domain management view
+- [x] Billing operations (failed payments, refunds, coupons)
+- [ ] Cross-product financial dashboard (kanNINJA / HelpNinja — future)
 - [ ] VPN/IP allowlist configuration in GKE ingress
-- [ ] Audit log viewer (every staff action)
+- [x] Audit log viewer (every staff action)
 - [ ] Alert: tenant storage > 90% of limit
 - [ ] Alert: tenant failed payment > 7 days
-      EOF

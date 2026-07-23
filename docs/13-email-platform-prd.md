@@ -1,10 +1,19 @@
 # sparx Platform — Email Platform PRD
 
-**Version:** 3.2
+**Version:** 3.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-07-22
 
 ---
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the email **backend** is complete —
+> the `email.send` → Pub/Sub → `email-worker` → Mailgun pipeline, per-tenant domain
+> provisioning/verification, suppression handling, and the MCP tools (§10) all ship and
+> run. **The operator UI, however, is currently STUBBED in `apps/workbench`** (the
+> operator app rebuilt from the deleted `apps/dashboard`): the broadcasts, domains,
+> suppressions, and settings surfaces are placeholders pending rebuild. So the pipeline
+> works end to end while the tenant-facing management screens described below are not
+> yet wired in the current app. See docs/84's reconciliation note.
 
 ## 1. Overview
 

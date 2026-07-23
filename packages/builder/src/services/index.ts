@@ -17,3 +17,4 @@ export * as platformCatalogService from './platform-catalog-service';
 export * as nodeIndexService from './node-index-service';
 export * as artifactService from './artifact-service';
 export * as opLogService from './op-log-service';
+export * as draftVersionService from './draft-version-service';

@@ -1,10 +1,24 @@
 # 79 — sparx Scheduling Module Spec
 
-**Version:** 1.3
+**Version:** 1.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-14
+**Last Updated:** 2026-07-22
 
 ---
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the separate
+> `services/scheduling-worker` deployable this spec prescribes (§1 table, §6.1) was
+> **NOT built as a standalone service.** Its jobs — due-reminder cron, waitlist
+> auto-fill, recurrence/series materialization, and calendar-sync polling — run as
+> **in-process, advisory-locked loops inside `api-rest`** (`src/lib/scheduling-*.ts`:
+> `scheduling-notifications`, `scheduling-waitlist`, `scheduling-series`,
+> `scheduling-calendar-sync`, `scheduling-classes`, …), the same pattern as the email
+> dispatch/provisioning loops. The dashboard scheduling surface moved off the deleted
+> `apps/dashboard` into `apps/workbench` (the `apps/dashboard/...` paths in §6.1/§13.3
+> now live under `apps/workbench`). Still open: intake / consultation forms (models
+> only — no API/UI), the Builder `Booking` catalog component + off-site embed, the
+> walk-in queue board, the reservations floor-plan, and **6 of the 13 MCP tools** (7
+> shipped).
 
 ## 1. Overview
 
@@ -213,7 +227,7 @@ engine and the calendar-sync engine; it _reuses_ everything else.
 - **Builder catalog components** — `Booking` block family in
   [packages/builder-schemas/src/catalog/](../packages/builder-schemas/src/catalog/) (data-as-code,
   stamped — never a new renderer branch), per the catalog contract.
-- **Dashboard area** — `apps/dashboard/app/(dashboard)/scheduling/` (calendar, bookings,
+- **Dashboard area** — `apps/workbench/surfaces/scheduling/` (calendar, bookings,
   services, resources, availability, waitlist, queue, reports, settings).
 - **MCP tools** — `packages/scheduling/src/mcp/` registered into `services/api-mcp`,
   scoped `read:scheduling` / `write:scheduling`, gated on the `ai` module.
@@ -633,7 +647,7 @@ My upcoming & past bookings; **reschedule / cancel** within policy; pay a balanc
 join / leave waitlists; manage class credits / membership; download `.ics`; intake form
 completion.
 
-### 13.3 Dashboard (`apps/dashboard/.../scheduling/`)
+### 13.3 Dashboard (`apps/workbench/surfaces/scheduling/`)
 
 - **Calendar** — day / week / month, multi-resource lanes (staff/room/table columns),
   drag-to-reschedule, drag-to-create, color by service/status. _(Shipped: the week grid

@@ -716,6 +716,59 @@ model BuilderRelease {
   @@map("builder_releases")
 }
 
+// A restorable snapshot of the DRAFT site, sealed on every save (docs/126 §4.6).
+//
+// The publish releases above make any PUBLISHED state recoverable. This does the same for
+// the DRAFT — the state the studio actually edits — so a save that overwrote work (the
+// last-write-wins case that concurrent agent+operator editing makes routine) is no longer
+// permanent: the overwritten version is one row back, restorable in a click.
+//
+// It reuses `builder_page_artifacts` verbatim for the trees (content-addressed, so an
+// unchanged page dedupes and a draft tree identical to a published one shares the row) —
+// this table only names the manifest, exactly like a release. It is a SEPARATE table, not
+// a flag on `builder_releases`, because the two restore differently: a release rewrites the
+// PUBLISHED columns, a draft version rewrites the DRAFT columns, and they must never share a
+// history list or a "current" notion.
+//
+// Append-only like releases; a `restore` is a new save forward, never a rewind. Pruned by a
+// rolling window (the service keeps a recent floor + a time window) so rows stay bounded
+// under heavy agent authoring; the shared artifacts are GC'd separately (never here).
+model BuilderDraftVersion {
+  id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String @map("tenant_id") @db.Uuid
+  propertyId String @map("property_id") @db.Uuid
+
+  // Content address of `manifest` — this draft state's identity. Two saves that changed
+  // nothing share a hash, so a no-op save is detectable rather than another opaque row.
+  hash     String @db.Char(64)
+  // [{ ownerKind, ownerId, hash }] — resolved against builder_page_artifacts, same shape a
+  // release carries. Covers every draft tree: page bodies, the layout (frame), symbols, theme.
+  manifest Json
+
+  // Denormalized for the history list (so it need not parse every manifest to say "12 pages").
+  pageCount Int @default(0) @map("page_count")
+
+  // What produced this version, so the history can group + label it for a non-technical
+  // owner. `save` = a human pressed Save; `agent` = an MCP write on an assistant's behalf;
+  // `restore` = this version reinstated an earlier one (itself restorable).
+  source         String  @default("save") @db.VarChar(16) // save | agent | restore
+  // When `source = 'restore'`, the version this one reinstated.
+  restoredFromId String? @map("restored_from_id") @db.Uuid
+
+  // Who saved it. Null for a system path with no human actor. No FK — users live in the
+  // Better Auth instance and a deleted user must not take the edit history with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // The history list, newest first, scoped to the property.
+  @@index([tenantId, propertyId, createdAt])
+  @@map("builder_draft_versions")
+}
+
 // A DERIVED index of the nodes inside every silica tree a property owns — page
 // bodies, the site chrome (layout), and symbol masters (docs/126 §5.4).
 //

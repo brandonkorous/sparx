@@ -1,8 +1,16 @@
 # 50 — SEO, AIO & Discoverability
 
-Version: 1.4
+Version: 1.5
 Author: Brandon Korous
-Last Updated: 2026-06-24
+Last Updated: 2026-07-22
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the SEO audit engine
+> (`@sparx/seo-audit` + `/v1/seo/audit`) and Search Console integration are built and
+> live. The operator SEO surfaces moved off the deleted `apps/dashboard` into
+> `apps/workbench/surfaces/seo` (the `/seo` overview + report) — the two
+> `apps/dashboard/...` paths below (`inspector.tsx`, `seo-meta-fields.tsx`) now live
+> under `apps/workbench`. Still deferred (as §5 records): cross-page content-quality
+> signals (duplicate titles, orphan pages, broken internal links) and hreflang / i18n.
 
 > Discoverability is a **platform capability**, not a per-app chore. It spans two audiences —
 > traditional search crawlers and the new wave of answer/generative engines (AIO) — and two
@@ -83,7 +91,7 @@ only `name · tenant`. They now carry real SEO, end to end:
   `BuilderPageDto` and the public `PublishedPageDto` expose the fields.
 - **Service** (`@sparx/builder` `pageService`): reads/writes the columns; empty strings normalize to
   `null` so a blank field falls back to the page name rather than an empty `<title>`.
-- **UI** (`apps/dashboard/.../builder/_builder/inspector.tsx`): a `PageSeoPanel` in the singleton's
+- **UI** (`apps/workbench/.../builder/_builder/inspector.tsx`): a `PageSeoPanel` in the singleton's
   page settings — title, description, canonical, social image, and an "allow indexing" switch.
   Text fields commit on blur (like the slug field); the switch commits immediately; edits are
   optimistic via `updatePageSeo`.
@@ -219,7 +227,7 @@ remaining follow-ups live with the feature in §7.6.)
   fallback — so a blank SEO field is **not** "missing", it inherits, and the score legitimately reads
   "present". That is correct on the live site but _confusing in the editor_ (blank field + green score reads
   like a bug). Every editable surface therefore renders its SEO pair through the reusable **`<SeoMetaFields>`**
-  (`apps/dashboard/components/seo/seo-meta-fields.tsx`), which makes the inheritance legible: the inherited
+  (`apps/workbench/components/seo/seo-meta-fields.tsx`), which makes the inheritance legible: the inherited
   value is the field's **placeholder**, and a per-field **"Use name" / "Use description"** button materializes
   it for editing (fill-empty only — it never clobbers a custom value; the description fill is trimmed to the
   ~160-char meta budget the score grades). Never render a bare SEO title/description input pair, and never a

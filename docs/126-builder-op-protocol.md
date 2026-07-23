@@ -1,9 +1,18 @@
 # 126 — Builder op protocol: granular edits, real collaboration, immutable publish
 
-Version: 1.8.0
+Version: 1.9.0
 Author: Brandon Korous
 Last Updated: 2026-07-22
 
+> **1.9.0 — Draft versioning: the recovery net for last-write-wins (§4.6).** Every save
+> (human or agent) now seals a restorable DRAFT version — the draft counterpart of the
+> publish releases — so a content overwrite between two authors is a click of undo rather
+> than permanent loss. Snapshot-based (immune to the op-log holes), reuses the
+> content-addressed artifact store, non-destructive restore, bounded retention. Surfaced as
+> a studio History drawer, REST, and MCP (`list_draft_versions` / `restore_draft_version`).
+> Completes the concurrency safety story: §4.4 no page lost, §4.5 agent work visible, §4.6
+> no content lost.
+>
 > **1.8.0 — Live relay for agent writes: the agent is just another editor (§4.5).** An
 > operator with the studio open now sees an agent's MCP writes fold into their canvas as
 > they land — the same `ops:relay` → `applyRemoteOps` path a human edit takes. Scripted
@@ -478,6 +487,47 @@ same way. The sender suppresses its own echo by batch id.
 **The floor still holds underneath.** A relayed `page.create` joins the client's
 save-baseline (§4.4) so a later local delete of it is still expressed; the relay is the
 pleasant layer, the explicit-delete floor is the safe one.
+
+### 4.6 Draft versioning — the recovery net for last-write-wins — **SHIPPED**
+
+§4.4 guarantees no page is DELETED under concurrency; §4.5 makes an agent's work visible.
+But one hole remained: a page's CONTENT. Two authors on the same page body still resolve
+last-write-wins on the draft snapshot (`silica_draft_tree` is one column, overwritten per
+save), and once concurrent agent+operator editing is the product model that overwrite is a
+routine event, not a corner case. The op log is not a recovery mechanism for it — an agent
+body/frame REPLACE and any whole-site LWW save carry no op, so the log has holes.
+
+So every save is now a **restorable draft version** (`builder_draft_versions`), the DRAFT
+counterpart of the publish releases (§5.3). It converts an overwrite from permanent loss
+into a click of undo — which is the guarantee that makes "keep the studio open while your
+agent works" safe to promise.
+
+Design:
+
+- **Snapshot, not replay.** A version records the resulting TREES, so it is immune to the
+  op-log holes — it captures the state regardless of how it got there. It reuses
+  `builder_page_artifacts` verbatim (content-addressed), so an unchanged page dedupes and a
+  draft tree identical to a published one shares the row; the version table only names the
+  manifest.
+- **Sealed on every `sync`**, inside the same transaction as the snapshot — a rolled-back
+  save leaves no orphan version. A save that changed nothing hashes identically to the last
+  version and is skipped, so history tracks real changes. Labeled `save` / `agent` /
+  `restore` so the studio history can say who did what.
+- **Non-destructive restore.** It brings back the versioned content of pages that still
+  exist and touches nothing else — never deletes a page added since, never resurrects one
+  deleted. Least surprise for a non-technical owner, and the restore seals itself as a new
+  version, so it is itself undoable. Restoring over MCP relays a reload signal (§4.5) to any
+  open editor.
+- **Bounded retention.** Keep the newest 20 versions plus everything from the last 30 days
+  (mirrors the publish-artifact window, §5.3.1), so heavy agent authoring can't grow it
+  unbounded; the shared artifacts are GC'd separately, never here.
+- **Surfaces:** a "History" drawer in the studio (list + restore), REST
+  (`GET /v1/builder/site/draft-versions`, `POST …/:id/restore`), and MCP
+  (`list_draft_versions` / `restore_draft_version`) so an assistant can undo its own work.
+
+Cost note: capture hashes every draft tree per save (O(pages)). Fine at typical site sizes;
+if very large sites or heavy agent bursts ever show latency, the lever is carry-forward
+(re-hash only changed pages) — not built, not yet needed.
 
 ---
 

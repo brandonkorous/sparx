@@ -1,15 +1,17 @@
 # Builder Tenant Components — user-authored components without a deploy
 
-**Version:** 1.2.0
+**Version:** 1.2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-04
+**Last Updated:** 2026-07-22
+
+> **Drift note (2026-07-22):** The tenant-authored-component concept below is still valid, but the bespoke in-code `_builder` registry + editor this doc references has since been REPLACED — sparx now HOSTS silicaui's `<Builder>` engine (studio at `apps/workbench/surfaces/builder/studio/studio-surface.tsx`). See **docs/118-builder-silicaui-html-migration.md** for the current architecture.
 
 ---
 
 ## 1. Purpose & relationship to other docs
 
 System components in the `/builder` tier are **code** — entries in the in-code registry
-(`apps/dashboard/app/(dashboard)/builder/_builder/registry.tsx`), each carrying a
+(the builder component catalog — now silica-owned: `@sparx/silica-catalog`), each carrying a
 `renderLeaf` React function. Tenants need to build, save, and reuse their **own**
 components — a branded CTA, a spec table, a “feature trio” — without a deploy and without
 writing JavaScript (which on a multi-tenant SSR surface is remote-code-execution).

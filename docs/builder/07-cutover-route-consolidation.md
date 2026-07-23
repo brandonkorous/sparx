@@ -1,8 +1,10 @@
 # 07 — Phase 7: Cutover & route consolidation
 
-Version: 1.0
+> ⚠️ **SUPERSEDED 2026-07-22.** The "Builder v2" series (docs 00–06) was inverted by the silicaui `<Builder>` adoption — sparx now HOSTS silica's engine instead of building its own shell/inspector/affordances. See **docs/118-builder-silicaui-html-migration.md** for the current architecture. This doc is the closest of the series to what shipped (route consolidation onto one editor still happened, now the silica studio at `apps/workbench/surfaces/builder/studio/studio-surface.tsx`), so its route/nav consolidation intent still reads true — but treat 118 as source of truth.
+
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-06-14
+Last Updated: 2026-07-22
 
 > The final phase: make the unified editor _the_ builder, retire the split
 > `/builder/{brand,site,page}` routes, and delete the now-dead second render path
@@ -38,7 +40,7 @@ this phase moves it to the canonical route and removes the temporary one.
 **2.2 Redirect the old routes.** `/builder/brand|site|page` → the unified editor,
 opening the corresponding zone/selection (e.g. `/builder/brand` opens the editor
 with the Theme node selected; `/builder/page?page=<id>` opens with that page in the
-Outlet). Use the dashboard redirect layer (`apps/dashboard/next.config.mjs`
+Outlet). Use the dashboard redirect layer (`apps/workbench/next.config.mjs`
 `redirects()`), preserving the `?page=` deep-link contract.
 
 **2.3 Delete the dead render path.** Once the unified editor and the live site both
@@ -55,7 +57,7 @@ initial zone/page). Don't leave dangling nav items.
 **2.5 Update docs + the module manifest.** Mark [29](../29-sitebuilder-architecture.md)/
 [30](../30-sitebuilder-redesign.md)/[45](../45-builder-site-layout.md) as
 superseded-where-relevant by this `docs/builder/` set; update the
-[builder manifest](<../../apps/dashboard/app/(dashboard)/builder/manifest.ts>) and
+[builder surface registration](../../apps/workbench/lib/surfaces/catalog/builder.ts) and
 any `MODULE_SLUGS`-style hardcoded lists ([feedback_module_slug_stale_lists]).
 
 **2.6 No capability regressions — checklist gate.** Cutover is blocked until a

@@ -1,8 +1,8 @@
 # sparx Platform — Onboarding PRD
 
-**Version:** 2.0
+**Version:** 2.0.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-11
+**Last Updated:** 2026-07-22
 
 ---
 
@@ -18,7 +18,7 @@ If information can be collected later without blocking launch, it is collected l
 
 ## 2. Shape: A Full-Page, Two-Pane Flow
 
-Onboarding is **not a modal**. It is a focused full-screen route (`apps/dashboard/app/(onboarding)`) outside the dashboard shell — no sidebar, no topbar.
+Onboarding is **not a modal**. It is a focused full-screen route in the workbench app (`apps/workbench/surfaces/onboarding/`, wizard under `wizard/`) outside the dashboard shell — no sidebar, no topbar.
 
 - **Persistent left rail** (Builder Indigo): the sparx wordmark, an **always-visible vertical journey** (every step with done/current state), and a one-line context blurb that changes per step. The rail never moves — it is the single source of progress and a sense of place.
 - **Clean working pane** on the right: the only thing that changes between steps. Left-aligned headline + supporting line at the top of each step. Nothing floats center-stacked in a void.
@@ -170,4 +170,14 @@ After launch the tenant lands in the dashboard. Everything deferred to protect t
 
 ## 11. Status
 
-Design-complete; **not yet built**. Interactive mockups: `mockups/onboarding.html` (the wizard) and `mockups/new-user-flow.html` (this flow + the billing lifecycle). Platform billing (docs/17 §6) is intentionally deferred until the onboarding UI is concrete; the onboarding UI has no billing dependency and ships first.
+**BUILT.**
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the previous "design-complete; not yet built"
+> status is obsolete. The 6-step wizard (Modules → Template → Workspace → Domain → Payments\* →
+> Launch) is live at [`apps/workbench/surfaces/onboarding/wizard/`](../apps/workbench/surfaces/onboarding/wizard)
+> (`step-modules` / `step-blueprint` / `step-workspace` / `step-domain` / `step-payments` /
+> `step-launch`, orchestrated by `wizard.tsx`), backed by `apps/workbench/lib/onboarding/`. The
+> post-launch welcome checklist (§6) ships in `surfaces/onboarding/welcome/`. Stripe Connect (Step 5)
+> and its callback route (`apps/workbench/app/onboarding/stripe-callback/`) are wired.
+
+Interactive mockups (historical): `mockups/onboarding.html` (the wizard) and `mockups/new-user-flow.html` (this flow + the billing lifecycle).

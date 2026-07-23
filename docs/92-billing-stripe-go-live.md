@@ -1,6 +1,6 @@
 # sparx Platform — Stripe Integration Map & Go-Live Tracker
 
-**Version:** 1.5
+**Version:** 1.6
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-22
 
@@ -21,6 +21,15 @@
 >
 > **Part A below — platform module billing (`@sparx/billing`) — remains current**, minus
 > the fee rows.
+>
+> **Reconciled 2026-07-22 (docs-vs-built audit):** `apps/dashboard` was deleted and
+> rebuilt as `apps/workbench`; the billing **chrome banner + trial chip** live at
+> `apps/workbench/components/billing/*`. The standalone `settings/billing` page and its
+> `trial-status-banner.tsx` / `enterprise-plan-card.tsx` components (referenced in §1 C4,
+> §5, and §10) were **not rebuilt** as a page in workbench — the trial/past-due/cancel
+> signal ships as the workbench chrome banner, and the enterprise flag is data-only
+> (`getBillingState` returns `planType: 'enterprise'` from `settings.billing.planType`,
+> §10). Treat the `apps/dashboard/...settings/billing/...` paths below as historical.
 
 ## Purpose
 
@@ -199,14 +208,14 @@ Plus two non-module prices:
 
 ## 5. Code work remaining
 
-| #   | Change                                                                                                                                                                                                                                                                              | File(s)                                                                                          | Done |
-| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | :--: |
-| C1  | Add `STRIPE_PRICE_TRANSACTION_FEE` accessor (the metered price id)                                                                                                                                                                                                                  | `packages/billing/src/price-catalog.ts`                                                          |  ✅  |
-| C2  | `syncModuleItems` attaches the transaction-fee metered item to every subscription it creates/reconciles (create path + existing-sub reconcile path)                                                                                                                                 | `packages/billing/src/service.ts`                                                                |  ✅  |
-| C3  | Provisioning script — idempotent create/update of products, prices, meter, metered price, portal config + webhook keyed by deterministic `lookup_key`/metadata; prints the env block to paste into Secret Manager. **Built** — run it (ops, §7) with the sandbox key.               | `packages/billing/scripts/provision-stripe.ts` (`pnpm --filter @sparx/billing provision-stripe`) |  ✅  |
-| C4  | Phase 3 — `TrialStatusBanner` (trial-ending / past-due / scheduled-cancel) on the billing page; "choose plan" done Stripe-native via portal `subscription_update` (module products + both intervals) — no duplicate custom plan UI. _Follow-up: surface the banner dashboard-wide._ | `apps/dashboard/.../settings/billing/_components/trial-status-banner.tsx`, `provision-stripe.ts` |  ✅  |
-| C5  | Phase 8 — enterprise: `EnterprisePlanCard` + `planType` in `getBillingState` (reads `settings.billing.planType`, no migration) + runbook (§10)                                                                                                                                      | `enterprise-plan-card.tsx`, `packages/billing/src/service.ts`, docs §10                          |  ✅  |
-| C6  | Behaviour tests (mock Stripe + `@sparx/db`) — `recordTransactionFee` tiers/guards, `reconcileFromSubscription` flag sync, `syncModuleItems` fee-item attach. _DB-backed integration stays CI-only._                                                                                 | `packages/billing/src/service.behavior.test.ts`                                                  |  ✅  |
+| #   | Change                                                                                                                                                                                                                                                                            | File(s)                                                                                          | Done |
+| --- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | :--: |
+| C1  | Add `STRIPE_PRICE_TRANSACTION_FEE` accessor (the metered price id)                                                                                                                                                                                                                | `packages/billing/src/price-catalog.ts`                                                          |  ✅  |
+| C2  | `syncModuleItems` attaches the transaction-fee metered item to every subscription it creates/reconciles (create path + existing-sub reconcile path)                                                                                                                               | `packages/billing/src/service.ts`                                                                |  ✅  |
+| C3  | Provisioning script — idempotent create/update of products, prices, meter, metered price, portal config + webhook keyed by deterministic `lookup_key`/metadata; prints the env block to paste into Secret Manager. **Built** — run it (ops, §7) with the sandbox key.             | `packages/billing/scripts/provision-stripe.ts` (`pnpm --filter @sparx/billing provision-stripe`) |  ✅  |
+| C4  | Phase 3 — `TrialStatusBanner` (trial-ending / past-due / scheduled-cancel) on the billing page; "choose plan" done Stripe-native via portal `subscription_update` (module products + both intervals) — no duplicate custom plan UI. _Now shipped as the workbench chrome banner._ | `apps/workbench/components/billing/billing-banner.tsx` + `trial-chip.tsx`, `provision-stripe.ts` |  ✅  |
+| C5  | Phase 8 — enterprise: `EnterprisePlanCard` + `planType` in `getBillingState` (reads `settings.billing.planType`, no migration) + runbook (§10)                                                                                                                                    | `enterprise-plan-card.tsx`, `packages/billing/src/service.ts`, docs §10                          |  ✅  |
+| C6  | Behaviour tests (mock Stripe + `@sparx/db`) — `recordTransactionFee` tiers/guards, `reconcileFromSubscription` flag sync, `syncModuleItems` fee-item attach. _DB-backed integration stays CI-only._                                                                               | `packages/billing/src/service.behavior.test.ts`                                                  |  ✅  |
 
 > ✅ C1 + C2 landed — Phase 7 now bills end-to-end **once the meter + metered price
 > are provisioned (C3)**. The fee item rides every subscription create + reconcile.
@@ -291,9 +300,13 @@ memory.
 
 Enterprise tenants (Gillett Diesel) run on a bespoke agreement — custom pricing,
 managed hosting — so they're provisioned **manually**, not through self-serve. The
-dashboard already renders the [Enterprise card](<../apps/dashboard/app/(dashboard)/settings/billing/_components/enterprise-plan-card.tsx>)
-whenever a tenant is flagged enterprise (no per-module breakdown; "contact your
-account team"; portal stays open for invoices + payment method).
+enterprise treatment is **data-only**: `getBillingState` returns
+`planType: 'enterprise'` (read from `settings.billing.planType`) whenever a tenant is
+flagged enterprise (no per-module breakdown; "contact your account team"; portal stays
+open for invoices + payment method). _(The `enterprise-plan-card.tsx` component lived in
+the now-deleted `apps/dashboard` and was not rebuilt as a standalone workbench page —
+see the reconciliation note at the top; the `planType` flag itself is live in
+`packages/billing/src/service.ts`.)_
 
 To provision one:
 

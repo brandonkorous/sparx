@@ -223,7 +223,28 @@ export type EventType =
   // and autoresponder as `email.send`; THIS event drives the CRM lead consumer
   // (upsert a prospect + log the message, gated on `crm`) + analytics + the
   // automation fan-in. Published by api-rest on POST /v1/public/forms/submit.
-  | 'form.submitted';
+  | 'form.submitted'
+  // ─── Social posting (docs/133, the `social` module) ─────────────────
+  // A tenant connected / disconnected one of their own social accounts (Facebook
+  // Page, Instagram, Threads, LinkedIn, Google Business Profile, …). Topic-only
+  // for now; future consumers: analytics + a "reconnect" reminder on revoke.
+  | 'social.connection.added'
+  | 'social.connection.revoked'
+  // A composed post entered the scheduled queue (published by api-rest when a
+  // post is approved + scheduled). Topic-only — the scheduled DRAIN below is what
+  // the worker consumes; this is the audit/automation hook.
+  | 'social.post.scheduled'
+  // The scheduled drain flipped a due post to `publishing` and is handing it to
+  // the social-worker. Published by the api-rest scheduled-publish tick; CONSUMED
+  // by social-worker (its pull subscription, wired in Slice 4). Keeps the heavy
+  // per-platform publish I/O off the api-rest tick.
+  | 'social.post.due'
+  // A post finished publishing to every target (published by social-worker). The
+  // hook other modules listen on — attribution, activity feed, a future metrics
+  // pull. `social.post.failed` fires when every target failed (a partial success
+  // stays a `social.post.published` with per-target errors on the row).
+  | 'social.post.published'
+  | 'social.post.failed';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */

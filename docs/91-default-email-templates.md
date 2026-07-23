@@ -1,8 +1,17 @@
 # Default Email Templates & Per-Site Email
 
-**Version:** 1.4 (13 trees BUILT as `DEFAULT_EMAIL_TEMPLATES`; **the automation module's half is DELIVERED** — the 4 node types render, the resolver reaches the full §3 vocabulary, every `*Url` resolves, the one-click unsubscribe is live; the provisional `node()` shapes are FINAL as authored, so provisioning is unblocked. v1.4: the tenant identity source is now keyed **`site`** — the canonical tokens are `{{site.name}}` / `{{site.url}}`; `resolveEmailData` + the sample emit the identity under both `site` and `tenant` roots and keep `siteUrl`/`storeUrl` as URL aliases, so every pre-rename `{{tenant.*}}` still resolves. Shipped defaults migrated to `site.*`. Merge tags are now discoverable: inline `{{` autocomplete + a "Merge tags" panel + the MCP `list_merge_tags` tool — see [docs/52](archive/52-email-builder.md) §7.1)
+**Version:** 1.5 (13 trees BUILT as `DEFAULT_EMAIL_TEMPLATES`; **the automation module's half is DELIVERED** — the 4 node types render, the resolver reaches the full §3 vocabulary, every `*Url` resolves, the one-click unsubscribe is live; the provisional `node()` shapes are FINAL as authored, so provisioning is unblocked. v1.4: the tenant identity source is now keyed **`site`** — the canonical tokens are `{{site.name}}` / `{{site.url}}`; `resolveEmailData` + the sample emit the identity under both `site` and `tenant` roots and keep `siteUrl`/`storeUrl` as URL aliases, so every pre-rename `{{tenant.*}}` still resolves. Shipped defaults migrated to `site.*`. Merge tags are now discoverable: inline `{{` autocomplete + a "Merge tags" panel + the MCP `list_merge_tags` tool — see [docs/52](archive/52-email-builder.md) §7.1)
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-13
+**Last Updated:** 2026-07-22
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the shipped
+> `DEFAULT_EMAIL_TEMPLATES` (`packages/builder-schemas/src/default-emails.ts`) now
+> carries **21** keyed trees, not 13. The original 13 enumerated in §4 remain; eight
+> more landed since — `invoicing-receipt`, `order-confirmation`,
+> `shipping-confirmation`, the four `booking-*` (`booking-confirmation`,
+> `booking-reminder`, `booking-rescheduled`, `booking-cancelled`), and
+> `waitlist-offer`. Every "13 templates" reference below reads against the original
+> set; the provisioned total is 21.
 
 > **Scope.** Two coupled bodies of work:
 >

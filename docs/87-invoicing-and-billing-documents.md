@@ -1,8 +1,10 @@
 # sparx Platform — Invoicing & Billing Documents
 
-**Version:** 0.3 (built — Phases 1–8 shipped; standalone $19 pricing + auto-enable wired)
+**Version:** 0.4 (built — Phases 1–8 shipped; standalone $19 pricing + auto-enable wired)
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-12
+**Last Updated:** 2026-07-22
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** Phases 1–8 are shipped and this remains accurate. The invoicing **operator UI** (document editor, line composer, stage bar, AR summary, workflow editor) lives at **`apps/workbench/surfaces/invoicing/*`** — the "Dashboard authoring UI" (§16 Phase 6) and "dashboard module settings" references predate the `apps/dashboard` → `apps/workbench` rebuild; read them as the workbench invoicing surface. **Still open** (both correctly deferred below): the **tokenized customer approve/pay public route** (§5 / §17 — Phase 5+ site customer-auth) and the **catalog/part-line stock decrement** (§17 — a line records without a stock move today).
 
 > **Status: design doc.** Captures the architecture for the **authored billing document** —
 > a human-built estimate / work order / invoice / ticket that moves through a tenant-configured

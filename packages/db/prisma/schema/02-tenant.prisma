@@ -332,6 +332,7 @@ model Tenant {
   builderNodeIndex         BuilderNodeIndex[]
   builderPageArtifacts     BuilderPageArtifact[]
   builderReleases          BuilderRelease[]
+  builderDraftVersions     BuilderDraftVersion[]
   builderPageOps           BuilderPageOp[]
   // Builder module — the site layout / chrome shell (docs/45)
   builderLayouts           BuilderLayout[]

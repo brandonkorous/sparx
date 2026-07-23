@@ -1,8 +1,10 @@
 # 00 — Builder v2: The Unified Builder
 
-Version: 1.0
+> ⚠️ **SUPERSEDED 2026-07-22.** This whole "Builder v2" series planned sparx building its OWN unified shell / inspector / affordances. That plan was inverted by the silicaui `<Builder>` adoption — sparx now HOSTS silica's engine (Insert palette, canvas, layers/Navigator, Design inspector, undo/redo, page switching, frame/Outlet, symbols, theme) rather than building its own. See **docs/118-builder-silicaui-html-migration.md** for the current architecture. The individual phase docs are kept for historical context.
+
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-06-14
+Last Updated: 2026-07-22
 
 > This is the table of contents and the binding plan for **Builder v2** — the
 > consolidation of `/builder/brand`, `/builder/site`, and `/builder/page` into a
@@ -112,20 +114,20 @@ fully independent and can be built any time. Phase 7 is the final consolidation.
 
 ## 5. Where the code lives (orientation)
 
-| Area                                       | Path                                                                                                        |
-| ------------------------------------------ | ----------------------------------------------------------------------------------------------------------- |
-| Editor shell (page)                        | `apps/dashboard/app/(dashboard)/builder/_builder/builder-app.tsx`                                           |
-| Editor shell (site)                        | `…/_builder/site-builder-app.tsx`                                                                           |
-| Editor shell (email)                       | `…/_builder/email-builder-app.tsx`                                                                          |
-| Shared workspace (canvas/inspector/layers) | `…/_builder/builder-workspace.tsx`                                                                          |
-| **Canvas render path (to be unified)**     | `…/_builder/canvas.tsx` + `…/_builder/registry.tsx`                                                         |
-| Inspector                                  | `…/_builder/inspector.tsx` + `…/_builder/class-controls.ts`                                                 |
-| Layers tree (dnd-kit)                      | `…/_builder/layers-panel.tsx` + `layers-tree.ts`                                                            |
-| Editor state + autosave                    | `…/_builder/use-builder-editor.ts`                                                                          |
-| Brand / theme center                       | `…/_brand/components/theme-center.tsx`                                                                      |
-| **Live render path (the target)**          | `apps/site/components/builder-renderer.tsx`                                                                 |
-| Shared binding/runtime                     | `packages/builder-schemas/src/runtime.ts`                                                                   |
-| Publish service + verified-email guard     | `packages/sitebuilder/src/services/publish-service.ts`, `services/api-rest/src/lib/verified-email-guard.ts` |
+| Area                                       | Path                                                                                                                                                |
+| ------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Editor shell (page)                        | `apps/workbench/surfaces/builder/builder-app.tsx` _(historical; the shipped editor is `apps/workbench/surfaces/builder/studio/studio-surface.tsx`)_ |
+| Editor shell (site)                        | `…/_builder/site-builder-app.tsx`                                                                                                                   |
+| Editor shell (email)                       | `…/_builder/email-builder-app.tsx`                                                                                                                  |
+| Shared workspace (canvas/inspector/layers) | `…/_builder/builder-workspace.tsx`                                                                                                                  |
+| **Canvas render path (to be unified)**     | `…/_builder/canvas.tsx` + `…/_builder/registry.tsx`                                                                                                 |
+| Inspector                                  | `…/_builder/inspector.tsx` + `…/_builder/class-controls.ts`                                                                                         |
+| Layers tree (dnd-kit)                      | `…/_builder/layers-panel.tsx` + `layers-tree.ts`                                                                                                    |
+| Editor state + autosave                    | `…/_builder/use-builder-editor.ts`                                                                                                                  |
+| Brand / theme center                       | `…/_brand/components/theme-center.tsx`                                                                                                              |
+| **Live render path (the target)**          | `apps/site/components/builder-renderer.tsx`                                                                                                         |
+| Shared binding/runtime                     | `packages/builder-schemas/src/runtime.ts`                                                                                                           |
+| Publish service + verified-email guard     | `packages/sitebuilder/src/services/publish-service.ts`, `services/api-rest/src/lib/verified-email-guard.ts`                                         |
 
 ## 6. Glossary (so every phase doc uses the same words)
 

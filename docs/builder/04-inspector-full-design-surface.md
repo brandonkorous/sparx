@@ -1,8 +1,10 @@
 # 04 — Phase 4: The Inspector as a full design surface
 
-Version: 1.0
+> ⚠️ **SUPERSEDED 2026-07-22.** This plan predates the silicaui `<Builder>` adoption — sparx now HOSTS silica's engine (Insert palette, canvas, layers, inspector, undo/redo) instead of building its own. See **docs/118-builder-silicaui-html-migration.md** for the current architecture. Kept for historical context.
+
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-06-14
+Last Updated: 2026-07-22
 
 > The product bar is **"full Tailwind-level design control for every element."**
 > Today the Inspector reaches ~70–75% of that surface from the UI; the rest is

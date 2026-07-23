@@ -1,10 +1,20 @@
 # sparx Platform — Automation Feature Build Log
 
-**Version:** 1.24
+**Version:** 1.25
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-12
+**Last Updated:** 2026-07-22
 
 ---
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the automations operator UI is
+> **fully built and real (not stubs)**, now living at
+> `apps/workbench/surfaces/automations/*` — the operator app was rebuilt from the
+> deleted `apps/dashboard` into `apps/workbench`, so every `apps/dashboard/.../automations/*`
+> path below now resolves under `apps/workbench`. **However, the EMAIL management
+> surfaces (broadcasts, domains, suppressions, settings) REGRESSED to stubs in that
+> rebuild** — the email backend + pipeline are complete (see docs/13) but the operator
+> UI for them is currently a placeholder, a known gap to rebuild. The "▶ RESUME HERE"
+> pointer below predates the workbench rebuild; treat it as historical.
 
 ## 0. What this doc is
 
@@ -259,7 +269,7 @@ inspector-primitives,action-config-editor,node-icons,history-panel,automation-ed
 automation-editor.css}`. Now extended with the versioning toolbar/history above.
 >
 > **(prior)** **Slice G-UI — DONE.** The dashboard automations surface
-> (`apps/dashboard/.../automations/*`) is built: **list** (status-filter chips + per-row module tags +
+> (`apps/workbench/surfaces/automations/*`) is built: **list** (status-filter chips + per-row module tags +
 > run stats + inline enable/pause), **detail/review** (trigger + conditions + ordered actions, runs
 > preview), the full **builder** (event/schedule trigger editor, **nested AND/OR condition editor** —
 > mixed precedence like `A AND (B OR C)`, depth-bounded — and a drag-to-reorder ordered action editor
@@ -427,7 +437,7 @@ reconciles them into the one canonical registry. No build blocker from deferring
 | `packages/db` (3 tables)                                    | `automations` / `automation_runs` / `automation_run_steps` + RLS                                                                                                                            | ☑      |
 | `services/api-rest` routes                                  | `/v1/automations` CRUD + clone + status + run-history reads (trigger/tick live in the worker, not api-rest)                                                                                 | ☑      |
 | `packages/automation` run reads                             | `listAutomationRuns` / `getAutomationRun` (tenant-scoped run-history read path for REST/MCP/UI)                                                                                             | ☑      |
-| `apps/dashboard` surface (`/automations/*`)                 | List / detail / builder / run history (docs/34 standard) — platform-level full-page routes, pure consumer of the G-API REST surface via Server Actions                                      | ☑      |
+| `apps/workbench` surface (`/automations/*`)                 | List / detail / builder / run history (docs/34 standard) — platform-level full-page routes, pure consumer of the G-API REST surface via Server Actions                                      | ☑      |
 | `packages/automation/src/mcp` (`automationMcpTools`)        | AI authoring path — 9 MCP tools wrapping the service layer; published by `services/api-mcp` (mirrors crm `mcp/`). `read:automations` / `write:automations` scopes                           | ☑      |
 
 ---

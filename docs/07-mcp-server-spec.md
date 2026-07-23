@@ -1,10 +1,21 @@
 # WizeWorks Platform — MCP Server Specification
 
-**Version:** 1.6  
+**Version:** 1.7  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-07-02
+**Last Updated:** 2026-07-22
 
 ---
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the tenant MCP service
+> (`services/api-mcp`) ships **~150 tools across all modules** today — the catalog in
+> §3 below is an early, partial sample, not the current inventory. The operator UI
+> moved off the deleted `apps/dashboard` into `apps/workbench`: the AI tool-policy +
+> prompt-library surfaces (§9/§10, "/ai/tools", "/ai/prompts") live under
+> `apps/workbench/surfaces/ai`, and connection management ("Settings → AI
+> Integrations", §5) under `apps/workbench/surfaces/ai-connections`. Still open:
+> Microsoft-Copilot AAD-token auth (§2) is spec, not built — Claude/ChatGPT OAuth 2.1
+>
+> - API-key are the live paths.
 
 ## 1. Overview
 

@@ -96,6 +96,7 @@ const OVERRIDE: Record<string, string> = {
   'mcp.set_page_seo': 'Page SEO updated',
   'mcp.set_page_default': 'Default page changed',
   'mcp.set_page_record_type': 'Page record type changed',
+  'mcp.restore_draft_version': 'Restored an earlier version',
 };
 
 /** `bulk_price_adjusted` → `bulk price adjusted`. */

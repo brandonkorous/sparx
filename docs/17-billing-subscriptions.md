@@ -1,10 +1,12 @@
 # sparx Platform — Billing & Subscriptions
 
-**Version:** 2.6
+**Version:** 2.7
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-22
 
 ---
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** Current build reality — **LIVE:** the module-flag → Stripe-subscription sync (`syncModuleItems`), the **Trial → Grace → Suspend** lifecycle (§6, enforced off the tenant row with no Stripe dependency), and public-**site suspension** (`apps/site` overlay). **Absent:** there is **no standalone tenant-facing `settings/billing` page** — `apps/dashboard` was deleted and rebuilt as `apps/workbench`, which ships only the billing **chrome banner + trial chip** (`apps/workbench/components/billing/*`); self-serve management is the embedded Stripe Customer Portal, not a custom settings page. **Deferred:** additional-site recurring billing (§5 add-on line item — create-site is open, metering unwired). **Removed:** the tiered **Transaction Fees** below (§2, §5) — no plan tiers, only modules; the sole platform payment fee is now **sparx Pay's flat 0.5%**, charged in-flow via `application_fee_amount` (see [docs/94 §8](94-ADR-payment-gateway.md) and [docs/92 §2](92-billing-stripe-go-live.md)), not a metered Connect fee.
 
 ## 1. Philosophy
 
@@ -39,7 +41,12 @@ Each module is independently activatable:
 - **Invoicing is a bundled-free capability of Commerce and B2B** — either one activates the full Invoicing surface (authoring, AR, aging, templates, MCP tools) at **$0**. A tenant with neither pays **$19** for it standalone (a service business — contractor, repair shop, consultant — that quotes and bills without a site). Modeled as the `@sparx/modules` `BUNDLED_FREE` graph: the standalone `invoicing` flag is only ever set on a real $19 purchase, so the bundled case is never billed.
 - Modules can be added or removed at any time (prorated).
 
-### Transaction Fees
+### Transaction Fees — REMOVED (2026-07-22)
+
+> **Historical.** The tiered transaction fee was **removed** — no plan tiers, only
+> modules. The only platform payment fee is now **sparx Pay's flat 0.5%**, taken
+> in-flow via Stripe `application_fee_amount` (docs/94 §8). The tiers below no longer
+> apply.
 
 - Commerce only: 0.5% per transaction
 - When CRM is added: 0.3% per transaction
@@ -125,7 +132,7 @@ Tenants manage billing via embedded Stripe Customer Portal:
 - Download invoices
 - Cancel subscription (with exit survey)
 
-No custom billing UI — the Stripe Customer Portal is embedded into sparx dashboard settings.
+No custom billing UI — self-serve management is the embedded Stripe Customer Portal, reached from the workbench billing chrome (there is no standalone `settings/billing` page — see the reconciliation note above).
 
 ---
 

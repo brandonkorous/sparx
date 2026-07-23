@@ -35,7 +35,13 @@ export type ModuleSlug =
   | 'inventory'
   | 'chat'
   | 'ai'
-  | 'scheduling';
+  | 'scheduling'
+  // Social posting (docs/133) — connect the tenant's own social accounts and
+  // publish native posts to them. Cross-cutting + FREE (no MODULE_MONTHLY_CENTS
+  // entry): a CMS-only publisher, a CRM-only outreach team, and a full storefront
+  // all want it, so it is gated on its own flag rather than folded into commerce
+  // the way channels is. No REQUIRES/BUNDLED_FREE — it runs standalone.
+  | 'social';
 
 // Canonical ordering is irrelevant here — callers (sidebar, breadcrumb) order
 // by their own manifest list. This is just the closed set we probe.
@@ -52,6 +58,7 @@ const ALL_MODULES: readonly ModuleSlug[] = [
   'chat',
   'ai',
   'scheduling',
+  'social',
 ];
 
 // ── Module dependency graph ──────────────────────────────────────────────────

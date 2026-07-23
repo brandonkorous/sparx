@@ -30,6 +30,11 @@ export const MODULE_MONTHLY_CENTS: Partial<Record<ModuleSlug, number>> = {
   invoicing: 1900,
   chat: 1900,
   scheduling: 2900,
+  // NOTE: `social` (docs/133) is intentionally absent — it is a FREE module. No
+  // entry ⇒ `isBillableModule` is false ⇒ the toggle path creates no Stripe item,
+  // so it activates at $0 through the normal flow. Do not add a price here without
+  // a deliberate decision to start charging (the paid lever is the future `ads`
+  // module, docs/133 §14, not social posting).
 };
 
 /** The 14-day, all-modules, no-card trial (docs/17 §6). */

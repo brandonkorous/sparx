@@ -68,6 +68,7 @@ import { themeFontFamilies } from '@sparx/site-themes';
 import { applyBrandOverride, tenantTheme, type BrandColumns } from './brand-theme';
 import { useCanvasBrandFonts } from './canvas-fonts';
 import { BuilderLiveSync } from './builder-live';
+import { VersionHistory } from './version-history';
 import { buildStudioHost } from './host';
 import { makeRenderHostNode } from './host-cores';
 import { buildPreviewRoot, type SitePreviewData } from './preview-data';
@@ -467,6 +468,7 @@ function StudioEditor({
             <Badge color={status.tone} variant="soft" size="sm">
               {status.label}
             </Badge>
+            <VersionHistory onReload={onReload} />
             <Button
               data-tour="builder-preview"
               size="sm"

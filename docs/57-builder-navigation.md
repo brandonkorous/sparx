@@ -1,8 +1,10 @@
 # sparx Platform — Navigation in the Builder
 
-**Version:** 0.3 (P1 + migration + fallback removal BUILT; CMS-surface teardown deferred)
+**Version:** 0.3.1 (P1 + migration + fallback removal BUILT; CMS-surface teardown deferred)
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-05
+**Last Updated:** 2026-07-22
+
+> **Drift note (2026-07-22):** The nav-as-site-chrome decision below is still valid, but the bespoke `_builder` inspector §4 references as the authoring surface has since been REPLACED — sparx now HOSTS silicaui's `<Builder>` engine (studio at `apps/workbench/surfaces/builder/studio/studio-surface.tsx`), which owns the inspector/property controls. See **docs/118-builder-silicaui-html-migration.md**.
 
 > **Status: BUILT — UNPUSHED, gate-green.** Site **navigation** now lives on the
 > Builder `NavMenu` node, not the CMS module: nav is site chrome, every site has
@@ -54,7 +56,7 @@ Today navigation is **owned by the CMS module**. The data is `navigation_menus` 
 `navigation_items` ([16-cms-navigation.prisma](../packages/db/prisma/schema/16-cms-navigation.prisma)),
 the editor is `/cms/navigation`, and that whole surface is **gated behind the CMS
 module** (`<ModuleGate module="cms">` in
-[cms/layout.tsx](<../apps/dashboard/app/(dashboard)/cms/layout.tsx>)).
+[the cms surface](../apps/workbench/surfaces/cms)).
 
 That's backwards. **A header/footer is site chrome — every site needs one
 regardless of which modules it runs.** The clinching case:
@@ -217,7 +219,7 @@ So `SITE_SOURCES` loses `primaryNav` + `footerNav`, keeps `identity` + `social`.
 The `/builder` inspector renders a node's editable fields from its registry
 `props: PropSpec[]`, via control kinds that are currently **hard-coded**
 (`text` / `textarea` / `select` / `buttongroup` / `switch` / `richtext` —
-[inspector.tsx](<../apps/dashboard/app/(dashboard)/builder/_builder/inspector.tsx>)
+the Design inspector (now silica-owned — `@wizeworks/silicaui-builder`)
 `ComponentPanel`). There is no repeatable-list control yet.
 
 **Add one new control kind: `navlinks`** — a small client editor for an ordered link

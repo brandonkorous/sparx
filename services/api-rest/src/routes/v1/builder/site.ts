@@ -44,7 +44,13 @@
 // Zod schema (`SiteSyncInput`), keeping api-rest free of @sparx/builder-schemas.
 
 import type { FastifyPluginAsync } from 'fastify';
-import { artifactService, nodeIndexService, opLogService, siteService } from '@sparx/builder';
+import {
+  artifactService,
+  draftVersionService,
+  nodeIndexService,
+  opLogService,
+  siteService,
+} from '@sparx/builder';
 import { withTenant } from '@sparx/db';
 import { isModuleEnabled } from '@sparx/auth';
 import { ok } from '@sparx/api-core/envelope';
@@ -162,6 +168,36 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     // Republishes the old manifest FORWARD as a new release — history is append-only,
     // so a restore is itself restorable. The counts describe what actually moved.
     const result = await artifactService.restoreRelease(await toBuilderContext(request), releaseId);
+    return ok(result);
+  });
+
+  // ── Draft version history (docs/126 §4.6) ──────────────────────────────────
+  // The DRAFT counterpart of the publish releases above: every save is a restorable
+  // version, so a last-write-wins overwrite (routine once an operator and an agent edit
+  // together) is recoverable. `viewer` reads the history; restoring rewrites the draft, so
+  // it takes `editor` like publishing does.
+
+  app.get('/v1/builder/site/draft-versions', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { limit } = request.query as { limit?: string };
+    const versions = await draftVersionService.listDraftVersions(
+      await toBuilderContext(request),
+      limit ? Number(limit) : undefined
+    );
+    return ok(versions);
+  });
+
+  app.post('/v1/builder/site/draft-versions/:versionId/restore', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { versionId } = request.params as { versionId: string };
+    // Non-destructive: brings back the versioned content of pages that still exist, seals
+    // itself as a new version (append-only), and touches nothing the operator added since.
+    const result = await draftVersionService.restoreDraftVersion(
+      await toBuilderContext(request),
+      versionId
+    );
     return ok(result);
   });
 

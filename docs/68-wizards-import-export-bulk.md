@@ -1,8 +1,25 @@
 # sparx Platform — Wizards, Import/Export & Bulk Operations
 
-**Version:** 1.1
+**Version:** 1.1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-07-22
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** two corrections to the specs below.
+>
+> **1. App path.** The operator app `apps/dashboard` (and its earlier `apps/app` name) was deleted
+> and rebuilt as **`apps/workbench`**, whose operator UIs live under `apps/workbench/surfaces/<module>/`
+> in a registry/pane architecture. Every `apps/app/src/app/(dashboard)/…` and `apps/dashboard/…` file
+> path in §7/§10 below is stale — read them as their `apps/workbench/surfaces/…` equivalents.
+>
+> **2. Multi-step creation wizards were NOT reproduced as specced (deliberate drift).** The Product,
+> B2B Account, Customer full-profile, and CMS Content **multi-step wizards** described in §4–§7 were
+> intentionally not rebuilt in the workbench — record creation now happens **in panes** (the
+> surface/pane model), not a stepper overlay. Treat §4–§7 as historical design intent, not current UI.
+>
+> **3. Import/export IS built.** The background import backend shipped:
+> [`services/import-worker/`](../services/import-worker) with processors for **products, customers,
+> B2B accounts, and discounts** (§8). Still open: **inventory-adjustment CSV import** (SKU + location)
+> and **Excel `.xlsx` upload** (§6/§8) — both remain unbuilt.
 
 ---
 
@@ -455,6 +472,12 @@ No bulk action silently does nothing on error — row-level errors surface in a 
 ---
 
 ## 10. Implementation plan
+
+> **Reconciled 2026-07-22:** the `apps/app/src/app/(dashboard)/…` file paths in this section are
+> stale (see the note under the header) — the operator app is now `apps/workbench` with a
+> surface/pane architecture. Phase 2's **`services/import-worker`** shipped (products / customers /
+> B2B accounts / discounts); the multi-step **wizards** in Phases 1/4/5 were superseded by pane-based
+> creation. `.xlsx` upload and inventory-adjustment import (Phase 6) remain open.
 
 ### Phase 1 — Product wizard
 

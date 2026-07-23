@@ -1,8 +1,10 @@
 # 02 — Phase 2 (keystone): Unify the canvas on the live renderer
 
-Version: 1.0
+> ⚠️ **SUPERSEDED 2026-07-22.** This plan predates the silicaui `<Builder>` adoption — sparx now HOSTS silica's engine (Insert palette, canvas, layers, inspector, undo/redo) instead of building its own. See **docs/118-builder-silicaui-html-migration.md** for the current architecture. Kept for historical context.
+
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-06-14
+Last Updated: 2026-07-22
 
 > The builder's premise is **"canvas == production."** Today it isn't, because
 > there are **two** render paths: the editor canvas renders each node through

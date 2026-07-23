@@ -53,6 +53,7 @@ import { invalidatePublishedStylesheet } from './surface-css-service';
 import { dropOwnerTx, reindexTreeTx } from './node-index-service';
 import { createReleaseTx, recordArtifactTx, type ManifestEntry } from './artifact-service';
 import { appendOpsTx } from './op-log-service';
+import { captureDraftVersionTx, type DraftVersionSource } from './draft-version-service';
 import { newOpBatch, pageCreateOp, pageDeleteOp, savedThemesSetOp, themeSetOp } from './silica-ops';
 import { BuilderConflictError, BuilderValidationError } from '../errors';
 import type { PropertyContext } from '../errors';
@@ -425,6 +426,9 @@ export interface SyncOptions {
    *  to swap the whole site (a blueprint install, a reset→reseed). NEVER set this on
    *  the editor autosave path. */
   allowReplace?: boolean;
+  /** Who authored this save, for the draft version history (docs/126 §4.6). A human
+   *  editor save is `save` (the default); an agent's MCP write is `agent`. */
+  versionSource?: DraftVersionSource;
 }
 
 /** What a successful {@link sync} hands back: the post-write `updatedAt` for every
@@ -682,6 +686,12 @@ export async function sync(
         relay = { batchId, seq: result.newSeq, ops: input.ops };
       }
     }
+
+    // Seal this save as a restorable draft version (docs/126 §4.6) — rides the SAME
+    // transaction as the snapshot, so a rolled-back save leaves no orphan version, and a
+    // save that changed nothing is skipped (no duplicate row). This is what makes a
+    // last-write-wins overwrite recoverable rather than permanent.
+    await captureDraftVersionTx(tx, ctx, opts.versionSource ?? 'save');
 
     // Hand back each page's post-write `updatedAt` so the client can advance its
     // precondition map (docs/126 Phase 1). Without this the client's timestamps would
@@ -1054,10 +1064,16 @@ async function syncScripted(
   opts: { ops?: BuilderOpEnvelope[]; reloadHints?: string[] } = {}
 ): Promise<SilicaWriteChange> {
   const ops = opts.ops ?? [];
-  const { relay } = await sync(ctx, {
-    ...site,
-    ...(ops.length > 0 ? { ops, batchId: newOpBatch() } : {}),
-  });
+  const { relay } = await sync(
+    ctx,
+    {
+      ...site,
+      ...(ops.length > 0 ? { ops, batchId: newOpBatch() } : {}),
+    },
+    // An agent's MCP write — labels the draft version in the history so the owner can see
+    // which saves the assistant made.
+    { versionSource: 'agent' }
+  );
   return { relay, reloadHints: opts.reloadHints ?? [] };
 }
 

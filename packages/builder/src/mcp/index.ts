@@ -12,12 +12,14 @@ import { writeTools } from './write-tools';
 import { layoutReadTools, layoutWriteTools } from './layout-tools';
 import { silicaReadTools } from './silica-read-tools';
 import { silicaWriteTools } from './silica-write-tools';
+import { silicaVersionTools } from './silica-version-tools';
 
 export * from './read-tools';
 export * from './write-tools';
 export * from './layout-tools';
 export * from './silica-read-tools';
 export * from './silica-write-tools';
+export * from './silica-version-tools';
 export * from './silica-blocks';
 export { readRelay, withRelay, type BuilderRelaySideChannel } from './relay';
 
@@ -28,4 +30,5 @@ export const builderMcpTools = [
   ...layoutWriteTools,
   ...silicaReadTools,
   ...silicaWriteTools,
+  ...silicaVersionTools,
 ];

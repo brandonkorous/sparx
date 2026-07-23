@@ -1,8 +1,10 @@
 # Builder v2 — Full Customization Rebuild
 
-**Version:** 1.5
+**Version:** 1.5.1
 **Author:** Brandon Korous / WizeWorks
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-07-22
+
+> **Drift note (2026-07-22):** The catalog / authoring / class-token / behavior-runtime content below is still valid, but the bespoke `_builder` editor + `packages/builder-render` host-walker this doc describes as the _editor_ has since been REPLACED — sparx now HOSTS silicaui's `<Builder>` engine (studio at `apps/workbench/surfaces/builder/studio/studio-surface.tsx`), which owns the canvas, Insert palette, Navigator/layers, Design inspector, and undo/redo. See **docs/118-builder-silicaui-html-migration.md** for the current architecture.
 
 > **Status (v1.5 — all seven pillars built + merged to `main`):** The entire plan is shipped. Beyond v1.4: **Pillar 4** (mediated unlocks — background-image-anywhere, the motion/animation library, the guarded position control, the extended bounded z-scale); **Pillar 5** (the closed `data-sx-*` behavior runtime — carousel/disclosure/tabs/scrollspy/marquee/menu — authored via sanctioned `props.behavior`/`props.sxRole`, lowered to `data-sx-*` and wired into **both** render surfaces); **Pillar 6 composites** (carousel hero, brand marquee, scroll-adaptive nav, mega-menu, single-open accordion, tabbed panels — behavior-bearing catalog rows on the runtime, with a sanctioned `hidden` attribute so closed panels ship collapsed and a cross-package vocabulary drift-guard); the **DB-backed `PlatformComponent` catalog + lifecycle/review API** (§5 — `/v1/platform/catalog/*`, CRUD + `draft→submitted→in_review→approved→published→archived|rejected`, owner-gated, global-table RLS); **Email v2** (§3.6c — the email-safe `class`→inline-style compiler driving **both** the real send renderer and the canvas preview, email-surface inspector gating, and `email` catalog blocks); and **View HTML + one-way HTML import** (§3.8/§4.2). The DB catalog was reconciled to **one shared vocabulary** with the data-as-code entry: `kind` is `common|comprehensive`, grouping is the shared 8-value `category`, plus `surfaces`/`icon`/`description` — so a published row renders in the Add palette identically to a static catalog entry, and the static catalog can seed straight into the table. **Remaining:** the §8 **live-storefront acceptance pass** (pin a card to a real product whose Add-to-cart adds the right variant; reproduce 2–3 reference mockups) is not yet exercised in a browser — everything to date is unit/type/lint-verified.
 >
@@ -133,7 +135,7 @@ The node tree is the **canonical model**; HTML is a **lossy projection** of it �
 
 ## 4. Rendering architecture: raw elements across both walkers
 
-The renderer is deliberately split (docs/builder/02): `renderLeaf` (`packages/builder-render/src/render-leaf.tsx`) is the **one per-type leaf map** both surfaces call; the **host walkers** own the tree walk, per-node wrapper, iteration, and containers — the dashboard canvas (`apps/dashboard/.../_builder/canvas.tsx`) and the site renderer (`apps/site/components/builder-renderer.tsx`).
+The renderer is deliberately split (docs/builder/02): `renderLeaf` (`packages/builder-render/src/render-leaf.tsx`) is the **one per-type leaf map** both surfaces call; the **host walkers** own the tree walk, per-node wrapper, iteration, and containers — the dashboard canvas (`apps/workbench/surfaces/builder/studio/host-cores.tsx`) and the site renderer (`apps/site/components/builder-renderer.tsx`).
 
 A universal raw element therefore lands in **three** places, kept in lockstep:
 

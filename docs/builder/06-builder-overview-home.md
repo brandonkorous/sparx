@@ -1,8 +1,10 @@
 # 06 — Phase 6: The Builder overview home
 
-Version: 1.0
+> ⚠️ **SUPERSEDED 2026-07-22.** This plan predates the silicaui `<Builder>` adoption — sparx now HOSTS silica's engine (Insert palette, canvas, layers, inspector, undo/redo) instead of building its own. See **docs/118-builder-silicaui-html-migration.md** for the current architecture. Kept for historical context.
+
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-06-14
+Last Updated: 2026-07-22
 
 > Today `/builder` is a thin surface-picker (Brand · Site · Page · Email ·
 > Components + a blueprint teaser). This phase replaces it with a real **module

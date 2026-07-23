@@ -41,6 +41,7 @@ export const MODULE_SLUGS: ModuleSlug[] = [
   'chat',
   'ai',
   'scheduling',
+  'social',
 ];
 export const MODULE_SLUG_SET = new Set<string>(MODULE_SLUGS);
 

@@ -1,8 +1,10 @@
 # 03 — Phase 3: The unified builder shell
 
-Version: 1.0
+> ⚠️ **SUPERSEDED 2026-07-22.** This plan predates the silicaui `<Builder>` adoption — sparx now HOSTS silica's engine (Insert palette, canvas, layers, inspector, undo/redo) instead of building its own. See **docs/118-builder-silicaui-html-migration.md** for the current architecture. Kept for historical context.
+
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-06-14
+Last Updated: 2026-07-22
 
 > Today brand, site chrome, and page are three separate routes
 > (`/builder/brand`, `/builder/site`, `/builder/page`) even though production

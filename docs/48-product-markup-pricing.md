@@ -1,11 +1,25 @@
 # sparx Platform — Product Markup, Surcharges & Fee Pass-Through
 
-**Version:** 0.2 (design notes — not yet scheduled)
+**Version:** 0.2.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-03
+**Last Updated:** 2026-07-22
 
-> **Status: backlog / thinking doc.** This captures the feature so it isn't forgotten —
-> nothing here is built yet, and it is expected to land soon. It describes one capability with
+> **Status: BUILT / SHIPPED.** The markup + surcharge engine described here is implemented and live.
+>
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the original "backlog / nothing built yet"
+> framing below is obsolete. Shipped: the markup engine (`percentage` / `multiplier` / `flat` /
+> `margin_target` / `matrix` methods with rounding + floor/ceiling) in
+> [`packages/commerce/src/services/markup-service.ts`](../packages/commerce/src/services/markup-service.ts),
+> the cost-band **`MarkupBand`** parts matrix, document-level **surcharges** (`set_surcharge` MCP
+> tool + config), quote/invoice-line markup with line-level snapshotting, and the cost-driven
+> **`markup-recompute-worker`** ([`services/markup-recompute-worker/`](../services/markup-recompute-worker)).
+> MCP pricing tools (`apply_markup`, `preview_markup`, `set_surcharge`) are exposed. Genuinely-open
+> items remain in §11 (auto-apply vs. staged-review tolerance policy, per-jurisdiction surcharge
+> compliance automation, landed-cost basis pending docs/28, the manual-invoice/repair-order surface,
+> multi-currency).
+>
+> _Original design note (retained for context):_ This captures the feature so it isn't forgotten.
+> It describes one capability with
 > **three application points**: deriving a product's **catalog price** from its cost via a markup
 > rule; applying a markup to **invoice/quote lines** at document time (especially parts on a
 > service/repair invoice); and adding **document-level surcharges** that pass through a

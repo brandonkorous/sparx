@@ -1,10 +1,21 @@
 # sparx Platform — Live Chat Module Spec
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-17
+**Last Updated:** 2026-07-22
 
 ---
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** two spec assertions were corrected
+> to match the build and the no-platform-AI rule. **(1) The AI first-responder is
+> TENANT BYOK, not a platform-credentialed Claude Haiku.** Every AI reply runs on the
+> tenant's OWN provider key (Anthropic OR OpenAI, encrypted via the integration
+> framework); sparx never bills an LLM call to a platform credential. Read §4/§11's
+> "Claude Haiku" as "the tenant's configured model." **(2) AI retrieval reads tenant
+> data over DB/RLS, not Typesense** (a documented deviation from §4/§11). Built + live:
+> the site widget, the WebSocket transport, and the operator inbox (in `apps/workbench`,
+> the operator app formerly `apps/dashboard`). Still open: Surface 3 — the sparx.market
+> "Chat with [Tenant]" button (§3.3, §14).
 
 ## 1. Overview
 
@@ -45,12 +56,14 @@ All customer conversations in one place. Assign to staff members. See customer's
 
 ## 4. AI Layer
 
-The chat widget is AI-first. Claude Haiku handles the first response:
+The chat widget is AI-first. The first response runs on the **tenant's own AI provider
+key (BYOK — Anthropic or OpenAI)**, never a platform-credentialed model (per the
+no-platform-AI rule); the example model below is illustrative, not a platform default:
 
 ```
 Shopper: "Does this injector fit a 2019 Ford F-350 6.7L?"
 
-AI (instant, reads product fitment data from Typesense):
+AI (instant, reads product fitment data over DB/RLS):
   "Yes, this Bosch injector is compatible with the
    2019 Ford F-350 6.7L Power Stroke. It's also
    compatible with 2017–2022 F-250 and F-350 models
@@ -259,8 +272,8 @@ The `@sparx/chat-widget` package exports a single React component:
 The AI handler runs server-side inside the API, not as a separate worker. On `POST /v1/public/chat/conversations/:id/messages`:
 
 1. Fetch conversation context (last 10 messages)
-2. Fetch tenant's product/policy context from Typesense (product fitment, shipping policy, return policy)
-3. Call Anthropic API with system prompt + context + user message
+2. Fetch tenant's product/policy context over DB/RLS (product fitment, shipping policy, return policy) — a documented deviation from the original "from Typesense" plan
+3. Call the **tenant's own AI provider (BYOK — Anthropic or OpenAI)** with system prompt + context + user message
 4. If `confidence >= 0.8` (extracted from structured output): insert AI message, push over WebSocket
 5. If `confidence < 0.8`: insert a handoff message ("Let me connect you with the team"), set `conversation.status = 'open'`, notify tenant
 
@@ -273,7 +286,9 @@ Return JSON: { "answer": string, "confidence": float, "escalate": boolean }
 Only answer what you can confirm from the provided context.
 ```
 
-Anthropic model: `claude-haiku-4-5` (fast, low cost per message, adequate for Q&A).
+Model: the tenant's configured BYOK model (a fast, low-cost Q&A tier on their chosen
+provider — e.g. a Haiku- or mini-class model). The credential is the tenant's, never
+sparx's.
 
 ---
 

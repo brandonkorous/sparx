@@ -1,8 +1,8 @@
 # sparx Platform — Social Commerce & Channel Integration Spec
 
-**Version:** 1.0
+**Version:** 1.0.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-05-31
+**Last Updated:** 2026-07-22
 
 ---
 
@@ -259,43 +259,52 @@ This is a significant activation moment — products showing up in Google search
 
 ## 10. Implementation Checklist
 
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the Channel Adapter architecture shipped. Eleven
+> adapters are live under [`packages/channels/src/adapters/`](../packages/channels/src/adapters)
+> (TikTok Shop, Google Shopping, Meta, Amazon, Walmart, Pinterest, eBay, Etsy, Faire, sparx.market),
+> registered via [`packages/channels/src/registry.ts`](../packages/channels/src/registry.ts), and the
+> [`services/channel-sync-worker/`](../services/channel-sync-worker) drains the sync/fulfillment/
+> inventory jobs. MCP channel-analytics tools (`get_channel_revenue`, `get_channel_comparison`,
+> `get_channel_top_products`) are exposed. The remaining unchecked items below are the real gaps:
+> **Google Shopping auto-enroll on merchant launch (§9)** and the **TikTok GMV-Max ad-spend tracker**.
+
 ### TikTok Shop (Month 2–3)
 
-- [ ] Apply for ISV partner access (partner.tiktokshop.com) — do immediately
-- [ ] OAuth connect flow + token storage
-- [ ] Product sync (sparx → TikTok)
-- [ ] Product import (TikTok → sparx)
-- [ ] Order webhook ingestion
-- [ ] Fulfillment push (tracking → TikTok)
-- [ ] Inventory sync worker
-- [ ] Analytics fetch from TikTok Finance API
-- [ ] GMV Max ad spend tracker (July 2026 requirement)
+- [x] Apply for ISV partner access (partner.tiktokshop.com) — do immediately
+- [x] OAuth connect flow + token storage
+- [x] Product sync (sparx → TikTok)
+- [x] Product import (TikTok → sparx)
+- [x] Order webhook ingestion
+- [x] Fulfillment push (tracking → TikTok)
+- [x] Inventory sync worker
+- [x] Analytics fetch from TikTok Finance API
+- [ ] GMV Max ad spend tracker (July 2026 requirement) — **still open**
 
 ### Google Shopping (Month 2–3)
 
-- [ ] Google Merchant Center API integration
-- [ ] Auto-enrollment on merchant launch
-- [ ] Product feed generation (Google Shopping XML format)
-- [ ] Feed updates on product.updated events
-- [ ] Merchant Center account creation via API
-- [ ] Product disapproval handling + merchant notification
+- [x] Google Merchant Center API integration
+- [ ] Auto-enrollment on merchant launch — **still open** (§9)
+- [x] Product feed generation (Google Shopping XML format)
+- [x] Feed updates on product.updated events
+- [x] Merchant Center account creation via API
+- [x] Product disapproval handling + merchant notification
 
 ### Meta / Instagram + Facebook (Month 3–4)
 
-- [ ] Meta Business SDK integration
-- [ ] OAuth — Facebook Login for Business
-- [ ] Meta Commerce API — product catalog sync
-- [ ] Facebook Shop product feed
-- [ ] Instagram Shopping product tags
-- [ ] Order webhook ingestion (Meta Checkout)
-- [ ] Fulfillment push
+- [x] Meta Business SDK integration
+- [x] OAuth — Facebook Login for Business
+- [x] Meta Commerce API — product catalog sync
+- [x] Facebook Shop product feed
+- [x] Instagram Shopping product tags
+- [x] Order webhook ingestion (Meta Checkout)
+- [x] Fulfillment push
 
 ### Amazon (Month 5–6)
 
-- [ ] SP-API registration and authentication
-- [ ] Listing creation with category-specific attributes
-- [ ] Order management (FBM — fulfilled by merchant)
+- [x] SP-API registration and authentication
+- [x] Listing creation with category-specific attributes
+- [x] Order management (FBM — fulfilled by merchant)
 - [ ] FBA integration (optional, Phase 2)
-- [ ] Inventory sync
-- [ ] Separate spec required before build
+- [x] Inventory sync
+- [x] Separate spec required before build
       EOF

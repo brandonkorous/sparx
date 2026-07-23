@@ -1,8 +1,10 @@
 # 01 — Phase 1: Fix the publish gate (verified-email RLS read)
 
-Version: 1.0
+> ⚠️ **SUPERSEDED 2026-07-22.** This plan predates the silicaui `<Builder>` adoption — sparx now HOSTS silica's engine (Insert palette, canvas, layers, inspector, undo/redo) instead of building its own. See **docs/118-builder-silicaui-html-migration.md** for the current architecture. Kept for historical context.
+
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-06-14
+Last Updated: 2026-07-22
 
 > Publishing — and rollback and schedule — is **blocked in local dev for any
 > post-onboarding tenant**, even when the user's email _is_ verified. The cause is

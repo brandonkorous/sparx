@@ -73,6 +73,7 @@ model Property {
   builderNodeIndex     BuilderNodeIndex[]
   builderPageArtifacts BuilderPageArtifact[]
   builderReleases      BuilderRelease[]
+  builderDraftVersions BuilderDraftVersion[]
   builderPageOps       BuilderPageOp[]
   builderLayouts       BuilderLayout[]
   builderAssignments   BuilderPageAssignment[]

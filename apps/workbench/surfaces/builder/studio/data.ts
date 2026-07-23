@@ -258,6 +258,49 @@ export function getSiteSeq(): Promise<number> {
     .catch(() => 0);
 }
 
+// ── Draft version history (docs/126 §4.6) ─────────────────────────────────────
+
+/** One restorable draft save, as the history drawer shows it. */
+export interface DraftVersionDto {
+  id: string;
+  hash: string;
+  pageCount: number;
+  /** save | agent | restore — who/what produced this version. */
+  source: string;
+  restoredFromId: string | null;
+  actorId: string | null;
+  createdAt: string;
+  /** True for the version matching the live draft right now (the newest). */
+  current: boolean;
+}
+
+export const DRAFT_VERSIONS_KEY = ['builder', 'draft-versions'];
+
+/** The property's draft-save history, newest first. Fetched only while the drawer is open
+ *  (`enabled`) so a closed drawer costs nothing. */
+export function useDraftVersions(enabled: boolean) {
+  return useQuery({
+    queryKey: DRAFT_VERSIONS_KEY,
+    queryFn: () => api.get<DraftVersionDto[]>('/v1/builder/site/draft-versions'),
+    enabled,
+    staleTime: 10_000,
+  });
+}
+
+/** Restore a draft version — non-destructive on the server (it seals a new version and
+ *  leaves pages added since untouched). The caller reloads the editor to show the result. */
+export function useRestoreDraftVersion() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (versionId: string) =>
+      api.post(`/v1/builder/site/draft-versions/${encodeURIComponent(versionId)}/restore`),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: DRAFT_VERSIONS_KEY });
+      void queryClient.invalidateQueries({ queryKey: PUBLISH_STATE_KEY });
+    },
+  });
+}
+
 /** Snapshot every silica draft tree → published, sealing a release. */
 export function usePublishSite() {
   const queryClient = useQueryClient();

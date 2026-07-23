@@ -1,10 +1,12 @@
 # sparx Platform — Billing Build Plan
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-12
+**Last Updated:** 2026-07-22
 
 ---
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** The **Phase 7 metered transaction fee** described throughout this plan was **removed** — there are no plan tiers, only modules, so the tiered 0.5%/0.3%/0% metered fee (`recordTransactionFee`, `meterOrderFee`, the `transaction_fee` meter/price) no longer exists in code. The **only** platform-collected payment fee is **sparx Pay's flat 0.5%**, taken at charge time via Stripe `application_fee_amount` and recorded on `payment_intents.platform_fee` (see [docs/94 §8](94-ADR-payment-gateway.md) and [docs/92 §2](92-billing-stripe-go-live.md)). The transaction-fee subsections below (Phase 1 "Transaction fee metering", Phase 7, and the fee rows in the Build Status) are **historical**. Separately, `apps/dashboard` was deleted and rebuilt as `apps/workbench`; the standalone `/settings/billing` page never shipped in workbench — only the billing **chrome banner + trial chip** (`apps/workbench/components/billing/*`) exist. Plan/status derive from active module flags; the Stripe Customer Portal covers self-serve management.
 
 ## Overview
 
@@ -29,7 +31,7 @@ the manual ops are done.
 ### ✅ Built (validated: typecheck + lint + 8 unit tests)
 
 - **`@sparx/billing` package** — `price-catalog.ts` (module list prices in
-  `MODULE_MONTHLY_CENTS` + `transactionFeeRate`), `client.ts`
+  `MODULE_MONTHLY_CENTS`), `client.ts`
   (`isBillingConfigured()` over the single platform Stripe account), `service.ts`
   (`syncModuleItems`, `createPortalSession`, `getBillingState`,
   `reconcileFromSubscription`, `setSubscriptionStatus`).
@@ -51,15 +53,10 @@ the manual ops are done.
   settings-nav `billing` entry flipped `ready: true`.
 - **Wiring** — api-rest Dockerfile COPY for `@sparx/billing`;
   `STRIPE_WEBHOOK_SECRET_BILLING` added to env.
-- **Phase 7 — transaction-fee metering** (§7) — `recordTransactionFee()` in
-  `@sparx/billing` computes the tier from the tenant's **explicit** billable-module
-  mix (0.5% Commerce / 0.3% with CRM / 0% once monthly spend ≥ $299) and emits a
-  `transaction_fee` meter event keyed by `stripe_customer_id`. Wired at **both**
-  `order.placed` emit sites via the `meterOrderFee` api-rest helper: site
-  checkout completion (gated on a new `freshlyPlaced` flag so an idempotent retry
-  never double-bills) and the B2B approval queue (the placement moment for a held
-  order). Best-effort + guarded; the order id rides along as the Stripe meter-event
-  `identifier` for a second, server-side 24h dedupe.
+- ~~**Phase 7 — transaction-fee metering** (§7)~~ — **REMOVED (2026-07-22).** The
+  tiered `recordTransactionFee()` / `meterOrderFee` / `transaction_fee` meter path
+  no longer exists (no tiers, only modules). The sole platform payment fee is now
+  sparx Pay's flat 0.5%, collected in-flow via `application_fee_amount` (docs/94 §8).
 
 ### ⛏️ Outstanding — manual ops (required before billing can charge)
 
@@ -77,12 +74,10 @@ the manual ops are done.
 - [ ] **Apply the migration** via the **DB Migrate workflow** (push to `main`) —
       Cloud SQL is private-IP, so `20260813000000_platform_billing` cannot be
       applied locally.
-- [ ] **Create the `transaction_fee` Billing Meter** in the Stripe Dashboard
-      (event name `transaction_fee`, customer mapping `stripe_customer_id`, value
-      key `value`) and attach a metered Price so fees land on each tenant's invoice.
-      The code emits meter events the moment the meter exists; until then
-      `meterEvents.create` no-ops (guarded — Stripe is unconfigured) or, once
-      `STRIPE_SECRET_KEY` is set but the meter isn't, the call is caught non-fatally.
+- [x] ~~**Create the `transaction_fee` Billing Meter**~~ — **no longer required
+      (2026-07-22).** The metered transaction fee was removed; there is no meter or
+      metered price to provision. sparx Pay's flat 0.5% is charged in-flow, not
+      metered onto the subscription (docs/94 §8).
 
 ### ⛏️ Outstanding — deferred code sub-slices (each its own scope)
 
@@ -135,7 +130,14 @@ export const PRICE_CATALOG = {
 } as const satisfies Record<ModuleKey, { monthly: string; annual?: string }>
 ```
 
-### Transaction fee metering
+### Transaction fee metering — REMOVED (2026-07-22)
+
+> **Historical.** The tiered metered transaction fee (0.5% / 0.3% / 0%) was removed —
+> no plan tiers, only modules. The only platform payment fee is sparx Pay's **flat
+> 0.5%**, taken in-flow via Stripe `application_fee_amount` (docs/94 §8), never metered
+> onto the tenant's subscription. The original metered design is preserved below for
+> context only; there is no `transaction_fees` meter, metered price, or `order.created`
+> meter emit in code.
 
 Commerce charges 0.5% per transaction. When CRM is also active: 0.3%. When active modules ≥ $299/mo: 0%.
 
@@ -272,7 +274,8 @@ The portal allows tenants to:
 Dashboard `/settings/billing`:
 
 - Current plan summary (active modules, next billing date, amount)
-- Transaction fee tier display (0.5% / 0.3% / 0% based on active modules)
+- ~~Transaction fee tier display (0.5% / 0.3% / 0% based on active modules)~~ —
+  removed 2026-07-22 (no tiers; sparx Pay's flat 0.5% is charged in-flow, docs/94 §8)
 - "Manage billing" button → Stripe Customer Portal
 - Invoice history (last 5 invoices with download links — fetched from Stripe API)
 
@@ -299,7 +302,14 @@ Retry logic: Stripe retries failed payments 3 times over 7 days. After 7 days un
 
 ---
 
-## Phase 7 — Transaction fee enforcement
+## Phase 7 — Transaction fee enforcement — REMOVED (2026-07-22)
+
+> **Historical.** This phase was **removed**. There are no plan tiers, only modules, so
+> the tiered metered fee below (`recordTransactionFee`, `getActiveModulesTotal`, the
+> `transaction_fee` meter) no longer exists in code. The sole platform payment fee is
+> sparx Pay's **flat 0.5%**, taken at charge time via `application_fee_amount` and
+> recorded on `payment_intents.platform_fee` (docs/94 §8). The design below is retained
+> for context only.
 
 Transaction fee calculation runs at order completion time (`POST /v1/checkout/sessions/:id/complete`):
 
@@ -342,16 +352,16 @@ TF addition: no infrastructure changes for enterprise provisioning. It's a data 
 
 ## Build order summary
 
-| #   | Phase                                     | Notes                                         |
-| --- | ----------------------------------------- | --------------------------------------------- |
-| 1   | Ph1 Stripe product catalog                | Manual Stripe Dashboard work + Secret Manager |
-| 2   | Ph2 DB schema + Stripe Customer on signup | Requires Tier 1 Checkout Ph1                  |
-| 3   | Ph3 Trial lifecycle                       | After Ph2                                     |
-| 4   | Ph4 Module activation/deactivation        | After Ph2–3                                   |
-| 5   | Ph5 Customer Portal + billing settings UI | After Ph4                                     |
-| 6   | Ph6 Webhook handler                       | After Ph2                                     |
-| 7   | Ph7 Transaction fee metering              | After Tier 1 Checkout complete                |
-| 8   | Ph8 Enterprise provisioning               | Manual; after Ph2                             |
+| #     | Phase                                     | Notes                                                              |
+| ----- | ----------------------------------------- | ------------------------------------------------------------------ |
+| 1     | Ph1 Stripe product catalog                | Manual Stripe Dashboard work + Secret Manager                      |
+| 2     | Ph2 DB schema + Stripe Customer on signup | Requires Tier 1 Checkout Ph1                                       |
+| 3     | Ph3 Trial lifecycle                       | After Ph2                                                          |
+| 4     | Ph4 Module activation/deactivation        | After Ph2–3                                                        |
+| 5     | Ph5 Customer Portal + billing settings UI | After Ph4                                                          |
+| 6     | Ph6 Webhook handler                       | After Ph2                                                          |
+| ~~7~~ | ~~Ph7 Transaction fee metering~~          | **REMOVED 2026-07-22** — flat 0.5% sparx Pay fee only (docs/94 §8) |
+| 8     | Ph8 Enterprise provisioning               | Manual; after Ph2                                                  |
 
 **Pre-launch checklist before enabling billing on any live tenant:**
 

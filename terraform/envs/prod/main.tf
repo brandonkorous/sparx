@@ -194,6 +194,19 @@ module "pubsub" {
     # push-worker (Cloud Run) delivers to staff browser subscriptions via VAPID.
     "push.send" = ["push-worker"]
 
+    # Social posting (docs/133, the `social` module). api-rest publishes the
+    # connection + lifecycle events; the scheduled-publish tick publishes
+    # social.post.due for the social-worker to drain. Topic-only for now — the
+    # social-worker pull subscription lands with the publish path in the build
+    # plan (docs/134 Slice 4: "social.post.due" = ["social-worker"]). Analytics +
+    # automation fan-in ride the publish() tee.
+    "social.connection.added"   = []
+    "social.connection.revoked" = []
+    "social.post.scheduled"     = []
+    "social.post.due"           = []
+    "social.post.published"     = []
+    "social.post.failed"        = []
+
     # Module lifecycle
     "module.activated"   = []
     "module.deactivated" = []

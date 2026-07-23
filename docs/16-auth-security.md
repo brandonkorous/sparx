@@ -1,8 +1,8 @@
 # sparx Platform — Authentication, Multi-Tenancy & Security
 
-**Version:** 2.3
+**Version:** 2.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-02
+**Last Updated:** 2026-07-22
 
 ---
 
@@ -41,13 +41,13 @@ Rolling auth primitives from scratch — password hashing, token rotation, MFA, 
 
 sparx authenticates **five distinct kinds of principal**, each with its own identity store, isolation boundary, and session mechanism. Conflating any two of them is a security bug — a tenant customer is not a tenant staff member, and neither is a WizeWorks operator. The tiers:
 
-| #   | Tier                       | Who                                           | Identity store                                               | Isolation                                           | Session / credential                      | Status                                |
-| --- | -------------------------- | --------------------------------------------- | ------------------------------------------------------------ | --------------------------------------------------- | ----------------------------------------- | ------------------------------------- |
-| 1   | **Tenant Staff**           | People running a sparx tenant account         | Better Auth (organization member)                            | One tenant (`tid` in every token)                   | JWT 15 min + rotating refresh (HTTP-only) | ✅ Built                              |
-| 2   | **Tenant Customer**        | Shoppers/members of a tenant's site           | **Better Auth** — customer instance, tenant-scoped (docs/27) | One tenant, RLS-isolated (`(tenant_id, email)` key) | `sparx_customer_session` cookie           | 🔄 Moving to Better Auth (docs/27 v2) |
-| 3   | **Programmatic (API key)** | Headless frontends, MCP, integrations         | `api_keys` table (SHA-256 hash)                              | One tenant, scope-limited                           | `sparx_live_…` bearer key                 | ✅ Built                              |
-| 4   | **Platform Operator**      | WizeWorks staff operating the platform itself | _none yet_ — see §2.4                                        | **Cross-tenant** (all tenants)                      | Interim: internal shared-secret header    | ⚠️ **Deferred**                       |
-| 5   | **System / Internal**      | Machine-to-machine service calls (cron, push) | Shared secret in Secret Manager                              | Cross-tenant, ClusterIP-only                        | `X-sparx-Internal-*-Token` header         | ✅ Built (§2.5)                       |
+| #   | Tier                       | Who                                           | Identity store                                               | Isolation                                            | Session / credential                      | Status                                      |
+| --- | -------------------------- | --------------------------------------------- | ------------------------------------------------------------ | ---------------------------------------------------- | ----------------------------------------- | ------------------------------------------- |
+| 1   | **Tenant Staff**           | People running a sparx tenant account         | Better Auth (organization member)                            | One tenant (`tid` in every token)                    | JWT 15 min + rotating refresh (HTTP-only) | ✅ Built                                    |
+| 2   | **Tenant Customer**        | Shoppers/members of a tenant's site           | **Better Auth** — customer instance, tenant-scoped (docs/27) | One tenant, RLS-isolated (`(tenant_id, email)` key)  | `sparx_customer_session` cookie           | 🔄 Moving to Better Auth (docs/27 v2)       |
+| 3   | **Programmatic (API key)** | Headless frontends, MCP, integrations         | `api_keys` table (SHA-256 hash)                              | One tenant, scope-limited                            | `sparx_live_…` bearer key                 | ✅ Built                                    |
+| 4   | **Platform Operator**      | WizeWorks staff operating the platform itself | Separate WizeWorks Better Auth staff instance (§2.4)         | **Cross-tenant**, via audited `/internal/operator/*` | `apps/admin` console session              | ✅ Built — read-only, no impersonation (D7) |
+| 5   | **System / Internal**      | Machine-to-machine service calls (cron, push) | Shared secret in Secret Manager                              | Cross-tenant, ClusterIP-only                         | `X-sparx-Internal-*-Token` header         | ✅ Built (§2.5)                             |
 
 The rule that ties them together: **a session is scoped to the narrowest tier that satisfies the request.** A site shopper never receives a staff token; a staff member never receives a cross-tenant operator capability; an internal service call never rides on a human's session. Crossing a tier boundary is always an explicit, audited hop (e.g. a staff member impersonating a customer for support, once §2.4 ships), never an implicit widening of an existing token.
 
@@ -107,7 +107,9 @@ Expiry: Optional — set at creation (none, 30d, 90d, 1y)
 Rotation: Old key valid for configurable overlap window
 ```
 
-### Layer 4 — Platform Operator (WizeWorks Staff) — Deliberately Deferred
+### Layer 4 — Platform Operator (WizeWorks Staff) — SHIPPED as the read-only admin console
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** This tier is **no longer deferred** — it shipped as the WizeWorks operations console (`apps/admin`, `app/(console)/sparx/*`), built exactly along the "Design for when it ships" lines below **except impersonation**: operators authenticate against a **separate WizeWorks Better Auth staff instance** (no `tid`, not a tenant `users` row), permissions are **capability-scoped and default-deny** (`support:read`, `billing:read`, `module:toggle`, …), and every cross-tenant read **and** write routes through audited api-rest `/internal/operator/*` endpoints (no ambient `BYPASSRLS`; the admin DB role only sees `wize_admin`). **Tenant impersonation was deliberately NOT built** (decision **D7**): there is no `impersonation_grants` table and no `tenant:impersonate` capability — operators get a **read-only account view** with representation parity instead, and the tenant app is untouched. **MFA status (precise):** passkeys, email OTP, and magic link are wired in `packages/auth` (`@better-auth/passkey`, `emailOTP`, `magicLink`), but **authenticator-app TOTP (the `twoFactor` plugin) is still NOT implemented**, and the "MFA mandatory for operators" requirement below is **not yet enforced**. The prose below is retained as the design rationale.
 
 WizeWorks employees who operate the **platform itself** — support engineers answering a tenant ticket, finance reading cross-tenant revenue, growth reading acquisition by channel — are a **fundamentally different principal** from a tenant staff member. A tenant staff member belongs to exactly one tenant and must never see another tenant's data; a platform operator's entire job is the cross-tenant view.
 

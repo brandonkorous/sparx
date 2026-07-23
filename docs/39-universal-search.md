@@ -1,8 +1,15 @@
 # 39 — Universal Search
 
-**Version:** 1.0
+**Version:** 1.1
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-07-22
+
+> **Reconciled 2026-07-22 (docs-vs-built audit):** the universal-search projectors run
+> AHEAD of this doc — the CMS / site / media projectors it schedules for Phase 2/3
+> (§11) are already live in `commerce-indexer`. The global ⌘K host moved off the
+> deleted `apps/dashboard` into `apps/workbench` (`searchEntities()`, §10). Still
+> deferred: per-tenant custom synonyms; the ⌘K palette rewire in workbench against
+> `/v1/search/all` is unverified against the current build.
 
 > Companion to [22-typesense-search-spec.md](22-typesense-search-spec.md). That doc
 > specifies the three **rich** collections (products, customers, orders). This doc
@@ -289,7 +296,7 @@ A search hit must never leak across a boundary:
 
 ## 10. Dashboard integration
 
-- **Global ⌘K** — `searchEntities()` ([apps/dashboard/.../\_components/search-action.ts](<../apps/dashboard/app/(dashboard)/_components/search-action.ts>))
+- **Global ⌘K** — `searchEntities()` (in `apps/workbench` — the operator app formerly `apps/dashboard`)
   re-points to `/v1/search/all`, grouping hits by module with the doc's `url` as the
   href. "Find anything" across the platform.
 - **List pages** — pages whose entity has a rich collection keep using it
