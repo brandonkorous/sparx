@@ -63,7 +63,8 @@ export type InstagramPostPlan =
 export function planInstagramPost(post: RenderedPost): InstagramPostPlan {
   const caption = post.link ? appendLink(post.text, post.link) : post.text;
   const imgs = imageUrls(post.mediaUrls);
-  if (imgs.length === 1) return { kind: 'image', imageUrl: imgs[0], caption };
+  const [firstImg] = imgs;
+  if (imgs.length === 1 && firstImg) return { kind: 'image', imageUrl: firstImg, caption };
   if (imgs.length > 1) return { kind: 'carousel', imageUrls: imgs, caption };
   const video = post.mediaUrls.find((u) => !isImageUrl(u));
   if (video) return { kind: 'reel', videoUrl: video, caption };
@@ -140,7 +141,10 @@ export class InstagramAdapter implements SocialAdapter {
         externalTargetId: ig.id,
         name: ig.username ? `@${ig.username}` : (page.name ?? ig.id),
         avatarUrl: ig.profile_picture_url,
-        params: { pageAccessToken: page.access_token, ...(ig.username ? { username: ig.username } : {}) },
+        params: {
+          pageAccessToken: page.access_token,
+          ...(ig.username ? { username: ig.username } : {}),
+        },
       });
     }
     return targets;
@@ -174,7 +178,12 @@ export class InstagramAdapter implements SocialAdapter {
     // First comment (the hashtag block) — additive, never fails a live post.
     if (post.firstComment) {
       try {
-        await graphPost(`${mediaId}/comments`, token, { message: post.firstComment }, 'Instagram comment');
+        await graphPost(
+          `${mediaId}/comments`,
+          token,
+          { message: post.firstComment },
+          'Instagram comment'
+        );
       } catch {
         // the post is live regardless
       }

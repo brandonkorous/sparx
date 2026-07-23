@@ -12,6 +12,12 @@
 import { registerSocialAdapter } from '../registry.js';
 import { GoogleBusinessAdapter } from './google-business.js';
 import { LinkedInAdapter } from './linkedin.js';
+import { FacebookPageAdapter } from './facebook.js';
+import { InstagramAdapter } from './instagram.js';
+import { ThreadsAdapter } from './threads.js';
+import { PinterestAdapter } from './pinterest.js';
+import { TikTokAdapter } from './tiktok.js';
+import { YouTubeAdapter } from './youtube.js';
 
 let registered = false;
 
@@ -21,9 +27,23 @@ export function registerBuiltinSocialAdapters(): void {
   if (registered) return;
   registerSocialAdapter(new GoogleBusinessAdapter());
   registerSocialAdapter(new LinkedInAdapter());
-  // Meta/Instagram/Threads (Phase 2) register here as they land.
+  // Phase 2 — the Meta family (Facebook Pages + Instagram + Threads), one shared app.
+  registerSocialAdapter(new FacebookPageAdapter());
+  registerSocialAdapter(new InstagramAdapter());
+  registerSocialAdapter(new ThreadsAdapter());
+  // Phase 3 — the platform tail. X is intentionally absent (its posting API is paid-
+  // tier; the adapter is skipped until the tenant commits to it — docs/134 Phase 3).
+  registerSocialAdapter(new PinterestAdapter());
+  registerSocialAdapter(new TikTokAdapter());
+  registerSocialAdapter(new YouTubeAdapter());
   registered = true;
 }
 
 export { GoogleBusinessAdapter } from './google-business.js';
 export { LinkedInAdapter } from './linkedin.js';
+export { FacebookPageAdapter } from './facebook.js';
+export { InstagramAdapter } from './instagram.js';
+export { ThreadsAdapter } from './threads.js';
+export { PinterestAdapter } from './pinterest.js';
+export { TikTokAdapter } from './tiktok.js';
+export { YouTubeAdapter } from './youtube.js';

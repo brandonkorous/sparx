@@ -65,11 +65,20 @@ export type FacebookPostPlan =
 export function planFacebookPost(post: RenderedPost): FacebookPostPlan {
   const imgs = imageUrls(post.mediaUrls);
   const link = post.link ?? null;
-  if (imgs.length === 1) {
-    return { kind: 'single_photo', imageUrl: imgs[0], caption: link ? appendLink(post.text, link) : post.text };
+  const [firstImg] = imgs;
+  if (imgs.length === 1 && firstImg) {
+    return {
+      kind: 'single_photo',
+      imageUrl: firstImg,
+      caption: link ? appendLink(post.text, link) : post.text,
+    };
   }
   if (imgs.length > 1) {
-    return { kind: 'multi_photo', imageUrls: imgs, message: link ? appendLink(post.text, link) : post.text };
+    return {
+      kind: 'multi_photo',
+      imageUrls: imgs,
+      message: link ? appendLink(post.text, link) : post.text,
+    };
   }
   return { kind: 'feed', message: post.text, link };
 }

@@ -13,7 +13,13 @@
 // the token; these helpers never read a per-tenant secret, only sparx's Meta app creds.
 
 import type { SocialConnectContext } from '../types.js';
-import { describeResponse, expiresInSeconds, fetchT, formBody, readPlatformCreds } from './_http.js';
+import {
+  describeResponse,
+  expiresInSeconds,
+  fetchT,
+  formBody,
+  readPlatformCreds,
+} from './_http.js';
 
 /** The Graph API version every Meta call pins to. Bump deliberately when adopting a
  *  newer schema (Meta keeps ~2 years of versions live). */
@@ -88,7 +94,11 @@ export async function graphPost<T>(
 }
 
 /** Build the Facebook Login authorize URL for a given scope set. */
-export function buildMetaConnectUrl(creds: MetaCreds, ctx: SocialConnectContext, scope: string): string {
+export function buildMetaConnectUrl(
+  creds: MetaCreds,
+  ctx: SocialConnectContext,
+  scope: string
+): string {
   const params = new URLSearchParams({
     client_id: creds.clientId,
     redirect_uri: ctx.redirectUri,
@@ -209,9 +219,23 @@ export async function listMetaPages(
     );
     out.push(...(data.data ?? []));
     // Cursor pagination: parse the `after` cursor out of the next URL when present.
-    after = data.paging?.next ? new URL(data.paging.next).searchParams.get('after') ?? undefined : undefined;
+    after = data.paging?.next
+      ? (new URL(data.paging.next).searchParams.get('after') ?? undefined)
+      : undefined;
   } while (after);
   return out;
+}
+
+/** Classify a Meta media-container status code (Instagram + Threads share the same
+ *  vocabulary): `FINISHED` → ready, `ERROR`/`EXPIRED` → failed, anything else → still
+ *  processing. Pure, so the state mapping is unit-tested without any network. */
+export function classifyMediaContainerStatus(statusCode: string | undefined): {
+  ready: boolean;
+  failed: boolean;
+} {
+  if (statusCode === 'FINISHED') return { ready: true, failed: false };
+  if (statusCode === 'ERROR' || statusCode === 'EXPIRED') return { ready: false, failed: true };
+  return { ready: false, failed: false };
 }
 
 /** Poll a two-step publish container (Instagram/Threads share this shape) until it

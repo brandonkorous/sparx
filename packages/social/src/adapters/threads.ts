@@ -1,0 +1,365 @@
+// Threads adapter (docs/133 §6, build plan docs/134 Phase 2) — publishes to a tenant's
+// own Threads profile. Threads rides the same Meta app + Business Verification as
+// Facebook + Instagram, but its API is a SEPARATE host (`graph.threads.net`) with its
+// own app credentials (`THREADS_APP_ID` / `THREADS_APP_SECRET`) and its own token
+// grammar (`th_exchange_token` / `th_refresh_token`), so it keeps its own small helper
+// set rather than sharing `_meta`.
+//
+// Auth: Threads OAuth. The callback code becomes a short-lived token + user id, which we
+// exchange for a long-lived token (~60 days). Unlike Facebook, Threads has a real
+// refresh endpoint, so refresh() extends the grant in place.
+//
+// Targets: exactly one — the authorizing user's own Threads profile. externalTargetId
+// is the Threads user id.
+//
+// Publish (the two-step Threads Publishing API): create a media CONTAINER
+// (`/{user}/threads`), wait for it to finish (a video needs processing time), then
+// publish it (`/{user}/threads_publish`). Text, single image, carousel, and video are
+// the shapes; Threads posts text-only, so a bare link uses the native `link_attachment`
+// field and only a media post folds the link into the text.
+//
+// No SDKs — pure `fetch` via the shared `_http` helpers. Pure I/O: the worker resolves +
+// decrypts the token and passes SocialAuth.
+
+import type {
+  PlatformConstraints,
+  RenderedPost,
+  SocialAdapter,
+  SocialAuth,
+  SocialConnectContext,
+  SocialPublishResult,
+  SocialTargetRef,
+  SocialTokens,
+} from '../types.js';
+import { PLATFORM_CONSTRAINTS } from '../constraints.js';
+import { classifyMediaContainerStatus, waitForContainer } from './_meta.js';
+import { appendLink, imageUrls, isImageUrl } from './_media.js';
+import {
+  describeResponse,
+  expiresInSeconds,
+  fetchT,
+  formBody,
+  readPlatformCreds,
+  requireCreds,
+} from './_http.js';
+
+const AUTH_URL = 'https://threads.net/oauth/authorize';
+const TOKEN_URL = 'https://graph.threads.net/oauth/access_token';
+const LONG_LIVED_URL = 'https://graph.threads.net/access_token';
+const REFRESH_URL = 'https://graph.threads.net/refresh_access_token';
+const API_BASE = 'https://graph.threads.net/v1.0';
+const SCOPE = 'threads_basic,threads_content_publish';
+const LONG_LIVED_FALLBACK_SECONDS = 5_184_000; // ~60 days
+
+const ID_VAR = 'THREADS_APP_ID';
+const SECRET_VAR = 'THREADS_APP_SECRET';
+
+export type ThreadsPostPlan =
+  | { kind: 'text'; text: string; link: string | null }
+  | { kind: 'image'; imageUrl: string; text: string }
+  | { kind: 'carousel'; imageUrls: string[]; text: string }
+  | { kind: 'video'; videoUrl: string; text: string };
+
+/** Decide how one rendered post maps onto a Threads post — pure, so the branching is
+ *  unit-tested without any network. Threads posts text-only, so a bare link uses the
+ *  native link attachment; a media post has no link field, so the link folds into the
+ *  text. */
+export function planThreadsPost(post: RenderedPost): ThreadsPostPlan {
+  const imgs = imageUrls(post.mediaUrls);
+  const [firstImg] = imgs;
+  if (imgs.length === 1 && firstImg) {
+    return {
+      kind: 'image',
+      imageUrl: firstImg,
+      text: post.link ? appendLink(post.text, post.link) : post.text,
+    };
+  }
+  if (imgs.length > 1) {
+    return {
+      kind: 'carousel',
+      imageUrls: imgs,
+      text: post.link ? appendLink(post.text, post.link) : post.text,
+    };
+  }
+  const video = post.mediaUrls.find((u) => !isImageUrl(u));
+  if (video) {
+    return {
+      kind: 'video',
+      videoUrl: video,
+      text: post.link ? appendLink(post.text, post.link) : post.text,
+    };
+  }
+  return { kind: 'text', text: post.text, link: post.link ?? null };
+}
+
+/** The public permalink for a published Threads post — the API returns one, but this is
+ *  the deterministic fallback. */
+export function threadsPermalink(id: string): string {
+  return `https://www.threads.net/t/${id}`;
+}
+
+interface ThreadsTokenResponse {
+  access_token: string;
+  user_id?: string;
+  expires_in?: number;
+}
+interface ThreadsMe {
+  id?: string;
+  username?: string;
+  name?: string;
+}
+interface ThreadsContainerResponse {
+  id: string;
+}
+interface ThreadsStatusResponse {
+  status?: string;
+  error_message?: string;
+}
+interface ThreadsPublishResponse {
+  id: string;
+}
+interface ThreadsPermalinkResponse {
+  permalink?: string;
+}
+
+export class ThreadsAdapter implements SocialAdapter {
+  readonly id = 'threads' as const;
+  readonly name = 'Threads';
+  readonly constraints: PlatformConstraints = PLATFORM_CONSTRAINTS.threads;
+
+  private creds() {
+    return readPlatformCreds(ID_VAR, SECRET_VAR);
+  }
+
+  isConfigured(): boolean {
+    return this.creds() !== null;
+  }
+
+  connectUrl(ctx: SocialConnectContext): string {
+    const { clientId } = requireCreds(this.creds(), this.name);
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: ctx.redirectUri,
+      response_type: 'code',
+      scope: SCOPE,
+      state: ctx.state,
+    });
+    return `${AUTH_URL}?${params.toString()}`;
+  }
+
+  async exchangeCode(code: string, ctx: SocialConnectContext): Promise<SocialTokens> {
+    const { clientId, clientSecret } = requireCreds(this.creds(), this.name);
+    const res = await fetchT(TOKEN_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formBody({
+        client_id: clientId,
+        client_secret: clientSecret,
+        grant_type: 'authorization_code',
+        redirect_uri: ctx.redirectUri,
+        code,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`Threads token exchange failed: ${await describeResponse(res)}`);
+    }
+    const short = (await res.json()) as ThreadsTokenResponse;
+    const longLived = await this.exchangeLongLived(short.access_token, clientSecret);
+    const me = await this.memberInfo(longLived.access_token);
+    return {
+      accessToken: longLived.access_token,
+      refreshToken: longLived.access_token, // extended by refresh() before it lapses
+      expiresInSeconds: expiresInSeconds(longLived.expires_in, LONG_LIVED_FALLBACK_SECONDS),
+      scope: SCOPE,
+      externalId: me?.id ?? short.user_id,
+      displayName: me?.name ?? (me?.username ? `@${me.username}` : 'Threads'),
+    };
+  }
+
+  async refresh(refreshToken: string): Promise<SocialTokens> {
+    const params = new URLSearchParams({
+      grant_type: 'th_refresh_token',
+      access_token: refreshToken,
+    });
+    const res = await fetchT(`${REFRESH_URL}?${params.toString()}`);
+    if (!res.ok) {
+      throw new Error(`Threads token refresh failed: ${await describeResponse(res)}`);
+    }
+    const data = (await res.json()) as ThreadsTokenResponse;
+    return {
+      accessToken: data.access_token,
+      refreshToken: data.access_token,
+      expiresInSeconds: expiresInSeconds(data.expires_in, LONG_LIVED_FALLBACK_SECONDS),
+      scope: SCOPE,
+    };
+  }
+
+  /** Threads posts to the authorizing user's OWN profile — a single target. */
+  async listTargets(auth: SocialAuth): Promise<SocialTargetRef[]> {
+    const me = await this.memberInfo(auth.accessToken);
+    const userId = me?.id ?? auth.externalId;
+    if (!userId) return [];
+    return [
+      {
+        externalTargetId: userId,
+        name: me?.name ?? (me?.username ? `@${me.username}` : 'Threads'),
+      },
+    ];
+  }
+
+  async publish(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    post: RenderedPost,
+    idempotencyKey: string
+  ): Promise<SocialPublishResult> {
+    void idempotencyKey; // two-step create/publish is naturally idempotent per caller
+    const token = auth.accessToken;
+    const userId = target.externalTargetId;
+    const plan = planThreadsPost(post);
+
+    const creationId = await this.createContainer(token, userId, plan);
+    await this.awaitContainer(token, creationId);
+
+    const published = await this.post<ThreadsPublishResponse>(`${userId}/threads_publish`, token, {
+      creation_id: creationId,
+    });
+    const threadId = published.id;
+
+    // First comment (the hashtag block) as a reply — additive, never fails a live post.
+    if (post.firstComment) {
+      try {
+        const reply = await this.post<ThreadsContainerResponse>(`${userId}/threads`, token, {
+          media_type: 'TEXT',
+          text: post.firstComment,
+          reply_to_id: threadId,
+        });
+        await this.post(`${userId}/threads_publish`, token, { creation_id: reply.id });
+      } catch {
+        // the post is live regardless
+      }
+    }
+
+    return { externalId: threadId, permalink: await this.permalink(token, threadId) };
+  }
+
+  // ── internals ──
+
+  private async createContainer(
+    token: string,
+    userId: string,
+    plan: ThreadsPostPlan
+  ): Promise<string> {
+    if (plan.kind === 'text') {
+      const fields: Record<string, string> = { media_type: 'TEXT', text: plan.text };
+      if (plan.link) fields.link_attachment = plan.link;
+      return (await this.post<ThreadsContainerResponse>(`${userId}/threads`, token, fields)).id;
+    }
+    if (plan.kind === 'image') {
+      return (
+        await this.post<ThreadsContainerResponse>(`${userId}/threads`, token, {
+          media_type: 'IMAGE',
+          image_url: plan.imageUrl,
+          text: plan.text,
+        })
+      ).id;
+    }
+    if (plan.kind === 'video') {
+      return (
+        await this.post<ThreadsContainerResponse>(`${userId}/threads`, token, {
+          media_type: 'VIDEO',
+          video_url: plan.videoUrl,
+          text: plan.text,
+        })
+      ).id;
+    }
+    // carousel: an item container per image (no text), then a CAROUSEL parent.
+    const childIds: string[] = [];
+    for (const url of plan.imageUrls) {
+      const child = await this.post<ThreadsContainerResponse>(`${userId}/threads`, token, {
+        media_type: 'IMAGE',
+        image_url: url,
+        is_carousel_item: 'true',
+      });
+      await this.awaitContainer(token, child.id);
+      childIds.push(child.id);
+    }
+    return (
+      await this.post<ThreadsContainerResponse>(`${userId}/threads`, token, {
+        media_type: 'CAROUSEL',
+        text: plan.text,
+        children: childIds.join(','),
+      })
+    ).id;
+  }
+
+  private async awaitContainer(token: string, containerId: string): Promise<void> {
+    await waitForContainer(async () => {
+      const params = new URLSearchParams({ fields: 'status,error_message', access_token: token });
+      const res = await fetchT(`${API_BASE}/${containerId}?${params.toString()}`);
+      if (!res.ok)
+        throw new Error(`Threads container status failed: ${await describeResponse(res)}`);
+      const data = (await res.json()) as ThreadsStatusResponse;
+      const { ready, failed } = classifyMediaContainerStatus(data.status);
+      return { ready, failed, detail: data.error_message ?? data.status };
+    });
+  }
+
+  private async memberInfo(accessToken: string): Promise<ThreadsMe | null> {
+    try {
+      const params = new URLSearchParams({ fields: 'id,username,name', access_token: accessToken });
+      const res = await fetchT(`${API_BASE}/me?${params.toString()}`);
+      if (!res.ok) return null;
+      return (await res.json()) as ThreadsMe;
+    } catch {
+      return null;
+    }
+  }
+
+  private async exchangeLongLived(
+    shortToken: string,
+    clientSecret: string
+  ): Promise<ThreadsTokenResponse> {
+    const params = new URLSearchParams({
+      grant_type: 'th_exchange_token',
+      client_secret: clientSecret,
+      access_token: shortToken,
+    });
+    const res = await fetchT(`${LONG_LIVED_URL}?${params.toString()}`);
+    if (!res.ok) {
+      throw new Error(`Threads long-lived token exchange failed: ${await describeResponse(res)}`);
+    }
+    return (await res.json()) as ThreadsTokenResponse;
+  }
+
+  private async permalink(token: string, threadId: string): Promise<string> {
+    try {
+      const params = new URLSearchParams({ fields: 'permalink', access_token: token });
+      const res = await fetchT(`${API_BASE}/${threadId}?${params.toString()}`);
+      if (res.ok) {
+        const data = (await res.json()) as ThreadsPermalinkResponse;
+        if (data.permalink) return data.permalink;
+      }
+    } catch {
+      // fall through to the deterministic permalink
+    }
+    return threadsPermalink(threadId);
+  }
+
+  /** POST a form-urlencoded Threads edge (token in the body), throwing on non-2xx. */
+  private async post<T>(
+    path: string,
+    accessToken: string,
+    fields: Record<string, string>
+  ): Promise<T> {
+    const res = await fetchT(`${API_BASE}/${path}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formBody({ ...fields, access_token: accessToken }),
+    });
+    if (!res.ok) {
+      throw new Error(`Threads request failed (${path}): ${await describeResponse(res)}`);
+    }
+    return (await res.json()) as T;
+  }
+}
