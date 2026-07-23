@@ -228,6 +228,7 @@ export function ProductsListSurface({ ctx }: { ctx: SurfaceContext }) {
         </Filter>
 
         <Button
+          data-tour="commerce-add-product"
           color="module"
           size="sm"
           className="ml-auto shrink-0 whitespace-nowrap"

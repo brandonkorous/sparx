@@ -4,22 +4,6 @@
     "impeccable@impeccable": false,
     "supabase@claude-plugins-official": false,
     "skill-creator@claude-plugins-official": false,
-    "adobe-for-creativity@claude-plugins-official": false,
     "sentry@claude-plugins-official": false
-  },
-  "hooks": {
-    "PostToolUse": [
-      {
-        "matcher": "Edit|Write|MultiEdit",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "node \"C:\\\\Users\\\\brand\\\\.claude\\\\skills\\\\impeccable\\\\scripts\\\\hook.mjs\"",
-            "timeout": 5,
-            "statusMessage": "Checking UI changes"
-          }
-        ]
-      }
-    ]
   }
 }

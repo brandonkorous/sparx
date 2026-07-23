@@ -11,9 +11,12 @@
 // change spans three hand-synced registries that typecheck green when they
 // disagree.
 //
-// One file per module. Order below is the order modules appear in the rail,
-// since buildNav() preserves first-registration order — so this array is also
-// the rail's running order, and the only place it is decided.
+// One file per module. The order below no longer decides the rail — that is
+// authored explicitly in MODULE_ORDER in ../nav.ts, because a module claims its
+// rail slot at its first LISTED surface and the cross-module product panels in
+// commerce.ts would otherwise drag Inventory/Dropshipping/Content out of place.
+// This array now only controls import/registration order (and so the stable
+// tiebreak for any module not listed in MODULE_ORDER).
 //
 // Surfaces whose screens are not built yet are declared with `stub()` (see
 // ./stub.ts) rather than omitted. A registered stub gives the module its real

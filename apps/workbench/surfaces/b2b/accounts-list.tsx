@@ -104,6 +104,7 @@ export function AccountsListSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         </div>
         <Button
+          data-tour="b2b-add-account"
           color="module"
           size="sm"
           className="ml-auto"

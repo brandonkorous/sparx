@@ -34,6 +34,7 @@ import { useConfirm } from '../lib/confirm';
 import {
   Check,
   ChevronDown,
+  Compass,
   Globe,
   LogOut,
   MessageSquarePlus,
@@ -59,6 +60,7 @@ import { useWorkbench } from '../lib/workbench/context';
 import { FeedbackButton } from './feedback/button';
 import { useFeedback } from './feedback/provider';
 import { NotificationCenter } from './notification-center';
+import { launchTour } from '../lib/tour/first-run-tour';
 
 interface ToolbarProps {
   userName: string;
@@ -144,12 +146,16 @@ export function Toolbar({
 
         {/* Workspace — plain identity, not a control. The tenant is a fact of
             the session; there is nothing to switch it to from here. */}
-        <span className="max-w-40 truncate text-sm font-medium" title={tenant?.name}>
+        <span
+          data-tour="workspace"
+          className="max-w-40 truncate text-sm font-medium"
+          title={tenant?.name}
+        >
           {tenant?.name ?? ' '}
         </span>
 
         {sites && sites.length > 0 ? (
-          <>
+          <span className="inline-flex items-center gap-1" data-tour="site-switcher">
             <span className="text-base-300 select-none" aria-hidden>
               /
             </span>
@@ -190,7 +196,7 @@ export function Toolbar({
                 <DropdownMenuItem disabled>Each site keeps its own pane layout</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          </>
+          </span>
         ) : null}
       </NavbarStart>
 
@@ -202,29 +208,35 @@ export function Toolbar({
             Never a text-color override: the variant owns its states — outline
             swaps to the fill's content color on hover, and pinning the text
             breaks that contract into same-on-same. */}
-        <Button
-          variant="ghost"
-          size="sm"
-          className="w-72 max-w-full justify-start gap-2 text-sm"
-          onClick={onOpenLauncher}
-        >
-          <Search className="size-3.5 shrink-0" aria-hidden />
-          <span className="flex-1 truncate text-left">Search everything</span>
-          <Kbd size="sm">⌘K</Kbd>
-        </Button>
+        <span data-tour="search" className="inline-flex w-72 max-w-full">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start gap-2 text-sm"
+            onClick={onOpenLauncher}
+          >
+            <Search className="size-3.5 shrink-0" aria-hidden />
+            <span className="flex-1 truncate text-left">Search everything</span>
+            <Kbd size="sm">⌘K</Kbd>
+          </Button>
+        </span>
       </NavbarCenter>
 
       <NavbarEnd className="gap-1">
-        <StarButton
-          surfaceKey={activeDescriptor?.surface ?? null}
-          hasParams={Boolean(
-            activeDescriptor?.params && Object.keys(activeDescriptor.params).length > 0
-          )}
-        />
+        <span data-tour="favorite-star" className="inline-flex">
+          <StarButton
+            surfaceKey={activeDescriptor?.surface ?? null}
+            hasParams={Boolean(
+              activeDescriptor?.params && Object.keys(activeDescriptor.params).length > 0
+            )}
+          />
+        </span>
 
         <NotificationCenter />
 
-        <FeedbackButton />
+        <span data-tour="feedback" className="inline-flex">
+          <FeedbackButton />
+        </span>
 
         <Tooltip content={theme === 'light' ? 'Dark theme' : 'Light theme'}>
           <Button
@@ -242,41 +254,56 @@ export function Toolbar({
           </Button>
         </Tooltip>
 
-        <DropdownMenu>
-          <Tooltip content={userName}>
-            <DropdownMenuTrigger>
-              <Button variant="ghost" size="sm" shape="square" aria-label={`Account — ${userName}`}>
-                <Avatar size="xs" color="neutral" alt={userName}>
-                  {initials(userName)}
-                </Avatar>
-              </Button>
-            </DropdownMenuTrigger>
-          </Tooltip>
-          <DropdownMenuContent align="end">
-            <DropdownMenuGroup>
-              <DropdownMenuLabel>
-                <span className="flex flex-col">
-                  <span className="font-medium">{userName}</span>
-                  <span className="text-sm font-normal">{userEmail}</span>
-                </span>
-              </DropdownMenuLabel>
-            </DropdownMenuGroup>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => {
-                feedback.openList();
-              }}
-            >
-              <MessageSquarePlus className="size-4" aria-hidden />
-              Your feedback
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={onSignOut}>
-              <LogOut className="size-4" aria-hidden />
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <span data-tour="account-menu" className="inline-flex">
+          <DropdownMenu>
+            <Tooltip content={userName}>
+              <DropdownMenuTrigger>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  shape="square"
+                  aria-label={`Account — ${userName}`}
+                >
+                  <Avatar size="xs" color="neutral" alt={userName}>
+                    {initials(userName)}
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+            </Tooltip>
+            <DropdownMenuContent align="end">
+              <DropdownMenuGroup>
+                <DropdownMenuLabel>
+                  <span className="flex flex-col">
+                    <span className="font-medium">{userName}</span>
+                    <span className="text-sm font-normal">{userEmail}</span>
+                  </span>
+                </DropdownMenuLabel>
+              </DropdownMenuGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => {
+                  feedback.openList();
+                }}
+              >
+                <MessageSquarePlus className="size-4" aria-hidden />
+                Your feedback
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => {
+                  launchTour();
+                }}
+              >
+                <Compass className="size-4" aria-hidden />
+                Take the tour
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={onSignOut}>
+                <LogOut className="size-4" aria-hidden />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </span>
       </NavbarEnd>
     </Navbar>
   );

@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og';
+import { BRAND } from '@sparx/brand';
 import { OgWordmark } from './og-wordmark';
 
 // Shared OG/Twitter card renderer for the bespoke non-module marketing pages
@@ -36,7 +37,7 @@ export function renderSimpleOg(opts: {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        backgroundColor: '#0A0A0A',
+        backgroundColor: BRAND.ink,
         padding: '72px',
         fontFamily: SYSTEM_FONT,
       }}
@@ -110,7 +111,7 @@ export function renderSimpleOg(opts: {
           alignItems: 'center',
           justifyContent: 'space-between',
           paddingTop: 28,
-          borderTop: '1px solid #1A1A1A',
+          borderTop: '1px solid rgba(255, 255, 255, 0.09)',
         }}
       >
         <span style={{ fontSize: 18, color: '#A1A1AA' }}>{footerLeft ?? ''}</span>

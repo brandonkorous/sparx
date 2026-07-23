@@ -441,6 +441,9 @@ importers:
       dockview:
         specifier: ^4.9.0
         version: 4.13.1(react@19.2.6)
+      driver.js:
+        specifier: ^1.4.0
+        version: 1.4.0
       geist:
         specifier: ^1.3.1
         version: 1.7.1(next@16.2.6(@opentelemetry/api@1.9.1)(@playwright/test@1.60.0)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))

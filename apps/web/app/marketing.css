@@ -774,35 +774,9 @@
     text-underline-offset: 2px;
   }
 
-  /* Persistent, quiet affordance after a decision — consent can always be changed. */
-  .mkt-consent-pill {
-    position: fixed;
-    left: 24px;
-    bottom: 24px;
-    z-index: 1000;
-    display: flex;
-    align-items: center;
-    gap: 7px;
-    padding: 8px 14px;
-    font-family: var(--font-sans);
-    font-size: 12.5px;
-    color: var(--color-ink-muted);
-    background-color: var(--color-base-100);
-    border: 1px solid var(--color-base-300);
-    border-radius: 999px;
-    box-shadow: var(--shadow-md);
-    cursor: pointer;
-    transition:
-      color 0.15s ease,
-      border-color 0.15s ease;
-  }
-  .mkt-consent-pill:hover {
-    color: var(--color-base-content);
-    border-color: var(--color-base-300);
-  }
-  .mkt-consent-pill__icon {
-    flex-shrink: 0;
-  }
+  /* After a decision the consent control lives in the footer (a "Cookie
+     preferences" link that reopens the modal via `sparx:open-consent`), so there
+     is no persistent floating affordance here anymore. */
 
   .mkt-consent-overlay {
     position: fixed;
@@ -918,17 +892,6 @@
     }
     .mkt-consent-banner__actions > * {
       flex: 1 1 auto;
-    }
-    .mkt-consent-pill {
-      left: 12px;
-      bottom: 12px;
-      width: 40px;
-      height: 40px;
-      padding: 0;
-      justify-content: center;
-    }
-    .mkt-consent-pill__label {
-      display: none;
     }
   }
 

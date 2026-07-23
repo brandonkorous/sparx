@@ -1,126 +1,25 @@
-import { ImageResponse } from 'next/og';
-import { BRAND } from '@sparx/brand';
-import { ModuleStrip } from '@/components/marketing/module-strip';
-import { OgWordmark } from '@/lib/og-wordmark';
+import { STORY_EXAMPLES } from '@sparx/story-schemas';
+import { renderStoryOg } from '@/lib/og-story';
 
-// The /platform OG card. Hand-built (not the per-module renderer) because the
-// platform page is the system-level pitch, not one module. Mirrors the home
-// card's structure — wordmark + tag, big headline, module-dot footer — with
-// platform-specific copy. system-ui fonts so no remote font fetch is needed.
-// nodejs so this card prerenders to a static .body with a real Content-Length —
-// LinkedIn rejects the chunked, no-Content-Length response an edge OG route
-// streams. See app/opengraph-image.tsx for the full reasoning.
+// The /platform card tells the broadest shipped story — the local grocer, whose 7
+// modules span content, commerce, B2B and dropship — so the "one platform for
+// everything" pitch is shown, not asserted. Same story-card system as the
+// homepage (lib/og-story.tsx), a different vertical: the motto, multiplied.
+
 export const runtime = 'nodejs';
-export const alt = 'sparx — One platform for content and commerce.';
+export const alt = 'sparx — Your story, multiplied. One platform for content and commerce.';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
+const GROCER = STORY_EXAMPLES.find((e) => e.label === 'a local grocer');
+if (!GROCER)
+  throw new Error('STORY_EXAMPLES is missing the grocer — the /platform OG card needs it.');
+const GROCER_STORY = GROCER.story;
+
 export default function Image() {
-  return new ImageResponse(
-    <div
-      style={{
-        width: '100%',
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        backgroundColor: '#0A0A0A',
-        padding: '72px',
-        fontFamily: 'system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
-      }}
-    >
-      {/* Top: wordmark + tag */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <OgWordmark height={40} />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 12,
-            padding: '8px 18px',
-            border: `1px solid ${BRAND.primary}33`,
-            borderRadius: 9999,
-            backgroundColor: `${BRAND.primary}1A`,
-          }}
-        >
-          <div
-            style={{ width: 8, height: 8, borderRadius: 9999, backgroundColor: BRAND.primary }}
-          />
-          <span
-            style={{
-              fontWeight: 500,
-              fontSize: 16,
-              letterSpacing: '0.08em',
-              color: BRAND.primary,
-              textTransform: 'uppercase',
-            }}
-          >
-            The Platform
-          </span>
-        </div>
-      </div>
-
-      {/* Middle: big headline */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 28 }}>
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            fontWeight: 500,
-            fontSize: 116,
-            letterSpacing: '-0.035em',
-            lineHeight: 1.02,
-            color: '#FFFFFF',
-          }}
-        >
-          <div style={{ display: 'flex' }}>One platform for</div>
-          <div style={{ display: 'flex', alignItems: 'flex-end', color: '#A1A1AA' }}>
-            <span>content and commerce</span>
-            <span
-              style={{
-                width: 24,
-                height: 24,
-                borderRadius: 9999,
-                backgroundColor: BRAND.primary,
-                marginLeft: 4,
-                marginBottom: 14,
-              }}
-            />
-          </div>
-        </div>
-        <span style={{ fontSize: 28, lineHeight: 1.4, color: '#A1A1AA', maxWidth: 980 }}>
-          Twelve modules on one shared data layer, one dashboard, one bill — API-first and
-          MCP-native. Activate only what you need.
-        </span>
-      </div>
-
-      {/* Bottom: module dots + footer */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          paddingTop: 28,
-          borderTop: '1px solid #1A1A1A',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
-          <span
-            style={{
-              fontWeight: 500,
-              fontSize: 14,
-              letterSpacing: '0.08em',
-              color: '#52525B',
-              textTransform: 'uppercase',
-            }}
-          >
-            12 modules
-          </span>
-          <ModuleStrip size={30} gap={10} wrap={false} />
-        </div>
-        <span style={{ fontSize: 18, color: '#52525B' }}>sparx.works/platform</span>
-      </div>
-    </div>,
-    { ...size }
-  );
+  return renderStoryOg({
+    story: GROCER_STORY,
+    headline: { lead: 'Your story,', accent: 'multiplied.' },
+    footerRight: 'sparx.works/platform',
+  });
 }

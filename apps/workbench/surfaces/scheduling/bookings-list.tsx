@@ -162,6 +162,7 @@ export function BookingsListSurface({ ctx }: { ctx: SurfaceContext }) {
         </NativeSelect>
 
         <Button
+          data-tour="scheduling-take-booking"
           color="module"
           size="sm"
           className="ml-auto"

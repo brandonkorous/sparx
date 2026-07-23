@@ -41,7 +41,6 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Eye, Save } from 'lucide-react';
-import { PaneToolbar, PANE_SHELL } from '../../../components/pane-toolbar';
 import { useDirtySource } from '../../../lib/workbench/dirty';
 import { useActiveSiteId, useModuleStates, useTenant } from '../../../lib/api/shell-data';
 import type { SurfaceContext } from '../../../lib/surfaces/registry';
@@ -273,6 +272,14 @@ function StudioEditor({
 
   const siteRef = useRef<Site>(site);
 
+  // The page ids this client KNOWS the server holds — seeded from the load (the
+  // starter is empty here: a fresh property has nothing persisted yet). A save may
+  // only delete pages that were in this baseline and the operator has since removed;
+  // a page absent for any other reason (an agent authored it over MCP after we loaded)
+  // is never in the baseline, so we never delete it out from under them. Advanced to
+  // the current set after each successful save.
+  const baselineIdsRef = useRef<Set<string>>(new Set((storedSite?.pages ?? []).map((p) => p.id)));
+
   // The host: the resolver over the canvas data root (placeholder records with the
   // tenant's REAL site.identity/site.social overlaid, so a bound Wordmark/logo/name
   // resolves to the actual brand) + the tenant's data sources + the commerce/site
@@ -312,7 +319,16 @@ function StudioEditor({
   }, []);
 
   const doSync = useCallback(async () => {
-    await sync.mutateAsync(toSyncInput(siteRef.current));
+    const next = siteRef.current;
+    const currentIds = new Set(next.pages.map((p) => p.id));
+    // The pages we loaded (or last saved) that the operator has since removed — the
+    // ONLY deletions this save may perform. Anything else absent from `currentIds`
+    // (e.g. a page an agent just created over MCP) is not ours to delete.
+    const deletedPageIds = [...baselineIdsRef.current].filter((id) => !currentIds.has(id));
+    await sync.mutateAsync(toSyncInput(next, deletedPageIds));
+    // The server now holds our current set (having deleted only what we named); advance
+    // the baseline so the next removal is computed against the truth, not the load.
+    baselineIdsRef.current = currentIds;
     setDirty(false);
   }, [sync]);
 
@@ -384,59 +400,59 @@ function StudioEditor({
   const status = liveStatus(publishState, dirty);
   const validPageIds = useMemo(() => new Set(site.pages.map((p) => p.id)), [site]);
 
+  // ONE toolbar. The status badge + Preview + Save are HOST concerns (silica owns
+  // only local edits, not whether our onChange persistence succeeded), so they ride
+  // in `toolbarSlot` — silica renders it in the editor header, right before its own
+  // Publish button. A separate PaneToolbar above the canvas would just stack a
+  // second bar on silica's; the whole point is that the operator sees one row of
+  // controls, not two. `ApplyInitialPage` renders nothing and rides along here.
   return (
-    <div className={PANE_SHELL}>
-      <PaneToolbar label="Editor actions">
-        <Badge color={status.tone} variant="soft" size="sm">
-          {status.label}
-        </Badge>
-        <div className="ml-auto flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            loading={previewToken.isPending}
-            onClick={() => {
-              void onPreview();
-            }}
-          >
-            <Eye className="size-4" aria-hidden />
-            Preview
-          </Button>
-          <Button
-            size="sm"
-            color="module"
-            disabled={!dirty || sync.isPending}
-            loading={sync.isPending}
-            onClick={() => {
-              void onSave();
-            }}
-          >
-            <Save className="size-4" aria-hidden />
-            {dirty ? 'Save' : 'Saved'}
-          </Button>
-        </div>
-      </PaneToolbar>
-
-      {/* The editor is a base-100 card lifted onto the pane (the house floating
-          pattern); silica fills it. min-h-0 lets the flex child shrink so the
-          canvas scrolls internally instead of pushing the toolbar off-screen. */}
-      <div className="bg-base-100 min-h-0 flex-1 overflow-hidden rounded-lg">
-        <Builder
-          key={propertyId ?? 'site'}
-          document={site}
-          host={host}
-          persistKey={null}
-          dataToggle={false}
-          onChange={onChange}
-          onPublish={onPublish}
-          toolbarSlot={
-            pageIdParam && validPageIds.has(pageIdParam) ? (
+    <div className="h-full">
+      <Builder
+        key={propertyId ?? 'site'}
+        document={site}
+        host={host}
+        persistKey={null}
+        dataToggle={false}
+        onChange={onChange}
+        onPublish={onPublish}
+        toolbarSlot={
+          <div className="flex items-center gap-2">
+            <Badge color={status.tone} variant="soft" size="sm">
+              {status.label}
+            </Badge>
+            <Button
+              data-tour="builder-preview"
+              size="sm"
+              variant="outline"
+              color="neutral"
+              loading={previewToken.isPending}
+              onClick={() => {
+                void onPreview();
+              }}
+            >
+              <Eye className="size-4" aria-hidden />
+              Preview
+            </Button>
+            <Button
+              data-tour="builder-save"
+              size="sm"
+              color="module"
+              disabled={!dirty || sync.isPending}
+              loading={sync.isPending}
+              onClick={() => {
+                void onSave();
+              }}
+            >
+              <Save className="size-4" aria-hidden />
+              {dirty ? 'Save' : 'Saved'}
+            </Button>
+            {pageIdParam && validPageIds.has(pageIdParam) ? (
               <ApplyInitialPage pageId={pageIdParam} />
-            ) : null
-          }
-        />
-      </div>
+            ) : null}
+          </div>
+        }
+      />
     </div>
   );
 }
@@ -461,12 +477,15 @@ function ApplyInitialPage({ pageId }: { pageId: string }) {
 }
 
 /** Map the whole extracted `Site` onto the sync wire shape. Single-author,
- *  explicit-save semantics: the full roster goes every time (last-write-wins), the
- *  same shape the MCP writers use — no ops, no optimistic-concurrency map. */
-function toSyncInput(site: Site): SiteSyncInput {
+ *  explicit-save semantics: the full roster goes every time (last-write-wins), no
+ *  ops, no optimistic-concurrency map. Deletions are stated EXPLICITLY via
+ *  `deletedPageIds` — the server never infers a removal from an absent page, so a
+ *  page an agent authored over MCP while this editor was open survives the save. */
+function toSyncInput(site: Site, deletedPageIds: string[]): SiteSyncInput {
   return {
     pages: site.pages.map((p) => ({ id: p.id, name: p.name, slug: p.slug, root: p.root })),
     pageIds: site.pages.map((p) => p.id),
+    ...(deletedPageIds.length > 0 ? { deletedPageIds } : {}),
     ...(site.frame ? { frame: { root: site.frame.root } } : {}),
     ...(site.symbols ? { symbols: site.symbols } : {}),
     ...(site.theme ? { theme: site.theme } : {}),

@@ -1,0 +1,1083 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sparx — workbench cockpit (single pane of glass, MDI)</title>
+    <!--
+      HOOK: "Single pane of glass" is now literally true — the workbench is MDI,
+      so the whole business is open side by side in ONE workspace. This mock
+      REPLACES the retired single-context dashboard recreation.
+
+      SECTION / DEVICE (this is one product-proof beat, so the "device" is the
+      frame itself): a faithful, LEAN recreation of the real workbench chrome —
+      • toolbar (identity + site switcher + search) across the top
+      • thin module rail (every module, colour-coded) down the left
+      • a DOCK holding THREE tiled panes at once, each a DIFFERENT module:
+          Commerce Products (orange) · CRM Orders (cyan) · Email/Inbox chat (sky)
+        with real tab strips, a background tab carrying a DIRTY DOT, and
+      • a live status bar (saved-state · business pulse · unsaved-work chip).
+      The argument is made by the LAYOUT: several things, several modules, one
+      screen — the opposite of "click one module, see one page."
+    -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500&family=Geist+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      :root {
+        /* sparx tokens, hardcoded for the standalone mock */
+        --page: #fafafa;
+        --surface: #ffffff;
+        --base-100: #ffffff;
+        --base-200: #f4f4f5;
+        --base-300: #e4e4e7;
+        --ink: #0a0a0a;
+        --ink-muted: #52525b;
+        --ink-subtle: #8a8a93;
+        --ink-onfill: #ffffff;
+
+        --ember: #e04631;
+        --primary: #4f46e5; /* indigo band */
+        --primary-content: #ffffff;
+
+        --m-builder: #6366f1;
+        --m-commerce: #f97316;
+        --m-cms: #14b8a6;
+        --m-crm: #06b6d4;
+        --m-email: #0ea5e9;
+        --m-b2b: #475569;
+        --m-ai: #ec4899;
+        --m-dropship: #10b981;
+
+        --success: #16a34a;
+        --success-tint: #dcfce7;
+        --success-ink: #15803d;
+        --warning: #d97706;
+        --warning-tint: #fef3c7;
+        --warning-ink: #b45309;
+        --danger: #dc2626;
+        --danger-tint: #fee2e2;
+        --danger-ink: #b91c1c;
+        --neutral-tint: #f4f4f5;
+        --neutral-ink: #52525b;
+
+        --radius: 12px;
+        font-family: 'Geist', system-ui, sans-serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--page);
+        color: var(--ink);
+        -webkit-font-smoothing: antialiased;
+      }
+
+      /* ── The marketing section shell (indigo band, like the live homepage) ── */
+      .band {
+        background: var(--primary);
+        margin: 24px;
+        border-radius: 32px;
+        padding: 120px 48px;
+      }
+      .band-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 56px;
+      }
+      .lede-wrap {
+        max-width: 640px;
+      }
+      .lede-h {
+        color: var(--primary-content);
+        font-size: 72px;
+        line-height: 0.95;
+        letter-spacing: -0.035em;
+        font-weight: 500;
+        margin: 0;
+      }
+      .lede-h .dot {
+        color: #fff;
+      }
+      .lede-p {
+        color: rgba(255, 255, 255, 0.86);
+        font-size: 22px;
+        line-height: 1.4;
+        letter-spacing: -0.01em;
+        margin: 20px 0 0;
+        font-weight: 400;
+      }
+      .lede-p b {
+        color: #fff;
+        font-weight: 500;
+      }
+
+      /* ── Board scroller (horizontal scroll on phone) ── */
+      .scroller {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .swipe {
+        display: none;
+        margin: -34px 0 10px;
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+        color: rgba(255, 255, 255, 0.7);
+      }
+
+      .board {
+        min-width: 1040px;
+        background: var(--base-100);
+        border: 1px solid var(--base-300);
+        border-radius: 14px;
+        overflow: hidden;
+      }
+
+      /* ── Browser chrome ── */
+      .chrome {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--base-200);
+        border-bottom: 1px solid var(--base-300);
+        padding: 12px 18px;
+      }
+      .lights {
+        display: flex;
+        gap: 7px;
+      }
+      .light {
+        width: 11px;
+        height: 11px;
+        border-radius: 999px;
+      }
+      .url {
+        margin-left: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--base-100);
+        border: 1px solid var(--base-300);
+        border-radius: 8px;
+        padding: 6px 14px;
+        max-width: 480px;
+        flex: 1;
+        color: var(--ink-muted);
+        font-family: 'Geist Mono', monospace;
+        font-size: 12px;
+      }
+      .url svg {
+        width: 12px;
+        height: 12px;
+        color: var(--ink-subtle);
+      }
+
+      /* ── Toolbar ── */
+      .toolbar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--base-100);
+        border-bottom: 1px solid var(--base-300);
+        padding: 8px 12px 8px 10px;
+      }
+      .wordmark {
+        font-size: 22px;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+        margin: 0 6px 0 4px;
+      }
+      .wordmark .x {
+        color: var(--ember);
+      }
+      .tenant {
+        font-size: 14px;
+        font-weight: 500;
+      }
+      .slash {
+        color: var(--base-300);
+        margin: 0 2px;
+      }
+      .siteswitch {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 14px;
+        color: var(--ink-muted);
+        padding: 5px 8px;
+        border-radius: 8px;
+      }
+      .siteswitch svg {
+        width: 14px;
+        height: 14px;
+      }
+      .search {
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        width: 280px;
+        max-width: 30vw;
+        background: var(--base-100);
+        border: 1px solid var(--base-300);
+        border-radius: 8px;
+        padding: 6px 10px;
+        color: var(--ink-subtle);
+        font-size: 14px;
+      }
+      .search svg {
+        width: 14px;
+        height: 14px;
+      }
+      .kbd {
+        margin-left: auto;
+        font-family: 'Geist Mono', monospace;
+        font-size: 11px;
+        color: var(--ink-subtle);
+        background: var(--base-200);
+        border: 1px solid var(--base-300);
+        border-radius: 5px;
+        padding: 1px 5px;
+      }
+      .tool-actions {
+        display: flex;
+        align-items: center;
+        gap: 4px;
+      }
+      .iconbtn {
+        width: 30px;
+        height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        color: var(--ink-muted);
+      }
+      .iconbtn svg {
+        width: 16px;
+        height: 16px;
+      }
+      .avatar {
+        width: 26px;
+        height: 26px;
+        border-radius: 999px;
+        background: var(--base-300);
+        color: var(--ink-muted);
+        font-size: 11px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* ── Body: rail + dock ── */
+      .body {
+        display: flex;
+        background: var(--base-200);
+        height: 560px;
+      }
+      .rail {
+        width: 52px;
+        flex-shrink: 0;
+        background: var(--base-200);
+        padding: 6px;
+      }
+      .rail-inner {
+        background: var(--base-100);
+        border-radius: 10px;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        padding: 8px 0;
+      }
+      .rail-icon {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 9px;
+      }
+      .rail-icon svg {
+        width: 19px;
+        height: 19px;
+        stroke-width: 1.8;
+      }
+      .rail-div {
+        width: 22px;
+        height: 1px;
+        background: var(--base-300);
+        margin: 5px 0;
+      }
+      .rail-spacer {
+        flex: 1;
+      }
+
+      /* ── Dock: three tiled groups ── */
+      .dock {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        gap: 6px;
+        padding: 6px 6px 6px 0;
+      }
+      .group {
+        display: flex;
+        flex-direction: column;
+        min-width: 0;
+        background: var(--base-100);
+        border: 1px solid var(--base-300);
+        border-radius: 10px;
+        overflow: hidden;
+      }
+      .g-commerce {
+        flex: 1.5;
+      }
+      .g-crm {
+        flex: 1.15;
+      }
+      .g-email {
+        flex: 1.25;
+      }
+
+      /* Tab strip */
+      .tabstrip {
+        display: flex;
+        align-items: stretch;
+        gap: 2px;
+        background: var(--base-200);
+        border-bottom: 1px solid var(--base-300);
+        padding: 5px 5px 0;
+      }
+      .tab {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        padding: 7px 11px;
+        font-size: 13px;
+        border-radius: 8px 8px 0 0;
+        border-top: 2px solid transparent;
+        border-left: 1px solid transparent;
+        border-right: 1px solid transparent;
+        color: var(--ink-muted);
+        min-width: 0;
+        white-space: nowrap;
+      }
+      .tab svg {
+        width: 14px;
+        height: 14px;
+        flex-shrink: 0;
+      }
+      .tab .close {
+        width: 16px;
+        height: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 5px;
+        margin-left: 2px;
+      }
+      .tab .close svg {
+        width: 13px;
+        height: 13px;
+      }
+      /* active tab: module fill + on-fill ink + coloured top edge */
+      .tab.active {
+        color: var(--ink-onfill);
+        border-top-color: var(--tab-c);
+        background: var(--tab-c);
+      }
+      .tab.active svg {
+        color: var(--ink-onfill);
+      }
+      /* inactive tab: soft module wash + coloured top edge */
+      .tab.idle {
+        background: color-mix(in oklab, var(--tab-c) 12%, var(--base-100));
+        border-top-color: var(--tab-c);
+        color: var(--ink-muted);
+      }
+      .tab.idle svg.tabicon {
+        color: var(--tab-c);
+      }
+      /* dirty dot on a tab */
+      .dirty {
+        width: 8px;
+        height: 8px;
+        border-radius: 999px;
+        background: var(--warning);
+        flex-shrink: 0;
+      }
+
+      /* Pane body chrome */
+      .pane {
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        background: var(--base-100);
+        overflow: hidden;
+      }
+      .pane-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 12px 14px 8px;
+      }
+      .pane-title {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+      .pane-glyph {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        background: color-mix(in oklab, var(--tab-c) 14%, var(--base-100));
+        color: var(--tab-c);
+      }
+      .pane-glyph svg {
+        width: 16px;
+        height: 16px;
+      }
+      .pane-h {
+        font-size: 16px;
+        font-weight: 500;
+        letter-spacing: -0.01em;
+        margin: 0;
+      }
+      .pane-sub {
+        font-size: 11px;
+        color: var(--ink-subtle);
+        margin: 1px 0 0;
+      }
+      .pill {
+        font-size: 11px;
+        font-weight: 500;
+        border-radius: 999px;
+        padding: 2px 9px;
+        background: color-mix(in oklab, var(--tab-c) 14%, var(--base-100));
+        color: var(--tab-c);
+        white-space: nowrap;
+      }
+      .primary-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--ink-onfill);
+        background: var(--tab-c);
+        border-radius: 8px;
+        padding: 6px 11px;
+        white-space: nowrap;
+      }
+      .primary-btn svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      /* mini toolbar inside a list pane */
+      .mini-tb {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 2px 14px 10px;
+      }
+      .mini-search {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex: 1;
+        min-width: 0;
+        background: var(--base-100);
+        border: 1px solid var(--base-300);
+        border-radius: 8px;
+        padding: 5px 9px;
+        color: var(--ink-subtle);
+        font-size: 12px;
+      }
+      .mini-search svg {
+        width: 13px;
+        height: 13px;
+      }
+      .chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-size: 12px;
+        color: var(--ink-muted);
+        border: 1px solid var(--base-300);
+        border-radius: 8px;
+        padding: 5px 9px;
+        white-space: nowrap;
+      }
+      .chip svg {
+        width: 11px;
+        height: 11px;
+        opacity: 0.6;
+      }
+
+      /* list table */
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 12.5px;
+      }
+      thead th {
+        text-align: left;
+        font-size: 10px;
+        font-weight: 500;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: var(--ink-subtle);
+        padding: 8px 14px;
+        border-bottom: 1px solid var(--base-300);
+        white-space: nowrap;
+      }
+      thead th.num {
+        text-align: right;
+      }
+      tbody td {
+        padding: 9px 14px;
+        border-bottom: 1px solid var(--base-300);
+        vertical-align: middle;
+        color: var(--ink-muted);
+      }
+      tbody tr:last-child td {
+        border-bottom: 0;
+      }
+      td.num {
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+        color: var(--ink);
+      }
+      .cell-main {
+        color: var(--ink);
+        font-weight: 500;
+      }
+      .cell-sub {
+        color: var(--ink-subtle);
+        font-size: 11px;
+      }
+      .badge {
+        display: inline-flex;
+        font-size: 11px;
+        font-weight: 500;
+        border-radius: 999px;
+        padding: 2px 9px;
+      }
+      .b-success {
+        background: var(--success-tint);
+        color: var(--success-ink);
+      }
+      .b-warning {
+        background: var(--warning-tint);
+        color: var(--warning-ink);
+      }
+      .b-danger {
+        background: var(--danger-tint);
+        color: var(--danger-ink);
+      }
+      .b-neutral {
+        background: var(--neutral-tint);
+        color: var(--neutral-ink);
+      }
+
+      /* chat pane */
+      .chat-scroll {
+        flex: 1;
+        min-height: 0;
+        overflow-y: auto;
+        padding: 6px 14px 12px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .day {
+        text-align: center;
+        font-size: 10px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink-subtle);
+        margin: 4px 0;
+      }
+      .msg {
+        max-width: 78%;
+        font-size: 13px;
+        line-height: 1.4;
+        padding: 8px 11px;
+        border-radius: 14px;
+      }
+      .msg.in {
+        align-self: flex-start;
+        background: var(--base-200);
+        color: var(--ink);
+        border-bottom-left-radius: 4px;
+      }
+      .msg.out {
+        align-self: flex-end;
+        background: var(--tab-c);
+        color: var(--ink-onfill);
+        border-bottom-right-radius: 4px;
+      }
+      .msg-time {
+        font-size: 10px;
+        color: var(--ink-subtle);
+        margin-top: 3px;
+      }
+      .msg.out .msg-time {
+        text-align: right;
+      }
+      .composer {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border-top: 1px solid var(--base-300);
+        padding: 9px 12px;
+      }
+      .composer-input {
+        flex: 1;
+        color: var(--ink-subtle);
+        font-size: 13px;
+        background: var(--base-100);
+        border: 1px solid var(--base-300);
+        border-radius: 999px;
+        padding: 7px 13px;
+      }
+      .send {
+        width: 32px;
+        height: 32px;
+        border-radius: 999px;
+        background: var(--tab-c);
+        color: var(--ink-onfill);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+      }
+      .send svg {
+        width: 15px;
+        height: 15px;
+      }
+      .chat-contact {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        padding: 11px 14px 9px;
+      }
+      .chat-av {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        background: color-mix(in oklab, var(--tab-c) 16%, var(--base-100));
+        color: var(--tab-c);
+        font-size: 12px;
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .online-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 999px;
+        background: var(--success);
+        display: inline-block;
+      }
+
+      /* ── Status bar ── */
+      .statusbar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        background: var(--base-100);
+        border-top: 1px solid var(--base-300);
+        height: 34px;
+        padding: 0 14px;
+        font-size: 13px;
+        color: var(--ink-muted);
+      }
+      .sb-item {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .sb-item svg {
+        width: 14px;
+        height: 14px;
+      }
+      .sb-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: var(--success);
+      }
+      .sb-spacer {
+        flex: 1;
+      }
+      .sb-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--ink-muted);
+        padding: 3px 8px;
+        border-radius: 7px;
+      }
+      .sb-chip svg {
+        width: 13px;
+        height: 13px;
+      }
+      .sb-warn {
+        background: var(--warning-tint);
+        color: var(--warning-ink);
+      }
+      .pulse-icon {
+        color: var(--success);
+      }
+
+      @media (max-width: 900px) {
+        .band {
+          padding: 72px 20px;
+          margin: 12px;
+          border-radius: 24px;
+        }
+        .lede-h {
+          font-size: 46px;
+        }
+        .lede-p {
+          font-size: 18px;
+        }
+        .swipe {
+          display: block;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <section class="band">
+      <div class="band-inner">
+        <div class="lede-wrap">
+          <h2 class="lede-h">Your whole business,<br />open at once<span class="dot">.</span></h2>
+          <p class="lede-p">
+            One login opens one workspace — and inside it your
+            <b>site, orders, customers and messages sit side by side</b>, not buried in eight
+            browser tabs. Pull a screen off to a second monitor, keep the rest in view. It&rsquo;s
+            every part of sparx, on one pane of glass.
+          </p>
+        </div>
+
+        <div class="scroller">
+          <div class="swipe">Swipe to explore the workbench &rarr;</div>
+          <div class="board">
+            <!-- browser chrome -->
+            <div class="chrome">
+              <div class="lights">
+                <span class="light" style="background: var(--danger)"></span>
+                <span class="light" style="background: var(--warning)"></span>
+                <span class="light" style="background: var(--success)"></span>
+              </div>
+              <div class="url">
+                <i data-lucide="shield"></i>
+                <span>app.sparx.works</span>
+              </div>
+            </div>
+
+            <!-- toolbar -->
+            <div class="toolbar">
+              <span class="wordmark">spar<span class="x">x</span></span>
+              <span class="tenant">Lumen &amp; Co.</span>
+              <span class="slash">/</span>
+              <span class="siteswitch">
+                <i data-lucide="globe"></i> Main site <i data-lucide="chevron-down"></i>
+              </span>
+              <div class="search">
+                <i data-lucide="search"></i>
+                <span>Search everything</span>
+                <span class="kbd">⌘K</span>
+              </div>
+              <div class="tool-actions">
+                <span class="iconbtn"><i data-lucide="star"></i></span>
+                <span class="iconbtn"><i data-lucide="bell"></i></span>
+                <span class="iconbtn"><i data-lucide="message-square-plus"></i></span>
+                <span class="iconbtn"><i data-lucide="moon"></i></span>
+                <span class="avatar">AR</span>
+              </div>
+            </div>
+
+            <!-- body -->
+            <div class="body">
+              <!-- rail -->
+              <div class="rail">
+                <div class="rail-inner">
+                  <span class="rail-icon" style="color: var(--m-builder)"
+                    ><i data-lucide="layout-template"></i
+                  ></span>
+                  <span class="rail-icon" style="color: var(--m-commerce)"
+                    ><i data-lucide="shopping-cart"></i
+                  ></span>
+                  <span class="rail-icon" style="color: var(--m-cms)"
+                    ><i data-lucide="file-text"></i
+                  ></span>
+                  <span class="rail-icon" style="color: var(--m-crm)"
+                    ><i data-lucide="users"></i
+                  ></span>
+                  <span class="rail-icon" style="color: var(--m-email)"
+                    ><i data-lucide="send"></i
+                  ></span>
+                  <span class="rail-icon" style="color: var(--m-b2b)"
+                    ><i data-lucide="building-2"></i
+                  ></span>
+                  <span class="rail-div"></span>
+                  <span class="rail-spacer"></span>
+                  <span class="rail-icon" style="color: var(--ink-subtle)"
+                    ><i data-lucide="layout-grid"></i
+                  ></span>
+                  <span class="rail-icon" style="color: var(--ink-subtle)"
+                    ><i data-lucide="panel-left"></i
+                  ></span>
+                </div>
+              </div>
+
+              <!-- dock -->
+              <div class="dock">
+                <!-- GROUP A · Commerce (orange) — Products, + dirty background tab -->
+                <div class="group g-commerce" style="--tab-c: var(--m-commerce)">
+                  <div class="tabstrip">
+                    <div class="tab active">
+                      <i data-lucide="package" class="tabicon"></i>
+                      <span>Products</span>
+                      <span class="close"><i data-lucide="x"></i></span>
+                    </div>
+                    <div class="tab idle">
+                      <i data-lucide="tag" class="tabicon"></i>
+                      <span>Summit Hoodie</span>
+                      <span class="dirty" title="Unsaved changes"></span>
+                    </div>
+                  </div>
+                  <div class="pane">
+                    <div class="pane-head">
+                      <div class="pane-title">
+                        <span class="pane-glyph"><i data-lucide="package"></i></span>
+                        <div>
+                          <h3 class="pane-h">Products</h3>
+                          <p class="pane-sub">284 in your catalog</p>
+                        </div>
+                      </div>
+                      <span class="primary-btn"><i data-lucide="plus"></i> New</span>
+                    </div>
+                    <div class="mini-tb">
+                      <span class="mini-search"><i data-lucide="search"></i> Search…</span>
+                      <span class="chip">Status <i data-lucide="chevron-down"></i></span>
+                    </div>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Title</th>
+                          <th>Status</th>
+                          <th class="num">Price</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div class="cell-main">Trail Tee</div>
+                            <div class="cell-sub">3 variants</div>
+                          </td>
+                          <td><span class="badge b-success">Active</span></td>
+                          <td class="num">$28</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="cell-main">Summit Hoodie</div>
+                            <div class="cell-sub">editing…</div>
+                          </td>
+                          <td><span class="badge b-success">Active</span></td>
+                          <td class="num">$64</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="cell-main">Field Cap</div>
+                            <div class="cell-sub">Northwind</div>
+                          </td>
+                          <td><span class="badge b-neutral">Draft</span></td>
+                          <td class="num">$22</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="cell-main">Canvas Tote</div>
+                            <div class="cell-sub">1 variant</div>
+                          </td>
+                          <td><span class="badge b-success">Active</span></td>
+                          <td class="num">$18</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="cell-main">Wool Beanie</div>
+                            <div class="cell-sub">Northwind</div>
+                          </td>
+                          <td><span class="badge b-warning">Low stock</span></td>
+                          <td class="num">$24</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- GROUP B · CRM (cyan) — Orders -->
+                <div class="group g-crm" style="--tab-c: var(--m-crm)">
+                  <div class="tabstrip">
+                    <div class="tab active">
+                      <i data-lucide="receipt" class="tabicon"></i>
+                      <span>Orders</span>
+                      <span class="close"><i data-lucide="x"></i></span>
+                    </div>
+                  </div>
+                  <div class="pane">
+                    <div class="pane-head">
+                      <div class="pane-title">
+                        <span class="pane-glyph"><i data-lucide="receipt"></i></span>
+                        <div>
+                          <h3 class="pane-h">Orders</h3>
+                          <p class="pane-sub">Every channel</p>
+                        </div>
+                      </div>
+                      <span class="pill">284</span>
+                    </div>
+                    <div class="mini-tb">
+                      <span class="mini-search"><i data-lucide="search"></i> Search…</span>
+                    </div>
+                    <table>
+                      <thead>
+                        <tr>
+                          <th>Order</th>
+                          <th>Status</th>
+                          <th class="num">Total</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr>
+                          <td>
+                            <div class="cell-main">#1043</div>
+                            <div class="cell-sub">Dana Whitfield</div>
+                          </td>
+                          <td><span class="badge b-success">Paid</span></td>
+                          <td class="num">$92</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="cell-main">#1042</div>
+                            <div class="cell-sub">Northwind Supply</div>
+                          </td>
+                          <td><span class="badge b-success">Paid</span></td>
+                          <td class="num">$1,240</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="cell-main">#1041</div>
+                            <div class="cell-sub">Tom Becker</div>
+                          </td>
+                          <td><span class="badge b-neutral">Pending</span></td>
+                          <td class="num">$56</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="cell-main">#1040</div>
+                            <div class="cell-sub">Priya Anand</div>
+                          </td>
+                          <td><span class="badge b-danger">Refunded</span></td>
+                          <td class="num">$28</td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="cell-main">#1039</div>
+                            <div class="cell-sub">Ridgeline Co.</div>
+                          </td>
+                          <td><span class="badge b-success">Paid</span></td>
+                          <td class="num">$410</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <!-- GROUP C · Email/Inbox (sky) — live chat -->
+                <div class="group g-email" style="--tab-c: var(--m-email)">
+                  <div class="tabstrip">
+                    <div class="tab active">
+                      <i data-lucide="message-circle" class="tabicon"></i>
+                      <span>Inbox — Dana W.</span>
+                      <span class="close"><i data-lucide="x"></i></span>
+                    </div>
+                  </div>
+                  <div class="pane">
+                    <div class="chat-contact">
+                      <span class="chat-av">DW</span>
+                      <div>
+                        <h3 class="pane-h">Dana Whitfield</h3>
+                        <p class="pane-sub"><span class="online-dot"></span> Online now</p>
+                      </div>
+                    </div>
+                    <div class="chat-scroll">
+                      <div class="day">Today</div>
+                      <div class="msg in">
+                        Hi! Is the Summit Hoodie coming back in large?
+                        <div class="msg-time">10:24</div>
+                      </div>
+                      <div class="msg out">
+                        Just restocked it this morning — I&rsquo;ll set one aside for you.
+                        <div class="msg-time">10:26</div>
+                      </div>
+                      <div class="msg in">
+                        Perfect, thank you! Same card as order #1043?
+                        <div class="msg-time">10:27</div>
+                      </div>
+                      <div class="msg out">
+                        Yes — sending a checkout link now.
+                        <div class="msg-time">10:27</div>
+                      </div>
+                    </div>
+                    <div class="composer">
+                      <span class="composer-input">Message Dana…</span>
+                      <span class="send"><i data-lucide="send-horizontal"></i></span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- status bar -->
+            <div class="statusbar">
+              <span class="sb-item"><span class="sb-dot"></span> Saved 2m ago</span>
+              <span class="sb-spacer"></span>
+              <span class="sb-chip"
+                ><i data-lucide="shopping-bag" class="pulse-icon"></i> New order — #1043 · 2m
+                ago</span
+              >
+              <span class="sb-chip"><i data-lucide="app-window"></i> 1 window</span>
+              <span class="sb-chip sb-warn">1 unsaved change</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <script>
+      lucide.createIcons();
+    </script>
+  </body>
+</html>

@@ -198,6 +198,7 @@ export function ContentListSurface({ ctx }: { ctx: SurfaceContext }) {
         </label>
 
         <Button
+          data-tour="cms-new"
           color="module"
           size="sm"
           className="ml-auto shrink-0 whitespace-nowrap"

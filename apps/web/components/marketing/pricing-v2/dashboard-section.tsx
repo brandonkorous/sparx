@@ -1,16 +1,17 @@
 import { Heading, Text } from '@wizeworks/silicaui-react';
-import { DashboardFrame } from '../dashboard-showcase';
+import { WorkbenchFrame } from '../workbench-showcase';
 
 /**
  * "One bill. One login. One place." — the pricing page's one real product-proof
  * beat, and its only imagery moment. Placed right after the switchboard: once
- * the reader has priced their stack, this shows the single product every module
- * they switched on actually lives inside — so "one platform, one invoice" is
- * something they can see, not just a claim.
+ * the reader has priced their stack, this shows the single workspace every
+ * module they switched on actually lives inside — so "one platform, one invoice"
+ * is something they can see, not just a claim.
  *
- * `DashboardFrame` is the same faithful, CSS-only recreation of the real app
- * shell that landing-v3's "One pane of glass" beat reuses byte-for-byte; only
- * this shell (indigo `bg-primary` band + headline + lede) is on silicaui.
+ * `WorkbenchFrame` is the same faithful recreation of the real app shell that
+ * landing-v3's "open at once" beat uses — the MDI workbench, every module tiled
+ * side by side. Only this shell (indigo `bg-primary` band + headline + lede) is
+ * on silicaui.
  */
 export function PricingV2DashboardSection() {
   return (
@@ -26,12 +27,13 @@ export function PricingV2DashboardSection() {
             <br />
             One place.
           </Heading>
-          <Text variant="lead" className="text-primary-content/85 mt-5 max-w-xl text-2xl">
-            Whatever you switch on shows up in the same dashboard — no extra seats, no new logins,
-            no tab-hopping. This is the product every module lives inside.
+          <Text variant="lead" className="text-primary-content mt-5 max-w-xl text-2xl">
+            Whatever you switch on opens in the same workspace — your site, orders, customers and
+            email side by side, no extra seats, no new logins, no tab-hopping. This is the one
+            product every module lives inside.
           </Text>
         </div>
-        <DashboardFrame />
+        <WorkbenchFrame />
       </div>
     </section>
   );

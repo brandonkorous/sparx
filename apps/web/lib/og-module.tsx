@@ -1,5 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { MODULE_HEX } from '@sparx/brand';
+import { BRAND, MODULE_HEX } from '@sparx/brand';
 import { type ModuleMeta } from './modules';
 import { OgWordmark } from './og-wordmark';
 
@@ -36,7 +36,7 @@ export function renderModuleOgImage(meta: ModuleOgMeta) {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        backgroundColor: '#0A0A0A',
+        backgroundColor: BRAND.ink,
         padding: '72px',
         fontFamily: 'system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
       }}
@@ -130,7 +130,7 @@ export function renderModuleOgImage(meta: ModuleOgMeta) {
           alignItems: 'center',
           justifyContent: 'space-between',
           paddingTop: 28,
-          borderTop: '1px solid #1A1A1A',
+          borderTop: '1px solid rgba(255, 255, 255, 0.09)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>

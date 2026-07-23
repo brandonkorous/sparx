@@ -16,6 +16,7 @@ import {
   CalendarClock,
   CreditCard,
   FileText,
+  Globe,
   Handshake,
   LayoutDashboard,
   Mail,
@@ -27,7 +28,6 @@ import {
   Truck,
   Users,
   Workflow,
-  Wrench,
   type LucideIcon,
 } from 'lucide-react';
 import { listedSurfaces, resolveTitle, type SurfaceDefinition } from './registry';
@@ -80,6 +80,63 @@ export function moduleLabel(module: WorkbenchModule): string {
 }
 
 /**
+ * The order modules appear in the rail — stated once, here, on purpose.
+ *
+ * This exists because "first-registration order" is the wrong tool for the job.
+ * A module claims its rail slot at its first LISTED surface, so a cross-module
+ * surface registered under another module's file (the product-panel stock/
+ * dropship/translations surfaces live in commerce.ts) would silently drag
+ * Inventory, Dropshipping and Content up above the modules they belong to — the
+ * rail order became an accident of where a surface happened to be declared.
+ *
+ * The order tells the arc of running the business, and every module that
+ * SUPPORTS another sits directly beneath it:
+ *
+ *   Workbench                          — home / overview
+ *   Site → Content → SEO               — your presence: build it, fill it, get it found
+ *   Selling → Inventory → Dropshipping → Wholesale
+ *                                      — what you offer, and everything backing it
+ *   Customers → Messages → Email → Scheduling
+ *                                      — the people you serve, and how you reach them
+ *   Invoicing → Finance                — getting paid
+ *   Automations → AI                   — leverage across everything above
+ *   Partners                           — a different kind of user; stays last
+ *
+ * A module missing from this list sorts after every listed one (and then by its
+ * registration order), so adding a module never vanishes it — it just lands at
+ * the end until it earns a considered slot here.
+ */
+const MODULE_ORDER: WorkbenchModule[] = [
+  'platform',
+  'builder',
+  'cms',
+  'seo',
+  'commerce',
+  'inventory',
+  'dropship',
+  'b2b',
+  'crm',
+  'chat',
+  'email',
+  'scheduling',
+  'invoicing',
+  'finance',
+  'automations',
+  'ai',
+  'storefront',
+  'partner',
+];
+
+const MODULE_RANK = new Map<WorkbenchModule, number>(
+  MODULE_ORDER.map((module, index) => [module, index])
+);
+
+/** Rank for rail sorting; unlisted modules sort to the end, ties keep insertion order. */
+function moduleRank(module: WorkbenchModule): number {
+  return MODULE_RANK.get(module) ?? Number.MAX_SAFE_INTEGER;
+}
+
+/**
  * The rail icon for each module — an explicit editorial choice.
  *
  * Deliberately NOT "the first surface's icon". That made a module's identity in
@@ -94,7 +151,7 @@ const MODULE_ICONS: Partial<Record<WorkbenchModule, LucideIcon>> = {
   invoicing: FileText,
   inventory: Boxes,
   cms: Newspaper,
-  builder: Wrench,
+  builder: Globe,
   email: Mail,
   b2b: Building2,
   finance: CreditCard,
@@ -184,6 +241,11 @@ export function buildNav(): NavModule[] {
       })),
     });
   }
+
+  // Rail order is authored in MODULE_ORDER, not inherited from registration —
+  // see the comment there. Array.prototype.sort is stable, so modules sharing a
+  // rank (only the unlisted tail) keep their first-registration order.
+  modules.sort((a, b) => moduleRank(a.module) - moduleRank(b.module));
 
   return modules;
 }

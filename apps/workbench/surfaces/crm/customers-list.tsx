@@ -123,6 +123,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
           />
         </div>
         <Button
+          data-tour="crm-add-customer"
           color="module"
           size="sm"
           className="ml-auto shrink-0"

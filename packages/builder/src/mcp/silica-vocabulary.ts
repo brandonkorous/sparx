@@ -14,6 +14,17 @@
 // `packages/builder/src/services/site-service.ts`. When those change, change this.
 
 export const SILICA_STYLE_GUIDE = {
+  // The canonical home of the design system this whole guide composes. Named so an
+  // agent (or a developer reading a tool result) knows where the full component +
+  // token reference lives beyond what these tools inline. The `silicaui` MCP server
+  // (list_components / get_component / get_tokens) is the machine-readable form of
+  // the same system; this guide is sparx's applied subset.
+  designSystem:
+    'Every node here composes @wizeworks/silicaui, WizeWorks’ open design system. Canonical reference: ' +
+    'https://silicaui.com. The full component + token catalog is also available machine-readably via the separate ' +
+    '`silicaui` MCP server (list_components, get_component, get_tokens) — connect it when you need a primitive or ' +
+    'token this guide does not already inline.',
+
   overview:
     'Author a site as a tree of silica Nodes: { kind:"element", tag, class, children, data? } for raw HTML, or ' +
     '{ kind:"component", component, class, props, children } for a @wizeworks/silicaui component. `upsert_silica_page` ' +

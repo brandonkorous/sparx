@@ -24,6 +24,7 @@ import {
   SiteSyncInput,
   blankPageTree,
   type BuilderOpEnvelope,
+  type BuilderPageKind,
   type SitePublishState,
   type PublishedSilicaFrameDto,
   type PublishedSilicaPageDto,
@@ -367,8 +368,38 @@ async function activeLayoutTx(tx: TxClient, ctx: PropertyContext): Promise<Build
 
 /** Reconcile an extracted silica `Site` into the store. Upserts a `BuilderPage`
  *  per page (by id — silica keeps ids stable), creates a row for a page silica
- *  just added, deletes a silica row absent from the payload (an explicit page
- *  removal), and writes the frame + symbols onto the active layout. */
+ *  just added, deletes ONLY the pages the caller explicitly named (never a page
+ *  merely absent from the payload — see {@link pagesToDelete}), and writes the
+ *  frame + symbols onto the active layout. */
+/** Which stored silica pages a {@link sync} should DELETE.
+ *
+ *  Deletion is EXPLICIT, never inferred from a page's absence from the payload. A
+ *  page missing from an autosave roster is as likely a concurrent create (an agent
+ *  authoring over MCP while the operator has the studio open) as a removal, and the
+ *  two are indistinguishable from the roster alone — so treating absence as deletion
+ *  is exactly what let one autosave wipe every page an agent had just authored.
+ *  Extracted as a pure function so the decision is directly testable (`sync` itself
+ *  needs a database).
+ *
+ *  · allowReplace  → wholesale swap: every stored page absent from the roster (the
+ *                    blueprint install / reset path that legitimately owns the site).
+ *  · otherwise     → ONLY the ids the caller named in `deletedPageIds`, intersected
+ *                    with what actually exists (a stale entry is a harmless no-op). */
+export function pagesToDelete(args: {
+  allowReplace: boolean;
+  storedSilicaIds: readonly string[];
+  roster: readonly string[];
+  deletedPageIds: readonly string[];
+}): string[] {
+  const { allowReplace, storedSilicaIds, roster, deletedPageIds } = args;
+  if (allowReplace) {
+    const inRoster = new Set(roster);
+    return storedSilicaIds.filter((id) => !inRoster.has(id));
+  }
+  const stored = new Set(storedSilicaIds);
+  return deletedPageIds.filter((id) => stored.has(id));
+}
+
 /** Would this sync payload CLOBBER the stored site — i.e. delete every page it has?
  *
  *  True when a non-empty stored site shares NO page id with the incoming pages. See
@@ -422,29 +453,25 @@ export async function sync(
 
     // The COMPLETE page roster in site order (docs/126 Phase 0). When the caller sends
     // `pageIds`, `input.pages` carries only the bodies that actually changed and the
-    // roster drives deletion + ordering. Without it, `input.pages` IS the roster —
-    // the original whole-site semantics every other caller still uses.
+    // roster drives ordering (deletion is explicit — see `deletedPageIds`). Without it,
+    // `input.pages` IS the roster — the original whole-site semantics.
     const roster = input.pageIds ?? input.pages.map((p) => p.id);
-    const inputIds = new Set(roster);
     const positionOf = new Map(roster.map((id, i) => [id, i] as const));
 
     // ── Clobber guard ────────────────────────────────────────────────────────
-    // This reconcile DELETES every stored page missing from the payload, published
-    // trees and all — so a payload that is not actually "this site, edited" destroys
-    // the tenant's live content irrecoverably.
-    //
-    // A real edit always keeps most page ids: silica hands back the same `Site` it
-    // was given, mutated. ZERO id overlap against a NON-EMPTY site therefore never
-    // means "the author deleted every page and made new ones" — the editor cannot
-    // even express that in one step. It means the caller is holding a DIFFERENT site
-    // than the one on disk, and the only outcomes are (a) destroy everything, or
-    // (b) refuse. Refuse.
+    // Deletion itself is explicit now (see the delete step below), so a stale roster
+    // can no longer silently remove pages. But ZERO id overlap against a NON-EMPTY
+    // site is still a red flag worth refusing: a real edit always keeps most page ids
+    // (silica hands back the same `Site` it was given, mutated), so no overlap means
+    // the caller is holding a DIFFERENT site than the one on disk. Writing it would
+    // graft a foreign site's pages alongside the tenant's real ones — recoverable, but
+    // wrong. Refuse rather than pollute.
     //
     // This is not hypothetical: a transient read failure made the studio seed a
-    // pristine STARTER (fresh ids) over a real tenant, and the first autosave deleted
-    // every page. The route no longer swallows that error, but the guard lives HERE
-    // so the store is safe from ANY caller — a future route, an MCP tool, a bug.
-    // Seeding a brand-new property is unaffected (no stored rows ⇒ nothing to clobber).
+    // pristine STARTER (fresh ids) over a real tenant. The route no longer swallows
+    // that error, but the guard lives HERE so the store is safe from ANY caller — a
+    // future route, an MCP tool, a bug. Seeding a brand-new property is unaffected
+    // (no stored rows ⇒ nothing to clobber).
     if (
       !opts.allowReplace &&
       wouldClobberSite(
@@ -494,13 +521,21 @@ export async function sync(
     }
 
     // Deletes first (a removed page frees its slug before any create reuses it).
-    for (const r of silicaRows) {
-      if (!inputIds.has(r.id)) {
-        await tx.builderPage.delete({ where: { id: r.id } });
-        // The index is derived, so a deleted page's rows are dead weight that would
-        // otherwise keep answering "this symbol is used here" for a page that is gone.
-        await dropOwnerTx(tx, ctx, 'page', r.id);
-      }
+    // EXPLICIT only: a page absent from the roster is preserved, never deleted — it
+    // may be a page a concurrent MCP writer just added that this client never loaded.
+    // Only ids the caller named in `deletedPageIds` (or, on the wholesale-replace path,
+    // roster-absent pages) are removed. See {@link pagesToDelete}.
+    const toDelete = pagesToDelete({
+      allowReplace: opts.allowReplace ?? false,
+      storedSilicaIds: silicaRows.map((r) => r.id),
+      roster,
+      deletedPageIds: input.deletedPageIds ?? [],
+    });
+    for (const id of toDelete) {
+      await tx.builderPage.delete({ where: { id } });
+      // The index is derived, so a deleted page's rows are dead weight that would
+      // otherwise keep answering "this symbol is used here" for a page that is gone.
+      await dropOwnerTx(tx, ctx, 'page', id);
     }
 
     // Upsert each page whose body was sent. `position` comes from the ROSTER, not the
@@ -1058,7 +1093,11 @@ export async function removePage(ctx: PropertyContext, pageId: string): Promise<
       `Cannot remove page ${pageId} — it is the site's only page. A site needs at least one page; replace its content with upsert_silica_page instead of deleting it.`
     );
   }
-  await sync(ctx, { ...current, pages });
+  // State the deletion EXPLICITLY: `sync` no longer removes a page just because it is
+  // absent from the payload (that would delete pages a concurrent operator/agent added
+  // and this snapshot never saw). `deletedPageIds` names the one page this call removes;
+  // every other page — including any the operator authored meanwhile — is left intact.
+  await sync(ctx, { ...current, pages, deletedPageIds: [pageId] });
 }
 
 /** Replace the site's FRAME (chrome) — the shared navbar/Outlet/footer every
@@ -1209,6 +1248,96 @@ export function getPublishedSite(ctx: PropertyContext): Promise<StoredSilicaSite
       })),
       ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
       ...(theme ? { theme } : {}),
+    };
+  });
+}
+
+// ── Blueprint capture (docs/118 Phase 3) ─────────────────────────────────────
+// The read half of the blueprint capture path: a whole authored site enriched with
+// the per-page domain columns (`kind`/`recordType`/`isDefault`/SEO) that `load` and
+// `getPublishedSite` drop because silica's flat `Page` doesn't model them. The
+// api-rest capture orchestration projects this straight into a `SiteDecl` via
+// `@sparx/blueprints`' `captureSite`, so a captured collection template keeps
+// binding to its record type on reinstall.
+
+/** One page as the capture path needs it — the source silica body `root` PLUS the
+ *  domain columns. Structurally mirrors `@sparx/blueprints`' `CapturedPageInput` so
+ *  the projector consumes it directly, without this package importing that one. */
+export interface CapturablePage {
+  id: string;
+  name: string;
+  slug: string | null;
+  root: SilicaNode;
+  kind: BuilderPageKind;
+  recordType: string | null;
+  isDefault: boolean;
+  seoTitle: string | null;
+  seoDescription: string | null;
+  canonical: string | null;
+  ogImage: string | null;
+  noindex: boolean;
+}
+
+export interface CapturableSite {
+  pages: CapturablePage[];
+  frame?: { root: SilicaNode };
+  theme?: SilicaTheme;
+  symbols?: Record<string, SilicaSymbolDef>;
+}
+
+export interface CaptureSourceOptions {
+  /** Which trees to read: the author's working `draft` (default — capture without
+   *  publishing) or the last `published` snapshot. */
+  source?: 'draft' | 'published';
+}
+
+/** Read the property's authored site for capture into a blueprint, or null when it
+ *  has materialized no site for the requested source. Mirrors `load` /
+ *  `getPublishedSite` but keeps every page's domain columns. */
+export function getCapturableSite(
+  ctx: PropertyContext,
+  opts: CaptureSourceOptions = {}
+): Promise<CapturableSite | null> {
+  const published = opts.source === 'published';
+  return withTenant(ctx, async (tx) => {
+    const allPages = await tx.builderPage.findMany({
+      where: { propertyId: ctx.propertyId },
+      orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+    });
+    const pages = allPages.filter(published ? isSilicaPublished : isSilica);
+    if (pages.length === 0) return null;
+    const [layout, site] = await Promise.all([
+      tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
+      tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+    ]);
+
+    const frameTree = published ? layout?.silicaPublishedTree : layout?.silicaDraftTree;
+    const symbols = symbolsOf(published ? site?.silicaPublishedSymbols : site?.silicaDraftSymbols);
+    const theme =
+      (published
+        ? (site?.silicaPublishedTheme as SilicaTheme | null | undefined)
+        : (site?.silicaDraftTheme as SilicaTheme | null | undefined)) ?? undefined;
+
+    return {
+      pages: pages.map((r) => ({
+        id: r.id,
+        name: r.name,
+        slug: r.slug,
+        root: asNode(published ? r.silicaPublishedTree : r.silicaDraftTree),
+        // Normalized rather than cast: the row column and the zod union share values,
+        // but a plain comparison typechecks without asserting Prisma's type.
+        kind: r.kind === 'collection' ? 'collection' : 'singleton',
+        recordType: r.recordType,
+        isDefault: r.isDefault,
+        seoTitle: r.seoTitle,
+        seoDescription: r.seoDescription,
+        canonical: r.canonical,
+        ogImage: r.ogImage,
+        noindex: r.noindex,
+      })),
+      ...(frameTree != null ? { frame: { root: asNode(frameTree) } } : {}),
+      ...(theme ? { theme } : {}),
+      ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
     };
   });
 }

@@ -20,8 +20,11 @@ export type Token =
   /** Prose between the chips — typed one character at a time. `mono` marks the
    *  address suffix, which is type-matched to the handle box beside it. */
   | { t: 'text'; s: string; mono?: boolean }
-  /** A module-tinted clause chip — appears whole, then flashes. */
-  | { t: 'chip'; s: string; tint: Tint; icon?: string }
+  /** A module-tinted clause chip — appears whole, then flashes. `mod` names the
+   *  module hue the chip wears (or 'neutral' for the tense verb) so a renderer that
+   *  can't resolve the `tint`'s `color-mix()` — the satori OG cards — can bake a
+   *  literal hue from `MODULE_HEX` off the same grammar instead of a second copy. */
+  | { t: 'chip'; s: string; tint: Tint; icon?: string; mod?: string }
   /** A boxed inline value (the dropship object slot, the web handle). */
   | { t: 'box'; s: string; mono?: boolean }
   /** An explicit break opportunity — costs no steps, renders a `<wbr>`. */
@@ -74,7 +77,7 @@ function clauseTokens(id: string, story: StoryState): Token[] {
   const cl = CLAUSE[id];
   if (!cl) return [];
   const phrase = (cl.place === 'cust' ? cl.cust : cl.owner) ?? id;
-  const out: Token[] = [{ t: 'chip', s: phrase, tint: tintStyle(cl.mod) }];
+  const out: Token[] = [{ t: 'chip', s: phrase, tint: tintStyle(cl.mod), mod: cl.mod }];
   if (cl.slot) {
     // An unfilled slot shows its placeholder — so `??` won't do, an empty string has
     // to fall back too (same rule as the composer's `phrase()`).
@@ -106,14 +109,15 @@ export function storyTokens(story: StoryState): StoryTokens | null {
 
   const body: Token[] = [
     { t: 'text', s: 'I ' },
-    { t: 'chip', s: TENSE[story.tense].verb, tint: NEUTRAL },
+    { t: 'chip', s: TENSE[story.tense].verb, tint: NEUTRAL, mod: 'neutral' },
     { t: 'text', s: ' ' },
-    { t: 'chip', s: ind.noun, tint: tintStyle('builder'), icon: ind.icon },
+    { t: 'chip', s: ind.noun, tint: tintStyle('builder'), icon: ind.icon, mod: 'builder' },
     { t: 'text', s: ' for ' },
     {
       t: 'chip',
       s: AUDIENCE[story.audience].label,
       tint: tintStyle(AUDIENCE[story.audience].kind),
+      mod: AUDIENCE[story.audience].kind,
     },
   ];
 

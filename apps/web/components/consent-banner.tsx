@@ -2,15 +2,15 @@
 
 // Marketing-site cookie consent (docs/42 §4.3 adapted for the platform site).
 // GDPR opt-in: the banner shows until the visitor decides; PostHog (analytics) and
-// the marketing click-id capture stay dark until then. After a decision a quiet
-// "Cookie preferences" pill remains so consent can always be changed/withdrawn
-// (also re-openable via a `sparx:open-consent` event from a footer link).
+// the marketing click-id capture stay dark until then. After a decision the banner
+// disappears entirely — consent stays changeable/withdrawable from the footer's
+// "Cookie preferences" link, which dispatches the `sparx:open-consent` event this
+// component listens for to reopen the preferences modal.
 //
 // Client-only — the `sparx_consent_state` cookie is the record (lib/consent.ts).
 // Renders nothing until mounted to avoid an SSR flash / hydration mismatch.
 
 import { useEffect, useState } from 'react';
-import { Cookie } from 'lucide-react';
 import { Button, Checkbox } from '@wizeworks/silicaui-react';
 import {
   ALL_GRANTED,
@@ -23,6 +23,11 @@ import {
 
 const OPEN_EVENT = 'sparx:open-consent';
 const POLICY_HREF = '/legal/privacy';
+
+/** Reopen the cookie-preferences modal from anywhere (e.g. the footer link). */
+export function openConsentPreferences() {
+  window.dispatchEvent(new Event(OPEN_EVENT));
+}
 
 type NonEssential = Exclude<ConsentCategory, 'strictly_necessary'>;
 
@@ -45,7 +50,6 @@ const NON_ESSENTIAL: { key: NonEssential; label: string; copy: string }[] = [
 
 export function ConsentBanner() {
   const [mounted, setMounted] = useState(false);
-  const [decided, setDecided] = useState(false);
   const [bannerOpen, setBannerOpen] = useState(false);
   const [prefsOpen, setPrefsOpen] = useState(false);
   const [draft, setDraft] = useState<ConsentState>(ESSENTIAL_ONLY);
@@ -53,7 +57,6 @@ export function ConsentBanner() {
   useEffect(() => {
     setMounted(true);
     const current = getConsent();
-    setDecided(current !== null);
     setBannerOpen(current === null);
     setDraft(current ?? ESSENTIAL_ONLY);
     const open = () => {
@@ -66,7 +69,6 @@ export function ConsentBanner() {
 
   function record(state: ConsentState) {
     setConsent(state);
-    setDecided(true);
     setBannerOpen(false);
     setPrefsOpen(false);
   }
@@ -105,21 +107,6 @@ export function ConsentBanner() {
             </Button>
           </div>
         </div>
-      )}
-
-      {decided && !bannerOpen && !prefsOpen && (
-        <button
-          type="button"
-          className="mkt-consent-pill"
-          onClick={() => {
-            setDraft(getConsent() ?? ESSENTIAL_ONLY);
-            setPrefsOpen(true);
-          }}
-          aria-label="Cookie preferences"
-        >
-          <Cookie className="mkt-consent-pill__icon" size={15} aria-hidden />
-          <span className="mkt-consent-pill__label">Cookie preferences</span>
-        </button>
       )}
 
       {prefsOpen && (

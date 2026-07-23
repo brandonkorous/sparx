@@ -21,6 +21,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import type { Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireAuth } from '@sparx/api-core/auth';
@@ -34,9 +35,32 @@ const LegalAcceptBody = z.object({
 const DEFAULT_DETAIL_VIEWS = ['drawer', 'modal', 'fullPage', 'newTab'] as const;
 const DEFAULT_LIST_VIEWS = ['table', 'card'] as const;
 
+// Product-tour state (docs/132). Rides the same preferences blob as the view
+// defaults — the merge-patch below preserves keys it doesn't own, so a
+// `{ tour: … }` patch lands without touching them. No new table.
+//
+// `dismissed` is tier-2 only: the owner declined a module's first-open offer
+// card without running its tour. The two tour branches — `welcome` (tier 1) and
+// `modules` (tier 2) — are written by independent client flows, so the PATCH
+// handler deep-merges `tour` (see below); a shallow overlay would drop whichever
+// branch the current patch does not carry.
+const TOUR_STATUSES = ['in-progress', 'completed', 'skipped', 'dismissed'] as const;
+const TOUR_MODULES = ['builder', 'commerce', 'cms', 'crm', 'email', 'scheduling', 'b2b'] as const;
+const TourOutcome = z.object({
+  status: z.enum(TOUR_STATUSES),
+  version: z.number().int().min(0).max(10_000),
+  lastStepId: z.string().min(1).max(60).optional(),
+  at: z.string().min(1).max(40),
+});
+const TourPrefs = z.object({
+  welcome: TourOutcome.optional(),
+  modules: z.record(z.enum(TOUR_MODULES), TourOutcome).optional(),
+});
+
 const PreferencesPatch = z.object({
   defaultDetailView: z.enum(DEFAULT_DETAIL_VIEWS).optional(),
   defaultListView: z.enum(DEFAULT_LIST_VIEWS).optional(),
+  tour: TourPrefs.optional(),
 });
 
 const ActionIdParam = z.object({
@@ -67,11 +91,15 @@ const DEFAULT_PREFERENCES = {
 function parsePreferences(raw: unknown): {
   defaultDetailView: (typeof DEFAULT_DETAIL_VIEWS)[number];
   defaultListView: (typeof DEFAULT_LIST_VIEWS)[number];
+  tour: z.infer<typeof TourPrefs>;
 } {
-  if (!raw || typeof raw !== 'object') return DEFAULT_PREFERENCES;
+  if (!raw || typeof raw !== 'object') return { ...DEFAULT_PREFERENCES, tour: {} };
   const obj = raw as Record<string, unknown>;
   const view = obj.defaultDetailView;
   const listView = obj.defaultListView;
+  // Tolerant parse: a malformed/legacy tour blob degrades to "not seen" rather
+  // than 400ing an unrelated preferences read.
+  const tour = TourPrefs.safeParse(obj.tour);
   return {
     defaultDetailView:
       typeof view === 'string' && (DEFAULT_DETAIL_VIEWS as readonly string[]).includes(view)
@@ -81,6 +109,7 @@ function parsePreferences(raw: unknown): {
       typeof listView === 'string' && (DEFAULT_LIST_VIEWS as readonly string[]).includes(listView)
         ? (listView as (typeof DEFAULT_LIST_VIEWS)[number])
         : DEFAULT_PREFERENCES.defaultListView,
+    tour: tour.success ? tour.data : {},
   };
 }
 
@@ -122,7 +151,36 @@ const meRoutes: FastifyPluginAsync = async (app) => {
         !Array.isArray(before.preferences)
           ? (before.preferences as Record<string, unknown>)
           : {};
-      const merged = { ...base, ...input };
+      // `tour` is a nested blob with two independent branches — `welcome` (tier 1)
+      // and `modules` (tier 2) — written by separate client flows. A shallow
+      // overlay of `input.tour` would replace the whole `tour` object, dropping the
+      // branch this patch doesn't carry (writing a module outcome would erase
+      // `welcome`, and completing the welcome tour would erase every module
+      // outcome). Deep-merge the tour sub-object, and its `modules` map one level
+      // deeper, so each branch composes independently.
+      const asRecord = (value: unknown): Record<string, unknown> =>
+        value && typeof value === 'object' && !Array.isArray(value)
+          ? (value as Record<string, unknown>)
+          : {};
+      let mergedTour: Record<string, unknown> | undefined;
+      if (input.tour) {
+        const baseTour = asRecord(base.tour);
+        const baseModules = asRecord(baseTour.modules);
+        const mergedModules = { ...baseModules, ...(input.tour.modules ?? {}) };
+        mergedTour = {
+          ...baseTour,
+          ...input.tour,
+          ...(Object.keys(mergedModules).length > 0 ? { modules: mergedModules } : {}),
+        };
+      }
+      // The deep-merged blob carries `unknown`-typed values (the tour branch is
+      // built structurally), so it is asserted to Prisma's JSON input type — it is
+      // by construction a plain JSON object.
+      const merged = {
+        ...base,
+        ...input,
+        ...(mergedTour ? { tour: mergedTour } : {}),
+      } as Prisma.InputJsonObject;
       await tx.user.update({
         where: { id: auth.actorId },
         data: { preferences: merged },

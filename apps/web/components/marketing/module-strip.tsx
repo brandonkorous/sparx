@@ -1,5 +1,5 @@
 import type { CSSProperties } from 'react';
-import { MODULES, MODULE_ICON, MODULE_HEX } from './modules-catalog';
+import { MODULES, MODULE_ICON, MODULE_HEX, type ModuleEntry } from './modules-catalog';
 
 // The module strip — every module as a hued chip carrying the SAME Lucide glyph
 // its dashboard sidebar entry uses (identity by shape, color by hue). Replaces
@@ -23,6 +23,9 @@ interface ModuleStripProps {
   border?: string;
   /** Let chips wrap to a second row. Off for single-line strips (e.g. OG). */
   wrap?: boolean;
+  /** Which modules to draw. Defaults to the full catalog; pass `PAID_MODULES` for
+   *  the 12 billable ones (e.g. an OG card whose label reads "12 modules"). */
+  modules?: readonly ModuleEntry[];
   style?: CSSProperties;
 }
 
@@ -32,6 +35,7 @@ export function ModuleStrip({
   iconColor = '#FFFFFF',
   border = '1px solid rgba(255, 255, 255, 0.28)',
   wrap = true,
+  modules = MODULES,
   style,
 }: ModuleStripProps) {
   const iconSize = Math.round(size * 0.52);
@@ -46,7 +50,7 @@ export function ModuleStrip({
         ...style,
       }}
     >
-      {MODULES.map((m) => {
+      {modules.map((m) => {
         const Icon = MODULE_ICON[m.id];
         return (
           <div

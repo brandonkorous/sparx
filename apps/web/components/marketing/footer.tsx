@@ -2,6 +2,7 @@ import { Badge, Footer as SilicaFooter, FooterTitle, Link, Text } from '@wizewor
 import { Wordmark } from '@sparx/ui';
 import type { MarketingModule } from './primitives';
 import { MODULES, MODULE_HEX } from './modules-catalog';
+import { ConsentPreferencesLink } from './consent-preferences-link';
 
 // Search-intent label widening for the footer only. "B2B" is the product name,
 // but wholesale and fleet are what people actually search for — and they are
@@ -93,6 +94,10 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
       { label: 'Agentic & MCP', href: '/agentic' },
       { label: 'Changelog', href: '/changelog' },
       { label: 'Open source', href: '/open-source' },
+      // Ingredient-brand credit: the design system every sparx surface is built
+      // on, for the technical/agency visitor who wants the underlying primitives.
+      // It lives in the Developers column, not the funnel — see silicaui.com.
+      { label: 'silicaui design system', href: 'https://silicaui.com' },
     ],
   },
   {
@@ -178,6 +183,8 @@ export function Footer() {
                 </Link>
               );
             })}
+            {/* Consent control lives with the legal links, not as floating chrome. */}
+            {col.title === 'Legal & trust' && <ConsentPreferencesLink className={LINK_CLASS} />}
           </nav>
         ))}
       </SilicaFooter>

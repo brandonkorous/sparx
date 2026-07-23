@@ -18,7 +18,7 @@
 // hover classes, which is exactly the re-skinning the design rules ban.
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Pin, PinOff, Plus } from 'lucide-react';
+import { Compass, Pin, PinOff, Plus } from 'lucide-react';
 import {
   Button,
   SearchInput,
@@ -37,6 +37,8 @@ import { ModuleScope, type WorkbenchModule } from './module-scope';
 import { buildNav } from '../lib/surfaces/nav';
 import { resolveTitle, type OpenTarget, type SurfaceDefinition } from '../lib/surfaces/registry';
 import { useWorkbench } from '../lib/workbench/context';
+import { isTourableModule } from '../lib/tour/module-tours';
+import { launchModuleTour } from '../lib/tour/module-tour-offers';
 
 interface ModulePanelProps {
   module: WorkbenchModule;
@@ -153,6 +155,25 @@ export function ModulePanel({
               {label}
             </span>
           </SidebarHeaderBrand>
+          {/* The deep-tour replay, only where a tour exists. Its outcome is
+              per-user (docs/132 §7), so this is always available — the first-open
+              offer fires once, this walks it again any time. */}
+          {isTourableModule(module) ? (
+            <Tooltip content={`Take the ${label} tour`}>
+              <Button
+                color="neutral"
+                variant="ghost"
+                size="xs"
+                shape="square"
+                aria-label={`Take the ${label} tour`}
+                onClick={() => {
+                  launchModuleTour(module);
+                }}
+              >
+                <Compass className="size-3.5" aria-hidden />
+              </Button>
+            </Tooltip>
+          ) : null}
           {pinnable ? (
             <Tooltip content={pinned ? 'Unpin — hide after opening' : 'Pin — keep this open'}>
               <Button

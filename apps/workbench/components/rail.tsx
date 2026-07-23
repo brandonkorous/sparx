@@ -250,6 +250,11 @@ export function Rail({ browsing, siteKey, expanded, onBrowse }: RailProps) {
               <ModuleScope key={entry.module} module={entry.module}>
                 <Tooltip content={entry.label} side="right" disabled={expanded}>
                   <SidebarItem
+                    // Per-module tour anchor (`module-commerce`, …). The product
+                    // tour's Phase-2 steps highlight each enabled tool's rail icon;
+                    // this is a stable handle that survives restyles. Only enabled,
+                    // visible modules render here, so the tour gates on its presence.
+                    data-tour={`module-${entry.module}`}
                     // `text-module` inside this item's own scope is what makes
                     // the rail a colour-coded module switcher — Selling orange,
                     // Customers cyan — the same signal the dashboard's rail

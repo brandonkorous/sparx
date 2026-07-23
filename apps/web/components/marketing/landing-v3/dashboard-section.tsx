@@ -1,11 +1,16 @@
 import { Heading, Text } from '@wizeworks/silicaui-react';
-import { DashboardFrame } from '../dashboard-showcase';
+import { WorkbenchFrame } from '../workbench-showcase';
 
 /**
- * "One pane of glass" — the product-proof beat. `DashboardFrame` is a
- * faithful, CSS-only-interactive recreation of the real app shell (not
- * editorial marketing type), so it's reused byte-for-byte; only this shell
- * (backdrop/headline/lede) is rebuilt on silicaui.
+ * "Your whole business, open at once" — the product-proof beat. sparx is a
+ * single workspace (the MDI workbench), so the visual is a faithful, CSS-light
+ * recreation of the real app shell showing several modules tiled side by side.
+ * The frame is a functional UI recreation, not editorial marketing type, so
+ * only this shell (band/headline/lede) is rebuilt on silicaui.
+ *
+ * This REPLACES the retired single-pane dashboard beat, whose "one sidebar, you
+ * always know where you are" copy the workbench no longer makes true — you are
+ * in several places at once now, and that is the stronger story.
  */
 export function LandingV3DashboardSection() {
   return (
@@ -17,14 +22,15 @@ export function LandingV3DashboardSection() {
             size="display"
             className="text-primary-content text-6xl leading-[0.95] tracking-tight sm:text-7xl"
           >
-            One pane of glass.
+            Your whole business, open at once.
           </Heading>
-          <Text variant="lead" className="text-primary-content/85 mt-5 text-2xl">
-            sparx is one URL, one login, one sidebar. Each active module gets a colored nav item and
-            a module-tinted card — you always know where you are.
+          <Text variant="lead" className="text-primary-content mt-5 text-2xl">
+            One login opens one workspace — and inside it your site, orders, customers and messages
+            sit side by side, not buried in eight browser tabs. Pull a screen onto a second monitor,
+            keep the rest in view. It&rsquo;s every part of sparx, on one pane of glass.
           </Text>
         </div>
-        <DashboardFrame />
+        <WorkbenchFrame />
       </div>
     </section>
   );

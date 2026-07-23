@@ -1,9 +1,17 @@
 # 126 — Builder op protocol: granular edits, real collaboration, immutable publish
 
-Version: 1.6.0
+Version: 1.7.0
 Author: Brandon Korous
-Last Updated: 2026-07-20
+Last Updated: 2026-07-22
 
+> **1.7.0 — Deletion is now explicit (§4.4).** `sync` no longer deletes a page just
+> because it is absent from the payload — the assumption that broke the instant authoring
+> went concurrent (operator in the studio while an agent writes over MCP), silently
+> deleting whichever side's pages a stale snapshot didn't know about. Deletion is now an
+> intent the caller states (`deletedPageIds`); absence is preserved. This is the safety
+> FLOOR under Phase 4's relay, and it protects the whole-site last-write-wins path
+> (workbench Save + the MCP writers) that carries no ops at all.
+>
 > **1.6.0 — Phase 4 SHIPPED: multi-editor is ON.** The realtime relay is live on a
 > `/ws/builder` socket.io namespace (a second server beside `/ws/chat`, same Redis
 > fan-out). Persistence still rides the HTTP sync PUT (Phase 2); after ops persist, the
@@ -371,6 +379,47 @@ Per [feedback_non_technical_audience], none of the above surfaces as jargon:
 - on a rejected slug: "Another page already uses /about."
 
 No sequence numbers, no conflict dialogs, no merge UI.
+
+### 4.4 Deletion is explicit, never inferred from absence — **SHIPPED**
+
+Everything above (§4.1–4.3) is the OP path — granular edits over the relay. But two
+callers never touch that path and carry no ops at all: the **workbench studio Save**
+(whole-site, explicit-save, last-write-wins) and the **MCP page writers**
+(`upsert_silica_page`/`delete_silica_page`/…, which `load → splice → sync` the whole
+site). Both reconcile through `siteService.sync`, and `sync` originally **DELETED any
+stored page absent from the payload** — the "the editor always hands back the complete
+`Site`, so a missing page means the author removed it" assumption from the single-author
+era (docs/118).
+
+That assumption is false the moment authoring is concurrent, which is the product model:
+**an operator keeps the studio open while an agent writes over MCP.** The failure is
+symmetric and it loses data irrecoverably:
+
+- Operator loads 4 pages → agent adds 3 pages over MCP → operator presses Save. The
+  operator's roster is the original 4, so the 3 agent pages are absent → **deleted**.
+- Agent's `upsert_silica_page` loads a snapshot → operator saves a new page meanwhile →
+  the agent's `sync` writes back its stale roster → the operator's new page is **deleted**.
+
+The fix makes **deletion an explicit intent, not an inference**. `sync` deletes a page
+only when the caller NAMES it in `deletedPageIds`; a page merely absent from the payload
+is preserved (it may be one a concurrent writer just added that this client never
+loaded). The pure decision lives in `pagesToDelete` (unit-tested without a DB):
+
+- **workbench studio** tracks a baseline of the page ids it loaded/last-saved and sends
+  `deletedPageIds = baseline − current` — exactly the pages the operator removed, never a
+  page it simply never knew about. It advances the baseline on each successful save.
+- **MCP writers** name nothing by default (`upsert`/`setFrame`/`setTheme` delete nothing
+  even from a stale snapshot); only `delete_silica_page` sends `deletedPageIds: [id]`.
+- **wholesale replace** (`allowReplace` — blueprint install / reset) is the one exception:
+  it owns the whole site, so there the roster stays authoritative and absent pages go.
+
+The clobber guard (§ the zero-overlap refusal) stays as the outer net for a wrong-site
+load. This is a FLOOR under Phase 4's relay, not part of it: it makes concurrent
+authoring **safe** (no page vanishes) even before live-sync makes it **pleasant** (the
+open editor folds in the agent's pages as they land). The relay narrows the stale-roster
+window; it can never close it, because a client can always Save in the gap between a
+remote write and hearing about it — so the floor is required regardless. Presence ("an
+agent is editing this site") and relaying MCP writes onto `ops:relay` are the next layer.
 
 ---
 

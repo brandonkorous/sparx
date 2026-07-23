@@ -2,6 +2,7 @@ import { ImageResponse } from 'next/og';
 import { BRAND } from '@sparx/brand';
 import { capabilityCounts } from '@/lib/capabilities';
 import { ModuleStrip } from '@/components/marketing/module-strip';
+import { PAID_MODULES } from '@/components/marketing/modules-catalog';
 import { OgWordmark } from '@/lib/og-wordmark';
 
 // Per-route OG image. Without this file the /features page emits no og:image —
@@ -29,7 +30,7 @@ export default function Image() {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        backgroundColor: '#0A0A0A',
+        backgroundColor: BRAND.ink,
         padding: '72px',
         fontFamily: 'system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
       }}
@@ -106,7 +107,7 @@ export default function Image() {
           alignItems: 'center',
           justifyContent: 'space-between',
           paddingTop: 28,
-          borderTop: '1px solid #1A1A1A',
+          borderTop: '1px solid rgba(255, 255, 255, 0.09)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
@@ -119,9 +120,9 @@ export default function Image() {
               textTransform: 'uppercase',
             }}
           >
-            {counts.modules} modules
+            {PAID_MODULES.length} modules
           </span>
-          <ModuleStrip size={30} gap={10} wrap={false} />
+          <ModuleStrip size={30} gap={10} wrap={false} modules={PAID_MODULES} />
         </div>
         <span style={{ fontSize: 18, color: '#52525B' }}>sparx.works/features</span>
       </div>

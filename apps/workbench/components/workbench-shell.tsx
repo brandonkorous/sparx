@@ -36,6 +36,8 @@ import { RecentsRecorder } from './recents-recorder';
 import { UpdateNotifier } from './update-notifier';
 import { FeedbackProvider } from './feedback/provider';
 import { PaneWaiting } from './pane-waiting';
+import { FirstRunTour } from '../lib/tour/first-run-tour';
+import { ModuleTourOffers } from '../lib/tour/module-tour-offers';
 import type { WorkbenchModule } from './module-scope';
 import { useOnboarding } from '../lib/onboarding/api';
 import { isOnboardingFinished } from '../lib/onboarding/entry';
@@ -272,7 +274,10 @@ export function WorkbenchShell({
                 setRailExpanded(!collapsed);
               }}
             >
-              <div className={`bg-base-200 relative z-10 flex rounded-r-lg p-1`}>
+              <div
+                data-tour="module-rail"
+                className={`bg-base-200 relative z-10 flex rounded-r-lg p-1`}
+              >
                 <Rail
                   browsing={browsing}
                   siteKey={siteKey ?? 'default'}
@@ -321,7 +326,7 @@ export function WorkbenchShell({
               />
             </div>
 
-            <main className="min-w-0 flex-1 p-1">
+            <main data-tour="dock" className="min-w-0 flex-1 p-1">
               {/* The dock waits for the site key — restoring Site A's layout and
                 then discovering we're on Site B would strand entity panes. With
                 the cookie handed down at SSR this is resolved on the first paint
@@ -340,6 +345,17 @@ export function WorkbenchShell({
           {/* The live signal strip — connection, activity, unsaved work, and the
             business pulse. Signals only; identity stays in the toolbar. */}
           <StatusBar />
+
+          {/* First-run feature walkthrough — auto-starts once after onboarding is
+              finished, and replays on demand from the account menu. Desktop only;
+              the compact shell gets its own trimmed set later (docs/132). */}
+          <FirstRunTour enabled={isOnboardingFinished(onboarding)} theme={theme} />
+
+          {/* Tier-2: the opt-in deep tour for each module, offered the first time
+              an owner lands in that tool and replayable from the module panel.
+              Desktop only, like the welcome tour above — the compact shell gets
+              its own set later (docs/132 §8). */}
+          <ModuleTourOffers enabled={isOnboardingFinished(onboarding)} theme={theme} />
 
           {/* Teaches the browser Back button to walk the workbench's own
             navigation — an open launcher or module panel closes first, then

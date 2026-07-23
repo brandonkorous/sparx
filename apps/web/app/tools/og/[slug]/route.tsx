@@ -40,7 +40,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        backgroundColor: '#0A0A0A',
+        backgroundColor: BRAND.ink,
         padding: '72px',
         borderTop: `14px solid ${accent}`,
       }}

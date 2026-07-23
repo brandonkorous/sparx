@@ -9,6 +9,7 @@
     "dev": "tsx watch --clear-screen=false src/index.ts",
     "start": "node --import tsx src/index.ts",
     "marketplace:ingest": "node --import tsx src/scripts/marketplace-ingest.ts",
+    "blueprint:capture": "node --import tsx src/scripts/blueprint-capture.ts",
     "marketplace:purge-blueprints": "node --import tsx src/scripts/marketplace-purge-blueprints.ts",
     "seed:demo": "node --import tsx src/scripts/seed-demo.ts",
     "backfill:webhook-secrets": "node --import tsx src/scripts/backfill-webhook-secrets.ts",

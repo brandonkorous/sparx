@@ -136,6 +136,25 @@ export const SiteSyncInput = z.object({
    */
   pageIds: z.array(z.string().min(1)).nullish(),
   /**
+   * The pages the caller EXPLICITLY removed — the only deletions a sync performs
+   * (docs/126 §4.4). Deletion is an intent the client states, NEVER inferred from a
+   * page's absence from `pages`/`pageIds`.
+   *
+   * The reason is the concurrent-authoring model: an operator keeps the studio open
+   * while an agent writes over MCP. A page missing from an autosave roster is equally
+   * "the operator deleted it" and "the agent just created a page this client never
+   * loaded" — indistinguishable from the roster alone. Treating absence as deletion is
+   * what let one autosave wipe every page an agent had authored a moment earlier. So an
+   * absent page is PRESERVED; only ids named here are deleted (intersected with what
+   * actually exists, so a stale entry is a harmless no-op).
+   *
+   * Omit it (or send `[]`) to delete nothing — the safe default every non-deleting
+   * caller uses (the MCP page/frame/theme writers, which only ever touch what they name).
+   * The one exception is a wholesale swap (`allowReplace` — blueprint install / reset),
+   * where the roster IS authoritative and this field is ignored.
+   */
+  deletedPageIds: z.array(z.string().min(1)).nullish(),
+  /**
    * Optimistic-concurrency precondition (docs/126 Phase 1): the `updatedAt` the client
    * last saw, per page id, as ISO strings.
    *
