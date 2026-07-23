@@ -1,0 +1,615 @@
+'use client';
+
+// Connections — the accounts your posts can go out to, and the ones you could add.
+//
+// A connection is a durable thing you come back to: to add a destination, to read
+// why an account needs reconnecting, to turn one Page off for a while, or to
+// remove it. So this is a pane, not a modal. Connecting an account is an OAuth
+// consent step that opens in a small popup — the workbench and everything you had
+// arranged stays exactly where it was; the platform returns to a page on this app
+// that hands the code back to this pane (see app/social/callback), which then
+// trades it for a stored, encrypted connection.
+//
+// The audience owns a business, not a social API. Nothing here says "OAuth
+// scope" or "target"; an account is an account and a destination is where a post
+// lands — a specific Page, profile or listing.
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import Image from 'next/image';
+import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+  Badge,
+  Button,
+  EmptyState,
+  Heading,
+  Switch,
+  Text,
+  Timestamp,
+  useToast,
+} from '@wizeworks/silicaui-react';
+import { Link2Off, Plug, Share2, ShieldCheck, Users } from 'lucide-react';
+import { useConfirm } from '../../lib/confirm';
+import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { RefreshButton } from '../../components/refresh-button';
+import { FormSection } from '../../components/form-section';
+import { useViewer } from '../../lib/api/shell-data';
+import type { SurfaceContext } from '../../lib/surfaces/registry';
+import {
+  canApprove,
+  catalogByPlatform,
+  connectionStatusMeta,
+  platformName,
+  socialErrorMessage,
+  useCompleteConnect,
+  useConnectUrl,
+  useDisconnectPlatform,
+  useSetRequireApproval,
+  useSocialOverview,
+  useToggleTarget,
+  type CatalogEntry,
+  type SocialConnection,
+  type SocialTarget,
+} from './data';
+
+const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
+
+/** The shape the callback page posts back through `window.opener`. */
+interface CallbackMessage {
+  source: 'sparx-social';
+  code?: string;
+  state?: string;
+  error?: string;
+}
+
+function isCallbackMessage(data: unknown): data is CallbackMessage {
+  return (
+    typeof data === 'object' &&
+    data !== null &&
+    (data as { source?: unknown }).source === 'sparx-social'
+  );
+}
+
+/** A small account/destination avatar, or a fallback glyph. Third-party avatar
+ *  hosts are not on our optimizer allow-list, so these render unoptimized (same
+ *  reasoning as the media picker's cross-origin thumbnails). */
+function Avatar({ url, size = 40 }: { url: string | null; size?: number }) {
+  const cls = size >= 40 ? 'size-10' : 'size-8';
+  if (!url) {
+    return (
+      <span
+        className={`bg-base-200 flex ${cls} shrink-0 items-center justify-center rounded-full`}
+        aria-hidden
+      >
+        <Users className="size-4" />
+      </span>
+    );
+  }
+  return (
+    <span className={`bg-base-200 relative ${cls} shrink-0 overflow-hidden rounded-full`}>
+      <Image
+        src={url}
+        alt=""
+        fill
+        sizes={`${String(size)}px`}
+        className="object-cover"
+        unoptimized
+      />
+    </span>
+  );
+}
+
+/* ── One destination row (a Page / profile / listing) ─────────────────────── */
+
+function TargetRow({ target, canManage }: { target: SocialTarget; canManage: boolean }) {
+  const toast = useToast();
+  const toggle = useToggleTarget();
+
+  const onToggle = (next: boolean) => {
+    toggle.mutate(
+      { id: target.id, enabled: next },
+      {
+        onError: (error) => {
+          toast.add({
+            title: 'Could not change that destination',
+            description: socialErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
+  return (
+    <div className="border-base-300 flex items-center gap-3 border-b py-2 last:border-b-0">
+      <Avatar url={target.avatarUrl} size={32} />
+      <span className="min-w-0 flex-1 truncate font-medium">{target.name}</span>
+      {canManage ? (
+        <Switch
+          color="module"
+          checked={target.enabled}
+          disabled={toggle.isPending}
+          aria-label={
+            target.enabled
+              ? `${target.name} is on — turn it off to stop posting here`
+              : `${target.name} is off — turn it on to post here`
+          }
+          onCheckedChange={onToggle}
+        />
+      ) : (
+        <Badge color={target.enabled ? 'success' : 'neutral'} variant="soft" size="sm">
+          {target.enabled ? 'On' : 'Off'}
+        </Badge>
+      )}
+    </div>
+  );
+}
+
+/* ── One connected account ────────────────────────────────────────────────── */
+
+function ConnectionCard({
+  connection,
+  name,
+  canManage,
+  onDisconnect,
+  disconnecting,
+}: {
+  connection: SocialConnection;
+  name: string;
+  canManage: boolean;
+  onDisconnect: () => void;
+  disconnecting: boolean;
+}) {
+  const state = connectionStatusMeta(connection.status);
+  const enabledCount = connection.targets.filter((t) => t.enabled).length;
+
+  return (
+    <div className="border-base-300 flex flex-col gap-3 rounded-lg border p-3">
+      <div className="flex flex-wrap items-center gap-3">
+        <Avatar url={connection.avatarUrl} />
+        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+          <div className="flex flex-wrap items-center gap-2">
+            <Text as="span" className="font-semibold">
+              {connection.displayName ?? name}
+            </Text>
+            <Badge color={state.tone} variant="soft" size="sm">
+              {state.label}
+            </Badge>
+          </div>
+          <Text className="text-sm">
+            {name} · connected <Timestamp value={connection.connectedAt} format="relative" />
+          </Text>
+        </div>
+        {canManage ? (
+          <Button
+            size="sm"
+            variant="ghost"
+            color="danger"
+            loading={disconnecting}
+            onClick={onDisconnect}
+          >
+            <Link2Off className="size-4" aria-hidden />
+            Disconnect
+          </Button>
+        ) : null}
+      </div>
+
+      {connection.status === 'expired' ? (
+        <Alert color="warning" variant="soft">
+          <AlertContent>
+            <AlertTitle>This account needs reconnecting</AlertTitle>
+            <AlertDescription>
+              Its permission has run out, so posts to it will not go through. Connect {name} again
+              below to fix it — nothing already posted is affected.
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+
+      {connection.targets.length === 0 ? (
+        <Text className="text-sm">
+          No destinations were found on this account. Try disconnecting and connecting it again.
+        </Text>
+      ) : (
+        <div className="flex flex-col">
+          <Text className="pb-1 text-sm font-medium">
+            Where posts land ({enabledCount} of {connection.targets.length} on)
+          </Text>
+          {connection.targets.map((target) => (
+            <TargetRow key={target.id} target={target} canManage={canManage} />
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+/* ── A platform you could connect ─────────────────────────────────────────── */
+
+function CatalogRow({
+  entry,
+  canManage,
+  connecting,
+  onConnect,
+}: {
+  entry: CatalogEntry;
+  canManage: boolean;
+  connecting: boolean;
+  onConnect: () => void;
+}) {
+  const available = entry.availability === 'available';
+  return (
+    <div className="border-base-300 flex flex-wrap items-center gap-3 border-b pb-3 last:border-b-0 last:pb-0">
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <Text as="span" className="font-medium">
+          {entry.name}
+        </Text>
+        <Text className="text-sm">{entry.blurb}</Text>
+      </div>
+      {available ? (
+        canManage ? (
+          <Button
+            size="sm"
+            color="module"
+            variant="outline"
+            loading={connecting}
+            onClick={onConnect}
+          >
+            <Plug className="size-4" aria-hidden />
+            Connect
+          </Button>
+        ) : (
+          <Badge color="success" variant="soft" size="sm">
+            Available
+          </Badge>
+        )
+      ) : (
+        <Badge color="neutral" variant="soft" size="sm">
+          Coming soon
+        </Badge>
+      )}
+    </div>
+  );
+}
+
+/* ── The surface ──────────────────────────────────────────────────────────── */
+
+export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
+  const toast = useToast();
+  const confirm = useConfirm();
+  const viewer = useViewer();
+  const overview = useSocialOverview();
+
+  const connectUrl = useConnectUrl();
+  const completeConnect = useCompleteConnect();
+  const disconnect = useDisconnectPlatform();
+  const setApproval = useSetRequireApproval();
+
+  const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
+  const [connectFailure, setConnectFailure] = useState<string | null>(null);
+
+  useEffect(() => {
+    ctx.setTitle('Connections');
+  }, [ctx]);
+
+  const canManage = canApprove(viewer.data?.role);
+  const data = overview.data;
+  const catalogMap = useMemo(() => catalogByPlatform(data?.catalog ?? []), [data]);
+
+  const connections = data?.connections ?? [];
+  const available = (data?.catalog ?? []).filter((c) => c.availability === 'available');
+  const comingSoon = (data?.catalog ?? []).filter((c) => c.availability !== 'available');
+
+  // Finish a connect once the popup posts the code back.
+  const runComplete = useCallback(
+    (code: string, state: string) => {
+      completeConnect.mutate(
+        { code, state },
+        {
+          onSuccess: (result) => {
+            setConnectingPlatform(null);
+            const name = platformName(result.platform, catalogMap);
+            toast.add({
+              title: `${name} connected`,
+              description:
+                result.targets.length > 0
+                  ? 'Choose which destinations to post to below.'
+                  : 'No destinations were found — try again if this looks wrong.',
+              type: 'success',
+            });
+          },
+          onError: (error) => {
+            setConnectingPlatform(null);
+            setConnectFailure(
+              socialErrorMessage(error, 'Could not finish connecting. Nothing was changed.')
+            );
+          },
+        }
+      );
+    },
+    [completeConnect, toast, catalogMap]
+  );
+
+  const completeRef = useRef(runComplete);
+  completeRef.current = runComplete;
+
+  useEffect(() => {
+    function onMessage(event: MessageEvent) {
+      if (event.origin !== window.location.origin) return;
+      if (!isCallbackMessage(event.data)) return;
+      if (event.data.error) {
+        setConnectingPlatform(null);
+        setConnectFailure(
+          event.data.error === 'access_denied'
+            ? 'You cancelled the sign-in, so nothing was connected.'
+            : `The platform reported a problem: ${event.data.error}`
+        );
+        return;
+      }
+      if (event.data.code && event.data.state) {
+        completeRef.current(event.data.code, event.data.state);
+      }
+    }
+    window.addEventListener('message', onMessage);
+    return () => {
+      window.removeEventListener('message', onMessage);
+    };
+  }, []);
+
+  const connect = (platform: string) => {
+    setConnectFailure(null);
+    setConnectingPlatform(platform);
+    // Open the popup synchronously in the click handler so the browser does not
+    // treat it as an unsolicited pop-up; point it at the platform once resolved.
+    const popup = window.open('', 'sparx-social-connect', 'width=560,height=680');
+    const redirectUri = `${window.location.origin}/social/callback`;
+    connectUrl.mutate(
+      { platform, redirectUri },
+      {
+        onSuccess: ({ url }) => {
+          if (popup) popup.location.href = url;
+          else window.location.href = url;
+        },
+        onError: (error) => {
+          popup?.close();
+          setConnectingPlatform(null);
+          setConnectFailure(
+            socialErrorMessage(error, 'Could not start the connection. Try again shortly.')
+          );
+        },
+      }
+    );
+  };
+
+  const onDisconnect = (platform: string) => {
+    const name = platformName(platform, catalogMap);
+    void (async () => {
+      const ok = await confirm({
+        title: `Disconnect ${name}?`,
+        description: `Posts will stop going out to ${name} and its destinations. Anything already posted stays live on ${name} itself. You can connect it again any time. This cannot be undone.`,
+        confirmLabel: 'Disconnect it',
+        cancelLabel: 'Keep it connected',
+        color: 'danger',
+      });
+      if (!ok) return;
+      disconnect.mutate(platform, {
+        onSuccess: () => {
+          toast.add({ title: `Disconnected ${name}`, type: 'success' });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not disconnect that account',
+            description: socialErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      });
+    })();
+  };
+
+  const onApprovalChange = (next: boolean) => {
+    setApproval.mutate(next, {
+      onSuccess: () => {
+        toast.add({
+          title: next ? 'Approval is now required' : 'Approval is now off',
+          description: next
+            ? 'Posts wait for an admin before they go live.'
+            : 'Posts can be scheduled and published without a separate approval.',
+          type: 'success',
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not change that setting',
+          description: socialErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  const connecting = connectUrl.isPending || completeConnect.isPending;
+
+  return (
+    <div className={PANE_SHELL}>
+      <PaneToolbar label="Connections controls">
+        <Share2 className="size-4 shrink-0" aria-hidden />
+        <Heading level={2} className="min-w-0 truncate text-base font-semibold">
+          Connections
+        </Heading>
+        {connections.length > 0 ? (
+          <Badge color="success" variant="soft" size="sm">
+            {connections.length === 1 ? '1 connected' : `${String(connections.length)} connected`}
+          </Badge>
+        ) : null}
+        <RefreshButton
+          className="ml-auto"
+          isFetching={overview.isFetching}
+          updatedAt={data ? overview.dataUpdatedAt : undefined}
+          onRefresh={() => {
+            void overview.refetch();
+          }}
+        />
+      </PaneToolbar>
+
+      <div className="min-h-0 flex-1 overflow-y-auto">
+        <div className={COLUMN}>
+          {overview.isError ? (
+            <EmptyState
+              icon={<Share2 className="size-6" aria-hidden />}
+              title="Could not load your connections"
+              description={socialErrorMessage(
+                overview.error,
+                'This is a problem reaching the server. Your connected accounts are unaffected.'
+              )}
+              actions={
+                <Button
+                  size="sm"
+                  color="module"
+                  onClick={() => {
+                    void overview.refetch();
+                  }}
+                >
+                  Try again
+                </Button>
+              }
+            />
+          ) : overview.isPending || !data ? (
+            <p className="text-sm" role="status">
+              Loading…
+            </p>
+          ) : (
+            <>
+              <div className="flex flex-col gap-1">
+                <Heading level={1} className="text-2xl font-semibold">
+                  Where your posts go
+                </Heading>
+                <Text>
+                  Connect the social accounts your business already has, then write once and post to
+                  all of them. You choose exactly which pages and profiles each post lands on.
+                </Text>
+              </div>
+
+              {connectFailure ? (
+                <Alert color="error" variant="soft">
+                  <AlertContent>
+                    <AlertTitle>Could not connect</AlertTitle>
+                    <AlertDescription>{connectFailure}</AlertDescription>
+                  </AlertContent>
+                </Alert>
+              ) : null}
+
+              {/* Before posts go live — the approval gate. Admin-only to change;
+                  everyone else sees where it stands. */}
+              <FormSection title="Before posts go live">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 items-start gap-2">
+                    <ShieldCheck className="mt-0.5 size-5 shrink-0" aria-hidden />
+                    <Text className="text-sm">
+                      Posts need an admin&rsquo;s approval before they go live. This keeps anything
+                      drafted — by a teammate or automatically — from reaching your real accounts
+                      until someone signs off.
+                    </Text>
+                  </div>
+                  {canManage ? (
+                    <Switch
+                      color="module"
+                      checked={data.settings.requireApproval}
+                      disabled={setApproval.isPending}
+                      aria-label="Require approval before posts go live"
+                      onCheckedChange={onApprovalChange}
+                    />
+                  ) : (
+                    <Badge
+                      color={data.settings.requireApproval ? 'success' : 'neutral'}
+                      variant="soft"
+                      size="sm"
+                    >
+                      {data.settings.requireApproval ? 'Required' : 'Off'}
+                    </Badge>
+                  )}
+                </div>
+              </FormSection>
+
+              <FormSection title="Connected accounts">
+                {connections.length === 0 ? (
+                  <EmptyState
+                    size="sm"
+                    icon={<Share2 className="size-6" aria-hidden />}
+                    title="No accounts connected yet"
+                    description="Connect an account below and it appears here, with each page or profile you can post to."
+                  />
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {connections.map((connection) => (
+                      <ConnectionCard
+                        key={connection.id}
+                        connection={connection}
+                        name={platformName(connection.platform, catalogMap)}
+                        canManage={canManage}
+                        disconnecting={
+                          disconnect.isPending && disconnect.variables === connection.platform
+                        }
+                        onDisconnect={() => {
+                          onDisconnect(connection.platform);
+                        }}
+                      />
+                    ))}
+                  </div>
+                )}
+              </FormSection>
+
+              {available.length > 0 ? (
+                <FormSection
+                  title="Ready to connect"
+                  description={
+                    canManage
+                      ? 'Sign in to one of these to start posting to it.'
+                      : 'These accounts can be connected by an admin.'
+                  }
+                >
+                  <div className="flex flex-col gap-3">
+                    {available.map((entry) => (
+                      <CatalogRow
+                        key={entry.platform}
+                        entry={entry}
+                        canManage={canManage}
+                        connecting={connecting && connectingPlatform === entry.platform}
+                        onConnect={() => {
+                          connect(entry.platform);
+                        }}
+                      />
+                    ))}
+                  </div>
+                </FormSection>
+              ) : null}
+
+              {comingSoon.length > 0 ? (
+                <FormSection
+                  title="On the way"
+                  description="These platforms are not ready to connect yet — they will light up here when they are, with nothing for you to do."
+                >
+                  <div className="flex flex-col gap-3">
+                    {comingSoon.map((entry) => (
+                      <CatalogRow
+                        key={entry.platform}
+                        entry={entry}
+                        canManage={canManage}
+                        connecting={false}
+                        onConnect={() => undefined}
+                      />
+                    ))}
+                  </div>
+                </FormSection>
+              ) : null}
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default SocialConnectionsSurface;

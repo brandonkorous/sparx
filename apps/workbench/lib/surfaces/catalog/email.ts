@@ -1,49 +1,96 @@
 // Email — sending to your list.
+//
+// The four operator surfaces of the email module, all consuming the existing
+// api-rest `/v1/email/*` backend (broadcasts, sending domains, suppressions,
+// settings). The KEYS are the deep-link + saved-layout contract, carried over
+// verbatim from the stubs these replaced so no bookmark or saved workspace breaks.
 
-import { Globe, Send, Settings, ShieldOff } from 'lucide-react';
+import { AtSign, Send, Settings, ShieldOff } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
-import { stub } from './stub';
+import { BroadcastsListSurface } from '../../../surfaces/email/broadcasts-list';
+import { BroadcastDetailSurface } from '../../../surfaces/email/broadcast-detail';
+import { SendingDomainsListSurface } from '../../../surfaces/email/domains-list';
+import { SendingDomainDetailSurface } from '../../../surfaces/email/domain-detail';
+import { SuppressionsListSurface } from '../../../surfaces/email/suppressions-list';
+import { EmailSettingsSurface } from '../../../surfaces/email/email-settings';
 
 export const EMAIL_SURFACES: SurfaceDefinition[] = [
-  stub({
+  {
+    // Unsectioned → leads the Email panel. Compose/manage is a separate pane.
     key: 'email.broadcasts.list',
     title: 'Broadcasts',
     module: 'email',
     icon: Send,
     order: 1,
     keywords: ['newsletter', 'campaign', 'send', 'blast', 'marketing'],
-    body: 'One email sent to a group of people at once — a newsletter, an offer, an announcement.',
-  }),
+    component: BroadcastsListSurface,
+    createSurface: 'email.broadcasts.detail',
+    createLabel: 'New broadcast',
+  },
+  {
+    // One pane, two states: {id:'new'} composes, {id} manages/reviews.
+    key: 'email.broadcasts.detail',
+    title: 'Broadcast',
+    module: 'email',
+    icon: Send,
+    listed: false,
+    keywords: ['newsletter', 'campaign', 'send', 'blast', 'marketing'],
+    component: BroadcastDetailSurface,
+  },
 
   /* ── Setup ─────────────────────────────────────────────────────────────── */
-  stub({
+  {
     key: 'email.domains.list',
     title: 'Sending addresses',
     module: 'email',
-    icon: Globe,
+    icon: AtSign,
     section: 'Setup',
     order: 10,
-    keywords: ['domains', 'from address', 'dns', 'spf', 'dkim', 'verify'],
-    body: 'Proving you own the address your email comes from, so it arrives in inboxes instead of spam folders.',
-  }),
-  stub({
+    keywords: ['domains', 'from address', 'dns', 'spf', 'dkim', 'verify', 'sender'],
+    component: SendingDomainsListSurface,
+    createSurface: 'email.domains.detail',
+    createLabel: 'Add a sending address',
+  },
+  {
+    // {id:'new'} provisions, then lands on {id} showing the DNS records to add.
+    key: 'email.domains.detail',
+    title: (params) => (params.id === 'new' ? 'Add a sending address' : 'Sending address'),
+    module: 'email',
+    icon: AtSign,
+    listed: false,
+    component: SendingDomainDetailSurface,
+  },
+  {
     key: 'email.suppressions.list',
     title: 'Do not email',
     module: 'email',
     icon: ShieldOff,
     section: 'Setup',
     order: 11,
-    keywords: ['suppressions', 'unsubscribed', 'bounced', 'complaints', 'opt out'],
-    body: 'People who unsubscribed, or whose address bounced. sparx will not email them again, which keeps you out of trouble.',
-  }),
-  stub({
+    // Account-wide list; a second copy is the same list.
+    singleton: true,
+    keywords: ['suppressions', 'unsubscribed', 'bounced', 'complaints', 'opt out', 'do not email'],
+    component: SuppressionsListSurface,
+  },
+  {
     key: 'email.settings',
     title: 'Email settings',
     module: 'email',
     icon: Settings,
     section: 'Setup',
     order: 12,
-    keywords: ['reply to', 'footer', 'preferences'],
-    body: 'Who replies go to, what appears at the bottom of every email, and how people manage what they receive.',
-  }),
+    // One settings screen per site; a second copy is meaningless.
+    singleton: true,
+    keywords: [
+      'reply to',
+      'footer',
+      'sender',
+      'from address',
+      'mailing address',
+      'can-spam',
+      'physical address',
+      'preferences',
+    ],
+    component: EmailSettingsSurface,
+  },
 ];

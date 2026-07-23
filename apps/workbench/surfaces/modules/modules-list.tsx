@@ -109,8 +109,9 @@ function ModuleCard({
   const hue = meta.hue;
 
   // The badge is the price, exactly as the pricing switchboard shows it —
-  // "$49/mo" for a paid module, "Included" while it rides free with its provider.
-  const badgeText = isBundled ? 'Included' : `$${meta.price}/mo`;
+  // "$49/mo" for a paid module, "Included" while it rides free with its provider,
+  // "Free" for a genuinely no-cost module (price 0, e.g. Social posts).
+  const badgeText = isBundled ? 'Included' : meta.price === 0 ? 'Free' : `$${meta.price}/mo`;
 
   // Shown only when a card needs a word the badge can't carry — the same
   // "Included with …" / "Required by …" lines the marketing tile uses, but kept
@@ -224,9 +225,11 @@ export function ModulesSurface({ ctx: _ctx }: { ctx: SurfaceContext }) {
       missingReqs.length
         ? `It also turns on ${names(missingReqs)}, which ${meta.name} is built on.`
         : '',
-      trial
-        ? `You are in your free trial until ${trialDate(billing)}, so nothing is charged for it yet.`
-        : 'It is a paid feature, added to your monthly subscription.',
+      meta.price === 0
+        ? 'It is free — nothing is added to your bill.'
+        : trial
+          ? `You are in your free trial until ${trialDate(billing)}, so nothing is charged for it yet.`
+          : 'It is a paid feature, added to your monthly subscription.',
       'You can turn it off again whenever you like.',
     ]
       .filter(Boolean)

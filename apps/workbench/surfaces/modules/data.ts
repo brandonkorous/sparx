@@ -27,6 +27,7 @@ import {
   Mail,
   MessagesSquare,
   ReceiptText,
+  Share2,
   ShoppingBag,
   Sparkles,
   Truck,
@@ -197,6 +198,16 @@ export const MODULE_META: ModuleMeta[] = [
     blurb:
       'Turn on the AI-assisted tools throughout sparx. They run on an AI account you connect yourself.',
     price: 49,
+    requires: [],
+  },
+  {
+    slug: 'social',
+    name: 'Social posts',
+    hue: 'social',
+    icon: Share2,
+    blurb:
+      'Connect your Facebook, Instagram, Google and other social accounts and post to all of them from one place — on a schedule, or automatically.',
+    price: 0,
     requires: [],
   },
 ];

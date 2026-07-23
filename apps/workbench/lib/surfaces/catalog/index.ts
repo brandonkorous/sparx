@@ -35,6 +35,7 @@ import { BUILDER_SURFACES } from './builder';
 import { CMS_SURFACES } from './cms';
 import { EMAIL_SURFACES } from './email';
 import { SCHEDULING_SURFACES } from './scheduling';
+import { SOCIAL_SURFACES } from './social';
 import { FINANCE_SURFACES } from './finance';
 import { DROPSHIP_SURFACES } from './dropship';
 import { AUTOMATION_SURFACES } from './automations';
@@ -59,6 +60,7 @@ registerSurfaces([
   ...CMS_SURFACES,
   ...EMAIL_SURFACES,
   ...SCHEDULING_SURFACES,
+  ...SOCIAL_SURFACES,
   ...FINANCE_SURFACES,
   // Dropshipping — its own module block (suppliers, catalog, orders, profit).
   ...DROPSHIP_SURFACES,

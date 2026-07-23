@@ -36,6 +36,7 @@ export const WORKBENCH_MODULES = [
   'seo',
   'finance',
   'partner',
+  'social',
   'platform',
 ] as const;
 

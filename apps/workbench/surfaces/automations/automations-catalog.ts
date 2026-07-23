@@ -19,7 +19,15 @@ import type { ActionType, ConditionOperator } from '@sparx/automation-schemas';
 
 /** The feature modules an automation can touch — the keys used for the module
  *  tags on a rule row. Matches the workbench module hues. */
-export type ModuleSlug = 'crm' | 'email' | 'commerce' | 'b2b' | 'cms' | 'invoicing' | 'platform';
+export type ModuleSlug =
+  | 'crm'
+  | 'email'
+  | 'commerce'
+  | 'b2b'
+  | 'cms'
+  | 'invoicing'
+  | 'social'
+  | 'platform';
 
 const MODULE_LABEL: Record<ModuleSlug, string> = {
   crm: 'Customers',
@@ -28,6 +36,7 @@ const MODULE_LABEL: Record<ModuleSlug, string> = {
   b2b: 'Wholesale',
   cms: 'Content',
   invoicing: 'Invoicing',
+  social: 'Social posts',
   platform: 'Platform',
 };
 
@@ -61,6 +70,12 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
   { eventType: 'order.fulfilled', label: 'An order is fulfilled', module: 'commerce' },
   { eventType: 'order.cancelled', label: 'An order is cancelled', module: 'commerce' },
   { eventType: 'commerce.order.refunded', label: 'An order is refunded', module: 'commerce' },
+  { eventType: 'product.published', label: 'A product goes live', module: 'commerce' },
+  {
+    eventType: 'content.entry.published',
+    label: 'An article or page is published',
+    module: 'cms',
+  },
   { eventType: 'crm.customer.created', label: 'A new customer is added', module: 'crm' },
   { eventType: 'crm.customer.updated', label: 'A customer’s details change', module: 'crm' },
   { eventType: 'crm.deal.stage_changed', label: 'A sales deal moves stage', module: 'crm' },
@@ -144,12 +159,15 @@ export const DAYS_OF_WEEK = [
 export function moduleForEventType(eventType: string): ModuleSlug {
   if (eventType.startsWith('crm.billing_document.')) return 'invoicing';
   const head = eventType.split('.')[0] ?? '';
-  if (head === 'order') return 'commerce';
+  if (head === 'order' || head === 'product' || head === 'variant' || head === 'inventory') {
+    return 'commerce';
+  }
   if (head === 'crm' || head === 'customer' || head === 'deal') return 'crm';
   if (head === 'commerce') return 'commerce';
   if (head === 'b2b') return 'b2b';
   if (head === 'email') return 'email';
-  if (head === 'cms' || head === 'site' || head === 'form') return 'cms';
+  if (head === 'cms' || head === 'content' || head === 'site' || head === 'form') return 'cms';
+  if (head === 'social') return 'social';
   return 'platform';
 }
 
@@ -514,6 +532,36 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     description: 'Not available yet.',
     mode: 'json',
     available: false,
+  },
+  // ── Social posts ──
+  {
+    type: 'social.post',
+    label: 'Post to social media',
+    module: 'social',
+    description:
+      'Drafts a post to your connected social accounts. By default it lands in your Approvals inbox to review first; you can also set it to post automatically.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      {
+        key: 'template',
+        label: 'Message',
+        type: 'textarea',
+        required: true,
+        placeholder: 'New arrival — {{announce.title}}',
+        help: 'The post text. Use {{announce.title}} for the product or article name; the link and image are attached for you.',
+      },
+      {
+        key: 'autoApprove',
+        label: 'Before it goes out',
+        type: 'select',
+        options: [
+          { value: '', label: 'Send to my Approvals inbox to review first' },
+          { value: 'auto', label: 'Post automatically, no review' },
+        ],
+        help: 'Reviewing first is recommended until you trust the drafts.',
+      },
+    ],
   },
   // ── Selling (Commerce — deferred) ──
   {
