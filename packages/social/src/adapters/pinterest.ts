@@ -1,0 +1,250 @@
+// Pinterest adapter (docs/133 §6, build plan docs/134 Phase 3) — creates Pins on a
+// tenant's Pinterest BOARDS. A Pin is image-first: it needs an image, a title, a
+// description, and (ideally) a destination link — a natural fit for a product or
+// article announcement.
+//
+// Auth: Pinterest OAuth 2.0. The token endpoint authenticates the app with HTTP Basic
+// (client id/secret); the grant returns a refresh token, so refresh() extends it.
+// Scopes: `boards:read` (list the boards to pin to), `pins:write` (create the Pin),
+// `user_accounts:read` (name the connection).
+//
+// Targets: a target is a BOARD. listTargets returns one per board; externalTargetId is
+// the board id, which the publish call pins to.
+//
+// Publish (`POST /v5/pins`): title + description + link + an `image_url` media source.
+// A post with no image can't become a Pin (constraints.requiresMedia), so the renderer
+// blocks it before it reaches here; a defensive guard throws a clear message anyway.
+//
+// No SDKs — pure `fetch` via the shared `_http` helpers. Pure I/O: the worker resolves +
+// decrypts the token and passes SocialAuth.
+
+import type {
+  PlatformConstraints,
+  RenderedPost,
+  SocialAdapter,
+  SocialAuth,
+  SocialConnectContext,
+  SocialPublishResult,
+  SocialTargetRef,
+  SocialTokens,
+} from '../types.js';
+import { PLATFORM_CONSTRAINTS } from '../constraints.js';
+import { deriveTitle, firstImageUrl } from './_media.js';
+import {
+  describeResponse,
+  expiresInSeconds,
+  fetchT,
+  formBody,
+  readPlatformCreds,
+  requireCreds,
+} from './_http.js';
+
+const AUTH_URL = 'https://www.pinterest.com/oauth/';
+const TOKEN_URL = 'https://api.pinterest.com/v5/oauth/token';
+const API_BASE = 'https://api.pinterest.com/v5';
+const SCOPE = 'boards:read,pins:read,pins:write,user_accounts:read';
+const TITLE_MAX = 100;
+const TOKEN_FALLBACK_SECONDS = 2_592_000; // 30 days (Pinterest access tokens)
+
+const ID_VAR = 'PINTEREST_APP_ID';
+const SECRET_VAR = 'PINTEREST_APP_SECRET';
+
+export interface PinterestPinPlan {
+  imageUrl: string;
+  title: string;
+  description: string;
+  link: string | null;
+}
+
+/** Decide the Pin fields for one rendered post — pure, so the title derivation +
+ *  image/link mapping is unit-tested without any network. Returns null when there's no
+ *  image (a Pin cannot exist without one). */
+export function planPinterestPin(post: RenderedPost): PinterestPinPlan | null {
+  const imageUrl = firstImageUrl(post.mediaUrls);
+  if (!imageUrl) return null;
+  return {
+    imageUrl,
+    title: deriveTitle(post.text, TITLE_MAX),
+    description: post.text,
+    link: post.link ?? null,
+  };
+}
+
+/** The public permalink for a created Pin id. */
+export function pinterestPermalink(id: string): string {
+  return `https://www.pinterest.com/pin/${id}/`;
+}
+
+interface PinterestTokenResponse {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+  scope?: string;
+}
+interface PinterestUser {
+  username?: string;
+  profile_image?: string;
+}
+interface PinterestBoard {
+  id: string;
+  name?: string;
+}
+interface PinterestBoardsResponse {
+  items?: PinterestBoard[];
+  bookmark?: string;
+}
+interface PinterestPinResponse {
+  id: string;
+}
+
+export class PinterestAdapter implements SocialAdapter {
+  readonly id = 'pinterest' as const;
+  readonly name = 'Pinterest';
+  readonly constraints: PlatformConstraints = PLATFORM_CONSTRAINTS.pinterest;
+
+  private creds() {
+    return readPlatformCreds(ID_VAR, SECRET_VAR);
+  }
+
+  /** Pinterest's token endpoint authenticates the app with HTTP Basic. */
+  private basicAuth(): string {
+    const { clientId, clientSecret } = requireCreds(this.creds(), this.name);
+    return `Basic ${Buffer.from(`${clientId}:${clientSecret}`).toString('base64')}`;
+  }
+
+  isConfigured(): boolean {
+    return this.creds() !== null;
+  }
+
+  connectUrl(ctx: SocialConnectContext): string {
+    const { clientId } = requireCreds(this.creds(), this.name);
+    const params = new URLSearchParams({
+      client_id: clientId,
+      redirect_uri: ctx.redirectUri,
+      response_type: 'code',
+      scope: SCOPE,
+      state: ctx.state,
+    });
+    return `${AUTH_URL}?${params.toString()}`;
+  }
+
+  async exchangeCode(code: string, ctx: SocialConnectContext): Promise<SocialTokens> {
+    const res = await fetchT(TOKEN_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: this.basicAuth(),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formBody({
+        grant_type: 'authorization_code',
+        code,
+        redirect_uri: ctx.redirectUri,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error(`Pinterest token exchange failed: ${await describeResponse(res)}`);
+    }
+    const data = (await res.json()) as PinterestTokenResponse;
+    const user = await this.userAccount(data.access_token);
+    return {
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      expiresInSeconds: expiresInSeconds(data.expires_in, TOKEN_FALLBACK_SECONDS),
+      scope: data.scope ?? SCOPE,
+      externalId: user?.username,
+      displayName: user?.username ? `@${user.username}` : 'Pinterest',
+      avatarUrl: user?.profile_image,
+    };
+  }
+
+  async refresh(refreshToken: string): Promise<SocialTokens> {
+    const res = await fetchT(TOKEN_URL, {
+      method: 'POST',
+      headers: {
+        Authorization: this.basicAuth(),
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: formBody({ grant_type: 'refresh_token', refresh_token: refreshToken }),
+    });
+    if (!res.ok) {
+      throw new Error(`Pinterest token refresh failed: ${await describeResponse(res)}`);
+    }
+    const data = (await res.json()) as PinterestTokenResponse;
+    return {
+      accessToken: data.access_token,
+      // Pinterest keeps the same refresh token unless it rotates one back.
+      refreshToken: data.refresh_token ?? refreshToken,
+      expiresInSeconds: expiresInSeconds(data.expires_in, TOKEN_FALLBACK_SECONDS),
+      scope: data.scope ?? SCOPE,
+    };
+  }
+
+  /** One target per board the account owns. externalTargetId is the board id. */
+  async listTargets(auth: SocialAuth): Promise<SocialTargetRef[]> {
+    const targets: SocialTargetRef[] = [];
+    let bookmark: string | undefined;
+    do {
+      const params = new URLSearchParams({ page_size: '100' });
+      if (bookmark) params.set('bookmark', bookmark);
+      const res = await fetchT(`${API_BASE}/boards?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${auth.accessToken}` },
+      });
+      if (!res.ok) {
+        throw new Error(`Pinterest board lookup failed: ${await describeResponse(res)}`);
+      }
+      const data = (await res.json()) as PinterestBoardsResponse;
+      for (const board of data.items ?? []) {
+        targets.push({ externalTargetId: board.id, name: board.name ?? board.id });
+      }
+      bookmark = data.bookmark ?? undefined;
+    } while (bookmark);
+    return targets;
+  }
+
+  async publish(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    post: RenderedPost,
+    idempotencyKey: string
+  ): Promise<SocialPublishResult> {
+    void idempotencyKey; // Pinterest has no client idempotency key; the caller guards replays
+    const plan = planPinterestPin(post);
+    if (!plan) throw new Error('Pinterest needs an image to create a Pin.');
+
+    const body: Record<string, unknown> = {
+      board_id: target.externalTargetId,
+      title: plan.title,
+      description: plan.description,
+      media_source: { source_type: 'image_url', url: plan.imageUrl },
+    };
+    if (plan.link) body.link = plan.link;
+
+    const res = await fetchT(`${API_BASE}/pins`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${auth.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    });
+    if (!res.ok) {
+      throw new Error(`Pinterest pin failed: ${await describeResponse(res)}`);
+    }
+    const data = (await res.json()) as PinterestPinResponse;
+    return { externalId: data.id, permalink: pinterestPermalink(data.id) };
+  }
+
+  // ── internals ──
+
+  private async userAccount(accessToken: string): Promise<PinterestUser | null> {
+    try {
+      const res = await fetchT(`${API_BASE}/user_account`, {
+        headers: { Authorization: `Bearer ${accessToken}` },
+      });
+      if (!res.ok) return null;
+      return (await res.json()) as PinterestUser;
+    } catch {
+      return null;
+    }
+  }
+}

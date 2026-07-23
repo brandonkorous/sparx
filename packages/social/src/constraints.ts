@@ -75,12 +75,14 @@ export const PLATFORM_CONSTRAINTS: Record<SocialPlatform, PlatformConstraints> =
     aspectRatios: ['2:3'],
   },
   youtube: {
-    // Community posts — conservative until the Phase 3 adapter firms this up.
-    maxTextLength: 1000,
+    // YouTube has no public API for Community text posts; the adapter uploads SHORTS
+    // (vertical short videos) via the Data API, so a YouTube post needs a video. The
+    // title caps at 100 chars but the description (what a post body maps to) allows 5k.
+    maxTextLength: 5000,
     maxMediaCount: 1,
-    supportedMedia: ['image'],
-    requiresMedia: false,
-    aspectRatios: ['1:1', '16:9'],
+    supportedMedia: ['video'],
+    requiresMedia: true,
+    aspectRatios: ['9:16'],
   },
 };
 

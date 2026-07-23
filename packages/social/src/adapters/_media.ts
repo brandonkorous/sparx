@@ -32,3 +32,18 @@ export function appendLink(text: string, link: string): string {
   if (!text) return link;
   return text.includes(link) ? text : `${text}\n\n${link}`;
 }
+
+/** Derive a short title from the post body — the first non-empty line, whitespace-
+ *  collapsed and truncated (with an ellipsis) to `maxLength`. Platforms that require a
+ *  title field (Pinterest Pins, YouTube videos) but where the tenant only wrote a body
+ *  use this; an empty body yields `fallback`. */
+export function deriveTitle(text: string, maxLength: number, fallback = 'New post'): string {
+  const firstLine = text
+    .split('\n')
+    .map((l) => l.trim())
+    .find((l) => l.length > 0);
+  const clean = (firstLine ?? '').replace(/\s+/g, ' ').trim();
+  if (!clean) return fallback;
+  if (clean.length <= maxLength) return clean;
+  return `${clean.slice(0, Math.max(0, maxLength - 1)).trimEnd()}…`;
+}
