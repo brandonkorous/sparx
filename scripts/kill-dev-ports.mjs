@@ -13,9 +13,69 @@
 // service's .env; keep this list in sync if you add a long-running dev task.
 
 import { execSync } from 'node:child_process';
+import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
 
-// 3010 market, 3011 workbench — both were missing until 2026-07-18.
-const PORTS = [3000, 3001, 3003, 3004, 3010, 3011, 3100, 3200, 8080, 8081, 8082, 8083];
+// Keeping this list by hand has now gone stale twice — 3010/3011 were missing until
+// 2026-07-18, and on 2026-07-24 it was missing 3002 (admin), 3300 (mcp-site) and
+// 8084-8091 (eight workers). A missed port is not a no-op: the orphan survives, the
+// next `pnpm dev` dies with EADDRINUSE, and because turbo fails the whole run on one
+// task, the ENTIRE stack refuses to start over one stale child.
+//
+// So the list is DERIVED from the workspace and only falls back to the literals:
+//   - apps/*      → the `--port N` flag in the package's dev script
+//   - services/*  → `PORT=N` in the service's .env (or .env.example)
+// Adding a service with a distinct port now needs no edit here.
+const FALLBACK_PORTS = [
+  3000, 3001, 3002, 3003, 3004, 3010, 3011, 3100, 3200, 3300, 8080, 8081, 8082, 8083, 8084, 8085,
+  8086, 8087, 8088, 8089, 8090, 8091, 8092,
+];
+
+function discoverPorts() {
+  const found = new Set(FALLBACK_PORTS);
+  const roots = ['apps', 'services'];
+  for (const root of roots) {
+    let entries = [];
+    try {
+      entries = readdirSync(root, { withFileTypes: true });
+    } catch {
+      continue; // root missing — nothing to discover
+    }
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+      const dir = join(root, entry.name);
+      // An app declares its port on the dev script; a service reads PORT from env.
+      const pkg = readIfPresent(join(dir, 'package.json'));
+      const devScript = pkg ? (safeJson(pkg)?.scripts?.dev ?? '') : '';
+      const flag = devScript.match(/--port[= ](\d+)/);
+      if (flag) found.add(Number(flag[1]));
+      for (const envName of ['.env', '.env.example']) {
+        const env = readIfPresent(join(dir, envName));
+        const port = env?.match(/^PORT=(\d+)/m);
+        if (port) found.add(Number(port[1]));
+      }
+    }
+  }
+  return [...found].sort((a, b) => a - b);
+}
+
+function readIfPresent(path) {
+  try {
+    return readFileSync(path, 'utf8');
+  } catch {
+    return null;
+  }
+}
+
+function safeJson(text) {
+  try {
+    return JSON.parse(text);
+  } catch {
+    return null;
+  }
+}
+
+const PORTS = discoverPorts();
 const isWindows = process.platform === 'win32';
 
 function run(cmd) {

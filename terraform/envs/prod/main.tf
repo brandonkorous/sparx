@@ -76,8 +76,8 @@ module "pubsub" {
     "tenant.created" = []
 
     # Commerce — catalog + inventory fan-in to commerce-indexer
-    "product.created"    = ["commerce-indexer"]
-    "product.updated"    = ["commerce-indexer"]
+    "product.created" = ["commerce-indexer"]
+    "product.updated" = ["commerce-indexer"]
     # A product went live (draft→active). Topic-only: no idle pull subscription —
     # the automation engine's "Announce new product" trigger rides the publish()
     # tee to automation.trigger (docs/133 §9), and the search index already
