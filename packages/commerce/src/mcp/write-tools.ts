@@ -24,8 +24,79 @@ import {
   reviewService,
   subscriptionService,
   surchargeService,
+  variantService,
 } from '../services';
 import type { AnyMcpTool, McpToolDefinition } from './registry';
+
+/** What an agent means by "create a product": a listing with a PRICE.
+ *
+ *  `productService.create` deliberately mints no variant — options/variants belong to
+ *  `variantService` — but a product with no variant has no price, a null
+ *  `defaultVariantId`, and a storefront add-to-cart that refuses to fire. Exposing the
+ *  bare create over MCP would hand agents a tool that reliably produces unsellable
+ *  products, so this input carries the default variant's price and the tool composes both
+ *  services. Multi-variant lattices (sizes, colours) stay with the dedicated variant
+ *  surface; this is the one-price common case that unblocks catalog setup. */
+const CreateProductWithPriceInput = z.object({
+  title: z.string().min(1).max(255),
+  /** The default variant's price, in cents. 0 is legal (a free/quote-only listing). */
+  priceCents: z.number().int().min(0),
+  /** Unique per tenant; derived from the resolved handle when omitted so an agent is
+   *  never forced to invent one. */
+  sku: z.string().min(1).max(64).optional(),
+  description: z.string().max(50_000).optional(),
+  status: z.enum(['draft', 'active']).default('draft'),
+  handle: z.string().max(255).optional(),
+  productType: z.string().max(127).optional(),
+  vendor: z.string().max(127).optional(),
+  tags: z.array(z.string().min(1).max(63)).max(50).default([]),
+  compareAtPriceCents: z.number().int().min(0).optional(),
+  currency: z.string().length(3).default('USD'),
+  seoTitle: z.string().max(255).optional(),
+  seoDescription: z.string().max(512).optional(),
+  categoryIds: z.array(z.string().uuid()).max(20).default([]),
+  collectionIds: z.array(z.string().uuid()).max(50).default([]),
+  propertyIds: z.array(z.string().uuid()).max(50).default([]),
+});
+
+const createProduct: McpToolDefinition = {
+  name: 'create_product',
+  description:
+    'Create a product AND its default (priced) variant in one call — the sellable listing an agent means by "add a product". Requires `title` and `priceCents`; `sku` is derived from the handle when omitted. Defaults to status `draft` — pass `active`, or call publish_product after, to put it on the storefront. Multi-variant products (sizes/colours) are set up through the variant surface after this call.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: CreateProductWithPriceInput,
+  run: async (ctx, raw) => {
+    const input = CreateProductWithPriceInput.parse(raw);
+    const product = await productService.create(ctx, {
+      title: input.title,
+      status: input.status,
+      tags: input.tags,
+      categoryIds: input.categoryIds,
+      collectionIds: input.collectionIds,
+      propertyIds: input.propertyIds,
+      ...(input.description !== undefined ? { description: input.description } : {}),
+      ...(input.handle !== undefined ? { handle: input.handle } : {}),
+      ...(input.productType !== undefined ? { productType: input.productType } : {}),
+      ...(input.vendor !== undefined ? { vendor: input.vendor } : {}),
+      ...(input.seoTitle !== undefined ? { seoTitle: input.seoTitle } : {}),
+      ...(input.seoDescription !== undefined ? { seoDescription: input.seoDescription } : {}),
+    });
+    // Uppercased handle is a stable, readable, tenant-unique seed; the variant service
+    // still rejects a genuine collision so two products can't share a SKU.
+    const sku = input.sku ?? product.handle.toUpperCase().slice(0, 48);
+    const variant = await variantService.create(ctx, product.id, {
+      sku,
+      priceCents: input.priceCents,
+      currency: input.currency,
+      isDefault: true,
+      ...(input.compareAtPriceCents !== undefined
+        ? { compareAtPriceCents: input.compareAtPriceCents }
+        : {}),
+    });
+    return { id: product.id, handle: product.handle, variantId: variant.id, sku: variant.sku };
+  },
+};
 
 const publishProduct: McpToolDefinition = {
   name: 'publish_product',
@@ -141,6 +212,7 @@ const setSurcharge: McpToolDefinition = {
 };
 
 export const writeTools: AnyMcpTool[] = [
+  createProduct,
   publishProduct,
   archiveProduct,
   bulkUpdateProductStatus,
