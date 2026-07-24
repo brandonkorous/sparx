@@ -1,6 +1,6 @@
 # Perfect Template → sparx Blueprint
 
-Version: 0.4.0
+Version: 0.5.0
 Author: Brandon Korous
 Last Updated: 2026-07-24
 
@@ -12,22 +12,28 @@ Last Updated: 2026-07-24
 > **v1.161.0 is deployed** (2026-07-24 12:53 UTC) — BUG-003, the logo/chat fixes, and the
 > first MCP batch are all live and verified. Two things now gate the rest:
 >
-> **(a) The MCP connector must be RECONNECTED.** api-mcp v1.161.0 serves
-> `create_product` + `create_scheduling_service`, but a client that connected before the
-> rollout still has the OLD tools/list cached — they are un-callable until the connector
-> is refreshed. Verified: the pod runs v1.161.0, and `git tag --contains d563c31d` → v1.161.0.
+> **(a) The MCP connector must be REFRESHED.** The server has the new tools; a client that
+> connected before the rollout still has the OLD tools/list cached, so they are un-callable
+> until the connector is re-added. This is a **client-side** action — verified twice that
+> the deploy itself is fine (pod on v1.163.0, tag contains every new file).
 >
-> **(b) A SECOND deploy** for the batch added after v1.161.0 (see _MCP capability work_):
-> `update_product`, `update_variant`, the scheduling **resource + hours** tools, and
-> `rebuild_search_index`. The new `write:search` scope means the connector must
-> **re-consent**, not merely reconnect — do (a) and (b) in one pass.
+> **(b) Batch 2 shipped as v1.163.0** — `update_product`, `update_variant`, the scheduling
+> **resource + hours** tools, and `rebuild_search_index` are all in the running image.
+> The new `write:search` scope means the connector must **re-consent**, not merely
+> reconnect.
+>
+> **(c) A THIRD deploy** for BUG-005 + BUG-006 (found while probing with the old tool
+> list — see the Log): the MCP result serializer, and api-mcp's missing Typesense env.
+> BUG-006 is a **manifest** change, so it needs the deploy workflow, not just an image tag.
+> Do (c) and then the re-consent in one pass.
 >
 > Then, in order:
 >
-> 1. **`rebuild_search_index`** — the Typesense products collection is EMPTY for this
->    tenant (BUG-004), so `/shop`, `/search`, and `/products` all render "No products
->    found" even though 21 products exist. Nothing about the catalog looks right until
->    this runs.
+> 1. **`rebuild_search_index`** — BUG-004: the Typesense products collection was never
+>    populated for this tenant, so the catalog surfaces render "No products found" despite
+>    21 products existing. Proven to be a pure BACKFILL gap: re-publishing one product
+>    (Southwest Grain) indexed it and it now renders on the live `/shop`. One call fixes
+>    the other 20; anything created from here indexes itself.
 > 2. Seed the schedule: `create_scheduling_service` → `create_scheduling_resource`
 >    (kind `staff`) → `set_resource_hours`. All three, or /book stays empty.
 > 3. Swap the catalog: archive the 10 smoothies, `create_product` × ~6 neutral goods
@@ -475,6 +481,30 @@ then capture the site and finish the bundle.
   - Added, gate-green: `rebuild_search_index` (+ `write:search` scope), the scheduling
     **resource + hours** tools and their reads, and `update_product` / `update_variant`.
     Full `pnpm typecheck` exit 0.
-- **NEXT SESSION STARTS HERE:** deploy batch 2 + **re-consent** the MCP connector (new
-  scope), then RESUME HERE steps 1–5. Step 1 (`rebuild_search_index`) gates everything
-  catalog-shaped.
+- **2026-07-24 (session 3 cont. — batch 2 deployed as v1.163.0)** — Confirmed the tag
+  contains `search-admin-tools.ts`, `set_resource_hours`, and `write:search`, and the pod
+  runs it (started 19:34 UTC). The connector tool list is **still stale** — the new tools
+  remain un-callable, so the refresh is a client-side action, not a deploy problem.
+  Probing with the tools I _do_ have turned up two more defects and one confirmation:
+  - **BUG-005 — a successful write reported as a protocol error.** Calling `publish_product`
+    returned an MCP schema violation. Root cause: `JSON.stringify(undefined)` is `undefined`,
+    not `"undefined"`, so every tool wrapping a `Promise<void>` service (`publish_product`,
+    `archive_product`, …) emitted `{type:'text', text: undefined}` and failed the SDK's
+    result schema. **The write had already committed and published its event** — the worst
+    shape of failure, because the agent believes it failed and retries a completed mutation.
+    Fixed in `services/api-mcp/src/server.ts` (`serializeResult`: void → `{ok:true}`), with
+    a regression test in `src/serialize-result.test.ts`.
+  - **BUG-006 — api-mcp's four search tools were dead in prod.** `search_products` threw
+    `TYPESENSE_API_KEY env var is required`: `k8s/apps/api-mcp.yaml` never got the Typesense
+    env block api-rest has. Added it, plus `enableServiceLinks: false` for the same
+    service-link collision that caused BUG-003 — before it bites a second service.
+  - **✅ The indexer write path is PROVEN end-to-end.** That failed `publish_product` still
+    fired its event: `commerce-indexer` processed it, and "Southwest Grain" went from absent
+    to returned by `GET /v1/public/commerce/search?q=grain` and rendered on the live
+    `/shop`. So **BUG-004 is purely a backfill problem** — touching a product re-indexes it,
+    and newly created products will index themselves. `rebuild_search_index` is the one-shot
+    remedy for the 21 historical rows.
+- **NEXT SESSION STARTS HERE:** deploy batch 3 (BUG-005 + BUG-006 — note BUG-006 is a
+  manifest change, so it needs the deploy workflow, not just an image bump), then
+  **re-consent** the MCP connector (the `write:search` scope is new), then RESUME HERE
+  steps 1–5. Step 1 (`rebuild_search_index`) gates everything catalog-shaped.

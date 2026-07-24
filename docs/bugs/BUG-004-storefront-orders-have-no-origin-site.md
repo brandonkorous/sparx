@@ -1,6 +1,6 @@
 # BUG-004 — Storefront orders carry no origin site, so the merchant's money is invisible
 
-Status: **FIXED (code) 2026-07-24 — awaiting deploy**
+Status: **✅ FIXED — VERIFIED IN PRODUCTION 2026-07-24**
 Severity: **Critical** — a merchant takes real money and Finance → Payments reads "No payments yet"
 Found: 2026-07-24, production payments E2E (order `O-000002`, tenant `keen-cedar-6433`)
 Surfaces: `services/api-rest/src/routes/v1/public/cart.ts`, `packages/commerce/src/services/checkout-service.ts`
@@ -60,3 +60,14 @@ tenant — is invisible in every site-scoped money view.
 - Finance → Payments lists it **with the site selected** (not only under "all sites").
 - Existing orders placed before the fix keep `propertyId: null` and remain visible only
   in the all-sites view — backfilling those is a separate decision.
+
+## Verified in production 2026-07-24
+
+New order **O-000003** came out with `propertyId: 2eed718f-…` (the primary site),
+and `GET /v1/finance/payments` **scoped to that site** returned it —
+`{ order: O-000003, amount: 30, status: captured }`. Before the fix that same
+site-scoped call read "No payments yet."
+
+As predicted, the pre-fix orders **O-000001 / O-000002** still carry
+`propertyId: null` and surface only under the all-sites view. Backfilling those two
+is optional and left as a separate decision (only two rows, both in a sandbox tenant).
