@@ -3,16 +3,21 @@
 //   GET /v1/finance/payouts      → each bank deposit, newest arrival first
 //   GET /v1/finance/payouts/:id  → one deposit + the individual sales it settles
 //
-// A payout is DERIVED, not stored: sparx does not yet persist a settlement
-// ledger, so this groups CAPTURED gateway payments (26-crm-order-payments) into
-// the batch that lands together — one deposit per (settlement day, processor).
-// Manual tenders (cash, check, wire, net terms) are excluded: they are money
-// received, but not a gateway deposit sparx can see arriving. Settlement is
-// modelled as capture + 2 calendar days, the ordinary card-processor delay.
+// Two sources, best-first:
 //
-// The synthetic id is `<processor>~<YYYY-MM-DD>` so a deposit is addressable
-// (openable in its own pane) without a table to hold it. Gated on order access
-// and site-scoped exactly like the payments feed.
+//  1. For sparx Pay (a connected Express account), we read Stripe's REAL `payout`
+//     objects — the exact amount, arrival date, and status that hit the bank
+//     (stripe-payouts.ts). A Stripe payout is ACCOUNT-LEVEL (one bank, every site at
+//     once), so this path is not site-scoped, and its ids are `po_…`.
+//  2. Otherwise a payout is DERIVED, not stored: sparx does not persist a settlement
+//     ledger, so this groups CAPTURED gateway payments (26-crm-order-payments) into the
+//     batch that lands together — one deposit per (settlement day, processor). Manual
+//     tenders (cash, check, wire, net terms) are excluded: money received, but not a
+//     gateway deposit sparx can see arriving. Settlement is modelled as capture + 2
+//     calendar days. Its synthetic id is `<processor>~<YYYY-MM-DD>`, site-scopable.
+//
+// The real path falls back to the derived one on ANY Stripe error, so the payouts view
+// can never 500 on a Stripe hiccup. Gated on order access.
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
@@ -23,6 +28,12 @@ import { withRequestTenant } from '@sparx/api-core/db';
 import { notFound } from '@sparx/api-core/errors';
 import { requireOrderAccess } from '../../../lib/order-context.js';
 import { resolveListScope } from '../../../lib/property.js';
+import {
+  getConnectedPayout,
+  hasConnectedPayouts,
+  isStripePayoutId,
+  listConnectedPayouts,
+} from '../../../lib/stripe-payouts.js';
 
 // Processors whose captures settle to a bank on a schedule. A manual/check/wire
 // payment is money in hand, not a deposit that "arrives".
@@ -147,6 +158,58 @@ const financePayoutRoutes: FastifyPluginAsync = (app) => {
     const q = ListQuery.parse(request.query);
     const scope = await resolveListScope(auth, q.property, request.headers['x-sparx-property-id']);
 
+    const processor = q.processor ?? 'all';
+    const status = q.status ?? 'all';
+    const sortKey = q.sort_by ?? 'arrivalDate';
+    const dir = q.order ?? 'desc';
+    const take = q.take ?? 50;
+    const skip = q.skip ?? 0;
+    const factor = dir === 'asc' ? 1 : -1;
+    const byArrivalOrAmount = (
+      a: { amount: number; arrivalDate: string },
+      b: { amount: number; arrivalDate: string }
+    ): number => {
+      if (sortKey === 'amount') return (a.amount - b.amount) * factor;
+      return (a.arrivalDate < b.arrivalDate ? -1 : a.arrivalDate > b.arrivalDate ? 1 : 0) * factor;
+    };
+
+    // Real Stripe payouts for sparx Pay (account-level — the exact deposits that hit the
+    // bank). Only when sparx Pay is the tenant's ACTIVE gateway: a tenant who chose a
+    // different vendor (Square, Authorize.net, …) — or one with a dormant connected
+    // account they no longer use — must keep the vendor-agnostic derived view, not an
+    // empty/stale Stripe list. A processor filter on a different vendor also drops to
+    // derived so that facet still works. Any Stripe error falls through to derived — the
+    // view must never 500.
+    const activeGateway = await withRequestTenant(request, (tx) =>
+      tx.tenantPaymentConfig.findUnique({
+        where: { tenantId: auth.tenantId },
+        select: { gatewayId: true },
+      })
+    );
+    if (
+      activeGateway?.gatewayId === 'sparx_pay' &&
+      (processor === 'all' || processor === 'sparx_pay') &&
+      (await hasConnectedPayouts(auth.tenantId))
+    ) {
+      try {
+        const real = await listConnectedPayouts(auth.tenantId, 100);
+        if (real) {
+          const filtered = real
+            .filter((p) => status === 'all' || p.status === status)
+            .sort(byArrivalOrAmount);
+          return paged(filtered.slice(skip, skip + take), {
+            total: filtered.length,
+            per_page: take,
+          });
+        }
+      } catch (err) {
+        request.log.warn(
+          { err, tenantId: auth.tenantId },
+          'finance payouts: real Stripe payouts unavailable — using derived model'
+        );
+      }
+    }
+
     const captured = await loadCaptured(request, scope);
     const todayDay = new Date().toISOString().slice(0, 10);
 
@@ -180,27 +243,16 @@ const financePayoutRoutes: FastifyPluginAsync = (app) => {
     }));
 
     // Facets applied to the WHOLE derived set before paging, so a filter or a
-    // sort reflects every deposit, not just the loaded window.
-    const status = q.status ?? 'all';
-    const processor = q.processor ?? 'all';
-    const filtered = built.filter(
-      (p) =>
-        (status === 'all' || p.status === status) &&
-        (processor === 'all' || p.processor === processor)
-    );
+    // sort reflects every deposit, not just the loaded window. (Sort defaults —
+    // newest arrival first, amount largest-first — come from the hoisted comparator.)
+    const filtered = built
+      .filter(
+        (p) =>
+          (status === 'all' || p.status === status) &&
+          (processor === 'all' || p.processor === processor)
+      )
+      .sort(byArrivalOrAmount);
 
-    const sortKey = q.sort_by ?? 'arrivalDate';
-    // Default: newest arrival first — the deposit an owner is looking for is the
-    // most recent one. `amount` defaults to largest-first.
-    const dir = q.order ?? 'desc';
-    const factor = dir === 'asc' ? 1 : -1;
-    filtered.sort((a, b) => {
-      if (sortKey === 'amount') return (a.amount - b.amount) * factor;
-      return (a.arrivalDate < b.arrivalDate ? -1 : a.arrivalDate > b.arrivalDate ? 1 : 0) * factor;
-    });
-
-    const take = q.take ?? 50;
-    const skip = q.skip ?? 0;
     return paged(filtered.slice(skip, skip + take), { total: filtered.length, per_page: take });
   });
 
@@ -208,6 +260,19 @@ const financePayoutRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'viewer');
     await requireOrderAccess(request);
     const { id } = PayoutId.parse(request.params);
+
+    // A real Stripe payout id (`po_…`) — resolve it against the connected account. On a
+    // Stripe error there is no derived equivalent for this id, so it's a clean 404.
+    if (isStripePayoutId(id)) {
+      try {
+        const detail = await getConnectedPayout(auth.tenantId, id);
+        if (detail) return ok(detail);
+      } catch (err) {
+        request.log.warn({ err, id }, 'finance payout detail: real Stripe payout unavailable');
+      }
+      throw notFound('Payout', id);
+    }
+
     const { property } = ListQuery.parse(request.query);
     const scope = await resolveListScope(auth, property, request.headers['x-sparx-property-id']);
 

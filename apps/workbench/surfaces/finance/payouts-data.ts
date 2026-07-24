@@ -2,9 +2,11 @@
 
 // Payouts data — bank deposits, and the sales one deposit settles.
 //
-// A payout is a DERIVED settlement batch (see the api-rest finance/payouts route),
-// so its id is synthetic (`<processor>~<date>`) but stable and addressable — that
-// is what lets a payout be opened in its own pane rather than a modal.
+// Two sources (see the api-rest finance/payouts route): sparx Pay serves REAL Stripe
+// payout objects (ids `po_…`, the exact bank deposits, account-level so no per-payout
+// sale count in the list); every other funding source is a DERIVED settlement batch
+// (synthetic id `<processor>~<date>`, site-scopable, with a sale count). Both ids are
+// stable + addressable — that is what lets a payout open in its own pane, not a modal.
 
 import { useQuery } from '@sparx/query';
 import { api } from '../../lib/api/client';
@@ -15,7 +17,9 @@ export interface Payout {
   arrivalDate: string;
   currency: string;
   amount: number;
-  salesCount: number;
+  /** Derived payouts carry a sale count; real Stripe payouts only expose it in the
+   *  detail (an N+1 balance-transaction call per list row), so the list omits it. */
+  salesCount?: number;
   status: string;
 }
 

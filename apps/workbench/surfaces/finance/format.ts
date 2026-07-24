@@ -134,9 +134,21 @@ export function paymentState(status: string): { label: string; tone: Tone } {
   }
 }
 
-/** A payout's state — has it reached the bank yet? */
+/** A payout's state — has it reached the bank yet? The derived model only ever emits
+ *  `paid` / `in_transit`; real Stripe (sparx Pay) payouts add `pending`, `canceled`, and
+ *  `failed`, which must read honestly (a failed deposit is NOT "on its way"). */
 export function payoutState(status: string): { label: string; tone: Tone } {
-  return status === 'paid'
-    ? { label: 'In your bank', tone: 'success' }
-    : { label: 'On its way', tone: 'info' };
+  switch (status) {
+    case 'paid':
+      return { label: 'In your bank', tone: 'success' };
+    case 'failed':
+      return { label: 'Failed', tone: 'error' };
+    case 'canceled':
+      return { label: 'Canceled', tone: 'warning' };
+    case 'pending':
+      return { label: 'Queued', tone: 'info' };
+    case 'in_transit':
+    default:
+      return { label: 'On its way', tone: 'info' };
+  }
 }

@@ -79,7 +79,13 @@ function PayoutRow({
         {methodLabel(payout.processor)} sales
       </td>
       <td className="hidden align-top whitespace-nowrap @xl:table-cell">
-        {payout.salesCount === 1 ? '1 sale' : `${String(payout.salesCount)} sales`}
+        {/* Real Stripe (sparx Pay) payouts are account-level — the sale count lives in
+            the detail, not the list — so show a dash; derived payouts show their count. */}
+        {payout.salesCount === undefined
+          ? '—'
+          : payout.salesCount === 1
+            ? '1 sale'
+            : `${String(payout.salesCount)} sales`}
       </td>
       <td className="align-top">
         <Badge color={state.tone} variant="soft" size="sm">
