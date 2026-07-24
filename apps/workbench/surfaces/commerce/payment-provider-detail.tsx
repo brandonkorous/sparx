@@ -35,6 +35,7 @@ import {
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
 import { CheckCircle2, ExternalLink, Trash2 } from 'lucide-react';
+import { CopyValue } from '../../components/copy-value';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useDirtySource } from '../../lib/workbench/dirty';
@@ -179,7 +180,12 @@ function ProviderEditor({
           ) : descriptor.onboarding === 'sparx_hosted' ? (
             <SparxPayBody descriptor={descriptor} config={config} isActive={isActive} />
           ) : (
-            <ApiKeysBody descriptor={descriptor} credential={credential} isSelected={isSelected} />
+            <ApiKeysBody
+              descriptor={descriptor}
+              credential={credential}
+              isSelected={isSelected}
+              webhookUrl={config?.webhookUrls?.[descriptor.id]}
+            />
           )}
         </div>
       </div>
@@ -353,10 +359,12 @@ function ApiKeysBody({
   descriptor,
   credential,
   isSelected,
+  webhookUrl,
 }: {
   descriptor: GatewayDescriptor;
   credential: MaskedGatewayCredential | undefined;
   isSelected: boolean;
+  webhookUrl: string | undefined;
 }) {
   const capture = useCaptureCredentials();
   const select = useSelectGateway();
@@ -529,6 +537,21 @@ function ApiKeysBody({
           </Button>
         </div>
       </FormSection>
+
+      {webhookUrl ? (
+        <FormSection
+          title={`Tell ${descriptor.name} where to send updates`}
+          description={`Add this address in your ${descriptor.name} account so it can tell us when a payment goes through. Until you do, cards will still be charged — but orders will keep showing as unpaid and your customers won't get a receipt.`}
+        >
+          <CopyValue value={webhookUrl} label="webhook address" />
+          <Text className="text-sm">
+            In Stripe: Developers → Webhooks → Add endpoint. Paste the address above, then choose
+            these updates: successful payments, failed payments, refunds, and disputes. Stripe then
+            shows you a signing secret — paste that into the <strong>Webhook signing secret</strong>{' '}
+            field above.
+          </Text>
+        </FormSection>
+      ) : null}
 
       <FormSection title="Use this provider">
         {isSelected ? (

@@ -8,6 +8,7 @@ import { describe, expect, it } from 'vitest';
 import { SPARX_PAY_FEE_RATE, sparxPayFeeCents } from './fee';
 import { GatewayNotFoundError, gatewayRegistry, registerBuiltInGateways } from './registry';
 import { normalizeStripeEvent } from './stripe-util';
+import { constructEventWithAnySecret, parseWebhookSecrets } from './webhook-secrets';
 import { SparxPayGateway, SPARX_PAY_ID } from './gateways/sparx-pay';
 import { StripeDirectGateway, STRIPE_DIRECT_ID } from './gateways/stripe-direct';
 
@@ -66,5 +67,44 @@ describe('normalizeStripeEvent (docs/94 §10)', () => {
 
   it('marks unknown event types ignored', () => {
     expect(normalizeStripeEvent(event('invoice.created', {})).type).toBe('ignored');
+  });
+});
+
+describe('webhook secrets', () => {
+  it('parses a single secret exactly like a plain value', () => {
+    expect(parseWebhookSecrets('whsec_one')).toEqual(['whsec_one']);
+    expect(parseWebhookSecrets('  whsec_one  ')).toEqual(['whsec_one']);
+  });
+
+  it('parses the two-endpoint case (account events + connect events)', () => {
+    expect(parseWebhookSecrets('whsec_account,whsec_connect')).toEqual([
+      'whsec_account',
+      'whsec_connect',
+    ]);
+  });
+
+  it('tolerates whitespace, newlines, and trailing separators', () => {
+    expect(parseWebhookSecrets('whsec_a, whsec_b,\n whsec_c,')).toEqual([
+      'whsec_a',
+      'whsec_b',
+      'whsec_c',
+    ]);
+  });
+
+  it('dedupes so a doubled rotation value is tried once', () => {
+    expect(parseWebhookSecrets('whsec_a,whsec_a')).toEqual(['whsec_a']);
+  });
+
+  it('treats unset/empty as no secrets — the caller warn-and-acks', () => {
+    expect(parseWebhookSecrets(undefined)).toEqual([]);
+    expect(parseWebhookSecrets('')).toEqual([]);
+    expect(parseWebhookSecrets('   ,  ,')).toEqual([]);
+  });
+
+  it('returns null when no configured secret verifies the signature', () => {
+    expect(
+      constructEventWithAnySecret(Buffer.from('{}'), 't=1,v1=deadbeef', ['whsec_a', 'whsec_b'])
+    ).toBeNull();
+    expect(constructEventWithAnySecret(Buffer.from('{}'), 't=1,v1=x', [])).toBeNull();
   });
 });

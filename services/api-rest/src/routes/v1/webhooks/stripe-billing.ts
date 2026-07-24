@@ -15,9 +15,10 @@
 // Always 200 on a valid signature (even for unhandled types) so Stripe stops
 // retrying; 403 on a bad signature. Reconciliation is idempotent.
 
-import Stripe from 'stripe';
+import type Stripe from 'stripe';
 import type { FastifyBaseLogger, FastifyPluginAsync } from 'fastify';
 import { reconcileFromSubscription, setSubscriptionStatus } from '@sparx/billing';
+import { constructEventWithAnySecret, parseWebhookSecrets } from '@sparx/payments';
 import { ApiError } from '@sparx/api-core/errors';
 import { env } from '../../../env.js';
 
@@ -39,8 +40,11 @@ const stripeBillingWebhookRoutes: FastifyPluginAsync = async (app) => {
     }
 
     const rawBody = request.body as Buffer;
-    const webhookSecret = env.STRIPE_WEBHOOK_SECRET_BILLING;
-    if (!webhookSecret) {
+    // Comma-separated list, so a rolled signing secret keeps verifying during Stripe's
+    // 24h overlap instead of 403-ing every billing event. See @sparx/payments'
+    // webhook-secrets.ts.
+    const webhookSecrets = parseWebhookSecrets(env.STRIPE_WEBHOOK_SECRET_BILLING);
+    if (webhookSecrets.length === 0) {
       // Dev / pre-ops: no billing webhook secret configured. Acknowledge so
       // Stripe (or a test) doesn't retry; nothing is reconciled.
       request.log.warn(
@@ -50,11 +54,9 @@ const stripeBillingWebhookRoutes: FastifyPluginAsync = async (app) => {
       return;
     }
 
-    let event: Stripe.Event;
-    try {
-      event = Stripe.webhooks.constructEvent(rawBody.toString('utf8'), sig, webhookSecret);
-    } catch (err) {
-      request.log.warn({ err }, 'stripe billing webhook: signature verification failed');
+    const event = constructEventWithAnySecret(rawBody.toString('utf8'), sig, webhookSecrets);
+    if (!event) {
+      request.log.warn('stripe billing webhook: signature verification failed');
       throw new ApiError('FORBIDDEN', 'Invalid Stripe webhook signature');
     }
 

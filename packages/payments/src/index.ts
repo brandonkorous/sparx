@@ -88,6 +88,8 @@ export {
 
 import { SparxPayGateway } from './gateways/sparx-pay';
 import { StripeDirectGateway } from './gateways/stripe-direct';
+export { parseWebhookSecrets, constructEventWithAnySecret } from './webhook-secrets';
+
 import { SquareGateway } from './gateways/square';
 import { AuthorizeNetGateway } from './gateways/authorize-net';
 import { FirstPayGateway } from './gateways/first-pay';

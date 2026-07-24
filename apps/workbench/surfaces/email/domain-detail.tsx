@@ -36,7 +36,8 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Check, Copy, Plus, RefreshCw, Star, Trash2 } from 'lucide-react';
+import { Plus, RefreshCw, Star, Trash2 } from 'lucide-react';
+import { CopyValue } from '../../components/copy-value';
 import { useConfirm } from '../../lib/confirm';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -67,58 +68,6 @@ const REGION_OPTIONS: { value: SendingRegion; label: string }[] = [
   { value: 'us', label: 'United States' },
   { value: 'eu', label: 'Europe' },
 ];
-
-/** A value someone has to retype at another company's website, character for
- *  character, with no forgiveness for a typo — so it is monospaced, selectable,
- *  and has a copy button. Transcribing it by eye is the failure mode. */
-function CopyValue({ value, label }: { value: string; label: string }) {
-  const toast = useToast();
-  const [copied, setCopied] = useState(false);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      setTimeout(() => {
-        setCopied(false);
-      }, 1600);
-    } catch {
-      // Clipboard access can be refused (permissions, insecure context). Saying
-      // so beats a button that silently does nothing — the value is on screen
-      // and can still be selected by hand.
-      toast.add({
-        title: 'Could not copy that',
-        description: 'Select the text and copy it manually.',
-        type: 'error',
-      });
-    }
-  };
-
-  return (
-    <div className="flex min-w-0 items-center gap-1">
-      <code className="bg-base-200 min-w-0 flex-1 rounded px-2 py-1 font-mono text-sm break-all">
-        {value}
-      </code>
-      <Button
-        size="sm"
-        variant="ghost"
-        color="neutral"
-        shape="square"
-        aria-label={`Copy ${label}`}
-        title={`Copy ${label}`}
-        onClick={() => {
-          void copy();
-        }}
-      >
-        {copied ? (
-          <Check className="size-4" aria-hidden />
-        ) : (
-          <Copy className="size-4" aria-hidden />
-        )}
-      </Button>
-    </div>
-  );
-}
 
 /**
  * One DNS record as a labelled block rather than a table row. A three-column

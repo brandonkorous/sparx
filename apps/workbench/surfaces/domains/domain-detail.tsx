@@ -38,7 +38,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { Check, Copy, ExternalLink, Link2, RefreshCw, Star, Trash2 } from 'lucide-react';
+import { ExternalLink, Link2, RefreshCw, Star, Trash2 } from 'lucide-react';
+import { CopyValue } from '../../components/copy-value';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
@@ -62,60 +63,6 @@ import {
  *  pane torn onto a second monitor is otherwise 2000px of dead grey with a
  *  paragraph pinned to the left edge. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
-
-/** A value someone has to retype at another company's website, character for
- *  character, with no forgiveness for a typo. So it is monospaced, selectable,
- *  and has a copy button — transcribing it by eye is the failure mode. */
-function CopyValue({ value, label }: { value: string; label: string }) {
-  const toast = useToast();
-  const [copied, setCopied] = useState(false);
-
-  const copy = async () => {
-    try {
-      await navigator.clipboard.writeText(value);
-      setCopied(true);
-      // Long enough to register, short enough that the button is ready again
-      // before someone reaches for the next record.
-      setTimeout(() => {
-        setCopied(false);
-      }, 1600);
-    } catch {
-      // Clipboard access can be refused (permissions, insecure context). Saying
-      // so beats a button that silently does nothing — the value is on screen
-      // and can still be selected by hand.
-      toast.add({
-        title: 'Could not copy that',
-        description: 'Select the text and copy it manually.',
-        type: 'error',
-      });
-    }
-  };
-
-  return (
-    <div className="flex min-w-0 items-center gap-1">
-      <code className="bg-base-200 min-w-0 flex-1 rounded px-2 py-1 font-mono text-sm break-all">
-        {value}
-      </code>
-      <Button
-        size="sm"
-        variant="ghost"
-        color="neutral"
-        shape="square"
-        aria-label={`Copy ${label}`}
-        title={`Copy ${label}`}
-        onClick={() => {
-          void copy();
-        }}
-      >
-        {copied ? (
-          <Check className="size-4" aria-hidden />
-        ) : (
-          <Copy className="size-4" aria-hidden />
-        )}
-      </Button>
-    </div>
-  );
-}
 
 /**
  * One DNS record as a labelled block rather than a table row.

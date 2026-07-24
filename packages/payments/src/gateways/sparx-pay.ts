@@ -21,6 +21,7 @@ import type {
 } from '../gateway';
 import { credentialRef, getPaymentSecretReader } from '../secrets';
 import { normalizeStripeEvent, toPaymentIntent, toPaymentResult } from '../stripe-util';
+import { constructEventWithAnySecret, parseWebhookSecrets } from '../webhook-secrets';
 
 export const SPARX_PAY_ID = 'sparx_pay';
 
@@ -158,24 +159,25 @@ export class SparxPayGateway implements PaymentGateway {
     return session.url;
   }
 
+  /** Every secret configured for this endpoint. Comma-separated because ONE URL takes
+   *  events from two Stripe endpoints (account-scoped payment/charge events + the
+   *  connected-account `account.updated`), each with its own signing secret — and
+   *  because a rolled secret overlaps with its predecessor. See webhook-secrets.ts. */
+  private secrets(): string[] {
+    return parseWebhookSecrets(process.env.STRIPE_WEBHOOK_SECRET_SPARX_PAY);
+  }
+
   verifyWebhookSignature(body: Buffer, signature: string): boolean {
-    const secret = process.env.STRIPE_WEBHOOK_SECRET_SPARX_PAY?.trim();
-    if (!secret) return false;
-    try {
-      this.platform().webhooks.constructEvent(body, signature, secret);
-      return true;
-    } catch {
-      return false;
-    }
+    return constructEventWithAnySecret(body, signature, this.secrets()) !== null;
   }
 
   parseWebhook(event: WebhookEvent): Promise<ParsedWebhookEvent> {
-    const secret = process.env.STRIPE_WEBHOOK_SECRET_SPARX_PAY?.trim() ?? '';
-    const stripeEvent = this.platform().webhooks.constructEvent(
-      event.rawBody,
-      event.signature,
-      secret
-    );
+    const stripeEvent = constructEventWithAnySecret(event.rawBody, event.signature, this.secrets());
+    if (!stripeEvent) {
+      // The route verifies before calling this, so reaching here means the secrets
+      // changed mid-request — surface it rather than silently dropping a payment.
+      throw new Error('sparx Pay webhook signature did not match any configured secret');
+    }
     return Promise.resolve(normalizeStripeEvent(stripeEvent));
   }
 }

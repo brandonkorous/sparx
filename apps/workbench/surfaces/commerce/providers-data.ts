@@ -71,6 +71,9 @@ export interface PaymentConfig {
   isActive: boolean;
   onboardedAt: string | null;
   sparxPay: SparxPayStatus;
+  /** gatewayId → the URL this tenant must register in their OWN processor dashboard.
+   *  Only bring-your-own gateways have one (sparx Pay's webhook is sparx's). */
+  webhookUrls?: Record<string, string>;
 }
 
 export interface MaskedGatewayCredential {

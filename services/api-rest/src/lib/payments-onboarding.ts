@@ -15,6 +15,7 @@
 import { getGatewayDescriptor, getPlatformStripe } from '@sparx/payments';
 import { prisma, withTenant } from '@sparx/db';
 
+import { env } from '../env.js';
 import { hasActiveCredentials } from './gateway-credentials.js';
 
 // Every catalog gateway is selectable (docs/111). sparx Pay / Stripe Direct keep their
@@ -45,6 +46,13 @@ export interface PaymentConfigState {
   isActive: boolean;
   onboardedAt: string | null;
   sparxPay: SparxPayStatus;
+  /** gatewayId → the URL the MERCHANT must register in their own processor dashboard.
+   *  Only bring-your-own gateways have one: sparx Pay's webhook is sparx's own platform
+   *  endpoint, but a `stripe_direct` merchant owns the Stripe account, so Stripe has no
+   *  way to tell us which tenant an event belongs to — the tenant rides in the path.
+   *  Without this surfaced, a merchant pastes their keys, checkout charges the card,
+   *  and the order never flips to paid because nothing ever told them to add a webhook. */
+  webhookUrls: Record<string, string>;
 }
 
 /** sparx Pay balance on the connected account (docs/110 GAP A). The money that has
@@ -106,6 +114,17 @@ async function fetchAccountStatus(
   };
 }
 
+/** The merchant-registered webhook URLs, per gateway. Empty when the public API origin
+ *  isn't configured — better to show nothing than a wrong URL a merchant would paste
+ *  into Stripe and then wait forever for events that never arrive. */
+function webhookUrlsFor(tenantId: string): Record<string, string> {
+  const base = env.SPARX_PUBLIC_API_REST_URL?.trim().replace(/\/+$/, '');
+  if (!base) return {};
+  return {
+    stripe_direct: `${base}/v1/public/webhooks/stripe-direct/${tenantId}`,
+  };
+}
+
 /** The full payment configuration + (for sparx Pay) live onboarding status. */
 export async function getPaymentConfig(tenantId: string): Promise<PaymentConfigState> {
   const config = await ensureConfig(tenantId);
@@ -127,6 +146,7 @@ export async function getPaymentConfig(tenantId: string): Promise<PaymentConfigS
     isActive: config.isActive,
     onboardedAt: config.onboardedAt?.toISOString() ?? null,
     sparxPay,
+    webhookUrls: webhookUrlsFor(tenantId),
   };
 }
 
