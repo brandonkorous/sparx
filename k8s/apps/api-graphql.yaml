@@ -75,20 +75,42 @@ spec:
             limits:
               cpu: '1000m'
               memory: '512Mi'
+          # The startupProbe is the fix — and it's FREE (no resource change). It gates
+          # liveness + readiness until the app is actually listening, so the heavy cold
+          # boot (Node evaluating the full schema surface + Prisma) can take its time
+          # instead of being SIGKILLed by liveness. Same incident as api-mcp on
+          # 2026-07-03, and again here on 2026-07-24: exit 137 with "connection refused"
+          # probes, killed at ~115s — because the old budget was initialDelay 15s +
+          # 3 × 30s = ~105s, which a 100m-CPU cold boot does not fit inside. With ONE
+          # replica that is a full outage, not degraded capacity, and it silently ate a
+          # production release (the rollout never went Available).
+          # The window is deliberately generous (60 × 5s = 300s) because boot is slow at
+          # 100m CPU. Raising CPU/memory would speed the boot but is an ongoing-cost
+          # decision (Autopilot bills per request) — left to the owner, not baked in.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3200
+            periodSeconds: 5
+            failureThreshold: 60
+            timeoutSeconds: 3
           livenessProbe:
             httpGet:
               path: /health
               port: 3200
-            initialDelaySeconds: 15
             periodSeconds: 30
             failureThreshold: 3
+            # 1s (the default) is far too tight for a CPU-throttled Node process: the
+            # later restarts here were "context deadline exceeded" — the server WAS
+            # listening, it just could not answer /health within a second.
+            timeoutSeconds: 5
           readinessProbe:
             httpGet:
               path: /health
               port: 3200
-            initialDelaySeconds: 3
             periodSeconds: 10
             failureThreshold: 2
+            timeoutSeconds: 5
           lifecycle:
             preStop:
               exec:

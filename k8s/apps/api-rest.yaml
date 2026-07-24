@@ -126,11 +126,26 @@ spec:
           # 5s tolerates event-loop stalls without masking a genuinely wedged
           # process; the liveness failureThreshold of 5 means a real hang still
           # gets killed within ~2.5min.
+          # The timeout fix above stopped steady-state crashlooping, but BOOT was still
+          # unprotected: liveness gave only initialDelay 30s + 5 × 30s = ~180s, and a
+          # cold start on 100m CPU can exceed that on a packed node — so pods landing
+          # on a busy node still died at exit 137 while their siblings came up fine
+          # (seen again 2026-07-24, and it is what times out `rollout status` in
+          # deploy-prod). A startupProbe is the structural fix and costs nothing: it
+          # gates liveness/readiness until the app is genuinely listening. Third time
+          # this class of bug has bitten (api-mcp 2026-07-03, api-rest 2026-07-18,
+          # api-graphql 2026-07-24) — hence the same generous 60 × 5s = 300s window.
+          startupProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            periodSeconds: 5
+            failureThreshold: 60
+            timeoutSeconds: 5
           livenessProbe:
             httpGet:
               path: /health
               port: 3000
-            initialDelaySeconds: 30
             periodSeconds: 30
             timeoutSeconds: 5
             failureThreshold: 5
