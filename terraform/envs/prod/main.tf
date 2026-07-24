@@ -144,6 +144,37 @@ module "pubsub" {
     "crm.customer.deleted" = []
     "crm.customer.merged"  = []
 
+    # The REST of the CRM bus. `CrmTopic` in packages/crm/src/events.ts is a
+    # SECOND event catalog, parallel to the `EventType` union in
+    # packages/events/src/types.ts — every name below is published for real, but
+    # only the four customer topics above had ever been provisioned. Found
+    # 2026-07-24 when a live order logged
+    # `publish failed … resource=crm.pipeline.created`, immediately after the
+    # 66-topic backfill below — which diffed only the `EventType` union and so
+    # could not see this catalog at all. Any drift check MUST cover both unions.
+    "crm.customer.subscribed"        = []
+    "crm.b2b_account.created"        = []
+    "crm.b2b_account.updated"        = []
+    "crm.pipeline.created"           = []
+    "crm.pipeline.updated"           = []
+    "crm.deal.created"               = []
+    "crm.deal.updated"               = []
+    "crm.deal.stage_changed"         = []
+    "crm.deal.closed"                = []
+    "crm.deal.order_attached"        = []
+    "crm.deal.order_detached"        = []
+    "crm.deal.document_attached"     = []
+    "crm.deal.document_detached"     = []
+    "crm.activity.recorded"          = []
+    "crm.task.created"               = []
+    "crm.task.updated"               = []
+    "crm.task.completed"             = []
+    "crm.segment.created"            = []
+    "crm.segment.updated"            = []
+    "crm.segment.entered"            = []
+    "crm.segment.exited"             = []
+    "crm.billing_document.converted" = []
+
     # Partner Program (docs/114 Part B) — topic-only fan-out (no idle pull
     # subscription yet); future consumers = staff notification + analytics +
     # the automation fan-in. api-rest publishes on partner activation, referral

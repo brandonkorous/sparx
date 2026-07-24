@@ -1,6 +1,6 @@
 # BUG-006 — Half the event catalog had no Pub/Sub topic, so every publish silently failed
 
-Status: **FIXED (terraform) 2026-07-24 — awaiting `terraform apply`**
+Status: **✅ FIXED — APPLIED + VERIFIED IN PRODUCTION 2026-07-24**
 Severity: High — no user-visible break, but every downstream consumer of ~half the
 platform's events received nothing
 Found: 2026-07-24, production payments E2E (seen on a real paid order)
@@ -48,13 +48,39 @@ Cost is nil: a Pub/Sub **topic** costs nothing to exist — only **subscriptions
 retention cost, and every entry added here has an empty subscriber list. A subscriber
 gets added to a list when its worker actually ships.
 
+## Second catalog found on apply (2026-07-24)
+
+Right after the 66-topic apply, a live order still logged
+`crm-pubsub: publish failed … resource=crm.pipeline.created`. Cause: there are
+**two** parallel event catalogs, and the first fix only closed one of them:
+
+- `EventType` in `packages/events/src/types.ts` — 134 names (the 66-topic fix)
+- **`CrmTopic` in `packages/crm/src/events.ts`** — 31 names, its own bus
+  (`crm-pubsub`) bridged to the same Pub/Sub project. Only the 4 `crm.customer.*`
+  topics had ever been provisioned; the other **22** (`crm.pipeline.*`,
+  `crm.deal.*`, `crm.task.*`, `crm.segment.*`, `crm.activity.recorded`,
+  `crm.b2b_account.*`, `crm.customer.subscribed`, `crm.billing_document.converted`)
+  had no topic.
+
+All 22 added to the terraform `topics` map (topic-only, `= []`) and applied.
+Final state: **171 topics, 0 declared-but-unprovisioned** across BOTH unions.
+
 ## Verify after apply
 
-- `gcloud pubsub topics list` returns all 134 event types.
-- Place an order → no `pubsub: publish failed` lines in api-rest logs.
+- `gcloud pubsub topics list` returns every name from both unions (171 total).
+- Place an order + refund it → no `pubsub: publish failed` / `crm-pubsub: publish
+  failed` lines in api-rest logs. **Confirmed 2026-07-24**: publish-failure count
+  dropped to 0 after both applies; the workbench activity feed shows live
+  "Checkout completed" entries (proof a previously-dead topic now flows).
 
-## Worth doing next
+## Recurrence guard — added 2026-07-24
 
-A CI check that diffs the `EventType` union against the terraform `topics` map and fails
-the build on drift would end this recurrence permanently — it has now cost three separate
-silent-failure incidents.
+`scripts/check-event-topics.mjs` (run via `pnpm check:events`, wired as the
+**Event ↔ topic parity** CI job in `.github/workflows/ci.yml`) now fails the
+build when any event declared in code has no topic in terraform. It unions BOTH
+catalogs — `EventType` (`packages/events`) AND `CrmTopic` (`packages/crm`) — so
+it catches exactly the gap that this session's first hand-diff missed. Pure
+Node, no install, so it runs fast and in parallel with the heavy jobs. Any PR
+adding an event without its topic now goes red before merge instead of failing
+silently in production. If a THIRD catalog is ever introduced, add it to the
+`CATALOGS` array in the script.
