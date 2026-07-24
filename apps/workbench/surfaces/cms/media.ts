@@ -27,6 +27,10 @@ export interface MediaAsset {
    *  the pane down. Callers pass `unoptimized={!canOptimize}` to be safe. */
   canOptimize: boolean;
   status: string;
+  /** 0..1 normalized subject point, defaulting to dead centre. Used when the image is
+   *  cropped to a shape other than its own (per-platform social previews). */
+  focalX: number;
+  focalY: number;
 }
 
 /** The media API is snake_case and returns every transcoded size; the picker
@@ -37,6 +41,12 @@ interface MediaAssetWire {
   mime_type: string;
   status: string;
   original_url: string | null;
+  // 0..1 normalized subject point. Set on the asset (the CMS image editor writes it),
+  // so every surface that CROPS the image to a different shape — the social composer's
+  // per-platform previews most of all — keeps the subject in frame instead of
+  // centre-cropping a head off. Absent → treated as dead centre.
+  focal_point_x?: number | null;
+  focal_point_y?: number | null;
   variants: { id: string; format: string; width: number; height: number; url: string }[];
 }
 
@@ -69,7 +79,15 @@ function toAsset(wire: MediaAssetWire): MediaAsset {
     url,
     canOptimize: isOwnMediaUrl(url),
     status: wire.status,
+    focalX: clampUnit(wire.focal_point_x),
+    focalY: clampUnit(wire.focal_point_y),
   };
+}
+
+/** A 0..1 focal coordinate, defaulting to centre for null/absent/out-of-range. */
+function clampUnit(value: number | null | undefined): number {
+  if (typeof value !== 'number' || Number.isNaN(value)) return 0.5;
+  return Math.min(1, Math.max(0, value));
 }
 
 export const mediaKeys = {

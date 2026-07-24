@@ -59,7 +59,8 @@ import { FormSection } from '../../components/form-section';
 import { useViewer } from '../../lib/api/shell-data';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaPickerProvider, AssetField } from '../cms/media-picker';
-import { useMediaAssets } from '../cms/media';
+import { useMediaAssets, type MediaAsset } from '../cms/media';
+import { PostPreview } from './post-preview';
 import {
   canApprove,
   canCompose,
@@ -96,6 +97,16 @@ interface Destination {
   name: string;
   platform: SocialPlatform;
   accountName: string;
+  /** The page/profile picture, so a preview reads as that account at a glance. */
+  avatarUrl: string | null;
+}
+
+/** "Instagram", "Instagram and TikTok", "Instagram, TikTok and Pinterest" — a plain
+ *  sentence-ready list, because a business owner reads prose, not an array. */
+function listNames(names: string[]): string {
+  if (names.length <= 1) return names[0] ?? '';
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(', ')} and ${names[names.length - 1]}`;
 }
 
 function fromLocalInput(local: string): string | null {
@@ -273,6 +284,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
           name: target.name,
           platform: connection.platform,
           accountName,
+          avatarUrl: target.avatarUrl ?? connection.avatarUrl,
         });
       }
     }
@@ -282,6 +294,15 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
   const dirty =
     body.trim() !== '' || link.trim() !== '' || mediaIds.length > 0 || selected.size > 0;
   useDirtySource(dirty && !compose.isSuccess, 'This post has not been saved yet. Close anyway?');
+
+  // Resolve the picked media so the previews can render the REAL image, cropped to each
+  // platform's shape. Kept in the author's chosen order (the query returns whatever
+  // order it likes; order decides which image leads a carousel).
+  const mediaAssets = useMediaAssets(mediaIds);
+  const orderedAssets = useMemo<MediaAsset[]>(() => {
+    const byId = new Map((mediaAssets.data ?? []).map((a) => [a.id, a]));
+    return mediaIds.map((id) => byId.get(id)).filter((a): a is MediaAsset => a !== undefined);
+  }, [mediaIds, mediaAssets.data]);
 
   const selectedDestinations = destinations.filter((d) => selected.has(d.targetId));
   const previews = selectedDestinations.map((dest) => {
@@ -370,7 +391,41 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
     );
   }
 
-  const noDestinations = overview.isSuccess && destinations.length === 0;
+  // Media is REQUIRED the moment a destination that demands it is selected. The label
+  // has to say so — calling it "optional" and letting the post fail later is the bug.
+  const mediaRequiredBy = selectedDestinations.filter(
+    (d) => catalogMap.get(d.platform)?.constraints.requiresMedia
+  );
+  const mediaMissing = mediaIds.length === 0 && mediaRequiredBy.length > 0;
+
+  // Nowhere to post yet. NOT a banner above a form that cannot be submitted — the one
+  // thing to do IS connecting an account, so it is the whole screen.
+  if (overview.isSuccess && destinations.length === 0) {
+    return (
+      <div className={PANE_SHELL}>
+        <div className="flex h-full items-center justify-center p-8">
+          <div className="flex max-w-md flex-col items-start gap-4">
+            <Heading level={1} className="text-2xl font-semibold">
+              Connect an account to start posting
+            </Heading>
+            <Text>
+              There is nowhere for a post to go yet. Connect a page or profile — your Facebook Page,
+              Instagram, Google Business listing — and it shows up here as a destination you can
+              write to.
+            </Text>
+            <Button
+              color="module"
+              onClick={() => {
+                ctx.open('social.connections');
+              }}
+            >
+              Connect an account
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={PANE_SHELL}>
@@ -391,288 +446,337 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
       </PaneToolbar>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              Write a post
-            </Heading>
-            <Text>
-              Write it once, choose where it goes, and see how it will read on each account before
-              it leaves.
-            </Text>
-          </div>
+        {/* Split studio: compose on the left, what it will ACTUALLY look like on the
+            right. Stacks to one column below lg so the composer works on a phone. */}
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4 lg:flex-row lg:items-start">
+          <div className="flex min-w-0 flex-1 flex-col gap-4">
+            <div className="flex flex-col gap-1">
+              <Heading level={1} className="text-2xl font-semibold">
+                Write a post
+              </Heading>
+              <Text>
+                Write it once, choose where it goes, and see exactly how it lands on each account
+                before it leaves.
+              </Text>
+            </div>
 
-          {failure ? (
-            <Alert color="error" variant="soft">
-              <AlertContent>
-                <AlertTitle>Could not save this post</AlertTitle>
-                <AlertDescription>{failure}</AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : null}
+            {failure ? (
+              <Alert color="error" variant="soft">
+                <AlertContent>
+                  <AlertTitle>Could not save this post</AlertTitle>
+                  <AlertDescription>{failure}</AlertDescription>
+                </AlertContent>
+              </Alert>
+            ) : null}
 
-          {noDestinations ? (
-            <Alert color="info" variant="soft">
-              <AlertContent>
-                <AlertTitle>Connect an account first</AlertTitle>
-                <AlertDescription>
-                  You have no accounts to post to yet. Connect one, and turn on the pages or
-                  profiles you want, then come back to write.
-                </AlertDescription>
-              </AlertContent>
-              <Button
-                size="sm"
-                color="info"
-                variant="soft"
-                onClick={() => {
-                  ctx.open('social.connections');
-                }}
+            {/* MEDIA FIRST. Most of these platforms are pictures-and-video first, and four
+              of them refuse a post without one — so this leads, and its label reflects
+              the CURRENT selection instead of always saying "optional". */}
+            <FormSection title="Pictures and video">
+              <Field>
+                <FieldLabel>
+                  {mediaRequiredBy.length > 0 ? 'Required for this post' : 'Add a picture or video'}
+                </FieldLabel>
+                <AssetField
+                  multiple
+                  value={mediaIds}
+                  onChange={(next) => {
+                    setMediaIds(Array.isArray(next) ? (next as string[]) : []);
+                  }}
+                />
+                <FieldDescription>
+                  {mediaMissing ? (
+                    <span className="text-error font-medium">
+                      {listNames(mediaRequiredBy.map((d) => platformName(d.platform, catalogMap)))}{' '}
+                      will not post without one.
+                    </span>
+                  ) : mediaRequiredBy.length > 0 ? (
+                    <>
+                      Needed by{' '}
+                      {listNames(mediaRequiredBy.map((d) => platformName(d.platform, catalogMap)))}{' '}
+                      — the preview shows how each one crops it.
+                    </>
+                  ) : (
+                    <>
+                      Optional for the accounts you have picked, but a picture is what gets a post
+                      seen. The preview shows how each account crops it.
+                    </>
+                  )}
+                </FieldDescription>
+              </Field>
+            </FormSection>
+
+            <FormSection title="Your words">
+              <Field>
+                <FieldLabel>What do you want to say?</FieldLabel>
+                <FieldControl
+                  render={
+                    <Textarea
+                      color="module"
+                      rows={5}
+                      value={body}
+                      placeholder="Share news, an offer, or what you are up to…"
+                      onChange={(event) => {
+                        setBody(event.target.value);
+                      }}
+                    />
+                  }
+                />
+                <FieldDescription>
+                  {body.length.toLocaleString()} {body.length === 1 ? 'character' : 'characters'} ·
+                  the preview shows anything an account will cut.
+                </FieldDescription>
+              </Field>
+
+              <Field>
+                <FieldLabel>Add a link (optional)</FieldLabel>
+                <FieldControl
+                  render={
+                    <Input
+                      color="module"
+                      value={link}
+                      placeholder="https://yourbusiness.com/news"
+                      autoComplete="off"
+                      spellCheck={false}
+                      onChange={(event) => {
+                        setLink(event.target.value);
+                      }}
+                    />
+                  }
+                />
+                <FieldDescription>
+                  A page you want people to visit. Each account treats a link differently — the
+                  preview shows which.
+                </FieldDescription>
+              </Field>
+            </FormSection>
+
+            {destinations.length > 0 ? (
+              <FormSection
+                title="Where it goes"
+                description="Pick the pages and profiles this post should land on. Each shows how it will read there."
               >
-                Go to connections
-              </Button>
-            </Alert>
-          ) : null}
-
-          <FormSection title="Your post">
-            <Field>
-              <FieldLabel>What do you want to say?</FieldLabel>
-              <FieldControl
-                render={
-                  <Textarea
-                    color="module"
-                    rows={5}
-                    value={body}
-                    placeholder="Share news, an offer, or what you are up to…"
-                    onChange={(event) => {
-                      setBody(event.target.value);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                {body.length.toLocaleString()} {body.length === 1 ? 'character' : 'characters'} ·
-                each account trims to its own limit automatically.
-              </FieldDescription>
-            </Field>
-
-            <Field>
-              <FieldLabel>Add a link (optional)</FieldLabel>
-              <FieldControl
-                render={
-                  <Input
-                    color="module"
-                    value={link}
-                    placeholder="https://yourbusiness.com/news"
-                    autoComplete="off"
-                    spellCheck={false}
-                    onChange={(event) => {
-                      setLink(event.target.value);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>A page you want people to visit from the post.</FieldDescription>
-            </Field>
-
-            <Field>
-              <FieldLabel>Pictures or video (optional)</FieldLabel>
-              <AssetField
-                multiple
-                value={mediaIds}
-                onChange={(next) => {
-                  setMediaIds(Array.isArray(next) ? (next as string[]) : []);
-                }}
-              />
-              <FieldDescription>
-                Some accounts (like Instagram) will not post without a picture — you will see that
-                warning under any account it applies to.
-              </FieldDescription>
-            </Field>
-          </FormSection>
-
-          {destinations.length > 0 ? (
-            <FormSection
-              title="Where it goes"
-              description="Pick the pages and profiles this post should land on. Each shows how it will read there."
-            >
-              <div className="flex flex-col gap-2">
-                {destinations.map((dest) => {
-                  const on = selected.has(dest.targetId);
-                  const constraints = catalogMap.get(dest.platform)?.constraints;
-                  const text = effectiveText(overrides[dest.targetId]?.textOverride, body);
-                  return (
-                    <div
-                      key={dest.targetId}
-                      className="border-base-300 flex flex-col gap-2 rounded-lg border p-3"
-                    >
-                      <label className="flex cursor-pointer items-start gap-3">
-                        <Checkbox
-                          color="module"
-                          size="sm"
-                          className="mt-0.5"
-                          checked={on}
-                          aria-label={`Post to ${dest.name}`}
-                          onChange={() => {
-                            toggle(dest.targetId);
-                          }}
-                        />
-                        <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                          <span className="font-medium">{dest.name}</span>
-                          <span className="text-sm">{platformName(dest.platform, catalogMap)}</span>
-                        </span>
-                      </label>
-                      {on && body.trim() !== '' ? (
-                        <div className="pl-8">
-                          <PreviewNotes
-                            constraints={constraints}
-                            text={text}
-                            mediaCount={mediaIds.length}
-                          />
-                        </div>
-                      ) : null}
-                    </div>
-                  );
-                })}
-              </div>
-            </FormSection>
-          ) : null}
-
-          {selectedDestinations.length > 0 ? (
-            <FormSection
-              title="Fine-tune per destination (optional)"
-              description="Leave these blank to use the same words everywhere. Set them only where one account needs something different."
-            >
-              <div className="flex flex-col gap-4">
-                {selectedDestinations.map((dest) => {
-                  const ov = overrides[dest.targetId] ?? { textOverride: '', firstComment: '' };
-                  return (
-                    <div key={dest.targetId} className="flex flex-col gap-2">
-                      <Text className="text-sm font-semibold">{dest.name}</Text>
-                      <Textarea
-                        color="module"
-                        rows={2}
-                        value={ov.textOverride}
-                        placeholder="Different wording just for this account…"
-                        aria-label={`Different wording for ${dest.name}`}
-                        onChange={(event) => {
-                          setOverrides((current) => ({
-                            ...current,
-                            [dest.targetId]: { ...ov, textOverride: event.target.value },
-                          }));
-                        }}
-                      />
-                      <Input
-                        color="module"
-                        value={ov.firstComment}
-                        placeholder="First comment (e.g. your hashtags)…"
-                        aria-label={`First comment for ${dest.name}`}
-                        onChange={(event) => {
-                          setOverrides((current) => ({
-                            ...current,
-                            [dest.targetId]: { ...ov, firstComment: event.target.value },
-                          }));
-                        }}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </FormSection>
-          ) : null}
-
-          <FormSection title="Ready to send?">
-            {selected.size === 0 ? (
-              <Text className="text-sm">Pick at least one destination above first.</Text>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {hasBlock ? (
-                  <Alert color="warning" variant="soft">
-                    <AlertContent>
-                      <AlertTitle>One destination needs a fix first</AlertTitle>
-                      <AlertDescription>
-                        A destination above cannot post as things stand — add what it needs, or turn
-                        it off for this post. You can still save a draft.
-                      </AlertDescription>
-                    </AlertContent>
-                  </Alert>
-                ) : null}
-
-                {requireApproval ? (
-                  <div className="flex items-start gap-2">
-                    <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden />
-                    <Text className="text-sm">
-                      Approval is on, so a post you schedule or submit waits for an admin before it
-                      goes live.
-                    </Text>
-                  </div>
-                ) : null}
-
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-wrap items-end gap-3">
-                    <Field className="min-w-0">
-                      <FieldLabel>Schedule for later</FieldLabel>
-                      <FieldControl
-                        render={
-                          <Input
+                <div className="flex flex-col gap-2">
+                  {destinations.map((dest) => {
+                    const on = selected.has(dest.targetId);
+                    const constraints = catalogMap.get(dest.platform)?.constraints;
+                    const text = effectiveText(overrides[dest.targetId]?.textOverride, body);
+                    return (
+                      <div
+                        key={dest.targetId}
+                        className="border-base-300 flex flex-col gap-2 rounded-lg border p-3"
+                      >
+                        <label className="flex cursor-pointer items-start gap-3">
+                          <Checkbox
                             color="module"
-                            type="datetime-local"
-                            className="max-w-xs"
-                            value={scheduleLocal}
-                            onChange={(event) => {
-                              setScheduleLocal(event.target.value);
+                            size="sm"
+                            className="mt-0.5"
+                            checked={on}
+                            aria-label={`Post to ${dest.name}`}
+                            onChange={() => {
+                              toggle(dest.targetId);
                             }}
                           />
-                        }
-                      />
-                    </Field>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      color="module"
-                      loading={compose.isPending && compose.variables?.action === 'schedule'}
-                      disabled={!canSaveDraft || !scheduleValid || hasBlock}
-                      onClick={() => {
-                        run('schedule');
-                      }}
-                    >
-                      <CalendarClock className="size-4" aria-hidden />
-                      Schedule
-                    </Button>
-                  </div>
+                          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                            <span className="font-medium">{dest.name}</span>
+                            <span className="text-sm">
+                              {platformName(dest.platform, catalogMap)}
+                            </span>
+                          </span>
+                        </label>
+                        {on && body.trim() !== '' ? (
+                          <div className="pl-8">
+                            <PreviewNotes
+                              constraints={constraints}
+                              text={text}
+                              mediaCount={mediaIds.length}
+                            />
+                          </div>
+                        ) : null}
+                      </div>
+                    );
+                  })}
+                </div>
+              </FormSection>
+            ) : null}
 
-                  <div className="border-base-300 flex flex-wrap items-center gap-2 border-t pt-3">
-                    <Button
-                      size="sm"
-                      color="module"
-                      variant="outline"
-                      loading={compose.isPending && compose.variables?.action === 'submit'}
-                      disabled={!canSaveDraft || hasBlock}
-                      onClick={() => {
-                        run('submit');
-                      }}
-                    >
-                      <Send className="size-4" aria-hidden />
-                      Submit for approval
-                    </Button>
-                    {isAdmin ? (
+            {selectedDestinations.length > 0 ? (
+              <FormSection
+                title="Fine-tune per destination (optional)"
+                description="Leave these blank to use the same words everywhere. Set them only where one account needs something different."
+              >
+                <div className="flex flex-col gap-4">
+                  {selectedDestinations.map((dest) => {
+                    const ov = overrides[dest.targetId] ?? { textOverride: '', firstComment: '' };
+                    return (
+                      <div key={dest.targetId} className="flex flex-col gap-2">
+                        <Text className="text-sm font-semibold">{dest.name}</Text>
+                        <Textarea
+                          color="module"
+                          rows={2}
+                          value={ov.textOverride}
+                          placeholder="Different wording just for this account…"
+                          aria-label={`Different wording for ${dest.name}`}
+                          onChange={(event) => {
+                            setOverrides((current) => ({
+                              ...current,
+                              [dest.targetId]: { ...ov, textOverride: event.target.value },
+                            }));
+                          }}
+                        />
+                        <Input
+                          color="module"
+                          value={ov.firstComment}
+                          placeholder="First comment (e.g. your hashtags)…"
+                          aria-label={`First comment for ${dest.name}`}
+                          onChange={(event) => {
+                            setOverrides((current) => ({
+                              ...current,
+                              [dest.targetId]: { ...ov, firstComment: event.target.value },
+                            }));
+                          }}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </FormSection>
+            ) : null}
+
+            <FormSection title="Ready to send?">
+              {selected.size === 0 ? (
+                <Text className="text-sm">Pick at least one destination above first.</Text>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {hasBlock ? (
+                    <Alert color="warning" variant="soft">
+                      <AlertContent>
+                        <AlertTitle>One destination needs a fix first</AlertTitle>
+                        <AlertDescription>
+                          A destination above cannot post as things stand — add what it needs, or
+                          turn it off for this post. You can still save a draft.
+                        </AlertDescription>
+                      </AlertContent>
+                    </Alert>
+                  ) : null}
+
+                  {requireApproval ? (
+                    <div className="flex items-start gap-2">
+                      <ShieldCheck className="mt-0.5 size-4 shrink-0" aria-hidden />
+                      <Text className="text-sm">
+                        Approval is on, so a post you schedule or submit waits for an admin before
+                        it goes live.
+                      </Text>
+                    </div>
+                  ) : null}
+
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-wrap items-end gap-3">
+                      <Field className="min-w-0">
+                        <FieldLabel>Schedule for later</FieldLabel>
+                        <FieldControl
+                          render={
+                            <Input
+                              color="module"
+                              type="datetime-local"
+                              className="max-w-xs"
+                              value={scheduleLocal}
+                              onChange={(event) => {
+                                setScheduleLocal(event.target.value);
+                              }}
+                            />
+                          }
+                        />
+                      </Field>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        color="module"
+                        loading={compose.isPending && compose.variables?.action === 'schedule'}
+                        disabled={!canSaveDraft || !scheduleValid || hasBlock}
+                        onClick={() => {
+                          run('schedule');
+                        }}
+                      >
+                        <CalendarClock className="size-4" aria-hidden />
+                        Schedule
+                      </Button>
+                    </div>
+
+                    <div className="border-base-300 flex flex-wrap items-center gap-2 border-t pt-3">
                       <Button
                         size="sm"
                         color="module"
-                        loading={compose.isPending && compose.variables?.action === 'publish'}
+                        variant="outline"
+                        loading={compose.isPending && compose.variables?.action === 'submit'}
                         disabled={!canSaveDraft || hasBlock}
                         onClick={() => {
-                          run('publish');
+                          run('submit');
                         }}
                       >
                         <Send className="size-4" aria-hidden />
-                        Publish now
+                        Submit for approval
                       </Button>
-                    ) : null}
+                      {isAdmin ? (
+                        <Button
+                          size="sm"
+                          color="module"
+                          loading={compose.isPending && compose.variables?.action === 'publish'}
+                          disabled={!canSaveDraft || hasBlock}
+                          onClick={() => {
+                            run('publish');
+                          }}
+                        >
+                          <Send className="size-4" aria-hidden />
+                          Publish now
+                        </Button>
+                      ) : null}
+                    </div>
                   </div>
                 </div>
+              )}
+            </FormSection>
+          </div>
+
+          {/* The payoff: the real thing, per account, as you type. Sticky on desktop so
+              it stays in view while the words change; just follows the flow on mobile. */}
+          <aside className="flex w-full flex-col gap-3 lg:sticky lg:top-4 lg:w-[400px] lg:shrink-0">
+            <div className="flex flex-col gap-1">
+              <Heading level={2} className="text-base font-semibold">
+                How it will look
+              </Heading>
+              <Text className="text-sm">
+                {selectedDestinations.length === 0
+                  ? 'Pick a destination and its preview appears here.'
+                  : 'Cropped to each account’s shape, cut to its limit.'}
+              </Text>
+            </div>
+
+            {selectedDestinations.length === 0 ? (
+              <div className="border-base-300 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-8 text-center">
+                <ImageIcon className="size-6" aria-hidden />
+                <Text className="text-sm">No destinations picked yet.</Text>
               </div>
+            ) : (
+              selectedDestinations.map((dest) => {
+                const ov = overrides[dest.targetId];
+                return (
+                  <PostPreview
+                    key={dest.targetId}
+                    platform={dest.platform}
+                    platformLabel={platformName(dest.platform, catalogMap)}
+                    destinationName={dest.name}
+                    avatarUrl={dest.avatarUrl}
+                    constraints={catalogMap.get(dest.platform)?.constraints}
+                    text={effectiveText(ov?.textOverride, body)}
+                    link={link.trim() || undefined}
+                    firstComment={ov?.firstComment}
+                    media={orderedAssets}
+                  />
+                );
+              })
             )}
-          </FormSection>
+          </aside>
         </div>
       </div>
     </div>

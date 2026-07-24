@@ -130,6 +130,11 @@ const EnvSchema = z
     //   secret (superseded by the per-gateway secrets below).
     // STRIPE_WEBHOOK_SECRET_SPARX_PAY — whsec_... for the sparx Pay (Connect
     //   destination-charge) payment webhook POST /v1/public/webhooks/sparx-pay.
+    //   COMMA-SEPARATED LIST: that ONE url is fed by TWO Stripe endpoints — the
+    //   account-scoped one (payment_intent.* / charge.*) and the connected-account
+    //   one (account.updated) — and Stripe issues each its own signing secret. A
+    //   rolled secret overlaps for 24h, which needs the same. Every configured
+    //   secret is tried; one value behaves exactly like a plain single secret.
     //   Read by @sparx/payments' SparxPayGateway; declared here so boot validates it
     //   and .env.example documents it. (Stripe Direct uses per-tenant secrets in GSM,
     //   not an env var; the BYO gateways verify with their own stored secrets.)
@@ -137,6 +142,7 @@ const EnvSchema = z
     // STRIPE_WEBHOOK_SECRET_BILLING — whsec_... for the PLATFORM billing webhook
     //   (subscription/invoice events). Separate endpoint, separate signing secret
     //   (docs/67 §6) so a commerce-webhook secret rotation can't break billing.
+    //   Also a comma-separated list, for rotation overlap.
     STRIPE_SECRET_KEY: z.string().optional(),
     STRIPE_PUBLISHABLE_KEY: z.string().optional(),
     STRIPE_WEBHOOK_SECRET: z.string().optional(),

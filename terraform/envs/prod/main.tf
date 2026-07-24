@@ -314,6 +314,11 @@ module "secrets" {
     # via `gcloud secrets versions add customer-auth-secret --data-file=-`.
     "customer-auth-secret",
     "stripe-secret-key",
+    # Connect OAuth client id (`ca_…`) — the ONBOARDING wizard's "Connect Stripe" step
+    # (GET /v1/tenant/onboarding/stripe/connect-url) hard-fails with "Stripe Connect is
+    # not configured on this platform." without it. Not needed by the Settings →
+    # Payments (Connect Express / sparx Pay) path, which mints accounts directly.
+    "stripe-client-id",
     "stripe-webhook-secret",
     # Stripe webhook signing secrets — ONE PER ENDPOINT, and the code reads them by
     # endpoint-specific name, NOT the generic `stripe-webhook-secret` above:
@@ -322,6 +327,10 @@ module "secrets" {
     #     that flips an order to paid). While unset, that route logs a warning and
     #     200-ACKS WITHOUT PROCESSING — cards are charged, orders stay unpaid, and no
     #     confirmation email is sent. Silent, so it must be populated before go-live.
+    #     Its value is a COMMA-SEPARATED LIST: that one URL is fed by TWO Stripe
+    #     endpoints (account-scoped payment/charge events + the connected-account
+    #     account.updated), each with its own whsec_, and a rolled secret overlaps
+    #     for 24h. Put both in one secret version, comma-separated.
     #   stripe-webhook-secret-billing → STRIPE_WEBHOOK_SECRET_BILLING, verifying the
     #     platform module-billing endpoint (@sparx/billing). Same fail-silent shape.
     # Value comes from Stripe → Developers → Webhooks → <endpoint> → signing secret

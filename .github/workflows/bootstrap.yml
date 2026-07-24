@@ -238,6 +238,7 @@ jobs:
             sparx-internal-cron-token
             sparx-internal-operator-token
             stripe-secret-key
+            stripe-client-id
             stripe-webhook-secret
             stripe-webhook-secret-sparx-pay
             stripe-webhook-secret-billing
