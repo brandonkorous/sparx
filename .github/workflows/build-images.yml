@@ -68,6 +68,7 @@ jobs:
           - billing-worker
           - webhook-worker
           - channel-sync-worker
+          - social-worker # @sparx/social-worker — publishes due social posts (docs/133)
     steps:
       - uses: actions/checkout@v4
 
