@@ -1,8 +1,8 @@
 # sparx Platform — Typesense Search Specification
 
-**Version:** 1.1.1
+**Version:** 1.2.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-07-24
 
 ---
 
@@ -14,6 +14,7 @@ Built end-to-end across four shippable slices (branch `feat/typesense-search-pha
 - **Indexing pipeline:** real-time via Pub/Sub. Products/variants/inventory already published; **customers** flow through the CRM bus (`crm.customer.*`) and **orders** through the platform bus (`order.*`), both bridged to Google Pub/Sub by `@sparx/crm/pubsub` and consumed by the `commerce-indexer` Cloud Run worker. Full reindex via `POST /v1/search/reindex` → `search.reindex.requested` → worker bulk-projection from Postgres.
 - **API:** `GET /v1/search/{products,customers,orders}`, `GET /v1/search` (palette), `GET /v1/search/status`, `POST /v1/search/reindex`, `GET /v1/search/key` (scoped-key), plus the public site `GET /v1/public/commerce/search` (Typesense-ranked, Postgres-hydrated cards + facet counts).
 - **Surfaces:** site `/search` faceted page, dashboard ⌘K deep search, CRM orders list, and MCP tools (`search_products/customers/orders/all`, scope `read:search`).
+- **Reindex is reachable by the tenant, not just the operator.** Alongside `POST /v1/search/reindex` (admin role) and the operator endpoint, the MCP tool **`rebuild_search_index`** publishes the same `search.reindex.requested` event under a dedicated **`write:search`** scope (owner/admin-grantable only, confirmation-gated). It lives in `services/api-mcp/src/search-admin-tools.ts` rather than `@sparx/search`, deliberately: publishing needs `@google-cloud/pubsub` and `@sparx/search` is imported by the Next apps for ⌘K. Without it, "my products are in the catalog but storefront search finds nothing" — the exact symptom of an index that never populated — had no remedy from inside the tenant.
 - **Synonyms (§6):** GLOBAL only. Per-tenant custom synonyms are **NOT** possible with shared collections (they'd leak across tenants) — deferred to a future per-tenant-collection model.
 - **Scoped keys:** require a search-only parent key (`TYPESENSE_SEARCH_KEY`), never the admin key; endpoint 501s until provisioned. Server-proxied search is the default; browser-direct querying is opt-in.
 

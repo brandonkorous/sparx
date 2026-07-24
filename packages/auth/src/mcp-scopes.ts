@@ -36,6 +36,7 @@ export type McpBusinessScope =
   | 'write:email'
   | 'write:email_bulk'
   | 'read:search'
+  | 'write:search'
   | 'read:automations'
   | 'write:automations'
   | 'read:domains'
@@ -179,6 +180,15 @@ export const MCP_SCOPE_CATALOG: readonly McpScopeMeta[] = [
     description: 'Search products, customers, orders across the tenant.',
   },
   {
+    scope: 'write:search',
+    module: 'Search',
+    kind: 'write',
+    label: 'Rebuild the search index',
+    description:
+      'Rebuild the search index from your data when results have gone stale. Does not change any of your records.',
+    sensitive: true,
+  },
+  {
     scope: 'read:automations',
     module: 'Automations',
     kind: 'read',
@@ -260,8 +270,13 @@ export function grantableScopesForRole(role: StaffRole): McpBusinessScope[] {
     case 'admin':
       return all;
     case 'editor':
-      // read + non-bulk write (no *_bulk, no write:domains).
-      return all.filter((s) => !s.endsWith('_bulk') && s !== 'write:domains');
+      // read + non-bulk write (no *_bulk, no write:domains). `write:search` is
+      // excluded too: the REST route it mirrors (POST /v1/search/reindex) requires
+      // the admin role, and a tenant-wide index rebuild is an operations action,
+      // not an editing one.
+      return all.filter(
+        (s) => !s.endsWith('_bulk') && s !== 'write:domains' && s !== 'write:search'
+      );
     case 'viewer':
       return all.filter((s) => s.startsWith('read:'));
     case 'api':

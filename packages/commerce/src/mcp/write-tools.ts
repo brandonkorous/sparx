@@ -14,6 +14,8 @@ import {
   ModerateReviewInput,
   PauseSubscriptionInput,
   ResumeSubscriptionInput,
+  UpdateProductInput,
+  UpdateVariantInput,
 } from '@sparx/commerce-schemas';
 
 import {
@@ -95,6 +97,54 @@ const createProduct: McpToolDefinition = {
         : {}),
     });
     return { id: product.id, handle: product.handle, variantId: variant.id, sku: variant.sku };
+  },
+};
+
+/** Edit an existing listing. `create_product` shipped without a partner, which left an
+ *  agent able to add a product and retire it but never CORRECT one — a typo in a title
+ *  or a wrong price meant archiving the listing and rebuilding it, losing the handle and
+ *  burning the SKU (tenant-unique even once soft-deleted). `UpdateProductInput` is a true
+ *  partial: omitted fields are left alone, and the nullable ones accept an explicit null
+ *  to clear. Price lives on the variant, not the product — see `update_variant`. */
+const UpdateProductArgs = z.object({
+  productId: z.string().uuid(),
+  patch: UpdateProductInput,
+});
+
+const updateProduct: McpToolDefinition = {
+  name: 'update_product',
+  description:
+    "Edit an existing product: title, description, status, handle, tags, vendor, product type, SEO, and its category/collection/site links. Send only the fields you want to change — anything you omit is left untouched — inside `patch`. To change the PRICE, use update_variant: price lives on the product's variant. Setting status to `active` publishes it to the storefront; `archived` withdraws it.",
+  scope: 'write:commerce',
+  confirmation: true,
+  input: UpdateProductArgs,
+  run: async (ctx, raw) => {
+    const { productId, patch } = UpdateProductArgs.parse(raw);
+    const product = await productService.update(ctx, productId, patch);
+    return { id: product.id, handle: product.handle, title: product.title, status: product.status };
+  },
+};
+
+/** The price/SKU half of "edit a product". Kept separate because that is the real shape
+ *  of the data — a product has many variants and each carries its own price, SKU, and
+ *  stock policy — not because the agent should have to care which call to make; both
+ *  tool descriptions point at each other. */
+const UpdateVariantArgs = z.object({
+  variantId: z.string().uuid(),
+  patch: UpdateVariantInput,
+});
+
+const updateVariant: McpToolDefinition = {
+  name: 'update_variant',
+  description:
+    "Edit one variant of a product — its price (`priceCents`), compare-at price, SKU, barcode, cost, weight, and stock policy. This is where a product's PRICE lives: `create_product` returns the `variantId` of the default variant it made, and get_product lists a product's variants. Send only the fields you want to change; pass null to clear a compare-at price, cost, or barcode.",
+  scope: 'write:commerce',
+  confirmation: true,
+  input: UpdateVariantArgs,
+  run: async (ctx, raw) => {
+    const { variantId, patch } = UpdateVariantArgs.parse(raw);
+    await variantService.update(ctx, variantId, patch);
+    return { id: variantId, updated: true };
   },
 };
 
@@ -213,6 +263,8 @@ const setSurcharge: McpToolDefinition = {
 
 export const writeTools: AnyMcpTool[] = [
   createProduct,
+  updateProduct,
+  updateVariant,
   publishProduct,
   archiveProduct,
   bulkUpdateProductStatus,

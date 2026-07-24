@@ -8,12 +8,17 @@ import { z } from 'zod';
 import {
   CancelBookingInput,
   CreateBookingInput,
+  CreateResourceInput,
   CreateServiceInput,
   RescheduleBookingInput,
+  SetAvailabilityWindowsInput,
+  UpdateResourceInput,
   UpdateServiceInput,
 } from '@sparx/scheduling-schemas';
 
+import { setAvailabilityWindows } from '../availability-rules';
 import { cancelBooking, createBooking, rescheduleBooking } from '../booking-service';
+import { createResource, deleteResource, updateResource } from '../resources';
 import { createService, deleteService, updateService } from '../services';
 
 import type { McpToolDefinition } from './registry';
@@ -89,6 +94,59 @@ export const deleteServiceTool: McpToolDefinition = {
     })),
 };
 
+// ── Resources + hours (the other half of "set up the schedule") ──────────────
+// A service on its own is inert. The availability engine offers a slot only when
+// some ACTIVE, online-bookable resource of the kind the service needs is free for
+// the whole span — and a resource with no weekly hours is never free. So an agent
+// that can create services but not resources-and-hours still leaves the tenant's
+// /book page empty, which is the same dead end `create_scheduling_service` was
+// added to fix, one layer down. Creating a service, a resource, and that
+// resource's hours is the complete "set up my schedule" path.
+
+export const createResourceTool: McpToolDefinition = {
+  name: 'create_scheduling_resource',
+  description:
+    'Create a bookable RESOURCE — the staff member, room, table, vehicle, or piece of equipment a booking actually occupies. Set `kind` and `name`; `timezone` (IANA, e.g. "America/Denver") should match where the work happens, since weekly hours are read in the resource\'s own zone. Services with no explicit requirements look for a `staff` resource, so that is the kind to create first. A new resource has NO hours yet — follow with set_resource_hours or it will never be offered.',
+  scope: 'write:scheduling',
+  confirmation: true,
+  input: CreateResourceInput,
+  run: (ctx, input) => createResource(ctx.tenantId, input as CreateResourceInput),
+};
+
+export const updateResourceTool: McpToolDefinition = {
+  name: 'update_scheduling_resource',
+  description:
+    'Update a bookable resource by `id` — name, kind, timezone, capacity, skill tags, bookableOnline, isActive, and so on. Only the fields you pass change. Setting `isActive:false` or `bookableOnline:false` immediately withdraws every slot it was the only cover for.',
+  scope: 'write:scheduling',
+  confirmation: true,
+  input: UpdateResourceInput,
+  run: (ctx, input) => updateResource(ctx.tenantId, input as UpdateResourceInput),
+};
+
+export const deleteResourceTool: McpToolDefinition = {
+  name: 'delete_scheduling_resource',
+  description:
+    'Soft-delete a bookable resource by `id`. Existing bookings keep their reference to it; it simply stops being offered. To pause someone temporarily use update_scheduling_resource with isActive:false instead.',
+  scope: 'write:scheduling',
+  confirmation: true,
+  input: z.object({ id: z.string().uuid() }),
+  run: (ctx, input) =>
+    deleteResource(ctx.tenantId, (input as { id: string }).id).then(() => ({
+      id: (input as { id: string }).id,
+      deleted: true,
+    })),
+};
+
+export const setResourceHoursTool: McpToolDefinition = {
+  name: 'set_resource_hours',
+  description:
+    "Set a resource's recurring weekly hours — the days and times it is open for bookings. REPLACES the whole week in one call, so send every window you want to keep: `dayOfWeek` 0=Sunday..6=Saturday, `startMinute`/`endMinute` as minutes from local midnight (9am = 540, 5pm = 1020). Send two windows on a day to model a lunch break. An empty `windows` array clears the schedule and stops the resource being offered at all. Times are read in the RESOURCE's timezone; `validFrom`/`validTo` (YYYY-MM-DD) bound a seasonal schedule.",
+  scope: 'write:scheduling',
+  confirmation: true,
+  input: SetAvailabilityWindowsInput,
+  run: (ctx, input) => setAvailabilityWindows(ctx.tenantId, input as SetAvailabilityWindowsInput),
+};
+
 export const writeTools = [
   createBookingTool,
   rescheduleBookingTool,
@@ -96,4 +154,8 @@ export const writeTools = [
   createServiceTool,
   updateServiceTool,
   deleteServiceTool,
+  createResourceTool,
+  updateResourceTool,
+  deleteResourceTool,
+  setResourceHoursTool,
 ];

@@ -15,6 +15,7 @@ import { automationMcpTools } from '@sparx/automation';
 import { schedulingMcpTools } from '@sparx/scheduling';
 import { cmsMcpTools } from '@sparx/cms/mcp';
 import { domainMcpTools } from './domain-tools.js';
+import { searchAdminMcpTools } from './search-admin-tools.js';
 
 // Structural type spanning every module's tool definition. Each module declares
 // its own scope union; here we only need the shared shape (scope is a string).
@@ -43,6 +44,9 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   ...(mediaMcpTools as unknown as AnyMcpTool[]),
   ...(emailMcpTools as unknown as AnyMcpTool[]),
   ...(searchMcpTools as unknown as AnyMcpTool[]),
+  // Index maintenance lives here, not in @sparx/search — see search-admin-tools.ts
+  // for why the one WRITE search tool is kept out of that package.
+  ...(searchAdminMcpTools as unknown as AnyMcpTool[]),
   // Automations are a PLATFORM capability (no module slug); the tools are
   // reachable whenever MCP itself is (the `ai` module gate in auth.ts).
   ...(automationMcpTools as unknown as AnyMcpTool[]),
@@ -104,6 +108,7 @@ const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:invoicing',
   'write:scheduling',
   'write:cms',
+  'write:search',
 ]);
 
 const TOOLS_BY_NAME: ReadonlyMap<string, AnyMcpTool> = new Map(

@@ -5,7 +5,9 @@
 import { z } from 'zod';
 
 import { getAvailability } from '../availability';
+import { listAvailabilityWindows } from '../availability-rules';
 import { getBooking, listBookings } from '../booking-queries';
+import { listResources } from '../resources';
 import { listServices } from '../services';
 
 import type { McpToolDefinition } from './registry';
@@ -72,4 +74,53 @@ export const getBookingTool: McpToolDefinition = {
   run: (ctx, input) => getBooking(ctx.tenantId, (input as { bookingId: string }).bookingId),
 };
 
-export const readTools = [listServicesTool, getAvailabilityTool, listBookingsTool, getBookingTool];
+// ── Who/what does the work ───────────────────────────────────────────────────
+// A service says what is bookable; a RESOURCE (a staff member, room, table, piece
+// of equipment) is what actually has to be free for a slot to exist. When an agent
+// is diagnosing "the service exists but nothing is bookable", these two reads are
+// the answer: no matching resource, or a resource with no weekly hours.
+
+export const listResourcesTool: McpToolDefinition = {
+  name: 'list_scheduling_resources',
+  description:
+    "List the tenant's bookable resources — the staff, rooms, tables, or equipment a booking consumes. A service offers no times unless at least one ACTIVE, online-bookable resource of the kind it needs has weekly hours, so start here when availability comes back empty.",
+  scope: 'read:scheduling',
+  confirmation: false,
+  input: z.object({
+    kind: z.enum(['staff', 'room', 'table', 'equipment', 'vehicle', 'asset']).optional(),
+    locationId: z.string().uuid().optional(),
+    activeOnly: z.boolean().optional(),
+  }),
+  run: (ctx, input) => {
+    const { kind, locationId, activeOnly } = input as {
+      kind?: string;
+      locationId?: string;
+      activeOnly?: boolean;
+    };
+    return listResources(ctx.tenantId, {
+      ...(kind !== undefined ? { kind } : {}),
+      ...(locationId !== undefined ? { locationId } : {}),
+      activeOnly: activeOnly ?? true,
+    });
+  },
+};
+
+export const listResourceHoursTool: McpToolDefinition = {
+  name: 'list_resource_hours',
+  description:
+    "A resource's recurring weekly hours — the days and local times it is open for bookings. An empty list means the resource can never be booked, however many services point at it.",
+  scope: 'read:scheduling',
+  confirmation: false,
+  input: z.object({ resourceId: z.string().uuid() }),
+  run: (ctx, input) =>
+    listAvailabilityWindows(ctx.tenantId, (input as { resourceId: string }).resourceId),
+};
+
+export const readTools = [
+  listServicesTool,
+  getAvailabilityTool,
+  listBookingsTool,
+  getBookingTool,
+  listResourcesTool,
+  listResourceHoursTool,
+];
