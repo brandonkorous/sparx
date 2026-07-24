@@ -74,6 +74,9 @@
   --color-error: #b42318;
   --color-error-content: #ffffff;
 
+  /* --color-neutral: #0c1433; */
+  --color-neutral-content: #ffffff;
+
   /* danger — the N-th named color. sparx `statusTone()` returns `danger`, so we
      register it (see the plugin `colors:` list) and pair it here. Same hue as
      `error`; kept as its own name so the platform's status vocabulary is exact.
@@ -113,6 +116,9 @@
   --color-error: #ef4444;
   --color-error-content: #ffffff;
 
+  /* --color-neutral: #08111f; */
+  --color-neutral-content: #ffffff;
+
   /* danger — see the light theme's note; same hue as `error`, own name so the
      platform's `statusTone()` vocabulary resolves. */
   --color-danger: #ef4444;
@@ -127,9 +133,9 @@
   --color-module-content: var(--color-primary-content);
 
   /* Surfaces */
-  --color-base-300: #0c1433;
-  --color-base-200: #161f42;
-  --color-base-100: #242e57;
+  --color-base-300: #020307;
+  --color-base-200: #05070f;
+  --color-base-100: #070a16;
 }
 
 /* ── Module identity palette ───────────────────────────────────────────────────

@@ -59,14 +59,24 @@ export function SiteBrand({
         <>
           {/* Both logos ship; CSS picks. The theme can flip client-side, so choosing in
               JS would need an effect (and would flash the wrong mark on first paint).
-              Rendering both and letting `dark:` decide is correct at SSR. */}
+              Rendering both and letting the theme selector decide is correct at SSR.
+
+              The swap keys on `[data-theme="dark"]`, NOT Tailwind's `dark:` variant. The
+              storefront's dark mode is the `data-theme` attribute the theme toggle + the
+              no-flash script set on <html> — it has nothing to do with the OS
+              `prefers-color-scheme`, which is what a bare `dark:` compiles to here (this
+              app defines no `@custom-variant dark`). Using `dark:` meant the light logo
+              (dark ink) stayed on in a dark theme when the OS was light — invisible ink on
+              a dark bar, and vice-versa. The attribute selector tracks the real theme. */}
           {/* A raw <img>, not next/image: the logo is an arbitrary tenant media URL and
               usually an SVG, which next/image can neither optimize nor size. */}
           <img
             src={logoUrl!}
             alt={showName ? '' : name}
             className={
-              logoDarkUrl ? 'h-8 w-auto object-contain dark:hidden' : 'h-8 w-auto object-contain'
+              logoDarkUrl
+                ? 'h-8 w-auto object-contain [[data-theme=dark]_&]:hidden'
+                : 'h-8 w-auto object-contain'
             }
             {...(showName ? { 'aria-hidden': true } : {})}
           />
@@ -74,7 +84,7 @@ export function SiteBrand({
             <img
               src={logoDarkUrl}
               alt={showName ? '' : name}
-              className="hidden h-8 w-auto object-contain dark:block"
+              className="hidden h-8 w-auto object-contain [[data-theme=dark]_&]:block"
               {...(showName ? { 'aria-hidden': true } : {})}
             />
           ) : null}

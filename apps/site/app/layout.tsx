@@ -335,6 +335,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         ? buildSilicaThemeCss(snapshot.compiledV2)
         : '';
 
+  // The floating chrome that lives OUTSIDE the silica frame — the chat launcher, the
+  // OG accent — historically read `site.theme.colorPrimary`, the LEGACY brand-compiled
+  // primary. On a silica-framed site that diverges from what the visitor actually sees:
+  // the legacy value is derived from the tenant Brand record, not the authored silica
+  // theme, so a tenant whose silica theme is (say) Ember still got an indigo chat
+  // bubble. Prefer the silica theme's own `--color-primary` when silica is active.
+  const silicaThemePrimary = silicaActive
+    ? silicaFrame.theme?.tokens?.['--color-primary']
+    : undefined;
+
   // The fonts to load, or the storefront renders every theme in the Geist fallback.
   // The AUTHORED silica theme leads: a typeface/heading font picked in the builder's
   // Design inspector lives ONLY in that theme (`--font-head` + `theme.fonts`), not the
@@ -652,7 +662,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <ChatWidget
                       apiUrl={chatApiUrl}
                       tenantSlug={site.slug}
-                      accentColor={site.theme?.colorPrimary ?? null}
+                      accentColor={silicaThemePrimary ?? site.theme?.colorPrimary ?? null}
                     />
                   ) : null}
                 </StorefrontBuilderRuntime>
