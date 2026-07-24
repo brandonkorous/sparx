@@ -138,7 +138,12 @@ const EnvSchema = z
     //   Read by @sparx/payments' SparxPayGateway; declared here so boot validates it
     //   and .env.example documents it. (Stripe Direct uses per-tenant secrets in GSM,
     //   not an env var; the BYO gateways verify with their own stored secrets.)
-    // STRIPE_CLIENT_ID        — Connect OAuth client_id (ca_...)
+    // STRIPE_CLIENT_ID        — DEPRECATED / unused. Was the Connect OAuth client_id
+    //   (ca_...) for the old "connect an existing Standard account" onboarding flow,
+    //   which was removed in favour of the sparx Pay Express Account-Link flow (the
+    //   same one Settings → Payments uses) — Account Links need no client_id. Kept
+    //   optional so a still-provisioned `stripe-client-id` secret doesn't fail boot;
+    //   the secret can be de-provisioned from bootstrap.yml + terraform later.
     // STRIPE_WEBHOOK_SECRET_BILLING — whsec_... for the PLATFORM billing webhook
     //   (subscription/invoice events). Separate endpoint, separate signing secret
     //   (docs/67 §6) so a commerce-webhook secret rotation can't break billing.

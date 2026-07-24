@@ -1,21 +1,17 @@
 'use client';
 
-// Stripe Connect OAuth landing (onboarding payments step).
+// sparx Pay (Stripe Connect Express) onboarding landing — the payments step's popup.
 //
-// Stripe redirects the connect popup here with ?code=&state= (or ?error= if the
-// owner cancels). This page runs ONLY in that popup: it hands the values back to
-// the workbench window that opened it via postMessage, then closes itself. The
-// exchange for a stored connection happens back in the payments step, on the
-// workbench's own token — nothing sensitive is handled here, and the code/state
-// are same-origin data passed straight through.
+// Stripe returns the popup here after the merchant finishes hosted onboarding
+// (return_url) or when the single-use Account Link expires (refresh_url). Unlike the
+// old OAuth flow there is NO code/state to hand back — the Express account is created
+// and reconciled entirely on the backend — so this page just signals "the popup came
+// back" to the workbench window that opened it, which then refreshes sparx Pay status.
 //
-// A popup (not a full-page redirect like the dashboard) so the in-page onboarding
-// flow keeps its state — losing the composed story or a half-filled wizard to an
-// OAuth round-trip is exactly the interruption the workbench avoids.
-//
-// NOTE: the redirect_uri `${origin}/onboarding/stripe-callback` must be registered
-// in the Stripe Connect app's allowed OAuth redirect URIs for each origin the
-// workbench runs on (localhost:3011 in dev, the deployed workbench host in prod).
+// A popup (not a full-page redirect) so the in-page onboarding keeps its state —
+// losing the composed story or a half-filled wizard to a Stripe round-trip is exactly
+// the interruption the workbench avoids. Account Links need no redirect-URI
+// registration (unlike OAuth), so this route works on any origin the workbench runs on.
 //
 // It reads from `window.location` inside an effect rather than `useSearchParams`
 // so it needs no Suspense boundary and never runs on the server — this is a
@@ -30,13 +26,11 @@ export default function StripeConnectCallbackPage() {
     const params = new URLSearchParams(window.location.search);
     const message = {
       source: 'sparx-stripe' as const,
-      code: params.get('code') ?? undefined,
-      state: params.get('state') ?? undefined,
+      done: true,
       error: params.get('error') ?? undefined,
     };
 
-    // Hand the result back to the window that opened this popup. Target the exact
-    // origin rather than '*' so the code/state can never be read cross-origin.
+    // Signal the window that opened this popup. Target the exact origin (never '*').
     const opener = window.opener as Window | null;
     opener?.postMessage(message, window.location.origin);
 

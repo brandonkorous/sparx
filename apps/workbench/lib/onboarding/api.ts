@@ -306,19 +306,31 @@ export function useOnboardingActions() {
     }
 
     // ── Step 5 — Payments ──────────────────────────────────────────────────────
-    // The workbench uses a popup + postMessage (like the Search Console connect),
-    // so no full-page redirect is needed and the in-page flow keeps its state.
-    // `redirectUri` is the workbench's own /onboarding/stripe-callback.
-    async function getStripeConnectUrl(redirectUri: string): Promise<string> {
-      const data = await api.get<{ url: string }>(
-        `/v1/tenant/onboarding/stripe/connect-url?redirect_uri=${encodeURIComponent(redirectUri)}`
+    // sparx Pay = Stripe Connect EXPRESS (the same model as Settings → Payments). We
+    // open Stripe's hosted Account Link in a popup (not a full-page redirect) so the
+    // in-page onboarding keeps its state; the popup returns to
+    // /onboarding/stripe-callback, which postMessages a "done" signal. There is no
+    // OAuth code to exchange — the account is created + reconciled by the backend — so
+    // on return we just refresh status. `returnUrl`/`refreshUrl` are the popup's own
+    // callback (Stripe hits `return_url` when the merchant finishes, `refresh_url` if
+    // the single-use link expired and needs re-minting).
+    async function startPaymentsOnboarding(
+      returnUrl: string,
+      refreshUrl: string
+    ): Promise<{ url: string; accountId: string }> {
+      return api.post<{ url: string; accountId: string }>(
+        '/v1/tenant/onboarding/payments/onboard',
+        { returnUrl, refreshUrl }
       );
-      return data.url;
     }
 
-    async function exchangeStripeCode(code: string, state?: string): Promise<void> {
-      await api.post('/v1/tenant/onboarding/stripe/exchange', { code, state });
+    async function refreshPaymentsStatus(): Promise<{ connected: boolean }> {
+      const data = await api.post<{ connected: boolean }>(
+        '/v1/tenant/onboarding/payments/refresh',
+        {}
+      );
       done();
+      return data;
     }
 
     async function completePayments(input: {
@@ -423,8 +435,8 @@ export function useOnboardingActions() {
       completeDomainStep,
       getPrimaryProperty,
       purchaseDomain,
-      getStripeConnectUrl,
-      exchangeStripeCode,
+      startPaymentsOnboarding,
+      refreshPaymentsStatus,
       completePayments,
       getPreviewToken,
       publishAndFinish,

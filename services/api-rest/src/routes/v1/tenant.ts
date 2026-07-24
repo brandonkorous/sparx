@@ -27,7 +27,7 @@ import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireVerifiedEmail } from '../../lib/verified-email-guard.js';
-import { badRequest, conflict, forbidden, notFound } from '@sparx/api-core/errors';
+import { badRequest, conflict, notFound } from '@sparx/api-core/errors';
 import {
   requiredModules,
   blockingDependents,
@@ -47,9 +47,12 @@ import {
 } from '../../lib/module-toggle.js';
 import { computeBannerEnabled } from '../../lib/consent.js';
 import { resolvePropertyId } from '../../lib/property.js';
+import {
+  PaymentsUnconfiguredError,
+  refreshSparxPayStatus,
+  startSparxPayOnboarding,
+} from '../../lib/payments-onboarding.js';
 import { env } from '../../env.js';
-import Stripe from 'stripe';
-import { SignJWT, jwtVerify } from 'jose';
 
 const PatchConsent = z.object({
   mode: z.enum(['off', 'gdpr', 'ccpa']).optional(),
@@ -728,14 +731,23 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     // receives writes). Auto-seeded legal pages (legal_kind set, docs/42) are
     // excluded so the step reflects a page the tenant actually created. Read
     // inside withRequestTenant so the FORCE-RLS count is tenant-scoped.
-    const [pageCount, tenantRow] = await Promise.all([
+    const [pageCount, paymentConfig] = await Promise.all([
       withRequestTenant(request, (tx) =>
         tx.contentEntry.count({ where: { typeKey: 'page', legalKind: null, deletedAt: null } })
       ),
-      prisma.tenant.findUnique({
-        where: { id: auth.tenantId },
-        select: { stripeAccountId: true },
-      }),
+      // The payments step is "done" when the tenant can actually collect — the
+      // stored `isActive` on their gateway config (sparx Pay charges-enabled, an
+      // api-key gateway with credentials, or manual). This reads the same synced
+      // flag Settings → Payments shows, so the two never disagree. (It replaced a
+      // `Boolean(stripeAccountId)` check that flipped "done" the instant the Express
+      // account was CREATED — before onboarding/KYC finished — and only knew about
+      // sparx Pay.)
+      withRequestTenant(request, (tx) =>
+        tx.tenantPaymentConfig.findUnique({
+          where: { tenantId: auth.tenantId },
+          select: { isActive: true },
+        })
+      ),
     ]);
 
     const steps = [
@@ -777,7 +789,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
         id: 'payments' as const,
         title: 'Connect payments',
         description: 'Connect Stripe to accept orders and payouts.',
-        done: Boolean(tenantRow?.stripeAccountId),
+        done: Boolean(paymentConfig?.isActive),
         cta: { label: 'Connect Stripe', href: '/onboarding?step=payments' },
       },
     ];
@@ -790,88 +802,62 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
     return ok({ state, pageCount, steps, completion });
   });
 
-  // ── Stripe Connect OAuth ──────────────────────────────────────────────────
+  // ── sparx Pay onboarding (Stripe Connect EXPRESS) ─────────────────────────
   //
-  //   GET  /v1/tenant/onboarding/stripe/connect-url  → { url } (owner only)
-  //   POST /v1/tenant/onboarding/stripe/exchange      → { stripeAccountId }
+  //   POST /v1/tenant/onboarding/payments/onboard  { returnUrl, refreshUrl } → { url, accountId }
+  //   POST /v1/tenant/onboarding/payments/refresh   → { connected, status }
   //
-  // The connect-url route builds the Stripe OAuth URL with a signed state JWT
-  // (HS256, tid+exp) so the exchange endpoint can verify CSRF. The callback
-  // lives in the dashboard at /onboarding/stripe-callback, which posts back
-  // here to exchange the code.
+  // Onboarding's "Connect payments" step shares the SAME Stripe Connect EXPRESS
+  // account model as Settings → Payments (docs/94): one connected account per tenant
+  // on `tenant.stripeAccountId`, one Stripe-hosted Account Link flow, reconciled by
+  // the same lib. This REPLACED an older OAuth/Standard "connect an existing account"
+  // flow that wrote the SAME `stripeAccountId` column with an incompatible Standard
+  // account — which then broke the Express-only payouts/balance UI (login links +
+  // shared balance are Express/Custom only) and never touched `tenant_payment_configs`,
+  // so Settings mis-reported a connected tenant as "Not collecting". A merchant who
+  // wants to use their OWN Stripe account picks `stripe_direct` in Settings (pasted
+  // keys), not a second account-connect path.
+  //
+  // NOT gated on the commerce module: payments are connected during onboarding, before
+  // commerce is configured (and underpin invoicing/scheduling too). The commerce
+  // Settings surface (`/v1/commerce/payments/*`) is the module-gated twin over this
+  // same lib. `startSparxPayOnboarding` creates-or-resumes the account, so re-running
+  // is idempotent.
 
-  app.get('/v1/tenant/onboarding/stripe/connect-url', async (request, reply) => {
-    const auth = requireRole(request, 'owner');
-    await requireVerifiedEmail(request);
-
-    if (!env.STRIPE_CLIENT_ID) {
-      throw badRequest('Stripe Connect is not configured on this platform.');
-    }
-    if (!env.SPARX_INTERNAL_JWT_SECRET) {
-      throw badRequest('Internal JWT secret is not configured.');
-    }
-
-    const redirectUri = (request.query as Record<string, string>).redirect_uri ?? '';
-    if (!redirectUri) throw badRequest('redirect_uri is required');
-
-    // Short-lived (10 min) state token to prevent CSRF on the callback.
-    const secret = new TextEncoder().encode(env.SPARX_INTERNAL_JWT_SECRET);
-    const state = await new SignJWT({ tid: auth.tenantId })
-      .setProtectedHeader({ alg: 'HS256' })
-      .setExpirationTime('10m')
-      .sign(secret);
-
-    const params = new URLSearchParams({
-      response_type: 'code',
-      client_id: env.STRIPE_CLIENT_ID,
-      scope: 'read_write',
-      redirect_uri: redirectUri,
-      state,
-    });
-    const url = `https://connect.stripe.com/oauth/authorize?${params.toString()}`;
-    return reply.send(ok({ url }));
+  const OnboardBody = z.object({
+    returnUrl: z.string().url(),
+    refreshUrl: z.string().url(),
   });
 
-  const ExchangeBody = z.object({ code: z.string().min(1), state: z.string().min(1) });
-
-  app.post('/v1/tenant/onboarding/stripe/exchange', async (request, reply) => {
+  app.post('/v1/tenant/onboarding/payments/onboard', async (request) => {
     const auth = requireRole(request, 'owner');
     await requireVerifiedEmail(request);
-
-    if (!env.STRIPE_SECRET_KEY) {
-      throw badRequest('Stripe is not configured on this platform.');
-    }
-    if (!env.SPARX_INTERNAL_JWT_SECRET) {
-      throw badRequest('Internal JWT secret is not configured.');
-    }
-
-    const body = ExchangeBody.parse(request.body);
-
-    // Verify state JWT and confirm it belongs to the authenticated tenant.
-    const secret = new TextEncoder().encode(env.SPARX_INTERNAL_JWT_SECRET);
-    let payload: { tid?: unknown };
+    const body = OnboardBody.parse(request.body);
     try {
-      const result = await jwtVerify(body.state, secret);
-      payload = result.payload as { tid?: unknown };
-    } catch {
-      throw forbidden('Invalid or expired state token.');
+      return ok(await startSparxPayOnboarding({ tenantId: auth.tenantId, ...body }));
+    } catch (err) {
+      if (err instanceof PaymentsUnconfiguredError) {
+        throw badRequest(
+          'Payments are not available yet — the platform is not configured to accept them.'
+        );
+      }
+      throw err;
     }
-    if (payload.tid !== auth.tenantId) throw forbidden('State token tenant mismatch.');
+  });
 
-    // Exchange the authorization code for a Stripe account ID.
-    const stripe = new Stripe(env.STRIPE_SECRET_KEY, {
-      apiVersion: '2024-11-20.acacia' as Stripe.LatestApiVersion,
+  app.post('/v1/tenant/onboarding/payments/refresh', async (request) => {
+    const auth = requireRole(request, 'owner');
+    await requireVerifiedEmail(request);
+    // Called when the onboarding popup returns from Stripe: pull live account status
+    // and sync `tenant_payment_configs.isActive` so the step (and Settings) reflect
+    // real charge-readiness immediately, without waiting for the account.updated webhook.
+    const config = await refreshSparxPayStatus(auth.tenantId);
+    return ok({
+      // The Express account exists once onboarding has begun; charge-ability (KYC) may
+      // still be pending in Stripe. The step's "done" tracks `isActive` (charges enabled).
+      connected: Boolean(config.sparxPay.accountId),
+      status: config.sparxPay,
     });
-    const token = await stripe.oauth.token({ grant_type: 'authorization_code', code: body.code });
-    const stripeAccountId = token.stripe_user_id;
-    if (!stripeAccountId) throw badRequest('Stripe did not return an account ID.');
-
-    await prisma.tenant.update({
-      where: { id: auth.tenantId },
-      data: { stripeAccountId },
-    });
-
-    return reply.send(ok({ stripeAccountId }));
   });
 };
 

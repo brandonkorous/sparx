@@ -136,14 +136,23 @@ export async function getPaymentConfig(tenantId: string): Promise<PaymentConfigS
     payoutsEnabled: false,
     detailsSubmitted: false,
   };
+  // For sparx Pay, the DISPLAYED "collecting" state tracks Stripe's LIVE
+  // charges_enabled, not just the stored flag — so Settings never mis-reads a
+  // charge-ready account as "Not collecting" in the window before the
+  // account.updated webhook / an explicit refresh has synced `isActive`. (The
+  // stored flag is still what the webhook syncs and the sync-writes update.)
+  let isActive = config.isActive;
   if (config.gatewayId === 'sparx_pay' && accountId) {
     const live = await fetchAccountStatus(accountId);
-    if (live) sparxPay = { accountId, ...live };
+    if (live) {
+      sparxPay = { accountId, ...live };
+      isActive = live.chargesEnabled;
+    }
   }
 
   return {
     gatewayId: config.gatewayId,
-    isActive: config.isActive,
+    isActive,
     onboardedAt: config.onboardedAt?.toISOString() ?? null,
     sparxPay,
     webhookUrls: webhookUrlsFor(tenantId),

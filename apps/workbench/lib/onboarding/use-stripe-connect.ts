@@ -1,23 +1,24 @@
 'use client';
 
-// The Stripe Connect handshake, as a hook — so the wizard's payments step and the
-// story's "get paid" chapter share ONE copy of the fiddly part (open Stripe in a
-// popup, listen for the same-origin callback's postMessage, exchange the code) and
-// only differ in how they PRESENT it.
+// The sparx Pay (Stripe Connect EXPRESS) onboarding handshake, as a hook — so the
+// wizard's payments step and the story's "get paid" chapter share ONE copy of the
+// fiddly part (open Stripe's hosted onboarding in a popup, wait for the callback's
+// postMessage, then refresh status) and only differ in how they PRESENT it.
 //
 // The workbench keeps its whole flow on one page, so it never full-page redirects to
-// Stripe (that would evaporate every in-page choice). It opens a popup and waits for
-// /onboarding/stripe-callback to postMessage the OAuth result back — the same shape
-// the Search Console connect uses. Connecting is always optional; the caller's CTA
-// proceeds either way.
+// Stripe (that would evaporate every in-page choice). It opens the Account Link in a
+// popup and waits for /onboarding/stripe-callback to postMessage back. There is no
+// OAuth code to exchange — the backend created + reconciles the Express account — so
+// on return we simply refresh sparx Pay status. Connecting is always optional; the
+// caller's CTA proceeds either way.
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { OnboardingActions } from './api';
 
 interface StripeMessage {
   source: 'sparx-stripe';
-  code?: string;
-  state?: string;
+  /** The popup returned from Stripe's hosted onboarding (no OAuth code any more). */
+  done?: boolean;
   error?: string;
 }
 
@@ -58,20 +59,15 @@ export function useStripeConnect(
 
       if (event.data.error) {
         setConnecting(false);
-        setError(
-          event.data.error === 'access_denied'
-            ? 'Stripe connection was cancelled.'
-            : 'Stripe could not connect. Please try again.'
-        );
-        return;
-      }
-      if (!event.data.code) {
-        setConnecting(false);
+        setError('Stripe could not connect. Please try again.');
         return;
       }
 
+      // The popup returned from Stripe's hosted onboarding. Pull live status so the
+      // step reflects charge-readiness right away (and syncs the config so Settings
+      // agrees), then let the caller advance.
       void actions
-        .exchangeStripeCode(event.data.code, event.data.state)
+        .refreshPaymentsStatus()
         .then(() => {
           setConnecting(false);
           onConnected();
@@ -92,10 +88,12 @@ export function useStripeConnect(
   const connect = useCallback(() => {
     setError(null);
     setConnecting(true);
-    const redirectUri = `${window.location.origin}/onboarding/stripe-callback`;
+    // Stripe returns the popup to this callback route on finish (return_url) or when
+    // the single-use link expires (refresh_url). The callback page postMessages back.
+    const callback = `${window.location.origin}/onboarding/stripe-callback`;
     void actions
-      .getStripeConnectUrl(redirectUri)
-      .then((url) => {
+      .startPaymentsOnboarding(callback, callback)
+      .then(({ url }) => {
         const popup = window.open(url, 'sparx-stripe-connect', 'width=520,height=720');
         if (!popup) {
           setConnecting(false);
