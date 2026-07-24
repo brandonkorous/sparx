@@ -1,6 +1,12 @@
 # BUG-003 — Storefront `/shop` (and all search) 500s: Kubernetes service-link shadows `TYPESENSE_PORT`
 
-Status: **FIXED (code + manifest) 2026-07-24 — awaiting deploy** (typecheck + lint green, uncommitted)
+Status: ✅ **FIXED — VERIFIED IN PRODUCTION 2026-07-24**
+
+Verified after deploy: `https://keen-cedar-6433.sparx.zone/shop` → **HTTP 200** (was 500),
+and `GET /v1/public/commerce/search?tenant=keen-cedar-6433` returns the real indexed
+product. That second fact also proves the **commerce-indexer writes recovered** — the
+same collision had been breaking indexing, so a working search result means both the
+read and write paths are healthy again.
 Severity: **Critical** — every faceted PLP (`/shop`) and every product/⌘K search 500s in prod
 Found: 2026-07-24, diagnosing the test tenant `keen-cedar-6433.sparx.zone/shop`
 Surface: `packages/search` (Typesense client) + `services/api-rest` (`/v1/public/commerce/search`)

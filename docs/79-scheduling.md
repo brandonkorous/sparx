@@ -1,8 +1,8 @@
 # 79 — sparx Scheduling Module Spec
 
-**Version:** 1.4
+**Version:** 1.5
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-22
+**Last Updated:** 2026-07-24
 
 ---
 
@@ -17,8 +17,8 @@
 > `apps/dashboard` into `apps/workbench` (the `apps/dashboard/...` paths in §6.1/§13.3
 > now live under `apps/workbench`). Still open: intake / consultation forms (models
 > only — no API/UI), the Builder `Booking` catalog component + off-site embed, the
-> walk-in queue board, the reservations floor-plan, and **6 of the 13 MCP tools** (7
-> shipped).
+> walk-in queue board, the reservations floor-plan, and the remaining **reporting/waitlist
+> MCP tools** (16 shipped, incl. the full service + resource + hours setup path — §17.2).
 
 ## 1. Overview
 
@@ -1144,6 +1144,24 @@ Registered in [07-mcp-server-spec.md](07-mcp-server-spec.md) §3 style. Write to
 | `check_in`                   | write | Check a customer in / mark attended                                             |
 | `promote_waitlist`           | write | Offer a freed slot to the next waitlisted customer                              |
 | `create_service_appointment` | write | B2B/fleet: book linked to account + asset, with a parts check against Inventory |
+
+**Shipped set (2026-07-24) — `packages/scheduling/src/mcp/`.** Names differ from the sketch
+above; these are the source of truth.
+
+| Tool                                                                                                              | Scope | Note                                                         |
+| ----------------------------------------------------------------------------------------------------------------- | ----- | ------------------------------------------------------------ |
+| `list_scheduling_services` · `get_scheduling_availability` · `list_bookings` · `get_booking`                      | read  | The booking-lifecycle reads.                                 |
+| `list_scheduling_resources` · `list_resource_hours`                                                               | read  | Why availability is empty is almost always one of these two. |
+| `create_booking` · `reschedule_booking` · `cancel_booking`                                                        | write | The lifecycle.                                               |
+| `create_scheduling_service` · `update_scheduling_service` · `delete_scheduling_service`                           | write | What is bookable.                                            |
+| `create_scheduling_resource` · `update_scheduling_resource` · `delete_scheduling_resource` · `set_resource_hours` | write | Who/what does the work, and when.                            |
+
+The last two rows are **setup**, and they exist because the lifecycle alone was a dead end: the
+tools could take a booking but never define what was bookable, and a service with no resource —
+or a resource with no weekly hours — offers zero slots (§7.2: a slot needs an active,
+online-bookable resource free for the buffered span). An agent asked to "set up my schedule"
+now has the whole path: service → resource → hours. `set_resource_hours` replaces the whole
+week per call, matching the editor's save shape, so it is idempotent to re-run.
 
 ---
 

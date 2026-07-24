@@ -1,6 +1,10 @@
 # BUG-001 — Storefront silently swallows the out-of-stock add-to-cart 409
 
-Status: **FIXED (code) 2026-07-24 — awaiting deploy** (typecheck + lint green, uncommitted)
+Status: **FIXED + DEPLOYED 2026-07-24 — error path not yet re-tested**
+(The happy path is confirmed working post-deploy: add-to-cart succeeds and the cart
+updates, so making `addItem` throw did not break a successful add. Re-testing the
+FAILURE path needs a `deny`-policy out-of-stock variant, which the test tenant no
+longer has — its Test Widget was stocked to 100 units for the payment run.)
 Severity: High (a shopper believes an item is in their cart when it is not)
 Found: 2026-07-24, during the production Stripe/payments E2E run
 Reporter: Brandon Korous

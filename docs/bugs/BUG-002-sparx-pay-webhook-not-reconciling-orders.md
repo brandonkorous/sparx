@@ -1,6 +1,28 @@
 # BUG-002 — sparx Pay charge succeeds but the order stays "Not paid" (webhook↔complete race + resend-proof dedupe)
 
-Status: **FIX IMPLEMENTED — awaiting deploy + prod re-test** (was: GO-LIVE BLOCKER)
+Status: ✅ **FIXED — VERIFIED IN PRODUCTION 2026-07-24** (was: GO-LIVE BLOCKER)
+
+## Verification (production, 2026-07-24, after deploy)
+
+A fresh sandbox checkout on the same test tenant produced order **O-000002**, and the
+race happened AGAIN — the webhook still beat `complete()`. This time it self-healed:
+
+```
+… "chargeId":"pi_3TwnibFY8gqB2fvj0qTz663B",
+   "msg":"payment webhook: succeeded intent has no order or invoice"   ← webhook won the race
+… (1.7s later, DIFFERENT request_id = the checkout-complete route)
+   "orderId":"a3053aee-…","amountCents":2500,"msg":"payment webhook: order paid"   ← Part A recovered it
+```
+
+Confirmed at every level: the orders list shows **O-000002 · Paid**; the API reports
+`paymentStatus: "paid"`, `amountPaid: 25`, `paidAt` set; the connected account's balance
+is `pendingCents: 4974` — exactly 2 × $25.00 − 2 × $0.13 platform fee, proving both
+orders' destination charges + the 0.5% fee landed on the merchant's account.
+
+**Part A (real-time capture) is verified.** Part B (resend recovers) and Part C (sweep)
+are deployed in code but NOT yet exercised: the sweep CronJob still needs
+`gh workflow run bootstrap.yml -f components=cronjobs`, which is also why the original
+`O-000001` is still "Not paid" — it will heal on the first sweep, or on a Stripe resend.
 Severity: Critical — real customers get charged; order shows unpaid; no receipt; no `order.paid`
 Found: 2026-07-24, production Stripe/payments E2E run (Stripe **sandbox** keys in prod)
 Fixed (code): 2026-07-24 — all three parts landed in the working tree (typecheck + lint green);

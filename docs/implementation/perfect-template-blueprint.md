@@ -1,6 +1,6 @@
 # Perfect Template → sparx Blueprint
 
-Version: 0.3.0
+Version: 0.4.0
 Author: Brandon Korous
 Last Updated: 2026-07-24
 
@@ -9,17 +9,34 @@ Last Updated: 2026-07-24
 
 > ## ▶ RESUME HERE
 >
-> The live site is built and verified. **All code work is done and gate-green but
-> UNCOMMITTED — the deploy is the gate** (see _Deploy dependency_). Once Brandon commits +
-> deploys `apps/site` + `api-rest` (BUG-003) + `api-mcp`, and the MCP is reconnected:
+> **v1.161.0 is deployed** (2026-07-24 12:53 UTC) — BUG-003, the logo/chat fixes, and the
+> first MCP batch are all live and verified. Two things now gate the rest:
 >
-> 1. Seed **bookable services** (`create_scheduling_service`) → /book populates.
-> 2. Swap the catalog: archive the 10 smoothies, `create_product` × ~6 neutral goods.
-> 3. Verify live: logo flips, chat accent Ember, `/search` + `/products` + `/shop` PLP 200.
-> 4. **Author the blueprint bundle** (see _Bundle authoring spec_ — the repo skeleton is
->    STALE, author against the schema documented there) → capture site → validate → ingest.
+> **(a) The MCP connector must be RECONNECTED.** api-mcp v1.161.0 serves
+> `create_product` + `create_scheduling_service`, but a client that connected before the
+> rollout still has the OLD tools/list cached — they are un-callable until the connector
+> is refreshed. Verified: the pod runs v1.161.0, and `git tag --contains d563c31d` → v1.161.0.
 >
-> Do NOT re-litigate _Locked decisions_. Constraints #2 / #2b were fixed this session —
+> **(b) A SECOND deploy** for the batch added after v1.161.0 (see _MCP capability work_):
+> `update_product`, `update_variant`, the scheduling **resource + hours** tools, and
+> `rebuild_search_index`. The new `write:search` scope means the connector must
+> **re-consent**, not merely reconnect — do (a) and (b) in one pass.
+>
+> Then, in order:
+>
+> 1. **`rebuild_search_index`** — the Typesense products collection is EMPTY for this
+>    tenant (BUG-004), so `/shop`, `/search`, and `/products` all render "No products
+>    found" even though 21 products exist. Nothing about the catalog looks right until
+>    this runs.
+> 2. Seed the schedule: `create_scheduling_service` → `create_scheduling_resource`
+>    (kind `staff`) → `set_resource_hours`. All three, or /book stays empty.
+> 3. Swap the catalog: archive the 10 smoothies, `create_product` × ~6 neutral goods
+>    (`update_product` now exists, so corrections no longer mean rebuild-and-lose-the-SKU).
+> 4. Verify live: logo flips, chat accent Ember, `/shop` PLP populated, `/search?q=` hits.
+> 5. **Author the blueprint bundle** (see _Bundle authoring spec_) → capture site →
+>    validate → ingest.
+>
+> Do NOT re-litigate _Locked decisions_. Constraints #2 / #2b are now FULLY fixed —
 > read their strikethrough notes before assuming a capability is missing.
 
 ## The goal
@@ -55,17 +72,26 @@ will never turn those modules on.
    represented by **site formatting** (Book/service-detail pages, a Wholesale page, the
    contact form) that render live data an installing tenant adds — not by seeded records
    the blueprint ships.
-2. **MCP write-capability gaps — BOTH ADDRESSED THIS SESSION.** Read this before assuming
-   a capability is missing:
-   - ~~No MCP tool creates a bookable service~~ → **FIXED.** Added
+2. **MCP write-capability gaps — ALL CLOSED.** Read this before assuming a capability is
+   missing:
+   - ~~No MCP tool creates a bookable service~~ → **FIXED** (v1.161.0):
      `create_scheduling_service` + `update_` + `delete_`. Note the blueprint schema still
      has no `scheduling` field (constraint #1) — services are seeded on the TENANT, never
      shipped in the bundle.
-   - ~~No MCP tool creates or updates a product~~ → **PARTLY FIXED.** Added `create_product`
-     (composes product + default priced variant), so the live catalog CAN now be swapped to
-     the neutral goods. **Still absent: `update_product`** — an existing product cannot be
-     renamed or edited, so the smoothies must be **archived and replaced**, not edited.
-   - Both are **callable only after api-mcp deploy + MCP reconnect.**
+   - ~~A service alone makes /book work~~ → **IT DOESN'T, AND THAT IS NOW FIXED TOO.**
+     `availability.ts` computes slots **per resource**: a service with no matching
+     resource, or a resource with no weekly hours, offers **zero** slots (it defaults to
+     looking for `{role:'staff', kind:'staff'}`). Added
+     `create/update/delete_scheduling_resource` and `set_resource_hours`, plus the reads
+     `list_scheduling_resources` / `list_resource_hours` so the "why is availability empty"
+     question is answerable. The full path is **service → resource → hours**.
+   - ~~No MCP tool creates or updates a product~~ → **FULLY FIXED.** `create_product`
+     (v1.161.0, composes product + default priced variant) plus `update_product` and
+     `update_variant` (this batch). Price lives on the VARIANT, not the product — that is
+     why it takes two tools. The smoothies can now be corrected in place, though the plan
+     is still to archive + replace them with neutral goods.
+   - All are **callable only after the api-mcp deploy AND an MCP reconnect** (see RESUME
+     HERE (a)/(b)).
 3. **Capture only does the SITE.** `captureBlueprintSite` → `SiteDecl` (pages + frame +
    theme + symbols) only. `brand` / `commerce` / `content` / `emails` are hand-authored
    into the bundle. (`services/api-rest/src/lib/blueprint-capture.ts`.)
@@ -146,18 +172,34 @@ Contact, Book, Wholesale. Full ids in _Every id in one place_ below.
 | SEO on all pages                                                                               | ✅ done                                      |
 | PDP + blog-post render via code defaults (no on-site record templates needed)                  | ✅ verified                                  |
 
-**BLOCKED ON DEPLOY** (code written, gate-green, uncommitted — see Deploy dependency):
-logo light/dark swap · chat accent · search resilience · **BUG-003 Typesense** ·
-`create_scheduling_service` · `create_product`.
+**SHIPPED in v1.161.0 and verified live:** logo light/dark swap · chat accent ·
+search resilience · **BUG-003 Typesense port** · `create_scheduling_service` ·
+`create_product`. `/shop`, `/search?q=`, `/products` and `/book` all return **200** —
+no more 500s. `/book` shows a clean "No services are bookable yet" empty state.
+Journal images resolve **200** (api media → 302 → Unsplash), so that report is closed.
 
-**REMAINING AFTER DEPLOY:**
+**BUG-004 — the search index is EMPTY for this tenant.** Not a scoping problem and not
+BUG-003 lingering: every search-backed surface renders "No products found" on **all three**
+sites (Template, wize.works, brandonkorous.com) while `get_products` returns 21 rows. The
+commerce-indexer is healthy (`typesense schemas ensured` / `event processed`, 2026-07-24
+18:23 UTC), so the collection simply never got populated for `wizeworks` — indexing writes
+happened while `TYPESENSE_PORT` was shadowed, and nothing backfills. **Fix = one
+`rebuild_search_index` call** once (b) below deploys. Newly created products will index
+themselves; the 21 existing ones will not.
 
-1. Reconnect MCP → seed **bookable services** (Book page) + **neutral catalog** (archive
-   smoothies, create ~6 neutral goods).
-2. Verify live: logo flips correctly, chat accent Ember, `/search` + `/products` + `/shop` PLP 200 with results.
-3. **Author the blueprint bundle** (spec below) → capture site → validate → ingest.
-4. ⬜ **Brandon action:** acknowledge + publish the 6 legal pages in workbench so the footer
-   Legal column appears (human-gated by design).
+**BLOCKED ON A SECOND DEPLOY** (code written, gate-green, uncommitted):
+`update_product` · `update_variant` · `create/update/delete_scheduling_resource` ·
+`set_resource_hours` · `list_scheduling_resources` · `list_resource_hours` ·
+`rebuild_search_index` (+ the new `write:search` scope).
+
+**REMAINING AFTER DEPLOY:** see _RESUME HERE_ steps 1–5, plus:
+
+- ⬜ **Brandon action:** acknowledge + publish the 6 legal pages in workbench so the footer
+  Legal column appears (human-gated by design). Confirmed still empty: the live footer emits
+  zero legal hrefs and no "Legal" heading.
+- ⬜ The site/property is still named **"Template"**, which the footer binds via
+  `site.identity.name`. No MCP tool renames a property; decide whether that matters for the
+  captured bundle (the installer sets the tenant's own name, so it may not).
 
 ## Every id in one place
 
@@ -303,6 +345,33 @@ dark`**, so `dark:` compiles to `prefers-color-scheme` — while the storefront'
   it renders EMPTY until BUG-003 deploys. (The old flat `commerce.product` grid did not,
   because it uses the non-search list endpoint.) Correct long-term; deploy closes it.
 
+### MCP capability work (two batches)
+
+**Batch 1 — shipped in v1.161.0.** `create_scheduling_service` (+ update/delete) and
+`create_product`. Details in the two subsections below.
+
+**Batch 2 — written this session, gate-green, awaiting a deploy.** Full-workspace
+`pnpm typecheck` passes (exit 0); `@sparx/commerce`, `@sparx/scheduling`, and the api-mcp
+`tool-scopes` suite all pass; all touched files prettier-clean.
+
+| Tool                                                             | Where                                        | Why it had to exist                                                                                                                                                                                                                                          |
+| ---------------------------------------------------------------- | -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `update_product`, `update_variant`                               | `packages/commerce/src/mcp/write-tools.ts`   | `create_product` shipped with no partner — a typo or wrong price meant archiving and rebuilding, losing the handle and burning the SKU (tenant-unique even soft-deleted). Price lives on the VARIANT, hence two tools; each description points at the other. |
+| `create/update/delete_scheduling_resource`, `set_resource_hours` | `packages/scheduling/src/mcp/write-tools.ts` | A service alone offers **zero** slots — `availability.ts` computes per resource and defaults to needing a `staff` one with weekly hours. Without these, `create_scheduling_service` still left /book empty.                                                  |
+| `list_scheduling_resources`, `list_resource_hours`               | `packages/scheduling/src/mcp/read-tools.ts`  | "Availability is empty" is almost always one of these two; an agent needs to be able to see which.                                                                                                                                                           |
+| `rebuild_search_index`                                           | `services/api-mcp/src/search-admin-tools.ts` | BUG-004: no tenant-reachable reindex existed — only `POST /v1/search/reindex` (admin role) and the platform-operator endpoint. Publishes the same `search.reindex.requested` event.                                                                          |
+
+`rebuild_search_index` lives in **api-mcp**, not `@sparx/search`, on purpose: publishing
+needs `@sparx/events` → `@google-cloud/pubsub`, and `@sparx/search` is imported by the Next
+apps for the ⌘K palette. Same precedent as `domain-tools.ts`. It introduces a new
+**`write:search`** scope (`packages/auth/src/mcp-scopes.ts`), `sensitive`, and — matching the
+REST route it mirrors — **owner/admin only**, excluded from the editor grant. A new scope
+means the connector must **re-consent**, not just reconnect.
+
+Docs updated to match: [22](../22-typesense-search-spec.md) v1.2.0 (reindex is now
+tenant-reachable + why the tool lives where it does), [79](../79-scheduling.md) v1.5
+(§17.2 gained a "shipped set" table — the sketch's names were never the real ones).
+
 ### MCP capability gap closed — scheduling service setup
 
 `packages/scheduling/src/mcp/write-tools.ts` gained **`create_scheduling_service`**,
@@ -323,20 +392,30 @@ tool that reliably makes **unsellable** products. The tool therefore takes `pric
 from the resolved handle when omitted). Multi-variant lattices stay with the variant surface.
 Auto-registers via the `commerceMcpTools` spread; `write:commerce` already allowed.
 
-### Deploy dependency (uncommitted, gate-green — typecheck + lint pass)
+### Deploy dependency
 
-| File                                                       | Fixes                                                  |
-| ---------------------------------------------------------- | ------------------------------------------------------ |
-| `apps/site/components/brand/site-brand.tsx`                | light/dark logo swap (#7)                              |
-| `apps/site/app/layout.tsx`                                 | chat accent uses silica theme (#2)                     |
-| `apps/site/lib/commerce.ts`                                | search degrades instead of 500 (#10, defence-in-depth) |
-| `packages/search/src/client.ts` + `k8s/apps/api-rest.yaml` | **BUG-003 root cause** (pre-existing, uncommitted)     |
-| `packages/scheduling/src/mcp/write-tools.ts`               | create/update/delete scheduling service                |
-| `packages/commerce/src/mcp/write-tools.ts`                 | `create_product`                                       |
+**Deploy 1 — DONE (v1.161.0, 2026-07-24 12:53 UTC).** All of it verified live:
+`apps/site/components/brand/site-brand.tsx` (logo swap) · `apps/site/app/layout.tsx` (chat
+accent) · `apps/site/lib/commerce.ts` (search degrades, no 500) ·
+`packages/search/src/client.ts` + `k8s/apps/api-rest.yaml` (**BUG-003**) ·
+`packages/scheduling/src/mcp/write-tools.ts` (service setup) ·
+`packages/commerce/src/mcp/write-tools.ts` (`create_product`).
 
-**After deploy + MCP reconnect:** seed bookable services (→ /book populates), create the
-neutral universal catalog (→ replaces the smoothies, feeds the bundle's `commerce`), verify
-logo/chat/search/PLP, then capture the site and finish the bundle.
+**Deploy 2 — PENDING (uncommitted, gate-green).**
+
+| File                                         | Adds                                                             |
+| -------------------------------------------- | ---------------------------------------------------------------- |
+| `packages/commerce/src/mcp/write-tools.ts`   | `update_product`, `update_variant`                               |
+| `packages/scheduling/src/mcp/write-tools.ts` | `create/update/delete_scheduling_resource`, `set_resource_hours` |
+| `packages/scheduling/src/mcp/read-tools.ts`  | `list_scheduling_resources`, `list_resource_hours`               |
+| `services/api-mcp/src/search-admin-tools.ts` | **new** — `rebuild_search_index`                                 |
+| `services/api-mcp/src/tool-registry.ts`      | registers it; `write:search` added to `WRITE_SCOPES`             |
+| `packages/auth/src/mcp-scopes.ts`            | `write:search` scope (sensitive, owner/admin only)               |
+| `docs/22-…md` · `docs/79-…md`                | doc updates (versions bumped)                                    |
+
+**After deploy + MCP re-consent:** `rebuild_search_index` first (nothing in the catalog is
+visible until then), then service → resource → hours, then the neutral catalog, then verify,
+then capture the site and finish the bundle.
 
 ## Log
 
@@ -376,9 +455,26 @@ logo/chat/search/PLP, then capture the site and finish the bundle.
   added complementary `searchProducts` degradation.
 - **2026-07-24 (MCP capability work)** — Brandon: _"this is THE GOLDEN STANDARD OF
   EVERYTHING… add that to the mcp and push that out, and anything else."_ Added
-  **`create_scheduling_service`/update/delete** and **`create_product`** (composing product
-  - default priced variant, because the bare service mints no variant → unsellable). Both
-    gate-green and auto-registering. **All my deployable work is now done — deploy is the
-    gate.**
-- **NEXT SESSION STARTS HERE:** after deploy + MCP reconnect → seed services + neutral
-  catalog → verify → author the bundle (spec above). Nothing else is blocked.
+  **`create_scheduling_service`/update/delete** and **`create_product`** (which composes
+  product plus a default priced variant, because the bare service mints no variant →
+  unsellable). Both gate-green and auto-registering.
+- **2026-07-24 (session 3 — post-deploy verification)** — **v1.161.0 is live.** Confirmed
+  `git tag --contains d563c31d` → v1.161.0 and both api-mcp + api-rest pods run that tag.
+  Verified live: `/`, `/shop`, `/search?q=`, `/products`, `/book`, `/about`, `/wholesale`,
+  `/contact` all **200** (BUG-003 closed). Journal images resolve 200 through the media
+  302 → Unsplash, so that report is closed too; the Journal page is at **`/blog`**, not
+  `/journal`. `/book` shows a clean "No services are bookable yet". Footer Legal column
+  still empty (awaiting Brandon's acknowledge + publish).
+  - **Found BUG-004:** every search-backed surface renders "No products found" on **all
+    three** sites while 21 products exist — the Typesense collection was never populated
+    for this tenant. The indexer is healthy; nothing backfills rows written while
+    `TYPESENSE_PORT` was shadowed. No tenant-reachable reindex existed.
+  - **Found the deeper scheduling gap:** `create_scheduling_service` alone can never make
+    /book work — availability is computed per RESOURCE, and a service with no resource (or
+    a resource with no hours) offers zero slots.
+  - Added, gate-green: `rebuild_search_index` (+ `write:search` scope), the scheduling
+    **resource + hours** tools and their reads, and `update_product` / `update_variant`.
+    Full `pnpm typecheck` exit 0.
+- **NEXT SESSION STARTS HERE:** deploy batch 2 + **re-consent** the MCP connector (new
+  scope), then RESUME HERE steps 1–5. Step 1 (`rebuild_search_index`) gates everything
+  catalog-shaped.
