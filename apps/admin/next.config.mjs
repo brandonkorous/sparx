@@ -32,6 +32,12 @@ const config = {
   typedRoutes: true,
   output: 'standalone',
   outputFileTracingRoot: join(__dirname, '../../'),
+  // Turbopack infers the workspace root by walking up for a lockfile, and in this
+  // monorepo it guessed `apps/admin/app` — from which `next/package.json` is not
+  // resolvable, so `pnpm dev` died with "Next.js inferred your workspace root, but
+  // it may not be correct" and (because turbo fails the run on one task) took the
+  // WHOLE dev stack down with it. Pin the root explicitly, as the error advises.
+  turbopack: { root: join(__dirname, '../../') },
 };
 
 export default config;

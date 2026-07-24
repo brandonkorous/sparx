@@ -20,8 +20,10 @@ describe('preferredAspectFor', () => {
     // Vertical-first platforms → 9:16 (TikTok 9:16 exactly, Pinterest 2:3 nearest).
     expect(preferredAspectFor('tiktok')).toBe('9:16');
     expect(preferredAspectFor('pinterest')).toBe('9:16');
-    // YouTube community posts declare 1:1 first.
-    expect(preferredAspectFor('youtube')).toBe('1:1');
+    // YouTube is a SHORTS uploader, not community posts — there is no public API to
+    // create a community post, so a YouTube post is a vertical short video (docs/134
+    // Phase 3). It declared 1:1 while the slot was still notionally community posts.
+    expect(preferredAspectFor('youtube')).toBe('9:16');
   });
 
   it('only ever returns a crop the worker actually generates', () => {
