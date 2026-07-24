@@ -43,6 +43,15 @@ spec:
         tier: api
     spec:
       serviceAccountName: sparx-app
+      # Disable Kubernetes' deprecated Docker-era "service link" env injection. For
+      # every Service in the namespace k8s otherwise injects `<SVC>_SERVICE_HOST`,
+      # `<SVC>_SERVICE_PORT`, and `<SVC>_PORT=tcp://<clusterIP>:<port>`. That last one
+      # collided with the app's own `TYPESENSE_PORT` (a Service named `typesense`
+      # exists) and shadowed it → the search client built `http://typesense:null/...`
+      # and every storefront `/shop` + search 500'd (BUG-003). We reach all in-cluster
+      # dependencies by DNS name + explicit env, never by these link vars, so turning
+      # the injection off is free and removes this whole class of collision.
+      enableServiceLinks: false
       containers:
         - name: api-rest
           image: us-central1-docker.pkg.dev/sparxworks/sparx/api-rest:latest
@@ -80,7 +89,10 @@ spec:
             # Typesense — api-rest's /v1/search/* read path queries the
             # in-cluster Typesense (ClusterIP Service named `typesense`, the
             # @sparx/search default host). The key matches the secret
-            # bootstrap.yml mints from Secret Manager's typesense-api-key.
+            # bootstrap.yml mints from Secret Manager's typesense-api-key. Port
+            # (8108) + protocol (http) come from the @sparx/search defaults — no
+            # need to pin them here now that `enableServiceLinks: false` (above)
+            # stops k8s from injecting a bogus `TYPESENSE_PORT`.
             - name: TYPESENSE_HOST
               value: typesense
             - name: TYPESENSE_API_KEY

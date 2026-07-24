@@ -451,19 +451,34 @@ export async function searchProducts(
     page: filters.page,
     perPage: filters.perPage,
   };
-  const { data, meta } = await publicGet<PublicProductListItem[]>(
-    '/v1/public/commerce/search',
-    query,
-    [`commerce:${tenantSlug}:search`]
-  );
-  const facets: SearchFacets = meta?.facets ?? {};
-  return {
-    items: data,
-    total: meta?.total ?? data.length,
-    page: meta?.page ?? filters.page ?? 1,
-    perPage: meta?.per_page ?? filters.perPage ?? 24,
-    facets,
-  };
+  try {
+    const { data, meta } = await publicGet<PublicProductListItem[]>(
+      '/v1/public/commerce/search',
+      query,
+      [`commerce:${tenantSlug}:search`]
+    );
+    const facets: SearchFacets = meta?.facets ?? {};
+    return {
+      items: data,
+      total: meta?.total ?? data.length,
+      page: meta?.page ?? filters.page ?? 1,
+      perPage: meta?.per_page ?? filters.perPage ?? 24,
+      facets,
+    };
+  } catch {
+    // A search-backend hiccup — Typesense unavailable, or a tenant whose catalog is
+    // not indexed yet — must NOT 500 the whole page. Degrade to an empty result so the
+    // search shell renders with a "no results" state, exactly like `searchEverything`
+    // and `listRelatedProducts` already do. Search is a feature of the page, never the
+    // page itself.
+    return {
+      items: [],
+      total: 0,
+      page: filters.page ?? 1,
+      perPage: filters.perPage ?? 24,
+      facets: {},
+    };
+  }
 }
 
 export interface SiteSearchHit {

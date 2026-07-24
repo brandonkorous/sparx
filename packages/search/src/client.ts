@@ -12,18 +12,60 @@ export interface TypesenseConfig {
   connectionTimeoutSeconds?: number;
 }
 
+/** Empty / whitespace env → undefined, so a `?? default` actually fires (an empty
+ *  string is not nullish, so `'' ?? x` yields `''`). */
+function cleanEnv(v: string | undefined): string | undefined {
+  const t = v?.trim();
+  return t && t.length > 0 ? t : undefined;
+}
+
+/**
+ * Resolve the Typesense port defensively.
+ *
+ * Kubernetes auto-injects `TYPESENSE_PORT=tcp://<clusterIP>:<port>` for the
+ * in-cluster Service named `typesense` (the Docker-legacy "service links"), which
+ * SHADOWS the numeric port the app expects. Because that string isn't nullish, the
+ * old `Number(process.env.TYPESENSE_PORT ?? 8108)` produced `NaN` and every search
+ * built an `http://typesense:null/...` URL → 500 on the whole storefront `/shop`
+ * PLP and the ⌘K palette. Accept ONLY a clean positive integer; the `tcp://…`
+ * string / empty / NaN all fall back to Typesense's default 8108.
+ */
+export function resolveTypesensePort(raw: string | undefined = process.env.TYPESENSE_PORT): number {
+  const n = Number(cleanEnv(raw));
+  return Number.isInteger(n) && n > 0 && n < 65536 ? n : 8108;
+}
+
+/** Host, guarding against the same service-link `tcp://…` shape for safety
+ *  (k8s injects it on `TYPESENSE_PORT`, but be defensive). Defaults to the
+ *  in-cluster Service name. */
+export function resolveTypesenseHost(raw: string | undefined = process.env.TYPESENSE_HOST): string {
+  const host = cleanEnv(raw);
+  return host && !host.includes('://') ? host : 'typesense';
+}
+
+/** Protocol — only `https` opts out of the in-cluster default `http` (an empty
+ *  `TYPESENSE_PROTOCOL` must not become an invalid protocol). */
+export function resolveTypesenseProtocol(
+  raw: string | undefined = process.env.TYPESENSE_PROTOCOL
+): 'http' | 'https' {
+  return cleanEnv(raw) === 'https' ? 'https' : 'http';
+}
+
 export function configFromEnv(): TypesenseConfig {
-  const host = process.env.TYPESENSE_HOST ?? 'typesense';
-  const port = Number(process.env.TYPESENSE_PORT ?? 8108);
-  const protocol = (process.env.TYPESENSE_PROTOCOL ?? 'http') as 'http' | 'https';
   const apiKey = process.env.TYPESENSE_API_KEY;
   if (!apiKey) {
     throw new Error('TYPESENSE_API_KEY env var is required');
   }
   return {
-    nodes: [{ host, port, protocol }],
+    nodes: [
+      {
+        host: resolveTypesenseHost(),
+        port: resolveTypesensePort(),
+        protocol: resolveTypesenseProtocol(),
+      },
+    ],
     apiKey,
-    connectionTimeoutSeconds: Number(process.env.TYPESENSE_TIMEOUT_SECONDS ?? 5),
+    connectionTimeoutSeconds: Number(cleanEnv(process.env.TYPESENSE_TIMEOUT_SECONDS) ?? 5),
   };
 }
 

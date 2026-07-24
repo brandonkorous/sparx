@@ -15,6 +15,9 @@ import {
   collectionStats,
   generateScopedSearchKeyWithExpiry,
   palette,
+  resolveTypesenseHost,
+  resolveTypesensePort,
+  resolveTypesenseProtocol,
   searchAll,
   searchCustomers,
   searchOrders,
@@ -239,9 +242,9 @@ const searchRoutes: FastifyPluginAsync = (app) => {
       return ok({
         key: scoped.key,
         expiresInSeconds: scoped.expiresInSeconds,
-        host: process.env.TYPESENSE_HOST ?? 'typesense',
-        port: Number(process.env.TYPESENSE_PORT ?? 8108),
-        protocol: process.env.TYPESENSE_PROTOCOL ?? 'http',
+        host: resolveTypesenseHost(),
+        port: resolveTypesensePort(),
+        protocol: resolveTypesenseProtocol(),
       });
     } catch {
       // No search-only parent key provisioned — feature unavailable, not an
