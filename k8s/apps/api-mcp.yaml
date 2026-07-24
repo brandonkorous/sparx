@@ -48,6 +48,13 @@ spec:
         tier: api
     spec:
       serviceAccountName: sparx-app
+      # Same reason as api-rest (BUG-003): a Service named `typesense` makes k8s
+      # inject the Docker-legacy `TYPESENSE_PORT=tcp://<clusterIP>:8108` link var,
+      # which shadows the app's own numeric port. We reach in-cluster dependencies
+      # by DNS name + explicit env, never by link vars, so turning the injection
+      # off costs nothing and removes the whole class of collision before it can
+      # bite a second service.
+      enableServiceLinks: false
       containers:
         - name: api-mcp
           image: us-central1-docker.pkg.dev/sparxworks/sparx/api-mcp:latest
@@ -79,6 +86,20 @@ spec:
               value: '3000'
             - name: LOG_LEVEL
               value: info
+            # Typesense — api-mcp publishes four SEARCH tools (search_products /
+            # customers / orders / all) that go straight to Typesense, and they were
+            # dead in production because this block was never added: `configFromEnv()`
+            # throws "TYPESENSE_API_KEY env var is required" on the first call, so
+            # every search tool errored while every other tool worked. Mirrors the
+            # api-rest block; `TYPESENSE_HOST` is explicit for the same reason
+            # `enableServiceLinks: false` is set above.
+            - name: TYPESENSE_HOST
+              value: typesense
+            - name: TYPESENSE_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: typesense-secrets
+                  key: api-key
           securityContext:
             runAsNonRoot: true
             runAsUser: 1000

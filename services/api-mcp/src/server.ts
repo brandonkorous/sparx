@@ -102,6 +102,24 @@ export async function buildServerForRequest(auth: McpAuthContext): Promise<McpSe
   return server;
 }
 
+/**
+ * A tool's return value as MCP `text` content.
+ *
+ * `JSON.stringify(undefined)` returns `undefined`, NOT the string "undefined" — so a tool
+ * whose service returns `Promise<void>` (publish_product, archive_product, and every other
+ * thin wrapper over a void write) produced `{ type: 'text', text: undefined }`, which fails
+ * the SDK's own result schema. The client then saw a protocol error for a call that had
+ * ALREADY SUCCEEDED: the write was committed and its event published before serialization
+ * ran. The worst shape of failure — the agent believes the action failed, so it retries or
+ * reports a problem that doesn't exist.
+ *
+ * A void write is a success with no payload, so say exactly that.
+ */
+export function serializeResult(result: unknown): string {
+  if (result === undefined) return JSON.stringify({ ok: true });
+  return JSON.stringify(result);
+}
+
 async function dispatch(
   tool: AnyMcpTool,
   auth: McpAuthContext,
@@ -180,7 +198,7 @@ async function dispatch(
       input: parsed,
       outcome: 'success',
     });
-    return { content: [{ type: 'text', text: JSON.stringify(result) }] };
+    return { content: [{ type: 'text', text: serializeResult(result) }] };
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     void recordToolInvocation({
