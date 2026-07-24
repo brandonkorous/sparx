@@ -82,7 +82,7 @@ interface VerifiedRequest {
  * which platforms that app governs. Throws when no configured secret matches.
  */
 function verifyMetaRequest(signed: string): VerifiedRequest {
-  const candidates: Array<{ secret: string | undefined; platforms: SocialPlatform[] }> = [
+  const candidates: { secret: string | undefined; platforms: SocialPlatform[] }[] = [
     { secret: process.env.META_APP_SECRET, platforms: META_PLATFORMS },
     { secret: process.env.THREADS_APP_SECRET, platforms: THREADS_PLATFORMS },
   ];
@@ -112,7 +112,7 @@ async function revokeMetaConnections(userId: string, platforms: SocialPlatform[]
   });
 }
 
-const socialMetaCallbackRoutes: FastifyPluginAsync = async (app) => {
+const socialMetaCallbackRoutes: FastifyPluginAsync = (app) => {
   // A user removed the app from their Meta account. The grant is already dead on
   // Meta's side, so the honest thing is to drop our copy rather than let the tenant
   // keep seeing a "connected" account that can no longer publish.
@@ -173,6 +173,10 @@ const socialMetaCallbackRoutes: FastifyPluginAsync = async (app) => {
         'Any social account connections associated with this Meta account have been removed from sparx.',
     });
   });
+
+  // Registration is synchronous; FastifyPluginAsync still wants a promise (same
+  // shape as the Mailgun receiver next door).
+  return Promise.resolve();
 };
 
 export default socialMetaCallbackRoutes;
