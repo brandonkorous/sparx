@@ -1,6 +1,6 @@
 # BUG-007 — Refunding an order recorded a refund without moving any money (and had no UI)
 
-Status: **FIXED (code) 2026-07-24 — awaiting deploy**
+Status: **✅ FIXED — VERIFIED IN PRODUCTION 2026-07-24**
 Severity: **Critical** — a refund could be recorded on the books while the customer was never paid back
 Found: 2026-07-24, production payments E2E (trying to refund `O-000002`)
 Surfaces: `services/api-rest/src/lib/order-refund.ts` (new),
@@ -54,3 +54,22 @@ failure leaves the order untouched and staff can retry, instead of a phantom ref
 - The button disappears once nothing is left to refund.
 - A tenant with no gateway configured gets the clean "refund manually / issue credit"
   message and **no** refund row is written.
+
+## Verified in production 2026-07-24
+
+Refunded **O-000003** ($30) from the workbench order pane. The confirm named the
+exact amount + destination email and warned stock is not restocked. Result:
+
+- **Real Stripe refund** `re_3Twp7xFY8gqB2fvj1o77reev` — `amount: 3000`,
+  `status: succeeded`, against charge `ch_3Twp7x…`. Not a bookkeeping-only row.
+- Order flipped to **Refunded** (`paymentStatus: refunded`, `amountPaid: 0`,
+  `refundTotal: 30`).
+- The sparx `order_refunds` row carries `processorRef: re_3Twp7x…` — the
+  gateway's own id, i.e. the exact join key `charge.refunded` reconciles by.
+- The "Refund this order" row disappeared once nothing remained to refund.
+
+One follow-on defect surfaced (not a regression in this fix): the CRM consumer of
+the resulting `order.refunded` event threw because the publisher omitted
+`customerId` — see [BUG-008](./BUG-008-order-refunded-event-missing-customer-id.md).
+The refund + Stripe settlement were unaffected; only the downstream CRM
+lifetime-value bookkeeping failed.

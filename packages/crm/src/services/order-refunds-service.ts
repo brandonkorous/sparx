@@ -31,12 +31,19 @@ export async function listForOrder(ctx: ServiceContext, orderId: string): Promis
 export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Promise<OrderRefund> {
   const input = RecordRefundInput.parse(rawInput);
 
+  // Captured inside the txn and read when publishing order.refunded — the CRM
+  // consumer keys its activity + lifetime-spend decrement off this id, so the
+  // event MUST carry it. Every order has a customer (Order.customerId is
+  // non-null), so this is always set by the time we publish.
+  let orderCustomerId = '';
+
   const refund = await withTenant(ctx, async (tx) => {
     const order = await tx.order.findUnique({
       where: { id: input.orderId },
       include: { items: true },
     });
     if (!order) throw new CrmNotFoundError('Order', input.orderId);
+    orderCustomerId = order.customerId;
     if (order.status === 'cancelled') {
       throw new CrmValidationError('Cannot refund a cancelled order');
     }
@@ -149,6 +156,7 @@ export async function recordRefund(ctx: ServiceContext, rawInput: unknown): Prom
     occurredAt: refund.refundedAt ?? new Date(),
     payload: {
       orderId: refund.orderId,
+      customerId: orderCustomerId,
       refundId: refund.id,
       refundAmount: Number(refund.amount),
       currency: refund.currency,
