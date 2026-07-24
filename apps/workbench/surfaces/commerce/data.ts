@@ -292,6 +292,26 @@ export function useCancelOrder(id: string) {
 }
 
 /**
+ * Refund money already taken for an order. The server settles this through the
+ * tenant's payment gateway and THEN records it (see api-rest lib/order-refund.ts), so
+ * a success here means the money really moved — and a 4xx carries the gateway's own
+ * reason, which `orderErrorMessage` surfaces verbatim.
+ */
+export function useRefundOrder(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { amount: number; reason?: string }) =>
+      api.post(`/v1/orders/${id}/refunds`, {
+        amount: input.amount,
+        ...(input.reason ? { reason: input.reason } : {}),
+      }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ORDERS_KEY });
+    },
+  });
+}
+
+/**
  * The server's own sentence for a 4xx. These routes explain the actual problem
  * ("Cannot cancel an order in status \"delivered\"") far better than anything
  * this side could infer from a status code. A 5xx has no such sentence, so it

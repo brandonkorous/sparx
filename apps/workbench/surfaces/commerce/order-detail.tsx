@@ -31,7 +31,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink, Ban } from 'lucide-react';
+import { ExternalLink, Ban, Undo2 } from 'lucide-react';
 import { FormSection } from '../../components/form-section';
 import { ModuleScope } from '../../components/module-scope';
 import { deferTick } from '../../lib/defer';
@@ -57,6 +57,7 @@ import {
   useOrderFulfillments,
   useOrderPayments,
   useOrderRefunds,
+  useRefundOrder,
   FULFILLMENT_STATUS_LABELS,
   PAYMENT_STATUS_LABELS,
   REFUND_STATUS_LABELS,
@@ -185,6 +186,7 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   const fulfillments = useOrderFulfillments(id);
   const refunds = useOrderRefunds(id);
   const cancel = useCancelOrder(id);
+  const refund = useRefundOrder(id);
 
   // Keyed on the NUMBER, not the order object. Depending on the object retitles
   // the tab on every refetch — including the one that follows a cancellation,
@@ -243,6 +245,53 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
   // exists to hand back an error is worse than no button.
   const cancellable =
     order.status !== 'cancelled' && order.status !== 'delivered' && order.status !== 'refunded';
+
+  // What is still refundable: money actually taken, less anything already given
+  // back. Rounded to cents so floating-point noise can't offer a $0.0000001 refund.
+  const refundableAmount = Math.max(
+    0,
+    Math.round((Number(order.amountPaid) - Number(order.refundTotal ?? 0)) * 100) / 100
+  );
+
+  const onRefund = async () => {
+    const ok = await confirm({
+      title: `Refund ${formatMoney(refundableAmount, currency)} to ${customerName(order.customer)}?`,
+      description:
+        `This sends ${formatMoney(refundableAmount, currency)} back to the card used for order ` +
+        `${order.orderNumber}. The money leaves your account straight away and this cannot be ` +
+        `undone. Stock is NOT taken back in — if you expect the items returned, process a return ` +
+        `instead so the goods come back on the shelf.`,
+      confirmLabel: `Refund ${formatMoney(refundableAmount, currency)}`,
+      cancelLabel: 'Leave it as it is',
+      color: 'danger',
+    });
+    if (!ok) return;
+    // Same reason as onCancel: let the confirm's flushSync close commit finish
+    // before this pane re-renders underneath it.
+    await deferTick();
+    refund.mutate(
+      { amount: refundableAmount },
+      {
+        onSuccess: () => {
+          toast.add({
+            title: `Refunded ${formatMoney(refundableAmount, currency)}`,
+            description: `Order ${order.orderNumber} — the customer's card has been credited.`,
+            type: 'success',
+          });
+        },
+        onError: (error) => {
+          toast.add({
+            title: 'Could not refund this order',
+            description: orderErrorMessage(
+              error,
+              'No money was moved and nothing was changed on the order.'
+            ),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
 
   const onCancel = async () => {
     const ok = await confirm({
@@ -577,6 +626,34 @@ export function OrderDetailSurface({ ctx }: { ctx: SurfaceContext }) {
                 </div>
               ) : null}
             </FormSection>
+          ) : null}
+
+          {/* Same treatment as cancelling: irreversible, so a plain row under a
+              divider rather than a card competing with what people came to read.
+              Offered only when there is money left to give back. */}
+          {refundableAmount > 0 ? (
+            <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t px-4 py-4">
+              <div className="flex min-w-0 flex-col gap-0.5">
+                <Text className="text-base font-medium">Refund this order</Text>
+                <Text className="text-sm">
+                  Sends {formatMoney(refundableAmount, currency)} back to the card it was paid with.
+                  The money leaves your account straight away and this cannot be undone. To give
+                  back only part of it, or to take stock back in, use a return instead.
+                </Text>
+              </div>
+              <Button
+                size="sm"
+                color="danger"
+                variant="outline"
+                loading={refund.isPending}
+                onClick={() => {
+                  void onRefund();
+                }}
+              >
+                <Undo2 className="size-4" aria-hidden />
+                Refund {formatMoney(refundableAmount, currency)}
+              </Button>
+            </div>
           ) : null}
 
           {/* Rare and irreversible, so it does NOT get a card of its own beside

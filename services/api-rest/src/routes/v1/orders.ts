@@ -45,6 +45,7 @@ import { listFulfillmentLabels, quoteOutboundRates, shippingService } from '@spa
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireOrderAccess, toOrderContext } from '../../lib/order-context.js';
+import { refundOrderThroughGateway } from '../../lib/order-refund.js';
 import { reachableSiteIds } from '../../lib/property.js';
 import { requireCommerceModule, toCommerceContext } from '../../lib/commerce-context.js';
 
@@ -294,15 +295,27 @@ const orderRoutes: FastifyPluginAsync = (app) => {
     return ok(rows);
   });
 
+  // Refund an order. By default this SETTLES through the tenant's payment gateway and
+  // then records the refund — `recordRefund` alone is bookkeeping only, so the old
+  // behaviour wrote a refund row while no money moved (BUG-007). A caller that has
+  // already settled elsewhere (the returns flow, or a merchant who refunded offline)
+  // passes its own `processorRef` and gets the record-only path, unchanged.
   app.post('/v1/orders/:id/refunds', async (request, reply) => {
     requireRole(request, 'editor');
     await requireOrderAccess(request);
     const { id } = PathId.parse(request.params);
     const body = (request.body ?? {}) as Record<string, unknown>;
-    const refund = await orderRefundsService.recordRefund(toOrderContext(request), {
-      ...body,
-      orderId: id,
-    });
+    const ctx = toOrderContext(request);
+
+    const alreadySettled = typeof body.processorRef === 'string' && body.processorRef.length > 0;
+    const refund = alreadySettled
+      ? await orderRefundsService.recordRefund(ctx, { ...body, orderId: id })
+      : await refundOrderThroughGateway(ctx, {
+          orderId: id,
+          amount: Number(body.amount),
+          ...(typeof body.currency === 'string' ? { currency: body.currency } : {}),
+          ...(typeof body.reason === 'string' ? { reason: body.reason } : {}),
+        });
     reply.code(201);
     return ok(refund);
   });
