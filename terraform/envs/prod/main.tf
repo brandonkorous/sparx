@@ -264,6 +264,114 @@ module "pubsub" {
     "dropship.order.shipped"           = []
     "dropship.order.delivered"         = []
     "dropship.order.failed"            = []
+
+    # ── Catalog reconciliation, 2026-07-24 ──────────────────────────────────
+    # The SAME failure as the dropship + order.placed notes above, found again
+    # during the payments E2E: this map had drifted from the EventType union in
+    # packages/events/src/types.ts, so 66 of its 134 event types had no topic and
+    # every publish to them failed with `5 NOT_FOUND: Resource not found`. It is
+    # caught + logged (publishes are best-effort, so nothing breaks user-visibly)
+    # which is exactly why it went unnoticed — the money still moved, but every
+    # downstream consumer got nothing. Seen live as
+    # `pubsub: publish failed … resource=payment.captured` on a real paid order.
+    #
+    # All topic-only (`[]`): a topic costs nothing to exist; only SUBSCRIPTIONS
+    # carry retention cost, so this restores publishability with no spend. Add a
+    # subscriber to a list here when its worker actually ships.
+    #
+    # Keep this map in lockstep with the EventType union — a type declared there
+    # but missing here fails silently in production.
+
+    # Commerce funnel — cart + checkout lifecycle (checkout-service publishes
+    # these on every session; `checkout.completed` fires on every order placed).
+    "cart.created"       = []
+    "cart.updated"       = []
+    "cart.recovered"     = []
+    "checkout.started"   = []
+    "checkout.completed" = []
+    "checkout.expired"   = []
+
+    # Payments — the gateway-neutral capture/failure signals from the payment
+    # webhook reconciler (docs/94 ADR §10). `order.paid` above is the CRM-side
+    # twin; these carry the processor detail.
+    "payment.captured"     = []
+    "payment.failed"       = []
+    "order.payment_failed" = []
+
+    # Store credit + gift cards
+    "accountcredit.granted" = []
+    "accountcredit.spent"   = []
+    "giftcard.issued"       = []
+    "giftcard.redeemed"     = []
+
+    # Returns / RMA
+    "return.requested" = []
+    "return.approved"  = []
+    "return.received"  = []
+    "return.refunded"  = []
+
+    # Customer-generated content — reviews + product questions
+    "review.submitted"   = []
+    "review.published"   = []
+    "review.flagged"     = []
+    "question.answered"  = []
+    "question.published" = []
+
+    # Subscriptions / recurring billing
+    "subscription.created"        = []
+    "subscription.renewed"        = []
+    "subscription.paused"         = []
+    "subscription.resumed"        = []
+    "subscription.cancelled"      = []
+    "subscription.payment_failed" = []
+
+    # B2B — quotes, approval workflow, AR, account standing
+    "b2b.quote.submitted"        = []
+    "b2b.quote.responded"        = []
+    "b2b.order.pending_approval" = []
+    "b2b.order.approved"         = []
+    "b2b.order.rejected"         = []
+    "b2b.invoice.created"        = []
+    "b2b.invoice.overdue"        = []
+    "b2b.account.credit_hold"    = []
+    "b2b.account.suspended"      = []
+
+    # Scheduling — bookings + connected calendars (docs/79)
+    "booking.created"          = []
+    "booking.confirmed"        = []
+    "booking.rescheduled"      = []
+    "booking.cancelled"        = []
+    "booking.completed"        = []
+    "booking.no_show"          = []
+    "booking.reminder"         = []
+    "booking.waitlist_offered" = []
+    "calendar.connected"       = []
+    "calendar.sync_failed"     = []
+
+    # Product configurator (quote-to-order)
+    "configuration.requested" = []
+    "configuration.quoted"    = []
+    "configuration.accepted"  = []
+
+    # Inventory — counts, transfers, and external stock sources
+    "inventory.levels.updated"        = []
+    "inventory.count.completed"       = []
+    "inventory.transfer.shipped"      = []
+    "inventory.transfer.received"     = []
+    "inventory.source.created"        = []
+    "inventory.source.sync_started"   = []
+    "inventory.source.sync_completed" = []
+    "inventory.source.error"          = []
+
+    # Integration providers, blueprint/template installs, imports, chat
+    "provider.installed"      = []
+    "provider.uninstalled"    = []
+    "provider.health_changed" = []
+    "template.install"        = []
+    "template.installed"      = []
+    "template.install_failed" = []
+    "import.job.created"      = []
+    "chat.message.received"   = []
   }
 
   # Per-subscription tuning. Anything not listed here uses the module
