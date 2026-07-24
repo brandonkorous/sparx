@@ -1,0 +1,69 @@
+# Heals orders stranded "Not paid" by the client-confirm race (BUG-002): a card
+# OrderPayment left `pending` whose gateway intent already `succeeded`. The
+# real-time capture (checkout complete's post-commit reconcile) plus the gateway
+# webhook cover the common cases, so this sweep only ever catches the rare
+# straggler that both missed — but with no human action needed.
+#
+# Runs every 5 minutes: recovery latency of a few minutes is fine (a resend would
+# fix it too), and a 2-minute grace window inside the sweep means it never fights
+# an in-flight checkout completion. Cheap — one indexed lookup per tenant, updates
+# only rows actually due. Forbid concurrency so a slow run can't pile up.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: commerce-payment-reconcile-sweep
+  namespace: sparx-prod
+  labels:
+    app: commerce-cron
+    job: payment-reconcile-sweep
+spec:
+  schedule: '*/5 * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 60
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: commerce-cron
+            job: payment-reconcile-sweep
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 120
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/commerce/payment-reconcile-sweep
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

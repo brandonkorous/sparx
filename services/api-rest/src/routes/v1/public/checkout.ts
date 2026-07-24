@@ -31,6 +31,7 @@ import { notFound } from '@sparx/api-core/errors';
 
 import { assertCartToken, publicCommerceContext } from '../../../lib/public-commerce-context.js';
 import { resolveOrderAttribution } from '../../../lib/attribution.js';
+import { reconcileCompletedCheckoutPayment } from '../../../lib/payment-webhook-reconcile.js';
 
 const SessionParam = z.object({ sessionId: z.string().uuid() });
 
@@ -348,6 +349,30 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
         userAgent: request.headers['user-agent'] ?? '',
         now: new Date(),
       });
+    }
+
+    // Close the client-confirm race (BUG-002): because the card is confirmed in
+    // the browser, `payment_intent.succeeded` can reach the webhook BEFORE the
+    // OrderPayment we just created existed — the webhook then no-ops and the order
+    // is stranded "Not paid". Now that `complete()` has committed the pending
+    // OrderPayment, finish the capture here if the intent already succeeded. Idempotent
+    // (a no-op when the webhook captured normally) and best-effort — the order is
+    // already placed, so this can never block or fail the sale; the webhook/sweep
+    // remain the backstop. Skipped for held B2B orders (no capture until approved).
+    if (result.paymentRef && result.paymentProviderSlug && !result.pendingApproval) {
+      try {
+        await reconcileCompletedCheckoutPayment(
+          request.log,
+          tenantId,
+          result.paymentProviderSlug,
+          result.paymentRef
+        );
+      } catch (err) {
+        request.log.error(
+          { err, orderId: result.orderId, paymentRef: result.paymentRef },
+          'checkout complete: post-commit payment reconcile failed (webhook/sweep will recover)'
+        );
+      }
     }
 
     return ok(result);

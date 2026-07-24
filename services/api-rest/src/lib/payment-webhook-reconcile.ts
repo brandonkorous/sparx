@@ -55,14 +55,21 @@ export async function reconcilePaymentEvent(
     return;
   }
 
-  // Dedupe + audit: the unique (gateway_id, external_id) makes a redelivery a no-op.
+  // Audit ledger. The unique (gateway_id, external_id) records each delivery once;
+  // a redelivery returns false. We DELIBERATELY keep processing on a duplicate
+  // (rather than early-returning) so a Stripe "Resend" is a first-class RECOVERY
+  // path — e.g. the client-side-confirm race (BUG-002) where the first delivery
+  // arrived before the OrderPayment existed and no-oped, and a resend after the
+  // order exists must finish the job. Every handler below is effect-idempotent
+  // (status guards): an already-captured / already-failed / already-refunded target
+  // is a no-op and only a real state transition emits events, so reprocessing a
+  // duplicate can never double-apply.
   const novel = await recordEvent(tenantId, opts.gatewayId, parsed);
   if (!novel) {
     log.debug(
       { externalId: parsed.externalId },
-      'payment webhook: duplicate event — already recorded'
+      'payment webhook: duplicate delivery — reprocessing idempotently for recovery'
     );
-    return;
   }
 
   // account.updated is sparx Pay Connect only — it carries no normalized payment data;
@@ -110,6 +117,101 @@ export async function reconcilePaymentEvent(
   }
 
   await markProcessed(tenantId, opts.gatewayId, parsed.externalId);
+}
+
+/**
+ * BUG-002 recovery — reconcile a just-completed checkout whose gateway intent has
+ * ALREADY succeeded but whose OrderPayment is still `pending`.
+ *
+ * The card is confirmed CLIENT-SIDE (Stripe Elements), so Stripe fires
+ * `payment_intent.succeeded` the instant the charge clears — which can beat the
+ * browser's follow-up `complete()` call that creates the OrderPayment. When the
+ * webhook wins that race it finds no OrderPayment and no-ops (writing only the
+ * `payment_intents` ledger row to `succeeded`), stranding the order "Not paid".
+ * The public checkout-complete route calls this right AFTER `complete()` commits:
+ * by then the pending OrderPayment is committed, and if the webhook already ran the
+ * succeeded ledger row is visible too — so we finish the capture the webhook
+ * couldn't. Reuses `handleSucceeded`, whose captured-status guard makes the ordinary
+ * (non-racing) case — the webhook captured normally — a clean no-op. Best-effort: a
+ * failure here never blocks the placed order (the webhook/sweep still recover it).
+ */
+export async function reconcileCompletedCheckoutPayment(
+  log: FastifyBaseLogger,
+  tenantId: string,
+  gatewayId: string,
+  paymentRef: string
+): Promise<boolean> {
+  const intent = await withTenant({ tenantId }, (tx) =>
+    tx.paymentIntent.findFirst({
+      where: { externalId: paymentRef },
+      select: { amount: true, currency: true, status: true },
+    })
+  );
+  // Only a `succeeded` ledger row means "the charge cleared but the order wasn't
+  // marked." Any other status: the charge hasn't cleared yet — the normal webhook
+  // will reconcile it when `payment_intent.succeeded` arrives. Nothing to recover.
+  if (intent?.status !== 'succeeded') return false;
+
+  const outcome = await handleSucceeded(log, tenantId, gatewayId, {
+    chargeId: paymentRef,
+    amountCents: intent.amount,
+    currency: intent.currency,
+  });
+  return outcome === 'captured';
+}
+
+/**
+ * BUG-002 safety net — self-healing sweep. Finds card OrderPayments still `pending`
+ * whose gateway intent already `succeeded` and reconciles each (idempotent). This is
+ * the backstop for the razor-thin residual race that Part A + the webhook can both
+ * miss: the webhook ran its OrderPayment lookup before `complete()` committed the row
+ * (so it no-oped) AND `complete()`'s post-commit reconcile read the intent before the
+ * webhook committed `succeeded` (so it saw nothing to do). Such an order is stranded
+ * until a Stripe resend — this sweep heals it with no human action. Run by the
+ * commerce cron (`/internal/commerce/payment-reconcile-sweep`).
+ *
+ * A grace window skips payments younger than a couple minutes so we never fight an
+ * in-flight completion. Bounded per run; the next tick picks up any remainder.
+ */
+export async function sweepStrandedCheckoutPayments(
+  log: FastifyBaseLogger,
+  tenantId: string
+): Promise<{ scanned: number; recovered: number }> {
+  const cutoff = new Date(Date.now() - 2 * 60_000);
+  const pending = await withTenant({ tenantId }, (tx) =>
+    tx.orderPayment.findMany({
+      where: { status: 'pending', processorRef: { not: null }, createdAt: { lt: cutoff } },
+      select: { processor: true, processorRef: true },
+      orderBy: { createdAt: 'asc' },
+      take: 200,
+    })
+  );
+
+  let recovered = 0;
+  for (const p of pending) {
+    if (!p.processorRef) continue;
+    try {
+      const didCapture = await reconcileCompletedCheckoutPayment(
+        log,
+        tenantId,
+        p.processor,
+        p.processorRef
+      );
+      if (didCapture) recovered += 1;
+    } catch (err) {
+      // One stranded payment failing to reconcile must not abort the sweep for the
+      // rest — log and move on; the next tick retries.
+      log.error(
+        { err, tenantId, processorRef: p.processorRef },
+        'payment sweep: reconcile of stranded payment failed'
+      );
+    }
+  }
+
+  if (recovered > 0) {
+    log.info({ tenantId, scanned: pending.length, recovered }, 'payment sweep: recovered orders');
+  }
+  return { scanned: pending.length, recovered };
 }
 
 // ─── tenant resolution ───────────────────────────────────────────────────────
@@ -198,7 +300,7 @@ async function handleSucceeded(
   tenantId: string,
   gatewayId: string,
   data: NormalizedPaymentData
-): Promise<void> {
+): Promise<'captured' | 'already' | 'none'> {
   const amountCents = data.amountCents;
   const currency = data.currency.toUpperCase();
 
@@ -247,7 +349,7 @@ async function handleSucceeded(
     };
   });
 
-  if (result.kind === 'already') return;
+  if (result.kind === 'already') return 'already';
   if (result.kind === 'none') {
     // A scheduling deposit/prepay charge confirmed (docs/79 §9): the booking's
     // intent carries metadata.booking_id. Advance the booking's deposit from `held`
@@ -263,7 +365,7 @@ async function handleSucceeded(
         })
       );
       if (moved.count > 0) log.info({ bookingId }, 'payment webhook: booking deposit captured');
-      return;
+      return 'none';
     }
     // No OrderPayment — an invoice payment-link intent carries metadata.invoiceId and
     // is recorded against its BillingDocument (which fires crm.billing_document.paid on
@@ -288,7 +390,7 @@ async function handleSucceeded(
         'payment webhook: succeeded intent has no order or invoice'
       );
     }
-    return;
+    return 'none';
   }
 
   log.info({ orderId: result.orderId, amountCents }, 'payment webhook: order paid');
@@ -329,6 +431,8 @@ async function handleSucceeded(
       );
     }
   }
+
+  return 'captured';
 }
 
 // ─── payment.failed ────────────────────────────────────────────────────────────

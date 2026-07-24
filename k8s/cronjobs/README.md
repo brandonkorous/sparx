@@ -13,15 +13,27 @@ Four Kubernetes `CronJob` resources that POST to `/internal/crm/*` on api-rest. 
 
 Wiring for the schedulers under [packages/commerce/src/schedulers/](../../packages/commerce/src/schedulers/).
 
-| CronJob                       | Schedule      | Endpoint                                     | Why this time                                            |
-| ----------------------------- | ------------- | -------------------------------------------- | -------------------------------------------------------- |
-| `commerce-reservation-reaper` | `*/1 * * * *` | `POST /internal/commerce/reservation-reaper` | Every minute — a stuck cart reservation holds stock      |
-| `commerce-revenue-rollup`     | `0 6 * * *`   | `POST /internal/commerce/revenue-rollup`     | Nightly, after the day closes and the CRM jobs (docs/97) |
+| CronJob                            | Schedule      | Endpoint                                          | Why this time                                            |
+| ---------------------------------- | ------------- | ------------------------------------------------- | -------------------------------------------------------- |
+| `commerce-reservation-reaper`      | `*/1 * * * *` | `POST /internal/commerce/reservation-reaper`      | Every minute — a stuck cart reservation holds stock      |
+| `commerce-revenue-rollup`          | `0 6 * * *`   | `POST /internal/commerce/revenue-rollup`          | Nightly, after the day closes and the CRM jobs (docs/97) |
+| `commerce-payment-reconcile-sweep` | `*/5 * * * *` | `POST /internal/commerce/payment-reconcile-sweep` | Every 5 min — heals rare orders stranded "Not paid"      |
 
 `commerce-revenue-rollup` reconciles `rollup_commerce_daily_revenue` per active
 tenant. It accepts an optional `?days=N` to widen the recomputed window for a
 one-shot backfill (default 400 days). The read endpoint live-overlays "today",
 so this job only keeps closed days correct.
+
+`commerce-payment-reconcile-sweep` is the self-healing backstop for the
+client-confirm payment race (BUG-002): a card `OrderPayment` left `pending` whose
+gateway intent already `succeeded`. Unlike the two rollups it isn't a commerce
+scheduler — it drives the api-rest payment reconciler
+([lib/payment-webhook-reconcile.ts](../../services/api-rest/src/lib/payment-webhook-reconcile.ts),
+`sweepStrandedCheckoutPayments`), because finishing the capture also sends the
+tenant's order-confirmation email. Real-time capture at checkout-complete plus the
+gateway webhook cover the common cases, so this only ever catches the rare
+straggler both missed. Idempotent; a 2-minute grace window keeps it from touching
+an in-flight completion.
 
 ## Invoicing scheduled jobs
 

@@ -507,6 +507,13 @@ export async function complete(
   /** True when the order is held for B2B approval — `order.placed` (and fee
    *  metering) is deferred to the approval route. */
   pendingApproval: boolean;
+  /** The gateway intent id + provider slug for a card order (absent for
+   *  net-terms / manual / idempotent-replay). The checkout-complete route uses
+   *  these to close the client-confirm race: right after this commits, it asks
+   *  the reconciler to finish the capture if the webhook already marked the
+   *  intent `succeeded` before the OrderPayment existed (BUG-002). */
+  paymentRef?: string;
+  paymentProviderSlug?: string;
 }> {
   const input = CompleteCheckoutInput.parse(rawInput);
   const inventoryActive = await isInventoryActive(ctx.tenantId);
@@ -914,6 +921,8 @@ export async function complete(
       b2bAccountId: session.b2bAccountId ?? null,
       pendingApproval,
       committedSales,
+      paymentRef: session.paymentRef ?? undefined,
+      paymentProviderSlug: session.paymentProviderSlug ?? undefined,
     };
   });
 

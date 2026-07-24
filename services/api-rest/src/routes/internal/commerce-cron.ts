@@ -5,8 +5,12 @@
 // internal cron surface.
 //
 // Each endpoint runs one scheduler:
-//   • POST /internal/commerce/reservation-reaper  → releases expired cart reservations
-//   • POST /internal/commerce/revenue-rollup      → reconciles the daily-revenue rollup
+//   • POST /internal/commerce/reservation-reaper       → releases expired cart reservations
+//   • POST /internal/commerce/revenue-rollup           → reconciles the daily-revenue rollup
+//   • POST /internal/commerce/payment-reconcile-sweep  → heals orders stranded "Not paid"
+//     by the client-confirm race (BUG-002): a card OrderPayment left `pending` whose
+//     gateway intent already `succeeded`. Idempotent; a real-time capture (Part A) +
+//     webhook cover the common cases, so this only ever catches the rare straggler.
 //
 // Per-tenant loops are sequential to keep DB load predictable. Commerce
 // reaper runs every minute on a tight loop because the impact of a stuck
@@ -20,6 +24,7 @@ import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { commerceSchedulers } from '@sparx/commerce';
 
 import { env } from '../../env.js';
+import { sweepStrandedCheckoutPayments } from '../../lib/payment-webhook-reconcile.js';
 
 const CRON_TOKEN_HEADER = 'x-sparx-internal-cron-token';
 
@@ -97,6 +102,14 @@ const commerceCronRoutes: FastifyPluginAsync = (app) => {
       return { success: true, data: summary };
     }
   );
+
+  app.post('/internal/commerce/payment-reconcile-sweep', async (request) => {
+    authorize(request);
+    const summary = await forEachActiveTenant((tenantId) =>
+      sweepStrandedCheckoutPayments(request.log, tenantId)
+    );
+    return { success: true, data: summary };
+  });
 
   return Promise.resolve();
 };
