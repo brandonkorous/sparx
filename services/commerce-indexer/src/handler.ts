@@ -53,7 +53,12 @@ export async function handleEvent(
     logger.warn({ type: event.type }, 'event missing tenantId; skipping');
     return { outcome: 'skipped' };
   }
-  const ctx = { tenantId, userId: event.actorId ?? undefined };
+  // Tenant only — NOT the actor. `event.actorId` can be a non-UUID (a wize-admin operator id,
+  // for instance), and `withTenant` validates `userId` as a UUID for the `app.user_id` GUC, so
+  // mapping actor→userId is a latent crash on any non-UUID actor. The indexer reads FORCE-RLS
+  // tables keyed on `tenant_id` and never needs `app.user_id`. (See reindex.ts for the case
+  // where this actually fired and emptied the product index.)
+  const ctx = { tenantId };
 
   switch (event.type) {
     case 'product.created':

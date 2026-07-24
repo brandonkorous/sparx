@@ -130,6 +130,18 @@ export function useMediaAssets(ids: string[]) {
     },
     enabled: ids.length > 0,
     staleTime: 5 * 60_000,
+    // A freshly uploaded image is still transcoding: the media-worker generates
+    // its crops a few seconds after /complete, and in GCS mode those variants are
+    // the ONLY previewable url (the private original resolves to null). Everything
+    // that reads `url` — the social composer's per-platform preview most of all —
+    // shows "Still processing…" until then. This is a one-shot query, so without
+    // a poll the preview would stay stuck on that stale first read forever. Tick
+    // while anything is unready, then stop so an idle pane isn't polling.
+    refetchInterval: (q) => {
+      const assets = q.state.data;
+      if (!assets) return false;
+      return assets.some((a) => a.status !== 'ready' || !a.url) ? 2_500 : false;
+    },
   });
 }
 

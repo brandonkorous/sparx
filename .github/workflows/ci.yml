@@ -57,6 +57,25 @@ jobs:
       - name: Prettier
         run: pnpm format:check
 
+  event-topics:
+    name: Event ↔ topic parity
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Guards against the drift that has caused four separate silent
+    # publish-failure incidents: an event declared in code (EventType OR
+    # CrmTopic) with no Pub/Sub topic in terraform. Pure Node, no install —
+    # so it fails fast, in parallel with the heavier jobs, on the first PR
+    # that adds an event without its topic.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check event/topic parity
+        run: node scripts/check-event-topics.mjs
+
   terraform:
     name: Terraform fmt + validate
     runs-on: ubuntu-latest

@@ -75,7 +75,15 @@ export async function runReindex(
   if (!tenantId) {
     throw new Error('search.reindex.requested missing tenantId');
   }
-  const ctx = { tenantId, userId: event.actorId ?? undefined };
+  // Tenant only — NOT the actor. `event.actorId` is whoever triggered the reindex, and
+  // that is not always a UUID: the wize-admin operator console sends a Better Auth staff id
+  // (`rZqhan9PO1EdZEVwgRyg9OfrB9iQN9Wm`), and `withTenant` validates `userId` as a UUID for
+  // the `app.user_id` RLS GUC → it threw before the first `listIds`, so an operator-triggered
+  // reindex ran with `dropStale` (dropped every product doc) and then crashed WITHOUT
+  // reprojecting — emptying the tenant's product search entirely. The indexer is a
+  // tenant-scoped system batch reading FORCE-RLS tables keyed on `tenant_id`; it never needs
+  // `app.user_id`, so don't set it. (Same fix applied to handler.ts for the real-time path.)
+  const ctx = { tenantId };
   const data = (event.data ?? {}) as {
     collections?: unknown;
     dropStale?: unknown;

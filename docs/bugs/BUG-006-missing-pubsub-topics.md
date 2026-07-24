@@ -69,7 +69,7 @@ Final state: **171 topics, 0 declared-but-unprovisioned** across BOTH unions.
 
 - `gcloud pubsub topics list` returns every name from both unions (171 total).
 - Place an order + refund it → no `pubsub: publish failed` / `crm-pubsub: publish
-  failed` lines in api-rest logs. **Confirmed 2026-07-24**: publish-failure count
+failed` lines in api-rest logs. **Confirmed 2026-07-24**: publish-failure count
   dropped to 0 after both applies; the workbench activity feed shows live
   "Checkout completed" entries (proof a previously-dead topic now flows).
 

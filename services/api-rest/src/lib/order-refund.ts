@@ -24,8 +24,13 @@ import { badRequest } from '@sparx/api-core/errors';
 
 export interface RefundOrderInput {
   orderId: string;
-  /** Refund amount in DOLLARS (the money vocabulary the CRM order surfaces use). */
-  amount: number;
+  /**
+   * Refund amount in DOLLARS (the money vocabulary the CRM order surfaces use).
+   * Optional: omit it to refund the FULL remaining amount (everything captured
+   * on this order, less anything already refunded). The workbench always sends
+   * an explicit amount; API/MCP/script callers can just POST `{}`.
+   */
+  amount?: number;
   currency?: string;
   reason?: string;
 }
@@ -47,22 +52,38 @@ export async function refundOrderThroughGateway(
   ctx: Ctx,
   input: RefundOrderInput
 ): Promise<OrderRefund> {
-  const amountCents = Math.round(input.amount * 100);
-  if (amountCents <= 0) throw badRequest('Refund amount must be greater than zero.');
-
-  // The captured payment this refund settles against — newest first, matching how
-  // the returns flow picks the charge to reverse.
-  const payment = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
-    tx.orderPayment.findFirst({
+  // The order (for the full-remaining default) and the captured payment this
+  // refund settles against — newest first, matching how the returns flow picks
+  // the charge to reverse. Read together so the default amount and the target
+  // charge come from one consistent snapshot.
+  const { order, payment } = await withTenant({ tenantId: ctx.tenantId }, async (tx) => ({
+    order: await tx.order.findUnique({
+      where: { id: input.orderId },
+      select: { amountPaid: true, refundTotal: true },
+    }),
+    payment: await tx.orderPayment.findFirst({
       where: { orderId: input.orderId, status: 'captured' },
       orderBy: { capturedAt: 'desc' },
       select: { id: true, processorRef: true, currency: true },
-    })
-  );
+    }),
+  }));
   if (!payment?.processorRef) {
     throw badRequest(
       'This order has no captured card payment to refund. Refund the customer manually, or issue account credit.'
     );
+  }
+
+  // An omitted/blank amount means "refund what's left" — everything captured on
+  // the order, less anything already given back. Resolve it here rather than in
+  // the route so every caller (workbench, MCP, scripts) gets the same default.
+  const remaining = Number(order?.amountPaid ?? 0) - Number(order?.refundTotal ?? 0);
+  const dollars = input.amount ?? remaining;
+  const amountCents = Math.round(dollars * 100);
+  // NaN slips past `<= 0` (every NaN comparison is false), which is exactly how a
+  // missing amount used to reach the gateway as `Invalid integer: NaN`. Guard on
+  // finiteness first so a bad amount fails HERE with a clear message, never at Stripe.
+  if (!Number.isFinite(amountCents) || amountCents <= 0) {
+    throw badRequest('There is nothing left to refund on this order.');
   }
 
   let result;
@@ -92,7 +113,7 @@ export async function refundOrderThroughGateway(
   return orderRefundsService.recordRefund(ctx, {
     orderId: input.orderId,
     paymentId: payment.id,
-    amount: input.amount,
+    amount: dollars,
     currency: input.currency ?? payment.currency,
     ...(input.reason ? { reason: input.reason } : {}),
     ...(result.refundId ? { processorRef: result.refundId } : {}),

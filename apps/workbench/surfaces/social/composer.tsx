@@ -816,6 +816,25 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
     [overview.data]
   );
 
+  // Resolve the picked media so this saved post shows the SAME visual preview the
+  // composer does — cropped to each account's shape (docs/133). Polls while a fresh
+  // upload is still transcoding, so the image appears on its own once its crops land.
+  const mediaAssets = useMediaAssets(mediaIds);
+  const orderedAssets = useMemo<MediaAsset[]>(() => {
+    const byId = new Map((mediaAssets.data ?? []).map((a) => [a.id, a]));
+    return mediaIds.map((id) => byId.get(id)).filter((a): a is MediaAsset => a !== undefined);
+  }, [mediaIds, mediaAssets.data]);
+
+  // A target's avatar isn't on the post row — look it up from the live connections
+  // so the preview header shows the real account picture (null → initials).
+  const avatarByTargetId = useMemo(() => {
+    const out = new Map<string, string | null>();
+    for (const connection of overview.data?.connections ?? []) {
+      for (const t of connection.targets) out.set(t.id, t.avatarUrl ?? connection.avatarUrl);
+    }
+    return out;
+  }, [overview.data]);
+
   useEffect(() => {
     ctx.setTitle(titleFor(post.body));
   }, [ctx, post.body]);
@@ -1066,6 +1085,31 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
               <TargetResults targets={post.targets} />
             )}
           </FormSection>
+
+          {/* Same "How it will look" the composer shows — the real image, cropped to
+              each account's shape, with the words that survive its limit. */}
+          {post.targets.length > 0 ? (
+            <FormSection
+              title="How it will look"
+              description="The real thing, per account — cropped to its shape and cut to its limit."
+            >
+              <div className="flex flex-col gap-3">
+                {post.targets.map((target) => (
+                  <PostPreview
+                    key={target.id}
+                    platform={target.platform}
+                    platformLabel={platformName(target.platform, catalogMap)}
+                    destinationName={target.targetName}
+                    avatarUrl={avatarByTargetId.get(target.socialTargetId) ?? null}
+                    constraints={catalogMap.get(target.platform)?.constraints}
+                    text={body}
+                    link={link.trim() || undefined}
+                    media={orderedAssets}
+                  />
+                ))}
+              </div>
+            </FormSection>
+          ) : null}
 
           {/* Lifecycle actions — only while the post can still move. */}
           {editable && canWrite ? (

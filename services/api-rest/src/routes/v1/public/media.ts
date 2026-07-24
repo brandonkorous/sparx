@@ -18,7 +18,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
-import { getStorage, variantKey } from '../../../lib/storage.js';
+import { getStorage, variantKey, variantUrlPath } from '../../../lib/storage.js';
 import { notFound } from '@sparx/api-core/errors';
 import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 import { env } from '../../../env.js';
@@ -119,8 +119,9 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
       const best = pool.reduce((a, b) => (b.width > a.width ? b : a));
       // Stored key is `<tenantId>/variants/<assetId>/<filename>`; the route is
       // /v1/public/media/variants/:tenantId/:assetId/:filename — drop the middle
-      // `/variants/` segment so the 3-param route matches.
-      const path = best.key.replace('/variants/', '/');
+      // `/variants/` segment so the 3-param route matches (shared helper — same
+      // transform GcsStorage.publicUrl uses, so the two can't drift).
+      const path = variantUrlPath(best.key);
       return reply
         .header('cache-control', 'public, max-age=86400')
         .redirect(`${env.MEDIA_PUBLIC_URL}/v1/public/media/variants/${path}`, 302);

@@ -212,13 +212,7 @@ class GcsStorage implements MediaStorage {
         `Refusing to mint a public URL for a private-bucket key: ${JSON.stringify(key)}`
       );
     }
-    // Public URL path matches routes/v1/public/media.ts:
-    //   <tenantId>/variants/<assetId>/<filename> →
-    //   <base>/v1/public/media/variants/<tenantId>/<assetId>/<filename>
-    // Splitting on `/variants/` lets us preserve the original key shape
-    // without re-encoding the segments (they're already URL-safe — the
-    // worker only emits `[a-z]+-\d+\.[a-z0-9]+` filenames).
-    return `${this.publicBase}/v1/public/media/variants/${key}`;
+    return `${this.publicBase}/v1/public/media/variants/${variantUrlPath(key)}`;
   }
 
   async presignGet(key: string, ttlSeconds = GET_URL_TTL_SEC): Promise<string> {
@@ -401,6 +395,22 @@ export function variantKey(
 ): string {
   const suffix = aspect ? `${format}-${aspect.replace(':', 'x')}-${width}` : `${format}-${width}`;
   return `${tenantId}/variants/${assetId}/${suffix}.${ext}`;
+}
+
+/**
+ * The URL path for a variant key. The serving route
+ * `/v1/public/media/variants/:tenantId/:assetId/:filename` is THREE segments and
+ * re-derives the storage key with {@link variantKey}, which re-inserts the middle
+ * `variants/` itself — so the URL must NOT carry it. A key
+ * `<tenantId>/variants/<assetId>/<filename>` maps to `<tenantId>/<assetId>/<filename>`.
+ *
+ * Emitting the raw key here (WITH the middle `variants/`) yields a FOUR-segment URL
+ * the 3-param route never matches — the request hangs and Cloudflare returns 503, so
+ * the image previews broken. The single source of truth shared by
+ * `GcsStorage.publicUrl` and the `/v1/public/media/:id` redirect so they can't drift.
+ */
+export function variantUrlPath(key: string): string {
+  return key.replace('/variants/', '/');
 }
 
 // Marketplace storage prefixes (docs/85 §6) — the parent "directories" the keys

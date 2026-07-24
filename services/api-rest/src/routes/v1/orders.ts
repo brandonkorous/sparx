@@ -312,7 +312,14 @@ const orderRoutes: FastifyPluginAsync = (app) => {
       ? await orderRefundsService.recordRefund(ctx, { ...body, orderId: id })
       : await refundOrderThroughGateway(ctx, {
           orderId: id,
-          amount: Number(body.amount),
+          // Only forward an amount when the caller actually gave a number —
+          // otherwise let the gateway helper default to the full remaining
+          // amount. (A bare `Number(body.amount)` here turns a missing value
+          // into NaN, which is how the empty-body refund used to reach Stripe
+          // as `Invalid integer: NaN`.)
+          ...(body.amount != null && Number.isFinite(Number(body.amount))
+            ? { amount: Number(body.amount) }
+            : {}),
           ...(typeof body.currency === 'string' ? { currency: body.currency } : {}),
           ...(typeof body.reason === 'string' ? { reason: body.reason } : {}),
         });

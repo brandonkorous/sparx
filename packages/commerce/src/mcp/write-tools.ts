@@ -148,6 +148,45 @@ const updateVariant: McpToolDefinition = {
   },
 };
 
+/** Give a product a photo. `create_product` / `update_product` cover every field EXCEPT
+ *  the one a storefront card is mostly made of — its image — because product images hang
+ *  off the VARIANT (`variantImage`, product-level when `variantId` is null), not the
+ *  product row. An agent could therefore build a whole catalog that renders as grey
+ *  placeholder tiles, with no tool to fix it: the exact "looks half-built" failure the
+ *  template work kept hitting. This composes the two service calls the dashboard's image
+ *  panel makes — attach the asset, then mark it the hero — so "add a photo to this
+ *  product" is one call. Get the `mediaAssetId` from set_image_from_url / upload_image. */
+const SetProductImageInput = z.object({
+  productId: z.string().uuid(),
+  /** A media asset id — the `assetId` returned by set_image_from_url, upload_image, or
+   *  create_image_upload. */
+  mediaAssetId: z.string().uuid(),
+  alt: z.string().max(512).optional(),
+  /** Make this the product's hero (the card + PDP lead image). True by default — the
+   *  common case is "set the picture"; pass false to add a gallery shot without demoting
+   *  the current hero. */
+  primary: z.boolean().default(true),
+});
+
+const setProductImage: McpToolDefinition = {
+  name: 'set_product_image',
+  description:
+    "Attach an image to a product and, by default, make it the product's main photo — the picture shown on its storefront card and product page. Get the `mediaAssetId` from set_image_from_url (an existing hosted/Unsplash URL) or upload_image first, then pass it here with the product's id. Pass `primary: false` to add an extra gallery shot without changing the main photo. A product with no image renders as a blank placeholder, so this is part of finishing any product an agent creates.",
+  scope: 'write:commerce',
+  confirmation: true,
+  input: SetProductImageInput,
+  run: async (ctx, raw) => {
+    const input = SetProductImageInput.parse(raw);
+    const { id } = await variantService.addImage(ctx, {
+      productId: input.productId,
+      mediaAssetId: input.mediaAssetId,
+      ...(input.alt !== undefined ? { alt: input.alt } : {}),
+    });
+    if (input.primary) await variantService.setPrimaryImage(ctx, id);
+    return { imageId: id, productId: input.productId, primary: input.primary };
+  },
+};
+
 const publishProduct: McpToolDefinition = {
   name: 'publish_product',
   description: 'Move a product to active status (visible in storefront).',
@@ -265,6 +304,7 @@ export const writeTools: AnyMcpTool[] = [
   createProduct,
   updateProduct,
   updateVariant,
+  setProductImage,
   publishProduct,
   archiveProduct,
   bulkUpdateProductStatus,

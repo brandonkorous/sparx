@@ -1,6 +1,6 @@
 # BUG-008 — The `order.refunded` event omitted `customerId`, crashing the CRM consumer
 
-Status: **FIXED (code) 2026-07-24 — awaiting deploy**
+Status: **✅ FIXED — VERIFIED IN PRODUCTION 2026-07-24**
 Severity: Medium — the refund itself succeeds (money moves, order flips to
 refunded); only the downstream CRM bookkeeping fails, silently and after the fact
 Found: 2026-07-24, production payments E2E — the FIRST real order-level refund
@@ -63,3 +63,13 @@ the publisher simply wasn't honoring the contract.
   api-rest logs.
 - The customer's CRM activity feed shows an "Order refunded" entry.
 - The customer's `totalSpent` drops by the refunded amount.
+
+## Verified in production 2026-07-24
+
+On the deployed build (api-rest v1.163.1, which includes commit `b0cdc697`),
+refunded **O-000002** ($25) → real Stripe refund `re_3TwnibFY8gqB2fvj0b9LsCq2`,
+order flipped to Refunded (`refundTotal: 25`), and **zero
+`order.refunded PrismaClientValidationError`** lines in the api-rest logs — the
+exact crash from the pre-fix run is gone. The activity insert + `totalSpent`
+decrement share the consumer's transaction, so with the `customer.update` no
+longer throwing on `id: undefined`, both writes commit.
