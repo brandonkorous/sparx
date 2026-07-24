@@ -73,6 +73,18 @@ export interface CartContextValue extends CartState {
   reset: () => void;
 }
 
+/** Thrown by cart mutations when the API rejects the change, so callers can show
+ *  the shopper a real message instead of failing silently. `status` is the HTTP
+ *  status — 409 means the variant went out of stock under a `deny` policy. */
+export class CartError extends Error {
+  readonly status: number;
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = 'CartError';
+    this.status = status;
+  }
+}
+
 const EMPTY_TOTALS: CartTotals = {
   subtotalCents: 0,
   discountTotalCents: 0,
@@ -211,7 +223,22 @@ export function CartProvider({ tenantSlug, propertySlug, currency, children }: C
           body: JSON.stringify({ variantId, quantity }),
         }
       );
-      if (res.ok) applyApi(((await res.json()) as { data: CartApiShape }).data);
+      if (!res.ok) {
+        // Surface the failure — do NOT open the drawer or resolve as if it worked.
+        // The silica buy-box form behavior awaits this promise and settles its
+        // visible state (success/error) from it, and <ProductDetail> catches it to
+        // show an inline message. Swallowing the error here (the old `if (res.ok)`
+        // + unconditional drawer-open) is exactly what made a sold-out add read as
+        // a false "Submitted." with an empty cart — BUG-001. The server's 409
+        // message is developer-facing, so map to shopper-friendly copy.
+        throw new CartError(
+          res.status === 409
+            ? 'Sorry, this item just sold out.'
+            : 'Sorry, we couldn’t add that to your cart. Please try again.',
+          res.status
+        );
+      }
+      applyApi(((await res.json()) as { data: CartApiShape }).data);
       setState((s) => ({ ...s, drawerOpen: true }));
     },
     [applyApi, authHeaders, ensureCart, tenantSlug]

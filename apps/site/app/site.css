@@ -719,6 +719,15 @@
     background: var(--st-text-muted);
   }
 
+  /* Add-to-cart failure (e.g. a variant that sold out between load and click).
+     A real danger ink — this is text the shopper must read, not decoration. */
+  .st-buybox__error {
+    margin: 0;
+    color: var(--st-danger);
+    font-size: 0.95rem;
+    font-weight: 500;
+  }
+
   /* ── Quantity stepper ──────────────────────────────────────── */
   .st-qty {
     display: inline-flex;

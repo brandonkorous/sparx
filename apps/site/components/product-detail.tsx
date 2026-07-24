@@ -55,6 +55,7 @@ export function ProductDetail({
   });
   const [qty, setQty] = useState(1);
   const [adding, setAdding] = useState(false);
+  const [addError, setAddError] = useState<string | null>(null);
   const [activeImageId, setActiveImageId] = useState<string | null>(
     () =>
       product.images.find((img) => !img.variantId && img.optionValueIds.length === 0)?.id ??
@@ -160,8 +161,14 @@ export function ProductDetail({
   async function handleAdd() {
     if (!resolvedVariant?.inStock) return;
     setAdding(true);
+    setAddError(null);
     try {
       await addItem(resolvedVariant.id, qty);
+    } catch (err) {
+      // The button's disabled state already prevents adding a KNOWN-sold-out
+      // variant; this catches the race where stock ran out between page load and
+      // the click (the server 409s). Show it instead of the old silent no-op.
+      setAddError(err instanceof Error ? err.message : 'Sorry, we couldn’t add that to your cart.');
     } finally {
       setAdding(false);
     }
@@ -365,6 +372,12 @@ export function ProductDetail({
             <WishlistButton variantId={(resolvedVariant ?? defaultVariant)!.id} />
           ) : null}
         </div>
+
+        {addError ? (
+          <p className="st-buybox__error" role="alert">
+            {addError}
+          </p>
+        ) : null}
 
         {resolvedVariant?.sku ? (
           <span className="st-muted" style={{ fontSize: '0.82rem' }}>

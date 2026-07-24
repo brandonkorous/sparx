@@ -64,6 +64,9 @@ interface ProductFormState {
   inStock: boolean;
   addToCart: () => Promise<void>;
   buyNow: () => Promise<void>;
+  /** Set when the last add/buy failed (e.g. the variant sold out between load and
+   *  click → the cart API 409s). Surfaced by the buy box instead of a silent no-op. */
+  addError: string | null;
 }
 
 const ProductFormContext = React.createContext<ProductFormState | null>(null);
@@ -102,6 +105,7 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
   );
   const [qty, setQty] = React.useState(1);
   const [adding, setAdding] = React.useState(false);
+  const [addError, setAddError] = React.useState<string | null>(null);
 
   const allSelected = optionless
     ? selectedVariantId !== null
@@ -146,8 +150,14 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
   const addToCart = React.useCallback(async () => {
     if (!resolvedVariant?.inStock) return;
     setAdding(true);
+    setAddError(null);
     try {
       await runtime.addToCart(resolvedVariant.id, qty);
+    } catch (err) {
+      // The button already disables for a KNOWN sold-out variant; this catches the
+      // race where it sold out between load and click (the cart API 409s). Show it
+      // instead of a silent no-op / unhandled rejection (BUG-001).
+      setAddError(err instanceof Error ? err.message : 'Sorry, we couldn’t add that to your cart.');
     } finally {
       setAdding(false);
     }
@@ -158,8 +168,11 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
   const buyNow = React.useCallback(async () => {
     if (!resolvedVariant?.inStock) return;
     setAdding(true);
+    setAddError(null);
     try {
       await runtime.buyNow(resolvedVariant.id, qty);
+    } catch (err) {
+      setAddError(err instanceof Error ? err.message : 'Sorry, we couldn’t add that to your cart.');
     } finally {
       setAdding(false);
     }
@@ -184,6 +197,7 @@ function useProductFormState(product: BuilderProduct): ProductFormState {
     inStock,
     addToCart,
     buyNow,
+    addError,
   };
 }
 
@@ -445,6 +459,11 @@ function BuyBoxInner() {
         <BuilderQuantity />
         <BuilderAddToCart />
       </div>
+      {f.addError ? (
+        <p className="st-buybox__error" role="alert">
+          {f.addError}
+        </p>
+      ) : null}
     </div>
   );
 }
