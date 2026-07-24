@@ -49,6 +49,7 @@ import { isInventoryActive } from '../inventory-gate';
 import * as discountService from './discount-service';
 import * as marketService from './market';
 import * as pricingService from './pricing-service';
+import * as shippingService from './shipping-service';
 import * as surchargeService from './surcharge-service';
 
 function parseDueDays(paymentTerms: string | null | undefined): number {
@@ -247,9 +248,42 @@ export async function submitContact(ctx: ServiceContext, rawInput: unknown): Pro
 
 export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Promise<void> {
   const input = SubmitShippingInput.parse(rawInput);
+
+  // PRICE the chosen rate server-side. This runs BEFORE the write transaction on
+  // purpose: rating opens its own tenant-scoped reads (and may call a carrier), which
+  // must not nest inside the update txn. We re-quote and match the caller's rateRef
+  // rather than accepting an amount from the client — a shopper could otherwise post
+  // a $0 shipping charge. Storing only the ref (the old behaviour) meant
+  // `shippingTotalCents` stayed 0 and every order shipped FREE regardless of the
+  // option chosen, silently eating the merchant's shipping cost (BUG-005).
+  const owner = await withTenant(ctx, (tx) =>
+    tx.checkoutSession.findFirst({
+      where: { id: input.sessionId },
+      select: { cartId: true },
+    })
+  );
+  if (!owner) throw new CommerceNotFoundError('CheckoutSession', input.sessionId);
+
+  const rates = await shippingService.quoteForCart(ctx, {
+    cartId: owner.cartId,
+    toAddress: input.shippingAddress,
+  });
+  const chosen = rates.find((r) => r.rateRef === input.shippingRateRef);
+  if (!chosen) {
+    // The quote the shopper saw is gone (rates changed, or a carrier dropped it).
+    // Refuse rather than silently charging nothing for shipping.
+    throw new CommerceValidationError(
+      'That shipping option is no longer available — please choose a shipping method again.'
+    );
+  }
+
   await withTenant(ctx, async (tx) => {
     const session = await assertSessionWritable(tx, input.sessionId);
     assertCanAdvance(session.step, 'shipping');
+    // Re-point the total at the newly chosen rate: swap out whatever shipping the
+    // session was carrying (0 on first pass, the previous pick on a change) for this
+    // one, so going back and switching methods can't stack charges.
+    const nextTotalCents = session.totalCents - session.shippingTotalCents + chosen.amountCents;
     await tx.checkoutSession.update({
       where: { id: session.id },
       data: {
@@ -258,6 +292,9 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
         billingAddress: input.billingAddress ?? input.shippingAddress,
         shippingProviderSlug: input.shippingProviderSlug,
         shippingRateRef: input.shippingRateRef,
+        shippingTotalCents: chosen.amountCents,
+        shippingDescription: `${chosen.carrier} ${chosen.service}`.trim(),
+        totalCents: nextTotalCents,
       },
     });
     await writeAuditLog({
@@ -609,6 +646,19 @@ export async function complete(
 
     const cart = session.cart;
 
+    // Origin site (docs/58 D1). The primary site identifies itself by sending no
+    // `?property=`, so a cart with no site means "primary" — resolve it once here
+    // and stamp it on BOTH the customer and the ORDER. The order used to take
+    // `cart.propertyId` raw, so every primary-site order was site-less and vanished
+    // from every site-scoped money view (Finance → Payments read "No payments yet"
+    // on a paid order — BUG-004), even though the customer beside it was already
+    // being defaulted to primary. Cart creation now sets this too; this stays as the
+    // backstop for carts opened before that fix and for any non-storefront caller.
+    const originPropertyId =
+      cart.propertyId ??
+      (await tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }))?.id ??
+      null;
+
     // sparx.market checkout (docs/106 §4.7) — sparx is merchant-of-record. The order
     // persists as channel='marketplace', source='sparx_market'; sparx absorbs card
     // processing (no buyer surcharge); a settlement accrual is recorded so the seller
@@ -631,7 +681,7 @@ export async function complete(
       customerId = await ensureCheckoutCustomer(
         tx,
         ctx.tenantId,
-        cart.propertyId ?? null,
+        originPropertyId,
         session.customerEmail
       );
     }
@@ -677,9 +727,9 @@ export async function complete(
       { ...ctx, tx },
       {
         customerId,
-        // Origin site (docs/58 D1) — inherit the cart's property so the order is
-        // tagged with the storefront it was placed on.
-        propertyId: cart.propertyId ?? undefined,
+        // Origin site (docs/58 D1) — the storefront the order was placed on, with
+        // the primary-site fallback resolved above (BUG-004).
+        propertyId: originPropertyId ?? undefined,
         channel: isMarket
           ? 'marketplace'
           : session.channel === 'storefront' || session.channel === 'b2b_portal'

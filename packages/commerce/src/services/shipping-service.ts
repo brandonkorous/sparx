@@ -25,6 +25,8 @@ import {
   voidOutboundLabel,
 } from './shipping-provider-bridge';
 import type { LabelResult } from './shipping-provider-bridge';
+// Imported (not just re-exported) because `quoteForCart` below composes them.
+import { resolvePackageForItems, resolveShipFromAddress } from './shipping-request-resolver';
 
 export {
   isAddressUsableForLiveRating,
@@ -513,6 +515,88 @@ export async function rateShipment(
   }
 
   return out.sort((a, b) => a.amountCents - b.amountCents);
+}
+
+/**
+ * Rate a CART for a destination — the single server-authoritative quote shared by
+ * the public shipping-quote endpoint and checkout's `submitShipping`.
+ *
+ * `submitShipping` must re-derive the chosen rate's PRICE here rather than trust a
+ * client-supplied amount, so this composition can't live only in the route: the cart's
+ * lines become one package, the tenant's ship-from warehouse is resolved, and rating
+ * runs against the cart's own site + currency. (Before this existed, submitShipping
+ * stored only the rate REF and never priced it, so every order shipped free — BUG-005.)
+ */
+export async function quoteForCart(
+  ctx: ServiceContext,
+  input: { cartId: string; toAddress: ShipmentRequest['toAddress'] }
+): Promise<RateOption[]> {
+  const cart = await withTenant(ctx, (tx) =>
+    tx.cart.findFirst({
+      where: { id: input.cartId },
+      select: {
+        currency: true,
+        // The site this cart is on (docs/131 §4) — bounds which zones may quote.
+        propertyId: true,
+        items: {
+          select: {
+            quantity: true,
+            subtotalCents: true,
+            variant: {
+              select: {
+                weightGrams: true,
+                lengthMm: true,
+                widthMm: true,
+                heightMm: true,
+                product: {
+                  select: {
+                    weightGrams: true,
+                    lengthMm: true,
+                    widthMm: true,
+                    heightMm: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    })
+  );
+  if (!cart) throw new CommerceNotFoundError('Cart', input.cartId);
+
+  const shipmentPackage = resolvePackageForItems(
+    cart.items.map((it) => ({
+      quantity: it.quantity,
+      weightGrams: it.variant.weightGrams,
+      lengthMm: it.variant.lengthMm,
+      widthMm: it.variant.widthMm,
+      heightMm: it.variant.heightMm,
+      productWeightGrams: it.variant.product.weightGrams,
+      productLengthMm: it.variant.product.lengthMm,
+      productWidthMm: it.variant.product.widthMm,
+      productHeightMm: it.variant.product.heightMm,
+    }))
+  );
+  shipmentPackage.declaredValueCents = cart.items.reduce((sum, it) => sum + it.subtotalCents, 0);
+
+  // A missing/placeholder warehouse address only costs LIVE rates — manual zone
+  // rates still quote, so checkout is never blocked by an unconfigured ship-from.
+  const fromAddress = await resolveShipFromAddress(ctx).catch(() => ({
+    line1: '—',
+    city: '—',
+    country: 'US',
+  }));
+
+  return rateShipment(ctx, {
+    ...(cart.propertyId ? { propertyId: cart.propertyId } : {}),
+    fromAddress,
+    toAddress: input.toAddress,
+    currency: cart.currency,
+    signatureRequired: false,
+    saturdayDelivery: false,
+    packages: [shipmentPackage],
+  });
 }
 
 // ─── Label purchase / void / tracking (provider-bridged) ─────────────

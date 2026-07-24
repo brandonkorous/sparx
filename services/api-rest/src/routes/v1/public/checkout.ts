@@ -163,85 +163,24 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
     const { tenantId, ctx } = await publicCommerceContext(request);
     const { cartId } = await assertSessionOwner(request, ctx, tenantId, sessionId);
 
-    // Build a ShipmentRequest from the cart: one consolidated package whose
-    // weight/dimensions fall back variant → product → a nominal default
-    // (resolvePackageForItems), summed against the tenant's real ship-from
-    // warehouse address (resolveShipFromAddress). shippingService.rateShipment
-    // matches this against manual zones/rates AND — when a carrier is
-    // installed and the addresses are real, not placeholders — live rates too.
-    const cart = await withTenant({ tenantId }, (tx) =>
-      tx.cart.findFirst({
-        where: { id: cartId },
-        select: {
-          currency: true,
-          // The site this cart is on (docs/131 §4) — bounds which shipping zones
-          // may quote, so a donut site's local-delivery rates never appear on a
-          // parts cart. Without passing this, the zone scoping was inert here.
-          propertyId: true,
-          items: {
-            select: {
-              quantity: true,
-              subtotalCents: true,
-              variant: {
-                select: {
-                  weightGrams: true,
-                  lengthMm: true,
-                  widthMm: true,
-                  heightMm: true,
-                  product: {
-                    select: { weightGrams: true, lengthMm: true, widthMm: true, heightMm: true },
-                  },
-                },
-              },
-            },
-          },
-        },
-      })
-    );
-    if (!cart) throw notFound('Cart', cartId);
-
-    const totalValue = cart.items.reduce((sum, it) => sum + it.subtotalCents, 0);
-    const shipmentPackage = shippingService.resolvePackageForItems(
-      cart.items.map((it) => ({
-        quantity: it.quantity,
-        weightGrams: it.variant.weightGrams,
-        lengthMm: it.variant.lengthMm,
-        widthMm: it.variant.widthMm,
-        heightMm: it.variant.heightMm,
-        productWeightGrams: it.variant.product.weightGrams,
-        productLengthMm: it.variant.product.lengthMm,
-        productWidthMm: it.variant.product.widthMm,
-        productHeightMm: it.variant.product.heightMm,
-      }))
-    );
-    shipmentPackage.declaredValueCents = totalValue;
-
-    // Zone matching only reads toAddress.country, so that alone is enough for
-    // manual rates. Live carrier rating needs the full street+city too — a
-    // carrier geocodes the destination to rate, a placeholder always returns
-    // zero live rates even though shipment creation "succeeds" — so when the
-    // checkout form has already collected the shopper's full address (it has,
-    // by the time "Get shipping rates" is clickable), forward it as a real
-    // toAddress instead of the country/postal-only placeholder.
-    // signatureRequired/saturdayDelivery default to false.
-    const fromAddress = await shippingService
-      .resolveShipFromAddress(ctx)
-      .catch(() => ({ line1: '—', city: '—', country: 'US' }));
+    // Quote the cart via the SHARED server-authoritative helper — the same one
+    // checkout's submitShipping uses to price the option the shopper picks, so the
+    // quoted price and the charged price can never drift apart (BUG-005).
+    //
+    // Zone matching only reads toAddress.country, so that alone is enough for manual
+    // rates. Live carrier rating needs the full street+city too — a carrier geocodes
+    // the destination, and a placeholder always returns zero live rates even though
+    // shipment creation "succeeds" — so when the checkout form has already collected
+    // the shopper's full address (it has, by the time "Get shipping rates" is
+    // clickable), forward it as a real toAddress instead of the country/postal-only
+    // placeholder.
     const toAddress = body.destinationAddress ?? {
       line1: '—',
       city: '—',
       country: body.destinationCountry ?? 'US',
       ...(body.destinationPostal ? { postalCode: body.destinationPostal } : {}),
     };
-    const rates = await shippingService.rateShipment(ctx, {
-      ...(cart.propertyId ? { propertyId: cart.propertyId } : {}),
-      fromAddress,
-      toAddress,
-      currency: cart.currency,
-      signatureRequired: false,
-      saturdayDelivery: false,
-      packages: [shipmentPackage],
-    });
+    const rates = await shippingService.quoteForCart(ctx, { cartId, toAddress });
 
     // Map the service RateOption shape → the storefront's ShippingRate shape.
     return ok(

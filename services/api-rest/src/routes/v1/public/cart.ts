@@ -166,17 +166,28 @@ const publicCartRoutes: FastifyPluginAsync = async (app) => {
   // echo via x-cart-token on every later call.
   app.post('/v1/public/commerce/cart', async (request) => {
     const { tenantId, ctx } = await publicCommerceContext(request);
-    // Resolve the origin site (docs/58 D1). Absent / unknown slug → null (no
-    // specific site); we never default to primary so a multi-site cart is never
-    // mis-tagged. The order copies this at checkout.
+    // Resolve the origin site (docs/58 D1). The storefront identifies the PRIMARY
+    // site by the ABSENCE of `?property=` — apps/site's resolveActivePropertySlug()
+    // returns null for it — so "no slug" means "primary", not "unknown". Default to
+    // primary accordingly, exactly as `defaultCurrency` below and checkout's
+    // `ensureCheckoutCustomer` already do for the same reason. Leaving it null made
+    // EVERY primary-site order site-less, which hid it from every site-scoped money
+    // view: a paid order showed up as "No payments yet" in Finance → Payments
+    // (BUG-004). A genuinely UNKNOWN slug still resolves to null rather than being
+    // mis-tagged onto primary — that's the case the old comment was guarding.
     const { property } = CreateCartQuery.parse(request.query);
-    const propertyId = property
-      ? ((
-          await withTenant({ tenantId }, (tx) =>
-            tx.property.findFirst({ where: { slug: property }, select: { id: true } })
-          )
-        )?.id ?? null)
-      : null;
+    const propertyId = await withTenant({ tenantId }, async (tx) => {
+      if (property) {
+        return (
+          (await tx.property.findFirst({ where: { slug: property }, select: { id: true } }))?.id ??
+          null
+        );
+      }
+      return (
+        (await tx.property.findFirst({ where: { isPrimary: true }, select: { id: true } }))?.id ??
+        null
+      );
+    });
     const token = randomUUID();
     const currency = await defaultCurrency(tenantId, propertyId);
     // A signed-in shopper's cart is linked to their customer record from the
