@@ -180,6 +180,7 @@ import emailRoutes from './routes/v1/email/index.js';
 import emailWebhookRoutes from './routes/v1/public/email-webhook.js';
 import emailUnsubscribeRoutes from './routes/v1/public/email-unsubscribe.js';
 import channelWebhookRoutes from './routes/v1/public/channel-webhooks.js';
+import socialMetaCallbackRoutes from './routes/v1/public/social-meta-callbacks.js';
 import dashboardRoutes from './routes/v1/dashboard.js';
 import jobsRoutes from './routes/v1/jobs.js';
 import activityRoutes from './routes/v1/activity.js';
@@ -840,6 +841,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(providerWebhookRoutes);
   await app.register(paymentWebhookRoutes);
   await app.register(channelWebhookRoutes);
+  await app.register(socialMetaCallbackRoutes);
   await app.register(sitemapRoutes);
   await app.register(rssRoutes);
   await app.register(publicContentRoutes);
