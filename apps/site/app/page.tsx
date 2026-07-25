@@ -151,58 +151,74 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
       {cmsHome ? <PageView entry={cmsHome} /> : null}
 
       {!cmsHome ? (
-        <section className="st-container">
-          <div className="st-hero st-hero--align-center">
-            <div className="st-hero__content st-hero__lede">
-              <span className="st-eyebrow">Welcome to {site.name}</span>
-              <h1 className="st-hero__title">Gear built to perform, priced to move.</h1>
-              <p className="st-hero__sub">
-                Browse the full catalog, find exactly what fits, and check out in seconds.
-              </p>
-              <div className="st-hero__cta">
-                <ButtonLink href="/products" color="primary" size="lg">
-                  Shop all products
-                </ButtonLink>
-                <ButtonLink href="/collections" color="neutral" variant="outline" size="lg">
-                  Browse collections
-                </ButtonLink>
-              </div>
+        <section className="mx-auto w-full max-w-6xl px-6">
+          <div className="flex flex-col items-center gap-6 py-[clamp(3.5rem,8vw,7rem)] text-center">
+            <h1 className="text-base-content max-w-[16ch] text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.04] font-bold tracking-tight">
+              Gear built to perform, priced to move.
+            </h1>
+            <p className="text-base-content max-w-[52ch] text-[clamp(1.05rem,2vw,1.3rem)] leading-relaxed">
+              Browse the full catalog, find exactly what fits, and check out in seconds.
+            </p>
+            <div className="mt-2 flex flex-wrap justify-center gap-3">
+              <ButtonLink href="/products" color="primary" size="lg">
+                Shop all products
+              </ButtonLink>
+              <ButtonLink href="/collections" color="neutral" variant="outline" size="lg">
+                Browse collections
+              </ButtonLink>
             </div>
           </div>
         </section>
       ) : null}
 
       {collectionShelf.length > 0 ? (
-        <section className="st-container st-section">
-          <div className="st-section__head">
-            <h2 className="st-h2">Shop by collection</h2>
-            <Link href="/collections" className="st-section__link">
+        <section className="mx-auto w-full max-w-6xl px-6 py-16">
+          <div className="mb-7 flex items-end justify-between gap-4">
+            <h2 className="text-base-content text-3xl font-semibold tracking-tight">
+              Shop by collection
+            </h2>
+            <Link
+              href="/collections"
+              className="text-primary text-sm font-medium whitespace-nowrap hover:underline"
+            >
               View all →
             </Link>
           </div>
-          <div className="st-grid st-grid--auto">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
             {collectionShelf.map((c) => {
               const hero = mediaUrl(c.heroMediaId, site.slug);
               return (
-                <Link key={c.id} href={`/collections/${c.handle}`} className="st-card">
-                  <div className="st-card__media">
+                <Link
+                  key={c.id}
+                  href={`/collections/${c.handle}`}
+                  className="group rounded-box bg-base-100 text-base-content focus-visible:outline-primary relative flex flex-col overflow-hidden no-underline transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2"
+                >
+                  <div className="bg-base-200 relative aspect-square overflow-hidden">
                     {hero ? (
                       <Image
                         src={hero}
                         alt={c.name}
                         fill
                         sizes="(max-width: 860px) 100vw, 33vw"
+                        className="object-cover transition-transform duration-[400ms] group-hover:scale-105"
                         style={{ objectFit: 'cover' }}
                       />
                     ) : (
-                      <div className="st-card__media st-card__media--empty" aria-hidden="true">
-                        <span style={{ fontSize: '2rem' }}>❖</span>
+                      <div
+                        className="bg-base-200 text-base-content/40 grid h-full place-items-center text-4xl"
+                        aria-hidden="true"
+                      >
+                        ❖
                       </div>
                     )}
                   </div>
-                  <div className="st-card__body">
-                    <span className="st-card__title">{c.name}</span>
-                    {c.description ? <span className="st-muted">{c.description}</span> : null}
+                  <div className="flex flex-col gap-1 px-1 pt-4 pb-2">
+                    <span className="text-base-content text-base leading-snug font-medium">
+                      {c.name}
+                    </span>
+                    {c.description ? (
+                      <span className="text-base-content text-sm">{c.description}</span>
+                    ) : null}
                   </div>
                 </Link>
               );
@@ -212,14 +228,19 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
       ) : null}
 
       {fresh.items.length > 0 ? (
-        <section className="st-container st-section">
-          <div className="st-section__head">
-            <h2 className="st-h2">New arrivals</h2>
-            <Link href="/products?sort=newest" className="st-section__link">
+        <section className="mx-auto w-full max-w-6xl px-6 py-16">
+          <div className="mb-7 flex items-end justify-between gap-4">
+            <h2 className="text-base-content text-3xl font-semibold tracking-tight">
+              New arrivals
+            </h2>
+            <Link
+              href="/products?sort=newest"
+              className="text-primary text-sm font-medium whitespace-nowrap hover:underline"
+            >
               Shop all →
             </Link>
           </div>
-          <div className="st-grid st-grid--auto">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
             {fresh.items.map((p) => (
               <ProductCard
                 key={p.id}
