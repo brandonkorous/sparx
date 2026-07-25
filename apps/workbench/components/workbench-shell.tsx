@@ -280,10 +280,14 @@ export function WorkbenchShell({
                 setRailExpanded(!collapsed);
               }}
             >
-              <div
-                data-tour="module-rail"
-                className={`bg-base-200 relative z-10 flex rounded-r-lg p-1`}
-              >
+              {/* `relative` anchors the rail's own absolutely-positioned bits
+                  (active indicator, tooltips) — but NO positive z-index: a raw
+                  `z-10` here (vestigial from when the module panel was an
+                  overlay) lifts the rail above body-portaled popovers, so the
+                  site switcher's dropdown paints BEHIND it. The panel and dock
+                  are static and sit below the rail regardless; the dropdown,
+                  portaled later in the DOM at the same stacking level, wins. */}
+              <div data-tour="module-rail" className={`bg-base-200 relative flex rounded-r-lg p-1`}>
                 <Rail
                   browsing={browsing}
                   siteKey={siteKey ?? 'default'}
