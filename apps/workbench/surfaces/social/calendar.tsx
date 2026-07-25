@@ -5,9 +5,11 @@
 // the shape of their week at a glance: where the gaps are, what clusters, what is due
 // tomorrow.
 //
-// A month grid when there is room; an agenda list when the pane is narrow (a cramped
-// 7-column grid helps no one). Drafts have no date, so they sit in a tray beneath —
-// picked up and opened, not lost. Click a day to start a post already dated to it.
+// The month grid is ALWAYS the view — this is the one place a social manager lives, so
+// it never degrades into a list. When the pane is too narrow for seven legible columns
+// the grid scrolls sideways rather than collapsing. Any day is a click target: click
+// the empty space (or the date) to start a post already dated to it. Drafts have no
+// date, so they sit in a tray beneath — picked up and opened, not lost.
 
 import { useMemo, useState } from 'react';
 import {
@@ -22,21 +24,15 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
-import { ChevronLeft, ChevronRight, Plus, Send, ServerCrash } from 'lucide-react';
+import { Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import { ChevronLeft, ChevronRight, Plus, ServerCrash } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import type { MediaAsset } from '../cms/media';
-import { DestinationAvatars, PostThumb, excerpt, formatTime, postDate } from './post-visuals';
+import { PostThumb, excerpt, formatTime, postDate } from './post-visuals';
 import { useSocialBoard } from './board';
-import {
-  isEditablePost,
-  postStatusMeta,
-  socialErrorMessage,
-  type CatalogEntry,
-  type Post,
-} from './data';
+import { isEditablePost, postStatusMeta, socialErrorMessage, type Post } from './data';
 
 interface OpenEvent {
   shiftKey: boolean;
@@ -46,8 +42,6 @@ interface OpenEvent {
 interface CalendarProps {
   posts: Post[];
   assetsById: Map<string, MediaAsset>;
-  avatarByTargetId: Map<string, string | null>;
-  catalogMap: Map<string, CatalogEntry>;
   canWrite: boolean;
   onOpenPost: (post: Post, event: OpenEvent) => void;
   onNewOnDay: (day: Date) => void;
@@ -165,56 +159,71 @@ function DayCell({
   const { setNodeRef, isOver } = useDroppable({ id: dayKey(day) });
   const shown = dayPosts.slice(0, 3);
   const overflow = dayPosts.length - shown.length;
+  const dayLabel = day.toLocaleDateString(undefined, {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+  });
 
   return (
     <div
       ref={setNodeRef}
-      className={`group/day flex min-h-28 flex-col gap-1 border-r border-b p-1.5 ${
+      className={`group/day relative flex min-h-28 flex-col gap-1 border-r border-b p-1.5 ${
         isOver
           ? 'border-module bg-module bg-soft'
           : `border-base-300 ${inMonth ? 'bg-base-100' : 'bg-base-200/50'}`
       }`}
     >
-      <div className="flex items-center justify-between">
-        <span
-          className={
-            isToday
-              ? 'bg-module text-module-content grid size-6 place-items-center rounded-full text-sm font-semibold'
-              : 'grid size-6 place-items-center text-sm font-medium'
-          }
-        >
-          {day.getDate()}
-        </span>
-        {canWrite ? (
-          <button
-            type="button"
-            aria-label={`New post on ${day.toLocaleDateString(undefined, {
-              weekday: 'long',
-              month: 'long',
-              day: 'numeric',
-            })}`}
-            title="New post on this day"
-            onClick={() => {
-              onNewOnDay(day);
-            }}
-            className="text-module hover:bg-module hover:bg-soft grid size-6 cursor-pointer place-items-center rounded-md opacity-0 transition-opacity group-hover/day:opacity-100 focus-visible:opacity-100"
-          >
-            <Plus className="size-4" aria-hidden />
-          </button>
-        ) : null}
-      </div>
-      {shown.map((post) => (
-        <DayChip
-          key={post.id}
-          post={post}
-          assetsById={assetsById}
-          canWrite={canWrite}
-          onOpen={(event) => {
-            onOpenPost(post, event);
+      {/* The whole cell is the "write a post on this day" target — the click surface a
+          calendar operator expects. It sits BEHIND the date + chips (which re-enable
+          their own pointer events), so tapping any empty space, the date, or the "+N
+          more" line starts a dated post, while a chip still opens its post. */}
+      {canWrite ? (
+        <button
+          type="button"
+          aria-label={`New post on ${dayLabel}`}
+          title="Write a post on this day"
+          onClick={() => {
+            onNewOnDay(day);
           }}
+          className="hover:bg-module hover:bg-soft focus-visible:bg-module focus-visible:bg-soft absolute inset-0 cursor-pointer"
         />
-      ))}
-      {overflow > 0 ? <span className="px-1 text-xs font-medium">+{overflow} more</span> : null}
+      ) : null}
+
+      <div className="pointer-events-none relative flex min-h-0 flex-col gap-1">
+        <div className="flex items-center justify-between">
+          <span
+            className={
+              isToday
+                ? 'bg-module text-module-content grid size-6 place-items-center rounded-full text-sm font-semibold'
+                : 'grid size-6 place-items-center text-sm font-medium'
+            }
+          >
+            {day.getDate()}
+          </span>
+          {canWrite ? (
+            <span
+              className="text-module opacity-0 transition-opacity group-hover/day:opacity-100"
+              aria-hidden
+            >
+              <Plus className="size-4" />
+            </span>
+          ) : null}
+        </div>
+        {shown.map((post) => (
+          <div key={post.id} className="pointer-events-auto">
+            <DayChip
+              post={post}
+              assetsById={assetsById}
+              canWrite={canWrite}
+              onOpen={(event) => {
+                onOpenPost(post, event);
+              }}
+            />
+          </div>
+        ))}
+        {overflow > 0 ? <span className="px-1 text-xs font-medium">+{overflow} more</span> : null}
+      </div>
     </div>
   );
 }
@@ -265,100 +274,6 @@ function MonthGrid({
           );
         })}
       </div>
-    </div>
-  );
-}
-
-/* ── The agenda (narrow pane) ─────────────────────────────────────────────── */
-
-function Agenda({
-  cursor,
-  postsByDay,
-  assetsById,
-  avatarByTargetId,
-  catalogMap,
-  onOpenPost,
-}: {
-  cursor: Date;
-  postsByDay: Map<string, Post[]>;
-  assetsById: Map<string, MediaAsset>;
-  avatarByTargetId: Map<string, string | null>;
-  catalogMap: Map<string, CatalogEntry>;
-  onOpenPost: (post: Post, event: OpenEvent) => void;
-}) {
-  const month = cursor.getMonth();
-  const todayKey = dayKey(new Date());
-
-  // Only days IN the visible month that carry posts, soonest first.
-  const days = useMemo(() => {
-    return [...postsByDay.entries()]
-      .filter(([, posts]) => posts.some((p) => (postDate(p)?.getMonth() ?? -1) === month))
-      .map(([key, posts]) => ({ key, posts, date: posts[0] ? postDate(posts[0]) : null }))
-      .filter((d) => d.date?.getMonth() === month)
-      .sort((a, b) => a.key.localeCompare(b.key));
-  }, [postsByDay, month]);
-
-  if (days.length === 0) {
-    return (
-      <div className="border-base-300 rounded-xl border border-dashed p-8 text-center">
-        <Text className="text-sm">Nothing scheduled or posted this month.</Text>
-      </div>
-    );
-  }
-
-  return (
-    <div className="flex flex-col gap-4">
-      {days.map(({ key, posts, date }) => (
-        <section key={key} className="flex flex-col gap-2">
-          <div className="flex items-baseline gap-2">
-            <Heading level={3} className="text-sm font-semibold">
-              {date?.toLocaleDateString(undefined, {
-                weekday: 'short',
-                month: 'short',
-                day: 'numeric',
-              })}
-            </Heading>
-            {key === todayKey ? (
-              <Badge color="module" variant="soft" size="sm">
-                Today
-              </Badge>
-            ) : null}
-          </div>
-          <div className="border-base-300 flex flex-col overflow-hidden rounded-xl border">
-            {posts.map((post) => {
-              const meta = postStatusMeta(post.status);
-              const iso = post.publishedAt ?? post.scheduledAt;
-              return (
-                <button
-                  key={post.id}
-                  type="button"
-                  onClick={(event) => {
-                    onOpenPost(post, event);
-                  }}
-                  className="border-base-300 hover:bg-base-200 flex cursor-pointer items-center gap-3 border-b p-3 text-left last:border-b-0"
-                >
-                  <PostThumb post={post} assetsById={assetsById} size="sm" />
-                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <span className="truncate text-sm font-medium">{excerpt(post.body, 60)}</span>
-                    <span className="flex items-center gap-2">
-                      {iso ? <span className="text-sm">{formatTime(iso)}</span> : null}
-                      <DestinationAvatars
-                        targets={post.targets}
-                        avatarByTargetId={avatarByTargetId}
-                        catalogMap={catalogMap}
-                        max={4}
-                      />
-                    </span>
-                  </span>
-                  <Badge color={meta.tone} variant="soft" size="sm">
-                    {meta.label}
-                  </Badge>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-      ))}
     </div>
   );
 }
@@ -445,8 +360,6 @@ function DraftsTray({
 export function PostsCalendar({
   posts,
   assetsById,
-  avatarByTargetId,
-  catalogMap,
   canWrite,
   onOpenPost,
   onNewOnDay,
@@ -550,32 +463,26 @@ export function PostsCalendar({
         </div>
 
         {canWrite ? (
-          <Text className="hidden text-sm @2xl:block">
-            Drag a post to another day to reschedule it — or drag a draft up from below onto a day
-            to schedule it.
+          <Text className="text-sm">
+            {posts.length === 0
+              ? 'No posts yet — click any day to write your first one.'
+              : 'Click any day to write a post dated to it. Drag a post to another day to reschedule it — or drag a draft up from below onto a day to schedule it.'}
           </Text>
         ) : null}
 
-        {/* Month grid when the pane is wide enough for it; agenda otherwise. */}
-        <div className="hidden @2xl:block">
-          <MonthGrid
-            cursor={cursor}
-            postsByDay={postsByDay}
-            assetsById={assetsById}
-            canWrite={canWrite}
-            onOpenPost={onOpenPost}
-            onNewOnDay={onNewOnDay}
-          />
-        </div>
-        <div className="@2xl:hidden">
-          <Agenda
-            cursor={cursor}
-            postsByDay={postsByDay}
-            assetsById={assetsById}
-            avatarByTargetId={avatarByTargetId}
-            catalogMap={catalogMap}
-            onOpenPost={onOpenPost}
-          />
+        {/* The month grid is always the view. On a pane too narrow for seven legible
+            columns it scrolls sideways rather than collapsing to a list. */}
+        <div className="-mx-1 overflow-x-auto px-1">
+          <div className="min-w-[44rem]">
+            <MonthGrid
+              cursor={cursor}
+              postsByDay={postsByDay}
+              assetsById={assetsById}
+              canWrite={canWrite}
+              onOpenPost={onOpenPost}
+              onNewOnDay={onNewOnDay}
+            />
+          </div>
         </div>
 
         <DraftsTray
@@ -670,35 +577,14 @@ export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
           <p className="p-4 text-sm" role="status">
             Loading…
           </p>
-        ) : all.length === 0 ? (
-          <div className="flex h-full items-center justify-center p-8">
-            <EmptyState
-              icon={<Send className="size-6" aria-hidden />}
-              title="No posts yet"
-              description="Write a post once and send it to every account you have connected. Scheduled posts appear on this calendar; drafts wait in the tray beneath it."
-              actions={
-                canWrite ? (
-                  <Button
-                    color="module"
-                    size="sm"
-                    onClick={(event) => {
-                      board.openNew(event);
-                    }}
-                  >
-                    <Plus className="size-4" aria-hidden />
-                    New post
-                  </Button>
-                ) : undefined
-              }
-            />
-          </div>
         ) : (
+          // The calendar is ALWAYS the view — an empty month is still a calendar you
+          // click into to write your first post. The zero-posts guidance rides inside
+          // it as a hint, not a screen that replaces the grid.
           <div className="p-4">
             <PostsCalendar
               posts={all}
               assetsById={board.assetsById}
-              avatarByTargetId={board.avatarByTargetId}
-              catalogMap={board.catalogMap}
               canWrite={canWrite}
               onOpenPost={board.openPost}
               onNewOnDay={board.newOnDay}
