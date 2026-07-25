@@ -13,6 +13,7 @@ import { withTenant } from '@sparx/db';
 import type { Prisma } from '@sparx/db';
 import {
   getSocialAdapter,
+  isRetryableError,
   renderForTarget,
   type SocialPlatform,
   type SocialTargetRef,
@@ -180,11 +181,13 @@ export async function drainPost(
     try {
       auth = await resolveSocialAuth(tenantId, target.connection, adapter);
     } catch (e) {
+      // A permanent refresh failure (revoked grant → 400 invalid_grant) fails fast;
+      // a transient one (5xx / network) stays pending for a re-drain.
       await recordFailure(
         t.id,
         t.platform,
         t.attemptCount,
-        'pending',
+        isRetryableError(e) ? 'pending' : 'failed',
         `Sign-in refresh failed: ${errMsg(e)}`
       );
       continue;
@@ -248,8 +251,16 @@ export async function drainPost(
       );
       published += 1;
     } catch (e) {
-      // Transient — leave pending for a re-drain (capped by MAX_ATTEMPTS).
-      await recordFailure(t.id, t.platform, t.attemptCount, 'pending', errMsg(e));
+      // Retry a TRANSIENT failure (5xx / 429 / network) for a re-drain, capped by
+      // MAX_ATTEMPTS; fail a PERMANENT one (4xx — a bad image/caption/token) immediately
+      // so a doomed post doesn't churn every attempt before giving up.
+      await recordFailure(
+        t.id,
+        t.platform,
+        t.attemptCount,
+        isRetryableError(e) ? 'pending' : 'failed',
+        errMsg(e)
+      );
     }
   }
 

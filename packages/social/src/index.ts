@@ -52,3 +52,8 @@ export {
   isPlatformConnectable,
   _resetSocialRegistryForTest,
 } from './registry.js';
+
+// Error classification for the publish drain: a status-bearing error + the predicate the
+// worker uses to retry transient failures (5xx / 429 / network) but fail permanent ones
+// (4xx) fast, instead of burning every attempt on a request that will never succeed.
+export { HttpError, isRetryableError } from './adapters/_http.js';

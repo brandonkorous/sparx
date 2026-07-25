@@ -18,6 +18,7 @@ import {
   expiresInSeconds,
   fetchT,
   formBody,
+  HttpError,
   readPlatformCreds,
 } from './_http.js';
 
@@ -72,7 +73,7 @@ export async function graphGet<T>(
 ): Promise<T> {
   const qs = new URLSearchParams({ ...params, access_token: accessToken });
   const res = await fetchT(`${GRAPH_BASE}/${path}?${qs.toString()}`);
-  if (!res.ok) throw new Error(await describeGraph(res, label));
+  if (!res.ok) throw new HttpError(await describeGraph(res, label), res.status);
   return (await res.json()) as T;
 }
 
@@ -89,7 +90,7 @@ export async function graphPost<T>(
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formBody({ ...fields, access_token: accessToken }),
   });
-  if (!res.ok) throw new Error(await describeGraph(res, label));
+  if (!res.ok) throw new HttpError(await describeGraph(res, label), res.status);
   return (await res.json()) as T;
 }
 
@@ -111,7 +112,7 @@ export async function graphPostMultipart<T>(
   form.append('access_token', accessToken);
   form.append(file.field, new Blob([file.bytes], { type: file.contentType }), file.filename);
   const res = await fetchT(`${GRAPH_BASE}/${path}`, { method: 'POST', body: form }, 60_000);
-  if (!res.ok) throw new Error(await describeGraph(res, label));
+  if (!res.ok) throw new HttpError(await describeGraph(res, label), res.status);
   return (await res.json()) as T;
 }
 

@@ -5,7 +5,7 @@
 // by extension. Centralized here so LinkedIn + the Meta family agree on exactly which
 // URLs count as an image and how a canonical link is appended to a caption.
 
-import { fetchT } from './_http.js';
+import { fetchT, HttpError } from './_http.js';
 
 /** File extensions the platforms treat as an uploadable image. `avif` is included so a
  *  base variant in that format is still recognized (the social CROPS are jpeg, but the
@@ -22,7 +22,8 @@ export async function fetchImageBinary(
   url: string
 ): Promise<{ bytes: ArrayBuffer; contentType: string; filename: string }> {
   const res = await fetchT(url, {}, 30_000);
-  if (!res.ok) throw new Error(`image fetch failed: ${res.status} ${url.slice(0, 160)}`);
+  if (!res.ok)
+    throw new HttpError(`image fetch failed: ${res.status} ${url.slice(0, 160)}`, res.status);
   const bytes = await res.arrayBuffer();
   const contentType = res.headers.get('content-type') ?? 'image/jpeg';
   const ext = contentType.includes('png')
