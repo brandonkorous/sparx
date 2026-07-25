@@ -29,6 +29,16 @@ const EnvSchema = z.object({
   // Unset → posts publish text-only (media is skipped, logged). Slice 6 layers
   // per-platform aspect variants + focal-point crops on top of this base resolution.
   MEDIA_PUBLIC_BASE_URL: z.string().url().optional(),
+  // Direct-origin media host (DNS-only, NOT Cloudflare-proxied) for platforms that
+  // publish by handing their OWN servers an image_url to fetch — Instagram, Threads,
+  // Pinterest. Cloudflare serves any `Range: bytes=0-` request a `206 Partial Content`
+  // (even the whole file), and those platforms reject a 206, so a post silently drops
+  // its image. Facebook/LinkedIn sidestep this by byte-uploading (they download via
+  // this worker, which sends no Range) so they KEEP the CDN host. This host bypasses
+  // CF's edge, so the origin's clean 200 reaches the platform. Unset → those platforms
+  // fall back to MEDIA_PUBLIC_BASE_URL (the pre-fix behavior). See cloudflare.tf
+  // `sparx_works_media_direct` + the Caddy `media-direct.sparx.works` vhost.
+  MEDIA_DIRECT_BASE_URL: z.string().url().optional(),
 });
 
 export type Env = z.infer<typeof EnvSchema>;

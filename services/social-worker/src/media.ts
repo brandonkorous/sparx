@@ -133,12 +133,55 @@ export async function resolvePostAssets(
   return out;
 }
 
+/** Platforms that publish an image by handing THEIR servers a URL to fetch (vs. the
+ *  byte-upload platforms — Facebook/LinkedIn — which download via this worker). These
+ *  must fetch from the direct-origin host: Cloudflare answers any `Range` request on a
+ *  cacheable media object with a `206 Partial Content` (verified on HIT and MISS), and
+ *  Instagram/Threads/Pinterest reject a 206, dropping the image. `MEDIA_DIRECT_BASE_URL`
+ *  is a DNS-only host that bypasses CF, so the origin's clean 200 reaches them. */
+const URL_FETCH_PLATFORMS: ReadonlySet<SocialPlatform> = new Set<SocialPlatform>([
+  'instagram',
+  'threads',
+  'pinterest',
+]);
+
+/** Whether a platform hands its OWN servers an image_url to fetch (so it needs the
+ *  CF-bypassing direct host), vs. a byte-upload platform that keeps the CDN host. */
+export function isUrlFetchPlatform(platform: SocialPlatform): boolean {
+  return URL_FETCH_PLATFORMS.has(platform);
+}
+
+/** Swap a variant URL's public (CDN) host prefix for the direct-origin host. Pure over
+ *  its bases so it's unit-tested without env: a no-op when either base is missing or the
+ *  URL doesn't start with the public base — so an unset direct host preserves the exact
+ *  pre-fix behavior. Trailing slashes on either base are tolerated. */
+export function swapMediaHost(
+  url: string,
+  publicBase: string | undefined,
+  directBase: string | undefined
+): string {
+  const pub = publicBase?.replace(/\/$/, '');
+  const dir = directBase?.replace(/\/$/, '');
+  if (!pub || !dir || !url.startsWith(pub)) return url;
+  return dir + url.slice(pub.length);
+}
+
 /** The MediaRefs to publish to one platform: each asset's crop for that platform's
- *  aspect, or its base variant when no such crop exists. */
+ *  aspect, or its base variant when no such crop exists. URL-fetch platforms
+ *  (Instagram/Threads/Pinterest) get the direct-origin host so Cloudflare's 206 on a
+ *  ranged fetch can't drop the image (see `URL_FETCH_PLATFORMS`). */
 export function mediaRefsForPlatform(
   assets: ResolvedAsset[],
   platform: SocialPlatform
 ): MediaRef[] {
   const aspect = preferredAspectFor(platform);
-  return assets.map((a) => ({ url: a.crops[aspect] ?? a.baseUrl, kind: a.kind }));
+  return assets.map((a) => {
+    const url = a.crops[aspect] ?? a.baseUrl;
+    return {
+      url: isUrlFetchPlatform(platform)
+        ? swapMediaHost(url, env.MEDIA_PUBLIC_BASE_URL, env.MEDIA_DIRECT_BASE_URL)
+        : url,
+      kind: a.kind,
+    };
+  });
 }

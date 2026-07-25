@@ -68,6 +68,29 @@ media.sparx.works {
   reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
 }
 
+# media-direct.sparx.works — the SAME media routes, but on a DNS-only host that
+# BYPASSES Cloudflare's proxy. Instagram/Threads/Pinterest publish an image by
+# handing THEIR servers an image_url to fetch; Cloudflare answers any `Range:
+# bytes=0-` on a cacheable media object with a `206 Partial Content` (verified on
+# HIT and MISS), and those platforms reject a 206 — the image silently drops and
+# the post goes out text-only. The ORIGIN returns a clean 200 to a ranged request
+# (Caddy/api-rest ignore Range), so a host that skips CF fixes them. Facebook +
+# LinkedIn sidestep this by BYTE-uploading (they download via the social-worker,
+# which sends no Range) and keep media.sparx.works. The social-worker points
+# MEDIA_DIRECT_BASE_URL here for the URL-fetch platforms only. Grey-cloud DNS →
+# on-demand cert lands directly on the pod (allow-listed in api-rest
+# /internal/domain-check PLATFORM_HOSTNAMES). See terraform cloudflare.tf
+# `sparx_works_media_direct`.
+media-direct.sparx.works {
+  tls {
+    on_demand
+  }
+  header {
+    -Set-Cookie
+  }
+  reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+}
+
 graphql.sparx.works {
   tls {
     on_demand

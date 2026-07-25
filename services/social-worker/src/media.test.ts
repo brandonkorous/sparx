@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { preferredAspectFor, variantUrlPath } from './media.js';
+import { isUrlFetchPlatform, preferredAspectFor, swapMediaHost, variantUrlPath } from './media.js';
 
 // Lock the platform → crop mapping (docs/133 §8). The media worker generates only the
 // four core crops (1:1 / 4:5 / 9:16 / 16:9); every platform's declared ratio snaps to
@@ -59,5 +59,56 @@ describe('variantUrlPath', () => {
 
   it('only strips the first `variants/` (ids never embed it, but be exact)', () => {
     expect(variantUrlPath('t/variants/a/webp-800.webp')).toBe('t/a/webp-800.webp');
+  });
+});
+
+// Instagram/Threads/Pinterest publish by handing THEIR servers an image_url; Cloudflare
+// answers any `Range: bytes=0-` with a `206 Partial Content` and those platforms reject
+// it, so the image silently drops. They fetch from a DNS-only direct-origin host that
+// bypasses CF. Facebook/LinkedIn byte-upload (download via this worker, no Range) and
+// keep the CDN host. This locks which platforms swap hosts, and the swap itself.
+describe('URL-fetch host routing', () => {
+  it('routes only the by-url-fetch platforms to the direct host', () => {
+    for (const p of ['instagram', 'threads', 'pinterest'] as const) {
+      expect(isUrlFetchPlatform(p)).toBe(true);
+    }
+    // Byte-upload + text platforms keep the CDN host.
+    for (const p of [
+      'facebook_page',
+      'linkedin',
+      'x',
+      'tiktok',
+      'youtube',
+      'google_business',
+    ] as const) {
+      expect(isUrlFetchPlatform(p)).toBe(false);
+    }
+  });
+
+  it('swaps the public base prefix for the direct base, path intact', () => {
+    const pub = 'https://media.sparx.works';
+    const dir = 'https://media-direct.sparx.works';
+    const url = `${pub}/v1/public/media/variants/t/a/jpeg-1x1-1080.jpg`;
+    expect(swapMediaHost(url, pub, dir)).toBe(
+      `${dir}/v1/public/media/variants/t/a/jpeg-1x1-1080.jpg`
+    );
+  });
+
+  it('tolerates a trailing slash on either base', () => {
+    expect(swapMediaHost('https://a.co/x/y.jpg', 'https://a.co/', 'https://b.co/')).toBe(
+      'https://b.co/x/y.jpg'
+    );
+  });
+
+  it('is a no-op when the direct base is unset (preserves pre-fix behavior)', () => {
+    const url = 'https://media.sparx.works/v1/public/media/variants/t/a/jpeg-1x1-1080.jpg';
+    expect(swapMediaHost(url, 'https://media.sparx.works', undefined)).toBe(url);
+  });
+
+  it('is a no-op when the URL is not on the public base (external/hot-linked media)', () => {
+    const url = 'https://cdn.example.com/img.jpg';
+    expect(
+      swapMediaHost(url, 'https://media.sparx.works', 'https://media-direct.sparx.works')
+    ).toBe(url);
   });
 });

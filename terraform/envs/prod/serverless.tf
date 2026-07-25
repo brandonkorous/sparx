@@ -738,6 +738,12 @@ module "social_worker_cloudrun" {
     # WITHOUT this, resolvePostAssets returns nothing and every post publishes text-only
     # (the image is silently skipped) — the cause of "Facebook didn't post the image".
     MEDIA_PUBLIC_BASE_URL = "https://media.sparx.works"
+    # DNS-only origin host (bypasses Cloudflare) that Instagram/Threads/Pinterest fetch a
+    # post's image_url from. Cloudflare answers a `Range` request with a 206 those
+    # platforms reject; this host serves the origin's clean 200. Facebook/LinkedIn
+    # byte-upload and keep MEDIA_PUBLIC_BASE_URL. See cloudflare.tf
+    # `sparx_works_media_direct` + the Caddy `media-direct.sparx.works` vhost.
+    MEDIA_DIRECT_BASE_URL = "https://media-direct.sparx.works"
     # Added at go-live: the non-secret platform OAuth client IDs used for token
     # refresh (GOOGLE_OAUTH_CLIENT_ID; later META_APP_ID / LINKEDIN_CLIENT_ID).
   }

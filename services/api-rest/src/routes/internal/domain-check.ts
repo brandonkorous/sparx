@@ -43,6 +43,12 @@ const PLATFORM_HOSTNAMES = new Set<string>([
   // imagery (Caddyfile routes it to api-rest). Without this entry on-demand TLS
   // is denied and Cloudflare returns 525 on every media URL (docs/85).
   'media.sparx.works',
+  // media-direct.sparx.works — the SAME media routes on a DNS-only (NOT
+  // Cloudflare-proxied) host. Instagram/Threads/Pinterest fetch a post's image_url
+  // from here so they never hit Cloudflare's 206-on-Range (which they reject,
+  // dropping the image). On-demand issuance lands directly on the pod (grey-cloud),
+  // but still calls this ask endpoint, so it must be allow-listed like media.sparx.works.
+  'media-direct.sparx.works',
   // sparx.zone apex (tenant *.sparx.zone subdomains are checked via
   // `domains` table in Phase 2)
   'sparx.zone',

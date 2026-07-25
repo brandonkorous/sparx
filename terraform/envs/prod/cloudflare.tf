@@ -137,6 +137,29 @@ resource "cloudflare_record" "sparx_works_media" {
   comment         = "Public CDN — transcoded media variants (Caddy → api-rest)"
 }
 
+# media-direct.sparx.works — the SAME origin, DNS-only (proxied = false), so it
+# BYPASSES Cloudflare's edge. This is the "DNS-only origin media host" the 206 note
+# below calls out as the fix for the URL-fetch platforms. Instagram/Threads/Pinterest
+# publish by handing their servers an image_url; Cloudflare answers any `Range` request
+# on a cacheable media object with a 206 (verified HIT + MISS) and they reject it,
+# dropping the image. The origin returns a clean 200 to a ranged request, so a host that
+# skips CF fixes them. The social-worker's MEDIA_DIRECT_BASE_URL points here for those
+# platforms only (Facebook/LinkedIn byte-upload and keep the CDN host). Same reserved
+# ingress IP; on-demand cert issues on the pod (allow-listed in api-rest
+# /internal/domain-check). Trade-off: no CDN cache/WAF for this host, but it serves only
+# public media variants and takes a handful of publish-time fetches — negligible.
+resource "cloudflare_record" "sparx_works_media_direct" {
+  count           = var.cloudflare_enabled ? 1 : 0
+  zone_id         = data.cloudflare_zone.sparx_works[0].id
+  name            = "media-direct"
+  type            = "A"
+  content         = google_compute_address.ingress.address
+  ttl             = 1
+  proxied         = false
+  allow_overwrite = true
+  comment         = "DNS-only origin — media variants for IG/Threads/Pinterest (bypasses CF 206-on-Range)"
+}
+
 # Strip the `Range` request header on public media IMAGE variants.
 #
 # Cloudflare serves any cached object as `206 Partial Content` when the request
@@ -169,13 +192,18 @@ resource "cloudflare_record" "sparx_works_media" {
 # packages/social/src/adapters/facebook.ts. FB never fetches our CDN, so the 206
 # can't bite.
 #
-# STILL EXPOSED: Instagram, Pinterest, and Threads can ONLY publish by public
-# image_url (no byte upload), so they WILL hit this 206 the moment they're used to
-# post an image. The clean fix is a Cloudflare SNIPPET on /v1/public/media/* that
-# deletes the Range header before cache (below) — but Snippets need a PAID plan,
-# and a Transform Rule can't touch `Range` (managed header). Options when we get
-# there: upgrade the CF plan and add the snippet, a Cloudflare Worker (paid), or a
-# DNS-only origin media host. Snippet body for reference:
+# INSTAGRAM / THREADS / PINTEREST — FIXED (2026-07-25) via a DNS-only origin host:
+# `media-direct.sparx.works` (resource `sparx_works_media_direct` below) points at the
+# same ingress with proxied = false, so it BYPASSES Cloudflare's edge entirely and the
+# origin's clean 200 reaches the platform's fetcher. The social-worker's
+# MEDIA_DIRECT_BASE_URL routes those three platforms' image_url there; Facebook/LinkedIn
+# byte-upload and keep media.sparx.works. This is the "DNS-only origin media host" option
+# below — chosen because a CF Snippet needs a PAID plan and a Transform Rule can't touch
+# the `Range` managed header (the free-plan constraints this stack runs under).
+#
+# Alternatives NOT taken (kept for reference): a Cloudflare SNIPPET on /v1/public/media/*
+# that deletes the Range header before cache (needs a paid plan), or a Cloudflare Worker
+# (paid). Snippet body for reference:
 #
 #   export default { async fetch(request) {
 #     if (request.headers.has("Range")) {
