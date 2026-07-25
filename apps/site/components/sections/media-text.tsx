@@ -19,15 +19,26 @@ export function MediaTextSection({
   const img = mediaUrl(config.mediaId ?? null, ctx.tenantSlug);
   const position = focalToPosition(config.imageFocal);
 
+  // Two-column band; collapses to a single column below 760px. Full-bleed runs
+  // edge-to-edge (no container, no gap, stretched rows, self-padded text).
+  const gridCls = config.fullBleed
+    ? 'grid grid-cols-2 items-stretch gap-0 max-[760px]:grid-cols-1'
+    : 'mx-auto grid w-full max-w-6xl grid-cols-2 items-center gap-[clamp(1.5rem,4vw,3.5rem)] px-6 max-[760px]:grid-cols-1';
+  const imgCls = config.fullBleed
+    ? 'h-full min-h-[340px] w-full bg-base-200 bg-cover bg-center'
+    : 'aspect-[4/3] w-full rounded-box bg-base-200 bg-cover bg-center';
+  const textCls = config.fullBleed
+    ? 'grid gap-4 p-[clamp(2rem,5vw,4rem)] max-[760px]:p-[clamp(1.5rem,5vw,2.5rem)]'
+    : 'grid gap-4';
+
   const grid = (
-    <div
-      className={config.fullBleed ? 'st-sb-mediatext__grid' : 'st-container st-sb-mediatext__grid'}
-      data-media-side={config.mediaSide}
-    >
-      <div className="st-sb-mediatext__media">
+    <div className={gridCls}>
+      <div
+        className={config.mediaSide === 'left' ? 'order-[-1] max-[760px]:order-none' : undefined}
+      >
         {img ? (
           <div
-            className="st-sb-mediatext__img"
+            className={imgCls}
             style={{
               backgroundImage: `url("${img}")`,
               backgroundSize: config.imageFit === 'contain' ? 'contain' : 'cover',
@@ -36,25 +47,27 @@ export function MediaTextSection({
           />
         ) : null}
       </div>
-      <div className="st-sb-mediatext__text">
-        {config.eyebrow ? <p className="st-sb-mediatext__eyebrow">{config.eyebrow}</p> : null}
-        {config.heading ? <h2 className="st-h2">{config.heading}</h2> : null}
-        {config.body ? <p className="st-sb-mediatext__body">{config.body}</p> : null}
+      <div className={textCls}>
+        {config.eyebrow ? (
+          <p className="text-base-content m-0 text-[0.8rem] font-semibold tracking-[0.07em] uppercase">
+            {config.eyebrow}
+          </p>
+        ) : null}
+        {config.heading ? (
+          <h2 className="text-base-content text-3xl font-semibold tracking-tight">
+            {config.heading}
+          </h2>
+        ) : null}
+        {config.body ? (
+          <p className="text-base-content m-0 leading-relaxed">{config.body}</p>
+        ) : null}
         <SbCtaRow ctas={config.ctas} />
       </div>
     </div>
   );
 
-  return config.fullBleed ? (
-    <section
-      className="st-section st-section--flush st-sb-mediatext"
-      data-bg={config.background}
-      data-fullbleed="true"
-    >
-      {grid}
-    </section>
-  ) : (
-    <section className="st-section st-sb-mediatext" data-bg={config.background}>
+  return (
+    <section className={`py-16 ${config.background === 'subtle' ? 'bg-base-200' : ''}`}>
       {grid}
     </section>
   );

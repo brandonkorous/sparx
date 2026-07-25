@@ -9,6 +9,36 @@ import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
 import { SbCtaRow, resolveCtas } from './_shared';
 
+// Fixed banner height (min == max, locks to a viewport fraction).
+const HEIGHT: Record<string, string> = {
+  sm: 'min-h-[25svh] max-h-[25svh]',
+  md: 'min-h-[50svh] max-h-[50svh]',
+  lg: 'min-h-[75svh] max-h-[75svh]',
+  screen: 'min-h-[100svh] max-h-[100svh]',
+};
+// Vertical placement of the content block. `split` stretches so its two groups
+// can pin top + bottom.
+const VALIGN: Record<string, string> = {
+  top: 'items-start',
+  center: 'items-center',
+  bottom: 'items-end',
+  split: 'items-stretch',
+};
+// Horizontal placement + text alignment of the banner.
+const ALIGN: Record<string, string> = {
+  left: '',
+  center: 'justify-center text-center',
+  right: 'justify-end text-right',
+};
+// Cross-axis alignment inside the (grid) content block.
+const INNER_ALIGN: Record<string, string> = {
+  left: '',
+  center: 'justify-items-center',
+  right: 'justify-items-end',
+};
+// Over-photo pill treatment for the CTA buttons (banners always read over media).
+const CTA_PILL = '[&>*]:min-w-[12rem] [&>*]:rounded-full';
+
 export function ImageBannerSection({
   config,
   ctx,
@@ -24,22 +54,30 @@ export function ImageBannerSection({
   // section (the Tesla-style model section). Otherwise everything stacks together.
   const isSplit = config.verticalAlign === 'split';
 
+  const groupAlign = INNER_ALIGN[config.align] ?? '';
   const textBlock = (
     <>
-      {config.eyebrow ? <p className="st-sb-banner__eyebrow">{config.eyebrow}</p> : null}
-      {config.heading ? <h2 className="st-sb-banner__title">{config.heading}</h2> : null}
-      {config.subheading ? <p className="st-sb-banner__sub">{config.subheading}</p> : null}
+      {config.eyebrow ? (
+        <p className="m-0 text-[0.8rem] font-semibold tracking-[0.08em] uppercase">
+          {config.eyebrow}
+        </p>
+      ) : null}
+      {config.heading ? (
+        <h2 className="m-0 text-[clamp(1.75rem,4vw,2.75rem)] font-semibold tracking-[-0.02em]">
+          {config.heading}
+        </h2>
+      ) : null}
+      {config.subheading ? <p className="m-0 leading-normal">{config.subheading}</p> : null}
     </>
   );
 
   const banner = (
     <div
-      className="st-sb-banner"
-      data-height={config.height}
-      data-align={config.align}
-      data-valign={config.verticalAlign}
-      data-text={config.textColor}
-      data-fullbleed={config.fullBleed ? 'true' : 'false'}
+      className={`bg-base-200 relative isolate flex overflow-hidden bg-cover bg-center p-[clamp(1.5rem,4vw,3rem)] ${
+        config.fullBleed ? 'rounded-none' : 'rounded-box'
+      } ${config.textColor === 'dark' ? 'text-base-content' : 'text-white'} ${
+        HEIGHT[config.height] ?? ''
+      } ${VALIGN[config.verticalAlign] ?? VALIGN.center} ${ALIGN[config.align] ?? ''}`}
       style={
         img
           ? {
@@ -51,33 +89,37 @@ export function ImageBannerSection({
       }
     >
       {img ? (
-        <div className="st-sb-banner__scrim" style={{ opacity: overlay }} aria-hidden="true" />
+        <div
+          className="absolute inset-0 z-0 bg-black"
+          style={{ opacity: overlay }}
+          aria-hidden="true"
+        />
       ) : null}
       {hasText ? (
-        <div className="st-sb-banner__inner">
-          {isSplit ? (
-            <>
-              <div className="st-sb-banner__group st-sb-banner__group--top">{textBlock}</div>
-              {ctas.length ? (
-                <div className="st-sb-banner__group st-sb-banner__group--bottom">
-                  <SbCtaRow ctas={ctas} />
-                </div>
-              ) : null}
-            </>
-          ) : (
-            <>
+        isSplit ? (
+          <div className="relative z-[1] flex w-full flex-col justify-between gap-6 self-stretch">
+            <div className={`grid gap-3 pt-[clamp(0.5rem,4vh,3rem)] ${groupAlign}`}>
               {textBlock}
-              <SbCtaRow ctas={ctas} />
-            </>
-          )}
-        </div>
+            </div>
+            {ctas.length ? (
+              <div className={`grid gap-3 pb-[clamp(0.5rem,3vh,2rem)] ${groupAlign}`}>
+                <SbCtaRow ctas={ctas} className={CTA_PILL} />
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div className={`relative z-[1] grid max-w-[46ch] gap-4 ${groupAlign}`}>
+            {textBlock}
+            <SbCtaRow ctas={ctas} className={CTA_PILL} />
+          </div>
+        )
       ) : null}
     </div>
   );
 
   return config.fullBleed ? (
-    <section className="st-section st-section--flush">{banner}</section>
+    <section className="py-16">{banner}</section>
   ) : (
-    <section className="st-container st-section">{banner}</section>
+    <section className="mx-auto w-full max-w-6xl px-6 py-16">{banner}</section>
   );
 }

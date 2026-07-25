@@ -11,6 +11,26 @@ import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
 import { SbCtaRow, resolveCtas } from './_shared';
 
+// Fixed section height (min == max, so the hero locks to a viewport fraction).
+const HEIGHT: Record<string, string> = {
+  sm: 'min-h-[25svh] max-h-[25svh]',
+  md: 'min-h-[50svh] max-h-[50svh]',
+  lg: 'min-h-[75svh] max-h-[75svh]',
+  screen: 'min-h-[100svh] max-h-[100svh]',
+};
+// Vertical placement of the content block (default centered).
+const VALIGN: Record<string, string> = {
+  top: 'items-start',
+  center: 'items-center',
+  bottom: 'items-end',
+};
+// Horizontal placement + text alignment of the inner grid (default centered).
+const ALIGN: Record<string, string> = {
+  left: 'place-items-start text-left',
+  center: 'place-items-center text-center',
+  right: 'place-items-end text-right',
+};
+
 export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionContext }) {
   const bg = mediaUrl(config.backgroundMediaId ?? null, ctx.tenantSlug);
   const overlay = Math.min(100, Math.max(0, config.overlayOpacity)) / 100;
@@ -28,19 +48,21 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
     transformOrigin: position,
   };
 
+  // Media present (or an explicit light text color) reads over a photo/scrim, so
+  // ink goes white; otherwise it's the themed base ink.
+  const textCls = bg || config.textColor === 'light' ? 'text-white' : 'text-base-content';
+  const innerAlign = ALIGN[config.align] ?? ALIGN.center;
+  const inner = `relative z-[2] grid w-full gap-5 ${innerAlign}`;
+
   return (
     <section
-      className="st-sb-hero"
-      data-align={config.align}
-      data-valign={config.verticalAlign}
-      data-height={config.height}
-      data-text={config.textColor}
-      data-has-bg={bg ? 'true' : 'false'}
-      data-fullbleed={config.fullBleed ? 'true' : 'false'}
+      className={`relative isolate flex overflow-hidden py-[clamp(3rem,7vw,6rem)] ${
+        VALIGN[config.verticalAlign] ?? VALIGN.center
+      } ${HEIGHT[config.height] ?? ''} ${textCls}`}
     >
       {isVideo ? (
         <video
-          className="st-sb-hero__media"
+          className="absolute inset-0 z-0 h-full w-full object-cover"
           autoPlay
           muted
           loop
@@ -50,19 +72,53 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
           style={mediaStyle}
         />
       ) : bg ? (
-        <img className="st-sb-hero__media" src={bg} alt="" aria-hidden="true" style={mediaStyle} />
+        <img
+          className="absolute inset-0 z-0 h-full w-full object-cover"
+          src={bg}
+          alt=""
+          aria-hidden="true"
+          style={mediaStyle}
+        />
       ) : null}
       {bg ? (
-        <div className="st-sb-hero__scrim" style={{ opacity: overlay }} aria-hidden="true" />
+        <div
+          className="absolute inset-0 z-[1] bg-black"
+          style={{ opacity: overlay }}
+          aria-hidden="true"
+        />
       ) : null}
-      <div className={config.fullBleed ? 'st-sb-hero__inner' : 'st-container st-sb-hero__inner'}>
-        {config.eyebrow ? <p className="st-sb-hero__eyebrow">{config.eyebrow}</p> : null}
-        {config.heading ? <h1 className="st-sb-hero__title">{config.heading}</h1> : null}
-        {config.subheading ? <p className="st-sb-hero__sub">{config.subheading}</p> : null}
-        <SbCtaRow ctas={ctas} size="lg" layout={config.ctaLayout} />
+      <div
+        className={
+          config.fullBleed
+            ? `${inner} px-[clamp(1.5rem,6vw,5rem)]`
+            : `mx-auto w-full max-w-6xl px-6 ${inner}`
+        }
+      >
+        {config.eyebrow ? (
+          <p className="m-0 text-sm font-semibold tracking-[0.08em] uppercase">{config.eyebrow}</p>
+        ) : null}
+        {config.heading ? (
+          <h1 className="m-0 max-w-[18ch] text-[clamp(2.25rem,5.5vw,4rem)] leading-[1.05] font-bold tracking-[-0.03em]">
+            {config.heading}
+          </h1>
+        ) : null}
+        {config.subheading ? (
+          <p className="m-0 max-w-[52ch] text-[clamp(1.05rem,2vw,1.3rem)] leading-normal">
+            {config.subheading}
+          </p>
+        ) : null}
+        <SbCtaRow
+          ctas={ctas}
+          size="lg"
+          layout={config.ctaLayout}
+          className={bg ? '[&>*]:min-w-[12rem] [&>*]:rounded-full' : undefined}
+        />
       </div>
       {config.showScrollHint ? (
-        <span className="st-sb-hero__scroll-hint" aria-hidden="true">
+        <span
+          className="absolute bottom-6 left-1/2 z-[3] inline-flex -translate-x-1/2 animate-bounce"
+          aria-hidden="true"
+        >
           <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor">
             <path d="M6 9l6 6 6-6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
           </svg>

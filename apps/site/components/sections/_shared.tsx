@@ -52,19 +52,32 @@ const CTA_RECIPE = {
 /** A row of up to two CTA buttons. Empty/invalid CTAs are dropped; renders
  *  nothing when none remain. `size="lg"` enlarges them (hero); `layout="stacked"`
  *  stacks them vertically (the full-bleed "two stacked pills" look). The button
- *  recipe rides on the routing-aware `SbLink` via `asChild`. */
+ *  recipe rides on the routing-aware `SbLink` via `asChild`. `className` lets a
+ *  media section inject the over-photo pill treatment (rounded-full + min-width)
+ *  onto the direct-child buttons. */
 export function SbCtaRow({
   ctas,
   size,
   layout,
+  className,
 }: {
   ctas?: Cta[] | null;
   size?: 'lg';
   layout?: 'row' | 'stacked';
+  className?: string;
 }) {
   const items = (ctas ?? []).filter((c) => c?.label && c?.url);
   if (items.length === 0) return null;
-  const rowCls = ['st-cta-row', layout === 'stacked' ? 'st-cta-row--stacked' : '']
+  // Base row layout. Stacked = a vertical column of full-width pills that keep a
+  // comfortable min-width until the smallest screens (targets the direct-child
+  // buttons the recipe renders).
+  const rowCls = [
+    'flex items-center gap-3',
+    layout === 'stacked'
+      ? 'flex-col flex-nowrap [&>*]:w-full [&>*]:min-w-[260px] max-[480px]:[&>*]:min-w-0'
+      : 'flex-wrap',
+    className ?? '',
+  ]
     .filter(Boolean)
     .join(' ');
   return (
