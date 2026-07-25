@@ -1,7 +1,7 @@
 'use client';
 
 // Mobile navigation — hamburger that opens a left slide-in panel. Only shown
-// on narrow viewports (the desktop .st-nav is hidden by media query). Closes
+// on narrow viewports (the desktop nav is hidden below 760px). Closes
 // on route selection, Escape, and backdrop click.
 
 import Link from 'next/link';
