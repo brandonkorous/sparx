@@ -32,7 +32,7 @@ export function ProductCard({
   return (
     <Link
       href={`/products/${product.handle}`}
-      className="group rounded-box bg-base-100 text-base-content focus-visible:outline-primary relative flex flex-col overflow-hidden no-underline transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2"
+      className="group rounded-box border-base-300 bg-base-100 text-base-content focus-visible:outline-primary hover:border-primary relative flex flex-col overflow-hidden border no-underline transition-[transform,border-color] duration-200 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2"
     >
       <div className="bg-base-200 relative aspect-square overflow-hidden">
         {/* Inline badge + positioning utilities over the relative media — the badge

@@ -51,6 +51,9 @@ export async function BookingServices() {
         <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-4 p-0">
           {services.map((s) => (
             <li key={s.id}>
+              {/* The whole card is the link; the CTA below is a visual affordance (a
+                  styled span, not a nested control) so the card reads as clearly
+                  clickable — bare "info block" cards tested as not-obviously-actionable. */}
               <Link
                 href={`/book/${s.id}`}
                 className="card border-base-300 hover:border-primary flex h-full flex-col gap-1.5 border p-5 no-underline transition-colors"
@@ -59,7 +62,15 @@ export async function BookingServices() {
                 {s.description ? <span className="text-base-content">{s.description}</span> : null}
                 <span className="text-base-content flex gap-4 text-sm font-medium">
                   <span>{duration(s.durationMinutes)}</span>
-                  {s.priceCents > 0 ? <span>{money(s.priceCents, s.currency)}</span> : null}
+                  {s.priceCents > 0 ? (
+                    <span>{money(s.priceCents, s.currency)}</span>
+                  ) : (
+                    <span>Free</span>
+                  )}
+                </span>
+                <span className="btn btn-primary btn-sm mt-auto gap-1.5 self-start">
+                  See open times
+                  <span aria-hidden="true">→</span>
                 </span>
               </Link>
             </li>

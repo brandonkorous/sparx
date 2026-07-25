@@ -94,16 +94,21 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
             : `mx-auto w-full max-w-6xl px-6 ${inner}`
         }
       >
+        {/* Entrance stagger via silica's on-mount animation presets (the
+            @wizeworks/silicaui `animations` set): each content row slides up, delayed
+            one step after the last, restoring the hero's arrival motion on silica. */}
         {config.eyebrow ? (
-          <p className="m-0 text-sm font-semibold tracking-[0.08em] uppercase">{config.eyebrow}</p>
+          <p className="sui-animate-slide-up m-0 text-sm font-semibold tracking-[0.08em] uppercase">
+            {config.eyebrow}
+          </p>
         ) : null}
         {config.heading ? (
-          <h1 className="m-0 max-w-[18ch] text-[clamp(2.25rem,5.5vw,4rem)] leading-[1.05] font-bold tracking-[-0.03em]">
+          <h1 className="sui-animate-slide-up sui-delay-1 m-0 max-w-[18ch] text-[clamp(2.25rem,5.5vw,4rem)] leading-[1.05] font-bold tracking-[-0.03em]">
             {config.heading}
           </h1>
         ) : null}
         {config.subheading ? (
-          <p className="m-0 max-w-[52ch] text-[clamp(1.05rem,2vw,1.3rem)] leading-normal">
+          <p className="sui-animate-slide-up sui-delay-2 m-0 max-w-[52ch] text-[clamp(1.05rem,2vw,1.3rem)] leading-normal">
             {config.subheading}
           </p>
         ) : null}
@@ -111,7 +116,9 @@ export function HeroSection({ config, ctx }: { config: HeroConfig; ctx: SectionC
           ctas={ctas}
           size="lg"
           layout={config.ctaLayout}
-          className={bg ? '[&>*]:min-w-[12rem] [&>*]:rounded-full' : undefined}
+          className={`sui-animate-slide-up sui-delay-3 ${
+            bg ? '[&>*]:min-w-[12rem] [&>*]:rounded-full' : ''
+          }`}
         />
       </div>
       {config.showScrollHint ? (
