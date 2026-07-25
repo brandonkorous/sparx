@@ -21,13 +21,19 @@ export function OrderSummary({
 }) {
   const surchargeCents = totals.surchargeTotalCents ?? 0;
   return (
-    <div className="st-summary" style={{ position: 'sticky', top: '92px' }}>
-      <h2 className="st-h3">Order summary</h2>
+    <div
+      className="rounded-box border-base-300 bg-base-100 flex flex-col gap-3 border p-6"
+      style={{ position: 'sticky', top: '92px' }}
+    >
+      <h2 className="text-base-content text-2xl font-semibold">Order summary</h2>
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {lines.map((line) => (
           <div key={line.id} style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
-            <div className="st-line__media" style={{ width: 56, height: 56, position: 'relative' }}>
+            <div
+              className="rounded-field bg-base-200 shrink-0 overflow-hidden"
+              style={{ width: 56, height: 56, position: 'relative' }}
+            >
               {line.imageUrl ? (
                 <Image
                   src={line.imageUrl}
@@ -37,13 +43,18 @@ export function OrderSummary({
                   style={{ objectFit: 'cover' }}
                 />
               ) : null}
-              <span className="st-iconbtn__count" style={{ top: -8, right: -8 }}>
+              <span
+                className="bg-primary text-primary-content absolute inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[9px] px-1 text-[0.65rem] font-bold"
+                style={{ top: -8, right: -8 }}
+              >
                 {line.quantity}
               </span>
             </div>
             <span style={{ flex: 1, fontSize: '0.9rem' }}>
               {line.title}
-              {line.variantTitle ? <span className="st-muted"> · {line.variantTitle}</span> : null}
+              {line.variantTitle ? (
+                <span className="text-base-content"> · {line.variantTitle}</span>
+              ) : null}
             </span>
             <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>
               {formatMoney(line.lineTotalCents, currency)}
@@ -52,17 +63,17 @@ export function OrderSummary({
         ))}
       </div>
 
-      <div className="st-summary__row">
+      <div className="text-base-content flex justify-between text-sm">
         <span>Subtotal</span>
         <span>{formatMoney(totals.subtotalCents, currency)}</span>
       </div>
       {totals.discountTotalCents > 0 ? (
-        <div className="st-summary__row text-success">
+        <div className="text-success flex justify-between text-sm">
           <span>Discount</span>
           <span>−{formatMoney(totals.discountTotalCents, currency)}</span>
         </div>
       ) : null}
-      <div className="st-summary__row">
+      <div className="text-base-content flex justify-between text-sm">
         <span>Shipping</span>
         <span>
           {totals.shippingTotalCents > 0
@@ -71,23 +82,23 @@ export function OrderSummary({
         </span>
       </div>
       {totals.taxTotalCents > 0 ? (
-        <div className="st-summary__row">
+        <div className="text-base-content flex justify-between text-sm">
           <span>Tax</span>
           <span>{formatMoney(totals.taxTotalCents, currency)}</span>
         </div>
       ) : null}
       {surchargeCents > 0 ? (
-        <div className="st-summary__row">
+        <div className="text-base-content flex justify-between text-sm">
           <span>{surchargeLabel ?? 'Surcharge'}</span>
           <span>{formatMoney(surchargeCents, currency)}</span>
         </div>
       ) : null}
-      <div className="st-summary__total">
+      <div className="border-base-300 text-base-content flex justify-between border-t pt-3 text-lg font-semibold">
         <span>Total</span>
         <span>{formatMoney(totals.totalCents, currency)}</span>
       </div>
       {surchargeCents > 0 ? (
-        <p className="st-muted" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
+        <p className="text-base-content" style={{ marginTop: '0.5rem', fontSize: '0.8rem' }}>
           {surchargeLabel ?? 'A surcharge'} of {formatMoney(surchargeCents, currency)} is added to
           cover payment processing costs and is included in your total.
         </p>

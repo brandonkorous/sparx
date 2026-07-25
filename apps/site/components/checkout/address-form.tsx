@@ -37,9 +37,9 @@ export function AddressForm({
   }
 
   return (
-    <div className="st-addr">
-      <label className="st-field st-field--full">
-        <span>Full name</span>
+    <div className="grid grid-cols-2 gap-4 max-[860px]:grid-cols-1">
+      <label className="col-span-full flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Full name</span>
         <Input
           required
           value={value.name}
@@ -47,8 +47,8 @@ export function AddressForm({
           autoComplete="name"
         />
       </label>
-      <label className="st-field st-field--full">
-        <span>Address</span>
+      <label className="col-span-full flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Address</span>
         <Input
           required
           value={value.line1}
@@ -56,16 +56,18 @@ export function AddressForm({
           autoComplete="address-line1"
         />
       </label>
-      <label className="st-field st-field--full">
-        <span>Apartment, suite, etc. (optional)</span>
+      <label className="col-span-full flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">
+          Apartment, suite, etc. (optional)
+        </span>
         <Input
           value={value.line2 ?? ''}
           onChange={(e) => set('line2', e.target.value)}
           autoComplete="address-line2"
         />
       </label>
-      <label className="st-field">
-        <span>City</span>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">City</span>
         <Input
           required
           value={value.city}
@@ -73,16 +75,16 @@ export function AddressForm({
           autoComplete="address-level2"
         />
       </label>
-      <label className="st-field">
-        <span>State / Region</span>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">State / Region</span>
         <Input
           value={value.region ?? ''}
           onChange={(e) => set('region', e.target.value)}
           autoComplete="address-level1"
         />
       </label>
-      <label className="st-field">
-        <span>Postal code</span>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Postal code</span>
         <Input
           required
           value={value.postalCode}
@@ -90,8 +92,8 @@ export function AddressForm({
           autoComplete="postal-code"
         />
       </label>
-      <label className="st-field">
-        <span>Country</span>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Country</span>
         <NativeSelect
           value={value.country}
           onChange={(e) => set('country', e.target.value)}
@@ -104,8 +106,8 @@ export function AddressForm({
           ))}
         </NativeSelect>
       </label>
-      <label className="st-field st-field--full">
-        <span>Phone (optional)</span>
+      <label className="col-span-full flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Phone (optional)</span>
         <Input
           type="tel"
           value={value.phone ?? ''}

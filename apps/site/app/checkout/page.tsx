@@ -20,8 +20,11 @@ export default async function CheckoutPage() {
   if (!site) notFound();
 
   return (
-    <div className="st-container" style={{ paddingBlock: '2rem' }}>
-      <h1 className="st-h1" style={{ marginBottom: '1.5rem' }}>
+    <div className="mx-auto w-full max-w-6xl px-6" style={{ paddingBlock: '2rem' }}>
+      <h1
+        className="text-base-content text-4xl font-semibold tracking-tight"
+        style={{ marginBottom: '1.5rem' }}
+      >
         Checkout
       </h1>
       <CheckoutFlow tenantSlug={site.slug} />

@@ -27,14 +27,19 @@ export function CartView() {
 
   if (lines.length === 0) {
     return (
-      <div className="st-empty" style={{ minHeight: '40vh' }}>
-        <span className="st-empty__icon" aria-hidden="true">
+      <div
+        className="text-base-content grid place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center"
+        style={{ minHeight: '40vh' }}
+      >
+        <span className="text-[2.5rem] opacity-50" aria-hidden="true">
           🛒
         </span>
-        <h2 className="st-h2" style={{ color: 'var(--st-text)' }}>
+        <h2 className="text-base-content text-3xl font-semibold tracking-tight">
           Your cart is empty
         </h2>
-        <p style={{ margin: 0 }}>Browse the catalog and add something you like.</p>
+        <p className="text-base-content" style={{ margin: 0 }}>
+          Browse the catalog and add something you like.
+        </p>
         <Button render={<Link href="/products" style={{ marginTop: '0.5rem' }} />} color="primary">
           Shop all products
         </Button>
@@ -43,11 +48,14 @@ export function CartView() {
   }
 
   return (
-    <div className="st-cart-grid">
+    <div className="grid grid-cols-[minmax(0,1fr)_360px] items-start gap-[clamp(1.5rem,4vw,3rem)] max-[860px]:grid-cols-1">
       <div>
         {lines.map((line) => (
-          <div key={line.id} className="st-line">
-            <div className="st-line__media">
+          <div
+            key={line.id}
+            className="border-base-300 grid grid-cols-[88px_1fr_auto] items-start gap-4 border-b py-5 max-[520px]:grid-cols-[64px_1fr]"
+          >
+            <div className="rounded-field bg-base-200 relative h-[88px] w-[88px] shrink-0 overflow-hidden">
               {line.imageUrl ? (
                 <Image
                   src={line.imageUrl}
@@ -62,25 +70,25 @@ export function CartView() {
               {line.productHandle ? (
                 <Link
                   href={`/products/${line.productHandle}`}
-                  className="st-card__title"
+                  className="card-title text-base-content"
                   style={{ textDecoration: 'none', color: 'inherit' }}
                 >
                   {line.title}
                 </Link>
               ) : (
-                <span className="st-card__title">{line.title}</span>
+                <span className="card-title text-base-content">{line.title}</span>
               )}
               {line.variantTitle ? (
-                <span className="st-muted" style={{ fontSize: '0.85rem' }}>
+                <span className="text-base-content" style={{ fontSize: '0.85rem' }}>
                   {line.variantTitle}
                 </span>
               ) : null}
               {line.sku ? (
-                <span className="st-muted" style={{ fontSize: '0.78rem' }}>
+                <span className="text-base-content" style={{ fontSize: '0.78rem' }}>
                   SKU: {line.sku}
                 </span>
               ) : null}
-              <div className="st-line__qty" style={{ marginTop: '0.25rem' }}>
+              <div style={{ marginTop: '0.25rem' }}>
                 <QuantityStepper
                   value={line.quantity}
                   onChange={(q) => updateItem(line.id, q)}
@@ -90,7 +98,7 @@ export function CartView() {
               <button
                 type="button"
                 onClick={() => removeItem(line.id)}
-                className="st-muted"
+                className="text-base-content"
                 style={{
                   background: 'none',
                   border: 'none',
@@ -107,7 +115,7 @@ export function CartView() {
             </div>
             <div style={{ textAlign: 'right', fontWeight: 600 }}>
               {formatMoney(line.lineTotalCents, currency)}
-              <div className="st-muted" style={{ fontSize: '0.8rem', fontWeight: 400 }}>
+              <div className="text-base-content" style={{ fontSize: '0.8rem', fontWeight: 400 }}>
                 {formatMoney(line.unitPriceCents, currency)} ea
               </div>
             </div>
@@ -115,14 +123,17 @@ export function CartView() {
         ))}
       </div>
 
-      <aside className="st-summary" style={{ position: 'sticky', top: '92px' }}>
-        <h2 className="st-h3">Order summary</h2>
-        <div className="st-summary__row">
+      <aside
+        className="rounded-box border-base-300 bg-base-100 flex flex-col gap-3 border p-6"
+        style={{ position: 'sticky', top: '92px' }}
+      >
+        <h2 className="text-base-content text-2xl font-semibold">Order summary</h2>
+        <div className="text-base-content flex justify-between text-sm">
           <span>Subtotal ({count} items)</span>
           <span>{formatMoney(totals.subtotalCents, currency)}</span>
         </div>
         {totals.discountTotalCents > 0 ? (
-          <div className="st-summary__row text-success">
+          <div className="text-success flex justify-between text-sm">
             <span>Discount</span>
             <span>−{formatMoney(totals.discountTotalCents, currency)}</span>
           </div>
@@ -132,7 +143,7 @@ export function CartView() {
             {appliedDiscountCodes.map((code) => (
               <span
                 key={code}
-                className="st-badge"
+                className="badge"
                 style={{ position: 'static', display: 'inline-flex', gap: '0.4rem' }}
               >
                 {code}
@@ -156,11 +167,11 @@ export function CartView() {
 
         <DiscountField />
 
-        <div className="st-summary__total">
+        <div className="border-base-300 text-base-content flex justify-between border-t pt-3 text-lg font-semibold">
           <span>Estimated total</span>
           <span>{formatMoney(totals.totalCents, currency)}</span>
         </div>
-        <p className="st-muted" style={{ fontSize: '0.8rem', margin: 0 }}>
+        <p className="text-base-content" style={{ fontSize: '0.8rem', margin: 0 }}>
           Shipping &amp; taxes calculated at checkout.
         </p>
         <Button render={<Link href="/checkout" />} color="primary" size="lg" className="w-full">

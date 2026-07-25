@@ -73,8 +73,8 @@ export function PaymentStep(props: PaymentStepProps) {
 
   if (method === 'choose') {
     return (
-      <div className="st-form">
-        <h2 className="st-h2">Payment</h2>
+      <div className="flex max-w-[560px] flex-col gap-4">
+        <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           <Button type="button" color="primary" size="lg" onClick={() => setMethod('card')}>
             Pay by card
@@ -136,14 +136,14 @@ function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStep
   }
 
   return (
-    <form onSubmit={submit} className="st-form">
-      <h2 className="st-h2">Bill to account</h2>
-      <label className="st-field">
-        <span>PO number (optional)</span>
+    <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
+      <h2 className="text-base-content text-3xl font-semibold tracking-tight">Bill to account</h2>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">PO number (optional)</span>
         <Input value={poNumber} onChange={(e) => setPoNumber(e.target.value)} />
       </label>
-      <label className="st-field">
-        <span>Payment terms</span>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Payment terms</span>
         <NativeSelect value={terms} onChange={(e) => setTerms(e.target.value)}>
           {NET_TERMS_OPTIONS.map((o) => (
             <option key={o.value} value={o.value}>
@@ -196,7 +196,7 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
 
   if (error) {
     return (
-      <div className="st-form">
+      <div className="flex max-w-[560px] flex-col gap-4">
         <Alert color="danger">{error}</Alert>
         <Button type="button" color="neutral" variant="ghost" onClick={onBack}>
           ← Back to shipping
@@ -207,9 +207,9 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
 
   if (!intent) {
     return (
-      <div className="st-form">
-        <h2 className="st-h2">Payment</h2>
-        <div className="st-skeleton" style={{ height: 180 }} />
+      <div className="flex max-w-[560px] flex-col gap-4">
+        <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
+        <div className="skeleton" style={{ height: 180 }} />
       </div>
     );
   }
@@ -230,9 +230,9 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
 
   if (!intent.clientSecret) {
     return (
-      <div className="st-form">
-        <h2 className="st-h2">Payment</h2>
-        <div className="st-skeleton" style={{ height: 180 }} />
+      <div className="flex max-w-[560px] flex-col gap-4">
+        <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
+        <div className="skeleton" style={{ height: 180 }} />
       </div>
     );
   }
@@ -289,8 +289,8 @@ function RedirectPay({
   }
 
   return (
-    <div className="st-form">
-      <h2 className="st-h2">Payment</h2>
+    <div className="flex max-w-[560px] flex-col gap-4">
+      <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
       <Alert color="info">
         You’ll finish paying securely on your payment provider’s page, then return here.
       </Alert>
@@ -364,8 +364,8 @@ function PaymentInner({
   }
 
   return (
-    <form onSubmit={pay} className="st-form">
-      <h2 className="st-h2">Payment</h2>
+    <form onSubmit={pay} className="flex max-w-[560px] flex-col gap-4">
+      <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
       <PaymentElement options={{ layout: 'tabs' }} />
       {error ? <Alert color="danger">{error}</Alert> : null}
       <div style={{ display: 'flex', gap: '0.75rem' }}>
