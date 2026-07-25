@@ -15,7 +15,7 @@ import {
   type Address,
   type AddressInput,
 } from '@/lib/customer-client';
-import { Alert, Button, Input } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button, Input } from '@wizeworks/silicaui-react';
 
 const EMPTY: Partial<AddressInput> = {
   type: 'shipping',
@@ -67,7 +67,7 @@ export default function AddressesPage() {
           marginBottom: '1.25rem',
         }}
       >
-        <h1 className="st-h2">Addresses</h1>
+        <h1 className="text-base-content text-3xl font-semibold tracking-tight">Addresses</h1>
         {editing === null ? (
           <Button color="neutral" variant="outline" onClick={() => setEditing('new')}>
             Add address
@@ -92,15 +92,15 @@ export default function AddressesPage() {
           }}
         />
       ) : addresses === null ? (
-        <div className="st-skeleton" style={{ height: 140 }} />
+        <div className="skeleton" style={{ height: 140 }} />
       ) : addresses.length === 0 ? (
-        <p className="st-muted">No saved addresses yet.</p>
+        <p className="text-base-content">No saved addresses yet.</p>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
           {addresses.map((a) => (
             <div
               key={a.id}
-              className="st-card"
+              className="card border-base-300 border"
               style={{
                 padding: '1rem 1.25rem',
                 display: 'flex',
@@ -111,8 +111,15 @@ export default function AddressesPage() {
             >
               <div>
                 {a.label ? <strong>{a.label} </strong> : null}
-                {a.isDefault ? <span className="st-badge">Default</span> : null}
-                <div className="st-muted" style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                {a.isDefault ? (
+                  <Badge color="neutral" variant="soft">
+                    Default
+                  </Badge>
+                ) : null}
+                <div
+                  className="text-base-content"
+                  style={{ fontSize: '0.85rem', marginTop: '0.25rem' }}
+                >
                   {formatAddress(a)}
                 </div>
               </div>
@@ -166,25 +173,25 @@ function AddressForm({
   }
 
   return (
-    <form onSubmit={submit} className="st-form">
-      <label className="st-field">
-        <span>Label (optional)</span>
+    <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Label (optional)</span>
         <Input
           value={form.label ?? ''}
           onChange={(e) => set('label', e.target.value)}
           placeholder="Home, Work…"
         />
       </label>
-      <label className="st-field">
-        <span>Recipient name</span>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Recipient name</span>
         <Input
           autoComplete="name"
           value={form.recipientName ?? ''}
           onChange={(e) => set('recipientName', e.target.value)}
         />
       </label>
-      <label className="st-field">
-        <span>Address line 1</span>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Address line 1</span>
         <Input
           required
           autoComplete="address-line1"
@@ -192,17 +199,17 @@ function AddressForm({
           onChange={(e) => set('line1', e.target.value)}
         />
       </label>
-      <label className="st-field">
-        <span>Address line 2 (optional)</span>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Address line 2 (optional)</span>
         <Input
           autoComplete="address-line2"
           value={form.line2 ?? ''}
           onChange={(e) => set('line2', e.target.value)}
         />
       </label>
-      <div className="st-addr">
-        <label className="st-field">
-          <span>City</span>
+      <div className="grid grid-cols-2 gap-4 max-[860px]:grid-cols-1">
+        <label className="flex flex-col gap-1.5">
+          <span className="text-base-content text-sm font-medium">City</span>
           <Input
             required
             autoComplete="address-level2"
@@ -210,24 +217,24 @@ function AddressForm({
             onChange={(e) => set('city', e.target.value)}
           />
         </label>
-        <label className="st-field">
-          <span>State / Region</span>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-base-content text-sm font-medium">State / Region</span>
           <Input
             autoComplete="address-level1"
             value={form.region ?? ''}
             onChange={(e) => set('region', e.target.value)}
           />
         </label>
-        <label className="st-field">
-          <span>Postal code</span>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-base-content text-sm font-medium">Postal code</span>
           <Input
             autoComplete="postal-code"
             value={form.postalCode ?? ''}
             onChange={(e) => set('postalCode', e.target.value)}
           />
         </label>
-        <label className="st-field">
-          <span>Country</span>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-base-content text-sm font-medium">Country</span>
           <Input
             required
             maxLength={2}
@@ -238,9 +245,10 @@ function AddressForm({
           />
         </label>
       </div>
-      <label className="st-check">
+      <label className="text-base-content flex cursor-pointer items-center gap-2.5 text-sm">
         <input
           type="checkbox"
+          className="checkbox"
           checked={form.isDefault ?? false}
           onChange={(e) => set('isDefault', e.target.checked)}
         />

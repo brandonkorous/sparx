@@ -12,11 +12,11 @@ export const metadata = { title: 'Authorize', robots: { index: false, follow: fa
 // connect; this page confirms who they are, lets them pick scopes, and hands back
 // to the authorization endpoint with a signed consent grant.
 //
-// `st-container` is the storefront-wide page gutter (shared by every account
-// route); the consent UI inside is pure silicaui.
+// The storefront-wide page gutter (shared by every account route); the consent
+// UI inside is pure silicaui.
 export default function AuthorizePage() {
   return (
-    <div className="st-container">
+    <div className="mx-auto w-full max-w-6xl px-6">
       <Suspense
         fallback={
           <div className="mx-auto w-full max-w-xl py-10">

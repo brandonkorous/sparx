@@ -13,7 +13,7 @@ import { cancelMyBooking, getMyBookings, type CustomerBooking } from '@/lib/cust
 import { AddToCalendar } from '@/components/booking/add-to-calendar';
 
 import { ReschedulePanel } from './reschedule-panel';
-import { Alert, Button } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
 const PAGE_SIZE = 20;
 
@@ -27,6 +27,23 @@ const STATUS_LABEL: Record<string, string> = {
   cancelled: 'Cancelled',
   no_show: 'Missed',
 };
+
+/** Semantic tone for a booking status — mirrors the STATUS_LABEL set. */
+function bookingStatusTone(status: string) {
+  switch (status) {
+    case 'confirmed':
+    case 'completed':
+      return 'success';
+    case 'in_progress':
+      return 'info';
+    case 'cancelled':
+      return 'danger';
+    case 'no_show':
+      return 'neutral';
+    default:
+      return 'warning';
+  }
+}
 
 function formatDateTime(iso: string): string {
   return new Date(iso).toLocaleString('en-US', {
@@ -100,7 +117,7 @@ export default function BookingsPage() {
           marginBottom: '1rem',
         }}
       >
-        <h1 className="st-h2">My bookings</h1>
+        <h1 className="text-base-content text-3xl font-semibold tracking-tight">My bookings</h1>
         <Button
           type="button"
           color="primary"
@@ -127,10 +144,13 @@ export default function BookingsPage() {
           {error}
         </Alert>
       ) : bookings === null ? (
-        <div className="st-skeleton" style={{ height: 200 }} />
+        <div className="skeleton" style={{ height: 200 }} />
       ) : bookings.length === 0 ? (
-        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="st-muted">
+        <div
+          className="card border-base-300 border"
+          style={{ padding: '2rem', textAlign: 'center' }}
+        >
+          <p className="text-base-content">
             {scope === 'upcoming' ? 'You have no upcoming bookings.' : 'No past bookings.'}
           </p>
         </div>
@@ -140,7 +160,7 @@ export default function BookingsPage() {
             {bookings.map((b) => (
               <div key={b.id}>
                 <div
-                  className="st-card"
+                  className="card border-base-300 border"
                   style={{
                     padding: '0.875rem 1rem',
                     display: 'flex',
@@ -152,24 +172,30 @@ export default function BookingsPage() {
                 >
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <strong>{b.serviceName}</strong>
-                    <div className="st-muted" style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}>
+                    <div
+                      className="text-base-content"
+                      style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}
+                    >
                       {formatDateTime(b.startAt)} · {b.durationMinutes} min
                     </div>
                     {b.staff.length > 0 && (
-                      <div className="st-muted" style={{ fontSize: '0.82rem' }}>
+                      <div className="text-base-content" style={{ fontSize: '0.82rem' }}>
                         With {b.staff.join(', ')}
                       </div>
                     )}
                     {b.cancellationReason && (
                       <div
-                        className="st-muted"
+                        className="text-base-content"
                         style={{ fontSize: '0.82rem', marginTop: '0.2rem' }}
                       >
                         Reason: {b.cancellationReason}
                       </div>
                     )}
                     {b.calendar && (
-                      <AddToCalendar links={b.calendar} className="st-add-to-cal--start" />
+                      <AddToCalendar
+                        links={b.calendar}
+                        className="mt-2 !justify-start text-[0.82rem]"
+                      />
                     )}
                   </div>
                   <div
@@ -181,9 +207,9 @@ export default function BookingsPage() {
                       flexWrap: 'wrap',
                     }}
                   >
-                    <span className="st-badge" data-status={b.status}>
+                    <Badge color={bookingStatusTone(b.status)} variant="soft">
                       {STATUS_LABEL[b.status] ?? b.status}
-                    </span>
+                    </Badge>
                     {b.canReschedule && (
                       <Button
                         type="button"
@@ -232,7 +258,10 @@ export default function BookingsPage() {
               >
                 Previous
               </Button>
-              <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
+              <span
+                className="text-base-content"
+                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
+              >
                 Page {page} of {totalPages}
               </span>
               <Button

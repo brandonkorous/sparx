@@ -56,7 +56,7 @@ export function QuoteProductPicker({ onPick }: { onPick: (product: QuoteProductR
       />
       {open && results.length > 0 && (
         <div
-          className="st-card"
+          className="card border-base-300 border"
           style={{
             position: 'absolute',
             zIndex: 10,
@@ -90,7 +90,10 @@ export function QuoteProductPicker({ onPick }: { onPick: (product: QuoteProductR
             >
               <span>{r.title}</span>
               {r.priceCents != null && (
-                <span className="st-muted" style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}>
+                <span
+                  className="text-base-content"
+                  style={{ whiteSpace: 'nowrap', fontSize: '0.85rem' }}
+                >
                   {formatMoney(r.priceCents, 'USD')}
                 </span>
               )}

@@ -7,9 +7,10 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useCustomer } from '@/components/customer-provider';
+import { orderStatusTone } from '@/components/order-timeline';
 import { getB2bOrders, type B2bOrderEntry } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
-import { Alert, Button } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
 const PAGE_SIZE = 20;
 
@@ -49,10 +50,10 @@ export default function B2bOrdersPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-        <Link href={`/account/b2b/${accountId}`} className="st-link" style={{ fontSize: '0.9rem' }}>
+        <Link href={`/account/b2b/${accountId}`} className="link link-primary text-sm">
           ← Back
         </Link>
-        <h1 className="st-h2">Orders</h1>
+        <h1 className="text-base-content text-3xl font-semibold tracking-tight">Orders</h1>
       </div>
 
       {error ? (
@@ -60,10 +61,13 @@ export default function B2bOrdersPage() {
           {error}
         </Alert>
       ) : orders === null ? (
-        <div className="st-skeleton" style={{ height: 200 }} />
+        <div className="skeleton" style={{ height: 200 }} />
       ) : orders.length === 0 ? (
-        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="st-muted">No orders found on this account.</p>
+        <div
+          className="card border-base-300 border"
+          style={{ padding: '2rem', textAlign: 'center' }}
+        >
+          <p className="text-base-content">No orders found on this account.</p>
         </div>
       ) : (
         <>
@@ -71,7 +75,7 @@ export default function B2bOrdersPage() {
             {orders.map((o) => (
               <div
                 key={o.id}
-                className="st-card"
+                className="card border-base-300 border"
                 style={{
                   padding: '0.875rem 1rem',
                   display: 'flex',
@@ -82,7 +86,10 @@ export default function B2bOrdersPage() {
               >
                 <div>
                   <strong>#{o.orderNumber}</strong>
-                  <div className="st-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
+                  <div
+                    className="text-base-content"
+                    style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}
+                  >
                     {formatDate(o.createdAt)}
                     {o.customerName && (
                       <span style={{ marginLeft: '0.4rem' }}>· {o.customerName}</span>
@@ -90,9 +97,9 @@ export default function B2bOrdersPage() {
                   </div>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span className="st-badge" data-status={o.status}>
+                  <Badge color={orderStatusTone(o.status)} variant="soft">
                     {o.status}
-                  </span>
+                  </Badge>
                   <strong style={{ whiteSpace: 'nowrap' }}>
                     {formatMoney(o.totalCents, o.currency)}
                   </strong>
@@ -112,7 +119,10 @@ export default function B2bOrdersPage() {
               >
                 Previous
               </Button>
-              <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
+              <span
+                className="text-base-content"
+                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
+              >
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <Button

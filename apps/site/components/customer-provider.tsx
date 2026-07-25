@@ -148,14 +148,17 @@ export function CustomerProvider({
   return (
     <CustomerContext.Provider value={value}>
       {recognized ? (
-        <div className="st-recognition" role="status">
+        <div
+          className="border-accent/30 bg-accent/10 text-base-content flex items-center justify-center gap-4 border-b px-5 py-[0.65rem] text-center text-sm"
+          role="status"
+        >
           <span>
             Welcome back! We recognized your email from another of our sites and created a separate
             account for you here — your orders and preferences on this site stay private to it.
           </span>
           <button
             type="button"
-            className="st-recognition__close"
+            className="flex-none cursor-pointer border-0 bg-transparent px-1 text-xl leading-none text-inherit opacity-70 hover:opacity-100"
             aria-label="Dismiss"
             onClick={() => setRecognized(false)}
           >
