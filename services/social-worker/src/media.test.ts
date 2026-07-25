@@ -68,19 +68,14 @@ describe('variantUrlPath', () => {
 // bypasses CF. Facebook/LinkedIn byte-upload (download via this worker, no Range) and
 // keep the CDN host. This locks which platforms swap hosts, and the swap itself.
 describe('URL-fetch host routing', () => {
-  it('routes only the by-url-fetch platforms to the direct host', () => {
-    for (const p of ['instagram', 'threads', 'pinterest'] as const) {
+  it('routes the image-by-url-fetch platforms to the direct host', () => {
+    // Fetch an IMAGE by URL (image_url / sourceUrl) → reject a 206 → need the direct host.
+    for (const p of ['instagram', 'threads', 'pinterest', 'google_business'] as const) {
       expect(isUrlFetchPlatform(p)).toBe(true);
     }
-    // Byte-upload + text platforms keep the CDN host.
-    for (const p of [
-      'facebook_page',
-      'linkedin',
-      'x',
-      'tiktok',
-      'youtube',
-      'google_business',
-    ] as const) {
+    // Byte-upload (facebook/linkedin/youtube), text (x), and video-pull (tiktok — range
+    // is expected for a video ingest + needs its own domain verification) keep the CDN host.
+    for (const p of ['facebook_page', 'linkedin', 'youtube', 'x', 'tiktok'] as const) {
       expect(isUrlFetchPlatform(p)).toBe(false);
     }
   });

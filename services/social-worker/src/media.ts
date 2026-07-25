@@ -133,16 +133,22 @@ export async function resolvePostAssets(
   return out;
 }
 
-/** Platforms that publish an image by handing THEIR servers a URL to fetch (vs. the
- *  byte-upload platforms — Facebook/LinkedIn — which download via this worker). These
- *  must fetch from the direct-origin host: Cloudflare answers any `Range` request on a
- *  cacheable media object with a `206 Partial Content` (verified on HIT and MISS), and
- *  Instagram/Threads/Pinterest reject a 206, dropping the image. `MEDIA_DIRECT_BASE_URL`
- *  is a DNS-only host that bypasses CF, so the origin's clean 200 reaches them. */
+/** Platforms that publish an IMAGE by handing THEIR servers a URL to fetch (vs. the
+ *  byte-upload platforms — Facebook/LinkedIn/YouTube — which upload via this worker).
+ *  These must fetch from the direct-origin host: Cloudflare answers any `Range` request
+ *  on a cacheable media object with a `206 Partial Content` (verified on HIT and MISS),
+ *  and these platforms reject a 206, dropping the image. `MEDIA_DIRECT_BASE_URL` is a
+ *  DNS-only host that bypasses CF, so the origin's clean 200 reaches them.
+ *
+ *  Instagram/Threads/Pinterest (`image_url`) + Google Business Profile (`sourceUrl`).
+ *  TikTok is deliberately EXCLUDED: it pulls a VIDEO (range/206 is expected for a video
+ *  ingest, not a bug) AND requires the source domain be URL-ownership-verified in its app
+ *  — so it stays on the already-verified CDN host until media-direct is verified there. */
 const URL_FETCH_PLATFORMS: ReadonlySet<SocialPlatform> = new Set<SocialPlatform>([
   'instagram',
   'threads',
   'pinterest',
+  'google_business',
 ]);
 
 /** Whether a platform hands its OWN servers an image_url to fetch (so it needs the
