@@ -52,14 +52,19 @@ media.sparx.works {
     on_demand
   }
   header {
-    # Belt + suspenders: Cloudflare already adds these but origin-side
-    # headers survive a CF bypass. `immutable` is critical — the URL
-    # encodes width + format, so the bytes never change.
-    Cache-Control "public, max-age=31536000, immutable"
     # Strip any cookies merchant proxies might forward — the CDN
     # variants are pure content.
     -Set-Cookie
   }
+  # NOTE: do NOT stamp a blanket `Cache-Control: immutable` here. api-rest
+  # owns cache semantics per-path — immutable on variant bytes, 86400 on the
+  # resolver redirect, and a deliberate 60s while an image is still
+  # transcoding (services/api-rest/src/routes/v1/public/media.ts). A blanket
+  # header overrode that 60s window (pinning a mid-transcode original for a
+  # year) AND — worse — cached 404/422 ERROR responses for a year, so a
+  # variant that wasn't ready at first fetch stayed permanently broken at the
+  # Cloudflare edge. The origin app sets the right header on every success
+  # path, so it survives a CF bypass without this.
   reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
 }
 

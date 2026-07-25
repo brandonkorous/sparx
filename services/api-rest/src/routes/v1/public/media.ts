@@ -180,6 +180,14 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
         // GCS returns 404 by surfacing an ENOENT-shaped error inside the
         // node SDK. Anything else (auth, network) bubbles up to the
         // generic error handler as 500.
+        //
+        // Tell the CDN NOT to cache this miss. The URL ends in an image
+        // extension, so Cloudflare would otherwise cache the 404 on its
+        // default static-asset heuristic — and a variant that simply hasn't
+        // finished transcoding yet (or a crop the worker requests a beat
+        // early) would then stay permanently broken at the edge even after
+        // the object lands. no-store keeps the next request hitting origin.
+        reply.header('cache-control', 'no-store');
         throw notFound('MediaVariant', `${params.assetId}/${params.filename}`);
       }
 
