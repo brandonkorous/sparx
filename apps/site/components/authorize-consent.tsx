@@ -9,10 +9,14 @@
 // All API calls are same-origin `/v1/public/auth/consent` (Caddy routes it to
 // api-rest on the store's own origin, so the sparx_customer_session cookie rides
 // along and the tenant resolves from the store Host).
+//
+// UI is pure silicaui + Tailwind on the storefront's bridged base tokens
+// (bg-base-100 / border-base-300 / text-base-content resolve to the tenant theme).
+// No hand-rolled `st-*` control classes and no inline `style` props.
 
 import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Alert, Button, Checkbox } from '@wizeworks/silicaui-react';
+import { Alert, Button, Skeleton, Switch, Text } from '@wizeworks/silicaui-react';
 
 const AUTH_PARAM_KEYS = [
   'response_type',
@@ -57,7 +61,13 @@ async function readEnvelope<T>(res: Response): Promise<Envelope<T>> {
   }
 }
 
-/** The scope picker — one labelled checkbox per requested capability. */
+/** A max-width column so the card sits centered on the storefront gutter. */
+function ConsentShell({ children }: { children: React.ReactNode }): React.ReactElement {
+  return <div className="mx-auto w-full max-w-xl py-10">{children}</div>;
+}
+
+/** The scope picker — one labelled switch per requested capability. The Switch
+ *  is the control; the row text is linked to it via aria, not a wrapping label. */
 function ScopeList({
   scopes,
   selected,
@@ -68,45 +78,33 @@ function ScopeList({
   onToggle: (scope: string, checked: boolean) => void;
 }): React.ReactElement {
   return (
-    <ul
-      style={{
-        listStyle: 'none',
-        padding: 0,
-        margin: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '0.75rem',
-      }}
-    >
+    <ul className="flex flex-col gap-2">
       {scopes.map((s) => {
-        const id = `scope-${s.scope}`;
-        const descriptionId = `${id}-description`;
+        const labelId = `scope-${s.scope}-label`;
+        const descId = `scope-${s.scope}-desc`;
         return (
-          <li key={s.scope}>
-            {/* The description sits OUTSIDE the <label> and is linked with
-                aria-describedby: nesting it would fold the whole paragraph into
-                the checkbox's accessible name, so a screen reader would announce
-                the entire explanation as the control's label. */}
-            <label
-              htmlFor={id}
-              className="st-field"
-              style={{ flexDirection: 'row', alignItems: 'flex-start', gap: '0.6rem' }}
-            >
-              <Checkbox
-                id={id}
-                aria-describedby={descriptionId}
-                checked={Boolean(selected[s.scope])}
-                onChange={(e) => onToggle(s.scope, e.target.checked)}
-              />
-              <span style={{ fontWeight: 600 }}>{s.label}</span>
-            </label>
-            <p
-              id={descriptionId}
-              className="st-muted"
-              style={{ margin: '0.15rem 0 0 1.85rem', fontSize: '0.875rem' }}
-            >
-              {s.description}
-            </p>
+          <li
+            key={s.scope}
+            className="border-base-300 flex items-start justify-between gap-3 rounded-md border p-3"
+          >
+            <div className="flex min-w-0 flex-col gap-0.5">
+              <span id={labelId} className="text-sm font-medium">
+                {s.label}
+              </span>
+              {/* Linked via aria-describedby rather than nested, so the switch's
+                    accessible name is the label alone — not the full paragraph. */}
+              <span id={descId} className="text-base-content text-sm">
+                {s.description}
+              </span>
+            </div>
+            <Switch
+              checked={Boolean(selected[s.scope])}
+              onCheckedChange={(v) => onToggle(s.scope, v)}
+              color="primary"
+              aria-labelledby={labelId}
+              aria-describedby={descId}
+              className="mt-0.5 shrink-0"
+            />
           </li>
         );
       })}
@@ -196,19 +194,23 @@ export function AuthorizeConsent(): React.ReactElement {
 
   if (loadError) {
     return (
-      <div className="st-container--prose" style={{ paddingBlock: '2.5rem', maxWidth: 560 }}>
+      <ConsentShell>
         <Alert color="danger">{loadError}</Alert>
-      </div>
+      </ConsentShell>
     );
   }
   if (!info) {
-    return <div className="st-skeleton" style={{ height: 360, maxWidth: 560 }} />;
+    return (
+      <ConsentShell>
+        <Skeleton className="h-80 w-full rounded-xl" />
+      </ConsentShell>
+    );
   }
   if (!info.valid) {
     return (
-      <div className="st-container--prose" style={{ paddingBlock: '2.5rem', maxWidth: 560 }}>
+      <ConsentShell>
         <Alert color="danger">{info.error ?? 'This authorization request is invalid.'}</Alert>
-      </div>
+      </ConsentShell>
     );
   }
 
@@ -216,50 +218,53 @@ export function AuthorizeConsent(): React.ReactElement {
   const clientName = trimmedClient && trimmedClient.length > 0 ? trimmedClient : 'An assistant';
   const storeName = info.storeName && info.storeName.length > 0 ? info.storeName : 'store';
   return (
-    <div className="st-container--prose" style={{ paddingBlock: '2.5rem', maxWidth: 560 }}>
-      <h1 className="st-h2" style={{ marginBottom: '0.5rem' }}>
-        Connect {clientName}
-      </h1>
-      <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
-        {clientName} wants to access your {storeName} account
-        {info.email ? ` (${info.email})` : ''}. Choose what it can do — you can revoke this anytime.
-      </p>
-
-      <form
-        className="st-form"
-        onSubmit={(e) => {
-          e.preventDefault();
-          void submit('approve');
-        }}
-      >
-        <ScopeList
-          scopes={info.scopes ?? []}
-          selected={selected}
-          onToggle={(scope, checked) => setSelected((prev) => ({ ...prev, [scope]: checked }))}
-        />
-
-        {error ? (
-          <Alert color="danger" role="alert">
-            {error}
-          </Alert>
-        ) : null}
-
-        <div style={{ display: 'flex', gap: '0.75rem', marginTop: '0.5rem' }}>
-          <Button type="submit" color="primary" size="lg" disabled={busy}>
-            {busy ? 'Authorizing…' : 'Authorize'}
-          </Button>
-          <Button
-            type="button"
-            color="neutral"
-            variant="outline"
-            size="lg"
-            disabled={busy}
-            onClick={() => void submit('deny')}
-          >
-            Deny
-          </Button>
+    <ConsentShell>
+      <div className="bg-base-100 border-base-300 flex flex-col gap-6 rounded-xl border p-6 sm:p-8">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
+          <Text className="text-base-content">
+            {clientName} wants to access your {storeName} account
+            {info.email ? ` (${info.email})` : ''}. Choose what it can do — you can revoke this
+            anytime.
+          </Text>
         </div>
-      </form>
-    </div>
+
+        <form
+          className="flex flex-col gap-6"
+          onSubmit={(e) => {
+            e.preventDefault();
+            void submit('approve');
+          }}
+        >
+          <ScopeList
+            scopes={info.scopes ?? []}
+            selected={selected}
+            onToggle={(scope, checked) => setSelected((prev) => ({ ...prev, [scope]: checked }))}
+          />
+
+          {error ? (
+            <Alert color="danger" role="alert">
+              {error}
+            </Alert>
+          ) : null}
+
+          <div className="flex gap-3">
+            <Button type="submit" color="primary" size="lg" disabled={busy}>
+              {busy ? 'Authorizing…' : 'Authorize'}
+            </Button>
+            <Button
+              type="button"
+              color="neutral"
+              variant="outline"
+              size="lg"
+              disabled={busy}
+              onClick={() => void submit('deny')}
+            >
+              Deny
+            </Button>
+          </div>
+        </form>
+      </div>
+    </ConsentShell>
   );
 }

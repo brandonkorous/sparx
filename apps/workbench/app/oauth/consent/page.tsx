@@ -28,13 +28,17 @@ type SP = Record<string, string | string[] | undefined>;
 const one = (v: string | string[] | undefined): string =>
   Array.isArray(v) ? (v[0] ?? '') : (v ?? '');
 
+// Outer chrome only. The card is a viewport-bounded flex column so a caller can
+// pin a header + a sticky footer around a scrollable middle — the consent screen
+// needs its Authorize action on screen no matter how many scopes render, and the
+// full owner catalog (25 scopes / 12 modules) far overflows a laptop viewport.
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="bg-base-200 text-base-content grid min-h-dvh place-items-center p-6">
-      <div className="flex w-full max-w-xl flex-col items-center gap-6">
-        <Wordmark size={60} aria-label="sparx" />
-        <div className="bg-base-100 border-base-300 w-full overflow-hidden rounded-xl border">
-          <div className="flex flex-col gap-6 p-6 sm:p-8">{children}</div>
+    <main className="bg-base-200 text-base-content grid min-h-dvh place-items-center p-4 sm:p-6">
+      <div className="flex w-full max-w-2xl flex-col items-center gap-5">
+        <Wordmark size={56} aria-label="sparx" />
+        <div className="bg-base-100 border-base-300 flex max-h-[calc(100dvh-7rem)] w-full flex-col overflow-hidden rounded-xl border">
+          {children}
         </div>
       </div>
     </main>
@@ -56,7 +60,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
   if (!validation.ok) {
     return (
       <Shell>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 p-6 sm:p-8">
           <h1 className="text-2xl font-semibold tracking-tight">Can’t complete this connection</h1>
           <Alert color="danger" variant="soft" role="alert">
             {validation.error}
@@ -88,7 +92,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
   if (catalog.length === 0) {
     return (
       <Shell>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 p-6 sm:p-8">
           <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
           <Alert color="warning" variant="soft" role="alert">
             Your account role ({role}) has no MCP permissions to grant. Ask an owner or admin to
@@ -101,29 +105,30 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
 
   return (
     <Shell>
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
-        <Text className="text-base-content">
-          {clientName} is requesting access to your sparx workspace through the MCP server. Choose
-          exactly what it can do — you can revoke this anytime in AI Connections.
-        </Text>
-      </div>
+      {/* Pinned header — the connection's identity + the security warning stay in
+          view while the scope list below scrolls. */}
+      <div className="border-base-300 flex shrink-0 flex-col gap-3 border-b p-6 sm:px-8">
+        <div className="flex flex-col gap-1.5">
+          <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
+          <Text className="text-base-content text-sm">
+            {clientName} wants to act in your sparx workspace through the MCP server. Choose exactly
+            what it can do — revoke anytime in AI Connections.
+          </Text>
+        </div>
 
-      <Alert color="warning" variant="soft">
-        This grants an external app live access to your data. Access tokens will be delivered to{' '}
-        <strong>{redirectHost}</strong>. Only continue if you started this connection yourself.
-      </Alert>
-
-      {queryError ? (
-        <Alert color="danger" variant="soft" role="alert">
-          {queryError}
+        <Alert color="warning" variant="soft" className="text-sm">
+          Grants an external app live access to your data. Access tokens are delivered to{' '}
+          <strong>{redirectHost}</strong> — only continue if you started this connection yourself.
         </Alert>
-      ) : null}
 
-      <div className="flex flex-col gap-1">
-        <Text className="text-sm font-medium">Signed in as</Text>
+        {queryError ? (
+          <Alert color="danger" variant="soft" role="alert">
+            {queryError}
+          </Alert>
+        ) : null}
+
         <Text className="text-base-content text-sm">
-          {session.user.email} · {role}
+          Signed in as <strong>{session.user.email}</strong> · {role}
         </Text>
       </div>
 
