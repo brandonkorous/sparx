@@ -7,6 +7,8 @@ import {
   ApproveReturnInput,
   BulkUpdateProductStatusInput,
   CancelSubscriptionInput,
+  ChangeSubscriptionAddressInput,
+  CreateSubscriptionInput,
   CreateSurchargeRuleInput,
   GrantAccountCreditInput,
   IssueGiftCardInput,
@@ -14,7 +16,10 @@ import {
   ModerateReviewInput,
   PauseSubscriptionInput,
   ResumeSubscriptionInput,
+  SkipNextOccurrenceInput,
   UpdateProductInput,
+  UpdateSubscriptionItemsInput,
+  UpdateSubscriptionScheduleInput,
   UpdateVariantInput,
 } from '@sparx/commerce-schemas';
 
@@ -205,6 +210,26 @@ const archiveProduct: McpToolDefinition = {
   run: (ctx, input) => productService.archive(ctx, (input as { productId: string }).productId),
 };
 
+const unpublishProduct: McpToolDefinition = {
+  name: 'unpublish_product',
+  description:
+    'Move a product back to draft (removes it from the storefront but keeps it editable).',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: z.object({ productId: z.string().uuid() }),
+  run: (ctx, input) => productService.unpublish(ctx, (input as { productId: string }).productId),
+};
+
+const restoreProduct: McpToolDefinition = {
+  name: 'restore_product',
+  description:
+    'Restore a previously archived product (back to draft; publish_product to relist it).',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: z.object({ productId: z.string().uuid() }),
+  run: (ctx, input) => productService.restore(ctx, (input as { productId: string }).productId),
+};
+
 const bulkUpdateProductStatus: McpToolDefinition = {
   name: 'bulk_update_product_status',
   description: 'Set the status of up to 1000 products in a single call.',
@@ -230,6 +255,53 @@ const grantAccountCredit: McpToolDefinition = {
   confirmation: true,
   input: GrantAccountCreditInput,
   run: (ctx, input) => discountService.grantAccountCredit(ctx, input),
+};
+
+const createSubscription: McpToolDefinition = {
+  name: 'create_subscription',
+  description:
+    'Create a subscription for a customer — the items, schedule (interval), and delivery details. Normally subscriptions start at checkout; this is the admin-side create for setting one up directly.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: CreateSubscriptionInput,
+  run: (ctx, input) => subscriptionService.create(ctx, input),
+};
+
+const updateSubscriptionItems: McpToolDefinition = {
+  name: 'update_subscription_items',
+  description: 'Change the line items (variants + quantities) on an existing subscription.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: UpdateSubscriptionItemsInput,
+  run: (ctx, input) => subscriptionService.updateItems(ctx, input),
+};
+
+const updateSubscriptionSchedule: McpToolDefinition = {
+  name: 'update_subscription_schedule',
+  description: 'Change a subscription’s delivery cadence / schedule (interval, next date).',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: UpdateSubscriptionScheduleInput,
+  run: (ctx, input) => subscriptionService.updateSchedule(ctx, input),
+};
+
+const changeSubscriptionAddress: McpToolDefinition = {
+  name: 'change_subscription_address',
+  description: 'Change the shipping address a subscription’s recurring orders go to.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: ChangeSubscriptionAddressInput,
+  run: (ctx, input) => subscriptionService.changeAddress(ctx, input),
+};
+
+const skipNextSubscriptionOccurrence: McpToolDefinition = {
+  name: 'skip_next_subscription_occurrence',
+  description:
+    'Skip the next scheduled occurrence of a subscription (the one after it proceeds normally).',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: SkipNextOccurrenceInput,
+  run: (ctx, input) => subscriptionService.skipNextOccurrence(ctx, input),
 };
 
 const pauseSubscription: McpToolDefinition = {
@@ -307,9 +379,16 @@ export const writeTools: AnyMcpTool[] = [
   setProductImage,
   publishProduct,
   archiveProduct,
+  unpublishProduct,
+  restoreProduct,
   bulkUpdateProductStatus,
   issueGiftCard,
   grantAccountCredit,
+  createSubscription,
+  updateSubscriptionItems,
+  updateSubscriptionSchedule,
+  changeSubscriptionAddress,
+  skipNextSubscriptionOccurrence,
   pauseSubscription,
   resumeSubscription,
   cancelSubscription,

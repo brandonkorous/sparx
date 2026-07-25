@@ -141,12 +141,21 @@ export async function getPaymentConfig(tenantId: string): Promise<PaymentConfigS
   // charge-ready account as "Not collecting" in the window before the
   // account.updated webhook / an explicit refresh has synced `isActive`. (The
   // stored flag is still what the webhook syncs and the sync-writes update.)
+  //
+  // Fetch the live status whenever a connected account EXISTS, not only when
+  // sparx Pay is the active gateway. Otherwise, after a merchant switches to
+  // another provider, sparx Pay reports its default (charges/details = false) —
+  // a healthy, onboarded account then looks "unfinished", so the Payment
+  // providers pane offers "Continue setup" instead of "Make this my active
+  // provider" and the merchant can never switch back (BUG-013).
   let isActive = config.isActive;
-  if (config.gatewayId === 'sparx_pay' && accountId) {
+  if (accountId) {
     const live = await fetchAccountStatus(accountId);
     if (live) {
       sparxPay = { accountId, ...live };
-      isActive = live.chargesEnabled;
+      // `isActive` reflects the ACTIVE gateway's collecting state, so only let
+      // sparx Pay's charge-readiness drive it when sparx Pay is actually active.
+      if (config.gatewayId === 'sparx_pay') isActive = live.chargesEnabled;
     }
   }
 

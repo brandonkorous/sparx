@@ -1,39 +1,56 @@
 # Perfect Template → sparx Blueprint
 
-Version: 1.0.0
+Version: 1.1.0
 Author: Brandon Korous
-Last Updated: 2026-07-24
+Last Updated: 2026-07-25
 
 > **Living build doc.** The single source of truth for the "perfect template" effort so
 > it survives context compaction. Update the **Status** table + **Log** as work lands.
 
 > ## ▶ RESUME HERE
 >
-> **STATUS: the LIVE reference site is functionally complete and every known bug is fixed +
-> verified in production. The next gate is BRANDON WALKING THE WHOLE SITE AND SIGNING OFF.**
-> The bundle is a _capture_ of the approved live site — do NOT author
-> `marketplace-catalog/blueprints/sparx/`, capture, or ingest until that sign-off happens.
-> That gate is intentional.
+> **STATUS (2026-07-25, session 5): the storefront is now FULLY on silica + all functional
+> fixes deployed. Still perfecting the live site; NOT building the blueprint bundle, no
+> sign-off yet.** Do NOT author `marketplace-catalog/blueprints/sparx/` until Brandon walks
+> the whole site and signs off. That gate is intentional.
 >
-> **All Deploy 1–4 changes are live + verified.** BUG-003/005/006/007/008/009 all deployed.
-> api-mcp search tools work; `create_product` / `update_product` / `update_variant` /
-> `set_product_image` / scheduling setup all callable.
+> **Landed + deployed this session:**
 >
-> - **`/shop` — DONE + verified:** 6 sparx goods (Notebook, Tee, Mug, Tote, Cap, Insulated
->   Bottle), each with a real photo (`200 image/jpeg`); 12 old products archived. All 6 now
->   read `in_stock: true` in the search index and render with **NO "Sold out"** (BUG-009
->   recovery ran 2026-07-24: re-patched all 6 variants to `continue`, which fired the new
->   module-aware `syncProductInStock` and flipped the stale `inStock` column).
-> - **`/book` — DONE + verified:** both services (Intro Consultation, Working Session) list AND
->   return real bookable slots — the staff resource + weekly hours resolve through the
->   property-scoped BUG-008 fix (`?property=`). No empty-state.
+> - **st-\* → silica migration (v1.16x).** The entire `apps/site` storefront (114 files) was
+>   migrated off the `@sparx/site-ui` `st-*` design system onto silica (silicaui plugin classes
+>   - `@wizeworks/silicaui-react` + Tailwind). `rg "st-[a-z]" apps/site` design-system classes
+>     are gone; site.css shed ~2846 lines. The `--st-*` **tokens** REMAIN (the tenant-theme bridge
+>     consumed by surface-compile/builder — NOT removable without a platform rewrite), and
+>     `@sparx/site-ui` is kept ONLY for builder-rendered tenant content. Done via a worktree
+>     branch, merged `-X theirs` on the 3 booking conflicts. See [[project_storefront_silica_migration]].
+> - **Product page width** — `productDetailPage()` in `packages/silica-catalog/src/commerce.ts`
+>   now wraps the buy box in `mx-auto w-full max-w-6xl` (was full-bleed). LIVE + verified.
+> - **Booking widget** — opens on the FIRST bookable day (seededDate scan), not a dead empty
+>   today; **/book reorder** (booking list directly under the hero); **card CTA** ("See open
+>   times" `btn`) + **card border** (`border-base-300 hover:border-primary`). LIVE.
+> - **Product card border** (`border-base-300 hover:border-primary`) — LIVE + verified.
+> - **Contact page** — real values (hello@sparx.works, (628) 555-0142, SF address). LIVE.
 >
-> **NEXT: walk the whole site with Brandon → get sign-off.** Only after sign-off, author the
-> blueprint bundle (see _Bundle authoring spec_): capture site → the 6 sparx goods become its
-> `commerce` → validate → ingest.
+> **PENDING (pushed this session, needs the pipeline rebuild+deploy to take effect):**
 >
-> `write:search` still ungranted (optional; catalog self-indexes). Do NOT re-litigate
-> _Locked decisions_.
+> - **Cart images bug (CART-IMG).** Client-side `mediaUrl` baked `http://localhost:3100`
+>   because `NEXT_PUBLIC_API_URL` was never a **build-arg** (only a runtime configmap value).
+>   Broke cart/mini-cart/order-summary thumbnails (mixed-content) AND triggered a Chrome
+>   Private-Network-Access prompt on add-to-cart. Fixed in `apps/site/Dockerfile` (ARG/ENV) +
+>   `.github/workflows/build-images.yml` (build-arg). See [[infra_next_public_build_arg]].
+>
+> **REMAINING follow-ups (small):**
+>
+> - **Hero entrance animation** — silica `sui-animate-slide-up` machinery is confirmed emitting
+>   in the live CSS, but the change landed on the section-renderer `hero.tsx`; the Template home
+>   uses a **published silica hero**, so it isn't animating there. Redirect: add the classes to
+>   the Template's published home hero (a silica CONTENT edit via MCP, like the /book reorder),
+>   and/or the silica starter hero.
+> - **Booking confirmation email** — pipeline verified CORRECT + zero errors in api-rest/
+>   email-worker; "no email" is delivery/spam (check Mailgun dashboard), NOT a code bug.
+>
+> **THEN:** walk the whole site with Brandon → sign-off → only then author the bundle.
+> `write:search` still ungranted (optional). Do NOT re-litigate _Locked decisions_.
 
 ## The goal
 
@@ -619,9 +636,20 @@ self-indexes).
     "Free" at $0). `apps/site/app/site.css`: card → flex column so the CTA bottom-aligns across
     cards, removed the hover `box-shadow` (no-shadows rule) leaving the border-color hover.
     Typecheck + eslint + prettier clean.
-- **NEXT SESSION STARTS HERE:** The live site is done + verified; `/book` reorder is live, and
-  the `/book` card-affordance code (booking-services.tsx + site.css) is uncommitted gate-green —
-  **Brandon deploys apps/site to make the card CTAs live.** Then continue the full-site
-  walkthrough for **SIGN-OFF** — do not author the bundle before that. Only after sign-off:
-  author `marketplace-catalog/blueprints/sparx/`, capture the site (6 sparx goods → `commerce`),
+- **2026-07-25 (session 5 — st-\* → silica migration + storefront fixes, all deployed)** — Ran
+  the full `st-*` → silica migration of `apps/site` (114 files) via a worktree subagent
+  ([[project_storefront_silica_migration]]), reconciled the 3 booking conflicts (`-X theirs` +
+  re-applied seededDate/CTA), Brandon merged + deployed. Also deployed: product-page width fix
+  (silica-catalog `productDetailPage`), booking widget first-bookable-day, /book reorder, card
+  CTA + border, product-card border, contact real values. Diagnosed the booking email as a
+  delivery/spam issue (pipeline is correct). **Found + fixed CART-IMG**: client `mediaUrl` baked
+  `localhost:3100` because `NEXT_PUBLIC_API_URL` was never a build-arg → broken cart thumbnails +
+  Chrome PNA prompt; fixed in Dockerfile + build-images.yml ([[infra_next_public_build_arg]]),
+  pushed, needs the pipeline rebuild.
+- **NEXT SESSION STARTS HERE:** (1) Confirm CART-IMG fix live after the rebuild (cart thumbnails
+  load, no Chrome prompt). (2) Redirect the **hero animation** onto the Template's PUBLISHED
+  silica home hero (MCP content edit — `sui-animate-slide-up` + `sui-delay-*`), since the
+  hero.tsx change only covers section-renderer heroes. (3) Continue the full-site walkthrough for
+  **SIGN-OFF** — do not author the bundle before that. Only after sign-off: author
+  `marketplace-catalog/blueprints/sparx/`, capture the site (6 sparx goods → `commerce`),
   validate, ingest.

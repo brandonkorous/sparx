@@ -92,6 +92,12 @@ COPY packages/scheduling ./packages/scheduling
 # a media.uploaded publish. Workspace deps @sparx/db + @sparx/events are already
 # above; @google-cloud/storage is an npm dep resolved by pnpm install below.
 COPY packages/media ./packages/media
+# @sparx/social — the post + lifecycle service behind the social MCP tools
+# (deps @sparx/db + @sparx/api-core + @sparx/events, all copied above).
+COPY packages/social ./packages/social
+# @sparx/b2b — the trade service layer behind the B2B MCP tools (deps @sparx/crm +
+# @sparx/inventory + @sparx/events + @sparx/api-core + @sparx/auth + @sparx/db, above).
+COPY packages/b2b ./packages/b2b
 COPY services/api-mcp ./services/api-mcp
 
 RUN pnpm install --filter @sparx/api-mcp... --frozen-lockfile --prod=false

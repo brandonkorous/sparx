@@ -61,6 +61,14 @@ const MODULE_BY_SCOPE: Record<string, ModuleSlug> = {
   // have the `cms` module active.
   'read:cms': 'cms',
   'write:cms': 'cms',
+  // Social (docs/133) — post compose + lifecycle tools refuse when the tenant
+  // doesn't have the `social` module active.
+  'read:social': 'social',
+  'write:social': 'social',
+  // B2B / wholesale (docs/10) — trade pricing, approval, and AR tools refuse when
+  // the tenant doesn't have the `b2b` module active.
+  'read:b2b': 'b2b',
+  'write:b2b': 'b2b',
 };
 
 export async function buildServerForRequest(auth: McpAuthContext): Promise<McpServer> {

@@ -242,6 +242,37 @@ jobs:
             stripe-webhook-secret
             stripe-webhook-secret-sparx-pay
             stripe-webhook-secret-billing
+            # Part A platform module-billing price ids (docs/92, docs/138 §5): one per
+            # billable module × {monthly,annual} + managed hosting. Produced by
+            # `pnpm --filter @sparx/billing provision-stripe` (it prints the STRIPE_PRICE_*
+            # block) and read by priceIdFor(). Missing-in-SM is WARNED not failed (a module
+            # with no price id is treated as not-yet-billable), so listing them before
+            # they're provisioned is safe — the values land when Part A billing goes live.
+            stripe-price-builder-monthly
+            stripe-price-builder-annual
+            stripe-price-commerce-monthly
+            stripe-price-commerce-annual
+            stripe-price-cms-monthly
+            stripe-price-cms-annual
+            stripe-price-crm-monthly
+            stripe-price-crm-annual
+            stripe-price-email-monthly
+            stripe-price-email-annual
+            stripe-price-b2b-monthly
+            stripe-price-b2b-annual
+            stripe-price-ai-monthly
+            stripe-price-ai-annual
+            stripe-price-dropship-monthly
+            stripe-price-dropship-annual
+            stripe-price-inventory-monthly
+            stripe-price-inventory-annual
+            stripe-price-invoicing-monthly
+            stripe-price-invoicing-annual
+            stripe-price-chat-monthly
+            stripe-price-chat-annual
+            stripe-price-scheduling-monthly
+            stripe-price-scheduling-annual
+            stripe-price-managed-hosting-monthly
             channels-token-key
             provider-secret-key
             social-token-key

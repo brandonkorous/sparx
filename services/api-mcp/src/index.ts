@@ -1,5 +1,6 @@
 // Entry point. Boots the Fastify app and listens.
 
+import { configurePubsub } from '@sparx/api-core/pubsub';
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { registerCommerceConsumers } from '@sparx/commerce/consumers';
@@ -11,6 +12,18 @@ import { closeBuilderRelay } from './builder-relay.js';
 async function main(): Promise<void> {
   const app = await createApp();
   await preconnectAudit();
+  // Hand api-core its Pub/Sub config before any tool handler can call publish().
+  // WITHOUT this, `@sparx/api-core/pubsub`'s publish() fell back to the stdout stub
+  // in this process, so every MCP write that emits through the api-core path —
+  // inventory stock/threshold + `search.entity.changed`, social `social.post.*`
+  // (the scheduled-publish worker never woke for an MCP-scheduled post), and CMS
+  // events — was silently dropped in prod. The CRM + platform buses are bridged
+  // separately below (their own module state), and tools that emit via @sparx/events
+  // `createPublisher` (domain, search-admin, b2b) were already real; this closes the
+  // api-core gap so ALL three paths reach real Pub/Sub. It also enables api-core's
+  // webhook-enqueue for these MCP writes — matching api-rest — and the rows drain on
+  // api-rest's shared webhook-delivery loop. Unset GCP_PROJECT_ID → stdout stub (dev).
+  configurePubsub({ gcpProjectId: env.GCP_PROJECT_ID });
   // Bridge CRM customer writes made via MCP tools to real Pub/Sub so they
   // reach the search index. MUST run before installCrmWebhookFanout() (it
   // wraps the active publisher). No-op when GCP_PROJECT_ID is unset.

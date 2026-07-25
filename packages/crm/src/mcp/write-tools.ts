@@ -4,12 +4,31 @@
 
 import { z } from 'zod';
 
-import { CreateCustomerInput } from '@sparx/crm-schemas';
+import {
+  CreateB2BAccountInput,
+  CreateB2bAccountContactInput,
+  CreatePipelineInput,
+  CreatePipelineStageInput,
+  CreateSegmentInput,
+  CreateCustomerInput,
+  MergeCustomersInput,
+  ReorderPipelineStagesInput,
+  UpdateB2BAccountInput,
+  UpdateDealInput,
+  UpdatePipelineInput,
+  UpdatePipelineStageInput,
+  UpdateSegmentInput,
+  UpdateTaskInput,
+} from '@sparx/crm-schemas';
 
 import {
   activityService,
+  b2bAccountService,
+  b2bAccountContactService,
   customerService,
   dealService,
+  pipelineService,
+  segmentService,
   taskService,
   billingDocumentConversionService,
 } from '../services';
@@ -219,16 +238,277 @@ export const convertQuote: McpToolDefinition = {
   },
 };
 
+export const mergeCustomers: McpToolDefinition = {
+  name: 'merge_customers',
+  description:
+    'Merge one or more duplicate customers into a primary. All activities, deals, tasks and addresses move to the primary; commerce stats (spend, order count, first/last order) roll up; tags union; the primary fills any missing name/email/phone from the freshest duplicate. Duplicates are soft-deleted with a merge pointer preserved — the history survives. Destructive and hard to undo; the server confirms first.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: MergeCustomersInput,
+  run: (ctx, input) => customerService.merge(ctx, input),
+};
+
+// ── Deals ────────────────────────────────────────────────────────────────
+// move_deal_stage (above) is the ONLY stage-change path — it emits
+// crm.deal.stage_changed for the automation engine. update_deal deliberately
+// omits stageId/pipelineId; a stage move through this generic path is refused.
+
+export const updateDeal: McpToolDefinition = {
+  name: 'update_deal',
+  description:
+    'Update a deal — title, value, currency, probability, expected close date, customer/account link, assigned rep, source, tags. Omitted fields are unchanged. To move a deal to a different stage use move_deal_stage instead (it fires the stage-change automations).',
+  scope: 'write:crm',
+  confirmation: true,
+  input: UpdateDealInput.omit({ pipelineId: true, stageId: true }).extend({
+    dealId: z.string().uuid(),
+  }),
+  run: (ctx, input) => {
+    const { dealId, ...patch } = input as { dealId: string } & Record<string, unknown>;
+    return dealService.update(ctx, dealId, patch);
+  },
+};
+
+export const deleteDeal: McpToolDefinition = {
+  name: 'delete_deal',
+  description:
+    'Soft-delete a deal that should never have existed — it drops out of every list while the row and its activity trail survive. The normal way a deal leaves the board is move_deal_stage to a Won/Lost stage, which keeps it in pipeline history; use that for a real close, this only for a mistake.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: z.object({ dealId: z.string().uuid() }),
+  run: (ctx, input) => dealService.softDelete(ctx, (input as { dealId: string }).dealId),
+};
+
+// ── Tasks ────────────────────────────────────────────────────────────────
+
+export const updateTask: McpToolDefinition = {
+  name: 'update_task',
+  description:
+    'Update a follow-up task — title, description, due date, priority, assignee, linked customer/deal, or status. Omitted fields are unchanged. To mark a task done prefer complete_task (it stamps who/when and drops a timeline entry).',
+  scope: 'write:crm',
+  confirmation: true,
+  input: UpdateTaskInput.extend({ taskId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { taskId, ...patch } = input as { taskId: string } & Record<string, unknown>;
+    return taskService.update(ctx, taskId, patch);
+  },
+};
+
+// ── B2B accounts ───────────────────────────────────────────────────────────
+
+export const createB2bAccount: McpToolDefinition = {
+  name: 'create_b2b_account',
+  description:
+    'Create a B2B / wholesale trade account: company, tax id, credit limit, payment terms, discount, pricing tier, assigned rep. Customers become contacts on it via add_b2b_account_contact, which is what unlocks trade pricing and net-terms at checkout.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: CreateB2BAccountInput,
+  run: (ctx, input) => b2bAccountService.create(ctx, input),
+};
+
+export const updateB2bAccount: McpToolDefinition = {
+  name: 'update_b2b_account',
+  description:
+    'Update a B2B account — any subset of company, tax id, website, pricing tier, credit limit, payment terms, discount, status, assigned rep, fleet size, notes, tags. Omitted fields are unchanged.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: UpdateB2BAccountInput.extend({ accountId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { accountId, ...patch } = input as { accountId: string } & Record<string, unknown>;
+    return b2bAccountService.update(ctx, accountId, patch);
+  },
+};
+
+export const deleteB2bAccount: McpToolDefinition = {
+  name: 'delete_b2b_account',
+  description:
+    'Soft-delete a B2B account: it is hidden from lists but not erased, so its orders and history are preserved.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: z.object({ accountId: z.string().uuid() }),
+  run: (ctx, input) =>
+    b2bAccountService.softDelete(ctx, (input as { accountId: string }).accountId),
+};
+
+export const addB2bAccountContact: McpToolDefinition = {
+  name: 'add_b2b_account_contact',
+  description:
+    'Link a customer to a B2B account with a role (primary_contact | buyer | approver | viewer). This is the row trade pricing, net-terms eligibility and the B2B portal all key off. The first account a customer is added to also becomes their default pricing account and promotes them to the wholesale relationship type.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: CreateB2bAccountContactInput.extend({ accountId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { accountId, ...body } = input as { accountId: string } & Record<string, unknown>;
+    return b2bAccountContactService.create(ctx, accountId, body);
+  },
+};
+
+// ── Pipelines + stages ─────────────────────────────────────────────────────
+
+export const createPipeline: McpToolDefinition = {
+  name: 'create_pipeline',
+  description:
+    'Create a sales pipeline (e.g. "New B2B Acquisition"). Stages are added separately with add_pipeline_stage. Leave propertyId unset for a tenant-wide pipeline, or set it to scope the pipeline to one site.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: CreatePipelineInput,
+  run: (ctx, input) => pipelineService.create(ctx, input),
+};
+
+export const updatePipeline: McpToolDefinition = {
+  name: 'update_pipeline',
+  description:
+    'Update a pipeline — name, slug, default flag, or sort order. Omitted fields are unchanged.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: UpdatePipelineInput.extend({ pipelineId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { pipelineId, ...patch } = input as { pipelineId: string } & Record<string, unknown>;
+    return pipelineService.update(ctx, pipelineId, patch);
+  },
+};
+
+export const archivePipeline: McpToolDefinition = {
+  name: 'archive_pipeline',
+  description:
+    'Archive a pipeline: it stops appearing in the active list and loses its default flag. Existing deals on it are preserved.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: z.object({ pipelineId: z.string().uuid() }),
+  run: (ctx, input) => pipelineService.archive(ctx, (input as { pipelineId: string }).pipelineId),
+};
+
+export const addPipelineStage: McpToolDefinition = {
+  name: 'add_pipeline_stage',
+  description:
+    'Add a stage to a pipeline: name, sort order, win probability, stage type (open | won | lost) and an optional colour.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: CreatePipelineStageInput.extend({ pipelineId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { pipelineId, ...body } = input as { pipelineId: string } & Record<string, unknown>;
+    return pipelineService.createStage(ctx, pipelineId, body);
+  },
+};
+
+export const updatePipelineStage: McpToolDefinition = {
+  name: 'update_pipeline_stage',
+  description:
+    'Update a pipeline stage — name, sort order, probability, stage type, or colour. Omitted fields are unchanged.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: UpdatePipelineStageInput.extend({ stageId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { stageId, ...patch } = input as { stageId: string } & Record<string, unknown>;
+    return pipelineService.updateStage(ctx, stageId, patch);
+  },
+};
+
+export const deletePipelineStage: McpToolDefinition = {
+  name: 'delete_pipeline_stage',
+  description:
+    'Remove a stage from a pipeline. A pipeline must keep at least one stage. If the stage still has open deals you MUST pass reassignToStageId (a different stage on the same pipeline) to move them to — the move and delete run atomically.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: z.object({
+    pipelineId: z.string().uuid(),
+    stageId: z.string().uuid(),
+    reassignToStageId: z.string().uuid().optional(),
+  }),
+  run: (ctx, input) =>
+    pipelineService.deleteStage(
+      ctx,
+      input as { pipelineId: string; stageId: string; reassignToStageId?: string }
+    ),
+};
+
+export const reorderPipelineStages: McpToolDefinition = {
+  name: 'reorder_pipeline_stages',
+  description:
+    'Set the full left-to-right order of a pipeline’s stages. Pass every stage id in the desired order; sort orders are rewritten atomically.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: ReorderPipelineStagesInput.extend({ pipelineId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { pipelineId, ...body } = input as { pipelineId: string } & Record<string, unknown>;
+    return pipelineService.reorderStages(ctx, pipelineId, body);
+  },
+};
+
+// ── Segments ───────────────────────────────────────────────────────────────
+
+export const createSegment: McpToolDefinition = {
+  name: 'create_segment',
+  description:
+    'Create a customer segment from a rule tree (the same predicate shape preview_segment_count evaluates). Membership is materialised asynchronously by the evaluator. Leave propertyId unset for a tenant-wide segment, or set it to scope to one site.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: CreateSegmentInput,
+  run: (ctx, input) => segmentService.create(ctx, input),
+};
+
+export const updateSegment: McpToolDefinition = {
+  name: 'update_segment',
+  description:
+    'Update a segment — name, slug, description, colour, or its rule tree. Omitted fields are unchanged; changing the rules triggers a membership recompute downstream.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: UpdateSegmentInput.extend({ segmentId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { segmentId, ...patch } = input as { segmentId: string } & Record<string, unknown>;
+    return segmentService.update(ctx, segmentId, patch);
+  },
+};
+
+export const archiveSegment: McpToolDefinition = {
+  name: 'archive_segment',
+  description:
+    'Archive a segment: it stops appearing in the active list. Membership rows are left as-is.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: z.object({ segmentId: z.string().uuid() }),
+  run: (ctx, input) => segmentService.archive(ctx, (input as { segmentId: string }).segmentId),
+};
+
+export const recomputeSegment: McpToolDefinition = {
+  name: 'recompute_segment',
+  description:
+    'Force a full re-evaluation of a segment against every customer, reconciling its membership. Expensive — use when membership looks stale, not routinely (membership normally updates incrementally from events).',
+  scope: 'write:crm',
+  confirmation: true,
+  input: z.object({ segmentId: z.string().uuid() }),
+  run: (ctx, input) =>
+    segmentService.recomputeFull(ctx, { segmentId: (input as { segmentId: string }).segmentId }),
+};
+
 export const writeTools = [
   createCustomer,
   updateCustomer,
   deleteCustomer,
+  mergeCustomers,
   addActivity,
   createTask,
   completeTask,
+  updateTask,
   bulkAssignCustomers,
   bulkTagCustomers,
   moveDealStage,
   createDeal,
+  updateDeal,
+  deleteDeal,
   convertQuote,
+  createB2bAccount,
+  updateB2bAccount,
+  deleteB2bAccount,
+  addB2bAccountContact,
+  createPipeline,
+  updatePipeline,
+  archivePipeline,
+  addPipelineStage,
+  updatePipelineStage,
+  deletePipelineStage,
+  reorderPipelineStages,
+  createSegment,
+  updateSegment,
+  archiveSegment,
+  recomputeSegment,
 ];

@@ -14,6 +14,8 @@ import { searchMcpTools } from '@sparx/search';
 import { automationMcpTools } from '@sparx/automation';
 import { schedulingMcpTools } from '@sparx/scheduling';
 import { cmsMcpTools } from '@sparx/cms/mcp';
+import { socialMcpTools } from '@sparx/social/mcp';
+import { b2bMcpTools } from '@sparx/b2b/mcp';
 import { domainMcpTools } from './domain-tools.js';
 import { searchAdminMcpTools } from './search-admin-tools.js';
 
@@ -61,6 +63,17 @@ export const ALL_MCP_TOOLS: AnyMcpTool[] = [
   // additionally gated on the `cms` module flag in server.ts. Thin wrappers over
   // the @sparx/cms service layer the REST routes drive (one service, many transports).
   ...(cmsMcpTools as unknown as AnyMcpTool[]),
+  // Social (docs/133) — post compose + lifecycle; own read:social / write:social
+  // scopes, additionally gated on the `social` module flag in server.ts. Thin
+  // wrappers over @sparx/social/service (extracted from api-rest so REST + MCP
+  // share one service — one service, many transports).
+  ...(socialMcpTools as unknown as AnyMcpTool[]),
+  // B2B / wholesale (docs/10) — pricing tiers + overrides, account trade config +
+  // fleet, purchase-approval rules + queue, net-terms AR invoices; own read:b2b /
+  // write:b2b scopes, additionally gated on the `b2b` module flag in server.ts.
+  // Thin wrappers over @sparx/b2b's service layer (extracted from the api-rest
+  // routes so REST + MCP share one implementation — one service, many transports).
+  ...(b2bMcpTools as unknown as AnyMcpTool[]),
 ];
 
 /**
@@ -108,6 +121,8 @@ const WRITE_SCOPES: ReadonlySet<string> = new Set([
   'write:invoicing',
   'write:scheduling',
   'write:cms',
+  'write:social',
+  'write:b2b',
   'write:search',
 ]);
 

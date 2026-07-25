@@ -18,7 +18,7 @@ import {
   reportingService,
 } from '../services';
 
-import { CustomerType, LeadStatus, LifecycleStage } from '@sparx/crm-schemas';
+import { CustomerType, LeadStatus, LifecycleStage, SegmentRuleSchema } from '@sparx/crm-schemas';
 
 import type { McpToolDefinition } from './registry';
 
@@ -188,6 +188,20 @@ export const getSegmentMembers: McpToolDefinition = {
   },
 };
 
+export const previewSegmentCount: McpToolDefinition = {
+  name: 'preview_segment_count',
+  description:
+    'Dry-run a segment rule tree WITHOUT saving it: returns how many of a sampled set of customers match ("X of Y match"). Use this to size an audience before create_segment / update_segment.',
+  scope: 'read:crm',
+  confirmation: false,
+  input: z.object({
+    rule: SegmentRuleSchema,
+    sampleSize: z.number().int().min(1).max(1000).optional(),
+  }),
+  run: (ctx, input) =>
+    segmentService.previewCount(ctx, input as { rule: unknown; sampleSize?: number }),
+};
+
 export const getActivityFeed: McpToolDefinition = {
   name: 'get_crm_activity_feed',
   description:
@@ -277,6 +291,7 @@ export const readTools = [
   getTodayTasks,
   getSegments,
   getSegmentMembers,
+  previewSegmentCount,
   getActivityFeed,
   getOrder,
   getQuote,

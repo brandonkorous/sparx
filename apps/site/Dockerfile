@@ -74,6 +74,16 @@ RUN pnpm --filter @sparx/site-ui build
 ARG NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 ENV NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=$NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
 
+# Public API base URL — same build-time inlining rule as the Stripe key above. The
+# CLIENT components (cart, mini-cart, order summary — all 'use client') build storefront
+# media URLs via lib/media's `mediaUrl`, which reads NEXT_PUBLIC_API_URL. Without it in
+# the bundle, mediaUrl falls back to http://localhost:3100, so on an HTTPS storefront the
+# browser blocks the image as mixed content AND raises a Chrome Private-Network-Access
+# permission prompt on add-to-cart (the mini-cart image is a local-network request).
+# Server components read SPARX_API_REST_URL at runtime and are unaffected.
+ARG NEXT_PUBLIC_API_URL
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # next.config.mjs has `output: 'standalone'` and outputFileTracingRoot
 # pointing at the monorepo root for this to work.
 RUN pnpm --filter @sparx/site build

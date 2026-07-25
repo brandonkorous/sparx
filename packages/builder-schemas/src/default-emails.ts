@@ -366,6 +366,33 @@ const bookingCancelled = (): BuilderNode =>
     button('Book another time', '{{booking.bookUrl}}'),
   ]);
 
+// The owner-facing counterpart of booking-confirmation (docs/79 §10): sent to the
+// BUSINESS when someone books online — the assigned host, else the site's inbox —
+// so a non-technical owner learns of a booking in their inbox, not by watching a
+// dashboard. Still a per-SITE send (identity + brand resolve from the booking's
+// property), never the tenant. `booking.newHeadline` reads "New booking request"
+// for a requires-approval booking, and `booking.pendingApproval` surfaces the
+// action-needed line.
+const bookingNotificationInternal = (): BuilderNode =>
+  body([
+    heading('{{booking.newHeadline}}'),
+    para('{{customer.fullName ?? "A customer"}} booked {{booking.service}} for {{booking.when}}.'),
+    conditional('booking.pendingApproval', [
+      para(
+        'This booking is a request awaiting your approval — confirm or decline it from your dashboard.'
+      ),
+    ]),
+    conditional('booking.staff', [para('With: {{booking.staff}}')]),
+    conditional('booking.location', [para('Location: {{booking.location}}')]),
+    conditional('booking.partySize', [para('Party size: {{booking.partySize}}')]),
+    para('Customer: {{customer.fullName ?? "—"}}'),
+    para('Email: {{customer.email}}'),
+    conditional('customer.company', [para('Company: {{customer.company}}')]),
+    conditional('booking.addToCalendarUrl', [
+      button('Add to calendar', '{{booking.addToCalendarUrl}}'),
+    ]),
+  ]);
+
 // A spot opened for a customer on the service waitlist (docs/79 §7). Time-sensitive
 // nudge to book before the offer expires; bound to the `waitlist` source.
 const waitlistOffer = (): BuilderNode =>
@@ -642,6 +669,17 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     sources: ['customer', 'waitlist', 'tenant'],
     refs: ['customerId', 'waitlistEntryId'],
     tree: waitlistOffer(),
+  },
+  {
+    key: 'booking-notification-internal',
+    name: 'New booking (internal)',
+    type: 'transactional',
+    category: 'scheduling',
+    subject: '{{booking.newHeadline}}: {{booking.service}}',
+    preheader: '{{customer.fullName ?? "A customer"}} — {{booking.when}}.',
+    sources: ['customer', 'booking', 'tenant'],
+    refs: ['customerId', 'bookingId'],
+    tree: bookingNotificationInternal(),
   },
 ];
 

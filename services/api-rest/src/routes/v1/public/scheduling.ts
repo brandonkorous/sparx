@@ -30,6 +30,7 @@ import { publishBookingEvent } from '../../../lib/scheduling-events.js';
 import { createBookingDeposit } from '../../../lib/scheduling-payments.js';
 import { bookingCalendarLinks } from '../../../lib/scheduling-ical.js';
 import { sendSeatConfirmation } from '../../../lib/scheduling-classes.js';
+import { sendOwnerBookingNotification } from '../../../lib/scheduling-owner-notify.js';
 
 async function requireScheduling(request: FastifyRequest): Promise<string> {
   const tenantId = await resolveTenantId(request);
@@ -255,6 +256,11 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
       source: 'site',
     });
 
+    // Tell the business someone booked (docs/79 §10) — the owner-facing counterpart
+    // of the customer confirmation, routed to the assigned host (else the site
+    // inbox). Best-effort: never blocks the booking response.
+    await sendOwnerBookingNotification(request.log, tenantId, created.booking.id);
+
     // "Add to calendar" links (docs/79 §8.1) — the per-booking `.ics` download plus
     // Google/Outlook web deep links, shown on the confirmation step.
     const calendar = bookingCalendarLinks(tenantId, created.booking.id, {
@@ -342,6 +348,11 @@ const publicSchedulingRoutes: FastifyPluginAsync = async (app) => {
     });
     if (!seat.waitlisted) {
       await sendSeatConfirmation(request.log, tenantId, id, seat.attendee);
+      // Alert the business to the new class signup — render the joining ATTENDEE as
+      // the customer (the session booking has no single customer of its own).
+      await sendOwnerBookingNotification(request.log, tenantId, id, {
+        customerId: seat.attendee.customerId,
+      });
     }
     return reply.code(201).send(
       ok({

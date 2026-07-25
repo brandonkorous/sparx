@@ -437,6 +437,11 @@ async function resolveBooking(
     // The per-booking `.ics` download (docs/79 §8.1) — an "Add to calendar" link in
     // the confirmation/reminder. Absolute api-rest URL (reachable by mail clients).
     addToCalendarUrl: bookingIcsUrl(ctx.tenantId, ref.bookingId),
+    // Owner-facing helpers for the internal new-booking alert (booking-notification-internal):
+    // `newHeadline` varies the subject/heading wording, and `pendingApproval` (truthy only
+    // for a requires-approval booking that's still `requested`) gates the action-needed line.
+    newHeadline: b.status === 'requested' ? 'New booking request' : 'New booking',
+    pendingApproval: b.status === 'requested' ? 'requested' : '',
   };
 }
 

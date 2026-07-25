@@ -16,11 +16,24 @@
     "./adapters": {
       "types": "./src/adapters/index.ts",
       "default": "./src/adapters/index.ts"
+    },
+    "./service": {
+      "types": "./src/service.ts",
+      "default": "./src/service.ts"
+    },
+    "./mcp": {
+      "types": "./src/mcp/index.ts",
+      "default": "./src/mcp/index.ts"
     }
   },
   "files": [
     "src"
   ],
+  "dependencies": {
+    "@sparx/api-core": "workspace:*",
+    "@sparx/db": "workspace:*",
+    "zod": "^4.4.3"
+  },
   "scripts": {
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",

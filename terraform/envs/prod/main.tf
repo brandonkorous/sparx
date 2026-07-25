@@ -480,6 +480,37 @@ module "secrets" {
     # (`whsec_…`), added out-of-band via `gcloud secrets versions add`.
     "stripe-webhook-secret-sparx-pay",
     "stripe-webhook-secret-billing",
+    # Part A platform module-billing price ids (docs/92, docs/138 §5). Empty
+    # containers created here; values are produced by `provision-stripe` (run with the
+    # live key) and added out-of-band via `gcloud secrets versions add`. Creating them
+    # in Terraform (not `gcloud secrets create`) keeps the next apply from 409-ing.
+    # One per billable module × {monthly,annual} + managed hosting; read by priceIdFor()
+    # and synced by the bootstrap KEYS list (missing-in-SM is warned, not failed).
+    "stripe-price-builder-monthly",
+    "stripe-price-builder-annual",
+    "stripe-price-commerce-monthly",
+    "stripe-price-commerce-annual",
+    "stripe-price-cms-monthly",
+    "stripe-price-cms-annual",
+    "stripe-price-crm-monthly",
+    "stripe-price-crm-annual",
+    "stripe-price-email-monthly",
+    "stripe-price-email-annual",
+    "stripe-price-b2b-monthly",
+    "stripe-price-b2b-annual",
+    "stripe-price-ai-monthly",
+    "stripe-price-ai-annual",
+    "stripe-price-dropship-monthly",
+    "stripe-price-dropship-annual",
+    "stripe-price-inventory-monthly",
+    "stripe-price-inventory-annual",
+    "stripe-price-invoicing-monthly",
+    "stripe-price-invoicing-annual",
+    "stripe-price-chat-monthly",
+    "stripe-price-chat-annual",
+    "stripe-price-scheduling-monthly",
+    "stripe-price-scheduling-annual",
+    "stripe-price-managed-hosting-monthly",
     "godaddy-api-key-ote",
     "godaddy-api-secret-ote",
     "godaddy-api-key-prod",

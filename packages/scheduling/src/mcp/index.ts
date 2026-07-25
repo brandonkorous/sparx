@@ -15,9 +15,11 @@ export type {
 
 import { readTools } from './read-tools';
 import { writeTools } from './write-tools';
+import { lifecycleWriteTools } from './write-lifecycle-tools';
 
 export * from './read-tools';
 export * from './write-tools';
+export { lifecycleWriteTools } from './write-lifecycle-tools';
 
 /** The full scheduling tool set the MCP server publishes. */
-export const schedulingMcpTools = [...readTools, ...writeTools];
+export const schedulingMcpTools = [...readTools, ...writeTools, ...lifecycleWriteTools];

@@ -277,6 +277,33 @@ const bookingCancelled = (): SectionNode[] => [
   copyBlock([button('Book another time', '{{booking.bookUrl}}')]),
 ];
 
+// Owner-facing counterpart of booking-confirmation (docs/79 §10) — sent to the
+// BUSINESS (assigned host, else the site inbox) when someone books online. A
+// per-SITE send: identity + brand resolve from the booking's property, never the
+// tenant. `booking.newHeadline` reads "New booking request" for a requires-approval
+// booking; `booking.pendingApproval` surfaces the action-needed line.
+const bookingNotificationInternal = (): SectionNode[] => [
+  copyBlock([
+    heading('{{booking.newHeadline}}'),
+    para('{{customer.fullName ?? "A customer"}} booked {{booking.service}} for {{booking.when}}.'),
+  ]),
+  when('booking.pendingApproval', [
+    para(
+      'This booking is a request awaiting your approval — confirm or decline it from your dashboard.'
+    ),
+  ]),
+  when('booking.staff', [para('With: {{booking.staff}}')]),
+  when('booking.location', [para('Location: {{booking.location}}')]),
+  when('booking.partySize', [para('Party size: {{booking.partySize}}')]),
+  copyBlock([
+    divider(),
+    para('Customer: {{customer.fullName ?? "—"}}'),
+    para('Email: {{customer.email}}'),
+  ]),
+  when('customer.company', [para('Company: {{customer.company}}')]),
+  when('booking.addToCalendarUrl', [button('Add to calendar', '{{booking.addToCalendarUrl}}')]),
+];
+
 const waitlistOffer = (): SectionNode[] => [
   copyBlock([
     heading('A spot just opened up'),
@@ -314,6 +341,7 @@ const SILICA_EMAIL_BODIES: Record<string, SectionNode[]> = {
   'booking-rescheduled': bookingRescheduled(),
   'booking-cancelled': bookingCancelled(),
   'waitlist-offer': waitlistOffer(),
+  'booking-notification-internal': bookingNotificationInternal(),
 };
 
 /** The silica document for a default template. Subject + preheader live INSIDE the

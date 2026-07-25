@@ -1,11 +1,16 @@
 'use client';
 
 import { useEffect } from 'react';
+import { isChunkLoadError, reloadOnceForStaleBuild } from '../lib/chunk-error';
 
 // Catches the chunk-load failures a browser tab throws when it's left open
 // across a deploy and then client-navigates to a route whose JS/CSS chunk the
 // new build purged. Next surfaces these as window 'error' / 'unhandledrejection'
 // events; the only real recovery is a full reload to fetch the current chunks.
+// The render-time counterpart — the same failure thrown INSIDE React, which
+// never reaches `window` — is caught by app/error.tsx + app/global-error.tsx.
+// The detector and the once-per-cooldown reload are shared between all three
+// (lib/chunk-error.ts) so a broken build can't loop.
 //
 // Renders nothing. Mount once near the app root. (Framework glue, not design-
 // library — ported local because the workbench builds on silicaui directly and
@@ -16,50 +21,18 @@ import { useEffect } from 'react';
 // days, so it is the most likely surface to still be running a build the server
 // no longer has chunks for.
 
-const CHUNK_ERROR_RE =
-  /Loading chunk [\w-]+ failed|ChunkLoadError|Loading CSS chunk|error loading dynamically imported module|Failed to fetch dynamically imported module|Importing a module script failed/i;
-
-const RELOAD_GUARD_KEY = 'sparx:chunk-reloaded-at';
-const RELOAD_COOLDOWN_MS = 10_000;
-
-function isChunkError(message: string): boolean {
-  return message.length > 0 && CHUNK_ERROR_RE.test(message);
-}
-
 export function ChunkReloadGuard(): null {
   useEffect(() => {
-    function maybeReload(message: string): void {
-      if (!isChunkError(message)) return;
-
-      // One reload per cooldown window. A stale chunk that survives a reload
-      // (a genuinely broken build) must not trap the tab in a refresh loop.
-      let last = 0;
-      try {
-        last = Number(window.sessionStorage.getItem(RELOAD_GUARD_KEY) ?? '0');
-      } catch {
-        // sessionStorage can throw in hardened privacy modes — treat as "no
-        // prior reload" and fall through to reload once.
-      }
-      if (Date.now() - last < RELOAD_COOLDOWN_MS) return;
-
-      try {
-        window.sessionStorage.setItem(RELOAD_GUARD_KEY, String(Date.now()));
-      } catch {
-        /* best-effort guard; reload anyway */
-      }
-      window.location.reload();
+    function maybeReload(input: unknown): void {
+      if (isChunkLoadError(input)) reloadOnceForStaleBuild();
     }
 
     function onError(event: ErrorEvent): void {
-      const message = event.message || (event.error instanceof Error ? event.error.message : '');
-      maybeReload(message);
+      maybeReload(event.error instanceof Error ? event.error : event.message);
     }
 
     function onRejection(event: PromiseRejectionEvent): void {
-      const reason: unknown = event.reason;
-      const message =
-        reason instanceof Error ? reason.message : typeof reason === 'string' ? reason : '';
-      maybeReload(message);
+      maybeReload(event.reason);
     }
 
     window.addEventListener('error', onError);

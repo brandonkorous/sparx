@@ -15,13 +15,8 @@
 
 import type Stripe from 'stripe';
 
-import {
-  credentialRef,
-  getPaymentSecretReader,
-  getPlatformStripe,
-  SPARX_PAY_ID,
-} from '@sparx/payments';
-import { withTenant } from '@sparx/db';
+import { getPlatformStripe } from '@sparx/payments';
+import { prisma, withTenant } from '@sparx/db';
 
 export interface ConnectedPayout {
   id: string; // Stripe payout id (po_…)
@@ -51,25 +46,17 @@ export interface ConnectedPayoutDetail extends ConnectedPayout {
   sales: ConnectedPayoutSale[];
 }
 
-/** The tenant's sparx Pay connected account id — read from the SAME source charges settle
- *  to: the payment secret store (`payments/{tenantId}/sparx_pay/stripe_account_id`), which
- *  is what `SparxPayGateway.merchantAccountId` uses for `on_behalf_of`/`transfer_data`.
- *
- *  Deliberately NOT `tenant.stripeAccountId` (the root column): that field can drift from
- *  the live Express account (a relic of the Standard→Express onboarding migration, docs/94),
- *  and reading it made payouts query a stale account with no payouts while charges settled
- *  elsewhere — the whole of BUG-012. Returns null when no sparx Pay account is configured,
- *  signalling the caller to fall back to the derived model. */
+/** The tenant's sparx Pay connected account id from the root `tenant.stripeAccountId`
+ *  column — the SAME source `getPaymentConfig` / the sparx-Pay balance + status endpoints
+ *  resolve (payments-onboarding.ts `tenantAccountId`), so payouts read the exact account
+ *  the rest of the finance surface reports. Returns null when the tenant has never onboarded
+ *  a connected account, signalling the caller to fall back to the derived model. */
 async function connectedAccountId(tenantId: string): Promise<string | null> {
-  try {
-    const accountId = await getPaymentSecretReader().read(
-      credentialRef(tenantId, SPARX_PAY_ID, 'stripe_account_id')
-    );
-    return accountId || null;
-  } catch {
-    // PaymentSecretNotFoundError (or any read failure) → sparx Pay not usable here.
-    return null;
-  }
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: { stripeAccountId: true },
+  });
+  return tenant?.stripeAccountId ?? null;
 }
 
 /** Stripe payout ids are `po_…`; the derived model's ids are `<processor>~<date>`. */

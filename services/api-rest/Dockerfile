@@ -50,6 +50,9 @@ COPY packages/commerce ./packages/commerce
 COPY packages/inventory ./packages/inventory
 COPY packages/channels ./packages/channels
 COPY packages/social ./packages/social
+# @sparx/b2b — the trade service layer the /v1/b2b/* routes delegate to (deps
+# @sparx/crm + @sparx/inventory + @sparx/events + @sparx/api-core, all copied above).
+COPY packages/b2b ./packages/b2b
 COPY packages/scheduling-schemas ./packages/scheduling-schemas
 COPY packages/scheduling ./packages/scheduling
 COPY packages/partner-schemas ./packages/partner-schemas
