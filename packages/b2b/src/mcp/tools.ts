@@ -161,7 +161,7 @@ const listApprovalQueue: McpToolDefinition = {
       take: 50,
       skip: 0,
       ...(input as Partial<approvalService.ApprovalQueueInput>),
-    } as approvalService.ApprovalQueueInput),
+    }),
 };
 
 const listInvoices: McpToolDefinition = {
@@ -181,7 +181,7 @@ const listInvoices: McpToolDefinition = {
       take: 50,
       skip: 0,
       ...(input as Partial<invoiceService.InvoiceListInput>),
-    } as invoiceService.InvoiceListInput),
+    }),
 };
 
 const getInvoice: McpToolDefinition = {
