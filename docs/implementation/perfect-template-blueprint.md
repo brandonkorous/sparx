@@ -1,6 +1,6 @@
 # Perfect Template → sparx Blueprint
 
-Version: 1.2.0
+Version: 1.3.0
 Author: Brandon Korous
 Last Updated: 2026-07-25
 
@@ -9,9 +9,11 @@ Last Updated: 2026-07-25
 
 > ## ▶ RESUME HERE
 >
-> **STATUS (2026-07-25, session 6): storefront FULLY on silica; CART-IMG + hero animation
-> live; automated walkthrough clean; a real transactional-email bug was found + FIXED (needs
-> deploy). Still perfecting the live site; NOT building the blueprint bundle, no sign-off yet.**
+> **STATUS (2026-07-25, session 6b): storefront FULLY on silica; CART-IMG + hero animation
+> live; automated walkthrough clean; the missing-`to` transactional-email bug is FIXED + VERIFIED
+> live (booking email now delivers). A second email bug — non-primary sites' email used the TENANT
+> logo, not the site's — is FIXED (needs an api-rest redeploy). Still perfecting the live site;
+> NOT building the blueprint bundle, no sign-off yet.**
 > Do NOT author `marketplace-catalog/blueprints/sparx/` until Brandon walks the whole site and
 > signs off. That gate is intentional.
 >
@@ -660,8 +662,22 @@ acking` — `sendTenantEmailByKey` published the raw payload **without `to`**, w
   **`RawEmailSendPayload`** in `@sparx/events` + `satisfies` guards at both raw publish sites so a
   missing `to` is a compile error. Typecheck + lint clean. Left in working tree for Brandon to
   commit/deploy. See [[bug_raw_email_send_needs_to]].
-- **NEXT SESSION STARTS HERE:** (1) After the api-rest deploy, **re-book on the Template → confirm
-  the booking confirmation email arrives** (bug now fixed; the prior dropped messages are gone).
+- **2026-07-25 (session 6b — `to` fix VERIFIED live + per-site email-logo bug fixed)** — Brandon
+  deployed api-rest; re-booked the Template's free Intro Consultation (booking `1467525d`, customer
+  Brandon Korous / bkorous@gmail.com). **Email arrived** — Cloud Run `email-worker` logged `message
+processed` (no schema-drop), confirming the `to` fix end-to-end. Brandon flagged the email carried
+  the **WizeWorks (tenant) logo, not the Template site's**. Traced it: `renderBuilderEmailDoc` →
+  `brandService.resolveEmailBrand` (packages/email-platform) read the per-site logo from the LEGACY
+  `override.logoMediaId` only, but the Builder Brand page always writes `logoLightMediaId` now
+  (site-identity-data.ts `computeOverride` drops the legacy key). So every NON-PRIMARY site's
+  transactional email fell back to the tenant logo. The storefront public payload resolves the same
+  logo correctly via `mergeBrandIdentity` (`logoLightMediaId ?? logoMediaId`) — email was the only
+  reader still on the old field. Fixed `resolveEmailBrand` to read
+  `logoLightMediaId ?? logoMediaId ?? tenant` (+ added `logoLightMediaId` to its local `BrandOverride`
+  type). Typecheck + lint clean. Needs an api-rest redeploy (logo is baked into the HTML at render
+  time in api-rest). See [[bug_email_per_site_logo_field]].
+- **NEXT SESSION STARTS HERE:** (1) After the next api-rest deploy, **re-book on the Template →
+  confirm the confirmation email now shows the TEMPLATE logo** (the `to` fix is already verified).
   (2) Optional: build the `patch_silica_node` MCP tool (granular node patch vs full-page replace).
   (3) Continue / finish the full-site walkthrough for **SIGN-OFF** — do not author the bundle
   before that. Only after sign-off: author `marketplace-catalog/blueprints/sparx/`, capture the

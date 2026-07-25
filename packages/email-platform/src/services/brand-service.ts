@@ -81,6 +81,13 @@ interface BrandOverride {
   colorAccent?: string | null;
   fontHeading?: string | null;
   fontBody?: string | null;
+  // The per-site light logo. `logoLightMediaId` is what the Builder Brand page
+  // writes today; `logoMediaId` is the legacy single-logo field kept so
+  // pre-expansion overrides still resolve. Read BOTH (new field wins) exactly as
+  // property-brand.ts `mergeBrandIdentity` does — reading only the legacy field
+  // silently ignored every current per-site logo and fell back to the tenant's,
+  // so a non-primary site's booking/order email wore the tenant's logo.
+  logoLightMediaId?: string | null;
   logoMediaId?: string | null;
 }
 
@@ -134,7 +141,10 @@ export async function resolveEmailBrand(
       colorAccent: override?.colorAccent ?? brandRow?.colorAccent ?? null,
       fontHeading: override?.fontHeading ?? brandRow?.fontHeading ?? null,
       fontBody: override?.fontBody ?? brandRow?.fontBody ?? null,
-      logoLightMediaId: override?.logoMediaId ?? brandRow?.logoLightMediaId ?? null,
+      // New field wins over the legacy single-logo field, then the tenant base —
+      // mirrors mergeBrandIdentity so email and storefront resolve the same logo.
+      logoLightMediaId:
+        override?.logoLightMediaId ?? override?.logoMediaId ?? brandRow?.logoLightMediaId ?? null,
     };
 
     const slug = tenant?.slug ?? '';
