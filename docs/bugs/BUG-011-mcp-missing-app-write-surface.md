@@ -1,11 +1,14 @@
 # BUG-011 — MCP is missing large parts of the app's write surface
 
-Status: **8 MODULES COMPLETE 2026-07-25 (CRM, commerce, inventory, scheduling, email,
-invoicing, social, b2b) + automation already complete; ai deliberately carved out.
-Social + b2b each required a service extraction into a shared package first (they were
-built api-rest-first) — both authored; a single owner-run `pnpm install` links the new
-packages and completes typecheck/lint. The api-mcp Pub/Sub-config gap surfaced during
-the b2b work is also fixed. See "Per-module status" below.**
+Status: **9 MODULES COMPLETE 2026-07-25 (CRM, commerce, inventory, scheduling, email,
+invoicing, social, b2b, cms) + automation/builder/sitebuilder/domains already broad; ai
+deliberately carved out. Full write parity across every operator module.** Social + b2b
+were service extractions into NEW shared packages (built api-rest-first) — a single
+owner-run `pnpm install` links them + completes typecheck/lint; CMS was an in-place
+extension of the existing `@sparx/cms` (no install, already verified clean). Two bugs
+found by post-build testing are also fixed: the **scope-catalog lag** (b2b/social scopes
+weren't grantable — un-reachable on every auth path) and the **api-mcp Pub/Sub-config
+gap**. See "Per-module status" + the fix subsections below.
 Severity: **High (platform principle)** — the platform commits to "MCP is a
 first-class service" and "API-first: every UI feature exists as an API endpoint;
 the dashboard is one consumer among many" (root `CLAUDE.md`). Today the MCP surface
@@ -137,7 +140,7 @@ expanded here.
 | Automation    | 9     | ✅ already complete (create/update/delete/clone/status + reads)                                                                                                                                                                                                                                                                                                                                                                             |
 | Builder       | 33    | ✅ already broad (site page/layout authoring — MCP's core purpose)                                                                                                                                                                                                                                                                                                                                                                          |
 | Sitebuilder   | 26    | ✅ already broad                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| CMS / content | 12    | ⚠️ create/update/publish covered; delete-entry / delete-type / restore-revision / put-schema are route-inline (no clean service fn) — need service extraction first                                                                                                                                                                                                                                                                         |
+| CMS / content | 16    | ✅ DONE 2026-07-25 — +4 (delete_content_entry, restore_content_revision, put_content_type_schema, delete_content_type); extracted the 4 route-inline ops into `@sparx/cms` service fns (each a `*Tx` core + wrapper), re-pointed the routes. In-place extension of an existing package → NO install; `@sparx/cms` typecheck + lint clean, routes lint clean.                                                                                |
 | Social        | 10    | ✅ DONE 2026-07-25 (authored; needs one `pnpm install`) — extracted the post + lifecycle service from api-rest `lib/` into `@sparx/social/service`, added `@sparx/social/mcp` (10 tools: list/get + create/update/delete/submit/schedule/approve/reject/publish), wired into api-mcp with new `read:social`/`write:social` scope + `social` module gate. See the extraction note below.                                                     |
 | B2B           | 31    | ✅ DONE 2026-07-25 (authored; needs one `pnpm install`) — extracted the trade service layer from the api-rest routes into `@sparx/b2b` (pricing tiers + overrides, account trade config + fleet, purchase-approval rules + queue, net-terms AR invoices), re-pointed the routes at it, and added `@sparx/b2b/mcp` (11 read + 20 write) wired into api-mcp with `read:b2b`/`write:b2b` + a `b2b` module gate. See the extraction note below. |
 | AI            | n/a   | 🚫 deliberately carved out — API keys, provider credentials, MCP-connection + tool-policy management are security-boundary meta an AI client should not self-administer.                                                                                                                                                                                                                                                                    |
@@ -248,6 +251,30 @@ api-mcp, updating the lockfile), then `pnpm --filter @sparx/b2b --filter @sparx/
 typecheck cannot resolve the new workspace symlinks; model names, the `b2b` module
 slug, and the four event types (`b2b.order.approved` / `b2b.order.rejected` /
 `b2b.invoice.created` / `order.placed`) were verified against the schema + registries.
+
+### Scope-catalog lag — b2b + social scopes were unreachable — FIXED 2026-07-25
+
+Caught by post-deploy MCP testing: `list_b2b_pricing_tiers` returned `forbidden: tool
+"…" requires scope "read:b2b" which is not granted`. Root cause: the new scopes were
+added to the tool definitions, api-mcp's `MODULE_BY_SCOPE` gate, and `WRITE_SCOPES` —
+but NOT to `@sparx/auth`'s scope catalog (`packages/auth/src/mcp-scopes.ts`:
+`McpBusinessScope` union + `MCP_SCOPE_CATALOG`). That catalog is the single source the
+API-key issuance dialog renders, that `MCP_ALL_OAUTH_SCOPES` (OAuth authorize + the
+`/.well-known/oauth-protected-resource` advertisement) derives from, and that
+`grantableScopesForRole` caps against. Because the scope wasn't in it, **no credential
+could ever be granted `read:b2b`/`write:b2b` or `read:social`/`write:social`** — the
+entire b2b AND social MCP surface was unreachable on every auth path, exactly the
+regression the `read:cms` note in that file already documents.
+
+**Fix:** added `read:b2b` / `write:b2b` / `read:social` / `write:social` to the union +
+catalog (module labels "B2B" / "Social"). Everything else derives from the catalog, so
+`grantableScopesForRole` (owner/admin: all; editor: +both non-bulk writes; viewer: both
+reads), `capBusinessScopes`, `MCP_ALL_OAUTH_SCOPES`, and the consent scope-picker pick
+them up automatically. `@sparx/auth` typecheck clean. **Requires deploy + a connector
+re-authorization** (the consent grant is scope-bound; an existing token must re-consent
+to acquire the new scopes) before the b2b/social tools are callable. This is the true
+"DONE" gate for both modules — the earlier "DONE" claims wired the tools but the surface
+was un-grantable until this landed.
 
 ### Follow-up — api-mcp did not configure the api-core Pub/Sub publisher — FIXED 2026-07-25
 

@@ -22,9 +22,15 @@ import { z } from 'zod';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
-import { conflict, notFound } from '@sparx/api-core/errors';
+import { notFound } from '@sparx/api-core/errors';
 import { ContentTypeSchema } from '@sparx/cms-schemas';
-import { createContentTypeTx, updateContentTypeTx, serializeContentType } from '@sparx/cms';
+import {
+  createContentTypeTx,
+  updateContentTypeTx,
+  replaceSchemaTx,
+  deleteContentTypeTx,
+  serializeContentType,
+} from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 
@@ -212,90 +218,43 @@ const contentTypeRoutes: FastifyPluginAsync = (app) => {
     const { key } = KeyParams.parse(request.params);
     const { schema } = SchemaBody.parse(request.body);
 
-    const result = await withRequestTenant(request, async (tx) => {
-      // Resolve by key, tenant row preferred (isBuiltIn ASC → a fork wins
-      // over the platform built-in of the same key).
-      const existing = await tx.contentType.findFirst({
-        where: { key },
-        orderBy: [{ isBuiltIn: 'asc' }, { updatedAt: 'desc' }],
-      });
-      if (!existing) throw notFound('Content type', key);
-
-      // Tenant already owns it (custom type or a prior fork) → update in place.
-      if (!existing.isBuiltIn) {
-        const row = await tx.contentType.update({
-          where: { id: existing.id },
-          data: { schemaJson: schema },
-        });
-        await writeAudit(tx, request, auth, {
-          action: 'content_type.upserted',
-          entityType: 'content_type',
-          entityId: row.id,
-          before: {
-            key: row.key,
-            fields: (existing.schemaJson as { fields?: unknown[] })?.fields?.length ?? 0,
-          },
-          after: { key: row.key, fields: schema.fields.length },
-        });
-        return { row, forked: false };
-      }
-
-      // Platform built-in → FORK into a tenant-owned copy. @@unique([tenantId,
-      // key]) lets (platform,key) + (tenant,key) coexist; WITH CHECK pins the
-      // insert to current_tenant_id(), so the tenant can only ever fork into
-      // its own scope.
-      const row = await tx.contentType.create({
-        data: {
-          tenantId: auth.tenantId,
-          key: existing.key,
-          name: existing.name,
-          pluralName: existing.pluralName,
-          description: existing.description,
-          icon: existing.icon,
-          urlPattern: existing.urlPattern,
-          isSingleton: existing.isSingleton,
-          isBuiltIn: false,
-          schemaJson: schema,
-        },
-      });
+    const { contentType, forked, events } = await withRequestTenant(request, async (tx) => {
+      const result = await replaceSchemaTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        key,
+        schema
+      );
       await writeAudit(tx, request, auth, {
         action: 'content_type.upserted',
         entityType: 'content_type',
-        entityId: row.id,
-        before: { key: existing.key, forkedFromBuiltIn: true },
-        after: { key: row.key, fields: schema.fields.length },
+        entityId: result.contentType.id,
+        before: { key: result.contentType.key, forkedFromBuiltIn: result.forked },
+        after: { key: result.contentType.key, fields: schema.fields.length },
       });
-      return { row, forked: true };
+      return result;
     });
 
-    await publish(request.log, 'content_type.upserted', auth.tenantId, auth.actorId, {
-      typeKey: result.row.key,
-    });
-    return ok({ ...serializeContentType(result.row), forked: result.forked });
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
+    return ok({ ...serializeContentType(contentType), forked });
   });
 
   app.delete('/v1/content/types/:key', async (request, reply) => {
     const auth = requireRole(request, 'editor');
     const { key } = KeyParams.parse(request.params);
     await withRequestTenant(request, async (tx) => {
-      const existing = await tx.contentType.findFirst({ where: { key, isBuiltIn: false } });
-      if (!existing) throw notFound('Custom content type', key);
-      // Reject deletion when entries still reference the type — the
-      // ContentEntry rows would orphan otherwise.
-      const inUse = await tx.contentEntry.count({
-        where: { typeKey: key, deletedAt: null },
-      });
-      if (inUse > 0) {
-        throw conflict(
-          `Cannot delete "${key}" — ${inUse} entr${inUse === 1 ? 'y' : 'ies'} still use it. Archive the entries first.`
-        );
-      }
-      await tx.contentType.delete({ where: { id: existing.id } });
+      const { contentType } = await deleteContentTypeTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        key
+      );
       await writeAudit(tx, request, auth, {
         action: 'content_type.deleted',
         entityType: 'content_type',
-        entityId: existing.id,
-        before: { key: existing.key, name: existing.name },
+        entityId: contentType.id,
+        before: { key: contentType.key, name: contentType.name },
       });
     });
     reply.code(204);

@@ -9,22 +9,17 @@
 // revision history reads chronologically.
 
 import type { FastifyPluginAsync } from 'fastify';
-import type { Prisma } from '@sparx/db';
 import { z } from 'zod';
 
-type Json = Prisma.InputJsonValue;
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import {
-  parseTypeSchema,
-  resolveType,
-  recordRevision,
+  restoreRevisionTx,
   serializeEntry,
   serializeRevisionFull,
   serializeRevisionMeta,
-  syncReferences,
 } from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 
@@ -75,44 +70,20 @@ const revisionRoutes: FastifyPluginAsync = (app) => {
     const { id, n } = OneParams.parse(request.params);
 
     const updated = await withRequestTenant(request, async (tx) => {
-      const entry = await tx.contentEntry.findFirst({ where: { id, deletedAt: null } });
-      if (!entry) throw notFound('Entry', id);
-
-      const target = await tx.contentRevision.findFirst({
-        where: { entryId: id, revisionNumber: n },
-      });
-      if (!target) throw notFound('Revision', `${id}#${n}`);
-
-      const type = await resolveType(tx, entry.typeKey);
-      const schema = parseTypeSchema(type);
-
-      const body = (target.body ?? {}) as Record<string, unknown>;
-      const seoJson = (target.seoJson ?? {}) as Record<string, unknown>;
-
-      const after = await tx.contentEntry.update({
-        where: { id },
-        data: { body: body as Json, seoJson: seoJson as Json, updatedAt: new Date() },
-      });
-      await syncReferences(tx, auth.tenantId, after.id, schema, body);
-      await recordRevision(tx, {
-        tenantId: auth.tenantId,
-        entryId: after.id,
-        body,
-        seoJson,
-        status: after.status,
-        kind: 'manual',
-        authorId: auth.actorId,
-        summary: `Restored from revision #${n}`,
-      });
+      const { entry } = await restoreRevisionTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        id,
+        n
+      );
       await writeAudit(tx, request, auth, {
         action: 'content.entry.restored',
         entityType: 'content_entry',
-        entityId: after.id,
+        entityId: entry.id,
         before: { revisionNumber: 'current' },
         after: { restoredFrom: n },
       });
-
-      return after;
+      return entry;
     });
 
     return ok(serializeEntry(updated));

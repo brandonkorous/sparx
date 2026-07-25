@@ -348,6 +348,89 @@ export async function unpublishEntry(
   return { entry: serializeEntry(entry), events };
 }
 
+// ── DELETE ──────────────────────────────────────────────────────────────────────
+
+export async function deleteEntryTx(
+  tx: TxClient,
+  _ctx: CmsWriteContext,
+  id: string
+): Promise<EntryWriteResult> {
+  const existing = await tx.contentEntry.findFirst({ where: { id, deletedAt: null } });
+  if (!existing) throw notFound('Entry', id);
+
+  // Soft-delete — the row survives for audit/history; reads filter deletedAt.
+  const entry = await tx.contentEntry.update({ where: { id }, data: { deletedAt: new Date() } });
+
+  return {
+    entry,
+    events: [{ type: 'content.entry.deleted', data: { entryId: id } }],
+  };
+}
+
+export async function deleteEntry(
+  ctx: CmsWriteContext,
+  id: string
+): Promise<{ entry: WireEntry; events: CmsEmittedEvent[] }> {
+  const { entry, events } = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+    deleteEntryTx(tx, ctx, id)
+  );
+  return { entry: serializeEntry(entry), events };
+}
+
+// ── RESTORE REVISION ─────────────────────────────────────────────────────────
+// Restore an entry's body + SEO from an older revision. This does NOT roll the
+// status back — it re-writes the current draft/published body from the snapshot
+// and records a NEW revision summarising the restore (so history stays append-
+// only). No Pub/Sub event: it's an in-place edit, same as a manual body update.
+
+export async function restoreRevisionTx(
+  tx: TxClient,
+  ctx: CmsWriteContext,
+  id: string,
+  revisionNumber: number
+): Promise<EntryWriteResult> {
+  const entry = await tx.contentEntry.findFirst({ where: { id, deletedAt: null } });
+  if (!entry) throw notFound('Entry', id);
+
+  const target = await tx.contentRevision.findFirst({ where: { entryId: id, revisionNumber } });
+  if (!target) throw notFound('Revision', `${id}#${revisionNumber}`);
+
+  const type = await resolveType(tx, entry.typeKey);
+  const schema = parseTypeSchema(type);
+
+  const body = (target.body ?? {}) as Record<string, unknown>;
+  const seoJson = (target.seoJson ?? {}) as Record<string, unknown>;
+
+  const after = await tx.contentEntry.update({
+    where: { id },
+    data: { body: body as Json, seoJson: seoJson as Json, updatedAt: new Date() },
+  });
+  await syncReferences(tx, ctx.tenantId, after.id, schema, body);
+  await recordRevision(tx, {
+    tenantId: ctx.tenantId,
+    entryId: after.id,
+    body,
+    seoJson,
+    status: after.status,
+    kind: 'manual',
+    authorId: ctx.actorId,
+    summary: `Restored from revision #${revisionNumber}`,
+  });
+
+  return { entry: after, events: [] };
+}
+
+export async function restoreRevision(
+  ctx: CmsWriteContext,
+  id: string,
+  revisionNumber: number
+): Promise<{ entry: WireEntry; events: CmsEmittedEvent[] }> {
+  const { entry, events } = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+    restoreRevisionTx(tx, ctx, id, revisionNumber)
+  );
+  return { entry: serializeEntry(entry), events };
+}
+
 // ── READS ──────────────────────────────────────────────────────────────────────
 
 export interface ListEntriesFilter {

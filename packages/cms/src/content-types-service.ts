@@ -1,9 +1,7 @@
 // Content type service — the shared write + read path for content types
-// (docs/12). The REST routes and the MCP tools both drive type create/update
-// through these functions so the collision + fork rules live in one place. The
-// specialized fork-on-edit schema authoring (PUT :key/schema) and delete stay in
-// the REST route — they're not on the MCP surface, so there's no second path to
-// keep in sync.
+// (docs/12). The REST routes and the MCP tools both drive type create/update/
+// delete + the fork-on-edit schema authoring (PUT :key/schema) through these
+// functions so the collision + fork + in-use rules live in one place.
 
 import type { ContentType, Prisma, TxClient } from '@sparx/db';
 import { withTenant } from '@sparx/db';
@@ -136,6 +134,112 @@ export async function updateContentType(
 ): Promise<{ contentType: WireContentType; events: CmsEmittedEvent[] }> {
   const { contentType, events } = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
     updateContentTypeTx(tx, ctx, key, input)
+  );
+  return { contentType: serializeContentType(contentType), events };
+}
+
+// ── SCHEMA AUTHORING (fork-on-edit) ──────────────────────────────────────────
+// PUT :key/schema owns the field schema (docs/51). Editing a tenant-owned type
+// updates schemaJson in place; editing a platform built-in FORKS it into a
+// tenant-owned copy of the same key that shadows the built-in everywhere (reads
+// dedupe by key, tenant copy wins). `forked` tells the caller which happened.
+
+export interface ReplaceSchemaResult extends ContentTypeWriteResult {
+  forked: boolean;
+}
+
+export async function replaceSchemaTx(
+  tx: TxClient,
+  ctx: CmsWriteContext,
+  key: string,
+  schema: ContentTypeSchemaT
+): Promise<ReplaceSchemaResult> {
+  // Resolve by key, tenant row preferred (isBuiltIn ASC → a fork wins over the
+  // platform built-in of the same key).
+  const existing = await tx.contentType.findFirst({
+    where: { key },
+    orderBy: [{ isBuiltIn: 'asc' }, { updatedAt: 'desc' }],
+  });
+  if (!existing) throw notFound('Content type', key);
+
+  // Tenant already owns it (custom type or a prior fork) → update in place.
+  if (!existing.isBuiltIn) {
+    const row = await tx.contentType.update({
+      where: { id: existing.id },
+      data: { schemaJson: schema },
+    });
+    return {
+      contentType: row,
+      forked: false,
+      events: [{ type: 'content_type.upserted', data: { typeKey: row.key } }],
+    };
+  }
+
+  // Platform built-in → FORK into a tenant-owned copy. @@unique([tenantId, key])
+  // lets (platform,key) + (tenant,key) coexist; the tenant can only fork into its
+  // own scope.
+  const row = await tx.contentType.create({
+    data: {
+      tenantId: ctx.tenantId,
+      key: existing.key,
+      name: existing.name,
+      pluralName: existing.pluralName,
+      description: existing.description,
+      icon: existing.icon,
+      urlPattern: existing.urlPattern,
+      isSingleton: existing.isSingleton,
+      isBuiltIn: false,
+      schemaJson: schema,
+    },
+  });
+  return {
+    contentType: row,
+    forked: true,
+    events: [{ type: 'content_type.upserted', data: { typeKey: row.key } }],
+  };
+}
+
+export async function replaceSchema(
+  ctx: CmsWriteContext,
+  key: string,
+  schema: ContentTypeSchemaT
+): Promise<{ contentType: WireContentType; forked: boolean; events: CmsEmittedEvent[] }> {
+  const { contentType, forked, events } = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+    replaceSchemaTx(tx, ctx, key, schema)
+  );
+  return { contentType: serializeContentType(contentType), forked, events };
+}
+
+// ── DELETE ──────────────────────────────────────────────────────────────────
+// Only a tenant-owned (custom or forked) type is deletable, and only when no live
+// entries still reference it — deleting out from under entries would orphan them.
+
+export async function deleteContentTypeTx(
+  tx: TxClient,
+  _ctx: CmsWriteContext,
+  key: string
+): Promise<ContentTypeWriteResult> {
+  const existing = await tx.contentType.findFirst({ where: { key, isBuiltIn: false } });
+  if (!existing) throw notFound('Custom content type', key);
+
+  const inUse = await tx.contentEntry.count({ where: { typeKey: key, deletedAt: null } });
+  if (inUse > 0) {
+    throw conflict(
+      `Cannot delete "${key}" — ${inUse} entr${inUse === 1 ? 'y' : 'ies'} still use it. Archive the entries first.`
+    );
+  }
+
+  await tx.contentType.delete({ where: { id: existing.id } });
+  // The captured (pre-delete) row is returned so the route can audit its identity.
+  return { contentType: existing, events: [] };
+}
+
+export async function deleteContentType(
+  ctx: CmsWriteContext,
+  key: string
+): Promise<{ contentType: WireContentType; events: CmsEmittedEvent[] }> {
+  const { contentType, events } = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
+    deleteContentTypeTx(tx, ctx, key)
   );
   return { contentType: serializeContentType(contentType), events };
 }

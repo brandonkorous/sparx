@@ -13,8 +13,20 @@ import { z } from 'zod';
 import { ContentTypeSchema } from '@sparx/cms-schemas';
 import { publish } from '@sparx/api-core/pubsub';
 
-import { createContentType, updateContentType } from '../content-types-service.js';
-import { createEntry, updateEntry, publishEntry, unpublishEntry } from '../entries-service.js';
+import {
+  createContentType,
+  updateContentType,
+  replaceSchema,
+  deleteContentType,
+} from '../content-types-service.js';
+import {
+  createEntry,
+  updateEntry,
+  publishEntry,
+  unpublishEntry,
+  deleteEntry,
+  restoreRevision,
+} from '../entries-service.js';
 import type { CmsEmittedEvent } from '../service-support.js';
 
 import type { CmsMcpCtx, McpToolDefinition } from './registry.js';
@@ -58,6 +70,43 @@ export const createContentTypeTool: McpToolDefinition = {
     );
     await emit(ctx, events);
     return contentType;
+  },
+};
+
+export const putContentTypeSchemaTool: McpToolDefinition = {
+  name: 'put_content_type_schema',
+  description:
+    "Replace a content type's field schema (docs/51). Editing a tenant-owned type updates it in place; editing a platform BUILT-IN forks it into a tenant-owned copy of the same key that shadows the built-in (the result's `forked` says which happened). The schema is validated the same way entry bodies are.",
+  scope: 'write:cms',
+  confirmation: true,
+  input: z.object({ key: z.string().min(1).max(63), schema: ContentTypeSchema }),
+  run: async (ctx, input) => {
+    const { key, schema } = input as { key: string; schema: Parameters<typeof replaceSchema>[2] };
+    const { contentType, forked, events } = await replaceSchema(
+      { tenantId: ctx.tenantId, actorId: ctx.userId },
+      key,
+      schema
+    );
+    await emit(ctx, events);
+    return { ...contentType, forked };
+  },
+};
+
+export const deleteContentTypeTool: McpToolDefinition = {
+  name: 'delete_content_type',
+  description:
+    'Delete a tenant-owned (custom or forked) content type by key. Refuses if any live entries still use it — archive or delete those entries first. Built-in platform types cannot be deleted.',
+  scope: 'write:cms',
+  confirmation: true,
+  input: z.object({ key: z.string().min(1).max(63) }),
+  run: async (ctx, input) => {
+    const { key } = input as { key: string };
+    const { events } = await deleteContentType(
+      { tenantId: ctx.tenantId, actorId: ctx.userId },
+      key
+    );
+    await emit(ctx, events);
+    return { key, deleted: true };
   },
 };
 
@@ -186,11 +235,49 @@ export const unpublishContentEntryTool: McpToolDefinition = {
   },
 };
 
+export const restoreContentRevisionTool: McpToolDefinition = {
+  name: 'restore_content_revision',
+  description:
+    "Restore a content entry's body + SEO from one of its earlier revisions (by revision number — see list via the entry's history). Re-writes the current draft/published body from that snapshot and records a NEW revision noting the restore; does not change the publish status.",
+  scope: 'write:cms',
+  confirmation: true,
+  input: z.object({ id: z.string().uuid(), revisionNumber: z.number().int().positive() }),
+  run: async (ctx, input) => {
+    const { id, revisionNumber } = input as { id: string; revisionNumber: number };
+    const { entry, events } = await restoreRevision(
+      { tenantId: ctx.tenantId, actorId: ctx.userId },
+      id,
+      revisionNumber
+    );
+    await emit(ctx, events);
+    return entry;
+  },
+};
+
+export const deleteContentEntryTool: McpToolDefinition = {
+  name: 'delete_content_entry',
+  description:
+    'Delete a content entry (soft-delete — it stops appearing everywhere but its history is retained). Notifies subscribers via content.entry.deleted.',
+  scope: 'write:cms',
+  confirmation: true,
+  input: z.object({ id: z.string().uuid() }),
+  run: async (ctx, input) => {
+    const { id } = input as { id: string };
+    const { events } = await deleteEntry({ tenantId: ctx.tenantId, actorId: ctx.userId }, id);
+    await emit(ctx, events);
+    return { id, deleted: true };
+  },
+};
+
 export const writeTools: McpToolDefinition[] = [
   createContentTypeTool,
   updateContentTypeTool,
+  putContentTypeSchemaTool,
+  deleteContentTypeTool,
   createContentEntryTool,
   updateContentEntryTool,
   publishContentEntryTool,
   unpublishContentEntryTool,
+  restoreContentRevisionTool,
+  deleteContentEntryTool,
 ];

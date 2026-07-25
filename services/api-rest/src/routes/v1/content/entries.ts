@@ -17,7 +17,7 @@ import { z } from 'zod';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
-import { createEntryTx, updateEntryTx, serializeEntry } from '@sparx/cms';
+import { createEntryTx, updateEntryTx, deleteEntryTx, serializeEntry } from '@sparx/cms';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { notFound } from '@sparx/api-core/errors';
@@ -287,25 +287,24 @@ const entryRoutes: FastifyPluginAsync = (app) => {
     const auth = requireRole(request, 'editor');
     const { id } = PathId.parse(request.params);
 
-    await withRequestTenant(request, async (tx) => {
-      const existing = await tx.contentEntry.findFirst({ where: { id, deletedAt: null } });
-      if (!existing) throw notFound('Entry', id);
-
-      await tx.contentEntry.update({
-        where: { id },
-        data: { deletedAt: new Date() },
-      });
+    const { events } = await withRequestTenant(request, async (tx) => {
+      const result = await deleteEntryTx(
+        tx,
+        { tenantId: auth.tenantId, actorId: auth.actorId },
+        id
+      );
       await writeAudit(tx, request, auth, {
         action: 'content.entry.deleted',
         entityType: 'content_entry',
         entityId: id,
-        before: { slug: existing.slug, status: existing.status },
+        before: { slug: result.entry.slug, status: result.entry.status },
       });
+      return result;
     });
 
-    await publish(request.log, 'content.entry.deleted', auth.tenantId, auth.actorId, {
-      entryId: id,
-    });
+    for (const ev of events) {
+      await publish(request.log, ev.type, auth.tenantId, auth.actorId, ev.data);
+    }
 
     reply.code(204);
   });

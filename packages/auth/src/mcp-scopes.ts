@@ -44,7 +44,11 @@ export type McpBusinessScope =
   | 'read:invoicing'
   | 'write:invoicing'
   | 'read:scheduling'
-  | 'write:scheduling';
+  | 'write:scheduling'
+  | 'read:b2b'
+  | 'write:b2b'
+  | 'read:social'
+  | 'write:social';
 
 export interface McpScopeMeta {
   scope: McpBusinessScope;
@@ -244,6 +248,42 @@ export const MCP_SCOPE_CATALOG: readonly McpScopeMeta[] = [
     kind: 'write',
     label: 'Manage scheduling',
     description: 'Create, reschedule, and cancel bookings.',
+  },
+  // B2B / wholesale (docs/10). MISSING here while the b2b tool registry already
+  // required them and api-mcp mapped them to the `b2b` module gate — the same
+  // catalog-lag defect the Content note above describes, so the whole trade
+  // surface (pricing tiers, approvals, net-terms AR) was unreachable over MCP on
+  // both auth paths at once.
+  {
+    scope: 'read:b2b',
+    module: 'B2B',
+    kind: 'read',
+    label: 'Read B2B',
+    description: 'View trade accounts, pricing tiers, the approval queue, and receivables.',
+  },
+  {
+    scope: 'write:b2b',
+    module: 'B2B',
+    kind: 'write',
+    label: 'Manage B2B',
+    description:
+      'Manage pricing tiers, account trade config, purchase approvals, and net-terms invoices.',
+  },
+  // Social (docs/133). Same catalog-lag defect — the social post + lifecycle tools
+  // shipped requiring these while this catalog predated them.
+  {
+    scope: 'read:social',
+    module: 'Social',
+    kind: 'read',
+    label: 'Read social',
+    description: 'View social posts and their per-platform status.',
+  },
+  {
+    scope: 'write:social',
+    module: 'Social',
+    kind: 'write',
+    label: 'Manage social',
+    description: 'Compose, schedule, approve, and publish social posts.',
   },
 ] as const;
 
