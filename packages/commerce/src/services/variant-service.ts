@@ -27,6 +27,7 @@ import {
   UpdateVariantInput,
 } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
+import { syncProductInStock } from '@sparx/inventory';
 import type {
   Prisma,
   ProductOption,
@@ -39,6 +40,7 @@ import { writeAuditLog } from '../audit';
 import { CommerceConflictError, CommerceNotFoundError, CommerceValidationError } from '../errors';
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
+import { isInventoryActive } from '../inventory-gate';
 
 // ─── Public shapes ────────────────────────────────────────────────────
 
@@ -343,6 +345,13 @@ export async function create(
 ): Promise<{ id: string; sku: string }> {
   const input = CreateVariantInput.parse(rawInput);
 
+  // Resolved before the tx (cached lookup): the new variant's product needs its
+  // denormalized `inStock` computed at birth, not left at the column default `false`.
+  // Without this a just-created product shows "Sold out" on the search-backed PLP until
+  // an inventory movement happens — which never comes for a `continue`-policy product or
+  // an inventory-off tenant. See syncProductInStock.
+  const inventoryActive = await isInventoryActive(ctx.tenantId);
+
   const result = await withTenant(ctx, async (tx) => {
     const product = await tx.product.findFirst({
       where: { id: productId, deletedAt: null },
@@ -404,6 +413,7 @@ export async function create(
     }
 
     await refreshProductPriceRange(tx, productId);
+    await syncProductInStock(tx, variant.id, inventoryActive);
 
     await writeAuditLog({
       tx,
@@ -438,6 +448,11 @@ export async function update(
 
   let prevCostCents: number | null = null;
   let costChanged = false;
+
+  // Resolved before the tx: a policy change to/from `deny` flips whether a zero-stock
+  // product is sellable, and only syncProductInStock refreshes the denormalized flag —
+  // otherwise "keep selling when out of stock" leaves the product stuck at "Sold out".
+  const inventoryActive = await isInventoryActive(ctx.tenantId);
 
   const result = await withTenant(ctx, async (tx) => {
     const before = await tx.productVariant.findFirst({
@@ -489,6 +504,15 @@ export async function update(
 
     if (input.priceCents !== undefined) {
       await refreshProductPriceRange(tx, before.productId);
+    }
+
+    // inventoryPolicy governs sellability (deny ↔ continue/preorder), so recompute the
+    // denormalized inStock whenever an update TOUCHES it — not only when the value
+    // differs. Firing on every policy-bearing patch is idempotent + cheap (one recompute)
+    // and, unlike a strict change-guard, lets a stale flag be repaired by simply re-setting
+    // the same policy (e.g. products created before this sync existed).
+    if (input.inventoryPolicy !== undefined) {
+      await syncProductInStock(tx, variantId, inventoryActive);
     }
 
     if (input.costCents !== undefined && before.costCents !== updated.costCents) {

@@ -1,10 +1,26 @@
 # BUG-001 — Storefront silently swallows the out-of-stock add-to-cart 409
 
-Status: **FIXED + DEPLOYED 2026-07-24 — error path not yet re-tested**
-(The happy path is confirmed working post-deploy: add-to-cart succeeds and the cart
-updates, so making `addItem` throw did not break a successful add. Re-testing the
-FAILURE path needs a `deny`-policy out-of-stock variant, which the test tenant no
-longer has — its Test Widget was stocked to 100 units for the payment run.)
+Status: **✅ FIXED — VERIFIED IN PRODUCTION 2026-07-24 (error path re-tested)**
+
+## Verified 2026-07-24 (error path)
+
+Created a dedicated `deny`-policy, 0-stock variant ("Sold Out Tester", since
+archived) on `keen-cedar-6433` and clicked **Add to cart** on its storefront page.
+Result: `POST …/cart/:id/items` → **409 `OUT_OF_STOCK`**, and the buy box settled to
+an **error state with a visible message** (`status` element) — the cart drawer did
+NOT open and no line was added. The old silent "Submitted." with an empty cart is
+gone. Core bug fixed.
+
+**Follow-up polish — FIXED (same session).** On the silica buy-box path
+(`silica-behaviors.tsx` → silica `form` behavior) the surfaced text was silica's
+GENERIC "Something went wrong. Please try again.", misleading for a permanent
+sell-out. silica's form behavior announces the form's **`data-error-message`**
+attribute (falling back to that generic string), so the fix is to set it from the
+thrown `CartError` before re-throwing: the add-to-cart handler now does
+`payload.form.setAttribute('data-error-message', err.message)` in its catch, so the
+shopper sees the real reason — "Sorry, this item just sold out." for a 409 — matching
+what the `<ProductDetail>` React path already shows. No silica change needed. All
+three buy-box paths now surface the specific message AND keep the drawer shut.
 Severity: High (a shopper believes an item is in their cart when it is not)
 Found: 2026-07-24, during the production Stripe/payments E2E run
 Reporter: Brandon Korous

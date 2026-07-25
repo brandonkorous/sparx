@@ -13,13 +13,15 @@ import {
   BulkAssignCustomersInput,
   BulkTagCustomersInput,
   CreateCustomerAddressInput,
+  CreateCustomerDocumentInput,
   CreateCustomerInput,
   SubscribeCustomerInput,
+  UpdateCustomerAddressInput,
   UpdateCustomerInput,
 } from '@sparx/crm-schemas';
 import { NEWSLETTER_SEGMENT_SLUG } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
-import type { Customer, CustomerAddress, Prisma } from '@sparx/db';
+import type { Customer, CustomerAddress, CustomerDocument, Prisma } from '@sparx/db';
 
 import { writeAuditLog } from '../audit';
 import { publishCrmEvent } from '../events';
@@ -172,6 +174,7 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
         gdprConsent: input.gdprConsent ?? {},
         tags: input.tags ?? [],
         metadata: (input.metadata ?? {}) as Prisma.InputJsonValue,
+        avatarMediaAssetId: input.avatarMediaAssetId ?? null,
       },
     });
 
@@ -400,6 +403,9 @@ export async function update(
         ...(input.metadata !== undefined
           ? { metadata: input.metadata as Prisma.InputJsonValue }
           : {}),
+        ...(input.avatarMediaAssetId !== undefined
+          ? { avatarMediaAssetId: input.avatarMediaAssetId }
+          : {}),
       },
     });
 
@@ -611,6 +617,122 @@ export async function addAddress(
         phone: input.phone ?? null,
       },
     });
+  });
+}
+
+/** Edit one address in place. Only the keys present in `rawInput` change (a PATCH
+ *  over the address, mirroring the customer PATCH) — an absent key is left as-is,
+ *  so the caller can flip `isDefault` without resending the whole address. Making
+ *  THIS address the default clears the flag on every other address on the same
+ *  customer, so a customer never has two defaults. 404s on an address that is not
+ *  this customer's, so a stale link fails cleanly rather than editing a stranger's
+ *  row. */
+export async function updateAddress(
+  ctx: ServiceContext,
+  customerId: string,
+  addressId: string,
+  rawInput: unknown
+): Promise<CustomerAddress> {
+  const input = UpdateCustomerAddressInput.parse(rawInput);
+  return withTenant(ctx, async (tx) => {
+    const existing = await tx.customerAddress.findFirst({ where: { id: addressId, customerId } });
+    if (!existing) throw new CrmNotFoundError('CustomerAddress', addressId);
+
+    if (input.isDefault) {
+      await tx.customerAddress.updateMany({
+        where: { customerId, id: { not: addressId } },
+        data: { isDefault: false },
+      });
+    }
+
+    const data: Prisma.CustomerAddressUpdateInput = {};
+    if (input.type !== undefined) data.type = input.type;
+    if (input.label !== undefined) data.label = input.label;
+    if (input.isDefault !== undefined) data.isDefault = input.isDefault;
+    if (input.recipientName !== undefined) data.recipientName = input.recipientName;
+    if (input.company !== undefined) data.company = input.company;
+    if (input.line1 !== undefined) data.line1 = input.line1;
+    if (input.line2 !== undefined) data.line2 = input.line2;
+    if (input.city !== undefined) data.city = input.city;
+    if (input.region !== undefined) data.region = input.region;
+    if (input.postalCode !== undefined) data.postalCode = input.postalCode;
+    if (input.country !== undefined) data.country = input.country;
+    if (input.phone !== undefined) data.phone = input.phone;
+
+    return tx.customerAddress.update({ where: { id: addressId }, data });
+  });
+}
+
+/** Remove one address. 404s on an address that is not this customer's, so a
+ *  stale link cannot delete a stranger's row. */
+export async function removeAddress(
+  ctx: ServiceContext,
+  customerId: string,
+  addressId: string
+): Promise<void> {
+  await withTenant(ctx, async (tx) => {
+    const existing = await tx.customerAddress.findFirst({ where: { id: addressId, customerId } });
+    if (!existing) throw new CrmNotFoundError('CustomerAddress', addressId);
+    await tx.customerAddress.delete({ where: { id: addressId } });
+  });
+}
+
+// ─────────────────────────────────────────────────────────────────────────
+// Document management
+// ─────────────────────────────────────────────────────────────────────────
+
+/** Every file attached to a customer, newest first. The bytes live in the media
+ *  pipeline; these rows are the links + labels. 404s on an unknown/soft-deleted
+ *  customer so a stale link fails cleanly. */
+export async function listDocuments(
+  ctx: ServiceContext,
+  customerId: string
+): Promise<CustomerDocument[]> {
+  return withTenant(ctx, async (tx) => {
+    const customer = await tx.customer.findFirst({ where: { id: customerId, deletedAt: null } });
+    if (!customer) throw new CrmNotFoundError('Customer', customerId);
+    return tx.customerDocument.findMany({
+      where: { customerId },
+      orderBy: { createdAt: 'desc' },
+    });
+  });
+}
+
+/** Attach an already-uploaded media asset to a customer as a document. The
+ *  upload itself happens through the media pipeline; this only records the link. */
+export async function addDocument(
+  ctx: ServiceContext,
+  customerId: string,
+  rawInput: unknown
+): Promise<CustomerDocument> {
+  const input = CreateCustomerDocumentInput.parse(rawInput);
+  return withTenant(ctx, async (tx) => {
+    const customer = await tx.customer.findFirst({ where: { id: customerId, deletedAt: null } });
+    if (!customer) throw new CrmNotFoundError('Customer', customerId);
+    return tx.customerDocument.create({
+      data: {
+        tenantId: ctx.tenantId,
+        customerId,
+        mediaAssetId: input.mediaAssetId,
+        label: input.label ?? null,
+      },
+    });
+  });
+}
+
+/** Detach a document. The row goes; the underlying media asset is left alone (it
+ *  may be referenced elsewhere). 404s on a document that is not this customer's. */
+export async function removeDocument(
+  ctx: ServiceContext,
+  customerId: string,
+  documentId: string
+): Promise<void> {
+  await withTenant(ctx, async (tx) => {
+    const existing = await tx.customerDocument.findFirst({
+      where: { id: documentId, customerId },
+    });
+    if (!existing) throw new CrmNotFoundError('CustomerDocument', documentId);
+    await tx.customerDocument.delete({ where: { id: documentId } });
   });
 }
 

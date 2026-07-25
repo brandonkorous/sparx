@@ -8,7 +8,7 @@
 // list is really FOR are lifetime value and how recently they last bought, so
 // those sort the list and sit on the right where the eye lands.
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Badge,
   Button,
@@ -33,6 +33,7 @@ import {
   type CustomerSort,
   type CustomerType,
 } from './customers-data';
+import { useAudienceVocab } from '../../lib/audience';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -59,6 +60,13 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
   const [type, setType] = useState<'all' | CustomerType>('all');
   const [sortBy, setSortBy] = useState<CustomerSort>('lastOrderAt');
+  const vocab = useAudienceVocab();
+
+  // The pane/tab title takes the tenant's word (the left-nav label is static
+  // catalog copy — a separate follow-on).
+  useEffect(() => {
+    ctx.setTitle(vocab.Many);
+  }, [ctx, vocab]);
 
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useCustomers({
     q: search,
@@ -72,9 +80,9 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
 
   const typeItems = useMemo(() => {
     const items: Record<string, string> = { all: 'Everyone' };
-    for (const t of CUSTOMER_TYPES) items[t] = customerTypeMeta(t).label;
+    for (const t of CUSTOMER_TYPES) items[t] = customerTypeMeta(t, vocab.one).label;
     return items;
-  }, []);
+  }, [vocab]);
 
   const sortItems = useMemo(() => {
     const items: Record<string, string> = {};
@@ -194,7 +202,7 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
             </thead>
             <tbody>
               {rows.map((row) => {
-                const meta = customerTypeMeta(row.type);
+                const meta = customerTypeMeta(row.type, vocab.one);
                 return (
                   <tr
                     key={row.id}

@@ -249,7 +249,12 @@ export type EventType =
   // pull. `social.post.failed` fires when every target failed (a partial success
   // stays a `social.post.published` with per-target errors on the row).
   | 'social.post.published'
-  | 'social.post.failed';
+  | 'social.post.failed'
+  // Pull each published target's performance numbers (likes/comments/shares, and
+  // reach/impressions where the scope allows) and snapshot them into
+  // social_post_metrics. Consumed by social-worker; emitted after a publish and by the
+  // Insights "Refresh" action (docs/implementation/social.md "Measure").
+  | 'social.metrics.collect';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */

@@ -280,13 +280,43 @@ export async function bootstrapDefaultWarehouse(
     });
     if (existing) return { id: existing.id, created: false };
 
+    // Seed the ship-from from the business's registered/trading address
+    // (tenant_businesses — the same block invoices/POs use), so a tenant that
+    // filled in Business details during onboarding gets LIVE carrier rates out
+    // of the box. Without this the Main Warehouse was created address-less, and
+    // resolveShipFromAddress then threw "incomplete", which tryLiveRates
+    // swallows — so every new physical-goods tenant silently got manual rates
+    // only until they hand-filled the warehouse (see docs/bugs/BUG-010). A
+    // partial/absent business address just seeds what exists; the merchant-facing
+    // "ship-from incomplete" prompt covers the rest.
+    const business = await tx.tenantBusiness.findUnique({
+      where: { tenantId: ctx.tenantId },
+      select: {
+        addressLine1: true,
+        addressLine2: true,
+        city: true,
+        region: true,
+        postalCode: true,
+        country: true,
+        phone: true,
+      },
+    });
+
     const warehouse = await tx.warehouse.create({
       data: {
         tenantId: ctx.tenantId,
         name: 'Main Warehouse',
         code: 'MAIN',
         type: 'owned',
-        country: 'US',
+        line1: business?.addressLine1 ?? null,
+        line2: business?.addressLine2 ?? null,
+        city: business?.city ?? null,
+        region: business?.region ?? null,
+        postalCode: business?.postalCode ?? null,
+        // Fall back to US only when the business gave no country, preserving the
+        // prior default while honoring an explicitly-set one.
+        country: business?.country ?? 'US',
+        phone: business?.phone ?? null,
         defaultForChannel: ['storefront'],
       },
       select: { id: true },

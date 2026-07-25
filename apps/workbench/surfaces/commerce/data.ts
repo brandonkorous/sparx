@@ -204,6 +204,10 @@ export interface OrderQuery {
   q?: string;
   status?: string;
   paymentStatus?: string;
+  /** Scope the list to one customer — the customer's-side lens on Selling. The
+   *  endpoint (`GET /v1/orders?customer_id=`) is the join; there is no separate
+   *  per-customer orders route. */
+  customerId?: string;
   sortBy: OrderSortKey;
   order: SortDirection;
   take: number;
@@ -219,6 +223,7 @@ export function useOrders(query: OrderQuery) {
           ...(query.q ? { q: query.q } : {}),
           ...(query.status ? { status: query.status } : {}),
           ...(query.paymentStatus ? { payment_status: query.paymentStatus } : {}),
+          ...(query.customerId ? { customer_id: query.customerId } : {}),
           sort_by: query.sortBy,
           order: query.order,
           take: query.take,

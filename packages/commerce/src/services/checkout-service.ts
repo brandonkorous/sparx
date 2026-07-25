@@ -268,7 +268,23 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
     cartId: owner.cartId,
     toAddress: input.shippingAddress,
   });
-  const chosen = rates.find((r) => r.rateRef === input.shippingRateRef);
+  // Match the chosen option in this FRESH quote. Prefer the exact ref (manual
+  // rates carry a deterministic ref that survives a re-quote), then fall back to
+  // the stable service identity: live carriers (Shippo) mint a new single-use
+  // `rateRef` on every rating call, so the ref the shopper saw is never in the
+  // re-quote and ref-only matching dead-ends every live-carrier checkout
+  // (BUG-010). Either way the amount comes from THIS server quote, never the
+  // client, so the BUG-005 "can't post $0 shipping" protection is intact.
+  const chosen =
+    rates.find((r) => r.rateRef === input.shippingRateRef) ??
+    (input.shippingService
+      ? rates.find(
+          (r) =>
+            r.providerSlug === input.shippingProviderSlug &&
+            r.service === input.shippingService &&
+            (input.shippingCarrier == null || r.carrier === input.shippingCarrier)
+        )
+      : undefined);
   if (!chosen) {
     // The quote the shopper saw is gone (rates changed, or a carrier dropped it).
     // Refuse rather than silently charging nothing for shipping.
@@ -290,8 +306,10 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
         step: 'shipping',
         shippingAddress: input.shippingAddress,
         billingAddress: input.billingAddress ?? input.shippingAddress,
-        shippingProviderSlug: input.shippingProviderSlug,
-        shippingRateRef: input.shippingRateRef,
+        // Record what we actually priced from this quote, not the (possibly
+        // stale, single-use) ref the client sent.
+        shippingProviderSlug: chosen.providerSlug,
+        shippingRateRef: chosen.rateRef,
         shippingTotalCents: chosen.amountCents,
         shippingDescription: `${chosen.carrier} ${chosen.service}`.trim(),
         totalCents: nextTotalCents,
@@ -308,8 +326,8 @@ export async function submitShipping(ctx: ServiceContext, rawInput: unknown): Pr
       diff: {
         after: {
           step: 'shipping',
-          shippingProviderSlug: input.shippingProviderSlug,
-          shippingRateRef: input.shippingRateRef,
+          shippingProviderSlug: chosen.providerSlug,
+          shippingRateRef: chosen.rateRef,
         },
       },
     });

@@ -192,6 +192,21 @@ function TaskEditor({ ctx, id, task }: { ctx: SurfaceContext; id: string; task?:
     }
   }, [isNew, touched, draft.assignedToUserId, viewer]);
 
+  // Opened from a customer's or deal's profile ("New task"), the task arrives
+  // pre-linked — the id rides in on ctx.params, seeded while the form is still
+  // untouched so it reads as a starting point, not an unsaved edit.
+  const presetCustomerId = typeof ctx.params.customerId === 'string' ? ctx.params.customerId : '';
+  const presetDealId = typeof ctx.params.dealId === 'string' ? ctx.params.dealId : '';
+  useEffect(() => {
+    if (!isNew || touched) return;
+    if (presetCustomerId === '' && presetDealId === '') return;
+    setDraft((cur) => ({
+      ...cur,
+      customerId: presetCustomerId !== '' ? presetCustomerId : cur.customerId,
+      dealId: presetDealId !== '' ? presetDealId : cur.dealId,
+    }));
+  }, [isNew, touched, presetCustomerId, presetDealId]);
+
   useEffect(() => {
     ctx.setTitle(isNew ? 'New task' : task ? task.title : 'Task');
   }, [ctx, isNew, task]);

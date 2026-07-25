@@ -56,6 +56,8 @@ export interface Customer {
   preferredContactMethod: string | null;
   doNotContact: boolean;
   tags: string[];
+  /** Optional profile photo — a MediaAsset id, resolved to a URL for display. */
+  avatarMediaAssetId: string | null;
   /** Serialized Prisma Decimal — a string like `"1234.50"`. */
   totalSpent: string;
   orderCount: number;
@@ -65,7 +67,8 @@ export interface Customer {
   updatedAt: string;
 }
 
-/** One postal address on a customer. Read-only in this surface. */
+/** One postal address on a customer. Added, edited and removed from the
+ *  customer's Details tab. */
 export interface CustomerAddress {
   id: string;
   type: string;
@@ -92,11 +95,22 @@ export interface CustomerListParams {
   b2bAccountId?: string;
 }
 
+/** One file attached to a customer. The bytes live in the media pipeline; this
+ *  is the link + a label. Resolve `mediaAssetId` to a name/URL with the media
+ *  hooks. */
+export interface CustomerDocument {
+  id: string;
+  mediaAssetId: string;
+  label: string | null;
+  createdAt: string;
+}
+
 export const customerKeys = {
   all: ['crm', 'customers'] as const,
   list: (params: CustomerListParams) => [...customerKeys.all, 'list', params] as const,
   detail: (id: string) => [...customerKeys.all, id] as const,
   addresses: (id: string) => [...customerKeys.all, id, 'addresses'] as const,
+  documents: (id: string) => [...customerKeys.all, id, 'documents'] as const,
 };
 
 /* ── Identity + presentation ────────────────────────────────────────────── */
@@ -122,35 +136,43 @@ export const CUSTOMER_TYPES: CustomerType[] = ['prospect', 'retail', 'b2b'];
  * How a customer's TYPE reads — its plain-language label, a colour that gives it
  * an identity, and a sentence explaining it.
  *
- * Type is an identity axis, not a status, so the colours are chosen to say what
- * kind of relationship this is rather than good/bad: a prospect is `info` (a
- * lead, not yet a buyer), a retail buyer wears the Commerce hue (they buy from
- * the shop), and a wholesale contact wears the B2B hue (they belong to a trade
- * account). All three are real silica colour slots.
+ * The WORD adapts to the tenant's audience noun (docs/136): a `retail` contact
+ * is a "Client" for a salon, a "Member" for a gym — pass the singular noun. The
+ * stored type stays prospect/retail/b2b; only the label + copy change. `prospect`
+ * is universal (a lead), and `b2b`/Wholesale is only relevant with the wholesale
+ * module on (the caller gates whether it is offered).
+ *
+ * Type is an identity axis, not a status, so the colours say what KIND of
+ * relationship this is: prospect `info` (a lead), the active relationship wears
+ * the Commerce hue, and wholesale the B2B hue. All three are real silica slots.
  */
-export function customerTypeMeta(type: CustomerType): {
+export function customerTypeMeta(
+  type: CustomerType,
+  noun = 'customer'
+): {
   label: string;
   color: string;
   description: string;
 } {
+  const One = noun.charAt(0).toUpperCase() + noun.slice(1);
   switch (type) {
     case 'prospect':
       return {
         label: 'Prospect',
         color: 'info',
-        description: 'Someone who has shown interest but has not bought anything yet.',
+        description: `Someone who has shown interest but is not a ${noun} yet.`,
       };
     case 'retail':
       return {
-        label: 'Retail',
+        label: One,
         color: 'commerce',
-        description: 'A regular customer who buys at your normal prices.',
+        description: 'Someone you are actively working with, at your normal prices.',
       };
     case 'b2b':
       return {
         label: 'Wholesale',
         color: 'b2b',
-        description: 'A business contact who buys at agreed trade prices.',
+        description: 'A business buying on behalf of an account, at agreed trade prices.',
       };
   }
 }
@@ -160,6 +182,59 @@ export function formatMoney(value: number | string | null | undefined, currency 
   const n = typeof value === 'string' ? Number(value) : (value ?? 0);
   if (!Number.isFinite(n)) return '—';
   return new Intl.NumberFormat(undefined, { style: 'currency', currency }).format(n);
+}
+
+/** Two letters for a monogram, from whatever identity is present — name, then
+ *  company, then email — so a chip is never an empty circle. Takes the loose
+ *  shape so it serves both a saved `Customer` and an in-progress edit draft. */
+export function customerInitials(c: {
+  firstName?: string | null;
+  lastName?: string | null;
+  company?: string | null;
+  email?: string | null;
+}): string {
+  const first = c.firstName?.trim() ?? '';
+  const last = c.lastName?.trim() ?? '';
+  const fromName = `${first[0] ?? ''}${last[0] ?? ''}`.toUpperCase();
+  if (fromName) return fromName;
+  // company, then email — `.find(Boolean)` picks the first non-empty (a trimmed
+  // blank must fall through, which `??` would not do), so no `||` on strings.
+  const fallback = [c.company, c.email].map((value) => value?.trim()).find(Boolean) ?? '';
+  return fallback ? fallback.slice(0, 2).toUpperCase() : '?';
+}
+
+/** A full, spelled-out date — for facts someone might quote ("first order"). */
+export function longDate(iso: string | null): string {
+  if (!iso) return 'Never';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return 'Never';
+  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
+}
+
+/** Month + year — the resolution "customer since" actually wants. */
+export function joinedMonth(iso: string): string {
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '—';
+  return date.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+}
+
+/** How long ago an order was, in words a person actually uses — days, weeks,
+ *  months, years. Recency is the signal that says whether a customer is still
+ *  active, so it is worth saying properly rather than as a raw date. */
+export function describeOrderRecency(iso: string | null): string {
+  if (!iso) return 'No orders yet';
+  const then = new Date(iso).getTime();
+  if (Number.isNaN(then)) return 'No orders yet';
+  const days = Math.floor((Date.now() - then) / 86_400_000);
+  if (days <= 0) return 'today';
+  if (days === 1) return 'yesterday';
+  if (days < 7) return `${String(days)} days ago`;
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return weeks === 1 ? 'a week ago' : `${String(weeks)} weeks ago`;
+  const months = Math.floor(days / 30);
+  if (months < 12) return months === 1 ? 'a month ago' : `${String(months)} months ago`;
+  const years = Math.floor(days / 365);
+  return years === 1 ? 'a year ago' : `${String(years)} years ago`;
 }
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
@@ -198,6 +273,93 @@ export function useCustomerAddresses(id: string) {
   });
 }
 
+/* ── Address writes ─────────────────────────────────────────────────────── */
+
+/** The write payload for one address. Optionals are OMITTED when empty rather
+ *  than sent as `null` — the server's Zod treats these as `.optional()` (absent),
+ *  not nullable, so a blank must be an absent key. `type`, `line1`, `city` and
+ *  `country` are the fields it requires. */
+export interface CustomerAddressInput {
+  type: 'shipping' | 'billing' | 'both';
+  label?: string;
+  isDefault?: boolean;
+  recipientName?: string;
+  company?: string;
+  line1: string;
+  line2?: string;
+  city: string;
+  region?: string;
+  postalCode?: string;
+  /** ISO 3166-1 alpha-2, e.g. "US". */
+  country: string;
+  phone?: string;
+}
+
+export function useAddAddress(customerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: CustomerAddressInput) =>
+      api.post<CustomerAddress>(`/v1/crm/customers/${customerId}/addresses`, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: customerKeys.addresses(customerId) });
+    },
+  });
+}
+
+export function useUpdateAddress(customerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ addressId, input }: { addressId: string; input: CustomerAddressInput }) =>
+      api.patch<CustomerAddress>(`/v1/crm/customers/${customerId}/addresses/${addressId}`, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: customerKeys.addresses(customerId) });
+    },
+  });
+}
+
+export function useDeleteAddress(customerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (addressId: string) =>
+      api.delete(`/v1/crm/customers/${customerId}/addresses/${addressId}`),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: customerKeys.addresses(customerId) });
+    },
+  });
+}
+
+/* ── Documents ──────────────────────────────────────────────────────────── */
+
+export function useCustomerDocuments(id: string) {
+  return useQuery({
+    queryKey: customerKeys.documents(id),
+    queryFn: () => api.get<CustomerDocument[]>(`/v1/crm/customers/${id}/documents`),
+    enabled: id !== 'new',
+  });
+}
+
+export function useAddDocument(customerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { mediaAssetId: string; label?: string }) =>
+      api.post<CustomerDocument>(`/v1/crm/customers/${customerId}/documents`, input),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: customerKeys.documents(customerId) });
+    },
+  });
+}
+
+export function useDeleteDocument(customerId: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (documentId: string) =>
+      api.delete(`/v1/crm/customers/${customerId}/documents/${documentId}`),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: customerKeys.documents(customerId) });
+    },
+  });
+}
+
 /* ── Invalidation ───────────────────────────────────────────────────────── */
 
 export function useInvalidateCustomers() {
@@ -225,6 +387,8 @@ export interface CustomerInput {
   preferredContactMethod?: 'email' | 'phone' | 'sms' | null;
   doNotContact?: boolean;
   tags?: string[];
+  /** A MediaAsset id for the profile photo; `null` clears it. */
+  avatarMediaAssetId?: string | null;
 }
 
 export function useCreateCustomer() {

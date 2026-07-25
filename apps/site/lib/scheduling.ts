@@ -3,7 +3,7 @@
 // shape. Tenant is resolved from the request host (resolveSiteRoute); a tenant
 // without the scheduling module active returns null/[] so the /book route 404s.
 
-import { resolveSiteRoute } from './site-context';
+import { resolveActivePropertySlug, resolveSiteRoute } from './site-context';
 
 const BASE_URL = process.env.SPARX_API_REST_URL ?? 'http://localhost:3100';
 
@@ -36,8 +36,17 @@ interface Envelope<T> {
 async function publicGet<T>(path: string): Promise<T | null> {
   const route = await resolveSiteRoute();
   if (!route) return null;
+  // Scope every public scheduling read to the ACTIVE site, exactly as lib/commerce.ts
+  // does — the endpoint resolves `?property=` and otherwise falls back to the tenant's
+  // PRIMARY site. Without this a non-primary site (e.g. a Template/second business) shows
+  // the primary site's services instead of its own, so a site whose services live only on
+  // itself renders "no services bookable" even though it has them. Null for the primary
+  // site keeps single-site storefronts unchanged.
+  const propertySlug = await resolveActivePropertySlug();
+  const params = new URLSearchParams({ tenant: route.tenantSlug });
+  if (propertySlug) params.set('property', propertySlug);
   const sep = path.includes('?') ? '&' : '?';
-  const url = `${BASE_URL}${path}${sep}tenant=${encodeURIComponent(route.tenantSlug)}`;
+  const url = `${BASE_URL}${path}${sep}${params.toString()}`;
   try {
     const res = await fetch(url, {
       next: { revalidate: 60, tags: ['sparx-scheduling', `scheduling:${route.tenantSlug}`] },

@@ -27,6 +27,7 @@ import {
 import type { LabelResult } from './shipping-provider-bridge';
 // Imported (not just re-exported) because `quoteForCart` below composes them.
 import { resolvePackageForItems, resolveShipFromAddress } from './shipping-request-resolver';
+import { listInstallations } from './provider-service';
 
 export {
   isAddressUsableForLiveRating,
@@ -597,6 +598,58 @@ export async function quoteForCart(
     saturdayDelivery: false,
     packages: [shipmentPackage],
   });
+}
+
+export interface LiveRateReadiness {
+  /** A live carrier (Shippo, …) is installed AND enabled. */
+  liveCarrierConnected: boolean;
+  /** Slugs of the connected+enabled shipping providers, for display. */
+  carrierSlugs: string[];
+  /** The ship-from warehouse address is complete enough to rate a live shipment. */
+  shipFromComplete: boolean;
+  /** When `shipFromComplete` is false, the already-merchant-friendly reason from
+   *  `resolveShipFromAddress` ("…incomplete (missing city, postal code) — finish
+   *  it under Inventory → Warehouses…"). Null when complete. */
+  shipFromIssue: string | null;
+}
+
+/**
+ * Is this tenant set up to show LIVE carrier rates at checkout?
+ *
+ * Live rating silently degrades to manual rates when the ship-from is missing
+ * (`tryLiveRates` swallows the error by design, so checkout never breaks). That
+ * is correct for the shopper but leaves the MERCHANT in the dark — they connect
+ * a carrier, expect USPS/UPS to appear, and never learn the warehouse address is
+ * the reason it doesn't. This is the signal the Shipping surface uses to warn
+ * them: a carrier is connected but the ship-from is incomplete. It never throws —
+ * a readiness probe must not fail the page it informs.
+ */
+export async function getLiveRateReadiness(ctx: ServiceContext): Promise<LiveRateReadiness> {
+  const carriers = await listInstallations(ctx, { kind: 'shipping', enabled: true }).catch(
+    () => []
+  );
+
+  let shipFromComplete = false;
+  let shipFromIssue: string | null = null;
+  try {
+    // Reuse the exact same resolver checkout uses, so "ready" here can never
+    // disagree with what actually happens at rating time. It throws a
+    // merchant-facing, actionable message when the ship-from can't be built.
+    await resolveShipFromAddress(ctx, { channel: 'storefront' });
+    shipFromComplete = true;
+  } catch (err) {
+    shipFromIssue =
+      err instanceof Error
+        ? err.message
+        : 'Your ship-from address is not set up yet, so live carrier rates cannot be calculated.';
+  }
+
+  return {
+    liveCarrierConnected: carriers.length > 0,
+    carrierSlugs: carriers.map((c) => c.providerSlug),
+    shipFromComplete,
+    shipFromIssue: shipFromComplete ? null : shipFromIssue,
+  };
 }
 
 // ─── Label purchase / void / tracking (provider-bridged) ─────────────

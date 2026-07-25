@@ -17,6 +17,15 @@ const ListQuery = z.object({
 
 // eslint-disable-next-line @typescript-eslint/require-await -- FastifyPluginAsync type demands async; no top-level await needed because route registration is sync.
 const shippingRoutes: FastifyPluginAsync = async (app) => {
+  // Live-rate readiness — whether a connected carrier can actually produce live
+  // rates, or is silently degrading to manual because the ship-from is missing.
+  // The Shipping surface reads this to warn the merchant (docs/bugs/BUG-010).
+  app.get('/v1/commerce/shipping/readiness', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    return ok(await shippingService.getLiveRateReadiness(toCommerceContext(request)));
+  });
+
   // Shipping zones
   app.get('/v1/commerce/shipping/zones', async (request) => {
     requireRole(request, 'viewer');

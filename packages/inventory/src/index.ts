@@ -25,6 +25,15 @@ export type { InventoryTopic, InventoryEventInput } from './events';
 export { computeAvailability } from './services/availability';
 export type { AvailabilityLevel, VariantAvailability } from './services/availability';
 
+// Resync a product's denormalized `inStock`/`lowStock` flags from current levels +
+// variant policies. `Product.inStock` defaults to false and was previously only ever
+// corrected by an inventory MOVEMENT (ledger/reservation) — so a variant created, or
+// flipped to a sell-without-stock policy (`continue`/`preorder`), stayed stuck at
+// "Sold out" on the search-backed PLP until an unrelated movement happened. Commerce
+// (variant create/update) and the blueprint installer call this so the flag is correct
+// the moment the product is sellable, with no inventory setup required.
+export { syncProductInStock } from './services/internal';
+
 // The one definition of "sellable" and "running low" — a raw-SQL fragment for
 // database-side filters and a JS twin for rows already in memory. Every read
 // path that decides whether a level is low routes through these.

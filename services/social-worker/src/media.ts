@@ -62,6 +62,17 @@ function kindFor(mime: string): 'image' | 'video' | null {
   return null;
 }
 
+/** Drop the bucket-convention middle `variants/` segment so the URL is the THREE-segment
+ *  shape the serving route matches — the SAME contract as api-rest's `variantUrlPath`
+ *  (docs/brain/apps/services.md "Media serving"). The stored key is four segments
+ *  (`<tenant>/variants/<asset>/<file>`); the route is
+ *  `/v1/public/media/variants/:tenantId/:assetId/:filename`. Emitting the raw key makes a
+ *  four-segment URL the route never matches → the platform can't fetch the image and the
+ *  post goes out image-less (or the photo call fails). This helper is the fix. */
+export function variantUrlPath(key: string): string {
+  return key.replace('/variants/', '/');
+}
+
 /** Load the post's assets with their base + crop variants, preserving id order. */
 export async function resolvePostAssets(
   tenantId: string,
@@ -69,7 +80,7 @@ export async function resolvePostAssets(
 ): Promise<ResolvedAsset[]> {
   if (assetIds.length === 0 || !env.MEDIA_PUBLIC_BASE_URL) return [];
   const base = env.MEDIA_PUBLIC_BASE_URL.replace(/\/$/, '');
-  const url = (key: string): string => `${base}/v1/public/media/variants/${key}`;
+  const url = (key: string): string => `${base}/v1/public/media/variants/${variantUrlPath(key)}`;
 
   const assets = await withTenant({ tenantId }, (tx) =>
     tx.mediaAsset.findMany({
@@ -77,7 +88,7 @@ export async function resolvePostAssets(
       select: {
         id: true,
         mimeType: true,
-        variants: { select: { key: true, width: true, aspect: true } },
+        variants: { select: { key: true, width: true, aspect: true, format: true } },
       },
     })
   );
@@ -90,19 +101,31 @@ export async function resolvePostAssets(
     const kind = kindFor(asset.mimeType);
     if (!kind) continue;
 
-    // Base = the widest scale-to-width variant (aspect IS NULL).
+    // Base = a scale-to-width variant (aspect IS NULL). PREFER jpeg — Facebook (and the
+    // other platforms' by-URL photo ingest) reliably accept jpeg but can reject an
+    // avif/webp base; within the same format preference, take the widest.
     let baseKey: string | null = null;
     let baseWidth = -1;
+    let baseIsJpeg = false;
     const crops: Record<string, string> = {};
     for (const v of asset.variants) {
       if (v.aspect) {
         crops[v.aspect] = url(v.key);
-      } else if (v.width > baseWidth) {
-        baseWidth = v.width;
+        continue;
+      }
+      const isJpeg = v.format === 'jpeg' || v.format === 'jpg';
+      const better =
+        baseKey === null ||
+        (isJpeg && !baseIsJpeg) ||
+        (isJpeg === baseIsJpeg && v.width > baseWidth);
+      if (better) {
         baseKey = v.key;
+        baseWidth = v.width;
+        baseIsJpeg = isJpeg;
       }
     }
-    // Base URL falls back to any crop when there's no scale-to-width variant.
+    // Base URL falls back to any crop (all crops are jpeg) when there's no scale-to-width
+    // variant — a valid, platform-accepted image either way.
     const baseUrl = baseKey ? url(baseKey) : Object.values(crops)[0];
     if (!baseUrl) continue; // nothing renderable
     out.push({ id, kind, baseUrl, crops });

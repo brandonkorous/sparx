@@ -27,6 +27,7 @@ import type {
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialPostMetrics,
   SocialPublishResult,
   SocialTargetRef,
   SocialTokens,
@@ -37,6 +38,7 @@ import {
   exchangeLongLivedToken,
   exchangeMetaCode,
   fetchMe,
+  graphGet,
   graphPost,
   listMetaPages,
   metaCreds,
@@ -89,6 +91,14 @@ interface FbPhotoResponse {
 }
 interface FbFeedResponse {
   id: string;
+}
+interface FbEngagementResponse {
+  likes?: { summary?: { total_count?: number } };
+  comments?: { summary?: { total_count?: number } };
+  shares?: { count?: number };
+}
+interface FbInsightsResponse {
+  data?: { name?: string; values?: { value?: number }[] }[];
 }
 
 export class FacebookPageAdapter implements SocialAdapter {
@@ -211,5 +221,44 @@ export class FacebookPageAdapter implements SocialAdapter {
       'Facebook post'
     );
     return { externalId: res.id, permalink: facebookPermalink(res.id) };
+  }
+
+  /** Engagement counts (pages_read_engagement — already granted) plus reach/impressions
+   *  (read_insights — extra Meta review) best-effort: a missing insights scope leaves
+   *  those two null rather than dropping the counts we do have. Reads as the PAGE. */
+  async getMetrics(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    externalId: string
+  ): Promise<SocialPostMetrics> {
+    const pageToken = target.params?.pageAccessToken ?? auth.accessToken;
+    const metrics: SocialPostMetrics = {};
+
+    const eng = await graphGet<FbEngagementResponse>(
+      externalId,
+      pageToken,
+      { fields: 'likes.summary(true),comments.summary(true),shares' },
+      'Facebook post engagement'
+    );
+    metrics.likes = eng.likes?.summary?.total_count;
+    metrics.comments = eng.comments?.summary?.total_count;
+    metrics.shares = eng.shares?.count;
+
+    try {
+      const insights = await graphGet<FbInsightsResponse>(
+        `${externalId}/insights`,
+        pageToken,
+        { metric: 'post_impressions,post_impressions_unique' },
+        'Facebook post insights'
+      );
+      for (const row of insights.data ?? []) {
+        const value = row.values?.[0]?.value;
+        if (row.name === 'post_impressions') metrics.impressions = value;
+        else if (row.name === 'post_impressions_unique') metrics.reach = value;
+      }
+    } catch {
+      // read_insights not granted yet — the engagement counts stand on their own.
+    }
+    return metrics;
   }
 }

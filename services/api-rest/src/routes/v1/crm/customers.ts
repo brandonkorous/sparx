@@ -6,6 +6,11 @@
 //   PATCH  /v1/crm/customers/:id               → update
 //   DELETE /v1/crm/customers/:id               → soft delete
 //   POST   /v1/crm/customers/:id/addresses     → add an address
+//   PATCH  /v1/crm/customers/:id/addresses/:aid → edit an address
+//   DELETE /v1/crm/customers/:id/addresses/:aid → remove an address
+//   GET    /v1/crm/customers/:id/documents      → list attached files
+//   POST   /v1/crm/customers/:id/documents      → attach an uploaded file
+//   DELETE /v1/crm/customers/:id/documents/:did → detach a file
 //   POST   /v1/crm/customers/bulk-assign       → bulk reassign rep
 //   POST   /v1/crm/customers/bulk-tag          → bulk add/remove tag
 //   GET    /v1/crm/customers/top               → top by spend
@@ -28,6 +33,14 @@ import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 import { resolveListScope, resolvePropertyId } from '../../../lib/property.js';
 
 const PathId = z.object({ id: z.string().uuid() });
+const AddressPath = z.object({
+  id: z.string().uuid(),
+  addressId: z.string().uuid(),
+});
+const DocumentPath = z.object({
+  id: z.string().uuid(),
+  documentId: z.string().uuid(),
+});
 
 const ListQuery = z.object({
   type: z.enum(['prospect', 'retail', 'b2b']).optional(),
@@ -186,6 +199,52 @@ const customerRoutes: FastifyPluginAsync = (app) => {
     const address = await customerService.addAddress(toCrmContext(request), id, request.body);
     reply.code(201);
     return ok(address);
+  });
+
+  app.patch('/v1/crm/customers/:id/addresses/:addressId', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id, addressId } = AddressPath.parse(request.params);
+    const address = await customerService.updateAddress(
+      toCrmContext(request),
+      id,
+      addressId,
+      request.body
+    );
+    return ok(address);
+  });
+
+  app.delete('/v1/crm/customers/:id/addresses/:addressId', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id, addressId } = AddressPath.parse(request.params);
+    await customerService.removeAddress(toCrmContext(request), id, addressId);
+    return ok({ id: addressId });
+  });
+
+  app.get('/v1/crm/customers/:id/documents', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const items = await customerService.listDocuments(toCrmContext(request), id);
+    return ok(items);
+  });
+
+  app.post('/v1/crm/customers/:id/documents', async (request, reply) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id } = PathId.parse(request.params);
+    const document = await customerService.addDocument(toCrmContext(request), id, request.body);
+    reply.code(201);
+    return ok(document);
+  });
+
+  app.delete('/v1/crm/customers/:id/documents/:documentId', async (request) => {
+    requireRole(request, 'editor');
+    await requireCrmModule(request);
+    const { id, documentId } = DocumentPath.parse(request.params);
+    await customerService.removeDocument(toCrmContext(request), id, documentId);
+    return ok({ id: documentId });
   });
 
   return Promise.resolve();

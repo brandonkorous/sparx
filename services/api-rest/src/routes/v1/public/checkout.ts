@@ -76,6 +76,10 @@ const ShippingBody = z.object({
   billingAddress: Address.optional(),
   shippingRateRef: z.string().min(1).max(255),
   shippingProviderSlug: z.string().min(1).max(63),
+  // Stable identity of the chosen rate, so submitShipping can re-find it after a
+  // re-quote even when the carrier's single-use ref has rotated (BUG-010).
+  shippingService: z.string().min(1).max(255).optional(),
+  shippingCarrier: z.string().min(1).max(255).optional(),
 });
 
 // The storefront's checkout form collects the recipient's name into this
@@ -206,6 +210,8 @@ const publicCheckoutRoutes: FastifyPluginAsync = async (app) => {
       ...(body.billingAddress ? { billingAddress: toAddressSnapshot(body.billingAddress) } : {}),
       shippingRateRef: body.shippingRateRef,
       shippingProviderSlug: body.shippingProviderSlug,
+      ...(body.shippingService ? { shippingService: body.shippingService } : {}),
+      ...(body.shippingCarrier ? { shippingCarrier: body.shippingCarrier } : {}),
     });
     return ok(await checkoutService.get(ctx, sessionId));
   });

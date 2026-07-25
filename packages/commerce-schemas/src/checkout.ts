@@ -46,6 +46,15 @@ export const SubmitShippingInput = z.object({
   // The chosen rate option ID returned by ShippingProvider.rateShipment.
   shippingRateRef: z.string().min(1).max(255),
   shippingProviderSlug: z.string().min(1).max(63),
+  // The rate's STABLE identity (carrier + service name), carried alongside the
+  // ref so the server can re-find the chosen option after re-quoting. Live
+  // carriers (Shippo) mint a fresh, single-use `rateRef` on every rating call,
+  // so the ref the shopper saw is gone by the time submitShipping re-quotes —
+  // matching on it alone dead-ends every live-rate checkout (BUG-010). These let
+  // us fall back to the service identity, which survives a re-quote. Optional so
+  // older clients (and manual rates, whose refs are stable) keep working.
+  shippingService: z.string().min(1).max(255).optional(),
+  shippingCarrier: z.string().min(1).max(255).optional(),
 });
 export type SubmitShippingInput = z.infer<typeof SubmitShippingInput>;
 

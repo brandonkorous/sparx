@@ -97,7 +97,21 @@ export function SilicaBehaviors({
           const variantId = firstValue(values.variantId);
           if (!variantId) return;
           const quantity = Number(firstValue(values.quantity) ?? '1') || 1;
-          await addItem(variantId, quantity);
+          try {
+            await addItem(variantId, quantity);
+          } catch (err) {
+            // silica's form behavior settles to its error state and announces
+            // `data-error-message` (falling back to a generic "Something went
+            // wrong. Please try again."). Point that at the CartError's real,
+            // shopper-friendly reason first — "Sorry, this item just sold out."
+            // for a 409 — so a permanent sell-out doesn't read as a transient
+            // "try again" (BUG-001 follow-up). Then re-throw so the form still
+            // shows its error state and the drawer stays shut.
+            if (payload.kind === 'submit' && err instanceof Error && err.message) {
+              payload.form.setAttribute('data-error-message', err.message);
+            }
+            throw err;
+          }
           openDrawer();
         }
       },

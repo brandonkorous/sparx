@@ -1,6 +1,6 @@
 # Perfect Template → sparx Blueprint
 
-Version: 0.7.0
+Version: 0.9.0
 Author: Brandon Korous
 Last Updated: 2026-07-24
 
@@ -9,43 +9,40 @@ Last Updated: 2026-07-24
 
 > ## ▶ RESUME HERE
 >
-> **Deployed: v1.163.0** (2026-07-24 19:34 UTC). Deploys 1 + 2 are live and verified;
-> BUG-003 closed; the connector is refreshed and batch-2 tools are callable. Using them,
-> session 3 seeded live: the **Book schedule** (resource + 2 services + M–F hours — /book
-> populated) and **6 sparx goods as DRAFT** (ids in the id table; kept draft so the live shop
-> keeps the smoothies until the sparx line has photos).
+> **STATUS: still perfecting the LIVE reference site. NOT building the blueprint bundle yet,
+> and Brandon has NOT signed off on the site.** The bundle is a _capture_ of the approved
+> live site — do not author `marketplace-catalog/blueprints/sparx/`, capture, or ingest until
+> Brandon walks the whole site and signs off. That gate is intentional.
 >
-> **What's left to deploy — Deploy 3 (uncommitted, gate-green):** `set_product_image`
-> (the last catalog capability gap), BUG-005 (MCP serializer), BUG-006 (api-mcp Typesense
-> env — a **manifest** change, so it needs a bootstrap `apps` apply, not only an image roll),
-> and **BUG-007** (the reindex crash that just emptied the product index — rolls the
-> `commerce-indexer` image too). Separately, **`write:search` still isn't granted** — check
-> it on the consent screen at the next reconnect.
+> **Deployed + verified live:** BUG-003, BUG-005, BUG-006, BUG-007. api-mcp search tools work,
+> `create_product` / `update_product` / `update_variant` / `set_product_image` / scheduling
+> setup all callable. **`/shop` is done** — 6 sparx goods (Notebook, Tee, Mug, Tote, Cap,
+> Insulated Bottle), each with a real photo (`200 image/jpeg`); 12 old products archived.
 >
-> ⚠ **The product search index is EMPTY right now** (the operator Reindex button hit BUG-007
-> mid-run with `dropStale`). It self-heals when Deploy 3 lands + the 6 goods are activated;
-> until then the live `/shop` shows nothing. Only the smoothies were affected, and they're
-> being retired anyway.
+> **UNCOMMITTED, gate-green — Brandon is pushing these (Deploy 4):**
 >
-> Then, in order:
+> - **BUG-008** (`apps/site/lib/scheduling.ts`) — `/book` reads the primary site's (empty)
+>   service list instead of Template's. Fix passes `?property=`. Needs the **apps/site** image.
+> - **BUG-009** (`packages/inventory` + `packages/commerce`) — `Product.inStock` defaulted
+>   `false` and only a stock MOVEMENT ever fixed it, so a `continue`-policy product OR a
+>   tenant with the **inventory module OFF** was stranded at "Sold out". `syncProductInStock`
+>   is now module-aware (inventory off → always sellable) and runs at variant create + on any
+>   policy-bearing update. Needs the **api-mcp + api-rest** images (whatever creates/updates
+>   variants); the storefront just reads the column.
 >
-> 1. **Deploy 3 + reconnect with `write:search` checked.** Ships `set_product_image`,
->    BUG-005, BUG-006. BUG-006 is a manifest change → needs the deploy workflow AND a
->    bootstrap `apps` apply, not just an image bump.
-> 2. **Finish the catalog:** for each of the 6 sparx goods — `set_image_from_url` (Unsplash
->    product photo) → `set_product_image`. Then flip all 6 to `active` (update_product
->    status) and archive the 10 smoothies (ids in the id table). Do images BEFORE activating
->    so the live shop never shows grey tiles.
-> 3. Verify live: `/shop` shows the 6 sparx goods with photos + facets/sort/paging; `/book`
->    shows both services with real slots; logo flips; chat accent Ember.
-> 4. (Optional) `rebuild_search_index` — NOT needed for the template (the catalog swap
->    self-indexes; proven with Southwest Grain), but it's the one-shot fix if any stale row
->    lingers. Needs `write:search`.
-> 5. **Author the blueprint bundle** (see _Bundle authoring spec_) → capture site →
->    validate → ingest. The 6 sparx goods + their images become the bundle's `commerce`.
+> **POST-DEPLOY-4 recovery (do this first thing next session):** the 6 live variants were set
+> to `continue` BEFORE the BUG-009 fix existed, so their `inStock` column is still stale
+> `false` → `/shop` still shows "Sold out". Re-run `update_variant` with
+> `{inventoryPolicy:"continue"}` on each of the 6 (variant ids in the id table) — the new
+> code fires `syncProductInStock` on any policy-bearing patch, flipping them in-stock. Then
+> verify `/shop` shows no "Sold out" and `/book` lists both services.
 >
-> Do NOT re-litigate _Locked decisions_. Every MCP capability gap found this session is now
-> closed in code — read the constraint-2 notes before assuming something is missing.
+> **Then:** walk the whole site → **get Brandon's sign-off** → only then author the blueprint
+> bundle (see _Bundle authoring spec_): capture site → the 6 sparx goods become its
+> `commerce` → validate → ingest.
+>
+> `write:search` still ungranted (optional; catalog self-indexes). Do NOT re-litigate
+> _Locked decisions_.
 
 ## The goal
 
@@ -195,9 +192,13 @@ happened while `TYPESENSE_PORT` was shadowed, and nothing backfills. **Fix = one
 `rebuild_search_index` call** once (b) below deploys. Newly created products will index
 themselves; the 21 existing ones will not.
 
-**LIVE NOW (session 3, via MCP):** the **Book page schedule** is fully seeded — resource +
-2 services + M–F 9–5 hours (ids above), so /book is no longer empty. The **6 sparx goods**
-exist as DRAFT (invisible to the live shop, so the smoothies still show until swap time).
+**LIVE NOW (session 3, via MCP) — CATALOG SWAP COMPLETE + VERIFIED.** All 6 sparx goods are
+**active, imaged, and on the Template `/shop`** (`set_product_image` — the tool built this
+session — works; every card image returns `200 image/jpeg`, verified by eye pre-assign). The
+sticker product was dropped for a **sparx Insulated Bottle** (stickers had no clean Unsplash
+shot). The 10 smoothies + sticker + `test` (12 total) are **archived** and gone from the shop.
+The **Book schedule** is seeded (resource + 2 services + hours) but **/book still renders empty
+until BUG-008 deploys** (below).
 
 **BLOCKED ON DEPLOY 3** (code gate-green, uncommitted): `set_product_image` (the last
 capability gap — products can't get a photo any other way over MCP), the BUG-005 serializer,
@@ -215,18 +216,19 @@ the BUG-006 api-mcp Typesense env. **`write:search`** still needs to be granted 
 
 ## Every id in one place
 
-| Thing                          | Value                                                                                                                                                                                                                                                                                                                                               |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Tenant (WizeWorks)             | `1bfef66a-a489-4e0f-99fd-f041adc7ffaa`                                                                                                                                                                                                                                                                                                              |
-| Property "Template"            | `c99e0e23-dae2-4814-b670-b73de5eec0f1`                                                                                                                                                                                                                                                                                                              |
-| Pages                          | Home `1f816f35-3728-45ee-8202-de332da47bf8` · Shop `4ce6bdab-e94a-40f7-92f9-0fa6e7b9a6f7` · About `1f9940a2-8c0d-446b-bb16-7a5259cd417f` · Journal `a909d9d3-709e-43f1-ab88-1d35451201f8` · Contact `4cc42b1d-0e32-4a02-8c78-780630f6aba9` · Book `72a5317f-95d9-4625-bed5-7bdb1e0fad9a` · Wholesale `1a60abc3-a47d-4e0f-99b6-17f04fa39892`         |
-| Logo media                     | light `19e69e0f-93ee-4942-9865-693f3eaab831` · dark `4245aa38-6ffc-4e6a-82be-8e4a22cf92f1` · favicon(spark) `4f13814f-a034-4a02-b3b3-3bf0f85643a7`                                                                                                                                                                                                  |
-| **Schedule (Book page)**       | resource "sparx Team" (staff, America/Denver, M–F 9–5) `57f5a81c-ed71-409a-9665-62e1374f3852` · service "Intro Consultation" (30m, free) `0588abc9-9d53-4c85-9562-b775c1b60752` · service "Working Session" (60m, $120) `f5a9cdc4-1832-4263-90bb-1ecea01be12f`                                                                                      |
-| **sparx catalog (6, DRAFT)**   | Field Notebook `cea66e75-…` v`84a58c8b-…` $14 · Everyday Tee `9efd4eb7-…` v`f3b55672-…` $28 · Enamel Mug `78013471-…` v`a00b2d9f-…` $18 · Canvas Tote `5f5c0bee-…` v`3a9082c4-…` $22/$30 · Sticker Sheet `6244d330-…` v`3e9b9c3f-…` $8 · Ripstop Cap `7b934ebc-…` v`42f9e0c5-…` $26. vendor `sparx`, scoped to Template. Images + activate pending. |
-| Smoothies to archive (10)      | `6b48c060` `08ceebb8` `bbcfbd7d` `c2501fd4` `74f965be` `eaeac552` `8ca74965` `0b8bf7db` `9694f3c3` `4d50ed2e` (+ draft `test` `6e9d5e57`)                                                                                                                                                                                                           |
-| Saved theme (legacy/ThemeDecl) | `07cd7da8-e3a4-4504-bb1b-62cc04fe35c1` (name `sparx`, base `apex`, Ember brand)                                                                                                                                                                                                                                                                     |
-| Journal posts                  | launch `32d5b258-cd0e-4495-a656-170ba5acbffa` (img `a7b995f8-d68a-46e3-9eec-dcf4e9a44ec0`) · descriptions `8a0fd5a3-920e-484c-9e9f-b5e82e106af6` (img `1382becc-80a3-4daa-8f56-672a8148f70d`) · regulars `722df7b1-6b2b-415c-b7ad-70ba9f6440eb` (img `a12ddc25-8f7e-4c00-8b9a-362e3b64b493`)                                                        |
-| Retired posts (draft)          | food: `6d9062ba…`, `e3f76ee4…` · SaaS: `31a0e63f…`, `f5d5e11b…`, `b2988887…`                                                                                                                                                                                                                                                                        |
+| Thing                                                              | Value                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tenant (WizeWorks)                                                 | `1bfef66a-a489-4e0f-99fd-f041adc7ffaa`                                                                                                                                                                                                                                                                                                                                                                         |
+| Property "Template"                                                | `c99e0e23-dae2-4814-b670-b73de5eec0f1`                                                                                                                                                                                                                                                                                                                                                                         |
+| Pages                                                              | Home `1f816f35-3728-45ee-8202-de332da47bf8` · Shop `4ce6bdab-e94a-40f7-92f9-0fa6e7b9a6f7` · About `1f9940a2-8c0d-446b-bb16-7a5259cd417f` · Journal `a909d9d3-709e-43f1-ab88-1d35451201f8` · Contact `4cc42b1d-0e32-4a02-8c78-780630f6aba9` · Book `72a5317f-95d9-4625-bed5-7bdb1e0fad9a` · Wholesale `1a60abc3-a47d-4e0f-99b6-17f04fa39892`                                                                    |
+| Logo media                                                         | light `19e69e0f-93ee-4942-9865-693f3eaab831` · dark `4245aa38-6ffc-4e6a-82be-8e4a22cf92f1` · favicon(spark) `4f13814f-a034-4a02-b3b3-3bf0f85643a7`                                                                                                                                                                                                                                                             |
+| **Schedule (Book page)**                                           | resource "sparx Team" (staff, America/Denver, M–F 9–5) `57f5a81c-ed71-409a-9665-62e1374f3852` · service "Intro Consultation" (30m, free) `0588abc9-9d53-4c85-9562-b775c1b60752` · service "Working Session" (60m, $120) `f5a9cdc4-1832-4263-90bb-1ecea01be12f`                                                                                                                                                 |
+| **sparx catalog (6, ACTIVE + imaged)**                             | Field Notebook `cea66e75` (Paper $14) · Everyday Tee `9efd4eb7` (Apparel $28) · Enamel Mug `78013471` (Drinkware $18) · Canvas Tote `5f5c0bee` (Accessories $22/$30) · Ripstop Cap `7b934ebc` (Apparel $26) · **Insulated Bottle `6460514e`** (Drinkware $32 — replaced the sticker). vendor `sparx`, scoped to Template; each has a primary Unsplash photo (200 image/jpeg).                                  |
+| sparx catalog **variant ids** (for the BUG-009 post-deploy resync) | Notebook `84a58c8b-de4a-4ab3-a60c-351944c4e348` · Tee `f3b55672-8536-453e-a514-92bd31d07bb5` · Mug `a00b2d9f-449c-469d-9a79-d980ac24fb00` · Tote `3a9082c4-b9aa-484e-8e0a-1559c0969f60` · Cap `42f9e0c5-99d3-49b0-9785-fc28b1eda449` · Bottle `623c7564-c8f8-4649-bf04-6dba66c96072`. All set to `inventoryPolicy:"continue"` — but `inStock` column is stale `false` until re-run post-BUG-009 (RESUME HERE). |
+| Archived (12)                                                      | 10 smoothies `6b48c060` `08ceebb8` `bbcfbd7d` `c2501fd4` `74f965be` `eaeac552` `8ca74965` `0b8bf7db` `9694f3c3` `4d50ed2e` + sticker `6244d330` + test `6e9d5e57`                                                                                                                                                                                                                                              |
+| Saved theme (legacy/ThemeDecl)                                     | `07cd7da8-e3a4-4504-bb1b-62cc04fe35c1` (name `sparx`, base `apex`, Ember brand)                                                                                                                                                                                                                                                                                                                                |
+| Journal posts                                                      | launch `32d5b258-cd0e-4495-a656-170ba5acbffa` (img `a7b995f8-d68a-46e3-9eec-dcf4e9a44ec0`) · descriptions `8a0fd5a3-920e-484c-9e9f-b5e82e106af6` (img `1382becc-80a3-4daa-8f56-672a8148f70d`) · regulars `722df7b1-6b2b-415c-b7ad-70ba9f6440eb` (img `a12ddc25-8f7e-4c00-8b9a-362e3b64b493`)                                                                                                                   |
+| Retired posts (draft)                                              | food: `6d9062ba…`, `e3f76ee4…` · SaaS: `31a0e63f…`, `f5d5e11b…`, `b2988887…`                                                                                                                                                                                                                                                                                                                                   |
 
 ## Bundle authoring spec (READ FIRST — the skeleton is stale)
 
@@ -420,18 +422,46 @@ accent) · `apps/site/lib/commerce.ts` (search degrades, no 500) ·
 the scheduling resource + hours tools and their reads, `rebuild_search_index` + the
 `write:search` scope. Verified live (services/resource/hours seeded through them).
 
-**Deploy 3 — PENDING (uncommitted, gate-green).** One is a MANIFEST change (api-mcp.yaml), so
-this deploy needs a bootstrap `apps` apply in addition to the image roll — and it rolls **two**
-images (`api-mcp` and `commerce-indexer`).
+**Deploy 3 — DONE (v1.163.2 images + bootstrap `apps` manifest apply). All verified live.**
+`set_product_image` (`write-tools.ts`), BUG-005 (`server.ts` + test), BUG-006 (`api-mcp.yaml`
+Typesense env — the bootstrap `apps` apply landed it: pod has `TYPESENSE_API_KEY`,
+`enableServiceLinks:false`, no injected `TYPESENSE_PORT`; `search_products` works), BUG-007
+(`commerce-indexer` reindex + handler).
 
-| File                                            | Adds / fixes                                                        |
-| ----------------------------------------------- | ------------------------------------------------------------------- |
-| `packages/commerce/src/mcp/write-tools.ts`      | **`set_product_image`** (attach + set-hero; the last catalog gap)   |
-| `services/api-mcp/src/server.ts`                | BUG-005 — `serializeResult` (void write no longer a protocol error) |
-| `services/api-mcp/src/serialize-result.test.ts` | BUG-005 regression test                                             |
-| `k8s/apps/api-mcp.yaml`                         | BUG-006 — Typesense env + `enableServiceLinks:false` (**manifest**) |
-| `services/commerce-indexer/src/reindex.ts`      | **BUG-007** — stop mapping non-UUID actorId → RLS userId            |
-| `services/commerce-indexer/src/handler.ts`      | BUG-007 — same fix on the real-time path                            |
+**Deploy 4 — PENDING (uncommitted, gate-green). Brandon is pushing.**
+
+| File                                                | Fixes                                                                                  |
+| --------------------------------------------------- | -------------------------------------------------------------------------------------- |
+| `apps/site/lib/scheduling.ts`                       | **BUG-008** — scope the storefront service list to the active site (pass `?property=`) |
+| `packages/inventory/src/services/internal.ts`       | **BUG-009** — `syncProductInStock` is module-aware (inventory off → always in stock)   |
+| `packages/inventory/src/index.ts`                   | BUG-009 — export `syncProductInStock`                                                  |
+| `packages/commerce/src/services/variant-service.ts` | BUG-009 — call it at variant create + on any policy-bearing update                     |
+
+Which images Deploy 4 rolls: **apps/site** (BUG-008 storefront read) + **api-mcp** and
+**api-rest** (BUG-009 — they own variant create/update; the blueprint installer goes through
+`variantService.create` too, so it's covered). The storefront only READS `inStock`, so
+apps/site needs no BUG-009 change.
+
+BUG-008: `lib/scheduling.ts` fetched `/v1/public/scheduling/services` with only `tenant=`, so
+a non-primary site fell back to the tenant's PRIMARY site and showed none of its own services —
+the Template `/book` read the (empty) WizeWorks list. `lib/commerce.ts` already passes
+`?property=`; this mirrors it. Only the LIST needs it — availability/booking are keyed on
+`serviceId`, so the browser client (`scheduling-client.ts`) needs no change.
+
+**BUG-009 (found live this session — Brandon's inventory-module insight):** the storefront PLP
+is search-backed and reads the denormalized `Product.inStock` column, which **defaults `false`**
+and was only ever corrected by an inventory MOVEMENT (`syncProductInStock` was called from the
+ledger + reservation paths only). So a product with a `continue`/`preorder` policy — OR any
+product on a tenant with the **inventory module OFF** (who can't and shouldn't manage stock) —
+stayed stuck at "Sold out" on the storefront forever. `computeAvailability` already models this
+via an `inventoryActive` flag (off → `inStock:true, tracked:false`); the denormalized column
+just never got the same treatment. Fix: `syncProductInStock` takes `inventoryActive` (default
+true for the inventory-internal callers) and short-circuits to `inStock:true, lowStock:false`
+when off; commerce's variant create + update resolve the flag via `isInventoryActive()` and
+call it (create always; update whenever the patch carries `inventoryPolicy`, so a stale flag is
+repairable by re-setting the same policy). This fixes the live shop AND every future blueprint
+install (the installer uses `variantService.create`). It does **not** self-heal the 6 existing
+variants — see the post-deploy recovery in RESUME HERE.
 
 **BUG-007 (found live this session):** the wize-admin operator **Reindex** button crashed the
 worker — `Invalid UUID for userId: rZqhan9PO1EdZEVwgRyg9OfrB9iQN9Wm`. `reindex.ts` set the RLS
@@ -544,7 +574,35 @@ self-indexes).
     `setPrimaryImage`), gate-green. User explicitly agreed this was warranted.
   - `rebuild_search_index` still `write:search`-forbidden (scope not granted at reconnect) —
     but NOT on the critical path; the catalog swap self-indexes.
-- **NEXT SESSION STARTS HERE:** deploy 3 (`set_product_image` + BUG-005 image roll AND the
-  BUG-006 manifest via bootstrap `apps`), reconnect (check `write:search`), then RESUME HERE
-  step 2: photos on the 6 goods → activate them → archive the smoothies → verify → author the
-  bundle.
+- **2026-07-24 (session 3 cont. — Deploy 3 verified, catalog FINISHED)** — Confirmed live:
+  BUG-005 (`publish_product` → `{"ok":true}`) and BUG-007 (Southwest Grain re-indexed, no
+  crash). `set_product_image` came online; used it to finish the `/shop`:
+  - Picked product photos by **downloading each candidate and viewing it** (a 200 status ≠ the
+    right subject — the first "tote" was a hardware flat-lay, "stickers" was an Instagram
+    logo, a "mug" was a latte). Dropped the sticker product entirely (no clean shot) for a
+    **sparx Insulated Bottle**. Final 6 all have verified, category-correct photos.
+  - Flow: create bottle → `set_image_from_url` ×6 → `set_product_image` ×6 → `update_product`
+    status=active ×6 → `bulk_update_product_status` archived ×12 (10 smoothies + sticker +
+    test). Verified: all 6 on the Template `/shop`, every card image `200 image/jpeg`,
+    smoothies gone.
+  - **Found BUG-008:** `/book` still empty because `apps/site/lib/scheduling.ts` didn't pass
+    `?property=` (unlike `lib/commerce.ts`), so a non-primary site read the primary site's
+    (empty) service list. Fixed + gate-green → **Deploy 4 (apps/site)**.
+- **2026-07-24 (session 3 cont. — Deploy 3 fully live, BUG-009 found + fixed)** — Brandon ran
+  bootstrap `apps` + reconnected. Verified: BUG-006 done (`search_products` works via MCP),
+  BUG-005/007 confirmed. Finished the shop, then hit two things:
+  - **"Sold out" on all 6 shop cards.** Traced to the denormalized `Product.inStock` column
+    (search-backed PLP) defaulting `false` and only ever fixed by an inventory movement. Set
+    all 6 variants to `inventoryPolicy:"continue"` — but the column didn't update (nothing
+    re-syncs on a policy change). **Brandon's key insight:** a tenant without the inventory
+    module can't track stock, so we must NOT default to `inStock:false`. → **BUG-009**:
+    `syncProductInStock` made module-aware + called at variant create/policy-update. Fixes the
+    live shop, inventory-off tenants, and every blueprint install. Gate-green.
+  - **Did NOT start the blueprint bundle.** Confirmed with Brandon: the bundle is a capture of
+    the APPROVED live site; he hasn't signed off yet. Holding at "perfect the live site."
+- **NEXT SESSION STARTS HERE:** After Brandon pushes **Deploy 4** (apps/site BUG-008 +
+  api-mcp/api-rest BUG-009): **(1)** re-run `update_variant {inventoryPolicy:"continue"}` on the
+  6 variant ids (id table) to clear the stale "Sold out"; **(2)** verify `/shop` (no Sold out)
+  - `/book` (both services). **(3)** Then walk the whole site and **GET BRANDON'S SIGN-OFF** —
+    do not author the bundle before that. **(4)** Only then: author `marketplace-catalog/
+blueprints/sparx/`, capture the site (6 sparx goods → `commerce`), validate, ingest.

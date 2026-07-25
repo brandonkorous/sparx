@@ -1,25 +1,41 @@
 'use client';
 
-// One customer — add them, then manage them.
+// One customer — add them, then live in their PROFILE.
 //
-// Add and manage are the SAME surface: `{ id: 'new' }` builds a customer, `{ id }`
-// manages one. A customer is one record with a `type` — prospect, retail or
-// wholesale — changed by editing that field, never by moving to another list.
+// Add and manage are the same surface: `{ id: 'new' }` builds a customer,
+// `{ id }` opens their profile. Creating is a single focused column (there is
+// nothing to profile yet). Managing is a real customer profile: a persistent
+// identity rail on the left — who they are, how to reach them, the facts you do
+// not edit — and a tabbed workspace on the right that opens on an Overview of
+// what they are worth and what has happened, with their Orders, Deals, Tasks and
+// Activity each a tab onto the REAL records, and the editable form living on its
+// own Details tab.
 //
-// This is an editable entity, so it shows its identity ONCE, as the name and
-// email fields at the top — there is no second read-only heading repeating them.
-// What the owner cannot change — what this person is worth and when they last
-// bought — is Commerce's data seen from the customer's side, so it wears the
-// Commerce hue via a nested ModuleScope, and it is read-only. Removing a
-// customer is rare and irreversible, so it sits in a quiet row after the work
-// rather than competing with the fields someone came to change.
+// ── Where identity shows, and why the rail carries the name ───────────────
+//
+// The platform rule is that an entity shows its identity ONCE, as the field you
+// change it in — not as a read-only heading stacked above that field. A read-
+// first profile satisfies that rule rather than fighting it: the name is DISPLAY
+// in the rail (the persistent masthead, an aside, exactly as every CRM the
+// references show), and it is EDITABLE only on the Details tab. The two are the
+// read view and the edit view of the same fact, not a heading duplicating a
+// field in one column.
+//
+// ── Where Save lives ──────────────────────────────────────────────────────
+//
+// Only the Details tab edits, so the shell owns the draft and the toolbar owns
+// the single Save — enabled whenever there are unsaved changes, reachable from
+// any tab, with a dirty dot on the Details tab so the scope is legible while you
+// stand on Overview. Removing a customer is rare and irreversible, so it sits in
+// a quiet row at the end of the Details form.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   AlertContent,
   AlertDescription,
   AlertTitle,
+  Avatar,
   Badge,
   Button,
   Field,
@@ -29,39 +45,58 @@ import {
   FieldStatus,
   Heading,
   Input,
+  MetadataItem,
+  MetadataList,
   Select,
   Switch,
+  Tabs,
+  TabsList,
+  TabsPanel,
+  TabsTab,
   TagInput,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { MapPin, Trash2 } from 'lucide-react';
+import { Camera, Loader2, Plus, Trash2 } from 'lucide-react';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
-import { ModuleScope } from '../../components/module-scope';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { useAccounts } from './accounts-data';
+import { useModuleStates } from '../../lib/api/shell-data';
+import { useAudienceVocab } from '../../lib/audience';
+import { useMediaAssets, useUploadMedia } from '../commerce/products-data';
+import { CustomerAddressesSection } from './customer-addresses';
+import { CustomerDocumentsTab } from './customer-documents-tab';
+import { CustomerOverviewTab } from './customer-overview';
+import {
+  CustomerActivityTab,
+  CustomerDealsTab,
+  CustomerNotesTab,
+  CustomerOrdersTab,
+  CustomerSubscriptionsTab,
+  CustomerTasksTab,
+} from './customer-related';
 import {
   CUSTOMER_TYPES,
   customerErrorMessage,
+  customerInitials,
   customerName,
   customerTypeMeta,
-  formatMoney,
+  joinedMonth,
   useCreateCustomer,
   useCustomer,
-  useCustomerAddresses,
   useDeleteCustomer,
   useUpdateCustomer,
   type Customer,
-  type CustomerAddress,
   type CustomerInput,
   type CustomerType,
 } from './customers-data';
 
+// The focused single column a NEW customer is created in — no profile to show yet.
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 const CONTACT_METHODS: Record<string, string> = {
@@ -70,6 +105,24 @@ const CONTACT_METHODS: Record<string, string> = {
   phone: 'Phone call',
   sms: 'Text message',
 };
+
+const CONTACT_METHOD_LABEL: Record<string, string> = {
+  email: 'Email',
+  phone: 'Phone call',
+  sms: 'Text message',
+};
+
+const TABS: { value: string; label: string }[] = [
+  { value: 'overview', label: 'Overview' },
+  { value: 'notes', label: 'Notes' },
+  { value: 'orders', label: 'Orders' },
+  { value: 'deals', label: 'Deals' },
+  { value: 'tasks', label: 'Tasks' },
+  { value: 'subscriptions', label: 'Subscriptions' },
+  { value: 'activity', label: 'Activity' },
+  { value: 'documents', label: 'Documents' },
+  { value: 'details', label: 'Details' },
+];
 
 /* ── Draft ──────────────────────────────────────────────────────────────── */
 
@@ -196,6 +249,7 @@ function CustomerEditor({
 
   const { members } = useTeamRoster();
   const { data: accounts } = useAccounts();
+  const vocab = useAudienceVocab();
 
   const saved = useMemo(() => (customer ? toDraft(customer) : emptyDraft()), [customer]);
   const [draft, setDraft] = useState<Draft>(saved);
@@ -204,9 +258,17 @@ function CustomerEditor({
     if (!touched) setDraft(saved);
   }, [saved, touched]);
 
+  const [tab, setTab] = useState('overview');
+  // Lazy-then-keep: a tab's data only loads once you open it (so a pane doesn't
+  // fire six queries at once), and stays mounted after — read-only tabs cost
+  // nothing to keep, and the Details draft lives in this shell, not the panel,
+  // so nothing is lost either way.
+  const visited = useRef(new Set<string>(['overview']));
+  visited.current.add(tab);
+
   useEffect(() => {
-    ctx.setTitle(isNew ? 'New customer' : customer ? customerName(customer) : 'Customer');
-  }, [ctx, isNew, customer]);
+    ctx.setTitle(isNew ? `New ${vocab.one}` : customer ? customerName(customer) : vocab.One);
+  }, [ctx, isNew, customer, vocab]);
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
     setTouched(true);
@@ -272,27 +334,24 @@ function CustomerEditor({
 
   /* ── Build + submit ───────────────────────────────────────────────────── */
 
-  const buildInput = (): CustomerInput => {
-    const candidate: CustomerInput = {
-      type: draft.type,
-      email: trimOrNull(draft.email),
-      phone: trimOrNull(draft.phone),
-      firstName: trimOrNull(draft.firstName),
-      lastName: trimOrNull(draft.lastName),
-      company: trimOrNull(draft.company),
-      jobTitle: trimOrNull(draft.jobTitle),
-      // A wholesale link only means anything for a wholesale contact; clearing
-      // the link when the kind changes keeps the record honest.
-      b2bAccountId: draft.type === 'b2b' ? draft.b2bAccountId || null : null,
-      assignedRepId: draft.assignedRepId || null,
-      preferredContactMethod: draft.preferredContactMethod
-        ? (draft.preferredContactMethod as 'email' | 'phone' | 'sms')
-        : null,
-      doNotContact: draft.doNotContact,
-      tags: draft.tags,
-    };
-    return candidate;
-  };
+  const buildInput = (): CustomerInput => ({
+    type: draft.type,
+    email: trimOrNull(draft.email),
+    phone: trimOrNull(draft.phone),
+    firstName: trimOrNull(draft.firstName),
+    lastName: trimOrNull(draft.lastName),
+    company: trimOrNull(draft.company),
+    jobTitle: trimOrNull(draft.jobTitle),
+    // A wholesale link only means anything for a wholesale contact; clearing the
+    // link when the kind changes keeps the record honest.
+    b2bAccountId: draft.type === 'b2b' ? draft.b2bAccountId || null : null,
+    assignedRepId: draft.assignedRepId || null,
+    preferredContactMethod: draft.preferredContactMethod
+      ? (draft.preferredContactMethod as 'email' | 'phone' | 'sms')
+      : null,
+    doNotContact: draft.doNotContact,
+    tags: draft.tags,
+  });
 
   const submit = () => {
     if (blocked) return;
@@ -347,428 +406,628 @@ function CustomerEditor({
     });
   };
 
-  const meta = customerTypeMeta(draft.type);
-  const spent = customer ? Number(customer.totalSpent) : 0;
+  const meta = customerTypeMeta(draft.type, vocab.one);
+
+  // Wholesale is the one kind that only means something with the b2b module on —
+  // it carries trade pricing + net terms. A salon or café never sees it. An
+  // existing wholesale contact keeps the option even if the module is later off,
+  // so its kind is never silently lost.
+  const { data: moduleStates } = useModuleStates();
+  const b2bEnabled = (moduleStates ?? []).some((m) => m.slug === 'b2b' && m.enabled);
+  const kindTypes = CUSTOMER_TYPES.filter((t) => t !== 'b2b' || b2bEnabled || draft.type === 'b2b');
+
+  /* ── The editable form (the Details tab, and the whole of "add") ────────── */
+
+  const failureAlert = failure ? (
+    <Alert color="error" variant="soft">
+      <AlertContent>
+        <AlertTitle>Could not save this customer</AlertTitle>
+        <AlertDescription>{failure}</AlertDescription>
+      </AlertContent>
+    </Alert>
+  ) : null;
+
+  const detailsForm = (
+    <div className="flex flex-col gap-4">
+      <FormSection title="Who they are">
+        <div className="grid gap-3 @md:grid-cols-2">
+          <Field>
+            <FieldLabel>First name</FieldLabel>
+            <FieldControl
+              render={
+                <Input
+                  color={nameError && touched ? 'error' : 'module'}
+                  value={draft.firstName}
+                  placeholder="Jamie"
+                  onChange={(event) => {
+                    set('firstName', event.target.value);
+                  }}
+                />
+              }
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Last name</FieldLabel>
+            <FieldControl
+              render={
+                <Input
+                  color={nameError && touched ? 'error' : 'module'}
+                  value={draft.lastName}
+                  placeholder="Rivera"
+                  onChange={(event) => {
+                    set('lastName', event.target.value);
+                  }}
+                />
+              }
+            />
+          </Field>
+        </div>
+        {nameError && touched ? <FieldStatus status="error">{nameError}</FieldStatus> : null}
+
+        <div className="grid gap-3 @md:grid-cols-2">
+          <Field>
+            <FieldLabel>Company</FieldLabel>
+            <FieldControl
+              render={
+                <Input
+                  color="module"
+                  value={draft.company}
+                  placeholder="Rivera Fabrication"
+                  onChange={(event) => {
+                    set('company', event.target.value);
+                  }}
+                />
+              }
+            />
+          </Field>
+          <Field>
+            <FieldLabel>Job title</FieldLabel>
+            <FieldControl
+              render={
+                <Input
+                  color="module"
+                  value={draft.jobTitle}
+                  placeholder="Owner"
+                  onChange={(event) => {
+                    set('jobTitle', event.target.value);
+                  }}
+                />
+              }
+            />
+          </Field>
+        </div>
+
+        <Field>
+          <FieldLabel>Kind of {vocab.one}</FieldLabel>
+          <Select
+            color="module"
+            aria-label={`Kind of ${vocab.one}`}
+            value={draft.type}
+            items={Object.fromEntries(
+              kindTypes.map((t) => [t, customerTypeMeta(t, vocab.one).label])
+            )}
+            onValueChange={(next) => {
+              set('type', next as CustomerType);
+            }}
+          />
+          <FieldDescription>{meta.description}</FieldDescription>
+        </Field>
+      </FormSection>
+
+      <FormSection
+        title="How to reach them"
+        description="However you have it — none of this is required."
+      >
+        <div className="grid gap-3 @md:grid-cols-2">
+          <Field>
+            <FieldLabel>Email</FieldLabel>
+            <FieldControl
+              render={
+                <Input
+                  color={emailError && touched ? 'error' : 'module'}
+                  type="email"
+                  value={draft.email}
+                  placeholder="jamie@example.com"
+                  autoComplete="off"
+                  spellCheck={false}
+                  onChange={(event) => {
+                    set('email', event.target.value);
+                  }}
+                />
+              }
+            />
+            {emailError && touched ? <FieldStatus status="error">{emailError}</FieldStatus> : null}
+          </Field>
+          <Field>
+            <FieldLabel>Phone</FieldLabel>
+            <FieldControl
+              render={
+                <Input
+                  color="module"
+                  type="tel"
+                  value={draft.phone}
+                  placeholder="(555) 010-2233"
+                  autoComplete="off"
+                  onChange={(event) => {
+                    set('phone', event.target.value);
+                  }}
+                />
+              }
+            />
+          </Field>
+        </div>
+
+        <Field>
+          <FieldLabel>Best way to reach them</FieldLabel>
+          <Select
+            color="module"
+            aria-label="Best way to reach them"
+            value={draft.preferredContactMethod}
+            items={CONTACT_METHODS}
+            onValueChange={(next) => {
+              set('preferredContactMethod', next as string);
+            }}
+          />
+        </Field>
+
+        <Field>
+          <FieldLabel>Do not send marketing</FieldLabel>
+          <FieldControl
+            render={
+              <Switch
+                color="module"
+                checked={draft.doNotContact}
+                onCheckedChange={(next: boolean) => {
+                  set('doNotContact', next);
+                }}
+              />
+            }
+          />
+          <FieldDescription>
+            {draft.doNotContact
+              ? 'They are left out of marketing emails. Order and account messages still reach them.'
+              : 'They may receive your marketing emails if they have opted in.'}
+          </FieldDescription>
+        </Field>
+      </FormSection>
+
+      <FormSection title="Your side of it">
+        <Field>
+          <FieldLabel>Looked after by</FieldLabel>
+          <Select
+            color="module"
+            aria-label="Which team member looks after this customer"
+            value={draft.assignedRepId}
+            items={repItems}
+            onValueChange={(next) => {
+              set('assignedRepId', next as string);
+            }}
+          />
+          <FieldDescription>The person on your team who owns this relationship.</FieldDescription>
+        </Field>
+
+        {draft.type === 'b2b' ? (
+          <Field>
+            <FieldLabel>Wholesale account</FieldLabel>
+            <Select
+              color="module"
+              aria-label="Which wholesale account this contact belongs to"
+              value={draft.b2bAccountId}
+              items={accountItems}
+              onValueChange={(next) => {
+                set('b2bAccountId', next as string);
+              }}
+            />
+            <FieldDescription>
+              The business this person buys on behalf of — they get its agreed prices and terms.
+            </FieldDescription>
+          </Field>
+        ) : null}
+
+        <Field>
+          <FieldLabel>Labels</FieldLabel>
+          <FieldControl
+            render={
+              <TagInput
+                color="module"
+                value={draft.tags}
+                placeholder="Type a label and press Enter"
+                aria-label="Labels"
+                onValueChange={(next) => {
+                  set('tags', next);
+                }}
+              />
+            }
+          />
+          <FieldDescription>
+            Your own words for grouping people — “vip”, “trade-show”, “needs-follow-up”. Letters,
+            numbers, - and _ only.
+          </FieldDescription>
+        </Field>
+      </FormSection>
+
+      {/* Addresses are their own records with their own immediate writes, so
+          they manage here (in the "manage this customer" tab) rather than riding
+          the customer Save draft. On "add" there is no customer id yet, so the
+          section only appears once the customer exists. */}
+      {!isNew && customer ? <CustomerAddressesSection customerId={customer.id} /> : null}
+
+      {!isNew && customer ? (
+        <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+          <Text className="text-sm">
+            Removing takes this customer out of your lists. Their history is kept.
+          </Text>
+          <Button
+            size="sm"
+            variant="outline"
+            color="danger"
+            loading={remove.isPending}
+            onClick={() => {
+              void onDelete();
+            }}
+          >
+            <Trash2 className="size-4" aria-hidden />
+            Remove this customer
+          </Button>
+        </div>
+      ) : null}
+    </div>
+  );
+
+  /* ── Toolbar (shared) ─────────────────────────────────────────────────── */
+
+  const toolbar = (
+    <PaneToolbar label="Customer actions">
+      <Badge color={meta.color} variant="soft" size="sm">
+        {meta.label}
+      </Badge>
+      {/* The things you DO to a customer live in the toolbar, not on the profile
+          card: start a deal or a task pre-linked to them. The label gives way to
+          the icon on a narrow pane; the aria-label carries the full name always. */}
+      {!isNew && customer ? (
+        <>
+          <Button
+            size="sm"
+            variant="ghost"
+            color="module"
+            className="ml-auto shrink-0"
+            aria-label="New deal for this customer"
+            onClick={() => {
+              ctx.open(
+                'crm.deal.detail',
+                { id: 'new', customerId: customer.id },
+                { target: 'tab' }
+              );
+            }}
+          >
+            <Plus className="size-4" aria-hidden />
+            <span className="hidden @md:inline">Deal</span>
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            color="module"
+            className="shrink-0"
+            aria-label="New task for this customer"
+            onClick={() => {
+              ctx.open(
+                'crm.task.detail',
+                { id: 'new', customerId: customer.id },
+                { target: 'tab' }
+              );
+            }}
+          >
+            <Plus className="size-4" aria-hidden />
+            <span className="hidden @md:inline">Task</span>
+          </Button>
+        </>
+      ) : null}
+      <Button
+        color="module"
+        size="sm"
+        className={!isNew && customer ? 'shrink-0' : 'ml-auto shrink-0'}
+        loading={saving}
+        disabled={Boolean(blocked) || (!isNew && !dirty)}
+        onClick={submit}
+      >
+        {isNew ? `Add ${vocab.one}` : 'Save'}
+      </Button>
+    </PaneToolbar>
+  );
+
+  /* ── Add: one focused column ──────────────────────────────────────────── */
+
+  if (isNew || !customer) {
+    return (
+      <div className={PANE_SHELL}>
+        {toolbar}
+        <div className="min-h-0 flex-1 overflow-y-auto p-3 @lg:p-4">
+          <div className={COLUMN}>
+            {isNew ? (
+              <div className="flex flex-col gap-1">
+                <Heading level={1} className="text-2xl font-semibold">
+                  Add a {vocab.one}
+                </Heading>
+                <Text>
+                  Everyone you work with or keep in touch with lives here. Fill in what you know — a
+                  name or an email is enough to start.
+                </Text>
+              </div>
+            ) : null}
+            {failureAlert}
+            {detailsForm}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ── Manage: the profile ──────────────────────────────────────────────── */
 
   return (
     <div className={PANE_SHELL}>
-      <PaneToolbar label="Customer actions">
-        <Badge color={meta.color} variant="soft" size="sm">
-          {meta.label}
-        </Badge>
-        {customer && customer.orderCount > 0 ? (
-          <Text as="span" className="hidden shrink-0 text-sm @md:inline">
-            {formatMoney(spent)} over{' '}
-            {customer.orderCount === 1 ? '1 order' : `${String(customer.orderCount)} orders`}
-          </Text>
-        ) : null}
-        <Button
-          color="module"
-          size="sm"
-          className="ml-auto shrink-0"
-          loading={saving}
-          disabled={Boolean(blocked) || (!isNew && !dirty)}
-          onClick={submit}
-        >
-          {isNew ? 'Add customer' : 'Save'}
-        </Button>
-      </PaneToolbar>
+      {toolbar}
+      <div className="min-h-0 flex-1 overflow-y-auto p-3 @lg:p-4">
+        <div className="@container mx-auto w-full max-w-6xl">
+          <div className="grid gap-3 @3xl:grid-cols-[19rem_minmax(0,1fr)] @3xl:items-start">
+            <aside className="flex min-w-0 flex-col gap-3 @3xl:sticky @3xl:top-0">
+              <IdentityRail customer={customer} repItems={repItems} accountItems={accountItems} />
+            </aside>
 
-      <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className={COLUMN}>
-          {isNew ? (
-            <div className="flex flex-col gap-1">
-              <Heading level={1} className="text-2xl font-semibold">
-                Add a customer
-              </Heading>
-              <Text>
-                Everyone you sell to or keep in touch with lives here. Fill in what you know — a
-                name or an email is enough to start.
-              </Text>
-            </div>
-          ) : null}
-
-          {failure ? (
-            <Alert color="error" variant="soft">
-              <AlertContent>
-                <AlertTitle>Could not save this customer</AlertTitle>
-                <AlertDescription>{failure}</AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : null}
-
-          <FormSection title="Who they are">
-            <div className="grid gap-3 @md:grid-cols-2">
-              <Field>
-                <FieldLabel>First name</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color={nameError && touched ? 'error' : 'module'}
-                      value={draft.firstName}
-                      placeholder="Jamie"
-                      onChange={(event) => {
-                        set('firstName', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Last name</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color={nameError && touched ? 'error' : 'module'}
-                      value={draft.lastName}
-                      placeholder="Rivera"
-                      onChange={(event) => {
-                        set('lastName', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-            </div>
-            {nameError && touched ? <FieldStatus status="error">{nameError}</FieldStatus> : null}
-
-            <div className="grid gap-3 @md:grid-cols-2">
-              <Field>
-                <FieldLabel>Company</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={draft.company}
-                      placeholder="Rivera Fabrication"
-                      onChange={(event) => {
-                        set('company', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Job title</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={draft.jobTitle}
-                      placeholder="Owner"
-                      onChange={(event) => {
-                        set('jobTitle', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-            </div>
-
-            <Field>
-              <FieldLabel>Kind of customer</FieldLabel>
-              <Select
+            <section className="flex min-w-0 flex-col gap-3">
+              {failureAlert}
+              <Tabs
+                variant="pills"
                 color="module"
-                aria-label="Kind of customer"
-                value={draft.type}
-                items={Object.fromEntries(
-                  CUSTOMER_TYPES.map((t) => [t, customerTypeMeta(t).label])
-                )}
+                value={tab}
                 onValueChange={(next) => {
-                  set('type', next as CustomerType);
+                  setTab(next as string);
                 }}
-              />
-              <FieldDescription>{meta.description}</FieldDescription>
-            </Field>
-          </FormSection>
+                className="flex flex-col gap-2 @lg:gap-3"
+              >
+                <div className="bg-base-300 shrink-0 rounded-full px-4 py-2">
+                  <TabsList className="overflow-x-auto">
+                    {TABS.map((entry) => (
+                      <TabsTab
+                        key={entry.value}
+                        value={entry.value}
+                        className="text-base-content flex items-center gap-1.5"
+                      >
+                        {entry.label}
+                        {/* The dirty dot makes a toolbar Save honest: it says
+                            "Details has unsaved work" while you stand on Overview.
+                            On the selected pill it wears the pill's own ink so it
+                            stays visible against the fill. */}
+                        {entry.value === 'details' && dirty ? (
+                          <>
+                            <span
+                              className={
+                                entry.value === tab
+                                  ? 'bg-module-content size-1.5 shrink-0 rounded-full'
+                                  : 'bg-module size-1.5 shrink-0 rounded-full'
+                              }
+                              aria-hidden
+                            />
+                            <span className="sr-only">(unsaved changes)</span>
+                          </>
+                        ) : null}
+                      </TabsTab>
+                    ))}
+                  </TabsList>
+                </div>
 
-          <FormSection
-            title="How to reach them"
-            description="However you have it — none of this is required."
+                <TabsPanel value="overview">
+                  {visited.current.has('overview') ? (
+                    <CustomerOverviewTab ctx={ctx} customer={customer} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="notes">
+                  {visited.current.has('notes') ? (
+                    <CustomerNotesTab customerId={customer.id} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="orders">
+                  {visited.current.has('orders') ? (
+                    <CustomerOrdersTab ctx={ctx} customerId={customer.id} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="deals">
+                  {visited.current.has('deals') ? (
+                    <CustomerDealsTab ctx={ctx} customerId={customer.id} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="tasks">
+                  {visited.current.has('tasks') ? (
+                    <CustomerTasksTab ctx={ctx} customerId={customer.id} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="subscriptions">
+                  {visited.current.has('subscriptions') ? (
+                    <CustomerSubscriptionsTab ctx={ctx} customerId={customer.id} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="activity">
+                  {visited.current.has('activity') ? (
+                    <CustomerActivityTab customerId={customer.id} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="documents">
+                  {visited.current.has('documents') ? (
+                    <CustomerDocumentsTab customerId={customer.id} />
+                  ) : null}
+                </TabsPanel>
+                <TabsPanel value="details">
+                  {visited.current.has('details') ? detailsForm : null}
+                </TabsPanel>
+              </Tabs>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ── Identity rail (the persistent read masthead) ─────────────────────────── */
+
+function IdentityRail({
+  customer,
+  repItems,
+  accountItems,
+}: {
+  customer: Customer;
+  repItems: Record<string, string>;
+  accountItems: Record<string, string>;
+}) {
+  const toast = useToast();
+  const vocab = useAudienceVocab();
+  const meta = customerTypeMeta(customer.type, vocab.one);
+  const name = customerName(customer);
+  const initials = customerInitials(customer);
+  const subtitle = [customer.company, customer.jobTitle].filter(Boolean).join(' · ');
+  // Resolve the photo to a real URL; the Avatar falls back to initials when
+  // there is no photo or it is still processing.
+  const avatarAssets = useMediaAssets(
+    customer.avatarMediaAssetId ? [customer.avatarMediaAssetId] : []
+  );
+  const photoUrl = avatarAssets.data?.[0]?.url ?? undefined;
+
+  // The photo edits INLINE, right on the avatar — click it to upload one, and the
+  // change commits on its own (it is the customer's own record, not part of the
+  // name/contact Save draft, the same as addresses and documents).
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const upload = useUploadMedia();
+  const setAvatar = useUpdateCustomer(customer.id);
+  const photoBusy = upload.isPending || setAvatar.isPending;
+
+  const onPhoto = (file: File | undefined) => {
+    if (!file) return;
+    upload.mutate(file, {
+      onSuccess: (mediaAssetId) => {
+        setAvatar.mutate(
+          { avatarMediaAssetId: mediaAssetId },
+          {
+            onError: () => {
+              toast.add({ title: 'Could not update the photo', type: 'error' });
+            },
+          }
+        );
+      },
+      onError: () => {
+        toast.add({
+          title: 'Could not upload that photo',
+          description: 'Try a different image, or again in a moment.',
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  const removePhoto = () => {
+    setAvatar.mutate(
+      { avatarMediaAssetId: null },
+      {
+        onError: () => {
+          toast.add({ title: 'Could not remove the photo', type: 'error' });
+        },
+      }
+    );
+  };
+
+  const rep = customer.assignedRepId ? repItems[customer.assignedRepId] : null;
+  const account =
+    customer.type === 'b2b' && customer.b2bAccountId ? accountItems[customer.b2bAccountId] : null;
+  const contact = customer.preferredContactMethod
+    ? CONTACT_METHOD_LABEL[customer.preferredContactMethod]
+    : null;
+
+  return (
+    <section className="card bg-base-100 flex flex-col gap-4 p-4">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={(event) => {
+            onPhoto(event.target.files?.[0]);
+            event.target.value = '';
+          }}
+        />
+        <div className="flex flex-col items-center gap-1.5">
+          <button
+            type="button"
+            className="relative rounded-full"
+            aria-label={photoUrl ? 'Change photo' : 'Add a photo'}
+            disabled={photoBusy}
+            onClick={() => {
+              fileRef.current?.click();
+            }}
           >
-            <div className="grid gap-3 @md:grid-cols-2">
-              <Field>
-                <FieldLabel>Email</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color={emailError && touched ? 'error' : 'module'}
-                      type="email"
-                      value={draft.email}
-                      placeholder="jamie@example.com"
-                      autoComplete="off"
-                      spellCheck={false}
-                      onChange={(event) => {
-                        set('email', event.target.value);
-                      }}
-                    />
-                  }
-                />
-                {emailError && touched ? (
-                  <FieldStatus status="error">{emailError}</FieldStatus>
-                ) : null}
-              </Field>
-              <Field>
-                <FieldLabel>Phone</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      type="tel"
-                      value={draft.phone}
-                      placeholder="(555) 010-2233"
-                      autoComplete="off"
-                      onChange={(event) => {
-                        set('phone', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-            </div>
-
-            <Field>
-              <FieldLabel>Best way to reach them</FieldLabel>
-              <Select
-                color="module"
-                aria-label="Best way to reach them"
-                value={draft.preferredContactMethod}
-                items={CONTACT_METHODS}
-                onValueChange={(next) => {
-                  set('preferredContactMethod', next as string);
-                }}
-              />
-            </Field>
-
-            <Field>
-              <FieldLabel>Do not send marketing</FieldLabel>
-              <FieldControl
-                render={
-                  <Switch
-                    color="module"
-                    checked={draft.doNotContact}
-                    onCheckedChange={(next: boolean) => {
-                      set('doNotContact', next);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                {draft.doNotContact
-                  ? 'They are left out of marketing emails. Order and account messages still reach them.'
-                  : 'They may receive your marketing emails if they have opted in.'}
-              </FieldDescription>
-            </Field>
-          </FormSection>
-
-          <FormSection title="Your side of it">
-            <Field>
-              <FieldLabel>Looked after by</FieldLabel>
-              <Select
-                color="module"
-                aria-label="Which team member looks after this customer"
-                value={draft.assignedRepId}
-                items={repItems}
-                onValueChange={(next) => {
-                  set('assignedRepId', next as string);
-                }}
-              />
-              <FieldDescription>
-                The person on your team who owns this relationship.
-              </FieldDescription>
-            </Field>
-
-            {draft.type === 'b2b' ? (
-              <Field>
-                <FieldLabel>Wholesale account</FieldLabel>
-                <Select
-                  color="module"
-                  aria-label="Which wholesale account this contact belongs to"
-                  value={draft.b2bAccountId}
-                  items={accountItems}
-                  onValueChange={(next) => {
-                    set('b2bAccountId', next as string);
-                  }}
-                />
-                <FieldDescription>
-                  The business this person buys on behalf of — they get its agreed prices and terms.
-                </FieldDescription>
-              </Field>
-            ) : null}
-
-            <Field>
-              <FieldLabel>Labels</FieldLabel>
-              <FieldControl
-                render={
-                  <TagInput
-                    color="module"
-                    value={draft.tags}
-                    placeholder="Type a label and press Enter"
-                    aria-label="Labels"
-                    onValueChange={(next) => {
-                      set('tags', next);
-                    }}
-                  />
-                }
-              />
-              <FieldDescription>
-                Your own words for grouping people — “vip”, “trade-show”, “needs-follow-up”.
-                Letters, numbers, - and _ only.
-              </FieldDescription>
-            </Field>
-          </FormSection>
-
-          {!isNew && customer ? (
-            <>
-              <LifetimeSection customer={customer} />
-              <AddressesSection id={id} />
-
-              <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
-                <Text className="text-sm">
-                  Removing takes this customer out of your lists. Their history is kept.
-                </Text>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  color="danger"
-                  loading={remove.isPending}
-                  onClick={() => {
-                    void onDelete();
-                  }}
-                >
-                  <Trash2 className="size-4" aria-hidden />
-                  Remove this customer
-                </Button>
-              </div>
-            </>
+            <Avatar size="xl" color="neutral" alt={name} src={photoUrl}>
+              {initials}
+            </Avatar>
+            {/* A camera badge that says the avatar is editable, spinning while a
+                new photo uploads. Absolute chrome on the avatar, not a control. */}
+            <span className="border-base-100 bg-module text-module-content absolute right-0 bottom-0 flex size-7 items-center justify-center rounded-full border-2">
+              {photoBusy ? (
+                <Loader2 className="size-3.5 animate-spin" aria-hidden />
+              ) : (
+                <Camera className="size-3.5" aria-hidden />
+              )}
+            </span>
+          </button>
+          {photoUrl && !photoBusy ? (
+            <Button size="xs" variant="ghost" color="neutral" onClick={removePhoto}>
+              Remove photo
+            </Button>
           ) : null}
         </div>
-      </div>
-    </div>
-  );
-}
-
-/* ── Lifetime signals (Commerce's data, seen from the customer's side) ────── */
-
-function longDate(iso: string | null): string {
-  if (!iso) return 'Never';
-  const date = new Date(iso);
-  if (Number.isNaN(date.getTime())) return 'Never';
-  return date.toLocaleDateString(undefined, { day: 'numeric', month: 'long', year: 'numeric' });
-}
-
-function LifetimeSection({ customer }: { customer: Customer }) {
-  const spent = Number(customer.totalSpent);
-  const hasOrders = customer.orderCount > 0;
-
-  return (
-    // This is Commerce's data, not the CRM's, so it wears the Commerce hue — the
-    // one signal that these figures come from Selling, not something you edit here.
-    <ModuleScope module="commerce">
-      <FormSection
-        title="What they are worth"
-        description="Totalled from their orders. This updates on its own — there is nothing to fill in."
-      >
-        <div className="grid gap-4 @sm:grid-cols-2">
-          <div className="flex flex-col gap-1">
-            <Text className="text-sm">Total spent</Text>
-            <span className="text-2xl font-semibold tabular-nums">{formatMoney(spent)}</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <Text className="text-sm">Orders placed</Text>
-            <div>
-              <Badge color="module" variant="soft" size="lg">
-                {customer.orderCount.toLocaleString()}
-              </Badge>
-            </div>
-          </div>
-          <div className="flex flex-col gap-1">
-            <Text className="text-sm">First order</Text>
-            <span className="text-base font-medium">
-              {hasOrders ? longDate(customer.firstOrderAt) : 'No orders yet'}
-            </span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <Text className="text-sm">Last order</Text>
-            <span className="text-base font-medium">
-              {hasOrders ? longDate(customer.lastOrderAt) : 'No orders yet'}
-            </span>
+        <div className="flex flex-col items-center gap-1">
+          <Heading level={2} className="text-lg font-semibold">
+            {name}
+          </Heading>
+          {subtitle ? <Text className="text-sm">{subtitle}</Text> : null}
+          <div className="pt-1">
+            <Badge color={meta.color} variant="soft" size="sm">
+              {meta.label}
+            </Badge>
           </div>
         </div>
-      </FormSection>
-    </ModuleScope>
-  );
-}
+      </div>
 
-/* ── Addresses (read-only) ───────────────────────────────────────────────── */
+      {customer.doNotContact ? (
+        <Alert color="warning" variant="soft">
+          <AlertContent>
+            <AlertDescription>
+              Left out of marketing emails. Order and account messages still reach them.
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
 
-function addressTypeLabel(type: string): string {
-  if (type === 'shipping') return 'Delivery';
-  if (type === 'billing') return 'Billing';
-  return 'Delivery & billing';
-}
-
-function AddressBlock({ address }: { address: CustomerAddress }) {
-  const lines = [
-    address.recipientName,
-    address.company,
-    address.line1,
-    address.line2,
-    [address.city, address.region, address.postalCode].filter(Boolean).join(', '),
-    address.country,
-  ].filter((line): line is string => Boolean(line?.trim()));
-
-  return (
-    <div className="border-base-300 flex flex-col gap-2 rounded-lg border p-3">
-      <div className="flex flex-wrap items-center gap-2">
-        <Badge color="neutral" variant="outline" size="sm">
-          {addressTypeLabel(address.type)}
-        </Badge>
-        {address.label ? <Text className="text-sm font-semibold">{address.label}</Text> : null}
-        {address.isDefault ? (
-          <Badge color="success" variant="soft" size="sm">
-            Default
-          </Badge>
+      <MetadataList layout="stack">
+        {customer.email ? (
+          <MetadataItem label="Email">
+            <span className="break-all">{customer.email}</span>
+          </MetadataItem>
         ) : null}
-      </div>
-      <address className="text-sm not-italic">
-        {lines.map((line, index) => (
-          <span key={index} className="block">
-            {line}
-          </span>
-        ))}
-      </address>
-      {address.phone ? <Text className="text-sm">{address.phone}</Text> : null}
-    </div>
-  );
-}
+        {customer.phone ? <MetadataItem label="Phone">{customer.phone}</MetadataItem> : null}
+        {contact ? <MetadataItem label="Best reached by">{contact}</MetadataItem> : null}
+        {rep ? <MetadataItem label="Looked after by">{rep}</MetadataItem> : null}
+        {account ? <MetadataItem label="Wholesale account">{account}</MetadataItem> : null}
+        <MetadataItem label="Customer since">{joinedMonth(customer.createdAt)}</MetadataItem>
+      </MetadataList>
 
-function AddressesSection({ id }: { id: string }) {
-  const { data: addresses, isPending, isError } = useCustomerAddresses(id);
-
-  return (
-    <FormSection
-      title="Addresses"
-      description="Where this customer's orders ship and bill to. Addresses are added on their orders."
-    >
-      {isError ? (
-        <Text className="text-sm">Could not load addresses just now.</Text>
-      ) : isPending ? (
-        <Text className="text-sm" role="status">
-          Loading…
-        </Text>
-      ) : (addresses?.length ?? 0) === 0 ? (
-        <div className="flex items-center gap-2">
-          <MapPin className="size-4 shrink-0" aria-hidden />
-          <Text className="text-sm">No addresses on file for this customer yet.</Text>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-3">
-          {addresses?.map((address) => (
-            <AddressBlock key={address.id} address={address} />
+      {customer.tags.length > 0 ? (
+        <div className="flex flex-wrap gap-1.5">
+          {customer.tags.map((tag) => (
+            <Badge key={tag} color="neutral" variant="soft" size="sm">
+              {tag}
+            </Badge>
           ))}
         </div>
-      )}
-    </FormSection>
+      ) : null}
+    </section>
   );
 }

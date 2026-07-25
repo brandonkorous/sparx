@@ -1,7 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { InstagramAdapter, planInstagramPost } from './instagram.js';
-import type { RenderedPost } from '../types.js';
+import type { RenderedPost, SocialAuth, SocialTargetRef } from '../types.js';
+
+function jsonRes(body: unknown): Response {
+  return { ok: true, status: 200, json: () => Promise.resolve(body) } as unknown as Response;
+}
+function errRes(status: number, text: string): Response {
+  return { ok: false, status, text: () => Promise.resolve(text) } as unknown as Response;
+}
 
 // The Instagram adapter's pure decision logic (docs/134 Phase 2). The two-step Content
 // Publishing API is integration surface; here we lock the image/carousel/reel branching
@@ -69,5 +76,58 @@ describe('InstagramAdapter connectUrl / isConfigured', () => {
   it('reports not-configured when the env is missing', () => {
     delete process.env.META_APP_ID;
     expect(new InstagramAdapter().isConfigured()).toBe(false);
+  });
+});
+
+describe('InstagramAdapter getMetrics', () => {
+  const auth: SocialAuth = { externalId: 'user', accessToken: 'user-token' };
+  const target: SocialTargetRef = {
+    externalTargetId: 'ig-1',
+    name: '@acme',
+    params: { pageAccessToken: 'page-token' },
+  };
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('returns like/comment counts + reach/impressions when insights are granted', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string) => {
+        expect(url).toContain('access_token=page-token');
+        if (url.includes('/insights')) {
+          return Promise.resolve(
+            jsonRes({
+              data: [
+                { name: 'impressions', values: [{ value: 640 }] },
+                { name: 'reach', values: [{ value: 590 }] },
+              ],
+            })
+          );
+        }
+        return Promise.resolve(jsonRes({ like_count: 40, comments_count: 6 }));
+      })
+    );
+
+    const metrics = await new InstagramAdapter().getMetrics(auth, target, 'media-1');
+    // No "shares" concept for an IG feed post.
+    expect(metrics).toEqual({ likes: 40, comments: 6, impressions: 640, reach: 590 });
+  });
+
+  it('keeps the counts when the insights scope is missing (403)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string) => {
+        if (url.includes('/insights')) {
+          return Promise.resolve(errRes(403, 'requires instagram_manage_insights'));
+        }
+        return Promise.resolve(jsonRes({ like_count: 9, comments_count: 0 }));
+      })
+    );
+
+    const metrics = await new InstagramAdapter().getMetrics(auth, target, 'media-1');
+    expect(metrics).toEqual({ likes: 9, comments: 0 });
+    expect(metrics.reach).toBeUndefined();
   });
 });

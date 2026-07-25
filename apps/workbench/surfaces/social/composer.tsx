@@ -27,9 +27,9 @@ import {
   AlertContent,
   AlertDescription,
   AlertTitle,
+  Avatar,
   Badge,
   Button,
-  Checkbox,
   Field,
   FieldControl,
   FieldDescription,
@@ -45,6 +45,7 @@ import {
   Check,
   ExternalLink,
   Image as ImageIcon,
+  RefreshCw,
   Save,
   Send,
   ShieldCheck,
@@ -74,7 +75,9 @@ import {
   useApprovePost,
   useComposePost,
   useDeletePost,
+  usePostMetrics,
   usePublishPost,
+  useRefreshPostMetrics,
   useRejectPost,
   useSchedulePost,
   useSocialOverview,
@@ -88,8 +91,6 @@ import {
   type PostTarget,
   type SocialPlatform,
 } from './data';
-
-const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 /** A chooseable destination, flattened from the connected accounts. */
 interface Destination {
@@ -242,6 +243,128 @@ function TargetResults({ targets }: { targets: PostTarget[] }) {
   );
 }
 
+/* ── How it did: the live numbers for a sent post (read-only) ─────────────── */
+
+/** One labelled number in the metrics row — a dash where the platform reported
+ *  nothing, never a fabricated zero. */
+function MetricNumber({ label, value }: { label: string; value: number | null }) {
+  return (
+    <div className="flex min-w-[3.5rem] flex-col items-end">
+      <span className="text-lg font-semibold tabular-nums">
+        {value === null ? '—' : value.toLocaleString()}
+      </span>
+      <span className="text-sm">{label}</span>
+    </div>
+  );
+}
+
+/**
+ * The performance panel a sent post grows once it is live: the latest numbers for
+ * each destination, a button to pull fresh ones, and a note on when they were last
+ * checked. Read-only — this is a report, not a form. Reach and views are nullable
+ * (a platform without the insights scope never reports them), so they show a dash.
+ */
+function PostMetricsSection({
+  postId,
+  avatarByTargetId,
+  catalogMap,
+}: {
+  postId: string;
+  avatarByTargetId: Map<string, string | null>;
+  catalogMap: Map<SocialPlatform, CatalogEntry>;
+}) {
+  const toast = useToast();
+  const metrics = usePostMetrics(postId);
+  const refresh = useRefreshPostMetrics();
+
+  const doRefresh = () => {
+    refresh.mutate(postId, {
+      onSuccess: () => {
+        toast.add({ title: 'Refreshing — numbers update shortly', type: 'info' });
+      },
+    });
+  };
+
+  const targets = metrics.data?.targets ?? [];
+  const hasAny = targets.some((t) => t.latest !== null);
+  const missingScope = targets.some(
+    (t) => t.latest !== null && (t.latest.reach === null || t.latest.impressions === null)
+  );
+
+  return (
+    <FormSection
+      title="How it did"
+      description="How this post is doing on each account. Numbers can take a little while to appear after it goes out."
+      action={
+        <Button
+          size="sm"
+          variant="outline"
+          color="module"
+          loading={refresh.isPending}
+          onClick={doRefresh}
+        >
+          <RefreshCw className="size-4" aria-hidden />
+          Refresh numbers
+        </Button>
+      }
+    >
+      {metrics.isPending ? (
+        <Text className="text-sm">Loading…</Text>
+      ) : metrics.isError ? (
+        <Text className="text-error text-sm">
+          {socialErrorMessage(
+            metrics.error,
+            'Could not load these numbers. Try Refresh in a moment.'
+          )}
+        </Text>
+      ) : !hasAny ? (
+        <Text className="text-sm">No numbers yet — hit Refresh numbers to pull the latest.</Text>
+      ) : (
+        <div className="flex flex-col gap-2">
+          {targets.map((target) => {
+            const s = target.latest;
+            return (
+              <div
+                key={target.postTargetId}
+                className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-2 border-b py-3 last:border-b-0"
+              >
+                <Avatar
+                  size="sm"
+                  src={avatarByTargetId.get(target.socialTargetId) ?? undefined}
+                  alt={target.targetName}
+                >
+                  {target.targetName.replace(/^@/, '').charAt(0).toUpperCase()}
+                </Avatar>
+                <div className="flex min-w-0 flex-1 flex-col">
+                  <span className="truncate font-medium">{target.targetName}</span>
+                  <span className="text-sm">{platformName(target.platform, catalogMap)}</span>
+                </div>
+                <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+                  <MetricNumber label="Likes" value={s?.likes ?? null} />
+                  <MetricNumber label="Comments" value={s?.comments ?? null} />
+                  <MetricNumber label="Shares" value={s?.shares ?? null} />
+                  <MetricNumber label="Views" value={s?.impressions ?? null} />
+                  <MetricNumber label="Reach" value={s?.reach ?? null} />
+                </div>
+                <span className="w-full text-sm">
+                  {s
+                    ? `Last checked ${formatWhen(s.collectedAt)}`
+                    : 'No numbers yet for this account.'}
+                </span>
+              </div>
+            );
+          })}
+          {missingScope ? (
+            <Text className="text-sm">
+              Reach and views need extra permissions from the platform.
+            </Text>
+          ) : null}
+        </div>
+      )}
+    </FormSection>
+  );
+}
+
 /* ══════════════════════════════════════════════════════════════════════════
    WRITE A NEW POST
    ══════════════════════════════════════════════════════════════════════════ */
@@ -259,7 +382,9 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
   const [overrides, setOverrides] = useState<
     Record<string, { textOverride: string; firstComment: string }>
   >({});
-  const [scheduleLocal, setScheduleLocal] = useState('');
+  // Seeded when the composer is opened from a calendar day (id:'new' + a schedule).
+  const seedSchedule = typeof ctx.params.schedule === 'string' ? ctx.params.schedule : '';
+  const [scheduleLocal, setScheduleLocal] = useState(seedSchedule);
 
   useEffect(() => {
     ctx.setTitle('New post');
@@ -556,7 +681,7 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                 title="Where it goes"
                 description="Pick the pages and profiles this post should land on. Each shows how it will read there."
               >
-                <div className="flex flex-col gap-2">
+                <div className="grid grid-cols-1 gap-2 @xl:grid-cols-2">
                   {destinations.map((dest) => {
                     const on = selected.has(dest.targetId);
                     const constraints = catalogMap.get(dest.platform)?.constraints;
@@ -564,28 +689,45 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                     return (
                       <div
                         key={dest.targetId}
-                        className="border-base-300 flex flex-col gap-2 rounded-lg border p-3"
+                        className={`hover:border-module flex flex-col gap-2 rounded-lg border p-3 transition-colors ${
+                          on ? 'border-module bg-module bg-soft' : 'border-base-300'
+                        }`}
                       >
-                        <label className="flex cursor-pointer items-start gap-3">
-                          <Checkbox
-                            color="module"
+                        {/* The whole identity row toggles the destination — one target,
+                            selected as a piece, not via a fiddly checkbox. */}
+                        <button
+                          type="button"
+                          aria-pressed={on}
+                          aria-label={`Post to ${dest.name}`}
+                          onClick={() => {
+                            toggle(dest.targetId);
+                          }}
+                          className="flex w-full cursor-pointer items-center gap-3 text-left"
+                        >
+                          <Avatar
                             size="sm"
-                            className="mt-0.5"
-                            checked={on}
-                            aria-label={`Post to ${dest.name}`}
-                            onChange={() => {
-                              toggle(dest.targetId);
-                            }}
-                          />
+                            src={dest.avatarUrl ?? undefined}
+                            alt={dest.accountName}
+                          >
+                            {dest.name.replace(/^@/, '').charAt(0).toUpperCase()}
+                          </Avatar>
                           <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                            <span className="font-medium">{dest.name}</span>
+                            <span className="truncate font-medium">{dest.name}</span>
                             <span className="text-sm">
                               {platformName(dest.platform, catalogMap)}
                             </span>
                           </span>
-                        </label>
+                          <span
+                            className={`grid size-5 shrink-0 place-items-center rounded-full border ${
+                              on ? 'border-module bg-module text-module-content' : 'border-base-300'
+                            }`}
+                            aria-hidden
+                          >
+                            {on ? <Check className="size-3.5" /> : null}
+                          </span>
+                        </button>
                         {on && body.trim() !== '' ? (
-                          <div className="pl-8">
+                          <div className="pl-11">
                             <PreviewNotes
                               constraints={constraints}
                               text={text}
@@ -973,258 +1115,297 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
       </PaneToolbar>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
-        <div className={COLUMN}>
-          <div className="flex flex-col gap-1">
-            <Heading level={1} className="text-2xl font-semibold">
-              {post.status === 'draft' ? 'Draft post' : 'Post'}
-            </Heading>
-            <Text className="text-sm">{meta.detail}</Text>
-          </div>
+        {/* Same split studio as writing a new post: the post on the left, the real
+            per-account preview pinned on the right so it stays in view while the
+            words change. Stacks to one column below lg for a phone. */}
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 p-4 lg:flex-row lg:items-start">
+          <div className="flex min-w-0 flex-1 flex-col gap-4">
+            <div className="flex flex-col gap-1">
+              <Heading level={1} className="text-2xl font-semibold">
+                {post.status === 'draft' ? 'Draft post' : 'Post'}
+              </Heading>
+              <Text className="text-sm">{meta.detail}</Text>
+            </div>
 
-          {actionError ? (
-            <Alert color="error" variant="soft">
-              <AlertContent>
-                <AlertTitle>That did not go through</AlertTitle>
-                <AlertDescription>{actionError}</AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : null}
+            {actionError ? (
+              <Alert color="error" variant="soft">
+                <AlertContent>
+                  <AlertTitle>That did not go through</AlertTitle>
+                  <AlertDescription>{actionError}</AlertDescription>
+                </AlertContent>
+              </Alert>
+            ) : null}
 
-          {editable && canWrite ? (
-            <FormSection title="Your post">
-              <Field>
-                <FieldLabel>What do you want to say?</FieldLabel>
-                <FieldControl
-                  render={
-                    <Textarea
-                      color="module"
-                      rows={5}
-                      value={body}
-                      onChange={(event) => {
-                        setBody(event.target.value);
-                      }}
-                    />
-                  }
-                />
-                <FieldDescription>
-                  {body.length.toLocaleString()} {body.length === 1 ? 'character' : 'characters'}
-                </FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel>Link (optional)</FieldLabel>
-                <FieldControl
-                  render={
-                    <Input
-                      color="module"
-                      value={link}
-                      placeholder="https://yourbusiness.com/news"
-                      autoComplete="off"
-                      spellCheck={false}
-                      onChange={(event) => {
-                        setLink(event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Pictures or video (optional)</FieldLabel>
-                <AssetField
-                  multiple
-                  value={mediaIds}
-                  onChange={(next) => {
-                    setMediaIds(Array.isArray(next) ? (next as string[]) : []);
-                  }}
-                />
-              </Field>
-            </FormSection>
-          ) : (
-            <FormSection title="Your post">
-              <Text className="whitespace-pre-wrap">{post.body}</Text>
-              {post.link ? (
-                <a
-                  href={post.link}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="text-module inline-flex items-center gap-0.5 text-sm underline"
-                >
-                  {post.link}
-                  <ExternalLink className="size-3.5" aria-hidden />
-                </a>
-              ) : null}
-              <MediaThumbs ids={post.mediaAssetIds} />
-            </FormSection>
-          )}
-
-          <FormSection
-            title="Where it goes"
-            description="The accounts this post was set up to reach, and how each is doing."
-          >
-            {post.targets.length === 0 ? (
-              <Text className="text-sm">This post has no destinations.</Text>
-            ) : editable && canWrite ? (
-              <div className="flex flex-col gap-2">
-                {post.targets.map((target) => {
-                  const constraints = catalogMap.get(target.platform)?.constraints;
-                  return (
-                    <div
-                      key={target.id}
-                      className="border-base-300 flex flex-col gap-1 border-b py-2 last:border-b-0"
-                    >
-                      <span className="font-medium">{target.targetName}</span>
-                      <PreviewNotes
-                        constraints={constraints}
-                        text={body}
-                        mediaCount={mediaIds.length}
+            {editable && canWrite ? (
+              <FormSection title="Your post">
+                <Field>
+                  <FieldLabel>What do you want to say?</FieldLabel>
+                  <FieldControl
+                    render={
+                      <Textarea
+                        color="module"
+                        rows={5}
+                        value={body}
+                        onChange={(event) => {
+                          setBody(event.target.value);
+                        }}
                       />
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <TargetResults targets={post.targets} />
-            )}
-          </FormSection>
-
-          {/* Same "How it will look" the composer shows — the real image, cropped to
-              each account's shape, with the words that survive its limit. */}
-          {post.targets.length > 0 ? (
-            <FormSection
-              title="How it will look"
-              description="The real thing, per account — cropped to its shape and cut to its limit."
-            >
-              <div className="flex flex-col gap-3">
-                {post.targets.map((target) => (
-                  <PostPreview
-                    key={target.id}
-                    platform={target.platform}
-                    platformLabel={platformName(target.platform, catalogMap)}
-                    destinationName={target.targetName}
-                    avatarUrl={avatarByTargetId.get(target.socialTargetId) ?? null}
-                    constraints={catalogMap.get(target.platform)?.constraints}
-                    text={body}
-                    link={link.trim() || undefined}
-                    media={orderedAssets}
+                    }
                   />
-                ))}
-              </div>
-            </FormSection>
-          ) : null}
+                  <FieldDescription>
+                    {body.length.toLocaleString()} {body.length === 1 ? 'character' : 'characters'}
+                  </FieldDescription>
+                </Field>
+                <Field>
+                  <FieldLabel>Link (optional)</FieldLabel>
+                  <FieldControl
+                    render={
+                      <Input
+                        color="module"
+                        value={link}
+                        placeholder="https://yourbusiness.com/news"
+                        autoComplete="off"
+                        spellCheck={false}
+                        onChange={(event) => {
+                          setLink(event.target.value);
+                        }}
+                      />
+                    }
+                  />
+                </Field>
+                <Field>
+                  <FieldLabel>Pictures or video (optional)</FieldLabel>
+                  <AssetField
+                    multiple
+                    value={mediaIds}
+                    onChange={(next) => {
+                      setMediaIds(Array.isArray(next) ? (next as string[]) : []);
+                    }}
+                  />
+                </Field>
+              </FormSection>
+            ) : (
+              <FormSection title="Your post">
+                <Text className="whitespace-pre-wrap">{post.body}</Text>
+                {post.link ? (
+                  <a
+                    href={post.link}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                    className="text-module inline-flex items-center gap-0.5 text-sm underline"
+                  >
+                    {post.link}
+                    <ExternalLink className="size-3.5" aria-hidden />
+                  </a>
+                ) : null}
+                <MediaThumbs ids={post.mediaAssetIds} />
+              </FormSection>
+            )}
 
-          {/* Lifecycle actions — only while the post can still move. */}
-          {editable && canWrite ? (
-            <FormSection title="Send">
-              <div className="flex flex-col gap-4">
-                {post.status === 'pending_approval' && isAdmin ? (
-                  <div className="flex flex-wrap items-center gap-2">
+            <FormSection
+              title="Where it goes"
+              description="The accounts this post was set up to reach, and how each is doing."
+            >
+              {post.targets.length === 0 ? (
+                <Text className="text-sm">This post has no destinations.</Text>
+              ) : editable && canWrite ? (
+                <div className="flex flex-col gap-2">
+                  {post.targets.map((target) => {
+                    const constraints = catalogMap.get(target.platform)?.constraints;
+                    return (
+                      <div
+                        key={target.id}
+                        className="border-base-300 flex items-start gap-3 border-b py-2 last:border-b-0"
+                      >
+                        <Avatar
+                          size="sm"
+                          src={avatarByTargetId.get(target.socialTargetId) ?? undefined}
+                          alt={target.targetName}
+                        >
+                          {target.targetName.replace(/^@/, '').charAt(0).toUpperCase()}
+                        </Avatar>
+                        <div className="flex min-w-0 flex-1 flex-col gap-1">
+                          <span className="font-medium">{target.targetName}</span>
+                          <PreviewNotes
+                            constraints={constraints}
+                            text={body}
+                            mediaCount={mediaIds.length}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <TargetResults targets={post.targets} />
+              )}
+            </FormSection>
+
+            {/* Lifecycle actions — only while the post can still move. */}
+            {editable && canWrite ? (
+              <FormSection title="Send">
+                <div className="flex flex-col gap-4">
+                  {post.status === 'pending_approval' && isAdmin ? (
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Button
+                        size="sm"
+                        color="module"
+                        loading={approve.isPending}
+                        onClick={doApprove}
+                      >
+                        <Check className="size-4" aria-hidden />
+                        Approve
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        color="danger"
+                        loading={reject.isPending}
+                        onClick={doReject}
+                      >
+                        <X className="size-4" aria-hidden />
+                        Send back
+                      </Button>
+                    </div>
+                  ) : null}
+
+                  {post.status === 'draft' ? (
                     <Button
                       size="sm"
                       color="module"
-                      loading={approve.isPending}
-                      onClick={doApprove}
+                      variant="outline"
+                      className="self-start"
+                      loading={submit.isPending}
+                      onClick={doSubmit}
                     >
-                      <Check className="size-4" aria-hidden />
-                      Approve
+                      <Send className="size-4" aria-hidden />
+                      Submit for approval
                     </Button>
+                  ) : null}
+
+                  <div className="flex flex-wrap items-end gap-3">
+                    <Field className="min-w-0">
+                      <FieldLabel>
+                        {post.scheduledAt ? 'Change the time' : 'Schedule for later'}
+                      </FieldLabel>
+                      <FieldControl
+                        render={
+                          <Input
+                            color="module"
+                            type="datetime-local"
+                            className="max-w-xs"
+                            value={scheduleLocal}
+                            onChange={(event) => {
+                              setScheduleLocal(event.target.value);
+                            }}
+                          />
+                        }
+                      />
+                    </Field>
                     <Button
                       size="sm"
                       variant="outline"
-                      color="danger"
-                      loading={reject.isPending}
-                      onClick={doReject}
-                    >
-                      <X className="size-4" aria-hidden />
-                      Send back
-                    </Button>
-                  </div>
-                ) : null}
-
-                {post.status === 'draft' ? (
-                  <Button
-                    size="sm"
-                    color="module"
-                    variant="outline"
-                    className="self-start"
-                    loading={submit.isPending}
-                    onClick={doSubmit}
-                  >
-                    <Send className="size-4" aria-hidden />
-                    Submit for approval
-                  </Button>
-                ) : null}
-
-                <div className="flex flex-wrap items-end gap-3">
-                  <Field className="min-w-0">
-                    <FieldLabel>
-                      {post.scheduledAt ? 'Change the time' : 'Schedule for later'}
-                    </FieldLabel>
-                    <FieldControl
-                      render={
-                        <Input
-                          color="module"
-                          type="datetime-local"
-                          className="max-w-xs"
-                          value={scheduleLocal}
-                          onChange={(event) => {
-                            setScheduleLocal(event.target.value);
-                          }}
-                        />
-                      }
-                    />
-                  </Field>
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    color="module"
-                    disabled={!scheduleValid || schedule.isPending}
-                    loading={schedule.isPending}
-                    onClick={doSchedule}
-                  >
-                    <CalendarClock className="size-4" aria-hidden />
-                    {post.scheduledAt ? 'Reschedule' : 'Schedule'}
-                  </Button>
-                </div>
-                {post.scheduledAt ? (
-                  <Text className="text-sm">Currently set for {formatWhen(post.scheduledAt)}.</Text>
-                ) : null}
-
-                {isAdmin ? (
-                  <div className="border-base-300 border-t pt-3">
-                    <Button
-                      size="sm"
                       color="module"
-                      loading={publish.isPending}
-                      onClick={doPublish}
+                      disabled={!scheduleValid || schedule.isPending}
+                      loading={schedule.isPending}
+                      onClick={doSchedule}
                     >
-                      <Send className="size-4" aria-hidden />
-                      {post.status === 'failed' ? 'Try publishing again' : 'Publish now'}
+                      <CalendarClock className="size-4" aria-hidden />
+                      {post.scheduledAt ? 'Reschedule' : 'Schedule'}
                     </Button>
                   </div>
-                ) : null}
-              </div>
-            </FormSection>
-          ) : null}
+                  {post.scheduledAt ? (
+                    <Text className="text-sm">
+                      Currently set for {formatWhen(post.scheduledAt)}.
+                    </Text>
+                  ) : null}
 
-          {/* Delete — a rare, irreversible action, kept apart under a divider. */}
-          {isAdmin && post.status !== 'publishing' ? (
-            <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+                  {isAdmin ? (
+                    <div className="border-base-300 border-t pt-3">
+                      <Button
+                        size="sm"
+                        color="module"
+                        loading={publish.isPending}
+                        onClick={doPublish}
+                      >
+                        <Send className="size-4" aria-hidden />
+                        {post.status === 'failed' ? 'Try publishing again' : 'Publish now'}
+                      </Button>
+                    </div>
+                  ) : null}
+                </div>
+              </FormSection>
+            ) : null}
+
+            {/* Delete — a rare, irreversible action, kept apart under a divider. */}
+            {isAdmin && post.status !== 'publishing' ? (
+              <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
+                <Text className="text-sm">
+                  Remove this post and its schedule. Anything already posted stays live on your
+                  accounts.
+                </Text>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  color="danger"
+                  loading={remove.isPending}
+                  onClick={doDelete}
+                >
+                  <Trash2 className="size-4" aria-hidden />
+                  Delete post
+                </Button>
+              </div>
+            ) : null}
+          </div>
+
+          {/* The payoff, pinned: the real thing per account, so it stays in view
+              while the words and pictures change. Follows the flow on mobile. */}
+          <aside className="flex w-full flex-col gap-3 lg:sticky lg:top-4 lg:w-[400px] lg:shrink-0">
+            <div className="flex flex-col gap-1">
+              <Heading level={2} className="text-base font-semibold">
+                How it will look
+              </Heading>
               <Text className="text-sm">
-                Remove this post and its schedule. Anything already posted stays live on your
-                accounts.
+                {post.targets.length === 0
+                  ? 'This post has no destinations.'
+                  : 'The real thing, per account — cropped to its shape, cut to its limit.'}
               </Text>
-              <Button
-                size="sm"
-                variant="outline"
-                color="danger"
-                loading={remove.isPending}
-                onClick={doDelete}
-              >
-                <Trash2 className="size-4" aria-hidden />
-                Delete post
-              </Button>
             </div>
-          ) : null}
+
+            {post.targets.length === 0 ? (
+              <div className="border-base-300 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed p-8 text-center">
+                <ImageIcon className="size-6" aria-hidden />
+                <Text className="text-sm">Nowhere to preview.</Text>
+              </div>
+            ) : (
+              post.targets.map((target) => (
+                <PostPreview
+                  key={target.id}
+                  platform={target.platform}
+                  platformLabel={platformName(target.platform, catalogMap)}
+                  destinationName={target.targetName}
+                  avatarUrl={avatarByTargetId.get(target.socialTargetId) ?? null}
+                  constraints={catalogMap.get(target.platform)?.constraints}
+                  text={body}
+                  link={link.trim() || undefined}
+                  media={orderedAssets}
+                />
+              ))
+            )}
+          </aside>
         </div>
+
+        {/* How it did — the live numbers, once the post is actually out. A full-width
+            band below the studio so the report reads on its own, after the preview. */}
+        {post.status === 'published' || post.status === 'partially_published' ? (
+          <div className="mx-auto w-full max-w-6xl px-4 pb-4">
+            <PostMetricsSection
+              postId={post.id}
+              avatarByTargetId={avatarByTargetId}
+              catalogMap={catalogMap}
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

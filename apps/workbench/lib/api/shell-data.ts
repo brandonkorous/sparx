@@ -18,6 +18,9 @@ export interface TenantInfo {
   id: string;
   name: string;
   slug: string;
+  /** What the tenant calls the people it serves (docs/136). Absent on older
+   *  responses → treat as 'customer'. */
+  audienceNoun?: string;
 }
 
 export interface SiteInfo {

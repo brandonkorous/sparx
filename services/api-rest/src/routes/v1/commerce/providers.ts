@@ -19,6 +19,7 @@ const ListReturnsQuery = z.object({
 
 const ListSubscriptionsQuery = z.object({
   status: z.string().optional(),
+  customer_id: z.string().uuid().optional(),
   take: z.coerce.number().int().min(1).max(250).optional(),
   skip: z.coerce.number().int().min(0).optional(),
 });
@@ -170,6 +171,7 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
     const q = ListSubscriptionsQuery.parse(request.query);
     const { items, total } = await subscriptionService.list(toCommerceContext(request), {
       status: q.status as never,
+      ...(q.customer_id ? { customerId: q.customer_id } : {}),
       take: q.take,
       skip: q.skip,
     });

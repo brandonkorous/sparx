@@ -81,8 +81,16 @@ export interface ShippingRate {
   estimatedDeliveryDays: number | null;
 }
 
+export interface LiveRateReadiness {
+  liveCarrierConnected: boolean;
+  carrierSlugs: string[];
+  shipFromComplete: boolean;
+  shipFromIssue: string | null;
+}
+
 export const shippingKeys = {
   root: ['commerce', 'shipping'] as const,
+  readiness: ['commerce', 'shipping', 'readiness'] as const,
   zones: ['commerce', 'shipping', 'zones'] as const,
   zone: (id: string) => ['commerce', 'shipping', 'zones', id] as const,
   zoneRates: (id: string) => ['commerce', 'shipping', 'zones', id, 'rates'] as const,
@@ -91,6 +99,13 @@ export const shippingKeys = {
 };
 
 /* ── Queries ────────────────────────────────────────────────────────────── */
+
+export function useShippingReadiness() {
+  return useQuery({
+    queryKey: shippingKeys.readiness,
+    queryFn: () => api.get<LiveRateReadiness>('/v1/commerce/shipping/readiness'),
+  });
+}
 
 export function useShippingZones() {
   return useQuery({

@@ -34,12 +34,31 @@ export async function ensureVariantExists(tx: TxClient, variantId: string): Prom
  * `applyMovement` (every onHand change) and by the reservation paths (allocated
  * changes).
  */
-export async function syncProductInStock(tx: TxClient, variantId: string): Promise<void> {
+export async function syncProductInStock(
+  tx: TxClient,
+  variantId: string,
+  // Whether the tenant tracks inventory (the `inventory` module is active). Defaults
+  // true because the inventory-internal callers (ledger movements, reservations) only
+  // ever run when it IS active. Commerce/installer callers pass the real flag: a tenant
+  // with inventory OFF does not manage stock at all, so its products are ALWAYS sellable
+  // — defaulting them to the column's `false` would strand every product at "Sold out"
+  // on the storefront with no way to fix it. Mirrors `computeAvailability`'s untracked
+  // path so the denormalized column agrees with the live availability calc.
+  inventoryActive = true
+): Promise<void> {
   const variant = await tx.productVariant.findFirst({
     where: { id: variantId },
     select: { productId: true },
   });
   if (!variant) return;
+
+  if (!inventoryActive) {
+    await tx.product.update({
+      where: { id: variant.productId },
+      data: { inStock: true, lowStock: false },
+    });
+    return;
+  }
 
   // A product is "in stock" if it has positive available inventory in any
   // warehouse, OR any live variant is orderable without tracked stock

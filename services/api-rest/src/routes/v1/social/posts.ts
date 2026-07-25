@@ -43,6 +43,7 @@ import {
   submitForApproval,
   type LifecycleResult,
 } from '../../../lib/social-lifecycle.js';
+import { getPostMetrics } from '../../../lib/social-metrics.js';
 
 const PathId = z.object({ id: z.string().uuid() });
 const ListQuery = z.object({ status: z.string().max(24).optional() });
@@ -204,6 +205,34 @@ const socialPostRoutes: FastifyPluginAsync = async (app) => {
     const deleted = await deleteSocialPost(toSocialContext(request), id);
     if (!deleted) throw notFound('post', id);
     return reply.status(204).send();
+  });
+
+  // ── performance (docs/implementation/social.md "Measure") ──────────────────────
+
+  // One post's per-destination numbers (with a snapshot history for a trend). Read of
+  // whatever the worker has collected so far — never blocks on a live platform call.
+  app.get('/v1/social/posts/:id/metrics', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'viewer');
+    const { id } = PathId.parse(request.params);
+    const metrics = await getPostMetrics(toSocialContext(request), id);
+    if (!metrics) throw notFound('post', id);
+    return reply.send(ok(metrics));
+  });
+
+  // Ask the worker to pull fresh numbers (the Insights "Refresh" action). The heavy
+  // per-platform I/O is the worker's job — here we just enqueue and 202.
+  app.post('/v1/social/posts/:id/metrics/refresh', async (request, reply) => {
+    await requireSocialModule(request);
+    const auth = requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const ctx = toSocialContext(request);
+    const post = await getSocialPost(ctx, id);
+    if (!post) throw notFound('post', id);
+    await publish(request.log, 'social.metrics.collect', ctx.tenantId, auth.actorId, {
+      postId: id,
+    });
+    return reply.status(202).send(ok({ collecting: true, postId: id }));
   });
 };
 

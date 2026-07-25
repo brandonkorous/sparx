@@ -242,6 +242,10 @@ module "pubsub" {
     "social.post.due"           = []
     "social.post.published"     = []
     "social.post.failed"        = []
+    # Metrics pull (docs/implementation/social.md "Measure"): api-rest (refresh) +
+    # the worker emit this; the social-worker's SECOND push subscription (serverless.tf)
+    # consumes it and snapshots each published target's numbers.
+    "social.metrics.collect" = []
 
     # Module lifecycle
     "module.activated"   = []

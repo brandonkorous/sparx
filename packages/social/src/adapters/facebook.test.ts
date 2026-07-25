@@ -1,7 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FacebookPageAdapter, facebookPermalink, planFacebookPost } from './facebook.js';
-import type { RenderedPost } from '../types.js';
+import type { RenderedPost, SocialAuth, SocialTargetRef } from '../types.js';
+
+function jsonRes(body: unknown): Response {
+  return { ok: true, status: 200, json: () => Promise.resolve(body) } as unknown as Response;
+}
+function errRes(status: number, text: string): Response {
+  return { ok: false, status, text: () => Promise.resolve(text) } as unknown as Response;
+}
 
 // The Facebook Page adapter's pure decision logic (docs/134 Phase 2). Network calls
 // (token exchange, Page listing, Graph publish) are integration surface; here we lock
@@ -85,5 +92,71 @@ describe('FacebookPageAdapter connectUrl / isConfigured', () => {
   it('reports not-configured when the env is missing', () => {
     delete process.env.META_APP_SECRET;
     expect(new FacebookPageAdapter().isConfigured()).toBe(false);
+  });
+});
+
+describe('FacebookPageAdapter getMetrics', () => {
+  const auth: SocialAuth = { externalId: 'user', accessToken: 'user-token' };
+  const target: SocialTargetRef = {
+    externalTargetId: 'page-1',
+    name: 'Page',
+    params: { pageAccessToken: 'page-token' },
+  };
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('returns engagement counts + reach/impressions when insights are granted', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string) => {
+        // Reads as the PAGE, never the user token.
+        expect(url).toContain('access_token=page-token');
+        if (url.includes('/insights')) {
+          return Promise.resolve(
+            jsonRes({
+              data: [
+                { name: 'post_impressions', values: [{ value: 1000 }] },
+                { name: 'post_impressions_unique', values: [{ value: 820 }] },
+              ],
+            })
+          );
+        }
+        return Promise.resolve(
+          jsonRes({
+            likes: { summary: { total_count: 12 } },
+            comments: { summary: { total_count: 3 } },
+            shares: { count: 2 },
+          })
+        );
+      })
+    );
+
+    const metrics = await new FacebookPageAdapter().getMetrics(auth, target, '123_456');
+    expect(metrics).toEqual({ likes: 12, comments: 3, shares: 2, impressions: 1000, reach: 820 });
+  });
+
+  it('keeps the engagement counts when the insights scope is missing (403)', async () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string) => {
+        if (url.includes('/insights')) {
+          return Promise.resolve(errRes(403, '(#10) requires read_insights permission'));
+        }
+        return Promise.resolve(
+          jsonRes({
+            likes: { summary: { total_count: 5 } },
+            comments: { summary: { total_count: 1 } },
+            shares: { count: 0 },
+          })
+        );
+      })
+    );
+
+    const metrics = await new FacebookPageAdapter().getMetrics(auth, target, '123_456');
+    expect(metrics).toEqual({ likes: 5, comments: 1, shares: 0 });
+    expect(metrics.impressions).toBeUndefined();
+    expect(metrics.reach).toBeUndefined();
   });
 });

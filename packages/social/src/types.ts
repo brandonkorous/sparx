@@ -189,6 +189,14 @@ export interface SocialAdapter {
     idempotencyKey: string
   ): Promise<SocialPublishResult>;
 
-  /** Optional: pull engagement for a published post. */
-  getMetrics?(auth: SocialAuth, externalId: string): Promise<SocialPostMetrics>;
+  /** Optional: pull engagement for a published post. Receives the same `target` as
+   *  {@link publish} (a platform like Facebook reads insights with the PAGE token that
+   *  rides in `target.params`, not the user token) and the platform's own post id
+   *  (`externalId` off the SocialPostTarget). Every field of the result is optional —
+   *  a platform reports what its granted scopes allow, null for the rest. */
+  getMetrics?(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    externalId: string
+  ): Promise<SocialPostMetrics>;
 }

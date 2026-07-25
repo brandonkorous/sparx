@@ -183,6 +183,75 @@ export interface UpdatePostInput {
   mediaAssetIds?: string[];
 }
 
+/* ── Insights (how the posts did) ───────────────────────────────────────── */
+
+/** One account's totals across the window — everything summed over its posts. */
+export interface InsightsAccount {
+  socialTargetId: string;
+  name: string;
+  platform: SocialPlatform;
+  posts: number;
+  likes: number;
+  comments: number;
+  shares: number;
+  impressions: number;
+  reach: number;
+}
+
+/** One post's row in the leaderboard — the best performers over the window. */
+export interface InsightsTopPost {
+  postId: string;
+  postTargetId: string;
+  excerpt: string;
+  publishedAt: string | null;
+  platform: SocialPlatform;
+  targetName: string;
+  permalink: string | null;
+  likes: number;
+  comments: number;
+  shares: number;
+  impressions: number;
+  reach: number;
+  engagements: number;
+}
+
+/** The performance roll-up behind the Insights surface. */
+export interface SocialInsights {
+  windowDays: number;
+  totals: { posts: number; engagements: number; reach: number; impressions: number };
+  accounts: InsightsAccount[];
+  topPosts: InsightsTopPost[];
+}
+
+/**
+ * One reading of a destination's numbers. Every count is nullable on purpose: a
+ * platform that has not granted the insights scope reports `null` for reach and
+ * views (never `0`, which is a real value), so the UI must show a dash — not a
+ * fabricated zero — where a number was never available.
+ */
+export interface MetricSnapshot {
+  likes: number | null;
+  comments: number | null;
+  shares: number | null;
+  impressions: number | null;
+  reach: number | null;
+  collectedAt: string;
+}
+
+/** Per-destination metrics for one post — the latest reading plus its history. */
+export interface PostMetrics {
+  postId: string;
+  targets: {
+    postTargetId: string;
+    socialTargetId: string;
+    targetName: string;
+    platform: SocialPlatform;
+    permalink: string | null;
+    latest: MetricSnapshot | null;
+    history: MetricSnapshot[];
+  }[];
+}
+
 /* ── Query keys ─────────────────────────────────────────────────────────── */
 
 export const socialKeys = {
@@ -190,6 +259,8 @@ export const socialKeys = {
   overview: ['social', 'overview'] as const,
   posts: (status?: string) => ['social', 'posts', { status: status ?? null }] as const,
   post: (id: string) => ['social', 'posts', 'detail', id] as const,
+  insights: (windowDays: number) => ['social', 'insights', windowDays] as const,
+  metrics: (postId: string) => ['social', 'posts', 'metrics', postId] as const,
 };
 
 /* ── Reads ──────────────────────────────────────────────────────────────── */
@@ -221,6 +292,24 @@ export function useSocialPost(id: string) {
     enabled: id !== 'new',
     retry: (failureCount, error) =>
       error instanceof ApiError && error.status === 404 ? false : failureCount < 2,
+  });
+}
+
+/** The performance roll-up over the last `windowDays` — totals, per-account rows,
+ *  and the best-performing posts. Behind the Insights surface. */
+export function useSocialInsights(windowDays: number) {
+  return useQuery({
+    queryKey: socialKeys.insights(windowDays),
+    queryFn: () => api.get<SocialInsights>('/v1/social/insights', { windowDays }),
+  });
+}
+
+/** One post's per-destination numbers — the latest reading and its history. */
+export function usePostMetrics(postId: string) {
+  return useQuery({
+    queryKey: socialKeys.metrics(postId),
+    queryFn: () => api.get<PostMetrics>(`/v1/social/posts/${postId}/metrics`),
+    enabled: postId !== 'new',
   });
 }
 
@@ -394,6 +483,41 @@ export function useSchedulePost(id: string) {
   });
 }
 
+/**
+ * Reschedule ANY post to a new time in one call — the drag-to-reschedule path on the
+ * calendar, where the id is per-drop, not fixed (so `useSchedulePost(id)`'s hook-per-id
+ * shape does not fit). Optimistic: the post's `scheduledAt` is patched in every posts
+ * list cache the instant it is dropped, so the chip lands on the new day with no wait,
+ * and rolls back if the server refuses (a time in the past, a post past its window).
+ */
+export function useReschedulePost() {
+  const queryClient = useQueryClient();
+  const invalidate = useInvalidatePosts();
+  return useMutation({
+    mutationFn: ({ id, scheduledAt }: { id: string; scheduledAt: string }) =>
+      api.post<Post>(`/v1/social/posts/${id}/schedule`, { scheduledAt }),
+    onMutate: async ({ id, scheduledAt }) => {
+      await queryClient.cancelQueries({ queryKey: ['social', 'posts'] });
+      // Snapshot every posts cache (each status filter) so an error can roll back.
+      const snapshot = queryClient.getQueriesData<Post[]>({ queryKey: ['social', 'posts'] });
+      queryClient.setQueriesData<Post[]>({ queryKey: ['social', 'posts'] }, (list) =>
+        // The detail cache holds a single Post, not an array — the guard leaves it be;
+        // onSettled invalidates it so it re-reads authoritatively.
+        Array.isArray(list) ? list.map((p) => (p.id === id ? { ...p, scheduledAt } : p)) : list
+      );
+      return { snapshot };
+    },
+    onError: (_error, _vars, context) => {
+      for (const [key, data] of context?.snapshot ?? []) {
+        queryClient.setQueryData(key, data);
+      }
+    },
+    onSettled: (post) => {
+      invalidate(post?.id);
+    },
+  });
+}
+
 export function useApprovePost(id: string) {
   const invalidate = useInvalidatePosts();
   return useMutation({
@@ -433,6 +557,27 @@ export function useDeletePost(id: string) {
     mutationFn: () => api.delete(`/v1/social/posts/${id}`),
     onSuccess: () => {
       invalidate();
+    },
+  });
+}
+
+/**
+ * Ask the server to pull fresh numbers for a post from every platform it went to.
+ * The endpoint enqueues a background collection and returns immediately (202), so
+ * the numbers arrive on a later refetch rather than in this response — hence we
+ * invalidate the insights roll-up AND this post's metrics so the next read shows
+ * whatever has landed. Keyed by post id, so it fits any row.
+ */
+export function useRefreshPostMetrics() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (postId: string) =>
+      api.post<{ collecting: boolean; postId: string }>(
+        `/v1/social/posts/${postId}/metrics/refresh`
+      ),
+    onSuccess: (_result, postId) => {
+      void queryClient.invalidateQueries({ queryKey: ['social', 'insights'] });
+      void queryClient.invalidateQueries({ queryKey: socialKeys.metrics(postId) });
     },
   });
 }

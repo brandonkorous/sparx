@@ -26,10 +26,11 @@ import type { Logger } from 'pino';
 import { env } from './env.js';
 import { resolveSocialAuth } from './auth.js';
 import { mediaRefsForPlatform, resolvePostAssets } from './media.js';
+import { tagSocialLink } from './utm.js';
 
 const MAX_ATTEMPTS = 5;
 
-const CONNECTION_SELECT = {
+export const CONNECTION_SELECT = {
   id: true,
   externalId: true,
   status: true,
@@ -53,7 +54,9 @@ function errMsg(e: unknown): string {
 }
 
 /** Read a target's platform params back off its metadata. */
-function paramsFromTargetMeta(metadata: Prisma.JsonValue): Record<string, string> | undefined {
+export function paramsFromTargetMeta(
+  metadata: Prisma.JsonValue
+): Record<string, string> | undefined {
   if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return undefined;
   const raw = (metadata as Record<string, unknown>).params;
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
@@ -96,6 +99,10 @@ export async function drainPost(
       'some media could not be resolved (unprocessed asset or no media base configured)'
     );
   }
+
+  // One timestamp for the whole drain, so every target of this post shares the same
+  // attribution campaign month (utm_campaign=social-<yyyy-mm>).
+  const publishTime = new Date();
 
   let published = 0;
   let failed = 0;
@@ -172,7 +179,9 @@ export async function drainPost(
       {
         body: post.body,
         media: mediaRefsForPlatform(assets, platform),
-        link: post.link ?? undefined,
+        // Tag the outbound link for attribution, per platform (docs/80). A link the
+        // author already tagged, or a non-http one, passes through untouched.
+        link: tagSocialLink(post.link ?? undefined, platform, publishTime),
       },
       platform,
       Object.keys(override).length ? override : undefined

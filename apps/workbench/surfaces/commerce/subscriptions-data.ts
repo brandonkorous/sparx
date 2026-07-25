@@ -85,6 +85,8 @@ export interface SubscriptionDetail extends SubscriptionSummary {
 
 export interface SubscriptionQuery {
   status?: SubscriptionStatus;
+  /** Scope to one customer — their standing orders, seen from their profile. */
+  customerId?: string;
   take: number;
   skip: number;
 }
@@ -109,6 +111,7 @@ export function useSubscriptions(query: SubscriptionQuery) {
     queryFn: () =>
       api.list<SubscriptionSummary>('/v1/commerce/subscriptions', {
         ...(query.status ? { status: query.status } : {}),
+        ...(query.customerId ? { customer_id: query.customerId } : {}),
         take: query.take,
         skip: query.skip,
       }),

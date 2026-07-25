@@ -41,6 +41,12 @@ model Customer {
   tags                   String[] @default([]) @db.VarChar(63)
   metadata               Json     @default("{}")
 
+  // Optional profile photo — a SOFT reference to a MediaAsset (cms module), no
+  // FK by design (mirrors CrmActivity.linkedEntityId's cross-module soft ref).
+  // The client resolves the id to a URL and falls back to initials if the asset
+  // is gone. A customer is never a staff user, so this is always editable.
+  avatarMediaAssetId String? @map("avatar_media_asset_id") @db.Uuid
+
   totalSpent   Decimal   @default(0) @map("total_spent") @db.Decimal(12, 2)
   orderCount   Int       @default(0) @map("order_count")
   firstOrderAt DateTime? @map("first_order_at") @db.Timestamptz
@@ -61,6 +67,7 @@ model Customer {
   mergedFrom  Customer[]    @relation("CustomerMerge")
 
   addresses        CustomerAddress[]
+  documents        CustomerDocument[]
   deals            Deal[]
   activities       CrmActivity[]
   tasks            Task[]
@@ -136,4 +143,27 @@ model CustomerAddress {
 
   @@index([tenantId, customerId])
   @@map("customer_addresses")
+}
+
+// A file attached to a customer — a signed contract, an ID scan, a spec sheet.
+// The bytes live in the media pipeline (MediaAsset, cms module); this row is the
+// link + a human label. `media_asset_id` is a SOFT reference (no FK), the same
+// cross-module pattern as the avatar and crm_activities.linked_entity_id — the
+// client resolves it to a name + download URL, and a missing asset degrades to a
+// dangling row the UI simply skips. `tenant_id` is a scalar (RLS reads it); the
+// cascade on customer deletion cleans these up, and customers themselves cascade
+// from the tenant, so no direct tenant FK is needed.
+model CustomerDocument {
+  id           String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String  @map("tenant_id") @db.Uuid
+  customerId   String  @map("customer_id") @db.Uuid
+  mediaAssetId String  @map("media_asset_id") @db.Uuid
+  label        String? @db.VarChar(200)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, customerId, createdAt(sort: Desc)])
+  @@map("customer_documents")
 }

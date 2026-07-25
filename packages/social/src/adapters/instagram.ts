@@ -26,6 +26,7 @@ import type {
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialPostMetrics,
   SocialPublishResult,
   SocialTargetRef,
   SocialTokens,
@@ -82,6 +83,13 @@ interface IgPublishResponse {
 }
 interface IgPermalinkResponse {
   permalink?: string;
+}
+interface IgCountsResponse {
+  like_count?: number;
+  comments_count?: number;
+}
+interface IgInsightsResponse {
+  data?: { name?: string; values?: { value?: number }[] }[];
 }
 
 export class InstagramAdapter implements SocialAdapter {
@@ -190,6 +198,44 @@ export class InstagramAdapter implements SocialAdapter {
     }
 
     return { externalId: mediaId, permalink: await this.permalink(token, mediaId) };
+  }
+
+  /** Like + comment counts (instagram_basic — granted) plus reach/impressions
+   *  (instagram_manage_insights — extra Meta review) best-effort. Instagram feed posts
+   *  have no "shares", so that stays null. Reads with the linked Page's token. */
+  async getMetrics(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    externalId: string
+  ): Promise<SocialPostMetrics> {
+    const token = target.params?.pageAccessToken ?? auth.accessToken;
+    const metrics: SocialPostMetrics = {};
+
+    const counts = await graphGet<IgCountsResponse>(
+      externalId,
+      token,
+      { fields: 'like_count,comments_count' },
+      'Instagram media counts'
+    );
+    metrics.likes = counts.like_count;
+    metrics.comments = counts.comments_count;
+
+    try {
+      const insights = await graphGet<IgInsightsResponse>(
+        `${externalId}/insights`,
+        token,
+        { metric: 'impressions,reach' },
+        'Instagram insights'
+      );
+      for (const row of insights.data ?? []) {
+        const value = row.values?.[0]?.value;
+        if (row.name === 'impressions') metrics.impressions = value;
+        else if (row.name === 'reach') metrics.reach = value;
+      }
+    } catch {
+      // instagram_manage_insights not granted yet — counts stand on their own.
+    }
+    return metrics;
   }
 
   // ── internals ──

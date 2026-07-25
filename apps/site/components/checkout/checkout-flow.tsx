@@ -104,6 +104,11 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
         shippingAddress: address,
         shippingRateRef: rate.rateRef,
         shippingProviderSlug: rate.providerSlug,
+        // Carry the rate's stable identity so the server can re-find it after
+        // re-quoting even when a live carrier's single-use ref has rotated
+        // (BUG-010) — otherwise picking a real USPS/UPS rate dead-ends checkout.
+        shippingService: rate.service,
+        shippingCarrier: rate.carrier,
       });
       setSession(updated);
       setStep('payment');

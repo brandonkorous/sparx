@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { preferredAspectFor } from './media.js';
+import { preferredAspectFor, variantUrlPath } from './media.js';
 
 // Lock the platform → crop mapping (docs/133 §8). The media worker generates only the
 // four core crops (1:1 / 4:5 / 9:16 / 16:9); every platform's declared ratio snaps to
@@ -42,5 +42,22 @@ describe('preferredAspectFor', () => {
     for (const p of platforms) {
       expect(generated.has(preferredAspectFor(p))).toBe(true);
     }
+  });
+});
+
+// The public URL a platform fetches a post's image from must be the THREE-segment shape
+// the serving route matches (docs/brain/apps/services.md). The stored variant key is FOUR
+// segments — its middle `variants/` is bucket convention, not part of the URL. Emitting
+// the raw key gives a URL Facebook (etc.) can't fetch, so the image never posts — this
+// locks the strip that the media resolver applies.
+describe('variantUrlPath', () => {
+  it('drops the middle `variants/` so the URL path is three segments', () => {
+    const key = 'tenant-1/variants/asset-9/jpeg-1x1-1080.jpg';
+    expect(variantUrlPath(key)).toBe('tenant-1/asset-9/jpeg-1x1-1080.jpg');
+    expect(variantUrlPath(key).split('/')).toHaveLength(3);
+  });
+
+  it('only strips the first `variants/` (ids never embed it, but be exact)', () => {
+    expect(variantUrlPath('t/variants/a/webp-800.webp')).toBe('t/a/webp-800.webp');
   });
 });

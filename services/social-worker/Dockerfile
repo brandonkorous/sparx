@@ -13,12 +13,13 @@ RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 WORKDIR /app
 
 # Workspace context — minimum needed to install social-worker + its transitive
-# workspace deps (db, social, events; social + events have no workspace deps).
+# workspace deps (db, social, events, attribution; all dependency-free themselves).
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/social ./packages/social
 COPY packages/events ./packages/events
+COPY packages/attribution ./packages/attribution
 COPY services/social-worker ./services/social-worker
 
 # Filtered install pulls only @sparx/social-worker + transitive workspace deps;

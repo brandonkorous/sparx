@@ -45,6 +45,7 @@ import {
 } from '../../../lib/social-connections.js';
 import { signSocialOAuthState, verifySocialOAuthState } from '../../../lib/social-oauth.js';
 import { getSocialSettings, setSocialRequireApproval } from '../../../lib/social-lifecycle.js';
+import { getSocialInsights } from '../../../lib/social-metrics.js';
 import socialPostRoutes from './posts.js';
 
 const SOCIAL_PLATFORMS = SOCIAL_CATALOG.map((d) => d.platform) as [
@@ -57,6 +58,9 @@ const CallbackBody = z.object({ code: z.string().min(1), state: z.string().min(1
 const TargetToggleBody = z.object({ enabled: z.boolean() });
 const PathId = z.object({ id: z.string().uuid() });
 const SettingsBody = z.object({ requireApproval: z.boolean() });
+const InsightsQuery = z.object({
+  windowDays: z.coerce.number().int().min(1).max(365).optional(),
+});
 
 type RuntimeDescriptor = SocialPlatformDescriptor & {
   availability: 'available' | 'coming_soon';
@@ -97,6 +101,17 @@ const socialRoutes: FastifyPluginAsync = async (app) => {
       getSocialSettings(ctx.tenantId),
     ]);
     return reply.send(ok({ connections, catalog: runtimeCatalog(), settings }));
+  });
+
+  // Performance rollup over a window — per-account totals + best posts (docs/
+  // implementation/social.md "Measure"). The post-scoped detail lives under
+  // /v1/social/posts/:id/metrics.
+  app.get('/v1/social/insights', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'viewer');
+    const { windowDays } = InsightsQuery.parse(request.query);
+    const insights = await getSocialInsights(toSocialContext(request), windowDays ?? 30);
+    return reply.send(ok(insights));
   });
 
   // The require-approval default (docs/133 §15.3) — who-may-publish is itself a

@@ -733,10 +733,13 @@ module "social_worker_cloudrun" {
     LOG_LEVEL         = "info"
     PUBSUB_INVOKER_SA = google_service_account.pubsub_invoker.email
     GCP_PROJECT_ID    = var.project_id
+    # The public origin a platform fetches a post's image from — the SAME host api-rest
+    # mints variant URLs on (k8s app-env `MEDIA_PUBLIC_URL = https://media.sparx.works`).
+    # WITHOUT this, resolvePostAssets returns nothing and every post publishes text-only
+    # (the image is silently skipped) — the cause of "Facebook didn't post the image".
+    MEDIA_PUBLIC_BASE_URL = "https://media.sparx.works"
     # Added at go-live: the non-secret platform OAuth client IDs used for token
-    # refresh (GOOGLE_OAUTH_CLIENT_ID; later META_APP_ID / LINKEDIN_CLIENT_ID) +
-    # MEDIA_PUBLIC_BASE_URL (the public origin a platform fetches post images from).
-    # Until MEDIA_PUBLIC_BASE_URL is set, posts publish text-only (media skipped).
+    # refresh (GOOGLE_OAUTH_CLIENT_ID; later META_APP_ID / LINKEDIN_CLIENT_ID).
   }
 
   secrets = [
@@ -761,6 +764,16 @@ module "social_worker_cloudrun" {
   pubsub_invoker_sa_email      = google_service_account.pubsub_invoker.email
   pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
   pubsub_max_delivery_attempts = 5
+
+  # Second subscription to the SAME service: metrics collection (docs/implementation/
+  # social.md "Measure"). The handler fans in on the event type, snapshotting each
+  # published target's numbers. Shares the invoker SA + DLQ + retry policy.
+  additional_subscriptions = [
+    {
+      topic             = "social.metrics.collect"
+      subscription_name = "social.metrics.collect.social-worker-cloudrun"
+    },
+  ]
 
   depends_on = [
     module.pubsub,

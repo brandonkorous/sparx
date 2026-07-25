@@ -56,6 +56,7 @@ export type {
   // CRM
   Customer,
   CustomerAddress,
+  CustomerDocument,
   // Site forms (docs/115)
   FormSubmission,
   FormDefinition,

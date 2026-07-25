@@ -189,6 +189,15 @@ function DealEditor({ ctx, id, deal }: { ctx: SurfaceContext; id: string; deal?:
     }
   }, [isNew, touched, draft.pipelineId, pipelineList]);
 
+  // Opened from a customer's profile ("New deal"), the deal arrives pre-linked
+  // to that customer — the id rides in on ctx.params, seeded while untouched so
+  // it reads as a starting point rather than an unsaved edit.
+  const presetCustomerId = typeof ctx.params.customerId === 'string' ? ctx.params.customerId : '';
+  useEffect(() => {
+    if (!isNew || touched || presetCustomerId === '') return;
+    setDraft((cur) => (cur.customerId === '' ? { ...cur, customerId: presetCustomerId } : cur));
+  }, [isNew, touched, presetCustomerId]);
+
   useEffect(() => {
     ctx.setTitle(isNew ? 'New deal' : deal ? deal.title : 'Deal');
   }, [ctx, isNew, deal]);

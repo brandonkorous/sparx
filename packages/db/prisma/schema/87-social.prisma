@@ -229,3 +229,39 @@ model SocialPostTarget {
   @@index([postId])
   @@map("social_post_targets")
 }
+
+// Per-target performance SNAPSHOTS (docs/133 §4 `getMetrics` seam +
+// docs/implementation/social.md "Measure"). One row per (post target, collection): a
+// time series, because a post's numbers keep climbing for days after it goes out, so
+// "how did it do?" is best read as the LATEST snapshot (max collected_at) with the
+// earlier ones available for a trend. Filled by the social-worker on a
+// `social.metrics.collect` event, which calls the platform adapter's getMetrics.
+//
+// EVERY metric is nullable on purpose: engagement counts (likes/comments/shares) come
+// back on close to current scopes, but reach/impressions need extra platform review — a
+// platform that can't report one leaves it NULL, never a misleading zero. FK-less to the
+// SocialTarget (that row may be disconnected away); postTargetId points at the fan-out
+// row whose external_id is the platform's own post id.
+model SocialPostMetric {
+  id           String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId     String @map("tenant_id") @db.Uuid
+  postId       String @map("post_id") @db.Uuid
+  postTargetId String @map("post_target_id") @db.Uuid
+  platform     String @db.VarChar(40)
+
+  likes       Int?
+  comments    Int?
+  shares      Int?
+  impressions Int?
+  reach       Int?
+
+  collectedAt DateTime @default(now()) @map("collected_at") @db.Timestamptz
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  // Scalar FKs only (no Prisma relations): the cascade lives in the hand-edited
+  // migration SQL, and the service reads by id — keeping this model from having to add
+  // back-relations onto Tenant / SocialPost / SocialPostTarget.
+  @@index([tenantId, postId])
+  @@index([postTargetId, collectedAt])
+  @@map("social_post_metrics")
+}

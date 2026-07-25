@@ -33,7 +33,9 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Save, TriangleAlert } from 'lucide-react';
+import type { AudienceNoun } from '@sparx/crm-schemas';
 import { api } from '../lib/api/client';
+import { AUDIENCE_NOUN_OPTIONS, useAudienceVocab, useSetAudienceNoun } from '../lib/audience';
 import { useDirtySource } from '../lib/workbench/dirty';
 import { timezoneOptions, type TimezoneOption } from '../lib/timezones';
 import { FormSection } from '../components/form-section';
@@ -174,6 +176,51 @@ function TextField({
         <FieldDescription>{description}</FieldDescription>
       ) : null}
     </Field>
+  );
+}
+
+/** What the business calls the people it serves. A single preference that renames
+ *  the whole CRM's vocabulary (docs/136) — so it commits ON CHANGE, on its own,
+ *  rather than riding the business form's Save (it writes a different record). */
+function AudienceSection() {
+  const toast = useToast();
+  const vocab = useAudienceVocab();
+  const setNoun = useSetAudienceNoun();
+  const hint = AUDIENCE_NOUN_OPTIONS.find((option) => option.value === vocab.key)?.hint;
+
+  return (
+    <FormSection
+      title="Your audience"
+      description="What you call the people you serve. This renames “Customers” across your CRM — the field, the labels, the copy. It changes words, never your data."
+    >
+      <Field>
+        <FieldLabel>You call them</FieldLabel>
+        <NativeSelect
+          color="module"
+          aria-label="What you call the people you serve"
+          value={vocab.key}
+          disabled={setNoun.isPending}
+          onChange={(event) => {
+            const next = event.target.value as AudienceNoun;
+            setNoun.mutate(next, {
+              onSuccess: () => {
+                toast.add({ title: 'Audience updated', type: 'success' });
+              },
+              onError: () => {
+                toast.add({ title: 'Could not change that', type: 'error' });
+              },
+            });
+          }}
+        >
+          {AUDIENCE_NOUN_OPTIONS.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </NativeSelect>
+        {hint ? <FieldDescription>{hint}</FieldDescription> : null}
+      </Field>
+    </FormSection>
   );
 }
 
@@ -400,6 +447,8 @@ export function BusinessDetailsSurface({ ctx }: { ctx: SurfaceContext }) {
           }
           rail={
             <>
+              <AudienceSection />
+
               <FormSection
                 title="Tax"
                 description="Only filled in if you are registered to charge tax."

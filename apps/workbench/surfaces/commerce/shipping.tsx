@@ -12,7 +12,17 @@
 // options and their prices) are edited inside a region, because a price only
 // means something once you know the region it applies to.
 
-import { Badge, Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
+import {
+  Alert,
+  AlertContent,
+  AlertDescription,
+  AlertTitle,
+  Badge,
+  Button,
+  EmptyState,
+  Heading,
+  Text,
+} from '@wizeworks/silicaui-react';
 import { Boxes, Plus, ServerCrash, Truck } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -22,6 +32,7 @@ import { coverageSummary } from './geo';
 import {
   shippingErrorMessage,
   useShippingProfiles,
+  useShippingReadiness,
   useShippingZones,
   type ShippingProfile,
   type ShippingZone,
@@ -100,6 +111,16 @@ type RowOpen = (surface: string, id: string, event: { shiftKey: boolean; altKey:
 export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
   const zones = useShippingZones();
   const profiles = useShippingProfiles();
+  const readiness = useShippingReadiness();
+
+  // A carrier is connected but live rates can't actually be calculated because
+  // the ship-from address is incomplete — checkout silently falls back to manual
+  // rates, so the merchant would never otherwise learn why USPS/UPS don't show
+  // (docs/bugs/BUG-010). Warn them here, where they set delivery up.
+  const shipFromWarning =
+    readiness.data && readiness.data.liveCarrierConnected && !readiness.data.shipFromComplete
+      ? readiness.data.shipFromIssue
+      : null;
 
   const open: RowOpen = (surface, id, event) => {
     ctx.open(surface, { id }, { target: targetFor(event) });
@@ -163,6 +184,18 @@ export function ShippingSurface({ ctx }: { ctx: SurfaceContext }) {
                   the options for wherever their address is, and pay the price you set here.
                 </Text>
               </div>
+
+              {shipFromWarning ? (
+                <Alert color="warning" variant="soft">
+                  <AlertContent>
+                    <AlertTitle>Live carrier rates are turned off right now</AlertTitle>
+                    <AlertDescription>
+                      {shipFromWarning} Until then, shoppers only see the delivery options you set
+                      up below — your connected carrier’s live prices won’t appear at checkout.
+                    </AlertDescription>
+                  </AlertContent>
+                </Alert>
+              ) : null}
 
               <FormSection
                 title="Delivery regions"

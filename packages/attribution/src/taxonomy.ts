@@ -22,6 +22,7 @@ export const UTM_SOURCES = [
   'bing',
   'meta',
   'tiktok',
+  'pinterest',
   'newsletter',
   'sparxcms',
   'sparxcrm',

@@ -101,7 +101,7 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
 
   const event = parseEvent(parsed);
   if (!event) {
-    logger.warn({ messageId, raw: parsed }, 'message did not match social.post.due schema; acking');
+    logger.warn({ messageId, raw: parsed }, 'message did not match a social-worker event; acking');
     res.statusCode = 204;
     res.end();
     return;
@@ -109,7 +109,7 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
 
   try {
     const outcome = await handle(event, logger);
-    logger.info({ messageId, ...outcome }, 'social.post.due processed');
+    logger.info({ messageId, type: event.type, ...outcome }, `${event.type} processed`);
     res.statusCode = 204;
     res.end();
   } catch (err) {

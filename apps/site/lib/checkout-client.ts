@@ -152,6 +152,8 @@ export function submitShipping(
     billingAddress?: Address;
     shippingRateRef: string;
     shippingProviderSlug: string;
+    shippingService?: string;
+    shippingCarrier?: string;
   }
 ): Promise<CheckoutSession> {
   return call(`/v1/public/commerce/checkout/${sessionId}/shipping`, tenantSlug, {

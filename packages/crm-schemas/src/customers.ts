@@ -40,6 +40,8 @@ export const CreateCustomerInput = z.object({
   gdprConsent: GdprConsent.optional(),
   tags: TagList.optional(),
   metadata: z.record(z.string(), z.unknown()).optional(),
+  // Optional profile photo — a MediaAsset id (cms module). `null` clears it.
+  avatarMediaAssetId: Uuid.nullable().optional(),
 });
 export type CreateCustomerInput = z.infer<typeof CreateCustomerInput>;
 
@@ -112,6 +114,27 @@ export const BulkTagCustomersInput = z.object({
 });
 export type BulkTagCustomersInput = z.infer<typeof BulkTagCustomersInput>;
 
+// AUDIENCE NOUN — what a tenant calls the people it serves. The CRM's core
+// record is universal (a contact you have a relationship with); the WORD for it
+// is not. A salon has clients, a gym members, a restaurant guests, a clinic
+// patients, a publisher subscribers, a charity donors — not "customers". This is
+// a per-tenant vocabulary preference stored in `tenants.settings.audienceNoun`;
+// the plural + capitalised + "kind" labels derive from it in the UI. It changes
+// no data and no behaviour — the stored customer `type` stays prospect/retail/b2b
+// (those are load-bearing for pricing + A/R); only the words a person reads adapt.
+export const AUDIENCE_NOUNS = [
+  'customer',
+  'client',
+  'member',
+  'guest',
+  'patient',
+  'subscriber',
+  'donor',
+  'student',
+] as const;
+export const AudienceNoun = z.enum(AUDIENCE_NOUNS);
+export type AudienceNoun = z.infer<typeof AudienceNoun>;
+
 // Customer address — separate row in customer_addresses.
 export const CreateCustomerAddressInput = z.object({
   customerId: Uuid,
@@ -137,3 +160,11 @@ export const UpdateCustomerAddressInput = CreateCustomerAddressInput.omit({
   customerId: true,
 }).partial();
 export type UpdateCustomerAddressInput = z.infer<typeof UpdateCustomerAddressInput>;
+
+// Customer document — a file (already uploaded to the media pipeline) attached to
+// a customer, plus an optional human label. `customerId` comes from the path.
+export const CreateCustomerDocumentInput = z.object({
+  mediaAssetId: Uuid,
+  label: z.string().trim().min(1).max(200).optional(),
+});
+export type CreateCustomerDocumentInput = z.infer<typeof CreateCustomerDocumentInput>;

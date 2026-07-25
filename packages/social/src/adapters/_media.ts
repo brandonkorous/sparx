@@ -5,8 +5,10 @@
 // by extension. Centralized here so LinkedIn + the Meta family agree on exactly which
 // URLs count as an image and how a canonical link is appended to a caption.
 
-/** File extensions the platforms treat as an uploadable image. */
-const IMAGE_EXT_RE = /\.(jpe?g|png|gif|webp)(?:$|[?#])/i;
+/** File extensions the platforms treat as an uploadable image. `avif` is included so a
+ *  base variant in that format is still recognized (the social CROPS are jpeg, but the
+ *  scale-to-width base can be avif/webp — see the worker's media resolver). */
+const IMAGE_EXT_RE = /\.(jpe?g|png|gif|webp|avif)(?:$|[?#])/i;
 
 /** Whether a resolved media URL points at an image (by extension). */
 export function isImageUrl(url: string): boolean {
