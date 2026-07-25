@@ -40,7 +40,7 @@ export function ModeToggle({ initial }: { initial: 'light' | 'dark' }) {
   return (
     <button
       type="button"
-      className="st-iconbtn"
+      className="rounded-field text-base-content hover:bg-base-200 relative inline-flex h-10 w-10 cursor-pointer items-center justify-center transition-colors"
       onClick={toggle}
       aria-label={`Switch to ${next} mode`}
       title={`Switch to ${next} mode`}

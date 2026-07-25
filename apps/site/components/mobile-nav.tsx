@@ -29,7 +29,7 @@ export function MobileNav({ nav, brand }: { nav: NavItem[]; brand: string }) {
     <>
       <button
         type="button"
-        className="st-iconbtn st-nav__toggle"
+        className="rounded-field text-base-content hover:bg-base-200 relative inline-flex h-10 w-10 cursor-pointer items-center justify-center transition-colors min-[760px]:hidden"
         aria-label="Open menu"
         aria-expanded={open}
         onClick={() => setOpen(true)}
@@ -49,19 +49,24 @@ export function MobileNav({ nav, brand }: { nav: NavItem[]; brand: string }) {
       </button>
 
       {open ? (
-        <div className="st-drawer-backdrop" role="presentation">
+        <div className="sui-animate-fade-in fixed inset-0 z-[60] bg-black/40" role="presentation">
           <button
             type="button"
             aria-label="Close mobile navigation"
-            className="st-drawer-backdrop__close"
+            className="absolute inset-0 h-full w-full cursor-pointer border-0 bg-transparent"
             onClick={() => setOpen(false)}
           />
-          <nav className="st-drawer-panel st-drawer-panel--left" aria-label="Mobile navigation">
-            <div className="st-drawer-panel__head">
-              <span className="st-header__brand">{brand}</span>
+          <nav
+            className="sui-animate-slide-right border-base-300 bg-base-100 absolute top-0 bottom-0 left-0 flex w-[min(420px,90vw)] flex-col border-r"
+            aria-label="Mobile navigation"
+          >
+            <div className="border-base-300 flex items-center justify-between border-b px-5 py-4">
+              <span className="text-base-content text-xl font-semibold tracking-tight">
+                {brand}
+              </span>
               <button
                 type="button"
-                className="st-iconbtn"
+                className="rounded-field text-base-content hover:bg-base-200 relative inline-flex h-10 w-10 cursor-pointer items-center justify-center transition-colors"
                 aria-label="Close menu"
                 onClick={() => setOpen(false)}
               >
@@ -79,7 +84,7 @@ export function MobileNav({ nav, brand }: { nav: NavItem[]; brand: string }) {
                 </svg>
               </button>
             </div>
-            <div className="st-drawer-panel__links">
+            <div className="[&_a]:rounded-field [&_a]:text-base-content [&_a]:hover:bg-base-200 flex flex-col p-2 [&_a]:px-3 [&_a]:py-3.5 [&_a]:text-[1.05rem] [&_a]:font-medium [&_a]:no-underline">
               {nav.map((item) => (
                 <Link key={item.href} href={item.href} onClick={() => setOpen(false)}>
                   {item.label}

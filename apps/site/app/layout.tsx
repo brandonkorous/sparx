@@ -546,7 +546,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           />
         ) : null}
       </head>
-      <body className="st-body">
+      <body className="antialiased">
         {/* Page-top loading bar in the tenant's own brand (--st-primary). */}
         <TopProgressBar />
         {/* Silently recover a shopper's tab whose chunks were purged by a deploy.
@@ -564,7 +564,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 currency={site.commerce.defaultCurrency}
               >
                 <StorefrontBuilderRuntime>
-                  <div className="st-frame">
+                  <div className="flex min-h-[100dvh] flex-col">
                     {silicaActive && silicaFrame.frame ? (
                       // The silica engine's published frame owns the chrome (docs/118
                       // Stage 6): the routed page drops at the frame's own Outlet.
@@ -595,7 +595,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       // A published Builder layout owns the chrome: render its tree
                       // with the page dropped at the Outlet (docs/45 §2.6).
                       <BuilderSiteChrome tree={builderLayout.tree} data={siteData}>
-                        <main className="st-main" id="st-main" tabIndex={-1}>
+                        <main
+                          className="flex-[1_0_auto] focus:outline-none"
+                          id="st-main"
+                          tabIndex={-1}
+                        >
                           {children}
                         </main>
                       </BuilderSiteChrome>
@@ -613,7 +617,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                             policy === 'toggle' ? <ModeToggle initial={initialTheme} /> : undefined
                           }
                         />
-                        <main className="st-main" id="st-main" tabIndex={-1}>
+                        <main
+                          className="flex-[1_0_auto] focus:outline-none"
+                          id="st-main"
+                          tabIndex={-1}
+                        >
                           {children}
                         </main>
                         <SiteFooter
@@ -670,8 +678,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </WishlistProvider>
           </CustomerProvider>
         ) : (
-          <div className="st-frame">
-            <main className="st-main">{children}</main>
+          <div className="flex min-h-[100dvh] flex-col">
+            <main className="flex-[1_0_auto] focus:outline-none">{children}</main>
           </div>
         )}
       </body>
