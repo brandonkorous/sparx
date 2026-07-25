@@ -44,7 +44,7 @@ export default async function ProductsPage({
   });
 
   return (
-    <div className="st-container">
+    <div className="mx-auto w-full max-w-6xl px-6">
       <Breadcrumbs
         items={[{ label: 'Home', href: '/' }, { label: q ? `Search: ${q}` : 'All products' }]}
       />

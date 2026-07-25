@@ -17,26 +17,39 @@ export function CategoryCard({
 }) {
   const hero = mediaUrl(category.heroMediaId ?? category.iconMediaId, tenantSlug);
   return (
-    <Link href={`/category/${category.handle}`} className="st-card">
-      <div className="st-card__media">
-        {category.featured ? <span className="st-badge">Featured</span> : null}
+    <Link
+      href={`/category/${category.handle}`}
+      className="group rounded-box bg-base-100 text-base-content focus-visible:outline-primary relative flex flex-col overflow-hidden no-underline transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2"
+    >
+      <div className="bg-base-200 relative aspect-square overflow-hidden">
+        {category.featured ? (
+          <span className="badge badge-neutral absolute top-3 left-3 z-10">Featured</span>
+        ) : null}
         {hero ? (
           <Image
             src={hero}
             alt={category.name}
             fill
             sizes="(max-width: 860px) 50vw, 33vw"
+            className="object-cover transition-transform duration-[400ms] group-hover:scale-105"
             style={{ objectFit: 'cover' }}
           />
         ) : (
-          <div className="st-card__media st-card__media--empty" aria-hidden="true">
-            <span style={{ fontSize: '2rem' }}>▤</span>
+          <div
+            className="bg-base-200 text-base-content/40 grid h-full place-items-center text-[2rem]"
+            aria-hidden="true"
+          >
+            ▤
           </div>
         )}
       </div>
-      <div className="st-card__body">
-        <span className="st-card__title">{category.name}</span>
-        {category.description ? <span className="st-muted">{category.description}</span> : null}
+      <div className="flex flex-col gap-1 px-1 pt-4 pb-2">
+        <span className="text-base-content text-base leading-snug font-medium">
+          {category.name}
+        </span>
+        {category.description ? (
+          <span className="text-base-content text-sm">{category.description}</span>
+        ) : null}
       </div>
     </Link>
   );

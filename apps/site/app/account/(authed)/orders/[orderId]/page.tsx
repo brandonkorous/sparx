@@ -42,28 +42,31 @@ function addressLine(addr: Record<string, unknown> | null): string | null {
 /** The money breakdown — subtotal, optional discount/tax, shipping, total. */
 function OrderTotals({ order }: { order: OrderDetail }) {
   return (
-    <div className="st-summary" style={{ maxWidth: 360, marginLeft: 'auto' }}>
-      <div className="st-summary__row">
+    <div
+      className="rounded-box border-base-300 bg-base-100 flex flex-col gap-3 border p-6"
+      style={{ maxWidth: 360, marginLeft: 'auto' }}
+    >
+      <div className="text-base-content flex justify-between text-sm">
         <span>Subtotal</span>
         <span>{formatMoney(order.subtotalCents, order.currency)}</span>
       </div>
       {order.discountTotalCents > 0 ? (
-        <div className="st-summary__row">
+        <div className="text-base-content flex justify-between text-sm">
           <span>Discount</span>
           <span>−{formatMoney(order.discountTotalCents, order.currency)}</span>
         </div>
       ) : null}
-      <div className="st-summary__row">
+      <div className="text-base-content flex justify-between text-sm">
         <span>Shipping</span>
         <span>{formatMoney(order.shippingTotalCents, order.currency)}</span>
       </div>
       {order.taxTotalCents > 0 ? (
-        <div className="st-summary__row">
+        <div className="text-base-content flex justify-between text-sm">
           <span>Tax</span>
           <span>{formatMoney(order.taxTotalCents, order.currency)}</span>
         </div>
       ) : null}
-      <div className="st-summary__total">
+      <div className="border-base-300 text-base-content flex justify-between border-t pt-3 text-lg font-semibold">
         <span>Total</span>
         <span>{formatMoney(order.totalCents, order.currency)}</span>
       </div>
@@ -94,7 +97,7 @@ export default function OrderDetailPage() {
   if (error === 'notfound') {
     return (
       <div>
-        <p className="st-muted" style={{ marginBottom: '1rem' }}>
+        <p className="text-base-content" style={{ marginBottom: '1rem' }}>
           We couldn’t find that order.
         </p>
         <Button render={<Link href="/account/orders" />} color="neutral" variant="outline">
@@ -110,13 +113,13 @@ export default function OrderDetailPage() {
       </Alert>
     );
   }
-  if (!order) return <div className="st-skeleton" style={{ height: 320 }} />;
+  if (!order) return <div className="skeleton" style={{ height: 320 }} />;
 
   const ship = addressLine(order.shippingAddress);
 
   return (
     <div>
-      <Link href="/account/orders" className="st-muted" style={{ fontSize: '0.85rem' }}>
+      <Link href="/account/orders" className="link link-hover text-sm">
         ← Orders
       </Link>
       <div
@@ -128,18 +131,26 @@ export default function OrderDetailPage() {
           margin: '0.5rem 0 1.5rem',
         }}
       >
-        <h1 className="st-h2">Order #{order.orderNumber}</h1>
+        <h1 className="text-base-content text-3xl font-semibold tracking-tight">
+          Order #{order.orderNumber}
+        </h1>
         <Badge color={orderStatusTone(order.status)} variant="soft">
           {titleCase(order.status)}
         </Badge>
       </div>
-      <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
+      <p className="text-base-content" style={{ marginBottom: '1.5rem' }}>
         Placed {formatDate(order.placedAt)} · Payment {titleCase(order.paymentStatus)}
       </p>
 
       {/* Order status timeline — the lifecycle at a glance. */}
-      <div className="st-card" style={{ padding: '1.5rem', marginBottom: '1.5rem' }}>
-        <h2 className="st-h3" style={{ marginBottom: '1.25rem' }}>
+      <div
+        className="card border-base-300 border"
+        style={{ padding: '1.5rem', marginBottom: '1.5rem' }}
+      >
+        <h2
+          className="text-base-content text-2xl font-semibold"
+          style={{ marginBottom: '1.25rem' }}
+        >
           Order status
         </h2>
         <OrderTimeline order={order} />
@@ -155,7 +166,7 @@ export default function OrderDetailPage() {
           >
             <span>
               {it.name}
-              <span className="st-muted"> × {it.quantity}</span>
+              <span className="text-base-content"> × {it.quantity}</span>
             </span>
             <strong>{formatMoney(it.lineTotalCents, order.currency)}</strong>
           </div>
@@ -166,10 +177,13 @@ export default function OrderDetailPage() {
 
       {ship ? (
         <div style={{ marginTop: '1.5rem' }}>
-          <h2 className="st-h3" style={{ marginBottom: '0.5rem' }}>
+          <h2
+            className="text-base-content text-2xl font-semibold"
+            style={{ marginBottom: '0.5rem' }}
+          >
             Shipping to
           </h2>
-          <p className="st-muted">{ship}</p>
+          <p className="text-base-content">{ship}</p>
         </div>
       ) : null}
     </div>

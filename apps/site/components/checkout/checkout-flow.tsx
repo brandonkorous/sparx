@@ -127,11 +127,14 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
 
   if (cartEmpty && step !== 'done') {
     return (
-      <div className="st-empty" style={{ minHeight: '40vh' }}>
-        <span className="st-empty__icon" aria-hidden="true">
+      <div
+        className="text-base-content grid place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center"
+        style={{ minHeight: '40vh' }}
+      >
+        <span className="text-[2.5rem] opacity-50" aria-hidden="true">
           🛒
         </span>
-        <h2 className="st-h2" style={{ color: 'var(--st-text)' }}>
+        <h2 className="text-base-content text-3xl font-semibold tracking-tight">
           Your cart is empty
         </h2>
         <Button render={<Link href="/products" />} color="primary">
@@ -146,17 +149,17 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
   }
 
   return (
-    <div className="st-checkout">
-      <div className="st-checkout__main">
+    <div className="grid grid-cols-[minmax(0,1fr)_380px] items-start gap-[clamp(1.5rem,4vw,3.5rem)] max-[860px]:grid-cols-1">
+      <div>
         <StepIndicator step={step} />
 
         {error ? <Alert color="danger">{error}</Alert> : null}
 
         {step === 'contact' ? (
-          <form onSubmit={handleContact} className="st-form">
-            <h2 className="st-h2">Contact</h2>
-            <label className="st-field">
-              <span>Email</span>
+          <form onSubmit={handleContact} className="flex max-w-[560px] flex-col gap-4">
+            <h2 className="text-base-content text-3xl font-semibold tracking-tight">Contact</h2>
+            <label className="flex flex-col gap-1.5">
+              <span className="text-base-content text-sm font-medium">Email</span>
               <Input
                 type="email"
                 required
@@ -166,9 +169,10 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
                 autoComplete="email"
               />
             </label>
-            <label className="st-check">
+            <label className="text-base-content flex cursor-pointer items-center gap-2.5 text-sm">
               <input
                 type="checkbox"
+                className="checkbox"
                 checked={acceptsMarketing}
                 onChange={(e) => setAcceptsMarketing(e.target.checked)}
               />
@@ -181,25 +185,33 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
         ) : null}
 
         {step === 'shipping' ? (
-          <form onSubmit={handleShipping} className="st-form">
-            <h2 className="st-h2">Shipping address</h2>
+          <form onSubmit={handleShipping} className="flex max-w-[560px] flex-col gap-4">
+            <h2 className="text-base-content text-3xl font-semibold tracking-tight">
+              Shipping address
+            </h2>
             <AddressForm value={address} onChange={setAddress} />
 
             {rates.length > 0 ? (
-              <fieldset className="st-rates">
-                <legend className="st-h3">Shipping method</legend>
+              <fieldset className="rounded-box border-base-300 m-0 flex flex-col gap-2 border p-4">
+                <legend className="text-base-content px-2 text-2xl font-semibold">
+                  Shipping method
+                </legend>
                 {rates.map((rate) => (
-                  <label key={rate.rateRef} className="st-rate">
+                  <label
+                    key={rate.rateRef}
+                    className="rounded-field border-base-300 has-[input:checked]:border-primary has-[input:checked]:bg-primary/[0.06] flex cursor-pointer items-center gap-3 border p-3"
+                  >
                     <input
                       type="radio"
                       name="rate"
+                      className="radio"
                       checked={chosenRate?.rateRef === rate.rateRef}
                       onChange={() => setChosenRate(rate)}
                     />
                     <span style={{ flex: 1 }}>
                       <strong>{rate.service}</strong>
                       {rate.estimatedDays != null ? (
-                        <span className="st-muted"> · {rate.estimatedDays} days</span>
+                        <span className="text-base-content"> · {rate.estimatedDays} days</span>
                       ) : null}
                     </span>
                     <span>
@@ -251,7 +263,7 @@ export function CheckoutFlow({ tenantSlug }: { tenantSlug: string }) {
         ) : null}
       </div>
 
-      <aside className="st-checkout__aside">
+      <aside className="sticky top-[92px] max-[860px]:static max-[860px]:order-[-1]">
         <OrderSummary
           lines={cart.lines}
           totals={session?.totals ?? cart.totals}
@@ -296,14 +308,15 @@ function StepIndicator({ step }: { step: CheckoutStep }) {
 
 function Confirmation({ orderNumber }: { orderNumber: string }) {
   return (
-    <div className="st-empty" style={{ minHeight: '50vh' }}>
-      <span className="st-empty__icon" aria-hidden="true">
+    <div
+      className="text-base-content grid place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center"
+      style={{ minHeight: '50vh' }}
+    >
+      <span className="text-[2.5rem] opacity-50" aria-hidden="true">
         🎉
       </span>
-      <h1 className="st-h1" style={{ color: 'var(--st-text)' }}>
-        Order confirmed
-      </h1>
-      <p style={{ margin: 0 }}>
+      <h1 className="text-base-content text-4xl font-semibold tracking-tight">Order confirmed</h1>
+      <p className="text-base-content" style={{ margin: 0 }}>
         Thank you! Your order <strong>{orderNumber}</strong> has been placed. A confirmation email
         is on its way.
       </p>

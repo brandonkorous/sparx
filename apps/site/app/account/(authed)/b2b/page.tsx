@@ -10,7 +10,7 @@ import { useRouter } from 'next/navigation';
 
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bAccounts, type B2bAccountEntry } from '@/lib/customer-client';
-import { Alert } from '@wizeworks/silicaui-react';
+import { Alert, Badge } from '@wizeworks/silicaui-react';
 
 function statusLabel(status: string): string {
   switch (status) {
@@ -22,6 +22,20 @@ function statusLabel(status: string): string {
       return 'Inactive';
     default:
       return 'Active';
+  }
+}
+
+/** Semantic tone for a B2B account status. */
+function accountStatusTone(status: string) {
+  switch (status) {
+    case 'credit_hold':
+      return 'warning';
+    case 'suspended':
+      return 'danger';
+    case 'inactive':
+      return 'neutral';
+    default:
+      return 'success';
   }
 }
 
@@ -58,16 +72,19 @@ export default function B2bPortalPage() {
   }
 
   if (accounts === null) {
-    return <div className="st-skeleton" style={{ height: 120 }} />;
+    return <div className="skeleton" style={{ height: 120 }} />;
   }
 
   if (accounts.length === 0) {
     return (
       <div>
-        <h1 className="st-h2" style={{ marginBottom: '0.5rem' }}>
+        <h1
+          className="text-base-content text-3xl font-semibold tracking-tight"
+          style={{ marginBottom: '0.5rem' }}
+        >
           B2B Account
         </h1>
-        <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
+        <p className="text-base-content" style={{ marginBottom: '1.5rem' }}>
           Your account doesn&apos;t have B2B access yet. Contact your sales representative to set up
           wholesale purchasing on your account.
         </p>
@@ -77,7 +94,10 @@ export default function B2bPortalPage() {
 
   return (
     <div>
-      <h1 className="st-h2" style={{ marginBottom: '1.25rem' }}>
+      <h1
+        className="text-base-content text-3xl font-semibold tracking-tight"
+        style={{ marginBottom: '1.25rem' }}
+      >
         B2B Accounts
       </h1>
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
@@ -85,7 +105,7 @@ export default function B2bPortalPage() {
           <Link
             key={acct.accountId}
             href={`/account/b2b/${acct.accountId}`}
-            className="st-card"
+            className="card border-base-300 border"
             style={{
               padding: '1rem 1.25rem',
               display: 'flex',
@@ -96,15 +116,21 @@ export default function B2bPortalPage() {
           >
             <div>
               <strong>{acct.companyName}</strong>
-              <div className="st-muted" style={{ fontSize: '0.85rem', marginTop: '0.2rem' }}>
+              <div
+                className="text-base-content"
+                style={{ fontSize: '0.85rem', marginTop: '0.2rem' }}
+              >
                 {acct.role.replace('_', ' ')}
               </div>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-              <span className="st-badge" data-status={acct.status}>
+              <Badge color={accountStatusTone(acct.status)} variant="soft">
                 {statusLabel(acct.status)}
-              </span>
-              <span className="st-muted" style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}>
+              </Badge>
+              <span
+                className="text-base-content"
+                style={{ fontSize: '0.85rem', whiteSpace: 'nowrap' }}
+              >
                 ${acct.creditAvailable.toLocaleString()} available
               </span>
             </div>

@@ -20,8 +20,8 @@ export function CollectionProductsSection({
   return (
     <>
       {config.showCount ? (
-        <div className="st-toolbar">
-          <span className="st-toolbar__count">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <span className="text-base-content text-sm">
             {extras.total} {extras.total === 1 ? 'product' : 'products'}
           </span>
         </div>

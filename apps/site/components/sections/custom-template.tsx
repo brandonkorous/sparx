@@ -32,7 +32,7 @@ export function CustomTemplateSection({
     resolveMediaSrc: (ref) => mediaUrl(ref || null, ctx.tenantSlug),
   };
   return (
-    <section className="st-container st-section st-sb-custom">
+    <section className="mx-auto w-full max-w-6xl px-6 py-16">
       <TemplateRenderer
         node={template}
         config={config}

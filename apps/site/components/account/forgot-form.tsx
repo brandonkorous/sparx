@@ -28,8 +28,11 @@ export function ForgotForm() {
   }
 
   return (
-    <div className="st-container--prose">
-      <h1 className="st-h2" style={{ marginBottom: '0.5rem' }}>
+    <div className="mx-auto w-full max-w-[68ch] px-6">
+      <h1
+        className="text-base-content text-3xl font-semibold tracking-tight"
+        style={{ marginBottom: '0.5rem' }}
+      >
         Reset your password
       </h1>
       {state === 'sent' ? (
@@ -39,12 +42,12 @@ export function ForgotForm() {
         </Alert>
       ) : (
         <>
-          <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
+          <p className="text-base-content" style={{ marginBottom: '1.5rem' }}>
             Enter your email and we’ll send you a link to set a new password.
           </p>
-          <form onSubmit={submit} className="st-form">
-            <label className="st-field">
-              <span>Email</span>
+          <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
+            <label className="flex flex-col gap-1.5">
+              <span className="text-base-content text-sm font-medium">Email</span>
               <Input
                 type="email"
                 required
@@ -59,7 +62,7 @@ export function ForgotForm() {
           </form>
         </>
       )}
-      <p className="st-muted" style={{ marginTop: '1.5rem', fontSize: '0.9rem' }}>
+      <p className="text-base-content text-sm" style={{ marginTop: '1.5rem' }}>
         <Link href="/account/login">← Back to sign in</Link>
       </p>
     </div>

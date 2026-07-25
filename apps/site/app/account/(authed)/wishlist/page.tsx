@@ -40,7 +40,10 @@ export default function WishlistPage() {
 
   return (
     <div>
-      <h1 className="st-h2" style={{ marginBottom: '1.25rem' }}>
+      <h1
+        className="text-base-content text-3xl font-semibold tracking-tight"
+        style={{ marginBottom: '1.25rem' }}
+      >
         Wishlist
       </h1>
 
@@ -49,10 +52,13 @@ export default function WishlistPage() {
           {error}
         </Alert>
       ) : visible === null ? (
-        <div className="st-skeleton" style={{ height: 160 }} />
+        <div className="skeleton" style={{ height: 160 }} />
       ) : visible.length === 0 ? (
-        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="st-muted" style={{ marginBottom: '1rem' }}>
+        <div
+          className="card border-base-300 border"
+          style={{ padding: '2rem', textAlign: 'center' }}
+        >
+          <p className="text-base-content" style={{ marginBottom: '1rem' }}>
             You haven’t saved anything yet.
           </p>
           <Button render={<Link href="/products" />} color="primary">
@@ -61,15 +67,22 @@ export default function WishlistPage() {
         </div>
       ) : (
         <div
-          className="st-grid st-grid--auto"
+          className="grid gap-[clamp(1rem,2vw,1.75rem)]"
           style={{ gridTemplateColumns: 'repeat(auto-fill, minmax(180px, 1fr))' }}
         >
           {visible.map((it) => {
             const img = mediaUrl(it.imageMediaId, tenantSlug);
             return (
-              <div key={it.variantId} className="st-card" style={{ overflow: 'hidden' }}>
+              <div
+                key={it.variantId}
+                className="card border-base-300 border"
+                style={{ overflow: 'hidden' }}
+              >
                 <Link href={`/products/${it.handle}`} style={{ display: 'block' }}>
-                  <div className="st-line__media" style={{ aspectRatio: '1', width: '100%' }}>
+                  <div
+                    className="bg-base-200 rounded-field relative overflow-hidden"
+                    style={{ aspectRatio: '1', width: '100%' }}
+                  >
                     {img ? (
                       <Image
                         src={img}
@@ -82,7 +95,7 @@ export default function WishlistPage() {
                   </div>
                   <div style={{ padding: '0.75rem' }}>
                     <div style={{ fontSize: '0.9rem', fontWeight: 600 }}>{it.title}</div>
-                    <div className="st-muted" style={{ fontSize: '0.85rem' }}>
+                    <div className="text-base-content" style={{ fontSize: '0.85rem' }}>
                       {formatMoney(it.priceCents)}
                     </div>
                   </div>

@@ -8,7 +8,7 @@
 //
 // The decision is persisted client-side (the /api/sparx proxy relays only one
 // Set-Cookie, so the cookie is set here) and POSTed to /v1/public/consent for
-// the legal record. Built from st-consent-* classes in site.css.
+// the legal record. Styled with silica classes + Tailwind utilities.
 
 import { useEffect, useState } from 'react';
 import type { SiteConsent } from '@/lib/site-context';
@@ -84,8 +84,12 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
   return (
     <>
       {bannerOpen ? (
-        <div className="st-consent-banner" role="dialog" aria-label="Cookie consent">
-          <div className="st-consent-banner__text">
+        <div
+          className="rounded-box border-base-300 bg-base-100 fixed inset-x-4 bottom-4 z-[80] mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-4 border p-4"
+          role="dialog"
+          aria-label="Cookie consent"
+        >
+          <div className="[&_a]:text-primary [&_p]:text-base-content [&_strong]:text-base-content min-w-0 flex-1 basis-[22rem] [&_a]:underline [&_p]:m-0 [&_p]:text-sm [&_strong]:mb-1 [&_strong]:block">
             <strong>{config.bannerTitle ?? 'We value your privacy'}</strong>
             <p>
               {config.bannerBody ??
@@ -93,12 +97,12 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
               See our <a href={policyHref}>Cookie Policy</a>.
             </p>
           </div>
-          <div className="st-consent-banner__actions">
+          <div className="flex flex-wrap gap-2">
             {config.mode === 'ccpa' ? (
               <>
                 <button
                   type="button"
-                  className="st-consent-btn st-consent-btn--primary"
+                  className="btn btn-primary btn-sm"
                   onClick={() =>
                     record({ ...draft, analytics: false, marketing: false }, 'opt_out')
                   }
@@ -107,7 +111,7 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
                 </button>
                 <button
                   type="button"
-                  className="st-consent-btn"
+                  className="btn btn-neutral btn-outline btn-sm"
                   onClick={() => record(ALL_ON, 'accept_all')}
                 >
                   Got it
@@ -117,14 +121,14 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
               <>
                 <button
                   type="button"
-                  className="st-consent-btn"
+                  className="btn btn-neutral btn-outline btn-sm"
                   onClick={() => record(NONE, 'reject_all')}
                 >
                   Reject all
                 </button>
                 <button
                   type="button"
-                  className="st-consent-btn st-consent-btn--primary"
+                  className="btn btn-primary btn-sm"
                   onClick={() => record(ALL_ON, 'accept_all')}
                 >
                   Accept all
@@ -133,7 +137,7 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
             )}
             <button
               type="button"
-              className="st-consent-btn st-consent-btn--ghost"
+              className="btn btn-ghost btn-sm"
               onClick={() => setPrefsOpen(true)}
             >
               Manage
@@ -146,7 +150,7 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
         // cookies" link. Both open the preference center.
         <button
           type="button"
-          className="st-consent-pill"
+          className="rounded-selector border-base-300 bg-base-100 text-base-content fixed bottom-4 left-4 z-[70] cursor-pointer border px-3 py-1.5 text-[0.8125rem] opacity-85 transition-opacity hover:opacity-100"
           onClick={() => setPrefsOpen(true)}
           aria-label={
             config.mode === 'ccpa'
@@ -159,26 +163,26 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
       )}
 
       {prefsOpen ? (
-        <div className="st-consent-modal__overlay">
+        <div className="fixed inset-0 z-[90] flex items-center justify-center bg-black/45 p-6">
           <button
             type="button"
-            className="st-consent-modal__scrim"
+            className="absolute inset-0 cursor-default border-0 bg-transparent p-0"
             aria-label="Close cookie preferences"
             onClick={() => setPrefsOpen(false)}
           />
           <div
-            className="st-consent-modal"
+            className="rounded-box border-base-300 bg-base-100 relative z-[1] max-h-[85vh] w-full max-w-[30rem] overflow-y-auto border p-6"
             role="dialog"
             aria-modal="true"
             aria-label="Cookie preferences"
           >
-            <h2 className="st-consent-modal__title">Cookie preferences</h2>
-            <p className="st-consent-modal__lede">
+            <h2 className="text-base-content mb-2 text-lg font-semibold">Cookie preferences</h2>
+            <p className="text-base-content [&_a]:text-primary mb-4 text-sm [&_a]:underline">
               Choose which cookies to allow. See our <a href={policyHref}>Cookie Policy</a> for
               details.
             </p>
 
-            <div className="st-consent-row st-consent-row--locked">
+            <div className="border-base-300 [&_span]:text-base-content [&_strong]:text-base-content flex items-start justify-between gap-4 border-t py-3 opacity-70 [&_span]:block [&_span]:text-[0.8125rem] [&_strong]:block [&_strong]:text-[0.9rem]">
               <div>
                 <strong>Strictly necessary</strong>
                 <span>Required for the site to work. Always on.</span>
@@ -187,7 +191,10 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
             </div>
 
             {nonEssential.map((cat) => (
-              <label key={cat} className="st-consent-row">
+              <label
+                key={cat}
+                className="border-base-300 [&_span]:text-base-content [&_strong]:text-base-content flex items-start justify-between gap-4 border-t py-3 [&_span]:block [&_span]:text-[0.8125rem] [&_strong]:block [&_strong]:text-[0.9rem]"
+              >
                 <div>
                   <strong>{cat.charAt(0).toUpperCase() + cat.slice(1)}</strong>
                   <span>{CATEGORY_COPY[cat]}</span>
@@ -201,17 +208,17 @@ export function ConsentManager({ tenant, config }: { tenant: string; config: Sit
               </label>
             ))}
 
-            <div className="st-consent-modal__actions">
+            <div className="mt-5 flex justify-end gap-2">
               <button
                 type="button"
-                className="st-consent-btn st-consent-btn--ghost"
+                className="btn btn-ghost btn-sm"
                 onClick={() => record(NONE, 'reject_all')}
               >
                 Reject all
               </button>
               <button
                 type="button"
-                className="st-consent-btn st-consent-btn--primary"
+                className="btn btn-primary btn-sm"
                 onClick={() => record(draft, 'save_prefs')}
               >
                 Save preferences

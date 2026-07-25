@@ -19,7 +19,7 @@ import {
   type EstimateEntry,
 } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
-import { Alert, Button, Input, Label, Textarea } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button, Input, Label, Textarea } from '@wizeworks/silicaui-react';
 
 const PAGE_SIZE = 20;
 const ACTIONABLE_STAGE = 'Priced';
@@ -48,10 +48,10 @@ function formatDate(iso: string | null): string {
   });
 }
 
-function stageBadgeStatus(stageType: string): string {
+function stageBadgeTone(stageType: string) {
   if (stageType === 'committed' || stageType === 'paid') return 'success';
   if (stageType === 'void') return 'danger';
-  return 'default';
+  return 'neutral';
 }
 
 export default function EstimatesPage() {
@@ -152,10 +152,13 @@ export default function EstimatesPage() {
   if (!available) {
     return (
       <div>
-        <h1 className="st-h2" style={{ marginBottom: '0.5rem' }}>
+        <h1
+          className="text-base-content text-3xl font-semibold tracking-tight"
+          style={{ marginBottom: '0.5rem' }}
+        >
           Estimates
         </h1>
-        <p className="st-muted">This store doesn&apos;t offer estimate requests.</p>
+        <p className="text-base-content">This store doesn&apos;t offer estimate requests.</p>
       </div>
     );
   }
@@ -172,15 +175,21 @@ export default function EstimatesPage() {
           flexWrap: 'wrap',
         }}
       >
-        <h1 className="st-h2">Estimates</h1>
+        <h1 className="text-base-content text-3xl font-semibold tracking-tight">Estimates</h1>
         <Button type="button" color="primary" onClick={() => setShowForm((v) => !v)}>
           {showForm ? 'Cancel' : 'Request an estimate'}
         </Button>
       </div>
 
       {showForm && (
-        <div className="st-card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
-          <h2 className="st-h4" style={{ marginBottom: '0.75rem' }}>
+        <div
+          className="card border-base-300 border"
+          style={{ padding: '1.25rem', marginBottom: '1.25rem' }}
+        >
+          <h2
+            className="text-base-content text-xl font-semibold"
+            style={{ marginBottom: '0.75rem' }}
+          >
             What do you need?
           </h2>
           {formError && (
@@ -261,10 +270,13 @@ export default function EstimatesPage() {
           {error}
         </Alert>
       ) : estimates === null ? (
-        <div className="st-skeleton" style={{ height: 200 }} />
+        <div className="skeleton" style={{ height: 200 }} />
       ) : estimates.length === 0 ? (
-        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="st-muted">No estimate requests yet.</p>
+        <div
+          className="card border-base-300 border"
+          style={{ padding: '2rem', textAlign: 'center' }}
+        >
+          <p className="text-base-content">No estimate requests yet.</p>
         </div>
       ) : (
         <>
@@ -274,7 +286,7 @@ export default function EstimatesPage() {
               return (
                 <div
                   key={est.id}
-                  className="st-card"
+                  className="card border-base-300 border"
                   style={{
                     padding: '0.875rem 1rem',
                     display: 'flex',
@@ -286,14 +298,17 @@ export default function EstimatesPage() {
                 >
                   <div>
                     <strong>{est.number ?? 'Requested'}</strong>
-                    <div className="st-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
+                    <div
+                      className="text-base-content"
+                      style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}
+                    >
                       Valid until {formatDate(est.validUntil)}
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span className="st-badge" data-status={stageBadgeStatus(est.stage.stageType)}>
+                    <Badge color={stageBadgeTone(est.stage.stageType)} variant="soft">
                       {est.stage.customerLabel ?? est.stage.name}
-                    </span>
+                    </Badge>
                     <strong style={{ whiteSpace: 'nowrap' }}>
                       {formatMoney(est.totalCents, est.currency)}
                     </strong>
@@ -337,7 +352,10 @@ export default function EstimatesPage() {
               >
                 Previous
               </Button>
-              <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
+              <span
+                className="text-base-content"
+                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
+              >
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <Button

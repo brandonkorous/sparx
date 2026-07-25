@@ -26,23 +26,26 @@ export function AccountAuth({ mode }: { mode: AuthMode }) {
   switch (mode) {
     case 'register':
       return (
-        <Suspense fallback={<div className="st-skeleton" style={{ height: 420, maxWidth: 560 }} />}>
+        <Suspense fallback={<div className="skeleton" style={{ height: 420, maxWidth: 560 }} />}>
           <AuthPanel initial="register" />
         </Suspense>
       );
     case 'forgot':
       return (
-        <Suspense fallback={<div className="st-skeleton" style={{ height: 240 }} />}>
+        <Suspense fallback={<div className="skeleton" style={{ height: 240 }} />}>
           <ForgotForm />
         </Suspense>
       );
     case 'reset':
       return (
-        <div className="st-container--prose">
-          <h1 className="st-h2" style={{ marginBottom: '1.5rem' }}>
+        <div className="mx-auto w-full max-w-[68ch] px-6">
+          <h1
+            className="text-base-content text-3xl font-semibold tracking-tight"
+            style={{ marginBottom: '1.5rem' }}
+          >
             Set a new password
           </h1>
-          <Suspense fallback={<div className="st-skeleton" style={{ height: 240 }} />}>
+          <Suspense fallback={<div className="skeleton" style={{ height: 240 }} />}>
             <ResetForm />
           </Suspense>
         </div>
@@ -50,7 +53,7 @@ export function AccountAuth({ mode }: { mode: AuthMode }) {
     case 'signin':
     default:
       return (
-        <Suspense fallback={<div className="st-skeleton" style={{ height: 360, maxWidth: 560 }} />}>
+        <Suspense fallback={<div className="skeleton" style={{ height: 360, maxWidth: 560 }} />}>
           <AuthPanel initial="signin" />
         </Suspense>
       );

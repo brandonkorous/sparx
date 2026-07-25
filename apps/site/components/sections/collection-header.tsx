@@ -18,15 +18,7 @@ export function CollectionHeaderSection({
   if (!collection) return null;
   const hero = config.showHeroImage ? mediaUrl(collection.heroMediaId, ctx.tenantSlug) : null;
   return (
-    <header
-      style={{
-        position: 'relative',
-        borderRadius: 'var(--st-radius-lg)',
-        overflow: 'hidden',
-        marginBottom: '2rem',
-        background: hero ? undefined : 'var(--st-bg-subtle)',
-      }}
-    >
+    <header className={`rounded-box relative mb-8 overflow-hidden ${hero ? '' : 'bg-base-200'}`}>
       {hero ? (
         <Image
           src={hero}
@@ -36,29 +28,25 @@ export function CollectionHeaderSection({
           height={260}
           priority
           sizes="100vw"
-          style={{ width: '100%', height: '260px', objectFit: 'cover', display: 'block' }}
+          className="block h-[260px] w-full object-cover"
         />
       ) : null}
+      {/* Over a hero photo the text sits in a bottom-up legibility scrim; without
+          one it's an ordinary padded band. */}
       <div
-        style={{
-          padding: hero ? '2rem' : '2.5rem 0',
-          ...(hero
-            ? {
-                position: 'absolute',
-                inset: 'auto 0 0 0',
-                background: 'linear-gradient(transparent, rgb(0 0 0 / 0.6))',
-                color: '#fff',
-              }
-            : {}),
-        }}
+        className={
+          hero
+            ? 'absolute inset-x-0 bottom-0 bg-linear-to-b from-transparent to-black/60 p-8 text-white'
+            : 'py-10'
+        }
       >
-        <h1 className="st-h1" style={hero ? { color: '#fff' } : undefined}>
+        <h1
+          className={`text-4xl font-semibold tracking-tight ${hero ? 'text-white' : 'text-base-content'}`}
+        >
           {collection.name}
         </h1>
         {config.showDescription && collection.description ? (
-          <p style={{ marginTop: '0.5rem', maxWidth: '60ch', lineHeight: 1.6 }}>
-            {collection.description}
-          </p>
+          <p className="mt-2 max-w-[60ch] leading-relaxed">{collection.description}</p>
         ) : null}
       </div>
     </header>

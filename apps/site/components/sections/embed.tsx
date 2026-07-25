@@ -6,17 +6,40 @@
 import type { EmbedConfig } from '@sparx/sitebuilder-schemas';
 import { resolveEmbed } from '@sparx/sitebuilder-schemas';
 
+// Aspect-ratio box keeps the iframe from shifting layout while it loads.
+const ASPECT: Record<string, string> = {
+  '16:9': 'aspect-[16/9]',
+  '4:3': 'aspect-[4/3]',
+  '3:2': 'aspect-[3/2]',
+  '1:1': 'aspect-[1/1]',
+  '21:9': 'aspect-[21/9]',
+};
+
 export function EmbedSection({ config }: { config: EmbedConfig }) {
   const resolved = resolveEmbed(config.url);
   if (!resolved) return null;
 
   const full = config.width === 'full';
+  const innerCls = full
+    ? 'w-full'
+    : config.width === 'prose'
+      ? 'mx-auto w-full max-w-[68ch] px-6'
+      : 'mx-auto w-full max-w-6xl px-6';
   return (
-    <section className="st-section st-sb-embed" data-width={config.width}>
-      <div className={full ? 'st-sb-embed__bleed' : 'st-container'}>
-        {config.heading ? <h2 className="st-h2 st-sb-embed__heading">{config.heading}</h2> : null}
-        <div className="st-sb-embed__frame" data-aspect={config.aspect}>
+    <section className="py-[clamp(2rem,5vw,4rem)]">
+      <div className={innerCls}>
+        {config.heading ? (
+          <h2 className="text-base-content mb-4 text-3xl font-semibold tracking-tight">
+            {config.heading}
+          </h2>
+        ) : null}
+        <div
+          className={`bg-base-200 relative w-full overflow-hidden ${ASPECT[config.aspect] ?? ''} ${
+            full ? 'rounded-none' : 'rounded-box border-base-300 border'
+          }`}
+        >
           <iframe
+            className="absolute inset-0 h-full w-full border-0"
             src={resolved.src}
             title={config.heading || resolved.title}
             loading="lazy"
@@ -26,7 +49,9 @@ export function EmbedSection({ config }: { config: EmbedConfig }) {
             allowFullScreen={resolved.allowFullScreen}
           />
         </div>
-        {config.caption ? <p className="st-muted st-sb-embed__caption">{config.caption}</p> : null}
+        {config.caption ? (
+          <p className="text-base-content mt-3 text-[0.9rem]">{config.caption}</p>
+        ) : null}
       </div>
     </section>
   );

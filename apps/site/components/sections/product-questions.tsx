@@ -16,36 +16,36 @@ export function ProductQuestionsSection({
   if (!product) return null;
   const questions = ctx.productExtras?.questions ?? [];
   return (
-    <section className="st-section">
-      <h2 className="st-h2" style={{ marginBottom: '1rem' }}>
+    <section className="py-16">
+      <h2 className="text-base-content mb-4 text-3xl font-semibold tracking-tight">
         {config.heading}
       </h2>
       {questions.length > 0 ? (
-        <ul className="st-qa" style={{ listStyle: 'none', padding: 0, margin: '0 0 1.25rem' }}>
+        <ul className="m-0 mb-5 list-none p-0">
           {questions.map((q) => (
-            <li key={q.id} className="st-qa__item">
-              <p className="st-qa__q">
+            <li key={q.id} className="border-base-300 border-b py-4 first:pt-0">
+              <p className="text-base-content m-0 mb-2 leading-normal">
                 <strong>Q:</strong> {q.body}
                 {q.displayName ? (
-                  <span className="st-muted" style={{ fontWeight: 400 }}>
-                    {' '}
-                    — {q.displayName}
-                  </span>
+                  <span className="text-base-content font-normal"> — {q.displayName}</span>
                 ) : null}
               </p>
               {q.answers.map((a) => (
-                <p key={a.id} className="st-qa__a">
+                <p
+                  key={a.id}
+                  className="text-base-content m-0 mb-1.5 flex flex-wrap items-baseline gap-1.5 pl-4 leading-normal"
+                >
                   <strong>A:</strong> {a.body}
-                  {a.isOfficial ? <span className="st-qa__official">Store</span> : null}
+                  {a.isOfficial ? (
+                    <span className="badge badge-primary badge-sm">Store</span>
+                  ) : null}
                 </p>
               ))}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="st-muted" style={{ marginBottom: '1.25rem' }}>
-          {config.emptyText}
-        </p>
+        <p className="text-base-content mb-5">{config.emptyText}</p>
       )}
       {config.showForm ? (
         <QuestionForm tenantSlug={ctx.tenantSlug} handle={product.handle} />

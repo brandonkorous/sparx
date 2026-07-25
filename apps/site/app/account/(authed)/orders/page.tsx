@@ -7,9 +7,10 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
+import { orderStatusTone } from '@/components/order-timeline';
 import { getOrders, type OrderSummary } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
-import { Alert, Button } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -36,7 +37,10 @@ export default function OrdersPage() {
 
   return (
     <div>
-      <h1 className="st-h2" style={{ marginBottom: '1.25rem' }}>
+      <h1
+        className="text-base-content text-3xl font-semibold tracking-tight"
+        style={{ marginBottom: '1.25rem' }}
+      >
         Orders
       </h1>
 
@@ -45,10 +49,13 @@ export default function OrdersPage() {
           {error}
         </Alert>
       ) : orders === null ? (
-        <div className="st-skeleton" style={{ height: 160 }} />
+        <div className="skeleton" style={{ height: 160 }} />
       ) : orders.length === 0 ? (
-        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="st-muted" style={{ marginBottom: '1rem' }}>
+        <div
+          className="card border-base-300 border"
+          style={{ padding: '2rem', textAlign: 'center' }}
+        >
+          <p className="text-base-content" style={{ marginBottom: '1rem' }}>
             You haven’t placed any orders yet.
           </p>
           <Button render={<Link href="/products" />} color="primary">
@@ -61,7 +68,7 @@ export default function OrdersPage() {
             <Link
               key={o.id}
               href={`/account/orders/${o.id}`}
-              className="st-card"
+              className="card border-base-300 border"
               style={{
                 padding: '1rem 1.25rem',
                 display: 'flex',
@@ -72,14 +79,14 @@ export default function OrdersPage() {
             >
               <div>
                 <strong>#{o.orderNumber}</strong>
-                <div className="st-muted" style={{ fontSize: '0.85rem' }}>
+                <div className="text-base-content" style={{ fontSize: '0.85rem' }}>
                   {formatDate(o.placedAt)}
                 </div>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <span className="st-badge" data-status={o.status}>
+                <Badge color={orderStatusTone(o.status)} variant="soft">
                   {o.status}
-                </span>
+                </Badge>
                 <strong>{formatMoney(o.totalCents, o.currency)}</strong>
               </div>
             </Link>

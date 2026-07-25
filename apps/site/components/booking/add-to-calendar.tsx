@@ -14,10 +14,15 @@ export interface CalendarLinks {
 
 export function AddToCalendar({ links, className }: { links: CalendarLinks; className?: string }) {
   return (
-    <div className={cn('st-add-to-cal', className)}>
-      <span className="st-add-to-cal__label">Add to calendar</span>
+    <div
+      className={cn(
+        'flex flex-wrap items-center justify-center gap-x-3.5 gap-y-2 text-sm',
+        className
+      )}
+    >
+      <span className="text-base-content font-semibold">Add to calendar</span>
       <a
-        className="st-add-to-cal__link"
+        className="border-primary/40 text-primary hover:border-primary border-b no-underline transition-colors"
         href={links.google}
         target="_blank"
         rel="noopener noreferrer"
@@ -25,7 +30,7 @@ export function AddToCalendar({ links, className }: { links: CalendarLinks; clas
         Google
       </a>
       <a
-        className="st-add-to-cal__link"
+        className="border-primary/40 text-primary hover:border-primary border-b no-underline transition-colors"
         href={links.outlook}
         target="_blank"
         rel="noopener noreferrer"
@@ -33,7 +38,10 @@ export function AddToCalendar({ links, className }: { links: CalendarLinks; clas
         Outlook
       </a>
       {/* The .ics download covers Apple Calendar, Outlook desktop, and any other client. */}
-      <a className="st-add-to-cal__link" href={links.ics}>
+      <a
+        className="border-primary/40 text-primary hover:border-primary border-b no-underline transition-colors"
+        href={links.ics}
+      >
         Apple / .ics
       </a>
     </div>

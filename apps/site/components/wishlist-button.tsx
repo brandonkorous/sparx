@@ -34,7 +34,15 @@ export function WishlistButton({
   return (
     <button
       type="button"
-      className={['st-wishbtn', saved && 'is-saved', className].filter(Boolean).join(' ')}
+      className={[
+        'rounded-field bg-base-100 focus-visible:outline-primary inline-flex h-10 w-10 cursor-pointer items-center justify-center border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2',
+        saved
+          ? 'border-danger/40 text-danger'
+          : 'border-base-300 text-base-content hover:border-primary hover:text-primary',
+        className,
+      ]
+        .filter(Boolean)
+        .join(' ')}
       aria-pressed={saved}
       aria-label={saved ? 'Remove from wishlist' : 'Save to wishlist'}
       title={saved ? 'Saved' : 'Save to wishlist'}

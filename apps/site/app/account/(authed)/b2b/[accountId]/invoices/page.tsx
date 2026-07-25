@@ -9,7 +9,7 @@ import { useParams } from 'next/navigation';
 import { useCustomer } from '@/components/customer-provider';
 import { getB2bInvoices, type B2bInvoiceEntry } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
-import { Alert, Button } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
 const PAGE_SIZE = 20;
 
@@ -21,10 +21,8 @@ function formatDate(iso: string): string {
   });
 }
 
-function statusBadgeProps(status: string): { 'data-status': string } {
-  return {
-    'data-status': status === 'paid' ? 'success' : status === 'overdue' ? 'danger' : 'warning',
-  };
+function invoiceStatusTone(status: string) {
+  return status === 'paid' ? 'success' : status === 'overdue' ? 'danger' : 'warning';
 }
 
 export default function B2bInvoicesPage() {
@@ -55,10 +53,10 @@ export default function B2bInvoicesPage() {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1.25rem' }}>
-        <Link href={`/account/b2b/${accountId}`} className="st-link" style={{ fontSize: '0.9rem' }}>
+        <Link href={`/account/b2b/${accountId}`} className="link link-primary text-sm">
           ← Back
         </Link>
-        <h1 className="st-h2">Invoices</h1>
+        <h1 className="text-base-content text-3xl font-semibold tracking-tight">Invoices</h1>
       </div>
 
       {error ? (
@@ -66,10 +64,13 @@ export default function B2bInvoicesPage() {
           {error}
         </Alert>
       ) : invoices === null ? (
-        <div className="st-skeleton" style={{ height: 200 }} />
+        <div className="skeleton" style={{ height: 200 }} />
       ) : invoices.length === 0 ? (
-        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="st-muted">No invoices found.</p>
+        <div
+          className="card border-base-300 border"
+          style={{ padding: '2rem', textAlign: 'center' }}
+        >
+          <p className="text-base-content">No invoices found.</p>
         </div>
       ) : (
         <>
@@ -79,7 +80,7 @@ export default function B2bInvoicesPage() {
               return (
                 <div
                   key={inv.id}
-                  className="st-card"
+                  className="card border-base-300 border"
                   style={{
                     padding: '0.875rem 1rem',
                     display: 'flex',
@@ -90,19 +91,22 @@ export default function B2bInvoicesPage() {
                 >
                   <div>
                     <strong>{inv.invoiceNumber}</strong>
-                    <div className="st-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
+                    <div
+                      className="text-base-content"
+                      style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}
+                    >
                       Due {formatDate(inv.dueAt)}
                       {isOverdue && inv.overdueDays > 0 && (
-                        <span style={{ color: 'var(--st-danger)', marginLeft: '0.4rem' }}>
+                        <span className="text-danger" style={{ marginLeft: '0.4rem' }}>
                           · {inv.overdueDays}d overdue
                         </span>
                       )}
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span className="st-badge" {...statusBadgeProps(inv.status)}>
+                    <Badge color={invoiceStatusTone(inv.status)} variant="soft">
                       {inv.status}
-                    </span>
+                    </Badge>
                     <strong style={{ whiteSpace: 'nowrap' }}>
                       {formatMoney(inv.amountCents, 'USD')}
                     </strong>
@@ -123,7 +127,10 @@ export default function B2bInvoicesPage() {
               >
                 Previous
               </Button>
-              <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
+              <span
+                className="text-base-content"
+                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
+              >
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <Button

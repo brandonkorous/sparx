@@ -58,9 +58,9 @@ export function ResetForm() {
   }
 
   return (
-    <form onSubmit={submit} className="st-form">
-      <label className="st-field">
-        <span>New password</span>
+    <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">New password</span>
         <Input
           type="password"
           required
@@ -69,12 +69,10 @@ export function ResetForm() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <span className="st-muted" style={{ fontSize: '0.8rem' }}>
-          At least 8 characters.
-        </span>
+        <span className="text-base-content text-sm">At least 8 characters.</span>
       </label>
-      <label className="st-field">
-        <span>Confirm password</span>
+      <label className="flex flex-col gap-1.5">
+        <span className="text-base-content text-sm font-medium">Confirm password</span>
         <Input
           type="password"
           required

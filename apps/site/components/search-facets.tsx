@@ -46,13 +46,20 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
   const hasAnyFacet = FACET_GROUPS.some((g) => (facets[g.field]?.length ?? 0) > 0);
 
   return (
-    <form id="search-filters" className="st-facets" method="GET" action={action}>
+    <form
+      id="search-filters"
+      className="sticky top-[92px] flex flex-col gap-6 max-[900px]:static"
+      method="GET"
+      action={action}
+    >
       {/* Preserve the query + sort across filter submits. */}
       {values.q ? <input type="hidden" name="q" value={values.q} /> : null}
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
-      <div className="st-facet">
-        <h4>Price</h4>
+      <div>
+        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+          Price
+        </h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <Input
             type="number"
@@ -64,7 +71,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
             style={{ width: '100%' }}
             aria-label="Minimum price (dollars)"
           />
-          <span className="st-muted">–</span>
+          <span className="text-base-content">–</span>
           <Input
             type="number"
             name="maxPrice"
@@ -78,9 +85,11 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
         </div>
       </div>
 
-      <div className="st-facet">
-        <h4>Availability</h4>
-        <label>
+      <div>
+        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+          Availability
+        </h4>
+        <label className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm">
           <input type="checkbox" name="inStock" value="true" defaultChecked={values.inStock} />
           In stock only
         </label>
@@ -91,10 +100,15 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
         if (!counts || counts.length === 0) return null;
         const active = values[group.param];
         return (
-          <div className="st-facet" key={group.field}>
-            <h4>{group.label}</h4>
+          <div key={group.field}>
+            <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+              {group.label}
+            </h4>
             {counts.slice(0, 10).map((c) => (
-              <label key={c.value}>
+              <label
+                key={c.value}
+                className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm"
+              >
                 <input
                   type="radio"
                   name={group.param}
@@ -102,9 +116,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
                   defaultChecked={active === c.value}
                 />
                 <span style={{ flex: 1 }}>{c.value}</span>
-                <span className="st-muted" style={{ fontSize: '0.78rem' }}>
-                  {c.count}
-                </span>
+                <span className="text-base-content text-xs">{c.count}</span>
               </label>
             ))}
           </div>
@@ -126,9 +138,7 @@ export function SearchFacets({ action, facets, values }: SearchFacetsProps) {
       </div>
 
       {!hasAnyFacet ? (
-        <p className="st-muted" style={{ fontSize: '0.8rem' }}>
-          Refine with price or availability.
-        </p>
+        <p className="text-base-content text-sm">Refine with price or availability.</p>
       ) : null}
     </form>
   );

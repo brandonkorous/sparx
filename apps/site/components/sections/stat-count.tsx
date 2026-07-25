@@ -93,7 +93,10 @@ export function StatValue({ value, animate }: { value: string; animate: boolean 
   }, [value, animate]);
 
   return (
-    <span ref={ref} className="st-sb-stat__value">
+    <span
+      ref={ref}
+      className="text-[clamp(1.75rem,3vw,2.5rem)] leading-none font-bold tracking-[-0.02em] tabular-nums"
+    >
       {display}
     </span>
   );

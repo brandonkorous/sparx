@@ -36,7 +36,7 @@ export default async function BookIndexPage() {
   });
 
   return (
-    <div className="st-container">
+    <div className="mx-auto w-full max-w-6xl px-6">
       <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
     </div>
   );

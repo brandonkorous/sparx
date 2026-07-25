@@ -14,6 +14,28 @@ import { mediaUrl } from '@/lib/media';
 import type { SectionContext } from '../section-renderer';
 import { SbCtaRow } from './_shared';
 
+// Fixed slide height (min == max, locks to a viewport fraction).
+const HEIGHT: Record<string, string> = {
+  sm: 'min-h-[25svh] max-h-[25svh]',
+  md: 'min-h-[50svh] max-h-[50svh]',
+  lg: 'min-h-[75svh] max-h-[75svh]',
+  screen: 'min-h-[100svh] max-h-[100svh]',
+};
+// Vertical placement of a slide's content (default bottom).
+const VALIGN: Record<string, string> = {
+  top: 'items-start',
+  center: 'items-center',
+  bottom: 'items-end',
+};
+// Horizontal placement + text alignment of the content block (default left).
+const ALIGN: Record<string, string> = {
+  left: 'justify-items-start text-left',
+  center: 'justify-items-center text-center',
+  right: 'justify-items-end text-right',
+};
+// Over-photo pill treatment for a slide's CTA buttons.
+const CTA_PILL = '[&>*]:min-w-[12rem] [&>*]:rounded-full';
+
 function Chevron({ dir }: { dir: 'prev' | 'next' }) {
   return (
     <svg
@@ -103,30 +125,33 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
   const multi = items.length > 1;
 
   return (
-    <section className="st-sb-carousel-section">
+    <section className="relative">
       {config.heading ? (
-        <div className="st-container st-section__head">
-          <h2 className="st-h2">{config.heading}</h2>
+        <div className="mx-auto flex w-full max-w-6xl items-end justify-between gap-4 px-6 pt-[clamp(1.5rem,3vw,2.5rem)] pb-4">
+          <h2 className="text-base-content text-3xl font-semibold tracking-tight">
+            {config.heading}
+          </h2>
         </div>
       ) : null}
       <div
-        className="st-sb-carousel"
+        className="relative isolate"
         onMouseEnter={() => (pausedRef.current = true)}
         onMouseLeave={() => (pausedRef.current = false)}
         onFocusCapture={() => (pausedRef.current = true)}
         onBlurCapture={() => (pausedRef.current = false)}
       >
-        <div className="st-sb-carousel__track" ref={trackRef}>
+        <div
+          className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          ref={trackRef}
+        >
           {items.map((s, i) => {
             const img = mediaUrl(s.mediaId ?? null, ctx.tenantSlug);
             return (
               <div
                 key={i}
-                className="st-sb-carousel__slide"
-                data-align={config.align}
-                data-valign={config.verticalAlign}
-                data-text={config.textColor}
-                data-height={config.height}
+                className={`bg-base-200 relative flex min-w-full flex-[0_0_100%] snap-start items-end overflow-hidden bg-cover bg-center py-[clamp(2.5rem,6vw,5rem)] ${
+                  config.textColor === 'dark' ? 'text-base-content' : 'text-white'
+                } ${HEIGHT[config.height] ?? ''} ${VALIGN[config.verticalAlign] ?? VALIGN.bottom}`}
                 style={
                   img
                     ? {
@@ -139,16 +164,32 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
               >
                 {img ? (
                   <div
-                    className="st-sb-carousel__scrim"
+                    className="absolute inset-0 z-0 bg-black"
                     style={{ opacity: overlay }}
                     aria-hidden="true"
                   />
                 ) : null}
-                <div className="st-container st-sb-carousel__inner">
-                  {s.eyebrow ? <p className="st-sb-carousel__eyebrow">{s.eyebrow}</p> : null}
-                  {s.heading ? <h3 className="st-sb-carousel__title">{s.heading}</h3> : null}
-                  {s.subheading ? <p className="st-sb-carousel__sub">{s.subheading}</p> : null}
-                  <SbCtaRow ctas={s.ctas} layout={config.ctaLayout} />
+                <div
+                  className={`relative z-[1] mx-auto grid w-full max-w-6xl gap-4 px-6 ${
+                    ALIGN[config.align] ?? ALIGN.left
+                  }`}
+                >
+                  {s.eyebrow ? (
+                    <p className="m-0 text-sm font-semibold tracking-[0.08em] uppercase">
+                      {s.eyebrow}
+                    </p>
+                  ) : null}
+                  {s.heading ? (
+                    <h3 className="m-0 max-w-[18ch] text-[clamp(2rem,4.5vw,3.25rem)] leading-[1.06] font-bold tracking-[-0.03em]">
+                      {s.heading}
+                    </h3>
+                  ) : null}
+                  {s.subheading ? (
+                    <p className="m-0 max-w-[48ch] text-[clamp(1rem,1.8vw,1.2rem)] leading-normal">
+                      {s.subheading}
+                    </p>
+                  ) : null}
+                  <SbCtaRow ctas={s.ctas} layout={config.ctaLayout} className={CTA_PILL} />
                 </div>
               </div>
             );
@@ -159,7 +200,7 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
           <>
             <button
               type="button"
-              className="st-sb-carousel__arrow st-sb-carousel__arrow--prev"
+              className="border-base-300 bg-base-100/90 text-base-content hover:bg-base-100 absolute top-1/2 left-[clamp(0.75rem,2vw,1.5rem)] z-[2] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border transition active:scale-95 max-[640px]:h-[38px] max-[640px]:w-[38px]"
               aria-label="Previous slide"
               onClick={() => scrollToIndex(index - 1)}
             >
@@ -167,7 +208,7 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
             </button>
             <button
               type="button"
-              className="st-sb-carousel__arrow st-sb-carousel__arrow--next"
+              className="border-base-300 bg-base-100/90 text-base-content hover:bg-base-100 absolute top-1/2 right-[clamp(0.75rem,2vw,1.5rem)] z-[2] inline-flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full border transition active:scale-95 max-[640px]:h-[38px] max-[640px]:w-[38px]"
               aria-label="Next slide"
               onClick={() => scrollToIndex(index + 1)}
             >
@@ -177,12 +218,16 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
         ) : null}
 
         {config.showDots && multi ? (
-          <div className="st-sb-carousel__dots" role="tablist" aria-label="Slides">
+          <div
+            className="absolute bottom-4 left-1/2 z-[2] flex -translate-x-1/2 gap-2"
+            role="tablist"
+            aria-label="Slides"
+          >
             {items.map((_, i) => (
               <button
                 key={i}
                 type="button"
-                className="st-sb-carousel__dot"
+                className="bg-base-100/60 data-[active=true]:bg-base-100 h-[9px] w-[9px] rounded-full border-none p-0 transition data-[active=true]:scale-125"
                 data-active={i === index}
                 aria-label={`Go to slide ${i + 1}`}
                 aria-current={i === index}

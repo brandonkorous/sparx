@@ -100,13 +100,20 @@ export function BrowseFacets({
   const selected = new Set(values.options);
 
   return (
-    <form id="browse-filters" className="st-facets" method="GET" action={action}>
+    <form
+      id="browse-filters"
+      className="sticky top-[92px] flex flex-col gap-6 max-[900px]:static"
+      method="GET"
+      action={action}
+    >
       {/* Preserve the text query + sort across filter submits (sort is owned by the toolbar). */}
       {values.q ? <input type="hidden" name="q" value={values.q} /> : null}
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
-      <div className="st-facet">
-        <h4>Price</h4>
+      <div>
+        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+          Price
+        </h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <Input
             type="number"
@@ -118,7 +125,7 @@ export function BrowseFacets({
             style={{ width: '100%' }}
             aria-label="Minimum price (dollars)"
           />
-          <span className="st-muted">–</span>
+          <span className="text-base-content">–</span>
           <Input
             type="number"
             name="maxPrice"
@@ -132,9 +139,11 @@ export function BrowseFacets({
         </div>
       </div>
 
-      <div className="st-facet">
-        <h4>Availability</h4>
-        <label>
+      <div>
+        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+          Availability
+        </h4>
+        <label className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm">
           <input type="checkbox" name="inStock" value="true" defaultChecked={values.inStock} />
           In stock only
         </label>
@@ -146,10 +155,15 @@ export function BrowseFacets({
         if (!counts || counts.length === 0) return null;
         const active = values[group.param];
         return (
-          <div className="st-facet" key={group.field}>
-            <h4>{group.label}</h4>
+          <div key={group.field}>
+            <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+              {group.label}
+            </h4>
             {counts.slice(0, 10).map((c) => (
-              <label key={c.value}>
+              <label
+                key={c.value}
+                className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm"
+              >
                 <input
                   type="radio"
                   name={group.param}
@@ -157,9 +171,7 @@ export function BrowseFacets({
                   defaultChecked={active === c.value}
                 />
                 <span style={{ flex: 1 }}>{c.value}</span>
-                <span className="st-muted" style={{ fontSize: '0.78rem' }}>
-                  {c.count}
-                </span>
+                <span className="text-base-content text-xs">{c.count}</span>
               </label>
             ))}
           </div>
@@ -170,10 +182,15 @@ export function BrowseFacets({
           NAME the tenant defined. Checkboxes under the shared `options` key so one Color AND
           one Size can both apply. */}
       {options.map((group) => (
-        <div className="st-facet" key={group.name}>
-          <h4>{group.name}</h4>
+        <div key={group.name}>
+          <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+            {group.name}
+          </h4>
           {group.values.slice(0, 12).map((v) => (
-            <label key={v.token}>
+            <label
+              key={v.token}
+              className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm"
+            >
               <input
                 type="checkbox"
                 name="options"
@@ -181,9 +198,7 @@ export function BrowseFacets({
                 defaultChecked={selected.has(v.token)}
               />
               <span style={{ flex: 1 }}>{v.label}</span>
-              <span className="st-muted" style={{ fontSize: '0.78rem' }}>
-                {v.count}
-              </span>
+              <span className="text-base-content text-xs">{v.count}</span>
             </label>
           ))}
         </div>

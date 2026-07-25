@@ -39,10 +39,10 @@ function formatDate(iso: string | null): string {
   });
 }
 
-function stageBadgeStatus(stageType: string): string {
+function stageBadgeTone(stageType: string) {
   if (stageType === 'committed' || stageType === 'paid') return 'success';
   if (stageType === 'void') return 'danger';
-  return 'default';
+  return 'neutral';
 }
 
 function emptyLine(): B2bQuoteLineInput {
@@ -184,14 +184,10 @@ export default function B2bQuotesPage() {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <Link
-            href={`/account/b2b/${accountId}`}
-            className="st-link"
-            style={{ fontSize: '0.9rem' }}
-          >
+          <Link href={`/account/b2b/${accountId}`} className="link link-primary text-sm">
             ← Back
           </Link>
-          <h1 className="st-h2">Quotes</h1>
+          <h1 className="text-base-content text-3xl font-semibold tracking-tight">Quotes</h1>
         </div>
         {canWrite && (
           <Button type="button" color="primary" onClick={() => setShowForm((v) => !v)}>
@@ -201,8 +197,14 @@ export default function B2bQuotesPage() {
       </div>
 
       {showForm && (
-        <div className="st-card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
-          <h2 className="st-h4" style={{ marginBottom: '0.75rem' }}>
+        <div
+          className="card border-base-300 border"
+          style={{ padding: '1.25rem', marginBottom: '1.25rem' }}
+        >
+          <h2
+            className="text-base-content text-xl font-semibold"
+            style={{ marginBottom: '0.75rem' }}
+          >
             What do you need?
           </h2>
           {formError && (
@@ -221,12 +223,7 @@ export default function B2bQuotesPage() {
                   <Label htmlFor={`quote-line-desc-${i}`}>
                     Item / description
                     {line.variantId && (
-                      <Badge
-                        color="module"
-                        variant="soft"
-                        size="sm"
-                        style={{ marginLeft: '0.5rem' }}
-                      >
+                      <Badge color="module" variant="soft" size="sm" className="ml-2">
                         Catalog item
                       </Badge>
                     )}
@@ -299,10 +296,13 @@ export default function B2bQuotesPage() {
           {error}
         </Alert>
       ) : quotes === null ? (
-        <div className="st-skeleton" style={{ height: 200 }} />
+        <div className="skeleton" style={{ height: 200 }} />
       ) : quotes.length === 0 ? (
-        <div className="st-card" style={{ padding: '2rem', textAlign: 'center' }}>
-          <p className="st-muted">No quotes found on this account.</p>
+        <div
+          className="card border-base-300 border"
+          style={{ padding: '2rem', textAlign: 'center' }}
+        >
+          <p className="text-base-content">No quotes found on this account.</p>
         </div>
       ) : (
         <>
@@ -312,7 +312,7 @@ export default function B2bQuotesPage() {
               return (
                 <div
                   key={q.id}
-                  className="st-card"
+                  className="card border-base-300 border"
                   style={{
                     padding: '0.875rem 1rem',
                     display: 'flex',
@@ -324,14 +324,17 @@ export default function B2bQuotesPage() {
                 >
                   <div>
                     <strong>{q.number ?? 'Draft'}</strong>
-                    <div className="st-muted" style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}>
+                    <div
+                      className="text-base-content"
+                      style={{ fontSize: '0.82rem', marginTop: '0.15rem' }}
+                    >
                       Valid until {formatDate(q.validUntil)}
                     </div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <span className="st-badge" data-status={stageBadgeStatus(q.stage.stageType)}>
+                    <Badge color={stageBadgeTone(q.stage.stageType)} variant="soft">
                       {q.stage.customerLabel ?? q.stage.name}
-                    </span>
+                    </Badge>
                     <strong style={{ whiteSpace: 'nowrap' }}>
                       {formatMoney(q.totalCents, q.currency)}
                     </strong>
@@ -375,7 +378,10 @@ export default function B2bQuotesPage() {
               >
                 Previous
               </Button>
-              <span className="st-muted" style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}>
+              <span
+                className="text-base-content"
+                style={{ fontSize: '0.85rem', lineHeight: '2.25rem' }}
+              >
                 {skip + 1}–{Math.min(skip + PAGE_SIZE, total)} of {total}
               </span>
               <Button

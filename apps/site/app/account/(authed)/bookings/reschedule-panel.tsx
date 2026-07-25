@@ -80,12 +80,12 @@ export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props)
 
   return (
     <div
-      className="st-card"
+      className="card border-base-300 border"
       style={{ padding: '1rem', marginTop: '0.5rem', display: 'grid', gap: '0.75rem' }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <strong style={{ fontSize: '0.9rem' }}>Pick a new time</strong>
-        <button type="button" className="st-link" style={{ fontSize: '0.85rem' }} onClick={onClose}>
+        <button type="button" className="link link-primary text-sm" onClick={onClose}>
           Close
         </button>
       </div>
@@ -108,22 +108,25 @@ export function ReschedulePanel({ tenantSlug, booking, onDone, onClose }: Props)
       </div>
 
       {loading ? (
-        <div className="st-skeleton" style={{ height: 64 }} />
+        <div className="skeleton" style={{ height: 64 }} />
       ) : slots === null ? (
-        <p className="st-muted" style={{ fontSize: '0.85rem' }}>
+        <p className="text-base-content" style={{ fontSize: '0.85rem' }}>
           Choose a day to see available times.
         </p>
       ) : slots.length === 0 ? (
-        <p className="st-muted" style={{ fontSize: '0.85rem' }}>
+        <p className="text-base-content" style={{ fontSize: '0.85rem' }}>
           No openings that day — try another date.
         </p>
       ) : (
-        <div className="st-booking__slots">
+        <div className="grid gap-[0.6rem]">
           {slots.map((s) => (
             <button
               key={s.startAt}
               type="button"
-              className={cn('st-booking__slot', submitting === s.startAt && 'is-selected')}
+              className={cn(
+                'rounded-field border-base-300 bg-base-100 text-base-content hover:border-primary cursor-pointer border px-[0.9rem] py-2 text-sm transition-colors',
+                submitting === s.startAt && 'border-primary bg-primary text-primary-content'
+              )}
               disabled={submitting !== null}
               onClick={() => void pick(s.startAt)}
             >

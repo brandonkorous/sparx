@@ -16,11 +16,13 @@ export function ProductRelatedSection({
   if (related.length === 0) return null;
   const items = related.slice(0, config.limit);
   return (
-    <section className="st-section">
-      <div className="st-section__head">
-        <h2 className="st-h2">{config.heading}</h2>
+    <section className="py-16">
+      <div className="mb-7 flex items-end justify-between gap-4">
+        <h2 className="text-base-content text-3xl font-semibold tracking-tight">
+          {config.heading}
+        </h2>
       </div>
-      <div className="st-grid st-grid--auto">
+      <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
         {items.map((p) => (
           <ProductCard
             key={p.id}

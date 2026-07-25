@@ -139,7 +139,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
       );
       // Render the builder tree BARE — exactly like the catch-all page route
       // ([...slug]). The template owns its own width (full-bleed hero sections,
-      // contained content), so no `st-container` wrapper or breadcrumbs: those
+      // contained content), so no centered container wrapper or breadcrumbs: those
       // would cap every section at the content max-width and sit under the
       // overlay header. The site chrome (header/footer) still frames it via the
       // root layout's Outlet.
@@ -230,7 +230,7 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
   };
 
   return (
-    <div className="st-container">
+    <div className="mx-auto w-full max-w-6xl px-6">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}

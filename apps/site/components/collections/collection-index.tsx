@@ -21,8 +21,8 @@ export async function CollectionIndex({ site }: { site: ResolvedSite }) {
   return (
     <>
       <header style={{ marginBottom: '2rem' }}>
-        <h1 className="st-h1">Collections</h1>
-        <p className="st-muted" style={{ marginTop: '0.5rem' }}>
+        <h1 className="text-base-content text-4xl font-semibold tracking-tight">Collections</h1>
+        <p className="text-base-content" style={{ marginTop: '0.5rem' }}>
           Curated lineups from {site.name}.
         </p>
       </header>
@@ -35,30 +35,44 @@ export async function CollectionIndex({ site }: { site: ResolvedSite }) {
           action={{ label: 'Shop all products', href: '/products' }}
         />
       ) : (
-        <div className="st-grid st-grid--auto">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
           {collections.map((c) => {
             const hero = mediaUrl(c.heroMediaId, site.slug);
             return (
-              <Link key={c.id} href={`/collections/${c.handle}`} className="st-card">
-                <div className="st-card__media">
-                  {c.featured ? <span className="st-badge">Featured</span> : null}
+              <Link
+                key={c.id}
+                href={`/collections/${c.handle}`}
+                className="group rounded-box bg-base-100 text-base-content focus-visible:outline-primary relative flex flex-col overflow-hidden no-underline transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2"
+              >
+                <div className="bg-base-200 relative aspect-square overflow-hidden">
+                  {c.featured ? (
+                    <span className="badge badge-neutral absolute top-3 left-3 z-10">Featured</span>
+                  ) : null}
                   {hero ? (
                     <Image
                       src={hero}
                       alt={c.name}
                       fill
                       sizes="(max-width: 860px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-[400ms] group-hover:scale-105"
                       style={{ objectFit: 'cover' }}
                     />
                   ) : (
-                    <div className="st-card__media st-card__media--empty" aria-hidden="true">
-                      <span style={{ fontSize: '2rem' }}>❖</span>
+                    <div
+                      className="bg-base-200 text-base-content/40 grid h-full place-items-center text-[2rem]"
+                      aria-hidden="true"
+                    >
+                      ❖
                     </div>
                   )}
                 </div>
-                <div className="st-card__body">
-                  <span className="st-card__title">{c.name}</span>
-                  {c.description ? <span className="st-muted">{c.description}</span> : null}
+                <div className="flex flex-col gap-1 px-1 pt-4 pb-2">
+                  <span className="text-base-content text-base leading-snug font-medium">
+                    {c.name}
+                  </span>
+                  {c.description ? (
+                    <span className="text-base-content text-sm">{c.description}</span>
+                  ) : null}
                 </div>
               </Link>
             );

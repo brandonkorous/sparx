@@ -45,17 +45,20 @@ export default function ProfilePage() {
 
   return (
     <div>
-      <h1 className="st-h2" style={{ marginBottom: '1.25rem' }}>
+      <h1
+        className="text-base-content text-3xl font-semibold tracking-tight"
+        style={{ marginBottom: '1.25rem' }}
+      >
         Profile
       </h1>
-      <form onSubmit={submit} className="st-form">
-        <label className="st-field">
-          <span>Email</span>
+      <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
+        <label className="flex flex-col gap-1.5">
+          <span className="text-base-content text-sm font-medium">Email</span>
           <Input value={customer?.email ?? ''} disabled readOnly />
         </label>
         <div style={{ display: 'flex', gap: '0.75rem' }}>
-          <label className="st-field" style={{ flex: 1 }}>
-            <span>First name</span>
+          <label className="flex flex-col gap-1.5" style={{ flex: 1 }}>
+            <span className="text-base-content text-sm font-medium">First name</span>
             <Input
               autoComplete="given-name"
               value={firstName}
@@ -65,8 +68,8 @@ export default function ProfilePage() {
               }}
             />
           </label>
-          <label className="st-field" style={{ flex: 1 }}>
-            <span>Last name</span>
+          <label className="flex flex-col gap-1.5" style={{ flex: 1 }}>
+            <span className="text-base-content text-sm font-medium">Last name</span>
             <Input
               autoComplete="family-name"
               value={lastName}
@@ -77,8 +80,8 @@ export default function ProfilePage() {
             />
           </label>
         </div>
-        <label className="st-field">
-          <span>Phone</span>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-base-content text-sm font-medium">Phone</span>
           <Input
             type="tel"
             autoComplete="tel"
@@ -99,7 +102,7 @@ export default function ProfilePage() {
             {state === 'busy' ? 'Saving…' : 'Save changes'}
           </Button>
           {state === 'saved' ? (
-            <span className="st-muted" role="status">
+            <span className="text-base-content" role="status">
               Saved.
             </span>
           ) : null}

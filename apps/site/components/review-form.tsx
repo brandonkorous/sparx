@@ -17,13 +17,20 @@ function StarRating({ value, onChange }: { value: number; onChange: (n: number) 
   const [hover, setHover] = useState(0);
   const shown = hover || value; // hover preview wins, else the committed value
   return (
-    <fieldset className="st-stars-input" onMouseLeave={() => setHover(0)}>
-      <legend>Rating</legend>
-      <div className="st-stars-input__row">
+    <fieldset
+      className="m-0 flex min-w-0 flex-col gap-1.5 border-0 p-0"
+      onMouseLeave={() => setHover(0)}
+    >
+      <legend className="text-base-content p-0 text-sm font-medium">Rating</legend>
+      <div className="inline-flex gap-0.5">
         {[1, 2, 3, 4, 5].map((n) => (
           <label
             key={n}
-            className={shown >= n ? 'st-stars-input__star is-on' : 'st-stars-input__star'}
+            className={
+              shown >= n
+                ? 'rounded-field text-warning focus-within:outline-primary cursor-pointer text-[1.6rem] leading-none transition-colors focus-within:outline-2 focus-within:outline-offset-2'
+                : 'rounded-field text-base-content/35 focus-within:outline-primary cursor-pointer text-[1.6rem] leading-none transition-colors focus-within:outline-2 focus-within:outline-offset-2'
+            }
             onMouseEnter={() => setHover(n)}
           >
             <input
@@ -32,10 +39,10 @@ function StarRating({ value, onChange }: { value: number; onChange: (n: number) 
               value={n}
               checked={value === n}
               onChange={() => onChange(n)}
-              className="st-sr-only"
+              className="sr-only"
             />
             <span aria-hidden="true">★</span>
-            <span className="st-sr-only">
+            <span className="sr-only">
               {n} star{n === 1 ? '' : 's'}
             </span>
           </label>
@@ -101,14 +108,14 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
   }
 
   return (
-    <form onSubmit={submit} className="st-form">
+    <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
       <StarRating value={rating} onChange={setRating} />
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
-        <label className="st-field" style={{ flex: 1 }}>
+      <div className="flex gap-3">
+        <label className="[&>span]:text-base-content flex flex-1 flex-col gap-1.5 [&>span]:text-sm [&>span]:font-medium">
           <span>Name</span>
           <Input required value={authorName} onChange={(e) => setAuthorName(e.target.value)} />
         </label>
-        <label className="st-field" style={{ flex: 1 }}>
+        <label className="[&>span]:text-base-content flex flex-1 flex-col gap-1.5 [&>span]:text-sm [&>span]:font-medium">
           <span>Email (optional)</span>
           <Input
             type="email"
@@ -117,11 +124,11 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
           />
         </label>
       </div>
-      <label className="st-field">
+      <label className="[&>span]:text-base-content flex flex-col gap-1.5 [&>span]:text-sm [&>span]:font-medium">
         <span>Title (optional)</span>
         <Input value={title} onChange={(e) => setTitle(e.target.value)} />
       </label>
-      <label className="st-field">
+      <label className="[&>span]:text-base-content flex flex-col gap-1.5 [&>span]:text-sm [&>span]:font-medium">
         <span>Review</span>
         <Textarea required rows={4} value={body} onChange={(e) => setBody(e.target.value)} />
       </label>
@@ -130,7 +137,7 @@ export function ReviewForm({ tenantSlug, handle }: { tenantSlug: string; handle:
           {error}
         </Alert>
       ) : null}
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
+      <div className="flex gap-3">
         <Button type="button" color="neutral" variant="ghost" onClick={() => setOpen(false)}>
           Cancel
         </Button>

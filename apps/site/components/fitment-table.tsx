@@ -28,7 +28,7 @@ export function FitmentTable({ fitments, domainsBySlug }: FitmentTableProps) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="flex flex-col gap-6">
       {[...groups.entries()].map(([slug, rows]) => (
         <FitmentGroup
           key={slug}
@@ -69,12 +69,10 @@ function FitmentGroup({
   return (
     <div>
       {showHeading ? (
-        <h3 className="st-h3" style={{ marginBottom: '0.75rem' }}>
-          {heading}
-        </h3>
+        <h3 className="text-base-content mb-3 text-2xl font-semibold">{heading}</h3>
       ) : null}
-      <div style={{ overflowX: 'auto' }}>
-        <table className="st-fitment-table">
+      <div className="overflow-x-auto">
+        <table className="table w-full">
           <thead>
             <tr>
               {visibleLevels.length > 0 ? (

@@ -62,17 +62,17 @@ export function QuestionForm({ tenantSlug, handle }: { tenantSlug: string; handl
   }
 
   return (
-    <form onSubmit={submit} className="st-form">
-      <label className="st-field">
+    <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
+      <label className="[&>span]:text-base-content flex flex-col gap-1.5 [&>span]:text-sm [&>span]:font-medium">
         <span>Name (optional)</span>
         <Input value={displayName} onChange={(e) => setDisplayName(e.target.value)} />
       </label>
-      <label className="st-field">
+      <label className="[&>span]:text-base-content flex flex-col gap-1.5 [&>span]:text-sm [&>span]:font-medium">
         <span>Your question</span>
         <Textarea required rows={3} value={body} onChange={(e) => setBody(e.target.value)} />
       </label>
       {error ? <Alert color="danger">{error}</Alert> : null}
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
+      <div className="flex gap-3">
         <Button type="button" color="neutral" variant="ghost" onClick={() => setOpen(false)}>
           Cancel
         </Button>

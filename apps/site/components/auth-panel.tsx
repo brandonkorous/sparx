@@ -10,7 +10,7 @@ import { useState } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
 import { AccountError } from '@/lib/customer-client';
-import { Alert, Button, Input } from '@wizeworks/silicaui-react';
+import { Alert, Button, Input, Tabs, TabsList, TabsTab } from '@wizeworks/silicaui-react';
 
 type Mode = 'signin' | 'register';
 
@@ -59,54 +59,45 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
   }
 
   return (
-    <div className="st-container--prose" style={{ paddingBlock: '2.5rem' }}>
-      <div className="st-tabs st-tabs--box st-c-primary" style={{ marginBottom: '1.5rem' }}>
-        <div className="st-tabs__list" role="tablist" aria-label="Account">
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'signin'}
-            data-state={mode === 'signin' ? 'active' : 'inactive'}
-            className="st-tabs__tab"
-            onClick={() => switchMode('signin')}
-          >
-            Sign in
-          </button>
-          <button
-            type="button"
-            role="tab"
-            aria-selected={mode === 'register'}
-            data-state={mode === 'register' ? 'active' : 'inactive'}
-            className="st-tabs__tab"
-            onClick={() => switchMode('register')}
-          >
-            Create account
-          </button>
-        </div>
-      </div>
+    <div className="mx-auto w-full max-w-[68ch] px-6 py-10">
+      <Tabs
+        variant="boxed"
+        color="primary"
+        value={mode}
+        onValueChange={(v) => switchMode(v as Mode)}
+        className="mb-6"
+      >
+        <TabsList aria-label="Account">
+          <TabsTab value="signin">Sign in</TabsTab>
+          <TabsTab value="register">Create account</TabsTab>
+        </TabsList>
+      </Tabs>
 
-      <h1 className="st-h2" style={{ marginBottom: '0.5rem' }}>
+      <h1
+        className="text-base-content text-3xl font-semibold tracking-tight"
+        style={{ marginBottom: '0.5rem' }}
+      >
         {mode === 'signin' ? 'Welcome back' : 'Create your account'}
       </h1>
-      <p className="st-muted" style={{ marginBottom: '1.5rem' }}>
+      <p className="text-base-content" style={{ marginBottom: '1.5rem' }}>
         {mode === 'signin'
           ? 'Sign in to track orders and check out faster.'
           : 'Save your details for a faster checkout next time.'}
       </p>
 
-      <form onSubmit={submit} className="st-form">
+      <form onSubmit={submit} className="flex max-w-[560px] flex-col gap-4">
         {mode === 'register' ? (
           <div style={{ display: 'flex', gap: '0.75rem' }}>
-            <label className="st-field" style={{ flex: 1 }}>
-              <span>First name</span>
+            <label className="flex flex-col gap-1.5" style={{ flex: 1 }}>
+              <span className="text-base-content text-sm font-medium">First name</span>
               <Input
                 autoComplete="given-name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
               />
             </label>
-            <label className="st-field" style={{ flex: 1 }}>
-              <span>Last name</span>
+            <label className="flex flex-col gap-1.5" style={{ flex: 1 }}>
+              <span className="text-base-content text-sm font-medium">Last name</span>
               <Input
                 autoComplete="family-name"
                 value={lastName}
@@ -116,8 +107,8 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
           </div>
         ) : null}
 
-        <label className="st-field">
-          <span>Email</span>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-base-content text-sm font-medium">Email</span>
           <Input
             type="email"
             required
@@ -127,8 +118,8 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
           />
         </label>
 
-        <label className="st-field">
-          <span>Password</span>
+        <label className="flex flex-col gap-1.5">
+          <span className="text-base-content text-sm font-medium">Password</span>
           <Input
             type="password"
             required
@@ -138,15 +129,9 @@ export function AuthPanel({ initial = 'signin' }: { initial?: Mode }) {
             onChange={(e) => setPassword(e.target.value)}
           />
           {mode === 'register' ? (
-            <span className="st-muted" style={{ fontSize: '0.8rem' }}>
-              At least 8 characters.
-            </span>
+            <span className="text-base-content text-xs">At least 8 characters.</span>
           ) : (
-            <Link
-              href="/account/forgot"
-              className="st-muted"
-              style={{ fontSize: '0.8rem', alignSelf: 'flex-start' }}
-            >
+            <Link href="/account/forgot" className="link link-primary self-start text-xs">
               Forgot your password?
             </Link>
           )}

@@ -1,5 +1,7 @@
-// Star rating display. Renders a 5-star glyph row with a partial fill driven
-// by a CSS variable (--pct) so half-stars render precisely. Pure presentation.
+// Star rating display. Renders the silica Rating in read-only mode (gold
+// `warning` stars) alongside an optional score/count. Pure presentation.
+
+import { Rating } from '@wizeworks/silicaui-react';
 
 export interface RatingStarsProps {
   rating: number; // 0–5
@@ -8,12 +10,16 @@ export interface RatingStarsProps {
 }
 
 export function RatingStars({ rating, count, compact }: RatingStarsProps) {
-  const pct = `${Math.max(0, Math.min(5, rating)) * 20}%`;
+  const value = Math.max(0, Math.min(5, rating));
   return (
-    <span className="st-stars" aria-label={`Rated ${rating.toFixed(1)} out of 5`}>
-      <span className="st-stars__fill" style={{ ['--pct' as string]: pct }} aria-hidden="true">
-        ★★★★★
-      </span>
+    <span className="text-base-content inline-flex items-center gap-1.5 text-sm">
+      <Rating
+        value={value}
+        color="warning"
+        size="sm"
+        readOnly
+        label={`Rated ${rating.toFixed(1)} out of 5`}
+      />
       {!compact && count != null ? (
         <span>
           {rating.toFixed(1)} ({count})

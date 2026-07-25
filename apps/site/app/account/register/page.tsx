@@ -29,7 +29,7 @@ export default async function RegisterPage() {
   const renderHost = storefrontHostRenderer({ site, propertySlug: propertySlug ?? undefined });
 
   return (
-    <div className="st-container">
+    <div className="mx-auto w-full max-w-6xl px-6">
       <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
     </div>
   );

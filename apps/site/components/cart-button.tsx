@@ -13,7 +13,7 @@ export function CartButton() {
   return (
     <Link
       href="/cart"
-      className="st-iconbtn"
+      className="rounded-field text-base-content hover:bg-base-200 relative inline-flex h-10 w-10 items-center justify-center bg-transparent no-underline transition-colors"
       aria-label={`Cart, ${count} ${count === 1 ? 'item' : 'items'}`}
       onClick={(e) => {
         // Progressive enhancement: open the drawer instead of navigating.
@@ -36,7 +36,11 @@ export function CartButton() {
         <circle cx="20" cy="21" r="1" />
         <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6" />
       </svg>
-      {count > 0 ? <span className="st-iconbtn__count">{count > 99 ? '99+' : count}</span> : null}
+      {count > 0 ? (
+        <span className="bg-primary text-primary-content absolute top-0.5 right-0.5 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[9px] px-1 text-[0.65rem] font-bold">
+          {count > 99 ? '99+' : count}
+        </span>
+      ) : null}
     </Link>
   );
 }

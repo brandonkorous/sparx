@@ -8,9 +8,10 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 
 import { useCustomer } from '@/components/customer-provider';
+import { orderStatusTone } from '@/components/order-timeline';
 import { getB2bSummary, type B2bPortalSummary } from '@/lib/customer-client';
 import { formatMoney } from '@/lib/format';
-import { Alert, Button } from '@wizeworks/silicaui-react';
+import { Alert, Badge, Button } from '@wizeworks/silicaui-react';
 
 function formatDate(iso: string): string {
   return new Date(iso).toLocaleDateString('en-US', {
@@ -18,6 +19,20 @@ function formatDate(iso: string): string {
     month: 'short',
     day: 'numeric',
   });
+}
+
+/** Semantic tone for a B2B account status. */
+function accountStatusTone(status: string) {
+  switch (status) {
+    case 'credit_hold':
+      return 'warning';
+    case 'suspended':
+      return 'danger';
+    case 'inactive':
+      return 'neutral';
+    default:
+      return 'success';
+  }
 }
 
 export default function B2bAccountPage() {
@@ -43,7 +58,7 @@ export default function B2bAccountPage() {
         {error}
       </Alert>
     );
-  if (!summary) return <div className="st-skeleton" style={{ height: 300 }} />;
+  if (!summary) return <div className="skeleton" style={{ height: 300 }} />;
 
   const { account, invoiceSummary, recentOrders } = summary;
   const overdueAmount = invoiceSummary.overdueCents + invoiceSummary.unpaidCents;
@@ -52,18 +67,21 @@ export default function B2bAccountPage() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
         <div>
-          <h1 className="st-h2" style={{ marginBottom: '0.25rem' }}>
+          <h1
+            className="text-base-content text-3xl font-semibold tracking-tight"
+            style={{ marginBottom: '0.25rem' }}
+          >
             {account.companyName}
           </h1>
-          <p className="st-muted" style={{ fontSize: '0.9rem' }}>
+          <p className="text-base-content" style={{ fontSize: '0.9rem' }}>
             {account.role.replace('_', ' ')}
             {account.paymentTerms ? ` · ${account.paymentTerms.toUpperCase()}` : ''}
           </p>
         </div>
         {account.status !== 'active' && (
-          <span className="st-badge" data-status={account.status}>
+          <Badge color={accountStatusTone(account.status)} variant="soft">
             {account.status.replace('_', ' ')}
-          </span>
+          </Badge>
         )}
       </div>
 
@@ -75,34 +93,44 @@ export default function B2bAccountPage() {
           gap: '0.75rem',
         }}
       >
-        <div className="st-card" style={{ padding: '1rem' }}>
-          <div className="st-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+        <div className="card border-base-300 border" style={{ padding: '1rem' }}>
+          <div
+            className="text-base-content"
+            style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}
+          >
             Credit limit
           </div>
           <strong style={{ fontSize: '1.1rem' }}>${account.creditLimit.toLocaleString()}</strong>
         </div>
-        <div className="st-card" style={{ padding: '1rem' }}>
-          <div className="st-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+        <div className="card border-base-300 border" style={{ padding: '1rem' }}>
+          <div
+            className="text-base-content"
+            style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}
+          >
             Credit used
           </div>
           <strong style={{ fontSize: '1.1rem' }}>${account.creditUsed.toLocaleString()}</strong>
         </div>
-        <div className="st-card" style={{ padding: '1rem' }}>
-          <div className="st-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+        <div className="card border-base-300 border" style={{ padding: '1rem' }}>
+          <div
+            className="text-base-content"
+            style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}
+          >
             Available
           </div>
           <strong
-            style={{
-              fontSize: '1.1rem',
-              color: account.creditAvailable > 0 ? 'var(--st-success)' : 'var(--st-danger)',
-            }}
+            className={account.creditAvailable > 0 ? 'text-success' : 'text-danger'}
+            style={{ fontSize: '1.1rem' }}
           >
             ${account.creditAvailable.toLocaleString()}
           </strong>
         </div>
         {account.discountPercent > 0 && (
-          <div className="st-card" style={{ padding: '1rem' }}>
-            <div className="st-muted" style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}>
+          <div className="card border-base-300 border" style={{ padding: '1rem' }}>
+            <div
+              className="text-base-content"
+              style={{ fontSize: '0.8rem', marginBottom: '0.35rem' }}
+            >
               Your discount
             </div>
             <strong style={{ fontSize: '1.1rem' }}>{account.discountPercent}%</strong>
@@ -133,9 +161,9 @@ export default function B2bAccountPage() {
         >
           Invoices
           {invoiceSummary.unpaidCount + invoiceSummary.overdueCount > 0 && (
-            <span className="st-badge st-badge--danger" style={{ marginLeft: '0.5rem' }}>
+            <Badge color="danger" size="sm" className="ml-2">
               {invoiceSummary.unpaidCount + invoiceSummary.overdueCount}
-            </span>
+            </Badge>
           )}
         </Button>
         <Button
@@ -157,14 +185,17 @@ export default function B2bAccountPage() {
       {/* Recent orders */}
       {recentOrders.length > 0 && (
         <div>
-          <h2 className="st-h4" style={{ marginBottom: '0.75rem' }}>
+          <h2
+            className="text-base-content text-xl font-semibold"
+            style={{ marginBottom: '0.75rem' }}
+          >
             Recent orders
           </h2>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {recentOrders.map((o) => (
               <div
                 key={o.id}
-                className="st-card"
+                className="card border-base-300 border"
                 style={{
                   padding: '0.75rem 1rem',
                   display: 'flex',
@@ -175,21 +206,24 @@ export default function B2bAccountPage() {
               >
                 <div>
                   <strong>#{o.orderNumber}</strong>
-                  <span className="st-muted" style={{ fontSize: '0.85rem', marginLeft: '0.5rem' }}>
+                  <span
+                    className="text-base-content"
+                    style={{ fontSize: '0.85rem', marginLeft: '0.5rem' }}
+                  >
                     {formatDate(o.createdAt)}
                   </span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                  <span className="st-badge" data-status={o.status}>
+                  <Badge color={orderStatusTone(o.status)} variant="soft">
                     {o.status}
-                  </span>
+                  </Badge>
                   <strong>{formatMoney(o.totalCents, o.currency)}</strong>
                 </div>
               </div>
             ))}
           </div>
           <div style={{ marginTop: '0.75rem' }}>
-            <Link href={`/account/b2b/${accountId}/orders`} className="st-link">
+            <Link href={`/account/b2b/${accountId}/orders`} className="link link-primary">
               View all orders →
             </Link>
           </div>
