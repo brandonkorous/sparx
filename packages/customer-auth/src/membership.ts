@@ -52,14 +52,15 @@ export function ensureMembership(
 
     const guest = await tx.customer.findFirst({
       where: { propertyId, email, authUserId: null, deletedAt: null },
-      select: { id: true, type: true, firstName: true, lastName: true },
+      select: { id: true, firstName: true, lastName: true },
     });
     if (guest) {
+      // Registering an account links the login; it is not a purchase, so the
+      // lifecycle stage is left to the order path to advance (see checkout-service).
       await tx.customer.update({
         where: { id: guest.id },
         data: {
           authUserId,
-          ...(guest.type === 'prospect' ? { type: 'retail' } : {}),
           ...(names.firstName && !guest.firstName ? { firstName: names.firstName } : {}),
           ...(names.lastName && !guest.lastName ? { lastName: names.lastName } : {}),
         },

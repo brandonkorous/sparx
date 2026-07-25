@@ -3233,24 +3233,38 @@
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
   }
   .st-booking__service-card {
-    display: grid;
+    display: flex;
+    flex-direction: column;
     gap: 0.4rem;
+    height: 100%;
     padding: 1.25rem;
     text-decoration: none;
     color: inherit;
-    transition:
-      border-color var(--st-ease),
-      box-shadow var(--st-ease);
+    transition: border-color var(--st-ease);
   }
+  /* Edge-based hover (no shadow): the border shifts to the brand ink so the whole
+     card reads as one clickable target. */
   .st-booking__service-card:hover {
     border-color: var(--st-primary);
-    box-shadow: var(--st-shadow-sm);
+  }
+  .st-booking__service-desc {
+    color: var(--st-text);
   }
   .st-booking__service-meta {
     display: flex;
     gap: 1rem;
-    color: var(--st-text-muted);
+    color: var(--st-text);
     font-size: 0.9rem;
+    font-weight: 500;
+  }
+  /* The card's call-to-action. `margin-top: auto` bottom-aligns it so cards of
+     differing copy length keep their CTAs on one line. It's a styled span (the
+     card is the link), so `justify-self`/`align-self` keeps it to its natural
+     width instead of stretching across the column. */
+  .st-booking__service-cta {
+    margin-top: auto;
+    align-self: flex-start;
+    gap: 0.4rem;
   }
   .st-booking__detail {
     display: grid;

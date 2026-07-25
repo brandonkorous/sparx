@@ -49,12 +49,25 @@ export async function BookingServices() {
         <ul className="st-booking__service-list">
           {services.map((s) => (
             <li key={s.id}>
+              {/* The whole card is the link; the CTA below is a visual affordance (a
+                  styled span, not a nested control) so the card reads as clearly
+                  clickable — "info block" cards tested as not-obviously-actionable. */}
               <Link href={`/book/${s.id}`} className="st-card st-booking__service-card">
                 <span className="st-booking__service-name st-h3">{s.name}</span>
-                {s.description ? <span className="st-muted">{s.description}</span> : null}
+                {s.description ? (
+                  <span className="st-booking__service-desc">{s.description}</span>
+                ) : null}
                 <span className="st-booking__service-meta">
                   <span>{duration(s.durationMinutes)}</span>
-                  {s.priceCents > 0 ? <span>{money(s.priceCents, s.currency)}</span> : null}
+                  {s.priceCents > 0 ? (
+                    <span>{money(s.priceCents, s.currency)}</span>
+                  ) : (
+                    <span>Free</span>
+                  )}
+                </span>
+                <span className="st-btn st-c-primary st-v-solid st-btn--sz-sm st-booking__service-cta">
+                  See open times
+                  <span aria-hidden="true">→</span>
                 </span>
               </Link>
             </li>

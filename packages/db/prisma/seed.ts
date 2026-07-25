@@ -3441,6 +3441,7 @@ async function seedDemoOrders(tenantId: string): Promise<void> {
           tenantId,
           propertyId,
           type: 'retail',
+          lifecycleStage: 'customer',
           email: c.email,
           firstName: c.firstName,
           lastName: c.lastName,

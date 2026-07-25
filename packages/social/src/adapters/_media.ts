@@ -5,10 +5,35 @@
 // by extension. Centralized here so LinkedIn + the Meta family agree on exactly which
 // URLs count as an image and how a canonical link is appended to a caption.
 
+import { fetchT } from './_http.js';
+
 /** File extensions the platforms treat as an uploadable image. `avif` is included so a
  *  base variant in that format is still recognized (the social CROPS are jpeg, but the
  *  scale-to-width base can be avif/webp — see the worker's media resolver). */
 const IMAGE_EXT_RE = /\.(jpe?g|png|gif|webp|avif)(?:$|[?#])/i;
+
+/** The bytes of an image URL, for adapters that UPLOAD the file rather than hand the
+ *  platform a public URL to fetch. Facebook's `/photos?url=` fetch is served a `206
+ *  Partial Content` by our CDN (Cloudflare slices every range request) and rejected as
+ *  `(#324) Missing or invalid image file`; a plain GET (no Range) returns a clean 200, so
+ *  the worker downloads the bytes here and posts them as multipart `source`. 30s timeout
+ *  — comfortably above a small social variant's transfer. */
+export async function fetchImageBinary(
+  url: string
+): Promise<{ bytes: ArrayBuffer; contentType: string; filename: string }> {
+  const res = await fetchT(url, {}, 30_000);
+  if (!res.ok) throw new Error(`image fetch failed: ${res.status} ${url.slice(0, 160)}`);
+  const bytes = await res.arrayBuffer();
+  const contentType = res.headers.get('content-type') ?? 'image/jpeg';
+  const ext = contentType.includes('png')
+    ? 'png'
+    : contentType.includes('webp')
+      ? 'webp'
+      : contentType.includes('gif')
+        ? 'gif'
+        : 'jpg';
+  return { bytes, contentType, filename: `image.${ext}` };
+}
 
 /** Whether a resolved media URL points at an image (by extension). */
 export function isImageUrl(url: string): boolean {

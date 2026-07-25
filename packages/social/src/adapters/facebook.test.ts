@@ -9,6 +9,14 @@ function jsonRes(body: unknown): Response {
 function errRes(status: number, text: string): Response {
   return { ok: false, status, text: () => Promise.resolve(text) } as unknown as Response;
 }
+function binRes(bytes: Uint8Array, contentType = 'image/jpeg'): Response {
+  return {
+    ok: true,
+    status: 200,
+    arrayBuffer: () => Promise.resolve(bytes.buffer),
+    headers: { get: (h: string) => (h.toLowerCase() === 'content-type' ? contentType : null) },
+  } as unknown as Response;
+}
 
 // The Facebook Page adapter's pure decision logic (docs/134 Phase 2). Network calls
 // (token exchange, Page listing, Graph publish) are integration surface; here we lock
@@ -158,5 +166,61 @@ describe('FacebookPageAdapter getMetrics', () => {
     expect(metrics).toEqual({ likes: 5, comments: 1, shares: 0 });
     expect(metrics.impressions).toBeUndefined();
     expect(metrics.reach).toBeUndefined();
+  });
+});
+
+// A single-image post must UPLOAD the bytes (multipart `source`), never hand Graph a
+// public `url` to fetch — Cloudflare serves our media URL a 206 that /photos rejects
+// (#324). This locks that: the worker downloads the image itself (a plain GET, no Range),
+// then posts it as multipart with no `url` field.
+describe('FacebookPageAdapter publish — single photo uploads bytes, not a url', () => {
+  const auth: SocialAuth = { externalId: 'user', accessToken: 'user-token' };
+  const target: SocialTargetRef = {
+    externalTargetId: 'page-1',
+    name: 'Page',
+    params: { pageAccessToken: 'page-token' },
+  };
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it('downloads the image and posts it as multipart source (no url= param)', async () => {
+    const calls: { url: string; init?: RequestInit }[] = [];
+    vi.stubGlobal(
+      'fetch',
+      vi.fn((url: string, init?: RequestInit) => {
+        calls.push({ url, init });
+        if (url.includes('media.example')) {
+          return Promise.resolve(binRes(new Uint8Array([0xff, 0xd8, 0xff, 0xd9])));
+        }
+        return Promise.resolve(jsonRes({ id: 'photo-1', post_id: 'page-1_100' }));
+      })
+    );
+
+    const result = await new FacebookPageAdapter().publish(
+      auth,
+      target,
+      rendered({ mediaUrls: ['https://media.example/pic.jpg'] }),
+      'post:tgt'
+    );
+    expect(result.externalId).toBe('page-1_100');
+
+    // 1) the image was downloaded from our CDN, and we set NO Range header (a plain GET
+    //    returns 200; it's Graph's own range-fetch that gets the 206 we're avoiding).
+    const download = calls.find((c) => c.url.includes('media.example'));
+    expect(download).toBeTruthy();
+    expect(download?.init?.headers).toBeUndefined();
+
+    // 2) the /photos call is multipart with a `source` file part, the caption + page
+    //    token — and crucially NO `url` field (that path is what fails).
+    const photoPost = calls.find((c) => c.url.includes('/photos'));
+    expect(photoPost).toBeTruthy();
+    const body = photoPost?.init?.body as FormData;
+    expect(body).toBeInstanceOf(FormData);
+    expect(body.has('source')).toBe(true);
+    expect(body.has('url')).toBe(false);
+    expect(body.get('caption')).toBe('Hello');
+    expect(body.get('access_token')).toBe('page-token');
   });
 });

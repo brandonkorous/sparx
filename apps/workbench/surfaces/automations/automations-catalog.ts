@@ -204,6 +204,8 @@ export function operatorDef(op: string): ConditionOperatorDef | undefined {
 /** Curated condition-field suggestions (resolver-exposed paths). Free text. */
 export const COMMON_CONDITION_FIELDS: readonly string[] = [
   'customer.type',
+  'customer.lifecycleStage',
+  'customer.leadStatus',
   'customer.email',
   'customer.totalSpent',
   'customer.lifetimeOrders',

@@ -18,6 +18,8 @@ import {
   reportingService,
 } from '../services';
 
+import { CustomerType, LeadStatus, LifecycleStage } from '@sparx/crm-schemas';
+
 import type { McpToolDefinition } from './registry';
 
 const PaginationArgs = {
@@ -28,11 +30,13 @@ const PaginationArgs = {
 export const getCustomers: McpToolDefinition = {
   name: 'get_customers',
   description:
-    'List customers, optionally filtered by type/tag/segment/free-text. Returns up to 100 rows per call.',
+    'List customers, optionally filtered by relationship type / lifecycle stage / lead status / tag / segment / free-text. Returns up to 100 rows per call.',
   scope: 'read:crm',
   confirmation: false,
   input: z.object({
-    type: z.enum(['prospect', 'retail', 'b2b']).optional(),
+    type: CustomerType.optional(),
+    lifecycleStage: LifecycleStage.optional(),
+    leadStatus: LeadStatus.optional(),
     tag: z.string().max(63).optional(),
     q: z.string().max(255).optional(),
     sortBy: z.enum(['updatedAt', 'createdAt', 'totalSpent', 'lastOrderAt']).optional(),

@@ -6,6 +6,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { CustomerType } from '@sparx/crm-schemas';
 import { withRequestTenant } from '@sparx/api-core/db';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -29,7 +30,7 @@ const SubmitImportBody = z.object({
 });
 
 const ListExportQuery = z.object({
-  type: z.enum(['prospect', 'retail', 'b2b']).optional(),
+  type: CustomerType.optional(),
   q: z.string().optional(),
   take: z.coerce.number().int().min(1).max(10_000).optional(),
 });

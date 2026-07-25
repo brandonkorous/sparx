@@ -88,6 +88,46 @@ touches the tenant's own site and so can't come from the traffic pipeline.
 
 Newest first. Each entry: the decision, and the reason it beat the alternative.
 
+### 2026-07-25 — Fix: Facebook rejected the image with `(#324)` — Cloudflare 206, so upload bytes
+
+After the media-resolution fix (below) went live, a real FB image publish STILL
+failed — `Facebook photo post: 400 Missing or invalid image file` (Graph `#324`).
+Root cause, run to ground against prod:
+
+- The image variant is valid (complete 800×801 progressive JPEG) and public — a
+  plain GET returns **200** even with Facebook's crawler UA.
+- But Facebook's `/photos?url=` fetch sends `Range: bytes=0-`, and **Cloudflare's
+  edge serves any range request a `206 Partial Content`** (verified on HIT and
+  MISS). The ORIGIN is fine — curl direct to the ingress with a Range header → 200,
+  `Server: Caddy`. Cloudflare is slicing it. Facebook's photo ingestion requires a
+  clean 200 and rejects the 206 (its OG Sharing-Debugger scraper tolerates the 206,
+  which masked it — the debugger rendered a preview while `/photos` refused).
+
+**Decision: upload the image BYTES to Facebook (multipart `source`), not a url.**
+The worker downloads the image itself (a plain GET, no Range → 200) and POSTs the
+bytes, so Facebook never fetches our CDN and the 206 is irrelevant. `graphPostMultipart`
+
+- `fetchImageBinary` in `@sparx/social`; `facebook.ts` single + multi photo paths;
+  regression test locks "source, never url=".
+
+* **Why not fix it at Cloudflare (which would cover every platform at once):** a
+  Transform Rule can't remove `Range` (managed header); a Cache Rule bypass still
+  206s; a Snippet that strips `Range` works but needs a **paid CF plan** we're not
+  on. Byte-upload is fully in our code, needs no CF change, and makes FB immune to
+  any future CDN quirk.
+* **Still open:** Instagram / Pinterest / Threads can ONLY publish by public
+  `image_url` — no byte upload — so they WILL hit this same 206 when first used to
+  post an image. Fix then = CF Snippet (paid), a CF Worker, or a DNS-only origin
+  media host. Tracked in `terraform/envs/prod/cloudflare.tf`. (LinkedIn already
+  uploads bytes, so it's unaffected.)
+
+Also fixed two worker bugs this uncovered: publish failures now LOG the platform
+error (they were only written to the target row — the `#324` took a browser
+React-tree dig to surface), and a **deferred target now retries** (the worker was
+acking even on a deferred target, so a transient hiccup stranded the post on
+"publishing" forever; it now 500s → Pub/Sub redelivers → re-drains only still-pending
+targets, capped at MAX_ATTEMPTS).
+
 ### 2026-07-24 — Fix: Facebook (and every platform) posted text-only, image dropped
 
 Two bugs in the worker's media path, both fixed:

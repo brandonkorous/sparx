@@ -202,7 +202,11 @@ export const bootcampService = {
         const customer = await tx.customer.create({
           data: {
             tenantId: hostTenantId,
-            type: 'prospect',
+            // A bootcamp signup is a fresh lead to work (docs/137): retail
+            // relationship, `lead` stage, `new` work-state.
+            type: 'retail',
+            lifecycleStage: 'lead',
+            leadStatus: 'new',
             email: input.email,
             firstName: parts[0] ?? input.name,
             lastName: parts.length > 1 ? parts.slice(1).join(' ') : null,

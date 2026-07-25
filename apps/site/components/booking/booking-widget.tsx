@@ -72,6 +72,10 @@ export function BookingWidget({
   const [pendingDeposit, setPendingDeposit] = useState<BookingConfirmation | null>(null);
   const [joiningWaitlist, setJoiningWaitlist] = useState(false);
   const [waitlistJoined, setWaitlistJoined] = useState(false);
+  // Whether we've resolved the first bookable day yet. Until then the slot area shows
+  // "Checking availability…" rather than an empty state, so a service that isn't open
+  // TODAY never flashes "no open times" before we jump to the day that is.
+  const [seededDate, setSeededDate] = useState(false);
 
   const fetchSlots = useCallback(async () => {
     setLoadingSlots(true);
@@ -101,6 +105,64 @@ export function BookingWidget({
   useEffect(() => {
     void fetchSlots();
   }, [fetchSlots]);
+
+  // Open the picker on the FIRST bookable day, not a dead "today". A service whose
+  // provider works only some weekdays — or any visitor arriving in the evening or on a
+  // weekend — would otherwise land on an empty date and read the whole widget as
+  // broken ("no open times"). Scan forward one week at a time (bounded by the service's
+  // max-advance window) and jump the date to the first day with an open slot. Runs once;
+  // the normal per-day fetch above takes over from there. If nothing's open in range we
+  // leave the date on today and its (correct) empty state + waitlist offer shows.
+  useEffect(() => {
+    if (seededDate) return;
+    let active = true;
+    void (async () => {
+      const start = new Date(`${todayISODate()}T00:00`);
+      const maxDays = Math.min(service.maxAdvanceDays || 60, 120);
+      for (let offset = 0; offset < maxDays; offset += 7) {
+        const from = new Date(start);
+        from.setDate(from.getDate() + offset);
+        const to = new Date(from);
+        to.setDate(to.getDate() + 7);
+        let found: PublicSlot[] = [];
+        try {
+          found = await loadSlots(
+            tenantSlug,
+            service.id,
+            from.toISOString(),
+            to.toISOString(),
+            isReservation ? partySize : undefined,
+            chosenResourceId ?? undefined
+          );
+        } catch {
+          break; // network trouble — don't spin; the per-day fetch surfaces the error
+        }
+        if (!active) return;
+        const first = found[0];
+        if (first) {
+          const d = new Date(first.startAt);
+          const iso = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
+            d.getDate()
+          ).padStart(2, '0')}`;
+          setDate((current) => (iso !== current ? iso : current));
+          break;
+        }
+      }
+      if (active) setSeededDate(true);
+    })();
+    return () => {
+      active = false;
+    };
+    // Re-seed when the chosen provider changes (a different resource has different days).
+  }, [
+    seededDate,
+    tenantSlug,
+    service.id,
+    service.maxAdvanceDays,
+    isReservation,
+    partySize,
+    chosenResourceId,
+  ]);
 
   // Load the pickable providers once, for a customer_choice service.
   useEffect(() => {
@@ -283,7 +345,7 @@ export function BookingWidget({
 
       <div className="st-booking__slots">
         <Label>Available times</Label>
-        {loadingSlots ? (
+        {loadingSlots || !seededDate ? (
           <p className="st-muted">Checking availability…</p>
         ) : slots?.length === 0 ? (
           <div className="st-booking__waitlist">

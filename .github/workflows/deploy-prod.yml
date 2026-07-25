@@ -34,7 +34,11 @@ jobs:
   deploy:
     name: Rollout
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    # Phases fan out (see the rollout steps), so the job is bounded by the
+    # slowest SINGLE service, not the fleet sum. 30 leaves ample headroom as
+    # the fleet grows — a serial rollout blew the old 20-minute cap once the
+    # Cloud Run worker count climbed (v1.164.0/v1.165.0 both timed out).
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -73,20 +77,46 @@ jobs:
           # dashboard decommissioned 2026-07-22 — the workbench replaced it at
           # app.sparx.works. (The kubectl-get guard below would self-skip it once
           # the Deployment is torn down, but drop it from the list too.)
+          #
+          # `set image` is instant; the wait is `rollout status`. Set every image
+          # first, then wait for all rollouts CONCURRENTLY so this phase costs the
+          # slowest single deployment, not their sum. Per-service logs are captured
+          # and replayed under a group so parallel output stays attributable.
+          tmp=$(mktemp -d)
+          rolling=()
           for svc in web api-rest api-graphql api-mcp mcp-site workbench site market \
                      media-worker \
                      email-worker domain-worker dropship-worker billing-worker webhook-worker; do
             if kubectl get deployment "$svc" -n $NAMESPACE >/dev/null 2>&1; then
-              echo "::group::Rolling out $svc"
+              echo "::notice::Rolling out $svc"
               kubectl set image deployment/$svc \
                 $svc=$IMAGE_BASE/$svc:${{ steps.tag.outputs.tag }} \
                 -n $NAMESPACE
-              kubectl rollout status deployment/$svc -n $NAMESPACE --timeout=5m
-              echo "::endgroup::"
+              rolling+=("$svc")
             else
               echo "::notice::Skipping $svc — Deployment not present in cluster yet."
             fi
           done
+          pids=()
+          for svc in "${rolling[@]}"; do
+            kubectl rollout status deployment/$svc -n $NAMESPACE --timeout=5m >"$tmp/$svc.log" 2>&1 &
+            pids+=($!)
+          done
+          fail=0
+          for i in "${!rolling[@]}"; do
+            svc="${rolling[$i]}"
+            echo "::group::$svc rollout"
+            if wait "${pids[$i]}"; then
+              cat "$tmp/$svc.log" 2>/dev/null || true
+              echo "OK: $svc"
+            else
+              cat "$tmp/$svc.log" 2>/dev/null || true
+              echo "::error::rollout failed for $svc"
+              fail=1
+            fi
+            echo "::endgroup::"
+          done
+          exit $fail
 
       # The admin console lives in the wize-admin namespace (docs/apps/admin/
       # build-plan.md §2 D2), not sparx-prod, so the loop above (`-n $NAMESPACE`)
@@ -115,21 +145,45 @@ jobs:
       - name: Rollout image to each Cloud Run service
         run: |
           IMAGE_BASE="$REGION-docker.pkg.dev/${{ env.PROJECT_ID }}/$AR_REPO"
+          # Each `gcloud run services update` waits for its OWN revision to go
+          # healthy (~1-2 min). Serially across the whole worker fleet that blew
+          # the job timeout (v1.164.0/v1.165.0 were cancelled mid-list here), so
+          # fan them all out and wait for the set — bounded by the slowest one.
+          # Per-service logs are captured and replayed under a group afterwards.
+          tmp=$(mktemp -d)
+          pids=()
+          names=()
           for svc in email-worker media-worker commerce-indexer legal-seed-worker automation-worker \
                      push-worker markup-recompute-worker channel-sync-worker domain-worker dropship-worker \
                      social-worker; do
             if gcloud run services describe "$svc" --region="$REGION" --project="${{ env.PROJECT_ID }}" >/dev/null 2>&1; then
-              echo "::group::Rolling out $svc (Cloud Run)"
+              echo "::notice::Rolling out $svc (Cloud Run)"
               gcloud run services update "$svc" \
                 --region="$REGION" \
                 --project="${{ env.PROJECT_ID }}" \
                 --image="$IMAGE_BASE/$svc:${{ steps.tag.outputs.tag }}" \
-                --quiet
-              echo "::endgroup::"
+                --quiet >"$tmp/$svc.log" 2>&1 &
+              pids+=($!)
+              names+=("$svc")
             else
               echo "::notice::Skipping $svc — Cloud Run service not present yet."
             fi
           done
+          fail=0
+          for i in "${!names[@]}"; do
+            svc="${names[$i]}"
+            echo "::group::$svc (Cloud Run) rollout"
+            if wait "${pids[$i]}"; then
+              cat "$tmp/$svc.log" 2>/dev/null || true
+              echo "OK: $svc"
+            else
+              cat "$tmp/$svc.log" 2>/dev/null || true
+              echo "::error::Cloud Run rollout failed for $svc"
+              fail=1
+            fi
+            echo "::endgroup::"
+          done
+          exit $fail
 
       - name: Smoke test
         run: |

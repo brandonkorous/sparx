@@ -1134,16 +1134,27 @@ async function ensureCheckoutCustomer(
   }
   const existing = await tx.customer.findFirst({
     where: { propertyId, email: normalizedEmail, deletedAt: null },
-    select: { id: true, type: true },
+    select: { id: true, lifecycleStage: true },
   });
   if (existing) {
-    if (existing.type === 'prospect') {
-      await tx.customer.update({ where: { id: existing.id }, data: { type: 'retail' } });
+    // A completed purchase advances a pre-customer to the customer stage and
+    // clears any open lead work-state; a settled customer/evangelist keeps theirs.
+    if (existing.lifecycleStage !== 'customer' && existing.lifecycleStage !== 'evangelist') {
+      await tx.customer.update({
+        where: { id: existing.id },
+        data: { lifecycleStage: 'customer', leadStatus: null },
+      });
     }
     return existing.id;
   }
   const created = await tx.customer.create({
-    data: { tenantId, propertyId, email: normalizedEmail, type: 'retail' },
+    data: {
+      tenantId,
+      propertyId,
+      email: normalizedEmail,
+      type: 'retail',
+      lifecycleStage: 'customer',
+    },
     select: { id: true },
   });
   return created.id;

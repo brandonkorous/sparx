@@ -137,6 +137,54 @@ resource "cloudflare_record" "sparx_works_media" {
   comment         = "Public CDN — transcoded media variants (Caddy → api-rest)"
 }
 
+# Strip the `Range` request header on public media IMAGE variants.
+#
+# Cloudflare serves any cached object as `206 Partial Content` when the request
+# carries a `Range` header — even `Range: bytes=0-` (the whole file). Facebook's
+# `/{page}/photos` ingestion (and other platforms' image-by-URL fetchers) send
+# exactly that and REJECT a 206 with `(#324) Missing or invalid image file`, so
+# a social post silently drops its image and goes out text-only. (The Sharing
+# Debugger's OG scraper tolerates the 206 and renders a preview, which masks it.)
+# Removing the Range header on these image paths forces a clean `200 OK` with the
+# full body. Images are small and never need range seeking, so there is no
+# downside; scoped to the media host + image extensions so any future *video*
+# variants keep range support.
+#
+# TOKEN SCOPE: applying this needs the CF API token to include
+# "Zone > Transform Rules > Edit" (or Zone WAF) — the DNS-only token this stack
+# started with will 403 on the ruleset API. Expand the token before `terraform
+# apply`, or add the equivalent rule in the dashboard (Rules → Transform Rules →
+# Modify Request Header → Remove "Range") — but not both, since a zone can hold
+# only ONE http_request_late_transform entrypoint ruleset.
+# CLOUDFLARE 206 ON MEDIA RANGE REQUESTS — CONTEXT + THE URL-FETCH PLATFORM GAP
+# (2026-07-25). Any `Range` request to a cacheable media object gets a `206 Partial
+# Content` from Cloudflare's edge (verified on both HIT and MISS); the ORIGIN is
+# fine — curl direct to the ingress with a Range header returns a clean 200
+# (Server: Caddy). Facebook's /photos and every other platform's image-BY-URL
+# fetcher send `Range: bytes=0-` and REJECT the 206 as `(#324) Missing or invalid
+# image file`, so the image silently drops and the post goes out text-only.
+#
+# FACEBOOK is fixed WITHOUT Cloudflare: the social-worker now downloads the image
+# and UPLOADS the bytes (multipart `source`) instead of handing Graph a url —
+# packages/social/src/adapters/facebook.ts. FB never fetches our CDN, so the 206
+# can't bite.
+#
+# STILL EXPOSED: Instagram, Pinterest, and Threads can ONLY publish by public
+# image_url (no byte upload), so they WILL hit this 206 the moment they're used to
+# post an image. The clean fix is a Cloudflare SNIPPET on /v1/public/media/* that
+# deletes the Range header before cache (below) — but Snippets need a PAID plan,
+# and a Transform Rule can't touch `Range` (managed header). Options when we get
+# there: upgrade the CF plan and add the snippet, a Cloudflare Worker (paid), or a
+# DNS-only origin media host. Snippet body for reference:
+#
+#   export default { async fetch(request) {
+#     if (request.headers.has("Range")) {
+#       const headers = new Headers(request.headers); headers.delete("Range");
+#       request = new Request(request, { headers });
+#     }
+#     return fetch(request);
+#   }};
+
 # NOTE: Tenant subdomain storefronts moved to sparx.zone (Shopify-style split).
 # No wildcard or customers records on sparx.works anymore — see sparx.zone block below.
 

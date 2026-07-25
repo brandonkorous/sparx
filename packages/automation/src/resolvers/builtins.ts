@@ -35,6 +35,8 @@ function str(v: unknown): string {
 interface CustomerLike {
   id: string;
   type: string;
+  lifecycleStage: string;
+  leadStatus: string | null;
   email: string | null;
   company: string | null;
   doNotContact: boolean;
@@ -55,6 +57,8 @@ function customerFields(c: CustomerLike, now: Date): ResolvedFields {
     [PROPERTY_FIELD]: c.propertyId,
     'customer.id': c.id,
     'customer.type': c.type,
+    'customer.lifecycleStage': c.lifecycleStage,
+    'customer.leadStatus': c.leadStatus,
     'customer.email': c.email,
     'customer.company': c.company,
     'customer.doNotContact': c.doNotContact,
@@ -71,6 +75,8 @@ function customerFields(c: CustomerLike, now: Date): ResolvedFields {
 const CUSTOMER_SELECT = {
   id: true,
   type: true,
+  lifecycleStage: true,
+  leadStatus: true,
   email: true,
   company: true,
   doNotContact: true,

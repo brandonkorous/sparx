@@ -26,6 +26,14 @@
 // ══════════════════════════════════════════════════════════════════════════
 
 import type { PredicateLeaf, SegmentField, SegmentOperator, SegmentRule } from '@sparx/crm-schemas';
+import {
+  LEAD_STATUSES,
+  LIFECYCLE_STAGES,
+  RELATIONSHIP_TYPES,
+  customerTypeMeta,
+  leadStatusMeta,
+  lifecycleStageMeta,
+} from './customers-data';
 
 // Re-exported so the rest of the surface imports these from one place — but they
 // are the REAL shared types, not a local copy.
@@ -62,14 +70,22 @@ interface FieldMeta {
 
 export const FIELD_META: Record<SegmentField, FieldMeta> = {
   'customer.type': {
-    label: 'Kind of customer',
+    label: 'Relationship',
     group: 'Customer',
     kind: 'enum',
-    options: [
-      { value: 'prospect', label: 'Prospect' },
-      { value: 'retail', label: 'Retail' },
-      { value: 'b2b', label: 'Wholesale' },
-    ],
+    options: RELATIONSHIP_TYPES.map((t) => ({ value: t, label: customerTypeMeta(t).label })),
+  },
+  'customer.lifecycleStage': {
+    label: 'Lifecycle stage',
+    group: 'Customer',
+    kind: 'enum',
+    options: LIFECYCLE_STAGES.map((s) => ({ value: s, label: lifecycleStageMeta(s).label })),
+  },
+  'customer.leadStatus': {
+    label: 'Lead status',
+    group: 'Customer',
+    kind: 'enum',
+    options: LEAD_STATUSES.map((s) => ({ value: s, label: leadStatusMeta(s).label })),
   },
   'customer.email': { label: 'Email', group: 'Customer', kind: 'text' },
   'customer.tags': {

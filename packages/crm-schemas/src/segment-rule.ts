@@ -11,6 +11,7 @@
 // here so its type signature stays load-bearing across consumers.
 
 import { z } from 'zod';
+import { CustomerType, LeadStatus, LifecycleStage } from './common';
 
 // ─────────────────────────────────────────────────────────────────────────
 // Leaf predicate
@@ -22,6 +23,8 @@ import { z } from 'zod';
 
 export const SegmentField = z.enum([
   'customer.type',
+  'customer.lifecycleStage',
+  'customer.leadStatus',
   'customer.email',
   'customer.tags',
   'customer.company',
@@ -127,7 +130,9 @@ export const SegmentRuleSchema: z.ZodType<SegmentRule> = z.lazy(() =>
 export const CustomerProjection = z.object({
   customer: z.object({
     id: z.string().uuid(),
-    type: z.enum(['prospect', 'retail', 'b2b']),
+    type: CustomerType,
+    lifecycleStage: LifecycleStage,
+    leadStatus: LeadStatus.nullable(),
     email: z.string().nullable(),
     tags: z.array(z.string()),
     company: z.string().nullable(),

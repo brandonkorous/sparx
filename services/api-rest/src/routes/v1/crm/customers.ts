@@ -25,6 +25,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
+import { CustomerType, LeadStatus, LifecycleStage } from '@sparx/crm-schemas';
 import { customerService } from '@sparx/crm';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -43,7 +44,9 @@ const DocumentPath = z.object({
 });
 
 const ListQuery = z.object({
-  type: z.enum(['prospect', 'retail', 'b2b']).optional(),
+  type: CustomerType.optional(),
+  lifecycle_stage: LifecycleStage.optional(),
+  lead_status: LeadStatus.optional(),
   assigned_rep_id: z.string().uuid().nullable().optional(),
   b2b_account_id: z.string().uuid().nullable().optional(),
   // Membership site filter (docs/58 D2). Omitted → the site the caller is
@@ -81,6 +84,8 @@ const customerRoutes: FastifyPluginAsync = (app) => {
     );
     const { items, total } = await customerService.list(ctx, {
       type: q.type,
+      lifecycleStage: q.lifecycle_stage,
+      leadStatus: q.lead_status,
       assignedRepId: q.assigned_rep_id ?? undefined,
       b2bAccountId: q.b2b_account_id ?? undefined,
       propertyId,

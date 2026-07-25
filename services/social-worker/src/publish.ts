@@ -109,9 +109,13 @@ export async function drainPost(
   let deferred = 0;
   let skipped = 0;
 
-  /** Record a per-target failure; a `pending` verdict flips to `failed` at the cap. */
+  /** Record a per-target failure; a `pending` verdict flips to `failed` at the cap.
+   *  ALWAYS logs the platform error — the failure is otherwise written only to the
+   *  target row, which left prod publish failures invisible in the logs (the reason
+   *  "Facebook photo post: 400 …" took a browser React-tree dig to surface). */
   async function recordFailure(
     targetId: string,
+    platform: string,
     attemptCount: number,
     verdict: 'failed' | 'pending',
     error: string
@@ -124,8 +128,19 @@ export async function drainPost(
         data: { status: finalStatus, error, attemptCount: next },
       })
     );
-    if (finalStatus === 'failed') failed += 1;
-    else deferred += 1;
+    if (finalStatus === 'failed') {
+      failed += 1;
+      logger.error(
+        { postId, targetId, platform, attempt: next, error },
+        'social publish target failed permanently'
+      );
+    } else {
+      deferred += 1;
+      logger.warn(
+        { postId, targetId, platform, attempt: next, error },
+        'social publish target deferred — will retry'
+      );
+    }
   }
 
   for (const t of post.targets) {
@@ -151,7 +166,13 @@ export async function drainPost(
     const platform = t.platform as SocialPlatform;
     const adapter = getSocialAdapter(platform);
     if (!adapter) {
-      await recordFailure(t.id, t.attemptCount, 'failed', `No adapter for ${t.platform}.`);
+      await recordFailure(
+        t.id,
+        t.platform,
+        t.attemptCount,
+        'failed',
+        `No adapter for ${t.platform}.`
+      );
       continue;
     }
 
@@ -159,12 +180,19 @@ export async function drainPost(
     try {
       auth = await resolveSocialAuth(tenantId, target.connection, adapter);
     } catch (e) {
-      await recordFailure(t.id, t.attemptCount, 'pending', `Sign-in refresh failed: ${errMsg(e)}`);
+      await recordFailure(
+        t.id,
+        t.platform,
+        t.attemptCount,
+        'pending',
+        `Sign-in refresh failed: ${errMsg(e)}`
+      );
       continue;
     }
     if (!auth) {
       await recordFailure(
         t.id,
+        t.platform,
         t.attemptCount,
         'failed',
         'Account disconnected — reconnect to publish.'
@@ -190,6 +218,7 @@ export async function drainPost(
       const issue = rendered.issues.find((i) => i.severity === 'error');
       await recordFailure(
         t.id,
+        t.platform,
         t.attemptCount,
         'failed',
         issue?.message ?? 'Not valid for this platform.'
@@ -220,7 +249,7 @@ export async function drainPost(
       published += 1;
     } catch (e) {
       // Transient — leave pending for a re-drain (capped by MAX_ATTEMPTS).
-      await recordFailure(t.id, t.attemptCount, 'pending', errMsg(e));
+      await recordFailure(t.id, t.platform, t.attemptCount, 'pending', errMsg(e));
     }
   }
 

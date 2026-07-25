@@ -14,6 +14,7 @@
 
 import { withTenant } from '@sparx/db';
 import type { Customer } from '@sparx/db';
+import type { CustomerType, LeadStatus, LifecycleStage } from '@sparx/crm-schemas';
 
 import type { ServiceContext } from '../errors';
 import { CrmNotFoundError } from '../errors';
@@ -21,7 +22,9 @@ import { CrmNotFoundError } from '../errors';
 export interface CustomerProjection {
   customerId: string;
   tenantId: string;
-  type: 'prospect' | 'retail' | 'b2b';
+  type: CustomerType;
+  lifecycleStage: LifecycleStage;
+  leadStatus: LeadStatus | null;
   authUserId: string | null;
   b2bAccountId: string | null;
   assignedRepId: string | null;
@@ -84,7 +87,9 @@ export function projectionFromCustomer(customer: Customer): CustomerProjection {
   return {
     customerId: customer.id,
     tenantId: customer.tenantId,
-    type: customer.type as 'prospect' | 'retail' | 'b2b',
+    type: customer.type as CustomerType,
+    lifecycleStage: customer.lifecycleStage as LifecycleStage,
+    leadStatus: customer.leadStatus as LeadStatus | null,
     authUserId: customer.authUserId,
     b2bAccountId: customer.b2bAccountId,
     assignedRepId: customer.assignedRepId,

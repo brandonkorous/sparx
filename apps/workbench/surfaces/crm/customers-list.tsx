@@ -24,16 +24,18 @@ import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { ListEmptyState } from '../../components/list-empty-state';
 import { RefreshButton } from '../../components/refresh-button';
 import {
-  CUSTOMER_TYPES,
+  LIFECYCLE_STAGES,
+  RELATIONSHIP_TYPES,
   customerName,
   customerTypeMeta,
   formatMoney,
+  lifecycleStageMeta,
   useCustomers,
   type Customer,
   type CustomerSort,
   type CustomerType,
+  type LifecycleStage,
 } from './customers-data';
-import { useAudienceVocab } from '../../lib/audience';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -58,31 +60,39 @@ const SORTS: { value: CustomerSort; label: string }[] = [
 
 export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
   const [search, setSearch] = useState('');
+  const [stage, setStage] = useState<'all' | LifecycleStage>('all');
   const [type, setType] = useState<'all' | CustomerType>('all');
   const [sortBy, setSortBy] = useState<CustomerSort>('lastOrderAt');
-  const vocab = useAudienceVocab();
 
-  // The pane/tab title takes the tenant's word (the left-nav label is static
-  // catalog copy — a separate follow-on).
   useEffect(() => {
-    ctx.setTitle(vocab.Many);
-  }, [ctx, vocab]);
+    ctx.setTitle('Customers');
+  }, [ctx]);
 
   const { data, isPending, isError, isFetching, dataUpdatedAt, refetch } = useCustomers({
     q: search,
+    lifecycleStage: stage === 'all' ? undefined : stage,
     type: type === 'all' ? undefined : type,
     sortBy,
   });
 
   const rows = data?.items ?? [];
   const total = data?.total;
-  const filtered = search.trim() !== '' || type !== 'all';
+  const filtered = search.trim() !== '' || stage !== 'all' || type !== 'all';
+
+  // Two independent filters (docs/137): lifecycle stage (where they are) and
+  // relationship (how they buy). Stage is the primary one, so it survives longest
+  // as the pane narrows.
+  const stageItems = useMemo(() => {
+    const items: Record<string, string> = { all: 'Any stage' };
+    for (const s of LIFECYCLE_STAGES) items[s] = lifecycleStageMeta(s).label;
+    return items;
+  }, []);
 
   const typeItems = useMemo(() => {
-    const items: Record<string, string> = { all: 'Everyone' };
-    for (const t of CUSTOMER_TYPES) items[t] = customerTypeMeta(t, vocab.one).label;
+    const items: Record<string, string> = { all: 'Any type' };
+    for (const t of RELATIONSHIP_TYPES) items[t] = customerTypeMeta(t).label;
     return items;
-  }, [vocab]);
+  }, []);
 
   const sortItems = useMemo(() => {
     const items: Record<string, string> = {};
@@ -106,12 +116,23 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
             onValueChange={setSearch}
           />
         </div>
-        {/* Both filters hide first as the pane narrows — search is used
-            constantly, these occasionally. */}
+        {/* Filters hide as the pane narrows — search is used constantly, these
+            occasionally; lifecycle stage (the primary signal) outlives the rest. */}
+        <div className="hidden w-40 shrink-0 @md:block">
+          <Select
+            size="sm"
+            aria-label="Filter by lifecycle stage"
+            value={stage}
+            items={stageItems}
+            onValueChange={(next) => {
+              setStage(next as 'all' | LifecycleStage);
+            }}
+          />
+        </div>
         <div className="hidden w-36 shrink-0 @lg:block">
           <Select
             size="sm"
-            aria-label="Which kind of customer"
+            aria-label="Filter by relationship type"
             value={type}
             items={typeItems}
             onValueChange={(next) => {
@@ -195,14 +216,15 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
               <tr>
                 <th>Name</th>
                 <th className="hidden @md:table-cell">Company</th>
-                <th>Kind</th>
+                <th>Stage</th>
                 <th className="text-right">Total spent</th>
                 <th className="hidden text-right @lg:table-cell">Last order</th>
               </tr>
             </thead>
             <tbody>
               {rows.map((row) => {
-                const meta = customerTypeMeta(row.type, vocab.one);
+                const stageMeta = lifecycleStageMeta(row.lifecycleStage);
+                const typeMeta = customerTypeMeta(row.type);
                 return (
                   <tr
                     key={row.id}
@@ -219,15 +241,24 @@ export function CustomersListSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <td>
-                      <span className="font-medium">{customerName(row)}</span>
+                      <span className="flex items-center gap-1.5">
+                        <span className="font-medium">{customerName(row)}</span>
+                        {/* Relationship rides the name only when it's noteworthy —
+                            a plain retail individual is the unremarkable default. */}
+                        {row.type !== 'retail' ? (
+                          <Badge color={typeMeta.color} variant="soft" size="sm">
+                            {typeMeta.label}
+                          </Badge>
+                        ) : null}
+                      </span>
                       {row.email && customerName(row) !== row.email ? (
                         <span className="block text-sm">{row.email}</span>
                       ) : null}
                     </td>
                     <td className="hidden @md:table-cell">{row.company ?? '—'}</td>
                     <td>
-                      <Badge color={meta.color} variant="soft" size="sm">
-                        {meta.label}
+                      <Badge color={stageMeta.color} variant="soft" size="sm">
+                        {stageMeta.label}
                       </Badge>
                     </td>
                     <td className="text-right font-mono text-sm tabular-nums">

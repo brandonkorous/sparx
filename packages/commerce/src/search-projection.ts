@@ -16,6 +16,7 @@ import {
   type ProductSearchDocument,
 } from '@sparx/search';
 import { withTenant } from '@sparx/db';
+import type { CustomerType } from '@sparx/crm-schemas';
 
 import type { ServiceContext } from './errors';
 import { mediaPublicUrl } from './media-url';
@@ -301,7 +302,9 @@ export async function projectCustomer(
       email: customer.email ?? '',
       phone: customer.phone ?? undefined,
       company: customer.company ?? undefined,
-      type: customer.type as 'prospect' | 'retail' | 'b2b',
+      type: customer.type as CustomerType,
+      lifecycle_stage: customer.lifecycleStage,
+      lead_status: customer.leadStatus ?? undefined,
       b2b_account_id: customer.b2bAccountId ?? undefined,
       tags: customer.tags.length > 0 ? customer.tags : undefined,
       total_spent_cents: Math.round(Number(customer.totalSpent) * 100),

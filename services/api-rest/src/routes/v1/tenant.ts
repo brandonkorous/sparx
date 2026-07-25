@@ -28,7 +28,6 @@ import { ok } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireVerifiedEmail } from '../../lib/verified-email-guard.js';
 import { badRequest, conflict, notFound } from '@sparx/api-core/errors';
-import { AUDIENCE_NOUNS, AudienceNoun } from '@sparx/crm-schemas';
 import {
   requiredModules,
   blockingDependents,
@@ -384,18 +383,6 @@ const DEFAULT_ONBOARDING: OnboardingState = {
   completed: DEFAULT_COMPLETED,
 };
 
-/** The tenant's audience noun from `settings.audienceNoun`, defaulting to
- *  'customer' for anyone who has never set it. */
-function readAudienceNoun(settings: unknown): string {
-  if (settings && typeof settings === 'object' && !Array.isArray(settings)) {
-    const raw = (settings as Record<string, unknown>).audienceNoun;
-    if (typeof raw === 'string' && (AUDIENCE_NOUNS as readonly string[]).includes(raw)) {
-      return raw;
-    }
-  }
-  return 'customer';
-}
-
 function readOnboarding(settings: unknown): OnboardingState {
   if (!settings || typeof settings !== 'object' || Array.isArray(settings)) {
     return DEFAULT_ONBOARDING;
@@ -455,27 +442,7 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       slug: row.slug,
       plan: row.plan,
       socials: readSocials(row.socials),
-      audienceNoun: readAudienceNoun(row.settings),
     });
-  });
-
-  // What the tenant calls the people it serves (docs/136). Admin-only, a single
-  // settings key; read-modify-write so it never clobbers `modules`/`onboarding`.
-  app.patch('/v1/tenant/audience', async (request) => {
-    const auth = requireRole(request, 'admin');
-    const input = z.object({ audienceNoun: AudienceNoun }).parse(request.body);
-    const before = await prisma.tenant.findUnique({
-      where: { id: auth.tenantId },
-      select: { settings: true },
-    });
-    if (!before) throw notFound('Tenant', auth.tenantId);
-    const currentSettings = (before.settings as Record<string, unknown> | null) ?? {};
-    const nextSettings = {
-      ...currentSettings,
-      audienceNoun: input.audienceNoun,
-    } as unknown as Prisma.InputJsonValue;
-    await prisma.tenant.update({ where: { id: auth.tenantId }, data: { settings: nextSettings } });
-    return ok({ audienceNoun: input.audienceNoun });
   });
 
   app.patch('/v1/tenant', async (request) => {

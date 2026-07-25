@@ -18,6 +18,9 @@ import {
   SubscribeCustomerInput,
   UpdateCustomerAddressInput,
   UpdateCustomerInput,
+  type CustomerType,
+  type LeadStatus,
+  type LifecycleStage,
 } from '@sparx/crm-schemas';
 import { NEWSLETTER_SEGMENT_SLUG } from '@sparx/crm-schemas/builtins';
 import { withTenant } from '@sparx/db';
@@ -37,7 +40,9 @@ export type { MergeResult, DuplicateGroup } from './merge-service';
 // ─────────────────────────────────────────────────────────────────────────
 
 export interface ListCustomersFilter {
-  type?: 'prospect' | 'retail' | 'b2b';
+  type?: CustomerType;
+  lifecycleStage?: LifecycleStage;
+  leadStatus?: LeadStatus;
   assignedRepId?: string | null;
   b2bAccountId?: string | null;
   // Membership site filter (docs/58 D2) — customers belonging to one site.
@@ -59,6 +64,8 @@ export async function list(
     const where: Prisma.CustomerWhereInput = {
       ...(filter.includeDeleted ? {} : { deletedAt: null }),
       ...(filter.type ? { type: filter.type } : {}),
+      ...(filter.lifecycleStage ? { lifecycleStage: filter.lifecycleStage } : {}),
+      ...(filter.leadStatus ? { leadStatus: filter.leadStatus } : {}),
       ...(filter.assignedRepId !== undefined ? { assignedRepId: filter.assignedRepId } : {}),
       ...(filter.b2bAccountId !== undefined ? { b2bAccountId: filter.b2bAccountId } : {}),
       // docs/58 D2: a site-scoped list shows customers belonging to THAT site
@@ -158,6 +165,8 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Cu
       data: {
         tenantId: ctx.tenantId,
         type: input.type,
+        lifecycleStage: input.lifecycleStage,
+        leadStatus: input.leadStatus ?? null,
         // The owning site (docs/58 D2); null → global. The api-rest route
         // defaults this to the active site for multi-site tenants.
         propertyId: input.propertyId ?? null,
@@ -286,7 +295,10 @@ export async function subscribe(
       const created = await tx.customer.create({
         data: {
           tenantId: ctx.tenantId,
-          type: 'prospect',
+          // Opted into email only → the `subscriber` lifecycle stage, retail
+          // relationship. Not a sales lead being worked, so no lead status.
+          type: 'retail',
+          lifecycleStage: 'subscriber',
           propertyId,
           email: input.email,
           firstName: input.firstName ?? null,
@@ -382,6 +394,8 @@ export async function update(
       where: { id: customerId },
       data: {
         ...(input.type !== undefined ? { type: input.type } : {}),
+        ...(input.lifecycleStage !== undefined ? { lifecycleStage: input.lifecycleStage } : {}),
+        ...(input.leadStatus !== undefined ? { leadStatus: input.leadStatus } : {}),
         ...(input.email !== undefined ? { email: input.email } : {}),
         ...(input.phone !== undefined ? { phone: input.phone } : {}),
         ...(input.firstName !== undefined ? { firstName: input.firstName } : {}),
@@ -813,7 +827,11 @@ export async function captureLead(
       const created = await tx.customer.create({
         data: {
           tenantId: ctx.tenantId,
-          type: 'prospect',
+          // An inbound form submission is a fresh lead to work, on a retail
+          // relationship until we know otherwise.
+          type: 'retail',
+          lifecycleStage: 'lead',
+          leadStatus: 'new',
           propertyId,
           email: input.email,
           firstName,
@@ -876,6 +894,8 @@ function serializeCustomer(c: Customer): Record<string, unknown> {
   return {
     id: c.id,
     type: c.type,
+    lifecycleStage: c.lifecycleStage,
+    leadStatus: c.leadStatus,
     authUserId: c.authUserId,
     b2bAccountId: c.b2bAccountId,
     assignedRepId: c.assignedRepId,

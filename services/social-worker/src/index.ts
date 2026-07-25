@@ -110,6 +110,23 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
   try {
     const outcome = await handle(event, logger);
     logger.info({ messageId, type: event.type, ...outcome }, `${event.type} processed`);
+    // A drain that left any target DEFERRED (a transient/pending failure — e.g. a
+    // platform fetch hiccup or a sign-in refresh that needs a retry) must NOT be
+    // acked, or the post stays stuck forever: nothing re-enqueues social.post.due
+    // for a pending target. Return 500 so Pub/Sub redelivers; the re-drain re-attempts
+    // ONLY still-pending targets (the query filters to pending/publishing, so an
+    // already-published target can't double-post), capped by MAX_ATTEMPTS (then the
+    // target flips to `failed`, deferred drops to 0, and this acks). Dead-letter is the
+    // final backstop.
+    if ('deferred' in outcome && outcome.deferred > 0) {
+      logger.warn(
+        { messageId, postId: event.data.postId, deferred: outcome.deferred },
+        'targets still pending — returning 500 so Pub/Sub redelivers the drain'
+      );
+      res.statusCode = 500;
+      res.end();
+      return;
+    }
     res.statusCode = 204;
     res.end();
   } catch (err) {

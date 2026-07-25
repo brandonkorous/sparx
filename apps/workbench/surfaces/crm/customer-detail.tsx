@@ -67,7 +67,6 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { useTeamRoster } from '../../lib/api/team';
 import { useAccounts } from './accounts-data';
 import { useModuleStates } from '../../lib/api/shell-data';
-import { useAudienceVocab } from '../../lib/audience';
 import { useMediaAssets, useUploadMedia } from '../commerce/products-data';
 import { CustomerAddressesSection } from './customer-addresses';
 import { CustomerDocumentsTab } from './customer-documents-tab';
@@ -81,11 +80,15 @@ import {
   CustomerTasksTab,
 } from './customer-related';
 import {
-  CUSTOMER_TYPES,
+  LEAD_STATUSES,
+  LIFECYCLE_STAGES,
+  RELATIONSHIP_TYPES,
   customerErrorMessage,
   customerInitials,
   customerName,
   customerTypeMeta,
+  leadStatusMeta,
+  lifecycleStageMeta,
   joinedMonth,
   useCreateCustomer,
   useCustomer,
@@ -94,6 +97,8 @@ import {
   type Customer,
   type CustomerInput,
   type CustomerType,
+  type LeadStatus,
+  type LifecycleStage,
 } from './customers-data';
 
 // The focused single column a NEW customer is created in — no profile to show yet.
@@ -132,6 +137,9 @@ interface Draft {
   company: string;
   jobTitle: string;
   type: CustomerType;
+  lifecycleStage: LifecycleStage;
+  /** '' = not set (the nullable lead-status column). */
+  leadStatus: LeadStatus | '';
   email: string;
   phone: string;
   preferredContactMethod: string;
@@ -147,7 +155,9 @@ function emptyDraft(): Draft {
     lastName: '',
     company: '',
     jobTitle: '',
-    type: 'prospect',
+    type: 'retail',
+    lifecycleStage: 'lead',
+    leadStatus: '',
     email: '',
     phone: '',
     preferredContactMethod: '',
@@ -165,6 +175,8 @@ function toDraft(c: Customer): Draft {
     company: c.company ?? '',
     jobTitle: c.jobTitle ?? '',
     type: c.type,
+    lifecycleStage: c.lifecycleStage,
+    leadStatus: c.leadStatus ?? '',
     email: c.email ?? '',
     phone: c.phone ?? '',
     preferredContactMethod: c.preferredContactMethod ?? '',
@@ -249,7 +261,6 @@ function CustomerEditor({
 
   const { members } = useTeamRoster();
   const { data: accounts } = useAccounts();
-  const vocab = useAudienceVocab();
 
   const saved = useMemo(() => (customer ? toDraft(customer) : emptyDraft()), [customer]);
   const [draft, setDraft] = useState<Draft>(saved);
@@ -267,8 +278,8 @@ function CustomerEditor({
   visited.current.add(tab);
 
   useEffect(() => {
-    ctx.setTitle(isNew ? `New ${vocab.one}` : customer ? customerName(customer) : vocab.One);
-  }, [ctx, isNew, customer, vocab]);
+    ctx.setTitle(isNew ? 'New customer' : customer ? customerName(customer) : 'Customer');
+  }, [ctx, isNew, customer]);
 
   const set = <K extends keyof Draft>(key: K, value: Draft[K]) => {
     setTouched(true);
@@ -336,6 +347,8 @@ function CustomerEditor({
 
   const buildInput = (): CustomerInput => ({
     type: draft.type,
+    lifecycleStage: draft.lifecycleStage,
+    leadStatus: draft.leadStatus === '' ? null : draft.leadStatus,
     email: trimOrNull(draft.email),
     phone: trimOrNull(draft.phone),
     firstName: trimOrNull(draft.firstName),
@@ -406,7 +419,8 @@ function CustomerEditor({
     });
   };
 
-  const meta = customerTypeMeta(draft.type, vocab.one);
+  const meta = customerTypeMeta(draft.type);
+  const lifecycleMeta = lifecycleStageMeta(draft.lifecycleStage);
 
   // Wholesale is the one kind that only means something with the b2b module on —
   // it carries trade pricing + net terms. A salon or café never sees it. An
@@ -414,7 +428,9 @@ function CustomerEditor({
   // so its kind is never silently lost.
   const { data: moduleStates } = useModuleStates();
   const b2bEnabled = (moduleStates ?? []).some((m) => m.slug === 'b2b' && m.enabled);
-  const kindTypes = CUSTOMER_TYPES.filter((t) => t !== 'b2b' || b2bEnabled || draft.type === 'b2b');
+  const kindTypes = RELATIONSHIP_TYPES.filter(
+    (t) => t !== 'b2b' || b2bEnabled || draft.type === 'b2b'
+  );
 
   /* ── The editable form (the Details tab, and the whole of "add") ────────── */
 
@@ -496,22 +512,65 @@ function CustomerEditor({
             />
           </Field>
         </div>
+      </FormSection>
 
+      <FormSection
+        title="Where they stand"
+        description="Three independent signals — where they are with you, what's happening right now, and how they buy."
+      >
         <Field>
-          <FieldLabel>Kind of {vocab.one}</FieldLabel>
+          <FieldLabel>Lifecycle stage</FieldLabel>
           <Select
             color="module"
-            aria-label={`Kind of ${vocab.one}`}
-            value={draft.type}
+            aria-label="Lifecycle stage"
+            value={draft.lifecycleStage}
             items={Object.fromEntries(
-              kindTypes.map((t) => [t, customerTypeMeta(t, vocab.one).label])
+              LIFECYCLE_STAGES.map((s) => [s, lifecycleStageMeta(s).label])
             )}
             onValueChange={(next) => {
-              set('type', next as CustomerType);
+              set('lifecycleStage', next as LifecycleStage);
             }}
           />
-          <FieldDescription>{meta.description}</FieldDescription>
+          <FieldDescription>
+            {lifecycleStageMeta(draft.lifecycleStage).description}
+          </FieldDescription>
         </Field>
+
+        <div className="grid gap-3 @md:grid-cols-2">
+          <Field>
+            <FieldLabel>Relationship</FieldLabel>
+            <Select
+              color="module"
+              aria-label="Relationship type"
+              value={draft.type}
+              items={Object.fromEntries(kindTypes.map((t) => [t, customerTypeMeta(t).label]))}
+              onValueChange={(next) => {
+                set('type', next as CustomerType);
+              }}
+            />
+            <FieldDescription>{meta.description}</FieldDescription>
+          </Field>
+          <Field>
+            <FieldLabel>Lead status</FieldLabel>
+            <Select
+              color="module"
+              aria-label="Lead status"
+              value={draft.leadStatus}
+              items={{
+                '': 'Not set',
+                ...Object.fromEntries(LEAD_STATUSES.map((s) => [s, leadStatusMeta(s).label])),
+              }}
+              onValueChange={(next) => {
+                set('leadStatus', next as LeadStatus | '');
+              }}
+            />
+            <FieldDescription>
+              {draft.leadStatus === ''
+                ? 'What a rep is doing right now. Clears once they become a customer.'
+                : leadStatusMeta(draft.leadStatus).description}
+            </FieldDescription>
+          </Field>
+        </div>
       </FormSection>
 
       <FormSection
@@ -678,8 +737,10 @@ function CustomerEditor({
 
   const toolbar = (
     <PaneToolbar label="Customer actions">
-      <Badge color={meta.color} variant="soft" size="sm">
-        {meta.label}
+      {/* The toolbar leads with the lifecycle stage — the primary "where are
+          they" signal; the relationship + lead status sit on the rail/form. */}
+      <Badge color={lifecycleMeta.color} variant="soft" size="sm">
+        {lifecycleMeta.label}
       </Badge>
       {/* The things you DO to a customer live in the toolbar, not on the profile
           card: start a deal or a task pre-linked to them. The label gives way to
@@ -730,7 +791,7 @@ function CustomerEditor({
         disabled={Boolean(blocked) || (!isNew && !dirty)}
         onClick={submit}
       >
-        {isNew ? `Add ${vocab.one}` : 'Save'}
+        {isNew ? 'Add customer' : 'Save'}
       </Button>
     </PaneToolbar>
   );
@@ -746,7 +807,7 @@ function CustomerEditor({
             {isNew ? (
               <div className="flex flex-col gap-1">
                 <Heading level={1} className="text-2xl font-semibold">
-                  Add a {vocab.one}
+                  Add a customer
                 </Heading>
                 <Text>
                   Everyone you work with or keep in touch with lives here. Fill in what you know — a
@@ -880,8 +941,9 @@ function IdentityRail({
   accountItems: Record<string, string>;
 }) {
   const toast = useToast();
-  const vocab = useAudienceVocab();
-  const meta = customerTypeMeta(customer.type, vocab.one);
+  const meta = customerTypeMeta(customer.type);
+  const lifecycleMeta = lifecycleStageMeta(customer.lifecycleStage);
+  const leadMeta = customer.leadStatus ? leadStatusMeta(customer.leadStatus) : null;
   const name = customerName(customer);
   const initials = customerInitials(customer);
   const subtitle = [customer.company, customer.jobTitle].filter(Boolean).join(' · ');
@@ -988,10 +1050,19 @@ function IdentityRail({
             {name}
           </Heading>
           {subtitle ? <Text className="text-sm">{subtitle}</Text> : null}
-          <div className="pt-1">
+          {/* The three classification axes, lifecycle first (the primary signal). */}
+          <div className="flex flex-wrap items-center justify-center gap-1.5 pt-1">
+            <Badge color={lifecycleMeta.color} variant="soft" size="sm">
+              {lifecycleMeta.label}
+            </Badge>
             <Badge color={meta.color} variant="soft" size="sm">
               {meta.label}
             </Badge>
+            {leadMeta ? (
+              <Badge color={leadMeta.color} variant="soft" size="sm">
+                {leadMeta.label}
+              </Badge>
+            ) : null}
           </div>
         </div>
       </div>

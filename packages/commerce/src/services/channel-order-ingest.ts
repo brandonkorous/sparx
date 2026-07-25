@@ -133,11 +133,15 @@ async function ensureChannelCustomer(
 
   const existing = await tx.customer.findFirst({
     where: { propertyId, email, deletedAt: null },
-    select: { id: true, type: true },
+    select: { id: true, lifecycleStage: true },
   });
   if (existing) {
-    if (existing.type === 'prospect') {
-      await tx.customer.update({ where: { id: existing.id }, data: { type: 'retail' } });
+    // A marketplace order makes them a customer (see checkout-service).
+    if (existing.lifecycleStage !== 'customer' && existing.lifecycleStage !== 'evangelist') {
+      await tx.customer.update({
+        where: { id: existing.id },
+        data: { lifecycleStage: 'customer', leadStatus: null },
+      });
     }
     return existing.id;
   }
@@ -149,6 +153,7 @@ async function ensureChannelCustomer(
       propertyId,
       email,
       type: 'retail',
+      lifecycleStage: 'customer',
       firstName: firstName ?? null,
       lastName: rest.length ? rest.join(' ') : null,
     },

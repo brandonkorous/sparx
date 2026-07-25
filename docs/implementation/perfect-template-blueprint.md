@@ -1,6 +1,6 @@
 # Perfect Template → sparx Blueprint
 
-Version: 0.9.0
+Version: 1.0.0
 Author: Brandon Korous
 Last Updated: 2026-07-24
 
@@ -9,36 +9,27 @@ Last Updated: 2026-07-24
 
 > ## ▶ RESUME HERE
 >
-> **STATUS: still perfecting the LIVE reference site. NOT building the blueprint bundle yet,
-> and Brandon has NOT signed off on the site.** The bundle is a _capture_ of the approved
-> live site — do not author `marketplace-catalog/blueprints/sparx/`, capture, or ingest until
-> Brandon walks the whole site and signs off. That gate is intentional.
+> **STATUS: the LIVE reference site is functionally complete and every known bug is fixed +
+> verified in production. The next gate is BRANDON WALKING THE WHOLE SITE AND SIGNING OFF.**
+> The bundle is a _capture_ of the approved live site — do NOT author
+> `marketplace-catalog/blueprints/sparx/`, capture, or ingest until that sign-off happens.
+> That gate is intentional.
 >
-> **Deployed + verified live:** BUG-003, BUG-005, BUG-006, BUG-007. api-mcp search tools work,
-> `create_product` / `update_product` / `update_variant` / `set_product_image` / scheduling
-> setup all callable. **`/shop` is done** — 6 sparx goods (Notebook, Tee, Mug, Tote, Cap,
-> Insulated Bottle), each with a real photo (`200 image/jpeg`); 12 old products archived.
+> **All Deploy 1–4 changes are live + verified.** BUG-003/005/006/007/008/009 all deployed.
+> api-mcp search tools work; `create_product` / `update_product` / `update_variant` /
+> `set_product_image` / scheduling setup all callable.
 >
-> **UNCOMMITTED, gate-green — Brandon is pushing these (Deploy 4):**
+> - **`/shop` — DONE + verified:** 6 sparx goods (Notebook, Tee, Mug, Tote, Cap, Insulated
+>   Bottle), each with a real photo (`200 image/jpeg`); 12 old products archived. All 6 now
+>   read `in_stock: true` in the search index and render with **NO "Sold out"** (BUG-009
+>   recovery ran 2026-07-24: re-patched all 6 variants to `continue`, which fired the new
+>   module-aware `syncProductInStock` and flipped the stale `inStock` column).
+> - **`/book` — DONE + verified:** both services (Intro Consultation, Working Session) list AND
+>   return real bookable slots — the staff resource + weekly hours resolve through the
+>   property-scoped BUG-008 fix (`?property=`). No empty-state.
 >
-> - **BUG-008** (`apps/site/lib/scheduling.ts`) — `/book` reads the primary site's (empty)
->   service list instead of Template's. Fix passes `?property=`. Needs the **apps/site** image.
-> - **BUG-009** (`packages/inventory` + `packages/commerce`) — `Product.inStock` defaulted
->   `false` and only a stock MOVEMENT ever fixed it, so a `continue`-policy product OR a
->   tenant with the **inventory module OFF** was stranded at "Sold out". `syncProductInStock`
->   is now module-aware (inventory off → always sellable) and runs at variant create + on any
->   policy-bearing update. Needs the **api-mcp + api-rest** images (whatever creates/updates
->   variants); the storefront just reads the column.
->
-> **POST-DEPLOY-4 recovery (do this first thing next session):** the 6 live variants were set
-> to `continue` BEFORE the BUG-009 fix existed, so their `inStock` column is still stale
-> `false` → `/shop` still shows "Sold out". Re-run `update_variant` with
-> `{inventoryPolicy:"continue"}` on each of the 6 (variant ids in the id table) — the new
-> code fires `syncProductInStock` on any policy-bearing patch, flipping them in-stock. Then
-> verify `/shop` shows no "Sold out" and `/book` lists both services.
->
-> **Then:** walk the whole site → **get Brandon's sign-off** → only then author the blueprint
-> bundle (see _Bundle authoring spec_): capture site → the 6 sparx goods become its
+> **NEXT: walk the whole site with Brandon → get sign-off.** Only after sign-off, author the
+> blueprint bundle (see _Bundle authoring spec_): capture site → the 6 sparx goods become its
 > `commerce` → validate → ingest.
 >
 > `write:search` still ungranted (optional; catalog self-indexes). Do NOT re-litigate
@@ -428,7 +419,8 @@ Typesense env — the bootstrap `apps` apply landed it: pod has `TYPESENSE_API_K
 `enableServiceLinks:false`, no injected `TYPESENSE_PORT`; `search_products` works), BUG-007
 (`commerce-indexer` reindex + handler).
 
-**Deploy 4 — PENDING (uncommitted, gate-green). Brandon is pushing.**
+**Deploy 4 — DONE + verified live (2026-07-24). BUG-009 recovery ran (all 6 variants
+re-synced); `/shop` shows no "Sold out", `/book` lists both services with real slots.**
 
 | File                                                | Fixes                                                                                  |
 | --------------------------------------------------- | -------------------------------------------------------------------------------------- |
@@ -600,9 +592,36 @@ self-indexes).
     live shop, inventory-off tenants, and every blueprint install. Gate-green.
   - **Did NOT start the blueprint bundle.** Confirmed with Brandon: the bundle is a capture of
     the APPROVED live site; he hasn't signed off yet. Holding at "perfect the live site."
-- **NEXT SESSION STARTS HERE:** After Brandon pushes **Deploy 4** (apps/site BUG-008 +
-  api-mcp/api-rest BUG-009): **(1)** re-run `update_variant {inventoryPolicy:"continue"}` on the
-  6 variant ids (id table) to clear the stale "Sold out"; **(2)** verify `/shop` (no Sold out)
-  - `/book` (both services). **(3)** Then walk the whole site and **GET BRANDON'S SIGN-OFF** —
-    do not author the bundle before that. **(4)** Only then: author `marketplace-catalog/
-blueprints/sparx/`, capture the site (6 sparx goods → `commerce`), validate, ingest.
+- **2026-07-24 (session 4 — Deploy 4 live, recovery DONE)** — Brandon confirmed Deploy 4
+  reached production. Ran the BUG-009 recovery: re-patched all 6 variants to
+  `inventoryPolicy:"continue"`, which fired the new module-aware `syncProductInStock` and
+  flipped their stale `inStock` columns. **Verified end-to-end in prod:** `/shop` shows all 6
+  sparx goods with **no "Sold out"** (`in_stock:true` on every search hit); `/book` lists both
+  services (Intro Consultation, Working Session) AND `get_scheduling_availability` returns
+  hundreds of real slots for each. The live reference site is now functionally complete + every
+  known bug fixed. **Did NOT start the bundle** — still holding for Brandon's full-site sign-off.
+- **2026-07-24 (session 4 cont. — /book walkthrough fixes)** — Brandon walked `/book` and
+  flagged it read as not-actionable. Two fixes:
+  - **Reorder (LIVE via silica publish).** The published `book` silica page put the actual
+    booking core (`scheduling.services` host) 4th, below two explainer sections ("How booking
+    works", "What you can book"). Reordered so the booking list sits **directly under the
+    hero**; explainers + CTA follow. Re-banded backgrounds for clean alternation
+    (base-100 → base-200 → base-100 → base-200 → neutral) so no two adjacent sections share a
+    tone, and fixed now-stale step-1 copy ("from the list below" → "above"). Done via
+    `upsert_silica_page` + `publish_silica_site` on the Template site
+    (`c99e0e23-…`), verified live with a cache-buster (edge cache served stale briefly; route
+    headers are `no-cache`).
+  - **Card affordance (CODE — gate-green, needs an apps/site deploy).**
+    `apps/site/components/booking/booking-services.tsx`: each service card was a bare link that
+    read as a static info block. Added a clear **"See open times →"** primary CTA (a styled
+    `st-btn` span inside the card link — no nested control), fixed the description from `st-muted`
+    → real ink (RULE #3), made duration/price readable (muted → `--st-text`, +weight; price shows
+    "Free" at $0). `apps/site/app/site.css`: card → flex column so the CTA bottom-aligns across
+    cards, removed the hover `box-shadow` (no-shadows rule) leaving the border-color hover.
+    Typecheck + eslint + prettier clean.
+- **NEXT SESSION STARTS HERE:** The live site is done + verified; `/book` reorder is live, and
+  the `/book` card-affordance code (booking-services.tsx + site.css) is uncommitted gate-green —
+  **Brandon deploys apps/site to make the card CTAs live.** Then continue the full-site
+  walkthrough for **SIGN-OFF** — do not author the bundle before that. Only after sign-off:
+  author `marketplace-catalog/blueprints/sparx/`, capture the site (6 sparx goods → `commerce`),
+  validate, ingest.

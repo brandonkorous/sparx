@@ -59,6 +59,8 @@ export async function buildSegmentRuleProjection(
       customer: {
         id: customer.id,
         type: customer.type,
+        lifecycleStage: customer.lifecycleStage,
+        leadStatus: customer.leadStatus,
         email: customer.email,
         tags: customer.tags ?? [],
         company: customer.company,

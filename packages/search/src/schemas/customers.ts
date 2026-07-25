@@ -24,7 +24,12 @@ export function customersSchema(
       { name: 'email', type: 'string', facet: false, infix: true },
       { name: 'phone', type: 'string', facet: false, optional: true },
       { name: 'company', type: 'string', facet: true, optional: true },
+      // Relationship type (retail|b2b|partner|vendor). docs/137.
       { name: 'type', type: 'string', facet: true },
+      // Lifecycle stage + lead status (docs/137). Optional so `ensureSchemas`
+      // adds them to the live collection on the next indexer boot.
+      { name: 'lifecycle_stage', type: 'string', facet: true, optional: true },
+      { name: 'lead_status', type: 'string', facet: true, optional: true },
       { name: 'b2b_account_id', type: 'string', facet: true, optional: true },
       { name: 'tags', type: 'string[]', facet: true, optional: true },
       { name: 'total_spent_cents', type: 'int64', facet: false, sort: true },
@@ -46,7 +51,9 @@ export interface CustomerSearchDocument {
   email: string;
   phone?: string;
   company?: string;
-  type: 'prospect' | 'retail' | 'b2b';
+  type: 'retail' | 'b2b' | 'partner' | 'vendor';
+  lifecycle_stage?: string;
+  lead_status?: string;
   b2b_account_id?: string;
   tags?: string[];
   total_spent_cents: number;

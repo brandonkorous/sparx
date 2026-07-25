@@ -7,10 +7,34 @@
 // for flexibility; tightening to typed sub-objects can land later.
 
 export const crmSdl = /* GraphQL */ `
+  "Relationship type — how a contact transacts (docs/137). Only b2b carries pricing."
   enum CustomerType {
-    prospect
     retail
     b2b
+    partner
+    vendor
+  }
+  "Where a contact is in the journey (docs/137)."
+  enum LifecycleStage {
+    subscriber
+    lead
+    marketing_qualified_lead
+    sales_qualified_lead
+    opportunity
+    customer
+    evangelist
+    other
+  }
+  "The micro work-state on a lead (docs/137); null once settled."
+  enum LeadStatus {
+    new
+    open
+    in_progress
+    open_deal
+    unqualified
+    attempted_to_contact
+    connected
+    bad_timing
   }
   enum B2BAccountStatus {
     active
@@ -45,6 +69,8 @@ export const crmSdl = /* GraphQL */ `
   type CrmCustomer {
     id: ID!
     type: CustomerType!
+    lifecycleStage: LifecycleStage!
+    leadStatus: LeadStatus
     email: String
     phone: String
     firstName: String
@@ -238,7 +264,15 @@ export const crmSdl = /* GraphQL */ `
   }
 
   extend type Query {
-    crmCustomers(type: CustomerType, tag: String, q: String, take: Int, skip: Int): CustomerPage!
+    crmCustomers(
+      type: CustomerType
+      lifecycleStage: LifecycleStage
+      leadStatus: LeadStatus
+      tag: String
+      q: String
+      take: Int
+      skip: Int
+    ): CustomerPage!
     crmCustomer(id: ID!): CrmCustomer
     crmTopCustomers(limit: Int, type: CustomerType): [CrmCustomer!]!
     crmInactiveCustomers(days: Int!, limit: Int): [CrmCustomer!]!

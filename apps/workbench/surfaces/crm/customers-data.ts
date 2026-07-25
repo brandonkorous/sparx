@@ -24,15 +24,16 @@
 
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
-import type { CustomerType } from '@sparx/crm-schemas';
+import type { CustomerType, LeadStatus, LifecycleStage } from '@sparx/crm-schemas';
 import { api } from '../../lib/api/client';
 
-// The customer TYPE enum comes straight from `@sparx/crm-schemas` (the server's
-// own Zod), so it can't drift. `CustomerInput` below stays a local, narrow write
-// PAYLOAD (only the fields this pane sends) on purpose — the same house pattern as
-// `DiscountInput` in commerce — because the full `CreateCustomerInput` carries
-// fields the pane deliberately doesn't manage.
-export type { CustomerType };
+// Classification is three orthogonal axes (docs/137), each enum straight from
+// `@sparx/crm-schemas` (the server's own Zod) so nothing can drift: `type` is the
+// RELATIONSHIP (retail/b2b/partner/vendor), `lifecycleStage` is where they are in
+// the journey, `leadStatus` is the micro work-state. `CustomerInput` below stays a
+// local, narrow write PAYLOAD (only the fields this pane sends) on purpose — the
+// same house pattern as `DiscountInput` in commerce.
+export type { CustomerType, LifecycleStage, LeadStatus };
 
 /* ── Shapes ─────────────────────────────────────────────────────────────── */
 
@@ -44,6 +45,8 @@ export type { CustomerType };
 export interface Customer {
   id: string;
   type: CustomerType;
+  lifecycleStage: LifecycleStage;
+  leadStatus: LeadStatus | null;
   propertyId: string | null;
   b2bAccountId: string | null;
   assignedRepId: string | null;
@@ -90,6 +93,8 @@ export type CustomerSort = 'lastOrderAt' | 'totalSpent' | 'updatedAt' | 'created
 export interface CustomerListParams {
   q?: string;
   type?: CustomerType;
+  lifecycleStage?: LifecycleStage;
+  leadStatus?: LeadStatus;
   sortBy?: CustomerSort;
   assignedRepId?: string;
   b2bAccountId?: string;
@@ -130,50 +135,151 @@ export function customerName(c: {
   return 'Unnamed contact';
 }
 
-export const CUSTOMER_TYPES: CustomerType[] = ['prospect', 'retail', 'b2b'];
-
-/**
- * How a customer's TYPE reads — its plain-language label, a colour that gives it
- * an identity, and a sentence explaining it.
- *
- * The WORD adapts to the tenant's audience noun (docs/136): a `retail` contact
- * is a "Client" for a salon, a "Member" for a gym — pass the singular noun. The
- * stored type stays prospect/retail/b2b; only the label + copy change. `prospect`
- * is universal (a lead), and `b2b`/Wholesale is only relevant with the wholesale
- * module on (the caller gates whether it is offered).
- *
- * Type is an identity axis, not a status, so the colours say what KIND of
- * relationship this is: prospect `info` (a lead), the active relationship wears
- * the Commerce hue, and wholesale the B2B hue. All three are real silica slots.
- */
-export function customerTypeMeta(
-  type: CustomerType,
-  noun = 'customer'
-): {
+interface AxisMeta {
   label: string;
   color: string;
   description: string;
-} {
-  const One = noun.charAt(0).toUpperCase() + noun.slice(1);
+}
+
+/* ── Axis 1: relationship type (`type`) ─────────────────────────────────────
+ * How a contact transacts. `b2b` (Wholesale) is the one kind with behaviour —
+ * trade pricing + A/R — so it is only offered when the B2B module is on (the
+ * caller gates it); the rest are label-only. */
+export const RELATIONSHIP_TYPES: CustomerType[] = ['retail', 'b2b', 'partner', 'vendor'];
+
+export function customerTypeMeta(type: CustomerType): AxisMeta {
   switch (type) {
-    case 'prospect':
-      return {
-        label: 'Prospect',
-        color: 'info',
-        description: `Someone who has shown interest but is not a ${noun} yet.`,
-      };
     case 'retail':
       return {
-        label: One,
+        label: 'Individual',
         color: 'commerce',
-        description: 'Someone you are actively working with, at your normal prices.',
+        description: 'A regular customer at your standard prices.',
       };
     case 'b2b':
       return {
         label: 'Wholesale',
         color: 'b2b',
-        description: 'A business buying on behalf of an account, at agreed trade prices.',
+        description: 'A business on a trade account, at agreed prices.',
       };
+    case 'partner':
+      return {
+        label: 'Partner',
+        color: 'accent',
+        description: 'A referral, affiliate, or reseller you work with.',
+      };
+    case 'vendor':
+      return {
+        label: 'Vendor',
+        color: 'neutral',
+        description: 'A supplier you buy from.',
+      };
+  }
+}
+
+/* ── Axis 2: lifecycle stage (`lifecycleStage`) ─────────────────────────────
+ * Where the contact is in the journey — the primary "where are they" signal.
+ * A completed order advances them to `customer` automatically. Ordered as the
+ * ladder progresses. */
+export const LIFECYCLE_STAGES: LifecycleStage[] = [
+  'subscriber',
+  'lead',
+  'marketing_qualified_lead',
+  'sales_qualified_lead',
+  'opportunity',
+  'customer',
+  'evangelist',
+  'other',
+];
+
+export function lifecycleStageMeta(stage: LifecycleStage): AxisMeta {
+  switch (stage) {
+    case 'subscriber':
+      return {
+        label: 'Subscriber',
+        color: 'neutral',
+        description: 'Opted in to hear from you — a newsletter or updates — nothing more yet.',
+      };
+    case 'lead':
+      return {
+        label: 'Lead',
+        color: 'info',
+        description: 'Made contact or enquired, beyond just subscribing.',
+      };
+    case 'marketing_qualified_lead':
+      return {
+        label: 'Marketing qualified',
+        color: 'primary',
+        description: 'Marketing judged them ready to hand to sales.',
+      };
+    case 'sales_qualified_lead':
+      return {
+        label: 'Sales qualified',
+        color: 'primary',
+        description: 'Sales judged them a real potential customer.',
+      };
+    case 'opportunity':
+      return {
+        label: 'Opportunity',
+        color: 'warning',
+        description: 'Has an open deal in progress.',
+      };
+    case 'customer':
+      return {
+        label: 'Customer',
+        color: 'success',
+        description: 'Has at least one completed order.',
+      };
+    case 'evangelist':
+      return {
+        label: 'Evangelist',
+        color: 'accent',
+        description: 'A customer who actively advocates for you.',
+      };
+    case 'other':
+      return {
+        label: 'Other',
+        color: 'neutral',
+        description: "Doesn't fit the ladder.",
+      };
+  }
+}
+
+/* ── Axis 3: lead status (`leadStatus`) ─────────────────────────────────────
+ * The micro work-state — what someone is doing about this contact right now.
+ * Only meaningful while a lead is being worked, so it can be unset. */
+export const LEAD_STATUSES: LeadStatus[] = [
+  'new',
+  'open',
+  'in_progress',
+  'open_deal',
+  'unqualified',
+  'attempted_to_contact',
+  'connected',
+  'bad_timing',
+];
+
+export function leadStatusMeta(status: LeadStatus): AxisMeta {
+  switch (status) {
+    case 'new':
+      return { label: 'New', color: 'info', description: 'Not worked yet.' };
+    case 'open':
+      return { label: 'Open', color: 'info', description: 'Being worked.' };
+    case 'in_progress':
+      return { label: 'In progress', color: 'primary', description: 'Actively in conversation.' };
+    case 'open_deal':
+      return { label: 'Open deal', color: 'success', description: 'A deal is on the table.' };
+    case 'unqualified':
+      return { label: 'Unqualified', color: 'neutral', description: 'Not a fit right now.' };
+    case 'attempted_to_contact':
+      return {
+        label: 'Attempted to contact',
+        color: 'warning',
+        description: 'Reached out, no reply yet.',
+      };
+    case 'connected':
+      return { label: 'Connected', color: 'success', description: 'Two-way contact made.' };
+    case 'bad_timing':
+      return { label: 'Bad timing', color: 'neutral', description: 'Interested, but not now.' };
   }
 }
 
@@ -246,6 +352,8 @@ export function useCustomers(params: CustomerListParams) {
       api.list<Customer>('/v1/crm/customers', {
         ...(params.q?.trim() ? { q: params.q.trim() } : {}),
         ...(params.type ? { type: params.type } : {}),
+        ...(params.lifecycleStage ? { lifecycle_stage: params.lifecycleStage } : {}),
+        ...(params.leadStatus ? { lead_status: params.leadStatus } : {}),
         ...(params.sortBy ? { sort_by: params.sortBy } : {}),
         ...(params.assignedRepId ? { assigned_rep_id: params.assignedRepId } : {}),
         ...(params.b2bAccountId ? { b2b_account_id: params.b2bAccountId } : {}),
@@ -376,6 +484,8 @@ export function useInvalidateCustomers() {
  *  field; an absent key leaves it untouched on a PATCH. */
 export interface CustomerInput {
   type: CustomerType;
+  lifecycleStage: LifecycleStage;
+  leadStatus?: LeadStatus | null;
   email?: string | null;
   phone?: string | null;
   firstName?: string | null;

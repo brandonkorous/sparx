@@ -93,6 +93,28 @@ export async function graphPost<T>(
   return (await res.json()) as T;
 }
 
+/** POST to a Graph edge as multipart/form-data, uploading a file's BYTES in `file.field`
+ *  (e.g. `source` for `/{page}/photos`) instead of handing Graph a public `url` to fetch.
+ *  This is the escape hatch from the Cloudflare 206 (see {@link fetchImageBinary}): our
+ *  media URL is fine to a plain GET but Graph's range-fetch gets a 206 it rejects, so we
+ *  send the bytes directly. The multipart boundary is set by fetch from the FormData — do
+ *  NOT set Content-Type by hand. 60s timeout to cover the upload of the largest variant. */
+export async function graphPostMultipart<T>(
+  path: string,
+  accessToken: string,
+  fields: Record<string, string>,
+  file: { field: string; bytes: ArrayBuffer; filename: string; contentType: string },
+  label = 'Meta request'
+): Promise<T> {
+  const form = new FormData();
+  for (const [k, v] of Object.entries(fields)) form.append(k, v);
+  form.append('access_token', accessToken);
+  form.append(file.field, new Blob([file.bytes], { type: file.contentType }), file.filename);
+  const res = await fetchT(`${GRAPH_BASE}/${path}`, { method: 'POST', body: form }, 60_000);
+  if (!res.ok) throw new Error(await describeGraph(res, label));
+  return (await res.json()) as T;
+}
+
 /** Build the Facebook Login authorize URL for a given scope set. */
 export function buildMetaConnectUrl(
   creds: MetaCreds,

@@ -40,11 +40,12 @@ import {
   fetchMe,
   graphGet,
   graphPost,
+  graphPostMultipart,
   listMetaPages,
   metaCreds,
   type MetaCreds,
 } from './_meta.js';
-import { appendLink, imageUrls } from './_media.js';
+import { appendLink, fetchImageBinary, imageUrls } from './_media.js';
 import { requireCreds } from './_http.js';
 
 const SCOPE =
@@ -180,10 +181,14 @@ export class FacebookPageAdapter implements SocialAdapter {
     const plan = planFacebookPost(post);
 
     if (plan.kind === 'single_photo') {
-      const res = await graphPost<FbPhotoResponse>(
+      // Upload the BYTES (multipart `source`), not a `url` for Graph to fetch: our CDN
+      // serves Graph's range-fetch a 206 that /photos rejects (see graphPostMultipart).
+      const img = await fetchImageBinary(plan.imageUrl);
+      const res = await graphPostMultipart<FbPhotoResponse>(
         `${pageId}/photos`,
         pageToken,
-        { url: plan.imageUrl, caption: plan.caption },
+        { caption: plan.caption },
+        { field: 'source', bytes: img.bytes, filename: img.filename, contentType: img.contentType },
         'Facebook photo post'
       );
       const id = res.post_id ?? res.id;
@@ -194,10 +199,17 @@ export class FacebookPageAdapter implements SocialAdapter {
       const mediaFields: Record<string, string> = { message: plan.message };
       let i = 0;
       for (const url of plan.imageUrls) {
-        const photo = await graphPost<FbPhotoResponse>(
+        const img = await fetchImageBinary(url);
+        const photo = await graphPostMultipart<FbPhotoResponse>(
           `${pageId}/photos`,
           pageToken,
-          { url, published: 'false' },
+          { published: 'false' },
+          {
+            field: 'source',
+            bytes: img.bytes,
+            filename: img.filename,
+            contentType: img.contentType,
+          },
           'Facebook photo upload'
         );
         mediaFields[`attached_media[${i}]`] = JSON.stringify({ media_fbid: photo.id });

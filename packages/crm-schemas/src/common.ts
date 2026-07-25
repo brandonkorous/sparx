@@ -24,8 +24,46 @@ export const TagList = z
   .max(50)
   .default([]);
 
-export const CustomerType = z.enum(['prospect', 'retail', 'b2b']);
+// Customer classification is THREE orthogonal axes, not one enum (docs/137,
+// modelled on HubSpot). A contact carries one value on each at once.
+
+// Axis 1 — RELATIONSHIP TYPE (`customers.type`): how a contact transacts. The
+// load-bearing axis: only `b2b` carries behaviour (trade pricing + A/R), exactly
+// as before — the meaning just narrowed from "everything" to "relationship kind".
+// `retail` (individual/consumer) is the default; `partner`/`vendor` are label-only.
+export const CustomerType = z.enum(['retail', 'b2b', 'partner', 'vendor']);
 export type CustomerType = z.infer<typeof CustomerType>;
+
+// Axis 2 — LIFECYCLE STAGE (`customers.lifecycle_stage`): where the contact is in
+// the journey. Coarse and mostly auto-advanced (a completed order → `customer`);
+// the Deals module carries the fine-grained opportunity/pipeline detail. HubSpot's
+// eight defaults, in order.
+export const LifecycleStage = z.enum([
+  'subscriber',
+  'lead',
+  'marketing_qualified_lead',
+  'sales_qualified_lead',
+  'opportunity',
+  'customer',
+  'evangelist',
+  'other',
+]);
+export type LifecycleStage = z.infer<typeof LifecycleStage>;
+
+// Axis 3 — LEAD STATUS (`customers.lead_status`): the micro work-state, what a rep
+// is doing right now. Only meaningful while a lead is being worked, so it is
+// NULLABLE — a settled customer clears it.
+export const LeadStatus = z.enum([
+  'new',
+  'open',
+  'in_progress',
+  'open_deal',
+  'unqualified',
+  'attempted_to_contact',
+  'connected',
+  'bad_timing',
+]);
+export type LeadStatus = z.infer<typeof LeadStatus>;
 
 export const PreferredContactMethod = z.enum(['email', 'phone', 'sms']);
 export type PreferredContactMethod = z.infer<typeof PreferredContactMethod>;

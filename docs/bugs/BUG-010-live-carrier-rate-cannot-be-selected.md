@@ -1,6 +1,33 @@
 # BUG-010 — A live carrier (Shippo) shipping rate can never be selected at checkout
 
-Status: **FIXED (code) 2026-07-24 — awaiting deploy**
+Status: **✅ FIXED — VERIFIED IN PRODUCTION 2026-07-24 (v1.165.0)**
+
+## Verified 2026-07-24 (prod, `keen-cedar-6433`, live Shippo)
+
+Drove the public checkout API end-to-end against `api.sparx.works`. All four
+verify-after-deploy items below pass:
+
+- **Live rate selectable.** Quoted `shippo/USPS Ground Advantage $7.90`, submitted
+  it → **HTTP 200** (was 422). The session persisted a shipping ref
+  (`afdd71d1…`) DIFFERENT from the one the shopper submitted (`9b745bdb…`) —
+  proof the re-quote + service-identity match is doing its job; the price
+  (`shippingTotalCents: 790`) came from the fresh server quote, not the client.
+- **Switch, no stacking.** Ground ($7.90) → re-pick Priority ($11.54): total
+  became 1154, reflecting only the latest pick.
+- **Manual still works.** `sparx-manual` flat rate ($5.00) submitted via the
+  deterministic-ref path → total 500.
+- **Stale rate rejected cleanly.** A bogus live service → 422 "That shipping
+  option is no longer available…", and the session stayed on the last good pick
+  (not corrupted to $0).
+- **Charge == new total.** Payment-intent for a 2×$25 + $11.54 cart was created
+  for exactly `6154` cents (`sparx_pay`, clientSecret present) — live carrier
+  shipping flows correctly into the amount Stripe will charge.
+
+Original code-fix writeup below.
+
+---
+
+Status (at fix time): **FIXED (code) 2026-07-24 — awaiting deploy**
 Severity: **High** — with live carrier rates enabled, every checkout that picks a
 real USPS/UPS/FedEx rate dead-ends; only the manual flat rate can complete
 Found: 2026-07-24, production shipping E2E on `keen-cedar-6433` (Shippo just enabled)

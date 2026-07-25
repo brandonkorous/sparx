@@ -51,7 +51,7 @@ export const SAVED_VIEW_PRESETS: Record<string, readonly SavedViewPreset[]> = {
   crm: [
     { target: '/crm/orders', name: 'To fulfill', params: { status: 'placed' } },
     { target: '/crm/orders', name: 'Awaiting payment', params: { paymentStatus: 'pending' } },
-    { target: '/crm/customers', name: 'Prospects', params: { type: 'prospect' } },
+    { target: '/crm/customers', name: 'Leads', params: { lifecycle_stage: 'lead' } },
     { target: '/crm/customers', name: 'Top spenders', params: { sort: 'totalSpent' } },
     { target: '/crm/deals', name: 'Open deals', params: { state: 'open' } },
     { target: '/crm/b2b', name: 'Credit hold', params: { status: 'credit_hold' } },

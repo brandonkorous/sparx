@@ -17,7 +17,14 @@
 model Customer {
   id            String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId      String  @map("tenant_id") @db.Uuid
-  type          String  @default("prospect") @db.VarChar(20) // prospect | retail | b2b
+  // Classification is three orthogonal axes (docs/137). `type` = RELATIONSHIP
+  // (how they transact); only `b2b` carries pricing/A-R behaviour.
+  type           String  @default("retail") @db.VarChar(20) // retail | b2b | partner | vendor
+  // LIFECYCLE STAGE — where they are in the journey (auto-advances to `customer`
+  // on first order). subscriber|lead|marketing_qualified_lead|sales_qualified_lead|opportunity|customer|evangelist|other
+  lifecycleStage String  @default("lead") @map("lifecycle_stage") @db.VarChar(30)
+  // LEAD STATUS — the micro work-state, null once settled. new|open|in_progress|open_deal|unqualified|attempted_to_contact|connected|bad_timing
+  leadStatus     String? @map("lead_status") @db.VarChar(30)
   // The Better Auth customer user (Layer 2 login, docs/27 v2) behind this
   // membership. null = a guest / CRM-imported contact with no storefront login.
   authUserId    String? @map("auth_user_id") @db.Uuid

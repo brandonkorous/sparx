@@ -1,6 +1,6 @@
 # 136 — Customer Profile (workbench CRM): build + tracking
 
-Version: 0.2
+Version: 0.4
 Author: Brandon Korous
 Last Updated: 2026-07-24
 
@@ -140,33 +140,26 @@ I author DB + dependent code as **files only** and never run
 - Presets: [task-detail.tsx](../apps/workbench/surfaces/crm/task-detail.tsx), [deal-detail.tsx](../apps/workbench/surfaces/crm/deal-detail.tsx)
 - Reused: `MediaField` / `useUploadMedia` / `useMediaAssets` from commerce.
 
-## Audience noun — the CRM adapts its vocabulary (added 0.2)
+## Customer classification → the three-axis model (0.4)
 
-"Kind of customer = prospect / retail / wholesale" was commerce-centric — meaningless
-to a salon (clients), gym (members), restaurant (guests), clinic (patients), publisher
-(subscribers), charity (donors). Fixed **without touching the stored `type`** (it stays
-`prospect/retail/b2b`, load-bearing for pricing + A/R across ~16 files):
+**The full model now lives in its own doc: [137-customer-classification-model.md](137-customer-classification-model.md).**
+Read that for the axes, values, migration mapping, and load-bearing moves. Short history of how it
+got there, since it happened on this surface:
 
-- **Storage:** `tenants.settings.audienceNoun` (jsonb, no migration). Default `customer`.
-- **Contract:** `AUDIENCE_NOUNS` + `AudienceNoun` in [crm-schemas customers.ts](../packages/crm-schemas/src/customers.ts)
-  (customer/client/member/guest/patient/subscriber/donor/student — all regular plurals).
-- **API:** `GET /v1/tenant` now returns `audienceNoun`; `PATCH /v1/tenant/audience` (admin) sets it —
-  [tenant.ts](../services/api-rest/src/routes/v1/tenant.ts). **Needs an api-rest restart.**
-- **Resolver + hooks:** [apps/workbench/lib/audience.ts](../apps/workbench/lib/audience.ts)
-  (`resolveAudienceVocab`, `useAudienceVocab`, `useSetAudienceNoun`).
-- **Setting UI:** "Your audience" section in [business-details.tsx](../apps/workbench/surfaces/business-details.tsx) —
-  a preference that commits **on change** (it writes a different record than the business-form Save)
-  and invalidates the tenant read so the whole CRM re-labels at once.
-- **Adapted:** the "Kind of {noun}" field + its option labels/descriptions, the type badge,
-  the pane titles (list = plural, detail = singular), the "Add a {noun}" copy —
-  `customerTypeMeta(type, noun)` in [customers-data.ts](../apps/workbench/surfaces/crm/customers-data.ts).
-- **Wholesale is module-gated:** the `b2b` kind is only offered when the wholesale module is on
-  (an existing wholesale contact keeps it either way), via `useModuleStates`.
+- **0.3 — richer single dropdown.** "Kind of customer = prospect / retail / wholesale" was
+  commerce-centric, so the one `type` dropdown was widened to a loyalty ladder
+  (prospect / customer / regular / vip / wholesale). Better, but still one field doing several jobs.
+- **0.4 — split into three orthogonal fields** (HubSpot's model, after research): **lifecycle
+  stage** (where they are), **lead status** (what a rep is doing now), and **relationship type**
+  (how they buy — the load-bearing `type`, now `retail · b2b · partner · vendor`). `prospect`
+  became a lifecycle stage; `regular`/`vip` had no home on any axis and are **preserved as tags** by
+  the migration. The customer form gained three controls; the rail/list badge leads with lifecycle
+  stage. See docs/137.
 
-**Deliberately NOT done (follow-on):** the **left-nav** "Customers" label is a static string in the
-surface catalog ([lib/surfaces/catalog/crm.ts](../apps/workbench/lib/surfaces/catalog/crm.ts)) — adapting
-it needs the nav/launcher to resolve vocab dynamically (a cross-cutting change). The pane/tab titles
-DO adapt. Deals/Tasks copy that says "customer" is not yet swept. Per-site nouns (vs per-tenant) deferred.
+**Also removed (0.3):** an over-built per-tenant _audience noun_ rename system (a
+`tenants.settings.audienceNoun` key, `GET`/`PATCH /v1/tenant/audience`, an
+`apps/workbench/lib/audience.ts` resolver, a "Your audience" setting) — far more than the ask; the
+CRM says "Customers" everywhere.
 
 ## Open decisions / next
 

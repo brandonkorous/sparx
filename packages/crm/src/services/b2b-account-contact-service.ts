@@ -89,7 +89,10 @@ export async function create(
         where: { id: customer.id },
         data: {
           b2bAccountId: customer.b2bAccountId ?? accountId,
-          type: customer.type === 'prospect' || customer.type === 'retail' ? 'b2b' : customer.type,
+          // Any non-wholesale relationship (retail / partner / vendor) becomes a
+          // wholesale (`b2b`) contact once on a trade account — only an existing
+          // b2b contact keeps its type. Written the once (see the guard above).
+          type: customer.type === 'b2b' ? customer.type : 'b2b',
         },
       });
     }

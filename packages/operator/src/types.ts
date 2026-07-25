@@ -600,7 +600,7 @@ export interface OperatorCustomerHit {
   email: string | null;
   phone: string | null;
   company: string | null;
-  /** prospect | retail | b2b. */
+  /** Relationship type: retail | b2b | partner | vendor (docs/137). */
   type: string;
   totalSpentCents: number;
   orderCount: number;

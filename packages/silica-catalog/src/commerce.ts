@@ -248,7 +248,13 @@ export function buyBox(): Node {
 export function productDetailPage(): Node {
   return el('div', 'flex flex-col', {
     children: [
-      el('section', 'bg-base-100 @container px-6 py-12', { children: [buyBox()] }),
+      // The buy box is capped at the same `max-w-6xl` reading width every other page
+      // uses (shopHeader, the featured rail, the silica pages) and centered — without
+      // this the PDP alone spanned full-bleed while the rest of the site stayed
+      // contained, which read as a broken width.
+      el('section', 'bg-base-100 @container px-6 py-12', {
+        children: [el('div', 'mx-auto w-full max-w-6xl', { children: [buyBox()] })],
+      }),
       featuredProducts(),
     ],
   });

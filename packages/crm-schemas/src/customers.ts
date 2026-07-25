@@ -8,7 +8,14 @@
 
 import { z } from 'zod';
 
-import { CustomerType, PreferredContactMethod, TagList, Uuid } from './common';
+import {
+  CustomerType,
+  LeadStatus,
+  LifecycleStage,
+  PreferredContactMethod,
+  TagList,
+  Uuid,
+} from './common';
 
 // GDPR consent shape (stored in customers.gdpr_consent JSONB).
 // Captured at the moment consent was granted; never mutated retroactively.
@@ -21,7 +28,12 @@ const GdprConsent = z.object({
 export type GdprConsent = z.infer<typeof GdprConsent>;
 
 export const CreateCustomerInput = z.object({
-  type: CustomerType.default('prospect'),
+  // The three classification axes (docs/137). Relationship type defaults to a
+  // retail individual; a hand-added contact starts life as a `lead`; lead status
+  // is optional (only set while a lead is being worked).
+  type: CustomerType.default('retail'),
+  lifecycleStage: LifecycleStage.default('lead'),
+  leadStatus: LeadStatus.nullable().optional(),
   // The site (web property) this customer belongs to (docs/58 D2). Null/absent →
   // a tenant-level (GLOBAL) customer, visible from every site's scoped list. The
   // dashboard create route defaults this to the ACTIVE site for multi-site
@@ -113,27 +125,6 @@ export const BulkTagCustomersInput = z.object({
   removeTags: z.array(z.string().min(1).max(63)).optional(),
 });
 export type BulkTagCustomersInput = z.infer<typeof BulkTagCustomersInput>;
-
-// AUDIENCE NOUN — what a tenant calls the people it serves. The CRM's core
-// record is universal (a contact you have a relationship with); the WORD for it
-// is not. A salon has clients, a gym members, a restaurant guests, a clinic
-// patients, a publisher subscribers, a charity donors — not "customers". This is
-// a per-tenant vocabulary preference stored in `tenants.settings.audienceNoun`;
-// the plural + capitalised + "kind" labels derive from it in the UI. It changes
-// no data and no behaviour — the stored customer `type` stays prospect/retail/b2b
-// (those are load-bearing for pricing + A/R); only the words a person reads adapt.
-export const AUDIENCE_NOUNS = [
-  'customer',
-  'client',
-  'member',
-  'guest',
-  'patient',
-  'subscriber',
-  'donor',
-  'student',
-] as const;
-export const AudienceNoun = z.enum(AUDIENCE_NOUNS);
-export type AudienceNoun = z.infer<typeof AudienceNoun>;
 
 // Customer address — separate row in customer_addresses.
 export const CreateCustomerAddressInput = z.object({

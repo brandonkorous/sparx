@@ -7,12 +7,38 @@ import { requireRole } from '@sparx/api-core/auth';
 import type { GqlContext } from '../types';
 import { requireCrmModule, toCrmContext } from '../../../lib/crm-context.js';
 
-type CustomerType = 'prospect' | 'retail' | 'b2b';
+type CustomerType = 'retail' | 'b2b' | 'partner' | 'vendor';
+type LifecycleStage =
+  | 'subscriber'
+  | 'lead'
+  | 'marketing_qualified_lead'
+  | 'sales_qualified_lead'
+  | 'opportunity'
+  | 'customer'
+  | 'evangelist'
+  | 'other';
+type LeadStatus =
+  | 'new'
+  | 'open'
+  | 'in_progress'
+  | 'open_deal'
+  | 'unqualified'
+  | 'attempted_to_contact'
+  | 'connected'
+  | 'bad_timing';
 
 export const customerQueryResolvers = {
   crmCustomers: async (
     _p: unknown,
-    args: { type?: CustomerType; tag?: string; q?: string; take?: number; skip?: number },
+    args: {
+      type?: CustomerType;
+      lifecycleStage?: LifecycleStage;
+      leadStatus?: LeadStatus;
+      tag?: string;
+      q?: string;
+      take?: number;
+      skip?: number;
+    },
     ctx: GqlContext
   ) => {
     requireRole(ctx.request, 'viewer');

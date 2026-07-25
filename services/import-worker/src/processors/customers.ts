@@ -32,10 +32,14 @@ export interface RowResult {
   errorMsg?: string;
 }
 
-function normalizeType(val: string | undefined): 'prospect' | 'retail' | 'b2b' {
-  if (val === 'retail') return 'retail';
-  if (val === 'b2b') return 'b2b';
-  return 'prospect';
+// The imported "type" column is the RELATIONSHIP (docs/137). An imported contact
+// defaults to a retail individual and, unset, lands at the `lead` lifecycle stage
+// (the schema default) — a reclassification, not a purchase.
+function normalizeType(val: string | undefined): 'retail' | 'b2b' | 'partner' | 'vendor' {
+  if (val === 'b2b' || val === 'wholesale') return 'b2b';
+  if (val === 'partner') return 'partner';
+  if (val === 'vendor') return 'vendor';
+  return 'retail';
 }
 
 export async function processCustomerRows(
