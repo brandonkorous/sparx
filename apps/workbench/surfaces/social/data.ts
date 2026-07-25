@@ -265,6 +265,11 @@ export const socialKeys = {
 
 /* ── Reads ──────────────────────────────────────────────────────────────── */
 
+/** How often an open post detail re-checks itself while its targets are still going out
+ *  (status `publishing`). Brisk enough to feel live as each account lands, and it stops
+ *  the instant the post reaches a settled status. */
+const PUBLISHING_POLL_MS = 2500;
+
 /** Connections, the connectable-platform catalog, and the approval setting — one
  *  request behind the Connections surface AND the composer's destination list. */
 export function useSocialOverview() {
@@ -282,6 +287,11 @@ export function useSocialPosts(status?: PostStatus) {
       api
         .get<{ posts: Post[] }>('/v1/social/posts', status ? { status } : undefined)
         .then((r) => r.posts),
+    // Keep the queue/board honest while a post is going out: as long as ANY row is
+    // publishing (its targets landing in the background), poll so it moves to
+    // published/failed on its own — no manual refresh. Stops once the list is settled.
+    refetchInterval: (q) =>
+      (q.state.data ?? []).some((p) => p.status === 'publishing') ? PUBLISHING_POLL_MS : false,
   });
 }
 
@@ -292,6 +302,13 @@ export function useSocialPost(id: string) {
     enabled: id !== 'new',
     retry: (failureCount, error) =>
       error instanceof ApiError && error.status === 404 ? false : failureCount < 2,
+    // "Publish now" hands the post to a background drain that flips each target
+    // pending → published/failed over the next few seconds (a Pub/Sub worker, not the
+    // request). A one-shot fetch would strand the just-published detail on its
+    // "publishing / Waiting" snapshot until a manual reopen. Poll ONLY in that transient
+    // window — every other status (draft, scheduled, pending_approval, published,
+    // partially_published, failed) is settled, so the clock stops the moment it lands.
+    refetchInterval: (q) => (q.state.data?.status === 'publishing' ? PUBLISHING_POLL_MS : false),
   });
 }
 
