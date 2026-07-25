@@ -126,10 +126,21 @@ rows. The shipped migration avoids it by snapshotting the original `type` into a
 immutable temp column (`_orig_type`) and mapping from that in one atomic `UPDATE`,
 correct under RLS (prod) and superuser (local), and idempotent on re-run.
 
-## Status — applied + verified locally (2026-07-24)
+## Status — shipped + verified in prod (2026-07-24/25)
 
-Done against local docker (dev was down): `prisma migrate deploy` + `generate`; the
-backfill verified — 39 retail customers, 13 wholesale, 26 leads (ex-prospects), and
-`regular`/`vip` preserved as tags; `migrate status` = up to date, no drift; all
-touched packages typecheck clean. **Remaining:** push (the pipeline applies the
-migration to prod) and restart api-rest when dev comes back up.
+Applied against local docker first: `prisma migrate deploy` + `generate`; backfill
+verified — 39 retail customers, 13 wholesale, 26 leads (ex-prospects), `regular`/`vip`
+preserved as tags; no drift; all touched packages typecheck clean.
+
+Then pushed; the pipeline applied the migration to prod. **Prod smoke test (via MCP):**
+every customer carries `type`/`lifecycleStage`/`leadStatus`; the backfill ran under the
+non-superuser RLS role (`leadStatus:"new"` populated on ex-prospects); the new enum is
+live (`type:"prospect"` is rejected server-side); relationship + lifecycle + lead-status
+filters all match server-side (`lifecycleStage=customer` → 0 vs `lead` → all, the
+discriminating check); Typesense docs carry `lifecycle_stage`/`lead_status` and search
+works; segment evaluation still resolves (built-ins intact, members carry the new shape).
+
+**Not exercisable via MCP (needs the workbench UI or a storefront order):** creating a
+customer with a chosen stage, editing classification on the Details tab, and the
+first-order → `lifecycleStage=customer` auto-promotion (verified in code + local, needs a
+real order to observe in prod).

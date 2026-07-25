@@ -1,8 +1,8 @@
 # Social module — implementation tracker
 
-Version: 0.1
+Version: 0.2
 Author: Brandon Korous
-Last Updated: 2026-07-24
+Last Updated: 2026-07-25
 
 > The **living** status + decision log for the `social` module. It answers three
 > questions the design docs don't: what are we building _toward_, where are we
@@ -87,6 +87,41 @@ touches the tenant's own site and so can't come from the traffic pipeline.
 ## 3. Decision log
 
 Newest first. Each entry: the decision, and the reason it beat the alternative.
+
+### 2026-07-25 — RESUME HERE: two more FB-image fixes pushed, verification pending
+
+State at last checkpoint (post-`(#324)` byte-upload, which is LIVE on social-worker
+v1.166.0). A live re-test of a real FB image publish surfaced TWO more bugs, both fixed
+and **pushed to `main`, deploy pipeline running** — NOT yet verified live:
+
+1. **Crop variant URLs 422'd** (commit `800fc74c`, api-rest). The byte-upload path
+   downloads the platform-framed crop (`jpeg-1x1-1080.jpg`), but the public media route's
+   filename regex only matched BASE variants (`jpeg-800.jpg`) — the aspect segment 422'd
+   on validation. Fixed: regex now accepts the optional aspect and passes it back through
+   `variantKey()`; the pattern moved to `storage.ts` as `VARIANT_FILENAME_RE`, imported by
+   BOTH the route and its test so it can't drift again (a private test copy staying green
+   while the route drifted is what shipped the bug). The first byte-upload test dodged this
+   (no 1:1 crop existed yet → used the base).
+2. **Retry churned permanent errors** (commit `9ce7cf8d`, `@sparx/social` + worker). The
+   deferred-target retry (from the earlier worker fix) hammered a permanent 4xx all 5
+   attempts. Fixed: Graph + image-fetch helpers throw a status-bearing `HttpError`; the
+   worker's `isRetryableError()` keeps `pending` only for transient failures (5xx / 429 /
+   network) and fails a 4xx immediately.
+
+**TO VERIFY once api-rest + social-worker redeploy** (watch `gcloud run services describe`
+image tags climb past v1.166.0):
+
+- `curl -I -H "Range: bytes=0-" <crop URL>` — the crop `jpeg-1x1-1080.jpg` for asset
+  `ec276cf9-…` under tenant `005ed4ee-…` must return **200** (was 422).
+- Re-publish a fresh post with an image to the connected FB Page → expect the image to
+  actually land (worker log shows `published: 1`, no `#324`).
+- The old stuck "publishing" test posts are being deleted by the user (they can't
+  self-heal — acked before the retry fix shipped).
+
+STILL OPEN: Instagram / Pinterest / Threads publish by public `image_url` only (no byte
+upload) → they WILL hit the same Cloudflare 206 when first used to post an image. Fix is a
+CF Snippet (needs a PAID plan — this account is on free), a CF Worker, or a DNS-only media
+origin. Documented in `terraform/envs/prod/cloudflare.tf`. LinkedIn already byte-uploads.
 
 ### 2026-07-25 — Fix: Facebook rejected the image with `(#324)` — Cloudflare 206, so upload bytes
 

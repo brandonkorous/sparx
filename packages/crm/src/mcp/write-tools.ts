@@ -4,6 +4,8 @@
 
 import { z } from 'zod';
 
+import { CreateCustomerInput } from '@sparx/crm-schemas';
+
 import {
   activityService,
   customerService,
@@ -13,6 +15,62 @@ import {
 } from '../services';
 
 import type { McpToolDefinition } from './registry';
+
+// The customer fields an MCP client can set — the friendly subset of
+// CreateCustomerInput. Site/property assignment, metadata, GDPR consent and the
+// avatar are managed by their own dedicated flows, not this general write. Picked
+// from the schema (not re-declared) so validation — especially the three
+// classification enums (type / lifecycleStage / leadStatus) — can never drift.
+const CustomerWriteInput = CreateCustomerInput.pick({
+  type: true,
+  lifecycleStage: true,
+  leadStatus: true,
+  email: true,
+  phone: true,
+  firstName: true,
+  lastName: true,
+  company: true,
+  jobTitle: true,
+  b2bAccountId: true,
+  assignedRepId: true,
+  preferredContactMethod: true,
+  doNotContact: true,
+  tags: true,
+});
+
+export const createCustomer: McpToolDefinition = {
+  name: 'create_customer',
+  description:
+    'Add a customer / contact. Classification is three independent axes (docs/137): `type` is the RELATIONSHIP — retail | b2b | partner | vendor (default retail; only b2b applies trade pricing); `lifecycleStage` is where they are in the journey — subscriber | lead | marketing_qualified_lead | sales_qualified_lead | opportunity | customer | evangelist | other (default lead); `leadStatus` is the optional work-state on a lead. A first completed order later promotes them to the `customer` stage automatically.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: CustomerWriteInput,
+  run: (ctx, input) => customerService.create(ctx, input),
+};
+
+export const updateCustomer: McpToolDefinition = {
+  name: 'update_customer',
+  description:
+    'Update a customer / contact — any subset of fields, including the three classification axes (relationship `type`, `lifecycleStage`, `leadStatus`). Omitted fields are left unchanged; pass null to clear a nullable field.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: CustomerWriteInput.partial().extend({ customerId: z.string().uuid() }),
+  run: (ctx, input) => {
+    const { customerId, ...patch } = input as { customerId: string } & Record<string, unknown>;
+    return customerService.update(ctx, customerId, patch);
+  },
+};
+
+export const deleteCustomer: McpToolDefinition = {
+  name: 'delete_customer',
+  description:
+    'Soft-delete a customer / contact: the record is hidden from lists and search but not erased — their orders, deals and history are preserved and it can be restored.',
+  scope: 'write:crm',
+  confirmation: true,
+  input: z.object({ customerId: z.string().uuid() }),
+  run: (ctx, input) =>
+    customerService.softDelete(ctx, (input as { customerId: string }).customerId),
+};
 
 export const addActivity: McpToolDefinition = {
   name: 'add_crm_activity',
@@ -162,6 +220,9 @@ export const convertQuote: McpToolDefinition = {
 };
 
 export const writeTools = [
+  createCustomer,
+  updateCustomer,
+  deleteCustomer,
   addActivity,
   createTask,
   completeTask,

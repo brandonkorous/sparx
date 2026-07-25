@@ -193,7 +193,11 @@ const financePayoutRoutes: FastifyPluginAsync = (app) => {
     ) {
       try {
         const real = await listConnectedPayouts(auth.tenantId, 100);
-        if (real) {
+        // Only short-circuit to the real payouts when there ARE some. An empty list (a
+        // sparx Pay account that simply hasn't paid out yet, or is between settlement
+        // cycles) falls through to the derived model so in-transit deposits still show —
+        // an empty array is truthy, so the old `if (real)` swallowed that case (BUG-012).
+        if (real && real.length > 0) {
           const filtered = real
             .filter((p) => status === 'all' || p.status === status)
             .sort(byArrivalOrAmount);

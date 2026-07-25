@@ -15,8 +15,13 @@
 
 import type Stripe from 'stripe';
 
-import { getPlatformStripe } from '@sparx/payments';
-import { prisma, withTenant } from '@sparx/db';
+import {
+  credentialRef,
+  getPaymentSecretReader,
+  getPlatformStripe,
+  SPARX_PAY_ID,
+} from '@sparx/payments';
+import { withTenant } from '@sparx/db';
 
 export interface ConnectedPayout {
   id: string; // Stripe payout id (po_…)
@@ -46,13 +51,25 @@ export interface ConnectedPayoutDetail extends ConnectedPayout {
   sales: ConnectedPayoutSale[];
 }
 
-/** The tenant's connected account id from the root row (no tenant context needed). */
+/** The tenant's sparx Pay connected account id — read from the SAME source charges settle
+ *  to: the payment secret store (`payments/{tenantId}/sparx_pay/stripe_account_id`), which
+ *  is what `SparxPayGateway.merchantAccountId` uses for `on_behalf_of`/`transfer_data`.
+ *
+ *  Deliberately NOT `tenant.stripeAccountId` (the root column): that field can drift from
+ *  the live Express account (a relic of the Standard→Express onboarding migration, docs/94),
+ *  and reading it made payouts query a stale account with no payouts while charges settled
+ *  elsewhere — the whole of BUG-012. Returns null when no sparx Pay account is configured,
+ *  signalling the caller to fall back to the derived model. */
 async function connectedAccountId(tenantId: string): Promise<string | null> {
-  const tenant = await prisma.tenant.findUnique({
-    where: { id: tenantId },
-    select: { stripeAccountId: true },
-  });
-  return tenant?.stripeAccountId ?? null;
+  try {
+    const accountId = await getPaymentSecretReader().read(
+      credentialRef(tenantId, SPARX_PAY_ID, 'stripe_account_id')
+    );
+    return accountId || null;
+  } catch {
+    // PaymentSecretNotFoundError (or any read failure) → sparx Pay not usable here.
+    return null;
+  }
 }
 
 /** Stripe payout ids are `po_…`; the derived model's ids are `<processor>~<date>`. */
