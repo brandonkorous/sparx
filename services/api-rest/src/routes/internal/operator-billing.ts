@@ -15,8 +15,11 @@ import {
   listPlatformStripeEvents,
   listTenantCharges,
   listPlatformCoupons,
+  listPromotionCodes,
   createPlatformCoupon,
   deletePlatformCoupon,
+  createPromotionCode,
+  deactivatePromotionCode,
   refundCharge,
   createEnterpriseInvoice,
   getBillingState,
@@ -46,6 +49,25 @@ const CouponSchema = z
   .refine((d) => d.percentOff !== undefined || d.amountOffCents !== undefined, {
     message: 'Provide percentOff or amountOffCents.',
   });
+
+// A promotion code (the typeable string) layered on a coupon. `tenantId` locks it
+// to one tenant (resolved to that tenant's Stripe customer server-side); omit for a
+// public code. `code` is optional — Stripe generates one when absent.
+const PromotionCodeSchema = z.object({
+  couponId: z.string().min(1),
+  code: z
+    .string()
+    .trim()
+    .min(3)
+    .max(40)
+    .regex(/^[A-Za-z0-9]+$/, 'Use letters and numbers only.')
+    .optional(),
+  tenantId: z.string().uuid().optional(),
+  maxRedemptions: z.number().int().positive().max(1_000_000).optional(),
+  expiresAt: z.string().datetime().optional(),
+  firstTimeOnly: z.boolean().optional(),
+  minimumAmountCents: z.number().int().positive().optional(),
+});
 
 const InvoiceSchema = z.object({
   tenantId: z.string().uuid(),
@@ -109,6 +131,52 @@ const operatorBillingRoutes: FastifyPluginAsync = async (app) => {
       if (!request.params.id) throw badRequest('Missing coupon id.');
       await deletePlatformCoupon(request.params.id);
       return reply.code(204).send();
+    }
+  );
+
+  // Promotion codes — the typeable strings tenants redeem at checkout. List (all,
+  // or filtered to one coupon), create (public or tenant-targeted), deactivate.
+  app.get<{ Querystring: { coupon?: string } }>(
+    '/internal/operator/billing/promotion-codes',
+    opts,
+    async (request) => {
+      authorizeOperator(request);
+      return listPromotionCodes(request.query.coupon);
+    }
+  );
+
+  app.post('/internal/operator/billing/promotion-codes', opts, async (request) => {
+    authorizeOperator(request);
+    const parsed = PromotionCodeSchema.safeParse(request.body);
+    if (!parsed.success) throw badRequest(parsed.error.issues[0]?.message ?? 'Invalid code.');
+    const { tenantId, ...rest } = parsed.data;
+
+    // Resolve a tenant-targeted code to that tenant's platform Stripe customer.
+    let customerId: string | undefined;
+    if (tenantId) {
+      const tenant = await prisma.tenant.findUnique({
+        where: { id: tenantId },
+        select: { stripeCustomerId: true },
+      });
+      if (!tenant) throw notFound('Tenant not found.');
+      if (!tenant.stripeCustomerId) {
+        throw badRequest(
+          'That tenant has no platform Stripe customer yet — it needs a billing relationship before a code can be locked to it.'
+        );
+      }
+      customerId = tenant.stripeCustomerId;
+    }
+
+    return createPromotionCode({ ...rest, customerId });
+  });
+
+  app.post<{ Params: { id: string } }>(
+    '/internal/operator/billing/promotion-codes/:id/deactivate',
+    opts,
+    async (request) => {
+      authorizeOperator(request);
+      if (!request.params.id) throw badRequest('Missing promotion code id.');
+      return deactivatePromotionCode(request.params.id);
     }
   );
 

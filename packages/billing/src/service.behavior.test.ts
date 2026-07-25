@@ -18,6 +18,7 @@ const h = vi.hoisted(() => {
         create: ReturnType<typeof vi.fn>;
         del: ReturnType<typeof vi.fn>;
       };
+      checkout: { sessions: { create: ReturnType<typeof vi.fn> } };
     },
   };
   return {
@@ -52,7 +53,7 @@ vi.mock('@sparx/db', () => ({
     fn({ billingSubscriptionItem: h.txItems }),
 }));
 
-import { reconcileFromSubscription, syncModuleItems } from './service';
+import { createCheckoutSession, reconcileFromSubscription, syncModuleItems } from './service';
 
 type Subscription = Parameters<typeof reconcileFromSubscription>[0];
 
@@ -75,6 +76,13 @@ function freshStripeStub() {
       create: vi.fn().mockResolvedValue({ id: 'si_new' }),
       del: vi.fn().mockResolvedValue({}),
     },
+    checkout: {
+      sessions: {
+        create: vi
+          .fn()
+          .mockResolvedValue({ id: 'cs_1', url: 'https://checkout.stripe.test/pay/cs_1' }),
+      },
+    },
   };
 }
 
@@ -89,13 +97,14 @@ afterEach(() => {
 });
 
 describe('syncModuleItems', () => {
-  it('creates a subscription with one item per billable module (no transaction-fee line)', async () => {
+  it('ensures the customer but does NOT create a subscription during the trial (born at checkout)', async () => {
     process.env.STRIPE_PRICE_COMMERCE_MONTHLY = 'price_commerce_m';
     h.tenantFindUnique.mockResolvedValue({
       id: 't1',
-      stripeCustomerId: 'cus_abc',
+      stripeCustomerId: null,
       stripeSubscriptionId: null,
       billingInterval: 'monthly',
+      trialEndsAt: null,
     });
 
     const r = await syncModuleItems({
@@ -105,41 +114,19 @@ describe('syncModuleItems', () => {
     });
 
     expect(r.applied).toBe(true);
-    const call = h.stub.value!.subscriptions.create.mock.calls[0];
-    expect(call).toBeDefined();
-    const createArg = call![0] as { items: { price: string }[] };
-    // Exactly the module item — the sparx Pay 0.5% fee is collected at charge time
-    // (application_fee_amount), never as a metered subscription line (docs/94 §8).
-    expect(createArg.items.map((i) => i.price)).toEqual(['price_commerce_m']);
-  });
-
-  it('pauses (not cancels) at trial end, and pins Stripe to the signup trial clock', async () => {
-    process.env.STRIPE_PRICE_COMMERCE_MONTHLY = 'price_commerce_m';
-    const trialEndsAt = new Date(Date.now() + 12 * 24 * 60 * 60 * 1000); // 12 days out
-    h.tenantFindUnique.mockResolvedValue({
-      id: 't1',
-      stripeCustomerId: 'cus_abc',
-      stripeSubscriptionId: null,
-      billingInterval: 'monthly',
-      trialEndsAt,
+    expect(r.stripeCustomerId).toBe('cus_new');
+    // The subscription is created AT CHECKOUT (createCheckoutSession), never eagerly
+    // here — a card-less subscription can't carry a promotion code.
+    expect(h.stub.value!.subscriptions.create).not.toHaveBeenCalled();
+    // The customer is still lazily created + persisted so checkout can attach to it.
+    expect(h.stub.value!.customers.create).toHaveBeenCalled();
+    expect(h.tenantUpdate).toHaveBeenCalledWith({
+      where: { id: 't1' },
+      data: { stripeCustomerId: 'cus_new' },
     });
-
-    await syncModuleItems({ tenantId: 't1', email: 'a@b.co', enabledModules: ['commerce'] });
-
-    const createArg = h.stub.value!.subscriptions.create.mock.calls[0]![0] as {
-      trial_end?: number;
-      trial_period_days?: number;
-      trial_settings?: { end_behavior?: { missing_payment_method?: string } };
-    };
-    // Day-14 lapse pauses the sub (site rides grace), never cancels.
-    expect(createArg.trial_settings?.end_behavior?.missing_payment_method).toBe('pause');
-    // Aligned to the signup clock (absolute trial_end), NOT a fresh 14-day window —
-    // so picking modules mid-onboarding can't silently re-extend the trial.
-    expect(createArg.trial_end).toBe(Math.floor(trialEndsAt.getTime() / 1000));
-    expect(createArg.trial_period_days).toBeUndefined();
   });
 
-  it('falls back to a fresh trial window when the signup clock is missing/too close', async () => {
+  it('reuses an existing customer and still creates no subscription', async () => {
     process.env.STRIPE_PRICE_COMMERCE_MONTHLY = 'price_commerce_m';
     h.tenantFindUnique.mockResolvedValue({
       id: 't1',
@@ -149,14 +136,16 @@ describe('syncModuleItems', () => {
       trialEndsAt: null,
     });
 
-    await syncModuleItems({ tenantId: 't1', email: 'a@b.co', enabledModules: ['commerce'] });
+    const r = await syncModuleItems({
+      tenantId: 't1',
+      email: 'a@b.co',
+      enabledModules: ['commerce'],
+    });
 
-    const createArg = h.stub.value!.subscriptions.create.mock.calls[0]![0] as {
-      trial_end?: number;
-      trial_period_days?: number;
-    };
-    expect(createArg.trial_period_days).toBe(14);
-    expect(createArg.trial_end).toBeUndefined();
+    expect(r.applied).toBe(true);
+    expect(r.stripeCustomerId).toBe('cus_abc');
+    expect(h.stub.value!.customers.create).not.toHaveBeenCalled();
+    expect(h.stub.value!.subscriptions.create).not.toHaveBeenCalled();
   });
 
   it('cancels the subscription when the last billable module is disabled', async () => {
@@ -176,6 +165,88 @@ describe('syncModuleItems', () => {
       where: { id: 't1' },
       data: { stripeSubscriptionId: null },
     });
+  });
+});
+
+describe('createCheckoutSession', () => {
+  const tenant = (over: Record<string, unknown>) => ({
+    id: 't1',
+    email: 'a@b.co',
+    name: 'Acme',
+    stripeCustomerId: 'cus_abc',
+    stripeSubscriptionId: null,
+    billingInterval: 'monthly',
+    trialEndsAt: null,
+    settings: { modules: { commerce: { enabled: true } } },
+    ...over,
+  });
+
+  it('opens a subscription-mode session: a line item per module, promo box on, trial pinned', async () => {
+    process.env.STRIPE_PRICE_COMMERCE_MONTHLY = 'price_commerce_m';
+    const trialEndsAt = new Date(Date.now() + 12 * 24 * 60 * 60 * 1000); // 12 days out
+    h.tenantFindUnique.mockResolvedValue(tenant({ trialEndsAt }));
+
+    const r = await createCheckoutSession('t1', {
+      successUrl: 'https://s/ok',
+      cancelUrl: 'https://s/no',
+    });
+
+    expect(r).toEqual({ url: 'https://checkout.stripe.test/pay/cs_1' });
+    const arg = h.stub.value!.checkout.sessions.create.mock.calls[0]![0] as {
+      mode: string;
+      allow_promotion_codes: boolean;
+      line_items: { price: string }[];
+      subscription_data: {
+        trial_end?: number;
+        trial_settings?: { end_behavior?: { missing_payment_method?: string } };
+      };
+    };
+    expect(arg.mode).toBe('subscription');
+    // The whole point: Stripe renders the discount-code redemption box.
+    expect(arg.allow_promotion_codes).toBe(true);
+    expect(arg.line_items.map((i) => i.price)).toEqual(['price_commerce_m']);
+    // Pinned to the signup clock (never a fresh 14 days), pauses at day 14 no-card.
+    expect(arg.subscription_data.trial_end).toBe(Math.floor(trialEndsAt.getTime() / 1000));
+    expect(arg.subscription_data.trial_settings?.end_behavior?.missing_payment_method).toBe(
+      'pause'
+    );
+  });
+
+  it('charges immediately (no trial) once the signup clock has lapsed', async () => {
+    process.env.STRIPE_PRICE_COMMERCE_MONTHLY = 'price_commerce_m';
+    h.tenantFindUnique.mockResolvedValue(tenant({ trialEndsAt: new Date(Date.now() - 1000) }));
+
+    await createCheckoutSession('t1', { successUrl: 'https://s/ok', cancelUrl: 'https://s/no' });
+
+    const arg = h.stub.value!.checkout.sessions.create.mock.calls[0]![0] as {
+      subscription_data: { trial_end?: number; trial_settings?: unknown };
+    };
+    expect(arg.subscription_data.trial_end).toBeUndefined();
+    expect(arg.subscription_data.trial_settings).toBeUndefined();
+  });
+
+  it('refuses when a subscription already exists (manage it in the portal instead)', async () => {
+    h.tenantFindUnique.mockResolvedValue(tenant({ stripeSubscriptionId: 'sub_live' }));
+
+    const r = await createCheckoutSession('t1', {
+      successUrl: 'https://s/ok',
+      cancelUrl: 'https://s/no',
+    });
+
+    expect(r).toEqual({ url: null, reason: 'already_active' });
+    expect(h.stub.value!.checkout.sessions.create).not.toHaveBeenCalled();
+  });
+
+  it('refuses when no paid module is active (nothing to bill)', async () => {
+    h.tenantFindUnique.mockResolvedValue(tenant({ settings: { modules: {} } }));
+
+    const r = await createCheckoutSession('t1', {
+      successUrl: 'https://s/ok',
+      cancelUrl: 'https://s/no',
+    });
+
+    expect(r).toEqual({ url: null, reason: 'no_paid_modules' });
+    expect(h.stub.value!.checkout.sessions.create).not.toHaveBeenCalled();
   });
 });
 

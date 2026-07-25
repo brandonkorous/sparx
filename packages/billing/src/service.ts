@@ -21,7 +21,6 @@ import { getBillingStripe, isBillingConfigured } from './client';
 import { isPlatformTenant, resolveBillingPhase, type BillingPhaseView } from './gate';
 import {
   MODULE_MONTHLY_CENTS,
-  TRIAL_PERIOD_DAYS,
   isBillableModule,
   priceIdFor,
   type BillingInterval,
@@ -56,18 +55,38 @@ function tsToDate(seconds: number | null | undefined): Date | null {
 // subscription create; keep a safety margin above that.
 const MIN_TRIAL_END_MS = 49 * 60 * 60 * 1000;
 
-/** Stripe trial params that honour the SIGNUP-stamped trial clock. When a valid
- *  future `trialEndsAt` exists, pin Stripe to that exact instant (`trial_end`) so
- *  the trial is never re-extended by picking modules later. Otherwise fall back to
- *  a fresh `trial_period_days` window (a tenant subscribing well after signup, or a
- *  missing stamp). */
-function trialParams(
-  trialEndsAt: Date | null
-): { trial_end: number } | { trial_period_days: number } {
+/** The trial instant to pin a CHECKOUT-created subscription to. Honours the
+ *  SIGNUP-stamped clock (`tenants.trial_ends_at`) so converting mid-trial keeps the
+ *  original end date — the subscription trials until then, then charges. Returns
+ *  `undefined` (no trial → immediate first charge) once the clock has lapsed or
+ *  sits inside Stripe's 48h floor, so a late converter is billed now rather than
+ *  granted a fresh 14 days. */
+function checkoutTrialData(trialEndsAt: Date | null): { trial_end: number } | undefined {
   if (trialEndsAt && trialEndsAt.getTime() - Date.now() >= MIN_TRIAL_END_MS) {
     return { trial_end: Math.floor(trialEndsAt.getTime() / 1000) };
   }
-  return { trial_period_days: TRIAL_PERIOD_DAYS };
+  return undefined;
+}
+
+/** Ensure the tenant has a Stripe customer, lazily creating + persisting one on
+ *  first need. Shared by the module-item sync and the checkout-session opener so
+ *  the `sparx_tenant_id` metadata (which the webhook resolves tenants by) is
+ *  stamped identically no matter which path creates the customer. */
+async function ensureStripeCustomer(
+  stripe: Stripe,
+  opts: { tenantId: string; existingCustomerId: string | null; email: string; name?: string | null }
+): Promise<string> {
+  if (opts.existingCustomerId) return opts.existingCustomerId;
+  const customer = await stripe.customers.create({
+    email: opts.email,
+    ...(opts.name ? { name: opts.name } : {}),
+    metadata: { sparx_tenant_id: opts.tenantId },
+  });
+  await prisma.tenant.update({
+    where: { id: opts.tenantId },
+    data: { stripeCustomerId: customer.id },
+  });
+  return customer.id;
 }
 
 /** Reverse the price catalog: which module (if any) a Stripe price id bills for.
@@ -120,48 +139,24 @@ export async function syncModuleItems(input: SubscriptionSyncInput): Promise<Bil
   const desired = billablePriced(input.enabledModules, iv);
 
   // 1) Ensure the Stripe customer.
-  let customerId = tenant.stripeCustomerId;
-  if (!customerId) {
-    const customer = await stripe.customers.create({
-      email: input.email,
-      ...(input.name ? { name: input.name } : {}),
-      metadata: { sparx_tenant_id: input.tenantId },
-    });
-    customerId = customer.id;
-    await prisma.tenant.update({
-      where: { id: input.tenantId },
-      data: { stripeCustomerId: customerId },
-    });
-  }
+  const customerId = await ensureStripeCustomer(stripe, {
+    tenantId: input.tenantId,
+    existingCustomerId: tenant.stripeCustomerId,
+    email: input.email,
+    name: input.name,
+  });
 
-  // 2) Ensure the subscription. First time: create it (trialing) with the desired
-  //    items. Stripe requires ≥1 item — if nothing is priced yet, defer creation
-  //    until a priced module is enabled.
+  // 2) No subscription yet → the subscription is BORN AT CHECKOUT
+  //    (`createCheckoutSession`), never eagerly here. A card-less subscription
+  //    can't carry a promotion code, and the tenant redeems discount codes on
+  //    Stripe's hosted Checkout page — which only offers the redemption box when
+  //    the Checkout Session is the thing creating the subscription. During the
+  //    trial we therefore only ensure the customer + let the tenant's module flags
+  //    accumulate; gating is column-driven (`resolveBillingPhase` reads
+  //    `tenants.trial_ends_at`, never Stripe), so nothing needs the subscription to
+  //    exist yet. Once it exists (post-checkout), step 3 keeps its items in sync.
   if (!tenant.stripeSubscriptionId) {
-    if (desired.length === 0) return { applied: true, stripeCustomerId: customerId };
-    const items: Stripe.SubscriptionCreateParams.Item[] = desired.map((d) => ({
-      price: d.priceId,
-    }));
-    const sub = await stripe.subscriptions.create({
-      customer: customerId,
-      items,
-      // ONE trial clock. The trial starts at SIGNUP (@sparx/auth stamps
-      // tenants.trial_ends_at), so align Stripe to that instant rather than
-      // starting a fresh 14 days here — otherwise picking modules mid-onboarding
-      // would silently extend the trial by however long signup→module-select took.
-      // Stripe requires an absolute `trial_end` ≥ ~48h out; fall back to a fresh
-      // 14-day window only if the stamp is missing or too close to expiry.
-      ...trialParams(tenant.trialEndsAt),
-      // Day 14, no card → PAUSE (docs/17 §6): paid module features gate in the
-      // dashboard, but the public site rides out its 7-day grace window before
-      // suspending. NOT 'cancel' — cancelling would tear down the items + module
-      // flags immediately and skip grace entirely.
-      trial_settings: { end_behavior: { missing_payment_method: 'pause' } },
-      collection_method: 'charge_automatically',
-      metadata: { sparx_tenant_id: input.tenantId },
-    });
-    await persistSubscription(input.tenantId, sub);
-    return { applied: true, stripeCustomerId: customerId, stripeSubscriptionId: sub.id };
+    return { applied: true, stripeCustomerId: customerId };
   }
 
   // 3) Reconcile items against an existing subscription.
@@ -244,6 +239,97 @@ export async function createPortalSession(
     return_url: returnUrl,
   });
   return session.url;
+}
+
+/** The outcome of opening a checkout session — a URL, or a typed reason the caller
+ *  turns into a clear message. */
+export type CheckoutSessionResult =
+  | { url: string }
+  | { url: null; reason: 'unconfigured' | 'no_paid_modules' | 'already_active' };
+
+/**
+ * Open a Stripe Checkout Session that BIRTHS the tenant's platform subscription —
+ * the trial-conversion / first-card path. `mode: 'subscription'` with one line item
+ * per explicitly-enabled billable module, the trial pinned to the signup clock, and
+ * `allow_promotion_codes: true` so the tenant can type a discount (promotion) code
+ * on Stripe's hosted page. The resulting `customer.subscription.created` webhook
+ * reconciles status + items + module flags (see reconcileFromSubscription) — this
+ * function persists nothing itself.
+ *
+ * Returns a typed reason instead of a URL when billing is unconfigured, the tenant
+ * has no paid module to bill (nothing to subscribe to), or a subscription already
+ * exists (manage it in the Portal — a second checkout would duplicate it).
+ */
+export async function createCheckoutSession(
+  tenantId: string,
+  opts: { successUrl: string; cancelUrl: string }
+): Promise<CheckoutSessionResult> {
+  const stripe = getBillingStripe();
+  if (!stripe) return { url: null, reason: 'unconfigured' };
+
+  const tenant = await prisma.tenant.findUnique({
+    where: { id: tenantId },
+    select: {
+      id: true,
+      email: true,
+      name: true,
+      stripeCustomerId: true,
+      stripeSubscriptionId: true,
+      billingInterval: true,
+      trialEndsAt: true,
+      settings: true,
+    },
+  });
+  if (!tenant) return { url: null, reason: 'unconfigured' };
+
+  // A tenant with a live subscription manages payment in the Portal; a second
+  // checkout would create a duplicate subscription.
+  if (tenant.stripeSubscriptionId) return { url: null, reason: 'already_active' };
+
+  // Bill exactly the tenant's EXPLICIT billable modules (bundled-free capabilities
+  // have no flag, so never a line item) that also have a configured price id.
+  const states = deriveModuleStates(tenant.settings);
+  const explicit = (Object.keys(MODULE_MONTHLY_CENTS) as ModuleSlug[]).filter(
+    (m) => states[m].source === 'explicit'
+  );
+  const desired = billablePriced(explicit, interval(tenant.billingInterval));
+  if (desired.length === 0) return { url: null, reason: 'no_paid_modules' };
+
+  const customerId = await ensureStripeCustomer(stripe, {
+    tenantId,
+    existingCustomerId: tenant.stripeCustomerId,
+    email: tenant.email,
+    name: tenant.name,
+  });
+
+  const subscriptionData: Stripe.Checkout.SessionCreateParams.SubscriptionData = {
+    metadata: { sparx_tenant_id: tenantId },
+  };
+  const trial = checkoutTrialData(tenant.trialEndsAt);
+  if (trial) {
+    // Keep the ONE signup trial clock; day-14-no-card pauses (grace, not cancel).
+    subscriptionData.trial_end = trial.trial_end;
+    subscriptionData.trial_settings = { end_behavior: { missing_payment_method: 'pause' } };
+  }
+
+  const session = await stripe.checkout.sessions.create({
+    mode: 'subscription',
+    customer: customerId,
+    line_items: desired.map((d) => ({ price: d.priceId, quantity: 1 })),
+    // The discount-code box the tenant asked for: Stripe renders + validates it,
+    // redeeming a PROMOTION CODE (created off a coupon, @sparx/billing operator.ts)
+    // against its restrictions. No custom field or redemption logic on our side.
+    allow_promotion_codes: true,
+    // Collect the card now even while trialing — the whole point of this path is
+    // putting a payment method on file so the trial converts instead of pausing.
+    payment_method_collection: 'always',
+    subscription_data: subscriptionData,
+    success_url: opts.successUrl,
+    cancel_url: opts.cancelUrl,
+    metadata: { sparx_tenant_id: tenantId },
+  });
+
+  return session.url ? { url: session.url } : { url: null, reason: 'unconfigured' };
 }
 
 export interface BillingStateView {

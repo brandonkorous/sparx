@@ -373,6 +373,38 @@ export interface OperatorCouponInput {
   durationInMonths?: number;
 }
 
+/** A promotion code — the typeable string (`LAUNCH50`) a tenant redeems in the
+ *  Checkout discount box, layered on a coupon. `customerId` non-null ⇒ locked to
+ *  one tenant (tenant-targeted); null ⇒ any tenant (public). */
+export interface OperatorPromotionCode {
+  id: string;
+  code: string;
+  couponId: string;
+  couponName: string | null;
+  active: boolean;
+  customerId: string | null;
+  maxRedemptions: number | null;
+  timesRedeemed: number;
+  expiresAt: string | null;
+  firstTimeOnly: boolean;
+  minimumAmountCents: number | null;
+}
+
+export interface OperatorPromotionCodeInput {
+  /** The coupon this code redeems. */
+  couponId: string;
+  /** Customer-facing code; Stripe generates one if omitted. Letters + digits only. */
+  code?: string;
+  /** Lock the code to a single tenant (its Stripe customer is resolved server-side).
+   *  Omit for a public code any tenant can redeem. */
+  tenantId?: string;
+  maxRedemptions?: number;
+  /** ISO date the code stops working. */
+  expiresAt?: string;
+  firstTimeOnly?: boolean;
+  minimumAmountCents?: number;
+}
+
 export interface OperatorInvoiceLine {
   description: string;
   amountCents: number;

@@ -60,11 +60,21 @@ export function useBill() {
   });
 }
 
-/** Open Stripe's hosted portal — the only place the card + subscription are
- *  edited. Returns the single-use URL; the caller navigates the window to it. */
+/** Open Stripe's hosted portal — where the card + subscription are MANAGED once a
+ *  subscription exists. Returns the single-use URL; the caller navigates to it. */
 export function useBillingPortal() {
   return useMutation({
     mutationFn: (returnUrl: string) =>
       api.post<{ url: string }>('/v1/billing/portal', { returnUrl }),
+  });
+}
+
+/** Open a Stripe Checkout Session to SET UP billing — births the subscription and
+ *  shows the discount-code box. Used before a subscription exists (trial → paid);
+ *  managing an existing one goes through the portal. Returns the single-use URL. */
+export function useBillingCheckout() {
+  return useMutation({
+    mutationFn: (returnUrl: string) =>
+      api.post<{ url: string }>('/v1/billing/checkout', { returnUrl }),
   });
 }

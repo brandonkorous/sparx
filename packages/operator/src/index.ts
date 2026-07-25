@@ -53,6 +53,8 @@ export type {
   OperatorRefundInput,
   OperatorRefundResult,
   OperatorCouponInput,
+  OperatorPromotionCode,
+  OperatorPromotionCodeInput,
   OperatorInvoiceLine,
   OperatorInvoiceInput,
   OperatorInvoiceResult,

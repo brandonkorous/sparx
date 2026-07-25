@@ -73,6 +73,40 @@ export interface CreateCouponInput {
   durationInMonths?: number;
 }
 
+/** A customer-facing promotion code — the typeable string (`LAUNCH50`) a tenant
+ *  redeems in the Checkout discount box, layered on a coupon. `customerId` locks it
+ *  to one tenant's Stripe customer (tenant-targeted); null means any tenant (public). */
+export interface PlatformPromotionCode {
+  id: string;
+  code: string;
+  couponId: string;
+  couponName: string | null;
+  active: boolean;
+  customerId: string | null;
+  maxRedemptions: number | null;
+  timesRedeemed: number;
+  /** ISO expiry, or null for no expiry. */
+  expiresAt: string | null;
+  firstTimeOnly: boolean;
+  minimumAmountCents: number | null;
+}
+
+export interface CreatePromotionCodeInput {
+  /** The coupon this code redeems (created via createPlatformCoupon). */
+  couponId: string;
+  /** The customer-facing code; Stripe generates one if omitted. Case-insensitive. */
+  code?: string;
+  /** A tenant's Stripe customer id — lock the code to that one tenant. Omit = public. */
+  customerId?: string;
+  maxRedemptions?: number;
+  /** ISO date; the code stops working after this. */
+  expiresAt?: string;
+  /** Only redeemable by a customer with no prior successful payment/invoice. */
+  firstTimeOnly?: boolean;
+  minimumAmountCents?: number;
+  currency?: string;
+}
+
 export interface EnterpriseInvoiceLine {
   description: string;
   amountCents: number;
@@ -146,6 +180,20 @@ export async function listPlatformCoupons(limit = 100): Promise<PlatformCoupon[]
   return res.data.map(toCoupon);
 }
 
+/** Every platform promotion code (the typeable strings tenants redeem at checkout),
+ *  optionally filtered to one coupon. Expands the coupon so each row carries its
+ *  name. Empty when unconfigured. */
+export async function listPromotionCodes(couponId?: string): Promise<PlatformPromotionCode[]> {
+  const stripe = getBillingStripe();
+  if (!stripe) return [];
+  const res = await stripe.promotionCodes.list({
+    limit: 100,
+    expand: ['data.coupon'],
+    ...(couponId ? { coupon: couponId } : {}),
+  });
+  return res.data.map(toPromotionCode);
+}
+
 // ── Writes (throw when unconfigured) ─────────────────────────────────────────
 
 /** Refund a platform charge, fully or partially. */
@@ -176,6 +224,42 @@ export async function createPlatformCoupon(input: CreateCouponInput): Promise<Pl
 export async function deletePlatformCoupon(id: string): Promise<void> {
   const stripe = requireStripe();
   await stripe.coupons.del(id);
+}
+
+/** Mint a promotion code off an existing coupon — the string a tenant types in the
+ *  Checkout discount box. Pass `customerId` to lock it to one tenant, or omit for a
+ *  public code. Restrictions (expiry, redemption cap, first-time-only, minimum) are
+ *  enforced by Stripe at redemption time. */
+export async function createPromotionCode(
+  input: CreatePromotionCodeInput
+): Promise<PlatformPromotionCode> {
+  const stripe = requireStripe();
+  const restrictions: Stripe.PromotionCodeCreateParams.Restrictions = {};
+  if (input.firstTimeOnly) restrictions.first_time_transaction = true;
+  if (input.minimumAmountCents !== undefined) {
+    restrictions.minimum_amount = input.minimumAmountCents;
+    restrictions.minimum_amount_currency = input.currency ?? 'usd';
+  }
+  const created = await stripe.promotionCodes.create({
+    coupon: input.couponId,
+    ...(input.code ? { code: input.code } : {}),
+    ...(input.customerId ? { customer: input.customerId } : {}),
+    ...(input.maxRedemptions !== undefined ? { max_redemptions: input.maxRedemptions } : {}),
+    ...(input.expiresAt
+      ? { expires_at: Math.floor(new Date(input.expiresAt).getTime() / 1000) }
+      : {}),
+    ...(Object.keys(restrictions).length > 0 ? { restrictions } : {}),
+    expand: ['coupon'],
+  });
+  return toPromotionCode(created);
+}
+
+/** Deactivate a promotion code. Stripe promotion codes can't be deleted, only
+ *  turned off (`active: false`) — a deactivated code can't be reactivated. */
+export async function deactivatePromotionCode(id: string): Promise<PlatformPromotionCode> {
+  const stripe = requireStripe();
+  const updated = await stripe.promotionCodes.update(id, { active: false });
+  return toPromotionCode(updated);
 }
 
 /** Author (and optionally finalize) a manual invoice against a tenant's platform
@@ -220,6 +304,23 @@ function toCharge(c: Stripe.Charge): PlatformCharge {
       typeof c.payment_intent === 'string' ? c.payment_intent : (c.payment_intent?.id ?? null),
     receiptUrl: c.receipt_url ?? null,
     refunded: c.refunded,
+  };
+}
+
+function toPromotionCode(p: Stripe.PromotionCode): PlatformPromotionCode {
+  const coupon = p.coupon;
+  return {
+    id: p.id,
+    code: p.code,
+    couponId: typeof coupon === 'string' ? coupon : coupon.id,
+    couponName: typeof coupon === 'string' ? null : (coupon.name ?? null),
+    active: p.active,
+    customerId: typeof p.customer === 'string' ? p.customer : (p.customer?.id ?? null),
+    maxRedemptions: p.max_redemptions ?? null,
+    timesRedeemed: p.times_redeemed,
+    expiresAt: p.expires_at ? isoFromUnix(p.expires_at) : null,
+    firstTimeOnly: p.restrictions.first_time_transaction,
+    minimumAmountCents: p.restrictions.minimum_amount ?? null,
   };
 }
 

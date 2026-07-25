@@ -28,7 +28,7 @@ import { CreditCard, ExternalLink } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { useBill, useBillingPortal, type Bill } from './bill-data';
+import { useBill, useBillingPortal, useBillingCheckout, type Bill } from './bill-data';
 import { formatMoney, formatDate } from './format';
 
 // Plain-language module names + what each does — an owner pays for capabilities,
@@ -83,25 +83,54 @@ function renewalLine(bill: Bill): string | null {
 export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: bill, isPending, isError, isFetching, dataUpdatedAt, refetch } = useBill();
   const portal = useBillingPortal();
-  const [portalError, setPortalError] = useState<string | null>(null);
+  const checkout = useBillingCheckout();
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [returnStatus, setReturnStatus] = useState<'success' | 'cancelled' | null>(null);
 
   useEffect(() => {
     ctx.setTitle('Your sparx bill');
   }, [ctx]);
 
-  const openPortal = () => {
-    setPortalError(null);
+  // Stripe sends the tenant back here after Checkout with `?billing=success|cancelled`
+  // (the api-rest checkout route builds that return URL). Read it once, clear the
+  // marker so a refresh doesn't re-show it, and on success pull fresh bill state —
+  // the subscription may have been created by the webhook moments ago.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('billing');
+    if (status !== 'success' && status !== 'cancelled') return;
+    setReturnStatus(status);
+    params.delete('billing');
+    const qs = params.toString();
+    window.history.replaceState(
+      null,
+      '',
+      window.location.pathname + (qs ? `?${qs}` : '') + window.location.hash
+    );
+    if (status === 'success') void refetch();
+  }, [refetch]);
+
+  // Before a subscription exists (trial, no card) we SET UP billing through Stripe
+  // Checkout — that hosted page carries the card form AND the discount-code box.
+  // Once it exists, the same button MANAGES it through the Customer Portal. Both are
+  // single-use hosted URLs opened in a new tab.
+  const inSetup = bill ? !bill.billingActive : false;
+
+  const openBilling = () => {
+    setActionError(null);
     const returnUrl =
       typeof window !== 'undefined' ? window.location.href : 'https://workbench.sparx.works';
-    portal.mutate(returnUrl, {
+    const mutation = inSetup ? checkout : portal;
+    mutation.mutate(returnUrl, {
       onSuccess: ({ url }) => {
         if (typeof window !== 'undefined') window.open(url, '_blank', 'noopener,noreferrer');
       },
       onError: (error) => {
-        setPortalError(
+        setActionError(
           error instanceof ApiError
             ? error.message
-            : 'Could not open the billing portal. Please try again in a moment.'
+            : 'Could not open billing. Please try again in a moment.'
         );
       },
     });
@@ -149,6 +178,43 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
           </p>
         ) : (
           <div className="mx-auto flex w-full max-w-2xl flex-col gap-4">
+            {/* Confirmation after returning from Stripe Checkout. */}
+            {returnStatus === 'success' ? (
+              <Alert color="success" variant="soft">
+                <div className="flex items-start justify-between gap-3">
+                  <Text>
+                    Payment method saved — you’re all set. Any discount code you entered has been
+                    applied, and your bill below reflects your plan.
+                  </Text>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setReturnStatus(null)}
+                    aria-label="Dismiss"
+                  >
+                    Dismiss
+                  </Button>
+                </div>
+              </Alert>
+            ) : returnStatus === 'cancelled' ? (
+              <Alert color="info" variant="soft">
+                <div className="flex items-start justify-between gap-3">
+                  <Text>
+                    Checkout was cancelled — no changes were made. You can set up billing whenever
+                    you’re ready.
+                  </Text>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setReturnStatus(null)}
+                    aria-label="Dismiss"
+                  >
+                    Dismiss
+                  </Button>
+                </div>
+              </Alert>
+            ) : null}
+
             {/* The headline charge — the statement's total, up top. */}
             <Card className="p-4">
               <div className="flex flex-wrap items-start justify-between gap-3">
@@ -235,24 +301,32 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
               <Text className="mt-1">
                 {bill.card
                   ? `${bill.card.brand.replace(/\b\w/g, (ch) => ch.toUpperCase())} ending ${bill.card.last4} · expires ${String(bill.card.expMonth).padStart(2, '0')}/${String(bill.card.expYear).slice(-2)}`
-                  : 'No card on file yet. Add one in the billing portal to keep your plan active.'}
+                  : inSetup
+                    ? 'No card on file yet. Set up billing to add your card and keep your plan active when the free trial ends.'
+                    : 'No card on file yet. Add one to keep your plan active.'}
               </Text>
 
-              {portalError ? (
+              {actionError ? (
                 <Alert color="warning" variant="soft" className="mt-3">
-                  <Text>{portalError}</Text>
+                  <Text>{actionError}</Text>
                 </Alert>
               ) : null}
 
               <div className="mt-4">
-                <Button color="module" size="sm" loading={portal.isPending} onClick={openPortal}>
+                <Button
+                  color="module"
+                  size="sm"
+                  loading={portal.isPending || checkout.isPending}
+                  onClick={openBilling}
+                >
                   <ExternalLink className="size-4" aria-hidden />
-                  {bill.card ? 'Manage billing & card' : 'Add a card'}
+                  {inSetup ? 'Set up billing' : bill.card ? 'Manage billing & card' : 'Add a card'}
                 </Button>
               </div>
               <Text className="mt-2 text-sm">
-                Opens sparx’s secure billing portal in a new tab, where you can update your card,
-                change your plan, or download past invoices.
+                {inSetup
+                  ? 'Opens sparx’s secure payment page in a new tab to add your card. Have a discount code? You can enter it there.'
+                  : 'Opens sparx’s secure billing portal in a new tab, where you can update your card, change your plan, or download past invoices.'}
               </Text>
             </Card>
           </div>

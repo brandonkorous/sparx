@@ -24,6 +24,8 @@ import type {
   OperatorStripeEvent,
   OperatorCoupon,
   OperatorCouponInput,
+  OperatorPromotionCode,
+  OperatorPromotionCodeInput,
   OperatorRefundInput,
   OperatorRefundResult,
   OperatorInvoiceInput,
@@ -153,6 +155,23 @@ export interface OperatorApiClient {
     signal?: AbortSignal
   ): Promise<OperatorCoupon>;
   deleteCoupon(couponId: string, operatorId: string, signal?: AbortSignal): Promise<void>;
+  /** Promotion codes — the strings tenants redeem at checkout; optionally scoped to
+   *  one coupon. */
+  listPromotionCodes(
+    operatorId: string,
+    couponId?: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPromotionCode[]>;
+  createPromotionCode(
+    input: OperatorPromotionCodeInput,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPromotionCode>;
+  deactivatePromotionCode(
+    id: string,
+    operatorId: string,
+    signal?: AbortSignal
+  ): Promise<OperatorPromotionCode>;
   /** A tenant's platform-billing view (subscription snapshot + recent charges). */
   getTenantBilling(
     tenantId: string,
@@ -482,6 +501,25 @@ export function createOperatorApiClient(config: OperatorApiClientConfig): Operat
         operatorId,
         signal,
       }),
+    listPromotionCodes: (operatorId, couponId, signal) =>
+      request<OperatorPromotionCode[]>(
+        `/internal/operator/billing/promotion-codes${
+          couponId ? `?coupon=${encodeURIComponent(couponId)}` : ''
+        }`,
+        { operatorId, signal }
+      ),
+    createPromotionCode: (input, operatorId, signal) =>
+      request<OperatorPromotionCode>('/internal/operator/billing/promotion-codes', {
+        method: 'POST',
+        body: input,
+        operatorId,
+        signal,
+      }),
+    deactivatePromotionCode: (id, operatorId, signal) =>
+      request<OperatorPromotionCode>(
+        `/internal/operator/billing/promotion-codes/${encodeURIComponent(id)}/deactivate`,
+        { method: 'POST', operatorId, signal }
+      ),
     getTenantBilling: (tenantId, operatorId, signal) =>
       request<OperatorTenantBillingView>(
         `/internal/operator/tenants/${encodeURIComponent(tenantId)}/billing`,

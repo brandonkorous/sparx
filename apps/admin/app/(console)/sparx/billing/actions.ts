@@ -7,7 +7,12 @@
 import { revalidatePath } from 'next/cache';
 import { requireCapability } from '@sparx/operator-auth/next';
 import { logOperatorAction } from '@sparx/operator-auth';
-import { OperatorApiError, type OperatorCouponInput, type OperatorIdentity } from '@sparx/operator';
+import {
+  OperatorApiError,
+  type OperatorCouponInput,
+  type OperatorPromotionCodeInput,
+  type OperatorIdentity,
+} from '@sparx/operator';
 import { operatorApi } from '@/lib/operator-api';
 
 export type BillingActionResult = { ok: true } | { ok: false; error: string };
@@ -19,6 +24,7 @@ function errorMessage(err: unknown): string {
 async function audit(
   operator: OperatorIdentity,
   action: string,
+  targetType: string,
   targetId: string | null
 ): Promise<void> {
   try {
@@ -27,7 +33,7 @@ async function audit(
       operatorEmail: operator.email,
       capability: 'billing:act',
       action,
-      targetType: 'coupon',
+      targetType,
       targetId,
     });
   } catch {
@@ -39,7 +45,7 @@ export async function createCouponAction(input: OperatorCouponInput): Promise<Bi
   const operator = await requireCapability('billing:act');
   try {
     const coupon = await operatorApi().createCoupon(input, operator.id);
-    await audit(operator, 'billing.coupon.create', coupon.id);
+    await audit(operator, 'billing.coupon.create', 'coupon', coupon.id);
     revalidatePath('/sparx/billing');
     return { ok: true };
   } catch (err) {
@@ -51,10 +57,53 @@ export async function deleteCouponAction(couponId: string): Promise<BillingActio
   const operator = await requireCapability('billing:act');
   try {
     await operatorApi().deleteCoupon(couponId, operator.id);
-    await audit(operator, 'billing.coupon.delete', couponId);
+    await audit(operator, 'billing.coupon.delete', 'coupon', couponId);
     revalidatePath('/sparx/billing');
     return { ok: true };
   } catch (err) {
     return { ok: false, error: errorMessage(err) };
+  }
+}
+
+export async function createPromotionCodeAction(
+  input: OperatorPromotionCodeInput
+): Promise<BillingActionResult> {
+  const operator = await requireCapability('billing:act');
+  try {
+    const code = await operatorApi().createPromotionCode(input, operator.id);
+    await audit(operator, 'billing.promotion_code.create', 'promotion_code', code.id);
+    revalidatePath('/sparx/billing');
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: errorMessage(err) };
+  }
+}
+
+export async function deactivatePromotionCodeAction(id: string): Promise<BillingActionResult> {
+  const operator = await requireCapability('billing:act');
+  try {
+    await operatorApi().deactivatePromotionCode(id, operator.id);
+    await audit(operator, 'billing.promotion_code.deactivate', 'promotion_code', id);
+    revalidatePath('/sparx/billing');
+    return { ok: true };
+  } catch (err) {
+    return { ok: false, error: errorMessage(err) };
+  }
+}
+
+/** Typeahead search for the tenant-targeted promotion-code picker. Read-only; gated
+ *  on billing:act (the same capability the create form requires). Returns a short
+ *  list of {id, name, slug}; empty on a too-short query or any error. */
+export async function searchTenantsAction(
+  q: string
+): Promise<{ id: string; name: string; slug: string }[]> {
+  const operator = await requireCapability('billing:act');
+  const query = q.trim();
+  if (query.length < 2) return [];
+  try {
+    const res = await operatorApi().listTenants({ q: query, limit: 8 }, operator.id);
+    return res.tenants.map((t) => ({ id: t.id, name: t.name, slug: t.slug }));
+  } catch {
+    return [];
   }
 }
