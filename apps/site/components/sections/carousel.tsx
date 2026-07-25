@@ -141,7 +141,7 @@ export function CarouselSection({ config, ctx }: { config: CarouselConfig; ctx: 
         onBlurCapture={() => (pausedRef.current = false)}
       >
         <div
-          className="flex snap-x snap-mandatory overflow-x-auto scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory [scrollbar-width:none] overflow-x-auto scroll-smooth [&::-webkit-scrollbar]:hidden"
           ref={trackRef}
         >
           {items.map((s, i) => {
