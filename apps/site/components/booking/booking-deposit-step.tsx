@@ -125,9 +125,9 @@ function DepositInner({
         : `${serviceName} ${INTRO.prepay} — ${money(amountCents)}.`;
 
   return (
-    <form onSubmit={confirm} className="st-card st-booking__deposit" style={{ padding: '1rem' }}>
-      <h2 className="st-h3">Secure your booking</h2>
-      <p className="st-muted">{lead}</p>
+    <form onSubmit={confirm} className="card border-base-300 grid gap-3 border p-4">
+      <h2 className="text-base-content text-2xl font-semibold">Secure your booking</h2>
+      <p className="text-base-content">{lead}</p>
       <PaymentElement options={{ layout: 'tabs' }} />
       {error ? <Alert color="danger">{error}</Alert> : null}
       <Button type="submit" color="primary" disabled={!stripe || busy}>

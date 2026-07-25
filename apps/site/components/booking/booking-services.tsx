@@ -34,9 +34,11 @@ export async function BookingServices() {
 
   return (
     <>
-      <header className="st-booking__header">
-        <h1 className="st-h1">Book with us</h1>
-        <p className="st-muted">Choose a service to see open times and reserve your spot.</p>
+      <header className="mb-7 grid gap-1.5">
+        <h1 className="text-base-content text-4xl font-semibold tracking-tight">Book with us</h1>
+        <p className="text-base-content">
+          Choose a service to see open times and reserve your spot.
+        </p>
       </header>
 
       {services.length === 0 ? (
@@ -46,13 +48,16 @@ export async function BookingServices() {
           description="Once services are open for online booking, they'll appear here."
         />
       ) : (
-        <ul className="st-booking__service-list">
+        <ul className="m-0 grid list-none grid-cols-[repeat(auto-fill,minmax(min(100%,18rem),1fr))] gap-4 p-0">
           {services.map((s) => (
             <li key={s.id}>
-              <Link href={`/book/${s.id}`} className="st-card st-booking__service-card">
-                <span className="st-booking__service-name st-h3">{s.name}</span>
-                {s.description ? <span className="st-muted">{s.description}</span> : null}
-                <span className="st-booking__service-meta">
+              <Link
+                href={`/book/${s.id}`}
+                className="card border-base-300 hover:border-primary flex h-full flex-col gap-1.5 border p-5 no-underline transition-colors"
+              >
+                <span className="text-base-content text-2xl font-semibold">{s.name}</span>
+                {s.description ? <span className="text-base-content">{s.description}</span> : null}
+                <span className="text-base-content flex gap-4 text-sm font-medium">
                   <span>{duration(s.durationMinutes)}</span>
                   {s.priceCents > 0 ? <span>{money(s.priceCents, s.currency)}</span> : null}
                 </span>

@@ -77,9 +77,11 @@ export function ClassBookingWidget({
 
   if (result) {
     return (
-      <div className="st-card st-booking__confirm" role="status">
-        <h2 className="st-h3">{result.waitlisted ? "You're on the waitlist" : "You're in"}</h2>
-        <p className="st-muted">
+      <div className="card border-base-300 grid gap-2 border p-8 text-center" role="status">
+        <h2 className="text-base-content text-2xl font-semibold">
+          {result.waitlisted ? "You're on the waitlist" : "You're in"}
+        </h2>
+        <p className="text-base-content">
           {result.waitlisted
             ? `This session is full — we'll let you know at ${email} if a spot opens.`
             : `Your spot in ${service.name} is confirmed. A confirmation is on its way to ${email}.`}
@@ -89,25 +91,28 @@ export function ClassBookingWidget({
   }
 
   return (
-    <form className="st-booking" onSubmit={submit}>
-      <div className="st-booking__slots">
+    <form className="grid gap-5" onSubmit={submit}>
+      <div className="grid gap-2">
         <Label>Upcoming sessions</Label>
         {sessions === null ? (
-          <p className="st-muted">Loading sessions…</p>
+          <p className="text-base-content">Loading sessions…</p>
         ) : sessions.length === 0 ? (
-          <p className="st-muted">No upcoming sessions scheduled. Check back soon.</p>
+          <p className="text-base-content">No upcoming sessions scheduled. Check back soon.</p>
         ) : (
-          <div className="st-booking__session-grid">
+          <div className="grid gap-2">
             {sessions.map((s) => (
               <button
                 key={s.bookingId}
                 type="button"
-                className={cn('st-booking__session', selected === s.bookingId && 'is-selected')}
+                className={cn(
+                  'rounded-field border-base-300 bg-base-100 text-base-content hover:border-primary flex items-center justify-between gap-4 border px-3.5 py-2.5 text-left transition-colors',
+                  selected === s.bookingId && 'border-primary ring-primary ring-1 ring-inset'
+                )}
                 aria-pressed={selected === s.bookingId}
                 onClick={() => setSelected(s.bookingId)}
               >
-                <span className="st-booking__session-when">{formatSession(s.startAt)}</span>
-                <span className="st-booking__session-seats st-muted">
+                <span className="font-semibold">{formatSession(s.startAt)}</span>
+                <span className="text-base-content text-sm">
                   {s.remaining > 0
                     ? `${s.remaining} ${s.remaining === 1 ? 'seat' : 'seats'} left`
                     : 'Full — join the waitlist'}
@@ -118,7 +123,7 @@ export function ClassBookingWidget({
         )}
       </div>
 
-      <div className="st-booking__row">
+      <div className="grid grid-cols-1 gap-4 min-[540px]:grid-cols-2">
         <div>
           <Label htmlFor="cls-name">Name</Label>
           <Input id="cls-name" value={name} onChange={(e) => setName(e.target.value)} required />

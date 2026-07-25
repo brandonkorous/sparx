@@ -184,9 +184,9 @@ export function BookingWidget({
 
   if (waitlistJoined) {
     return (
-      <div className="st-card st-booking__confirm" role="status">
-        <h2 className="st-h3">You&rsquo;re on the list</h2>
-        <p className="st-muted">
+      <div className="card border-base-300 grid gap-2 border p-8 text-center" role="status">
+        <h2 className="text-base-content text-2xl font-semibold">You&rsquo;re on the list</h2>
+        <p className="text-base-content">
           We&rsquo;ll email {email} as soon as a spot opens for {service.name} in the coming weeks.
         </p>
       </div>
@@ -213,11 +213,11 @@ export function BookingWidget({
 
   if (confirmation) {
     return (
-      <div className="st-card st-booking__confirm" role="status">
-        <h2 className="st-h3">
+      <div className="card border-base-300 grid gap-2 border p-8 text-center" role="status">
+        <h2 className="text-base-content text-2xl font-semibold">
           {confirmation.requiresApproval ? 'Request received' : "You're booked"}
         </h2>
-        <p className="st-muted">
+        <p className="text-base-content">
           {confirmation.requiresApproval
             ? `We've received your request for ${confirmation.serviceName} on ${formatDateTime(confirmation.startAt)}. You'll get a confirmation once it's approved.`
             : `${confirmation.serviceName} is confirmed for ${formatDateTime(confirmation.startAt)}. A confirmation is on its way to ${email}.`}
@@ -228,14 +228,17 @@ export function BookingWidget({
   }
 
   return (
-    <form className="st-booking" onSubmit={submit}>
+    <form className="grid gap-5" onSubmit={submit}>
       {isCustomerChoice && providers && providers.length > 0 ? (
-        <div className="st-booking__slots">
+        <div className="grid gap-2">
           <Label>Choose your {service.providerLabel}</Label>
-          <div className="st-booking__slot-grid">
+          <div className="flex flex-wrap gap-2">
             <button
               type="button"
-              className={cn('st-booking__slot', chosenResourceId === null && 'is-selected')}
+              className={cn(
+                'rounded-field border-base-300 bg-base-100 text-base-content hover:border-primary border px-3.5 py-2 text-sm transition-colors',
+                chosenResourceId === null && 'border-primary bg-primary text-primary-content'
+              )}
               aria-pressed={chosenResourceId === null}
               onClick={() => setChosenResourceId(null)}
             >
@@ -245,7 +248,10 @@ export function BookingWidget({
               <button
                 key={p.id}
                 type="button"
-                className={cn('st-booking__slot', chosenResourceId === p.id && 'is-selected')}
+                className={cn(
+                  'rounded-field border-base-300 bg-base-100 text-base-content hover:border-primary border px-3.5 py-2 text-sm transition-colors',
+                  chosenResourceId === p.id && 'border-primary bg-primary text-primary-content'
+                )}
                 aria-pressed={chosenResourceId === p.id}
                 onClick={() => setChosenResourceId(p.id)}
               >
@@ -256,7 +262,7 @@ export function BookingWidget({
         </div>
       ) : null}
 
-      <div className="st-booking__row">
+      <div className="grid grid-cols-1 gap-4 min-[540px]:grid-cols-2">
         <div>
           <Label htmlFor="book-date">Date</Label>
           <Input
@@ -281,13 +287,13 @@ export function BookingWidget({
         ) : null}
       </div>
 
-      <div className="st-booking__slots">
+      <div className="grid gap-2">
         <Label>Available times</Label>
         {loadingSlots ? (
-          <p className="st-muted">Checking availability…</p>
+          <p className="text-base-content">Checking availability…</p>
         ) : slots?.length === 0 ? (
-          <div className="st-booking__waitlist">
-            <p className="st-muted">
+          <div className="grid justify-items-start gap-2">
+            <p className="text-base-content">
               No open times that day — try another date, or join the waitlist and we&rsquo;ll let
               you know the moment a spot opens.
             </p>
@@ -302,12 +308,15 @@ export function BookingWidget({
             </Button>
           </div>
         ) : (
-          <div className="st-booking__slot-grid">
+          <div className="flex flex-wrap gap-2">
             {(slots ?? []).map((slot) => (
               <button
                 key={slot.startAt}
                 type="button"
-                className={cn('st-booking__slot', selected === slot.startAt && 'is-selected')}
+                className={cn(
+                  'rounded-field border-base-300 bg-base-100 text-base-content hover:border-primary border px-3.5 py-2 text-sm transition-colors',
+                  selected === slot.startAt && 'border-primary bg-primary text-primary-content'
+                )}
                 aria-pressed={selected === slot.startAt}
                 onClick={() => setSelected(slot.startAt)}
               >
@@ -318,7 +327,7 @@ export function BookingWidget({
         )}
       </div>
 
-      <div className="st-booking__row">
+      <div className="grid grid-cols-1 gap-4 min-[540px]:grid-cols-2">
         <div>
           <Label htmlFor="book-name">Name</Label>
           <Input id="book-name" value={name} onChange={(e) => setName(e.target.value)} required />

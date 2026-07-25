@@ -38,29 +38,29 @@ export async function BookingServiceDetail({ serviceId }: { serviceId: string })
 
   if (!service || !tenantSlug) {
     return (
-      <div className="st-booking__detail">
-        <Link href="/book" className="st-link st-booking__back">
+      <div className="grid max-w-[40rem] gap-6">
+        <Link href="/book" className="link link-primary text-sm">
           ← All services
         </Link>
-        <p className="st-muted">This service isn’t available for booking right now.</p>
+        <p className="text-base-content">This service isn’t available for booking right now.</p>
       </div>
     );
   }
 
   return (
-    <div className="st-booking__detail">
-      <Link href="/book" className="st-link st-booking__back">
+    <div className="grid max-w-[40rem] gap-6">
+      <Link href="/book" className="link link-primary text-sm">
         ← All services
       </Link>
-      <header className="st-booking__header">
-        <h1 className="st-h1">{service.name}</h1>
-        <p className="st-booking__service-meta st-muted">
+      <header className="grid gap-1.5">
+        <h1 className="text-base-content text-4xl font-semibold tracking-tight">{service.name}</h1>
+        <p className="text-base-content flex gap-4 text-sm font-medium">
           <span>{duration(service.durationMinutes)}</span>
           {service.priceCents > 0 ? (
             <span>{money(service.priceCents, service.currency)}</span>
           ) : null}
         </p>
-        {service.description ? <p className="st-muted">{service.description}</p> : null}
+        {service.description ? <p className="text-base-content">{service.description}</p> : null}
       </header>
 
       {service.bookingType === 'class' ? (
