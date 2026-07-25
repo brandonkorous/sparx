@@ -175,10 +175,10 @@ export function ProductDetail({
   }
 
   return (
-    <div className="st-pdp">
+    <div className="grid grid-cols-1 items-start gap-[clamp(1.5rem,4vw,4rem)] py-[clamp(1.5rem,4vw,3rem)] min-[901px]:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]">
       {/* Gallery */}
-      <div className="st-gallery">
-        <div className="st-gallery__main">
+      <div className="flex flex-col gap-3">
+        <div className="rounded-box bg-base-200 relative aspect-square overflow-hidden">
           {activeImage && mediaUrl(activeImage.mediaAssetId, tenantSlug) ? (
             <Image
               src={mediaUrl(activeImage.mediaAssetId, tenantSlug)!}
@@ -189,18 +189,21 @@ export function ProductDetail({
               style={{ objectFit: 'cover' }}
             />
           ) : (
-            <div className="st-card__media--empty" style={{ height: '100%' }} aria-hidden="true">
-              <span style={{ fontSize: '3rem' }}>◳</span>
+            <div
+              className="bg-base-200 text-base-content/40 grid h-full place-items-center text-5xl"
+              aria-hidden="true"
+            >
+              ◳
             </div>
           )}
         </div>
         {galleryImages.length > 1 ? (
-          <div className="st-gallery__thumbs">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(72px,1fr))] gap-2.5">
             {galleryImages.map((img) => (
               <button
                 key={img.id}
                 type="button"
-                className="st-thumb"
+                className="rounded-field bg-base-200 aria-[current=true]:border-primary relative aspect-square cursor-pointer overflow-hidden border-2 border-transparent p-0"
                 aria-current={img.id === activeImage?.id}
                 aria-label={img.alt ?? 'Product image'}
                 onClick={() => setActiveImageId(img.id)}
@@ -221,17 +224,21 @@ export function ProductDetail({
       </div>
 
       {/* Info */}
-      <div className="st-pdp__info">
-        {product.vendor ? <span className="st-card__vendor">{product.vendor}</span> : null}
-        <h1 className="st-h1" style={{ fontSize: 'clamp(1.6rem, 3vw, 2.25rem)' }}>
+      <div className="flex flex-col gap-5 min-[901px]:sticky min-[901px]:top-[92px]">
+        {product.vendor ? (
+          <span className="text-base-content text-xs tracking-wider uppercase">
+            {product.vendor}
+          </span>
+        ) : null}
+        <h1 className="text-base-content text-[clamp(1.6rem,3vw,2.25rem)] font-semibold tracking-tight">
           {product.title}
         </h1>
 
-        <div className="st-pdp__price">
+        <div className="text-base-content text-[1.6rem] font-semibold tracking-tight">
           {yourPriceCents != null ? (
             <>
               Your price: {formatMoney(yourPriceCents, currency, locale)}
-              <span className="st-card__compare" style={{ fontSize: '1rem' }}>
+              <span className="text-base-content ml-1.5 text-base font-normal line-through">
                 {formatMoney(priceCents, currency, locale)}
               </span>
             </>
@@ -241,7 +248,7 @@ export function ProductDetail({
                 ? formatMoney(priceCents, currency, locale)
                 : formatPriceRange(product.priceMinCents, product.priceMaxCents, currency, locale)}
               {onSale ? (
-                <span className="st-card__compare" style={{ fontSize: '1rem' }}>
+                <span className="text-base-content ml-1.5 text-base font-normal line-through">
                   {formatMoney(compareAt, currency, locale)}
                 </span>
               ) : null}
@@ -255,21 +262,21 @@ export function ProductDetail({
             per-option chips below render nothing (no options), so this is the
             buyer's only way to reach the other variants. */}
         {optionless ? (
-          <div className="st-option">
-            <span className="st-option__label">
+          <div className="flex flex-col gap-2.5">
+            <span className="text-base-content text-sm font-semibold">
               Variant
               {resolvedVariant ? (
-                <span className="st-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
+                <span className="text-base-content ml-1.5 font-normal">
                   {resolvedVariant.title ?? resolvedVariant.sku}
                 </span>
               ) : null}
             </span>
-            <div className="st-option__values">
+            <div className="flex flex-wrap gap-2">
               {product.variants.map((v) => (
                 <button
                   key={v.id}
                   type="button"
-                  className="st-chip"
+                  className="rounded-selector border-base-300 bg-base-100 text-base-content hover:border-base-content aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary min-h-8 cursor-pointer border px-[0.95rem] py-[0.55rem] text-sm transition-colors disabled:cursor-not-allowed disabled:line-through disabled:opacity-40"
                   aria-pressed={selectedVariantId === v.id}
                   disabled={!v.inStock}
                   onClick={() => selectVariant(v.id)}
@@ -285,16 +292,16 @@ export function ProductDetail({
         {product.options.map((opt) => {
           const isSwatch = opt.displayType === 'swatch' || opt.values.some((v) => v.swatchHex);
           return (
-            <div key={opt.id} className="st-option">
-              <span className="st-option__label">
+            <div key={opt.id} className="flex flex-col gap-2.5">
+              <span className="text-base-content text-sm font-semibold">
                 {opt.name}
                 {selected[opt.id] ? (
-                  <span className="st-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
+                  <span className="text-base-content ml-1.5 font-normal">
                     {opt.values.find((v) => v.id === selected[opt.id])?.value}
                   </span>
                 ) : null}
               </span>
-              <div className="st-option__values">
+              <div className="flex flex-wrap gap-2">
                 {opt.values.map((val) => {
                   const isSelected = selected[opt.id] === val.id;
                   const disabled = !valueAvailable[val.id];
@@ -302,7 +309,7 @@ export function ProductDetail({
                     <button
                       key={val.id}
                       type="button"
-                      className="st-swatch"
+                      className="border-base-300 aria-pressed:border-primary aria-pressed:ring-primary aria-pressed:ring-offset-base-100 relative h-[38px] w-[38px] cursor-pointer rounded-full border-2 p-0 disabled:cursor-not-allowed disabled:opacity-45 aria-pressed:ring-2 aria-pressed:ring-offset-2"
                       style={{ background: val.swatchHex }}
                       aria-pressed={isSelected}
                       aria-label={val.value}
@@ -313,7 +320,7 @@ export function ProductDetail({
                     <button
                       key={val.id}
                       type="button"
-                      className="st-chip"
+                      className="rounded-selector border-base-300 bg-base-100 text-base-content hover:border-base-content aria-pressed:border-primary aria-pressed:bg-primary/10 aria-pressed:text-primary min-h-8 cursor-pointer border px-[0.95rem] py-[0.55rem] text-sm transition-colors disabled:cursor-not-allowed disabled:line-through disabled:opacity-40"
                       aria-pressed={isSelected}
                       disabled={disabled}
                       onClick={() => selectValue(opt.id, val.id)}
@@ -328,11 +335,12 @@ export function ProductDetail({
         })}
 
         {/* Quantity + add to cart */}
-        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div className="st-qty">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="rounded-field border-base-300 inline-flex items-center overflow-hidden border">
             <button
               type="button"
               aria-label="Decrease quantity"
+              className="bg-base-100 text-base-content hover:bg-base-200 h-11 w-10 cursor-pointer border-0 text-lg transition-colors"
               onClick={() => setQty((q) => Math.max(1, q - 1))}
             >
               −
@@ -342,11 +350,13 @@ export function ProductDetail({
               min={1}
               value={qty}
               aria-label="Quantity"
+              className="border-base-300 bg-base-100 text-base-content h-11 w-11 [appearance:textfield] border-x text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
               onChange={(e) => setQty(Math.max(1, Number(e.target.value) || 1))}
             />
             <button
               type="button"
               aria-label="Increase quantity"
+              className="bg-base-100 text-base-content hover:bg-base-200 h-11 w-10 cursor-pointer border-0 text-lg transition-colors"
               onClick={() => setQty((q) => q + 1)}
             >
               +
@@ -356,7 +366,7 @@ export function ProductDetail({
             type="button"
             color="primary"
             size="lg"
-            style={{ flex: 1, minWidth: '200px' }}
+            className="min-w-[200px] flex-1"
             disabled={!resolvedVariant || !inStock || adding}
             onClick={handleAdd}
           >
@@ -374,15 +384,13 @@ export function ProductDetail({
         </div>
 
         {addError ? (
-          <p className="st-buybox__error" role="alert">
+          <p className="text-danger m-0 text-[0.95rem] font-medium" role="alert">
             {addError}
           </p>
         ) : null}
 
         {resolvedVariant?.sku ? (
-          <span className="st-muted" style={{ fontSize: '0.82rem' }}>
-            SKU: {resolvedVariant.sku}
-          </span>
+          <span className="text-base-content text-sm">SKU: {resolvedVariant.sku}</span>
         ) : null}
       </div>
     </div>
@@ -400,23 +408,23 @@ function StockLine({
 }) {
   if (!inStock) {
     return (
-      <span className="st-stock st-stock--out">
-        <span className="st-stock__dot" />
+      <span className="text-base-content inline-flex items-center gap-1.5 text-sm font-medium">
+        <span className="bg-base-content/40 h-2 w-2 rounded-full" />
         Out of stock
       </span>
     );
   }
   if (lowStock && available != null) {
     return (
-      <span className="st-stock st-stock--low">
-        <span className="st-stock__dot" />
+      <span className="text-base-content inline-flex items-center gap-1.5 text-sm font-medium">
+        <span className="bg-warning h-2 w-2 rounded-full" />
         Only {available} left
       </span>
     );
   }
   return (
-    <span className="st-stock">
-      <span className="st-stock__dot" />
+    <span className="text-base-content inline-flex items-center gap-1.5 text-sm font-medium">
+      <span className="bg-success h-2 w-2 rounded-full" />
       In stock
     </span>
   );

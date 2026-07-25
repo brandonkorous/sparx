@@ -28,7 +28,7 @@ export function ProductGrid({ products, tenantSlug, currency, locale, empty }: P
     );
   }
   return (
-    <div className="st-grid st-grid--auto">
+    <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
       {products.map((product) => (
         <ProductCard
           key={product.id}

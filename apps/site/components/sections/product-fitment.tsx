@@ -16,8 +16,8 @@ export function ProductFitmentSection({
   if (!product || product.fitments.length === 0) return null;
   const domainsBySlug = ctx.productExtras?.fitmentDomainsBySlug ?? {};
   return (
-    <section className="st-section">
-      <h2 className="st-h2" style={{ marginBottom: '1rem' }}>
+    <section className="py-16">
+      <h2 className="text-base-content mb-4 text-3xl font-semibold tracking-tight">
         {config.heading}
       </h2>
       <FitmentTable fitments={product.fitments} domainsBySlug={domainsBySlug} />

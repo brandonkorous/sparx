@@ -28,10 +28,15 @@ export function QuantityStepper({
 
   return (
     <div
-      className="st-qty"
+      className="rounded-field border-base-300 inline-flex items-center overflow-hidden border"
       style={small ? { transform: 'scale(0.9)', transformOrigin: 'left' } : undefined}
     >
-      <button type="button" aria-label="Decrease quantity" onClick={dec}>
+      <button
+        type="button"
+        aria-label="Decrease quantity"
+        className="bg-base-100 text-base-content hover:bg-base-200 h-11 w-10 cursor-pointer border-0 text-lg transition-colors"
+        onClick={dec}
+      >
         −
       </button>
       <input
@@ -40,12 +45,18 @@ export function QuantityStepper({
         max={max}
         value={value}
         aria-label="Quantity"
+        className="border-base-300 bg-base-100 text-base-content h-11 w-11 [appearance:textfield] border-x text-center [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
         onChange={(e) => {
           const n = Number(e.target.value);
           if (Number.isFinite(n) && n >= 1) onChange(Math.min(max, Math.floor(n)));
         }}
       />
-      <button type="button" aria-label="Increase quantity" onClick={inc}>
+      <button
+        type="button"
+        aria-label="Increase quantity"
+        className="bg-base-100 text-base-content hover:bg-base-200 h-11 w-10 cursor-pointer border-0 text-lg transition-colors"
+        onClick={inc}
+      >
         +
       </button>
     </div>

@@ -15,13 +15,11 @@ export function ProductDescriptionSection({
   if (!product) return null;
   if (!product.description && config.hideWhenEmpty) return null;
   return (
-    <section className="st-section st-container--prose" style={{ paddingInline: 0 }}>
-      <h2 className="st-h2" style={{ marginBottom: '1rem' }}>
+    <section className="mx-auto w-full max-w-[68ch] py-16">
+      <h2 className="text-base-content mb-4 text-3xl font-semibold tracking-tight">
         {config.heading}
       </h2>
-      <div className="sparx-content" style={{ whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>
-        {product.description}
-      </div>
+      <div className="sparx-content leading-relaxed whitespace-pre-wrap">{product.description}</div>
     </section>
   );
 }
