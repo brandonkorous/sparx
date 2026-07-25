@@ -35,7 +35,7 @@ export default async function CategoryIndexPage() {
   });
 
   return (
-    <div className="st-container">
+    <div className="mx-auto w-full max-w-6xl px-6">
       <Breadcrumbs items={[{ label: 'Home', href: '/' }, { label: 'Categories' }]} />
       <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
     </div>

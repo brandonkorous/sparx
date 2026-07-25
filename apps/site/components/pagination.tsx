@@ -63,7 +63,7 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
         const gap = i > 0 && p - window[i - 1]! > 1;
         return (
           <span key={p} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
-            {gap ? <span className="st-muted">…</span> : null}
+            {gap ? <span className="text-base-content">…</span> : null}
             {p === page ? (
               // The current page is not a link. A plain <Button> (no `render`)
               // keeps this a Server Component — see ButtonLink for why passing an

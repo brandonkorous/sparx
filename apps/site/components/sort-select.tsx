@@ -24,9 +24,7 @@ export function SortSelect({ value }: { value: string }) {
 
   return (
     <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-      <span className="st-muted" style={{ fontSize: '0.85rem' }}>
-        Sort
-      </span>
+      <span className="text-base-content text-sm">Sort</span>
       <NativeSelect
         value={value}
         onChange={(e) => {

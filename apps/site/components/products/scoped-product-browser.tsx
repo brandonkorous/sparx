@@ -186,11 +186,11 @@ export async function ScopedProductBrowser({
     <>
       {heading ? (
         <header style={{ marginBottom: '0.5rem' }}>
-          <h1 className="st-h1">{heading}</h1>
+          <h1 className="text-base-content text-4xl font-semibold tracking-tight">{heading}</h1>
         </header>
       ) : null}
 
-      <div className="st-plp">
+      <div className="grid grid-cols-[248px_minmax(0,1fr)] items-start gap-[clamp(1.5rem,3vw,3rem)] py-[clamp(1.5rem,4vw,3rem)] max-[900px]:grid-cols-1">
         <aside>
           <BrowseFacets
             action={basePath}
@@ -203,8 +203,8 @@ export async function ScopedProductBrowser({
         </aside>
 
         <div>
-          <div className="st-toolbar">
-            <span className="st-toolbar__count">
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+            <span className="text-base-content text-sm">
               {result.total} {result.total === 1 ? 'product' : 'products'}
             </span>
             <SortSelect value={sort} />

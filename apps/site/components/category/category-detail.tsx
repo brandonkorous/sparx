@@ -38,7 +38,7 @@ export async function CategoryDetail({
 
   const category = await getCategory(site.slug, handle);
   if (!category) {
-    return <p className="st-muted">This category isn’t available right now.</p>;
+    return <p className="text-base-content">This category isn’t available right now.</p>;
   }
 
   const all = await listCategories(site.slug);
@@ -57,13 +57,11 @@ export async function CategoryDetail({
       />
 
       <header
-        style={{
-          position: 'relative',
-          borderRadius: 'var(--st-radius-lg)',
-          overflow: 'hidden',
-          marginBottom: '2rem',
-          background: hero ? undefined : 'var(--st-bg-subtle)',
-        }}
+        className={
+          hero
+            ? 'rounded-box relative mb-8 overflow-hidden'
+            : 'rounded-box bg-base-200 relative mb-8 overflow-hidden'
+        }
       >
         {hero ? (
           <Image
@@ -92,7 +90,10 @@ export async function CategoryDetail({
               : {}),
           }}
         >
-          <h1 className="st-h1" style={hero ? { color: '#fff' } : undefined}>
+          <h1
+            className="text-4xl font-semibold tracking-tight"
+            style={hero ? { color: '#fff' } : undefined}
+          >
             {category.name}
           </h1>
           {category.description ? (
@@ -105,10 +106,13 @@ export async function CategoryDetail({
 
       {children.length > 0 ? (
         <section style={{ marginBottom: '2.5rem' }}>
-          <h2 className="st-h2" style={{ marginBottom: '1rem' }}>
+          <h2
+            className="text-base-content text-3xl font-semibold tracking-tight"
+            style={{ marginBottom: '1rem' }}
+          >
             Browse {category.name}
           </h2>
-          <div className="st-grid st-grid--auto">
+          <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
             {children.map((c) => (
               <CategoryCard key={c.id} category={c} tenantSlug={site.slug} />
             ))}

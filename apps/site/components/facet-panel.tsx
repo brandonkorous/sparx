@@ -68,12 +68,19 @@ const COLUMN_LABEL = {
 
 export function FacetPanel({ action, domains, activeDomain, levels, values }: FacetPanelProps) {
   return (
-    <form id="plp-filters" className="st-facets" method="GET" action={action}>
+    <form
+      id="plp-filters"
+      className="sticky top-[92px] flex flex-col gap-6 max-[900px]:static"
+      method="GET"
+      action={action}
+    >
       {values.q ? <input type="hidden" name="q" value={values.q} /> : null}
       <input type="hidden" name="sort" value={values.sort ?? 'relevance'} />
 
-      <div className="st-facet">
-        <h4>Price</h4>
+      <div>
+        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+          Price
+        </h4>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
           <Input
             type="number"
@@ -85,7 +92,7 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
             style={{ width: '100%' }}
             aria-label="Minimum price (dollars)"
           />
-          <span className="st-muted">–</span>
+          <span className="text-base-content">–</span>
           <Input
             type="number"
             name="maxPrice"
@@ -99,9 +106,11 @@ export function FacetPanel({ action, domains, activeDomain, levels, values }: Fa
         </div>
       </div>
 
-      <div className="st-facet">
-        <h4>Availability</h4>
-        <label>
+      <div>
+        <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
+          Availability
+        </h4>
+        <label className="text-base-content flex cursor-pointer items-center gap-2 py-1 text-sm">
           <input type="checkbox" name="inStock" value="true" defaultChecked={values.inStock} />
           In stock only
         </label>
@@ -137,16 +146,14 @@ export function FitmentFacet({
   const fitmentRanges = values.fitmentRanges ?? {};
 
   return (
-    <div className="st-facet">
-      <h4>
+    <div>
+      <h4 className="text-base-content mt-0 mb-3 text-xs font-medium tracking-wide uppercase">
         {domains.length > 1 ? 'Fits your' : `Fits your ${activeDomain.displayName.toLowerCase()}`}
       </h4>
 
       {domains.length > 1 ? (
         <label style={{ ...COLUMN_LABEL, marginBottom: '0.5rem' }}>
-          <span className="st-muted" style={{ fontSize: '0.78rem' }}>
-            Type
-          </span>
+          <span className="text-base-content text-xs">Type</span>
           <NativeSelect name="fitmentDomain" defaultValue={activeDomain.slug}>
             {domains.map((d) => (
               <option key={d.id} value={d.slug}>
@@ -165,9 +172,7 @@ export function FitmentFacet({
           key={level.dimension.key}
           style={{ ...COLUMN_LABEL, marginTop: i === 0 ? undefined : '0.5rem' }}
         >
-          <span className="st-muted" style={{ fontSize: '0.78rem' }}>
-            {level.dimension.label}
-          </span>
+          <span className="text-base-content text-xs">{level.dimension.label}</span>
           <NativeSelect name={`fl${i}`} defaultValue={level.selectedId}>
             <option value="">Any {level.dimension.label.toLowerCase()}</option>
             {level.nodes.map((n) => (
@@ -184,9 +189,7 @@ export function FitmentFacet({
           a plain number input with a unit suffix). */}
       {rangeDimensions.map((dim) => (
         <label key={dim.key} style={{ ...COLUMN_LABEL, marginTop: '0.5rem' }}>
-          <span className="st-muted" style={{ fontSize: '0.78rem' }}>
-            {dim.label}
-          </span>
+          <span className="text-base-content text-xs">{dim.label}</span>
           <RangeWidget dim={dim} value={fitmentRanges[dim.key]} />
         </label>
       ))}
@@ -256,7 +259,7 @@ function RangeWidget({ dim, value }: { dim: PublicFitmentDimension; value?: stri
         style={{ width: '100%' }}
         aria-label={`${dim.label}${unitSuffix ? ` (${unitSuffix})` : ''}`}
       />
-      {unitSuffix ? <span className="st-muted">{unitSuffix}</span> : null}
+      {unitSuffix ? <span className="text-base-content">{unitSuffix}</span> : null}
     </span>
   );
 }

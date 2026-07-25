@@ -95,7 +95,7 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
       searchParams: sp,
     });
     return (
-      <div className="st-container">
+      <div className="mx-auto w-full max-w-6xl px-6">
         <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
       </div>
     );
@@ -127,7 +127,7 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
   const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
 
   return (
-    <div className="st-container">
+    <div className="mx-auto w-full max-w-6xl px-6">
       <Breadcrumbs
         items={[
           { label: 'Home', href: '/' },

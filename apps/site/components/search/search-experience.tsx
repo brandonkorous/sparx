@@ -91,9 +91,9 @@ export async function SearchExperience({
 
   return (
     <>
-      <form action="/search" role="search" className="st-search" style={{ maxWidth: '560px' }}>
+      <form action="/search" role="search" className="relative w-full max-w-[560px]">
         <svg
-          className="st-search__icon"
+          className="text-base-content pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
           width="18"
           height="18"
           viewBox="0 0 24 24"
@@ -112,6 +112,7 @@ export async function SearchExperience({
           defaultValue={q}
           placeholder="Search products…"
           aria-label="Search products"
+          className="input w-full pl-9"
         />
       </form>
 
@@ -143,7 +144,10 @@ export async function SearchExperience({
           description="Type a product name, brand, or part number above."
         />
       ) : (
-        <div className="st-plp" style={{ marginTop: '1.5rem' }}>
+        <div
+          className="grid grid-cols-[248px_minmax(0,1fr)] items-start gap-[clamp(1.5rem,3vw,3rem)] py-[clamp(1.5rem,4vw,3rem)] max-[900px]:grid-cols-1"
+          style={{ marginTop: '1.5rem' }}
+        >
           <aside>
             <SearchFacets
               action="/search"
@@ -163,8 +167,8 @@ export async function SearchExperience({
             />
           </aside>
           <div>
-            <div className="st-toolbar">
-              <span className="st-toolbar__count">
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+              <span className="text-base-content text-sm">
                 {result.total} {result.total === 1 ? 'result' : 'results'}
                 {q ? ` for “${q}”` : ''}
               </span>

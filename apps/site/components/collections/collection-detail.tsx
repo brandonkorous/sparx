@@ -36,7 +36,7 @@ export async function CollectionDetail({
 
   const collection = await getCollection(site.slug, handle);
   if (!collection) {
-    return <p className="st-muted">This collection isn’t available right now.</p>;
+    return <p className="text-base-content">This collection isn’t available right now.</p>;
   }
 
   const hero = mediaUrl(collection.heroMediaId, site.slug);
@@ -52,13 +52,11 @@ export async function CollectionDetail({
       />
 
       <header
-        style={{
-          position: 'relative',
-          borderRadius: 'var(--st-radius-lg)',
-          overflow: 'hidden',
-          marginBottom: '2rem',
-          background: hero ? undefined : 'var(--st-bg-subtle)',
-        }}
+        className={
+          hero
+            ? 'rounded-box relative mb-8 overflow-hidden'
+            : 'rounded-box bg-base-200 relative mb-8 overflow-hidden'
+        }
       >
         {hero ? (
           <Image
@@ -87,7 +85,10 @@ export async function CollectionDetail({
               : {}),
           }}
         >
-          <h1 className="st-h1" style={hero ? { color: '#fff' } : undefined}>
+          <h1
+            className="text-4xl font-semibold tracking-tight"
+            style={hero ? { color: '#fff' } : undefined}
+          >
             {collection.name}
           </h1>
           {collection.description ? (

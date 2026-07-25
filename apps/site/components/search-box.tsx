@@ -89,10 +89,9 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
   const showMenu = open && q.trim().length >= 2 && results.length > 0;
 
   return (
-    <div className="st-search st-search--desktop" ref={boxRef} style={{ position: 'relative' }}>
+    <div className="relative max-w-[360px] flex-1 max-[760px]:hidden" ref={boxRef}>
       <button
         type="button"
-        className="st-search__submit"
         aria-label="Search"
         onClick={() => go()}
         style={{ display: 'contents' }}
@@ -107,7 +106,8 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
         autoComplete="off"
         role="combobox"
         aria-expanded={showMenu}
-        aria-controls="st-search-menu"
+        aria-controls="search-menu"
+        className="input w-full pl-9"
         value={q}
         onChange={(e) => {
           setQ(e.target.value);
@@ -117,14 +117,19 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
         onKeyDown={onKeyDown}
       />
       {showMenu ? (
-        <ul className="st-search__menu" id="st-search-menu" role="listbox">
+        <ul
+          className="rounded-field border-base-300 bg-base-100 absolute top-[calc(100%+6px)] right-0 left-0 z-40 m-0 flex list-none flex-col gap-[0.1rem] border p-1.5"
+          id="search-menu"
+          role="listbox"
+        >
           {results.map((r, i) => (
             <li key={r.id} role="option" aria-selected={i === active}>
               <Link
                 href={`/products/${r.handle}`}
-                className={['st-search__result', i === active && 'is-active']
-                  .filter(Boolean)
-                  .join(' ')}
+                className={[
+                  'rounded-field hover:bg-base-200 hover:text-primary block w-full px-2.5 py-2 text-left text-sm',
+                  i === active ? 'bg-base-200 text-primary' : 'text-base-content',
+                ].join(' ')}
                 onClick={() => setOpen(false)}
               >
                 {r.title}
@@ -132,7 +137,11 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
             </li>
           ))}
           <li role="option" aria-selected={false}>
-            <button type="button" className="st-search__result st-search__all" onClick={() => go()}>
+            <button
+              type="button"
+              className="rounded-field text-base-content border-base-300 hover:bg-base-200 hover:text-primary mt-0.5 block w-full border-t px-2.5 py-2 text-left text-sm"
+              onClick={() => go()}
+            >
               See all results for “{q.trim()}”
             </button>
           </li>
@@ -145,7 +154,7 @@ export function SearchBox({ tenantSlug }: { tenantSlug: string }) {
 function SearchIcon() {
   return (
     <svg
-      className="st-search__icon"
+      className="text-base-content pointer-events-none absolute top-1/2 left-3 -translate-y-1/2"
       width="18"
       height="18"
       viewBox="0 0 24 24"

@@ -41,7 +41,7 @@ export default async function SearchPage({
   });
 
   return (
-    <div className="st-container" style={{ paddingBlock: '2rem' }}>
+    <div className="mx-auto w-full max-w-6xl px-6 py-8">
       <SilicaFunctionalBody root={shell} symbols={published?.symbols} renderHost={renderHost} />
     </div>
   );

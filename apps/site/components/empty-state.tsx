@@ -11,16 +11,14 @@ export interface EmptyStateProps {
 
 export function EmptyState({ icon, title, description, action }: EmptyStateProps) {
   return (
-    <div className="st-empty">
+    <div className="text-base-content grid place-items-center gap-3 px-6 py-[clamp(3rem,8vw,6rem)] text-center">
       {icon ? (
-        <span className="st-empty__icon" aria-hidden="true">
+        <span className="text-[2.5rem] opacity-50" aria-hidden="true">
           {icon}
         </span>
       ) : null}
-      <h3 className="st-h3" style={{ color: 'var(--st-text)' }}>
-        {title}
-      </h3>
-      {description ? <p style={{ margin: 0, maxWidth: '40ch' }}>{description}</p> : null}
+      <h3 className="text-base-content text-2xl font-semibold">{title}</h3>
+      {description ? <p className="m-0 max-w-[40ch]">{description}</p> : null}
       {action ? (
         <ButtonLink href={action.href} style={{ marginTop: '0.5rem' }} color="primary">
           {action.label}

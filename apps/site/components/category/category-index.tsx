@@ -27,8 +27,8 @@ export async function CategoryIndex({ site }: { site: ResolvedSite }) {
   return (
     <>
       <header style={{ marginBottom: '2rem' }}>
-        <h1 className="st-h1">Categories</h1>
-        <p className="st-muted" style={{ marginTop: '0.5rem' }}>
+        <h1 className="text-base-content text-4xl font-semibold tracking-tight">Categories</h1>
+        <p className="text-base-content" style={{ marginTop: '0.5rem' }}>
           Browse everything at {site.name}.
         </p>
       </header>
@@ -41,7 +41,7 @@ export async function CategoryIndex({ site }: { site: ResolvedSite }) {
           action={{ label: 'Shop all products', href: '/products' }}
         />
       ) : (
-        <div className="st-grid st-grid--auto">
+        <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
           {roots.map((c) => (
             <CategoryCard key={c.id} category={c} tenantSlug={site.slug} />
           ))}
