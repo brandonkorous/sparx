@@ -18,14 +18,21 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { withTenant } from '@sparx/db';
-import { getStorage, variantKey, variantUrlPath } from '../../../lib/storage.js';
+import {
+  getStorage,
+  variantKey,
+  variantUrlPath,
+  VARIANT_FILENAME_RE,
+} from '../../../lib/storage.js';
 import { notFound } from '@sparx/api-core/errors';
 import { requireTenantIdBySlug } from '../../../lib/tenant-slug.js';
 import { env } from '../../../env.js';
 
-// Filename pattern matches what variantKey() emits in storage.ts:
-//   `${format}-${width}.${ext}` → e.g. webp-800.webp, avif-1200.avif, jpeg-400.jpg
-const FILENAME_RE = /^([a-z]+)-(\d+)\.([a-z0-9]+)$/;
+// Filename pattern = the inverse of variantKey(): `<format>-<width>.<ext>` for a base or
+// `<format>-<aspect>-<width>.<ext>` for a social crop (jpeg-1x1-1080.jpg). Imported from
+// storage.ts (next to variantKey) so it can't drift from the generator — a private copy
+// missing the optional aspect group is what 422'd every crop URL in prod.
+const FILENAME_RE = VARIANT_FILENAME_RE;
 
 const PathParams = z.object({
   tenantId: z.string().uuid(),
@@ -152,9 +159,19 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
       // PathParams.regex already validated the filename matches FILENAME_RE,
       // so the re-exec cannot return null. Re-execing is just to destructure.
       const match = FILENAME_RE.exec(params.filename)!;
-      const [, format, widthStr, ext] = match;
+      const [, format, aspectFolded, widthStr, ext] = match;
+      // A crop filename carries the folded aspect ('1x1'); variantKey wants the ratio
+      // form ('1:1') and re-folds it, so round-trip it back before rebuilding the key.
+      const aspect = aspectFolded ? aspectFolded.replace('x', ':') : undefined;
 
-      const key = variantKey(params.tenantId, params.assetId, format!, Number(widthStr), ext!);
+      const key = variantKey(
+        params.tenantId,
+        params.assetId,
+        format!,
+        Number(widthStr),
+        ext!,
+        aspect
+      );
 
       let obj;
       try {

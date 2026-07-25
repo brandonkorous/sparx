@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { variantKey, variantUrlPath } from './storage.js';
+import { variantKey, variantUrlPath, VARIANT_FILENAME_RE } from './storage.js';
 
 // The variant serving route is /v1/public/media/variants/:tenantId/:assetId/:filename
 // (routes/v1/public/media.ts) — THREE path segments — and it re-derives the storage
@@ -10,8 +10,11 @@ import { variantKey, variantUrlPath } from './storage.js';
 // never matches, the request hangs, and Cloudflare returns 503 — every uploaded image
 // then previews broken (the bug these tests lock out).
 
-// The route's own filename regex (media.ts): <format>-[<aspect>-]<width>.<ext>
-const FILENAME_RE = /^([a-z0-9]+)-(?:(\d+x\d+)-)?(\d+)\.([a-z0-9]+)$/;
+// The route's own filename regex — imported from storage.ts (NOT re-declared here) so
+// this test guards the REAL pattern the route uses. A local copy is exactly what let the
+// route's regex drift (dropping the optional aspect group) and 422 every crop URL in prod
+// while this test stayed green.
+const FILENAME_RE = VARIANT_FILENAME_RE;
 
 describe('variantUrlPath', () => {
   it('drops the middle `variants/` so the URL is three segments', () => {

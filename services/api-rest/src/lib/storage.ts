@@ -397,6 +397,13 @@ export function variantKey(
   return `${tenantId}/variants/${assetId}/${suffix}.${ext}`;
 }
 
+/** The inverse of {@link variantKey}'s filename half — matches BOTH shapes it emits:
+ *  `<format>-<width>.<ext>` (scale-to-width base) and `<format>-<aspect>-<width>.<ext>`
+ *  (a social crop, aspect folded '1:1' → '1x1'). Lives HERE, next to variantKey, and is
+ *  imported by both the public media route and its tests — a private copy in either drifts
+ *  from this generator, which is exactly the bug that made every crop URL 422 in prod. */
+export const VARIANT_FILENAME_RE = /^([a-z0-9]+)-(?:(\d+x\d+)-)?(\d+)\.([a-z0-9]+)$/;
+
 /**
  * The URL path for a variant key. The serving route
  * `/v1/public/media/variants/:tenantId/:assetId/:filename` is THREE segments and
