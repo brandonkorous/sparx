@@ -345,6 +345,33 @@ export interface EmailSendPayload {
   headers?: Record<string, string>;
 }
 
+/**
+ * The OTHER `email.send` variant: a PRE-RENDERED (`kind:'raw'`) send. Tenant→customer
+ * emails (booking/order/shipping/appointment) are Builder-authored and rendered by key
+ * at dispatch (docs/93 §2), so they arrive at the worker as a finished body rather than
+ * a template id + props. This MIRRORS email-worker's `RawSendSchema` (services/email-worker
+ * handler.ts) — the worker is the source of truth for what it will deliver; keep the two
+ * in sync. `to` is REQUIRED: a raw payload without it fails the worker's schema and is
+ * silently acked/dropped (no send, no error) — the regression this type exists to make a
+ * compile error. Publishers apply it via `satisfies RawEmailSendPayload`.
+ */
+export interface RawEmailSendPayload {
+  kind: 'raw';
+  /** The recipient's verified address. REQUIRED — see the note above. */
+  to: string;
+  from?: string;
+  replyTo?: string;
+  subject: string;
+  html: string;
+  text: string;
+  /** Broadcast attribution id; opaque to the worker. */
+  templateId?: string;
+  /** Mailgun user-variables for webhook attribution (worker stamps tenant/property). */
+  variables?: Record<string, string>;
+  /** The site this send is on behalf of — stamped for per-site analytics (docs/49 Phase 7). */
+  propertyId?: string | null;
+}
+
 /** Payload for `form.submitted`. Emitted by api-rest after a Builder contact/lead
  *  form on a tenant site is stored. The submitter fields are a snapshot (the form
  *  is anonymous — no customer/user id). `addToCrm` is resolved server-side from

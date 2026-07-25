@@ -17,6 +17,7 @@
 import type { FastifyBaseLogger } from 'fastify';
 import { withTenant } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
+import type { RawEmailSendPayload } from '@sparx/events';
 import { renderSilicaEmail } from '@sparx/email/silica';
 import { emailService } from '@sparx/builder';
 import { brandService } from '@sparx/email-platform';
@@ -257,9 +258,16 @@ export async function sendTenantEmailByKey(
 
   await publish(logger, 'email.send', tenantId, null, {
     ...raw,
+    // The recipient MUST ride in the event: email-worker's RawSendSchema requires
+    // `to`, and a payload without it fails validation and is silently acked/dropped
+    // (no send, no error). `renderBuilderEmailDoc` returns only the rendered body,
+    // so `to` is added here — the same field the chat + automation-dispatch
+    // publishers already carry. `satisfies RawEmailSendPayload` makes a future
+    // omission a COMPILE error rather than a silent prod regression.
+    to: args.to,
     from: buildFrom(settings.fromName, settings.fromAddress),
     ...(settings.replyTo ? { replyTo: settings.replyTo } : {}),
     ...(args.variables ? { variables: args.variables } : {}),
-  });
+  } satisfies RawEmailSendPayload);
   return { sent: true };
 }

@@ -15,6 +15,7 @@ import type { FastifyBaseLogger } from 'fastify';
 import { prisma, withTenant } from '@sparx/db';
 import { publish } from '@sparx/api-core/pubsub';
 import { emailService } from '@sparx/builder';
+import type { RawEmailSendPayload } from '@sparx/events';
 import type { EmailRecipientRef } from './email-data.js';
 import { buildFrom, loadSenderIdentity, renderBuilderEmailDoc } from './tenant-email.js';
 
@@ -206,7 +207,9 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             subjectOverride: payload.defer.subject,
             preheaderOverride: payload.defer.preheader,
           });
-          data = { ...raw, ...common };
+          // `common` carries `to` (the worker's RawSendSchema requires it — a raw
+          // payload without it is silently dropped); `satisfies` locks that in.
+          data = { ...raw, ...common } satisfies RawEmailSendPayload;
         } else if (payload.raw) {
           // Pre-rendered (broadcast) → delivered as-is.
           data = {
@@ -219,7 +222,7 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             // (docs/49 Phase 7). The body was already branded at compose time.
             ...(propertyId ? { propertyId } : {}),
             ...common,
-          };
+          } satisfies RawEmailSendPayload;
         } else {
           // template → worker renders + brands. The site this send is on behalf
           // of (docs/49 Phase 7b) rides along so the worker resolves the SITE's

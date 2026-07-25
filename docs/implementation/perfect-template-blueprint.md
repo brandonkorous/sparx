@@ -1,6 +1,6 @@
 # Perfect Template → sparx Blueprint
 
-Version: 1.1.0
+Version: 1.2.0
 Author: Brandon Korous
 Last Updated: 2026-07-25
 
@@ -9,45 +9,45 @@ Last Updated: 2026-07-25
 
 > ## ▶ RESUME HERE
 >
-> **STATUS (2026-07-25, session 5): the storefront is now FULLY on silica + all functional
-> fixes deployed. Still perfecting the live site; NOT building the blueprint bundle, no
-> sign-off yet.** Do NOT author `marketplace-catalog/blueprints/sparx/` until Brandon walks
-> the whole site and signs off. That gate is intentional.
+> **STATUS (2026-07-25, session 6): storefront FULLY on silica; CART-IMG + hero animation
+> live; automated walkthrough clean; a real transactional-email bug was found + FIXED (needs
+> deploy). Still perfecting the live site; NOT building the blueprint bundle, no sign-off yet.**
+> Do NOT author `marketplace-catalog/blueprints/sparx/` until Brandon walks the whole site and
+> signs off. That gate is intentional.
 >
-> **Landed + deployed this session:**
+> **Confirmed live this session (verified in prod HTML/bundle):**
 >
-> - **st-\* → silica migration (v1.16x).** The entire `apps/site` storefront (114 files) was
->   migrated off the `@sparx/site-ui` `st-*` design system onto silica (silicaui plugin classes
->   - `@wizeworks/silicaui-react` + Tailwind). `rg "st-[a-z]" apps/site` design-system classes
->     are gone; site.css shed ~2846 lines. The `--st-*` **tokens** REMAIN (the tenant-theme bridge
->     consumed by surface-compile/builder — NOT removable without a platform rewrite), and
->     `@sparx/site-ui` is kept ONLY for builder-rendered tenant content. Done via a worktree
->     branch, merged `-X theirs` on the 3 booking conflicts. See [[project_storefront_silica_migration]].
-> - **Product page width** — `productDetailPage()` in `packages/silica-catalog/src/commerce.ts`
->   now wraps the buy box in `mx-auto w-full max-w-6xl` (was full-bleed). LIVE + verified.
-> - **Booking widget** — opens on the FIRST bookable day (seededDate scan), not a dead empty
->   today; **/book reorder** (booking list directly under the hero); **card CTA** ("See open
->   times" `btn`) + **card border** (`border-base-300 hover:border-primary`). LIVE.
-> - **Product card border** (`border-base-300 hover:border-primary`) — LIVE + verified.
-> - **Contact page** — real values (hello@sparx.works, (628) 555-0142, SF address). LIVE.
+> - **CART-IMG fixed + verified.** Client bundle now bakes `https://api.sparx.works` (no
+>   `localhost:3100`); the exact previously-broken media asset returns a real JPEG over HTTPS.
+>   No more mixed-content thumbnails, no Chrome PNA prompt. See [[infra_next_public_build_arg]].
+> - **Hero animation — DONE on the right hero.** The Template's **published silica home hero**
+>   now carries staggered `sui-animate-slide-up` (+`sui-delay-1/2/3`) on heading → subheading →
+>   CTA row → image, edited via MCP `upsert_silica_page` (full-page replace; validated
+>   byte-for-byte round-trip before publish) and confirmed in served HTML. (The earlier
+>   `hero.tsx` change only covered section-renderer heroes.)
+> - **Full-route sweep clean** — all 8 routes 200; no `st-*`, no `localhost`, no mixed-content,
+>   no broken bindings; PDP width, product-card borders, booking CTA all verified.
 >
-> **PENDING (pushed this session, needs the pipeline rebuild+deploy to take effect):**
+> **FIXED this session — real code bug, NOT spam (left in working tree, NEEDS api-rest DEPLOY):**
 >
-> - **Cart images bug (CART-IMG).** Client-side `mediaUrl` baked `http://localhost:3100`
->   because `NEXT_PUBLIC_API_URL` was never a **build-arg** (only a runtime configmap value).
->   Broke cart/mini-cart/order-summary thumbnails (mixed-content) AND triggered a Chrome
->   Private-Network-Access prompt on add-to-cart. Fixed in `apps/site/Dockerfile` (ARG/ENV) +
->   `.github/workflows/build-images.yml` (build-arg). See [[infra_next_public_build_arg]].
+> - **Booking/transactional email was silently dropped.** Cloud Run `email-worker` logs showed
+>   `message did not match email.send schema; acking` at the exact booking times. Root cause:
+>   `sendTenantEmailByKey` ([tenant-email.ts](../../services/api-rest/src/lib/tenant-email.ts))
+>   published the raw `email.send` payload **without `to`** (`renderBuilderEmailDoc` returns only
+>   the body). The worker's `RawSendSchema` REQUIRES `to`, so it acked/dropped every raw send —
+>   **booking confirmation, owner "new booking" alert, order confirmation, shipping.** Chat +
+>   automations + OTP were unaffected (they carry `to`) — which is why chat emails DID arrive.
+>   Fix: add `to: args.to` to the publish. Prevention: new **`RawEmailSendPayload`** type in
+>   `@sparx/events` mirroring the worker schema, applied via `satisfies` at both raw publish
+>   sites (tenant-email + email-dispatch) so a missing `to` is now a COMPILE error. Typecheck +
+>   lint clean. See [[bug_raw_email_send_needs_to]]. **After deploy: re-book → confirm the email.**
+>   (This CORRECTS session-5's wrong "delivery/spam, not a code bug" conclusion.)
 >
-> **REMAINING follow-ups (small):**
+> **REMAINING follow-ups (small, optional):**
 >
-> - **Hero entrance animation** — silica `sui-animate-slide-up` machinery is confirmed emitting
->   in the live CSS, but the change landed on the section-renderer `hero.tsx`; the Template home
->   uses a **published silica hero**, so it isn't animating there. Redirect: add the classes to
->   the Template's published home hero (a silica CONTENT edit via MCP, like the /book reorder),
->   and/or the silica starter hero.
-> - **Booking confirmation email** — pipeline verified CORRECT + zero errors in api-rest/
->   email-worker; "no email" is delivery/spam (check Mailgun dashboard), NOT a code bug.
+> - **`patch_silica_node` MCP tool** — `upsert_silica_page` is a full-page replace; a granular
+>   node patch (pageId + node id → class/props/attrs/text) would remove the re-transcribe risk.
+>   api-mcp slice.
 >
 > **THEN:** walk the whole site with Brandon → sign-off → only then author the bundle.
 > `write:search` still ungranted (optional). Do NOT re-litigate _Locked decisions_.
@@ -646,10 +646,23 @@ self-indexes).
   `localhost:3100` because `NEXT_PUBLIC_API_URL` was never a build-arg → broken cart thumbnails +
   Chrome PNA prompt; fixed in Dockerfile + build-images.yml ([[infra_next_public_build_arg]]),
   pushed, needs the pipeline rebuild.
-- **NEXT SESSION STARTS HERE:** (1) Confirm CART-IMG fix live after the rebuild (cart thumbnails
-  load, no Chrome prompt). (2) Redirect the **hero animation** onto the Template's PUBLISHED
-  silica home hero (MCP content edit — `sui-animate-slide-up` + `sui-delay-*`), since the
-  hero.tsx change only covers section-renderer heroes. (3) Continue the full-site walkthrough for
-  **SIGN-OFF** — do not author the bundle before that. Only after sign-off: author
-  `marketplace-catalog/blueprints/sparx/`, capture the site (6 sparx goods → `commerce`),
-  validate, ingest.
+- **2026-07-25 (session 6 — CART-IMG confirmed, hero animation done, transactional-email bug fixed)** —
+  Confirmed CART-IMG live in prod (bundle bakes `api.sparx.works`, real JPEG over HTTPS, no PNA
+  prompt). Put the **hero animation** on the Template's PUBLISHED silica home hero via MCP
+  `upsert_silica_page` (full-page replace — reproduced the 7-section tree, injected
+  `sui-animate-slide-up`/`sui-delay-*` on 4 hero nodes by id, diff-validated only those 4 classes
+  changed, byte-for-byte draft round-trip, then published); verified in served HTML. Ran a clean
+  8-route walkthrough sweep. **Traced the booking email properly this time** (last session's
+  "spam" call was WRONG): Cloud Run `email-worker` logs showed `did not match email.send schema;
+acking` — `sendTenantEmailByKey` published the raw payload **without `to`**, which the worker's
+  `RawSendSchema` requires, so it dropped EVERY raw transactional send (booking, order, shipping).
+  Chat/automations/OTP were fine (they carry `to`). Fixed (`to: args.to`) + added prevention type
+  **`RawEmailSendPayload`** in `@sparx/events` + `satisfies` guards at both raw publish sites so a
+  missing `to` is a compile error. Typecheck + lint clean. Left in working tree for Brandon to
+  commit/deploy. See [[bug_raw_email_send_needs_to]].
+- **NEXT SESSION STARTS HERE:** (1) After the api-rest deploy, **re-book on the Template → confirm
+  the booking confirmation email arrives** (bug now fixed; the prior dropped messages are gone).
+  (2) Optional: build the `patch_silica_node` MCP tool (granular node patch vs full-page replace).
+  (3) Continue / finish the full-site walkthrough for **SIGN-OFF** — do not author the bundle
+  before that. Only after sign-off: author `marketplace-catalog/blueprints/sparx/`, capture the
+  site (6 sparx goods → `commerce`), validate, ingest.
