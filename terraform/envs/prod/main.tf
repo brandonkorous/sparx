@@ -457,10 +457,12 @@ module "secrets" {
     # via `gcloud secrets versions add customer-auth-secret --data-file=-`.
     "customer-auth-secret",
     "stripe-secret-key",
-    # Connect OAuth client id (`ca_…`) — the ONBOARDING wizard's "Connect Stripe" step
-    # (GET /v1/tenant/onboarding/stripe/connect-url) hard-fails with "Stripe Connect is
-    # not configured on this platform." without it. Not needed by the Settings →
-    # Payments (Connect Express / sparx Pay) path, which mints accounts directly.
+    # Connect OAuth client id (`ca_…`) — DEAD CONFIG. The old "connect an existing
+    # Standard account" OAuth onboarding was removed in favour of sparx Pay Express
+    # Account Links (which need no client_id); `env.ts` keeps STRIPE_CLIENT_ID optional
+    # and reads it NOWHERE. Kept here only so a still-provisioned secret doesn't drift;
+    # safe to de-provision (remove from here + bootstrap KEYS) later. Do NOT wait on
+    # Stripe issuing a live `ca_…` — no go-live step depends on it.
     "stripe-client-id",
     "stripe-webhook-secret",
     # Stripe webhook signing secrets — ONE PER ENDPOINT, and the code reads them by
