@@ -16,6 +16,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
+import type { EmailFrame } from '@wizeworks/silicaui-builder/email';
 import type { PresentationOverlayV2, TenantBrandColumns } from '@sparx/site-themes';
 import { api } from '../../../lib/api/client';
 
@@ -221,6 +222,21 @@ export function useSiteBrandInfos() {
   return useQuery({
     queryKey: ['properties'],
     queryFn: () => api.get<SiteBrandInfo[]>('/v1/properties'),
+    staleTime: 300_000,
+  });
+}
+
+/** The branded chrome the canvas renders around the authored body — the brand bar +
+ *  wordmark (header) and the tiered legal footer (footer), as silicaui 0.34's
+ *  host-owned `EmailFrame`. Resolved SERVER-SIDE from the active site's brand + its
+ *  published footer links (the same `buildEmailFrame` the real send composes), so the
+ *  edit canvas shows the exact chrome that ships — inert, un-editable, never part of
+ *  the saved document. Keyed without the site id because a site switch reloads the
+ *  whole app (see `switchSite`), refetching this fresh. */
+export function useEmailFrame() {
+  return useQuery({
+    queryKey: ['builder', 'emails', 'frame'],
+    queryFn: () => api.get<EmailFrame>('/v1/builder/emails/frame'),
     staleTime: 300_000,
   });
 }

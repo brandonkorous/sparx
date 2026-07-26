@@ -11,6 +11,7 @@ import type {
   DividerNode,
   EmailBody,
   EmailDocument,
+  EmailFrame,
   HtmlNode,
   ImageNode,
   SectionNode,
@@ -235,19 +236,41 @@ function footerSection(
   };
 }
 
+/** Build the branded chrome as silicaui 0.34's host-owned `EmailFrame` — the brand
+ *  bar + wordmark ABOVE the body (`header`) and the tiered legal footer BELOW it
+ *  (`footer`). This is the SINGLE source of truth for the frame: the send splices it
+ *  around the author's body (`composeSendDocument`), and the email studio hands the
+ *  IDENTICAL frame to `<EmailBuilder frame={…}>` so the edit canvas renders the real
+ *  brand bar / wordmark / footer as inert chrome — the author designs against exactly
+ *  what ships, and the compliance footer stays un-deletable because it's never a node
+ *  in the saved document. */
+export function buildEmailFrame(opts: ComposeOptions): EmailFrame {
+  const id = makeIder('sx-frame');
+  return {
+    header: [brandBarSection(opts.brand, id), wordmarkSection(opts.brand, id)],
+    footer: [
+      footerSection(
+        opts.brand,
+        { marketing: opts.marketing, compliance: opts.compliance, footerLinks: opts.footerLinks },
+        id
+      ),
+    ],
+    label: 'Brand frame',
+  };
+}
+
 /** Wrap the author's document with the branded header (+ marketing footer),
  *  returning a new `EmailDocument` ready to resolve + project. The author's body
- *  sections are preserved in order between the two frame sections. */
+ *  sections are preserved in order between the frame's header and footer sections —
+ *  the same `EmailFrame` the editor canvas renders (via `buildEmailFrame`), so send
+ *  and canvas can never disagree on the chrome. */
 export function composeSendDocument(doc: EmailDocument, opts: ComposeOptions): EmailDocument {
-  const id = makeIder('sx-frame');
-  const brandBar = brandBarSection(opts.brand, id);
-  const header = wordmarkSection(opts.brand, id);
-  const footer = footerSection(
-    opts.brand,
-    { marketing: opts.marketing, compliance: opts.compliance, footerLinks: opts.footerLinks },
-    id
-  );
-  const children: SectionNode[] = [brandBar, header, ...doc.root.children, footer];
+  const frame = buildEmailFrame(opts);
+  const children: SectionNode[] = [
+    ...(frame.header ?? []),
+    ...doc.root.children,
+    ...(frame.footer ?? []),
+  ];
   const root: EmailBody = { ...doc.root, children };
   return { ...doc, root };
 }

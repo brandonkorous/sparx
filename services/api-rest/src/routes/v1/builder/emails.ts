@@ -32,7 +32,7 @@ import {
   toBuilderTenantContext,
 } from '../../../lib/builder-context.js';
 import { requireTenantProperty } from '../../../lib/property.js';
-import { silicaEmailDataResolver } from '../../../lib/email-data.js';
+import { resolveEmailFooterLinks, silicaEmailDataResolver } from '../../../lib/email-data.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
 const PropertyParam = z.object({ propertyId: z.string().uuid() });
@@ -143,6 +143,21 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     const { id } = IdParam.parse(request.params);
     const email = await emailService.publishSilica(toBuilderTenantContext(request), id);
     return ok(email);
+  });
+
+  // The branded chrome (brand bar + wordmark + tiered legal footer) the studio's
+  // edit canvas renders as inert frame around the authored body (silicaui 0.34
+  // `<EmailBuilder frame>`), so the canvas shows the real header/footer instead of a
+  // bare body. Built from the SAME per-site brand + published footer links the real
+  // send composes (`buildEmailFrame`), so the canvas can't diverge from what ships.
+  // A static (`/frame`) route, so Fastify matches it ahead of `/:id`.
+  app.get('/v1/builder/emails/frame', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    const footerLinks = await resolveEmailFooterLinks(ctx, ctx.propertyId);
+    const frame = await builderEmailService.buildFrame(ctx, ctx.propertyId, footerLinks);
+    return ok(frame);
   });
 
   // Render the DRAFT body to inlined HTML + plain text for the editor preview.

@@ -24,8 +24,10 @@
 //
 // The canvas is a live preview in its own right: silica resolves `{{merge.tags}}`
 // against sample data as you type, so a `{{customer.firstName}}` reads as a real
-// name on screen. The "Preview" here is the STEP BEYOND that — the final,
-// email-safe HTML with the brand frame the send composes, rendered by the server.
+// name on screen, and it renders the send's brand frame (brand bar/wordmark/legal
+// footer) as inert chrome around the body (silicaui 0.34). The "Preview" here is the
+// STEP BEYOND that — the final, email-safe projected HTML, rendered by the server
+// (real client rendering, real per-recipient data), not the canvas approximation.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
@@ -76,7 +78,6 @@ import {
   toSilicaDataSources,
   type MergeTag,
 } from '@sparx/builder-schemas';
-import { PaneToolbar, PANE_SHELL } from '../../../components/pane-toolbar';
 import { WelcomeEmptyState } from '../../../components/welcome-empty-state';
 import { PaneScope } from '../../../lib/dock/window-boundary';
 import { useConfirm } from '../../../lib/confirm';
@@ -90,6 +91,7 @@ import {
   useCreateEmail,
   useCustomizeEmailForSite,
   useDeleteEmail,
+  useEmailFrame,
   useEmails,
   usePreviewEmail,
   usePublishEmail,
@@ -109,6 +111,25 @@ import {
  *  re-resolves the real per-site brand (docs/120), so it never decides the shipped
  *  look. */
 const FALLBACK_THEME: Theme = THEME_PRESETS[0]!;
+
+/** The FIXED semantic status colours the send applies (`@sparx/email/silica`
+ *  `brand-colors.ts` SEMANTIC) — a success is green for every tenant, a warning
+ *  amber, independent of the brand palette. Overlaid onto the canvas theme's own
+ *  `--color-{info,success,warning,error}` tokens so silica's live repaint
+ *  (`setColorDefaults`) paints the ✓ Confirmed / warning / error cues on the EDIT
+ *  canvas with the EXACT hexes the send does — otherwise the compiled theme's own
+ *  semantic tokens (a different green) drift the canvas from the Preview.
+ *
+ *  KEEP IN SYNC with `packages/email/src/silica/brand-colors.ts` SEMANTIC — the two
+ *  are the same fixed constants, deliberately duplicated (a client component must
+ *  not pull the server email package into its bundle), the same way the builder
+ *  live-sync wire contract is duplicated from api-rest. */
+const EMAIL_SEMANTIC_TOKENS: Record<string, string> = {
+  '--color-info': '#1d4ed8',
+  '--color-success': '#15803d',
+  '--color-warning': '#b45309',
+  '--color-error': '#b91c1c',
+};
 
 /** The email binding vocabulary as silica data sources — drives the built-in
  *  binding picker and the inline `{{` autocomplete. Static (the email sources are
@@ -147,15 +168,26 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   const { data: sites } = useSites();
   const { data: activeSite } = useActiveSiteId();
 
-  // The canvas seeds new blocks in the tenant's real brand (docs/49) — the same
-  // compile the storefront uses, over the active site's effective brand. These are
-  // fast cached reads; a failure degrades to the neutral preset rather than
-  // blocking the studio, because only the EDIT preview is affected (Preview + send
-  // resolve the brand server-side).
+  // The canvas paints the tenant's real brand (docs/49) — the same compile the
+  // storefront uses, over the active site's effective brand. silica's own
+  // `setColorDefaults` repaints EVERY node still on its default (`*Auto`) from this
+  // theme, resolving each node's role exactly as the send's `applyBrandColors` does
+  // — so the canvas button/status/tint match the Preview, not just newly-inserted
+  // blocks. These are fast cached reads; a failure degrades to the neutral preset
+  // rather than blocking the studio. The send-composed FRAME (brand bar/wordmark/
+  // legal footer) renders too, as inert chrome around the body — see `useEmailFrame`
+  // below — so the canvas now shows the full email, not just the editable body.
   const brand = useTenantBrand();
   const siteConfig = useSiteBuilderConfig();
   const siteBrands = useSiteBrandInfos();
   const brandSettled = !brand.isLoading && !siteConfig.isLoading;
+
+  // The send-composed brand chrome (brand bar + wordmark + legal footer) the canvas
+  // renders as inert frame around the authored body (silicaui 0.34) — resolved
+  // server-side to the SAME frame the real send uses. A live render prop, so it
+  // streams in without gating the editor; a failed/absent read just leaves the canvas
+  // frameless (the Preview still composes it).
+  const frame = useEmailFrame();
 
   const canvasTheme = useMemo<Theme>(() => {
     if (!brand.data || !siteConfig.data) return FALLBACK_THEME;
@@ -171,7 +203,11 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
         brand: effective,
         presentation: siteConfig.data.draftSettings?.presentation ?? null,
       });
-      return compiledToSilicaTheme(compiled, siteConfig.data.themeKey);
+      const silica = compiledToSilicaTheme(compiled, siteConfig.data.themeKey);
+      // Overlay the send's FIXED semantic status colours so the canvas repaints the
+      // status cues exactly as the Preview/send does (the compiled theme carries its
+      // own, differing, semantic tokens).
+      return { ...silica, tokens: { ...silica.tokens, ...EMAIL_SEMANTIC_TOKENS } };
     } catch {
       return FALLBACK_THEME;
     }
@@ -520,181 +556,186 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     remove.isPending ||
     customize.isPending;
 
-  return (
-    <div className={PANE_SHELL}>
-      {/* `wrap`: the studio strip carries the switcher, its lifecycle AND the
-          editor actions — more than one line's worth in a narrow pane, and it
-          earns the second line rather than crushing the switcher. */}
-      <PaneToolbar label="Email studio actions" wrap>
-        {renaming ? (
-          <Input
-            ref={renameInputRef}
-            color="module"
-            size="sm"
-            className="w-44 @lg:w-56"
-            aria-label="Email name"
-            value={nameDraft}
-            onChange={(event) => {
-              setNameDraft(event.target.value);
-            }}
-            onBlur={commitName}
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') event.currentTarget.blur();
-              if (event.key === 'Escape') {
-                setNameDraft(active.name);
-                setRenaming(false);
-              }
-            }}
-          />
-        ) : (
-          <NativeSelect
-            color="module"
-            size="sm"
-            className="w-44 @lg:w-56"
-            aria-label="Which email"
-            value={active.id}
-            disabled={busy}
-            onChange={(event) => {
-              void attemptSwitch(event.target.value);
-            }}
-          >
-            {emails.map((email) => (
-              <option key={email.id} value={email.id}>
-                {email.name}
-              </option>
-            ))}
-          </NativeSelect>
-        )}
-        <Button
+  // ONE toolbar — the same move the site Editor makes (studio-surface.tsx). The
+  // switcher, its lifecycle (rename/new/delete/customize), the status badge, and the
+  // editor actions (merge tags/Preview/Publish/Save) are all HOST concerns silica
+  // knows nothing about, so they ride in `toolbarSlot` — silica renders them in its
+  // own editor header, right before its Send-test/Export buttons, instead of a
+  // second bar stacked above the canvas. `flex-wrap` lets a narrow pane drop to a
+  // second line rather than crush the switcher.
+  const toolbar = (
+    <div className="flex flex-wrap items-center gap-2">
+      {renaming ? (
+        <Input
+          ref={renameInputRef}
+          color="module"
           size="sm"
-          variant="ghost"
-          color="neutral"
-          shape="square"
-          aria-label="Rename this email"
-          title="Rename this email"
-          disabled={busy || renaming}
-          onClick={() => {
-            setNameDraft(active.name);
-            setRenaming(true);
+          className="w-44 @lg:w-56"
+          aria-label="Email name"
+          value={nameDraft}
+          onChange={(event) => {
+            setNameDraft(event.target.value);
+          }}
+          onBlur={commitName}
+          onKeyDown={(event) => {
+            if (event.key === 'Enter') event.currentTarget.blur();
+            if (event.key === 'Escape') {
+              setNameDraft(active.name);
+              setRenaming(false);
+            }
+          }}
+        />
+      ) : (
+        <NativeSelect
+          color="module"
+          size="sm"
+          className="w-44 @lg:w-56"
+          aria-label="Which email"
+          value={active.id}
+          disabled={busy}
+          onChange={(event) => {
+            void attemptSwitch(event.target.value);
           }}
         >
-          <Pencil className="size-4" aria-hidden />
-        </Button>
+          {emails.map((email) => (
+            <option key={email.id} value={email.id}>
+              {email.name}
+            </option>
+          ))}
+        </NativeSelect>
+      )}
+      <Button
+        size="sm"
+        variant="ghost"
+        color="neutral"
+        shape="square"
+        aria-label="Rename this email"
+        title="Rename this email"
+        disabled={busy || renaming}
+        onClick={() => {
+          setNameDraft(active.name);
+          setRenaming(true);
+        }}
+      >
+        <Pencil className="size-4" aria-hidden />
+      </Button>
+      <Button
+        size="sm"
+        variant="ghost"
+        color="neutral"
+        shape="square"
+        aria-label="New email"
+        title="New email"
+        disabled={busy}
+        onClick={() => {
+          void onNewEmail();
+        }}
+      >
+        <Plus className="size-4" aria-hidden />
+      </Button>
+      {isCustom ? (
         <Button
           size="sm"
           variant="ghost"
-          color="neutral"
+          color="danger"
           shape="square"
-          aria-label="New email"
-          title="New email"
+          aria-label="Delete this email"
+          title="Delete this email"
+          loading={remove.isPending}
           disabled={busy}
           onClick={() => {
-            void onNewEmail();
+            void onDelete();
           }}
         >
-          <Plus className="size-4" aria-hidden />
+          <Trash2 className="size-4" aria-hidden />
         </Button>
-        {isCustom ? (
-          <Button
-            size="sm"
-            variant="ghost"
-            color="danger"
-            shape="square"
-            aria-label="Delete this email"
-            title="Delete this email"
-            loading={remove.isPending}
-            disabled={busy}
-            onClick={() => {
-              void onDelete();
-            }}
-          >
-            <Trash2 className="size-4" aria-hidden />
-          </Button>
-        ) : null}
+      ) : null}
 
-        <Badge color={status.tone} variant="soft" size="sm">
-          {status.label}
+      <Badge color={status.tone} variant="soft" size="sm">
+        {status.label}
+      </Badge>
+      {active.scope === 'site' ? (
+        <Badge color="module" variant="soft" size="sm">
+          This site only
         </Badge>
-        {active.scope === 'site' ? (
-          <Badge color="module" variant="soft" size="sm">
-            This site only
-          </Badge>
-        ) : canCustomize ? (
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            loading={customize.isPending}
-            disabled={busy}
-            title={`Make a version of this email just for ${sites?.find((s) => s.id === activeSite?.propertyId)?.name ?? 'this site'}`}
-            onClick={() => {
-              void onCustomize();
-            }}
-          >
-            <SplitSquareHorizontal className="size-4" aria-hidden />
-            <span className="hidden @lg:inline">Customize for this site</span>
-          </Button>
-        ) : null}
+      ) : canCustomize ? (
+        <Button
+          size="sm"
+          variant="outline"
+          color="neutral"
+          loading={customize.isPending}
+          disabled={busy}
+          title={`Make a version of this email just for ${sites?.find((s) => s.id === activeSite?.propertyId)?.name ?? 'this site'}`}
+          onClick={() => {
+            void onCustomize();
+          }}
+        >
+          <SplitSquareHorizontal className="size-4" aria-hidden />
+          <span className="hidden @lg:inline">Customize for this site</span>
+        </Button>
+      ) : null}
 
-        <div className="ml-auto flex flex-wrap items-center gap-2">
-          <MergeTagsMenu />
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            loading={preview.isPending}
-            disabled={busy}
-            onClick={() => {
-              void onPreview();
-            }}
-          >
-            <Eye className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Preview</span>
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            color="neutral"
-            loading={publish.isPending}
-            disabled={busy}
-            onClick={() => {
-              void onPublish();
-            }}
-          >
-            <Upload className="size-4" aria-hidden />
-            <span className="hidden @md:inline">Publish</span>
-          </Button>
-          <Button
-            size="sm"
-            color="module"
-            disabled={!dirty || busy}
-            loading={save.isPending}
-            onClick={() => {
-              void onSave();
-            }}
-          >
-            <Save className="size-4" aria-hidden />
-            {dirty ? 'Save' : 'Saved'}
-          </Button>
-        </div>
-      </PaneToolbar>
-
-      {/* The editor is a base-100 card lifted onto the pane, matching the house
-          floating pattern — silica fills it. `key` remounts the engine when the
-          switcher moves to another email so it loads that document; min-h-0 lets
-          the flex child shrink so the canvas scrolls internally instead of pushing
-          the toolbar off-screen. */}
-      <div className="card bg-base-100 min-h-0 flex-1 overflow-hidden">
-        <EmailBuilder
-          key={active.id}
-          document={doc}
-          host={HOST}
-          theme={canvasTheme}
-          onChange={onChange}
-          onSendTest={onSendTest}
-          persistKey={null}
-        />
+      <div className="ml-auto flex flex-wrap items-center gap-2">
+        <MergeTagsMenu />
+        <Button
+          size="sm"
+          variant="outline"
+          color="neutral"
+          loading={preview.isPending}
+          disabled={busy}
+          onClick={() => {
+            void onPreview();
+          }}
+        >
+          <Eye className="size-4" aria-hidden />
+          <span className="hidden @md:inline">Preview</span>
+        </Button>
+        <Button
+          size="sm"
+          variant="outline"
+          color="neutral"
+          loading={publish.isPending}
+          disabled={busy}
+          onClick={() => {
+            void onPublish();
+          }}
+        >
+          <Upload className="size-4" aria-hidden />
+          <span className="hidden @md:inline">Publish</span>
+        </Button>
+        <Button
+          size="sm"
+          color="module"
+          disabled={!dirty || busy}
+          loading={save.isPending}
+          onClick={() => {
+            void onSave();
+          }}
+        >
+          <Save className="size-4" aria-hidden />
+          {dirty ? 'Save' : 'Saved'}
+        </Button>
       </div>
+    </div>
+  );
+
+  // silica fills the pane — its editor header (carrying `toolbar`), Insert palette,
+  // canvas, and Design inspector are the whole surface, exactly like the site
+  // Editor's `<Builder>`. `key` remounts the engine when the switcher moves to
+  // another email so it loads that document.
+  return (
+    <div className="h-full">
+      <EmailBuilder
+        key={active.id}
+        document={doc}
+        host={HOST}
+        theme={canvasTheme}
+        frame={frame.data ?? undefined}
+        onChange={onChange}
+        onSendTest={onSendTest}
+        persistKey={null}
+        toolbarSlot={toolbar}
+      />
 
       {rendered ? (
         <PreviewDialog

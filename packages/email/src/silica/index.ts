@@ -9,9 +9,13 @@ export {
 } from './render-silica-email';
 export {
   composeSendDocument,
+  buildEmailFrame,
   type EmailCompliance,
   type ComposeOptions,
   type FooterLink,
 } from './frame';
+// Re-exported so the frame's consumers (the email studio's canvas via the server, the
+// send path) type the chrome without a direct @wizeworks/silicaui-builder dependency.
+export type { EmailFrame } from '@wizeworks/silicaui-builder/email';
 export { applyBrandColors } from './brand-colors';
 export { emailDocumentToText } from './to-text';

@@ -11,7 +11,9 @@
 // emailService) so this package stays free of a @sparx/builder dependency — the same
 // injection pattern templateService uses for section data (docs/31 §8).
 
-import { renderSilicaEmail } from '@sparx/email/silica';
+import { renderSilicaEmail, buildEmailFrame } from '@sparx/email/silica';
+import type { EmailFrame, FooterLink } from '@sparx/email/silica';
+import { defaultBrand } from '@sparx/email';
 import type { DataSources, SilicaEmailDocument } from '@sparx/builder-schemas';
 
 import { TestSendInput } from '../schemas/templates';
@@ -89,6 +91,29 @@ export async function renderPreview(
     { brand: brand ?? undefined }
   );
   return { subject: rendered.subject, html: rendered.html, text: rendered.text };
+}
+
+/** The branded chrome the email studio's canvas renders around the authored body —
+ *  the SAME `EmailFrame` the send composes (`buildEmailFrame`), resolved from the
+ *  active site's brand + its published legal/footer links, so the edit canvas shows
+ *  the real brand bar / wordmark / footer instead of just the bare body (silicaui
+ *  0.34 `<EmailBuilder frame>`). `propertyId` scopes the brand + links to the active
+ *  site, matching the preview + send. `marketing:false` (no per-recipient unsubscribe
+ *  line on the canvas) + no per-send compliance — the canvas is a design surface, not
+ *  a specific recipient's copy. The caller resolves `footerLinks` (its content
+ *  package has the legal-placement source); absent → the footer's utility row is just
+ *  the account link. */
+export async function buildFrame(
+  ctx: ServiceContext,
+  propertyId?: string | null,
+  footerLinks?: FooterLink[]
+): Promise<EmailFrame> {
+  const brand = await resolveEmailBrand(ctx, propertyId);
+  return buildEmailFrame({
+    brand: brand ?? defaultBrand,
+    marketing: false,
+    footerLinks,
+  });
 }
 
 /** The deliverable a staff test-send produces: a fully-rendered email ready to

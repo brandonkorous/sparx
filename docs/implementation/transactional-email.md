@@ -1,6 +1,6 @@
 # Transactional email — coverage + build tracker
 
-Version: 0.2
+Version: 0.4
 Author: Brandon Korous
 Last Updated: 2026-07-26
 
@@ -290,5 +290,112 @@ with system fallbacks today; a webfont link is additive and lower-value.
 - **Tests per slice:** a body render assertion (status cue + hero datum present) and, where a
   trigger seed lands, its presence in `SYSTEM_AUTOMATIONS`.
 - Uncommitted; user handles commits.
-  </content>
-  </invoke>
+
+---
+
+## 6. Live verification (2026-07-26, on the Template tenant)
+
+Drove the deployed workbench email studio (WizeWorks tenant → Template site) after the
+first deploy.
+
+**Confirmed working:**
+
+- **Provisioning:** the 15 new keys were absent at first because the backfill reconcile
+  is a 6-hour loop whose first tick is `boot + 6h` (`RECONCILE_INTERVAL_MS`, first
+  `setTimeout` at boot). Toggling the email module off/on fired `module.activated` →
+  `provisionDefaultEmails`, and **all 15 appeared immediately**. Provisioning is solid;
+  the delay is just the timer.
+- **Design renders correctly.** Previewed `order-refunded` + `subscription-confirmed`:
+  ember brand bar → heading → the rounded tinted **card with the semantic status cue**
+  (`✓ Refunded` / `✓ Active`) → ember CTA → reassurance line. The redesign is intact for
+  the new emails.
+
+**Bugs found + fixed (uncommitted):**
+
+- **P4 billing CTA was doubly broken:** it pointed at `/settings/billing` on
+  `https://sparx.works` (the _marketing_ site — api-rest's `SPARX_DASHBOARD_URL` has no
+  default, so the fallback was wrong) **and** no such route existed. Fixed: the fallback
+  now defaults to `https://app.sparx.works` (matching `services/domain-worker`), and a new
+  redirect route `apps/workbench/app/settings/billing/page.tsx` translates `/settings/billing`
+  → the `finance.subscription` pane ("Your sparx bill"), per the readable-path convention.
+- **P2 subscription CTA → `/account/subscriptions` (storefront) 404'd** — no such page.
+  Repointed to `/account` (exists) as a non-dead interim. **Follow-up:** a real customer
+  `/account/subscriptions` storefront page (skip / change date / pause / cancel) — the
+  feature the copy promises — does not exist and should be built.
+
+**Open, needs verification / decision:**
+
+- **Wordmark showed "sparx", not the tenant brand,** in the studio preview (brand bar +
+  button were ember = sparx primary too). Likely the preview rendering with sparx defaults
+  rather than injecting tenant brand — needs a real test-send to confirm the send path
+  resolves the tenant logo/name. 🔎
+- **Stale data on the Template tenant (pre-existing):** duplicate rows — both
+  `Appointment confirmation/reminder/cancelled` (old) and `Booking …` (new), plus four
+  `Welcome` entries. Orphans from the appointment→booking rename + welcome seeding; a
+  cleanup pass is warranted.
+- **The redesign does NOT auto-apply to seeded/edited rows** (by design — the
+  fingerprint refresh won't clobber non-pristine rows). A tenant like Template whose
+  defaults were seeded custom will keep old bodies unless explicitly reset.
+
+## 7. Email studio ↔ Preview fidelity (2026-07-26)
+
+Question raised: "why is the builder not rendering the email like our preview does — is
+that silicaui's fault?" **Answer: not silicaui's fault.** The divergence was two things,
+one ours (now fixed), one a genuine silica gap.
+
+**How brand colour reaches the canvas (verified end-to-end in silicaui 0.33):** every
+default-email node carries `*Auto` flags + optional `*Role` (`silica-email-kit.ts`).
+silica's `EmailBuilder` runs `editor.setColorDefaults(resolveEmailColorDefaults(theme))`
+on every `theme` change, which **repaints every node still on its default** (`<field>Auto
+=== true`), resolving each node's role via `AUTO_COLOR_FIELDS` (button bg → `primary`,
+section bg → `base100`, …). Those defaults are **identical** to the send's
+`applyBrandColors` (`@sparx/email/silica/brand-colors.ts`) role map. So canvas colour ==
+send colour **iff** `resolveEmailColorDefaults(canvasTheme)` == `roleMap(sendBrand)`.
+`resolveEmailColorDefaults` reads `--color-{primary,base-100/200/300,base-content,success,
+warning,info,error,…}` off the theme tokens (`silicaui-html` `colorValue`), and
+`compiledToSilicaTheme` emits all of them.
+
+**Fix 1 — colour parity (ours).** The compiled theme's semantic tokens
+(`--color-success` etc.) differ from the send's **FIXED** semantic constants (a success is
+green for everyone). The email studio now overlays `EMAIL_SEMANTIC_TOKENS` (= the send's
+`SEMANTIC`, duplicated with a keep-in-sync note) onto the canvas theme, so the status cues
+(`✓ Confirmed` green, warning amber, error red) and the brand button/tint paint on the
+edit canvas exactly as the Preview/send does — not silica's neutral `DEFAULT_EMAIL_COLORS`
+(whose `primary` is `#111827`, the "black button" that was showing through).
+
+**Fix 2 — one toolbar (ours), mirroring the site Editor.** The studio previously stacked
+its own `PaneToolbar` **above** `<EmailBuilder>` (two headers). silica's `EmailBuilder`
+exposes `toolbarSlot` for exactly this (added to mirror the site `<Builder toolbarSlot>`);
+the switcher, lifecycle (rename/new/delete/customize), status badge, and Preview/Publish/
+Save now ride in silica's own editor header — structurally identical to
+`studio-surface.tsx`. `apps/workbench/surfaces/builder/email/email-editor.tsx`.
+
+**Fix 3 — the FRAME, now CLOSED (silicaui 0.34).** The brand bar + wordmark + tiered
+legal footer are composed at **send** by `composeSendDocument` (`@sparx/email/silica`),
+deliberately **outside** the editable body (so an author can't delete the compliance
+footer and the frame always reflects the current per-site brand). Originally the email
+`EmailBuilder` had **no frame concept at all** and no locked/pinned section, so the canvas
+couldn't show it — a genuine silica gap. **silicaui 0.34 shipped the fix we specified: an
+`EmailBuilder`/`EmailCanvas`/`EmailPreview` `frame` prop** — host-owned `EmailFrame`
+(`{header: SectionNode[], footer: SectionNode[], label}`) that renders ABOVE/BELOW the
+authored body as **inert, un-editable chrome** (no selection/drag/edit, never enters the
+document, re-supplied every mount), plus `composeEmailDocument(doc, frame)` for the send
+path. Wired in:
+
+- `packages/email/src/silica/frame.ts` — extracted **`buildEmailFrame(opts): EmailFrame`**
+  as the SINGLE source of truth (brand bar + wordmark → `header`, tiered footer →
+  `footer`); `composeSendDocument` now splices that same frame, so send and canvas can't
+  diverge. Exported from `@sparx/email/silica` (+ `EmailFrame` type re-export).
+- `packages/email-platform/src/services/builder-email-service.ts` — `buildFrame(ctx,
+propertyId, footerLinks)` resolves the active site's brand (`resolveEmailBrand`, same as
+  the preview/send) → `buildEmailFrame`.
+- `services/api-rest/src/routes/v1/builder/emails.ts` — `GET /v1/builder/emails/frame`
+  (static route, matched ahead of `/:id`) resolves footer links (`resolveEmailFooterLinks`)
+  - returns the frame.
+- workbench `email-data.ts` `useEmailFrame()` + `email-editor.tsx` passes
+  `frame={frame.data}` to `<EmailBuilder>` (a live render prop — streams in, no mount gate).
+
+The catalog was bumped `^0.33.0 → ^0.34.0` (all 11 `@wizeworks/silicaui*` entries) and
+installed. **Net: the edit canvas now shows the full email — brand bar, wordmark, branded
+body (colours + semantic status), and the legal footer — matching the Preview/send, with
+the frame still un-deletable and always current-brand.**
