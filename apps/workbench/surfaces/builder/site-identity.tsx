@@ -116,7 +116,7 @@ export function SiteIdentitySurface({ ctx }: { ctx: SurfaceContext }) {
   // Key on the site id so switching sites (a reload, in practice) can never carry
   // one site's draft into another's editor.
   return (
-    <MediaPickerProvider>
+    <MediaPickerProvider source="brand">
       <IdentityEditor
         key={propertyQuery.data.id}
         ctx={ctx}

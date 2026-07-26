@@ -4,6 +4,7 @@ import {
   productSiteVisibilityWhere,
   collectionSiteVisibilityWhere,
   categorySiteVisibilityWhere,
+  mediaSiteVisibilityWhere,
   defaultPropertyIdsToActiveSite,
 } from './property.js';
 
@@ -32,6 +33,25 @@ describe('site-visibility where fragments', () => {
     // would vanish from every site at once.
     const and = collectionSiteVisibilityWhere(PROP).AND as { OR: unknown[] }[];
     expect(and[0]!.OR).toContainEqual({ propertyLinks: { none: {} } });
+  });
+});
+
+// Media uses a DIFFERENT shape from the catalog Model-B entities above: a direct
+// nullable `property_id` (like SocialConnection), not a propertyLinks join. So its
+// visibility is "this site OR shared (property_id IS NULL)". This locks that the
+// NULL/shared arm is present — dropping it would hide every shared asset AND every
+// legacy asset (all NULL) from every picker at once, the same class of silent
+// data-hiding bug the Model-B test guards against.
+describe('mediaSiteVisibilityWhere — direct-column (this site OR shared)', () => {
+  it('produces the "this site OR NULL/shared" shape', () => {
+    expect(mediaSiteVisibilityWhere(PROP)).toEqual({
+      AND: [{ OR: [{ propertyId: PROP }, { propertyId: null }] }],
+    });
+  });
+
+  it('keeps the shared arm — the default that must never be dropped', () => {
+    const and = mediaSiteVisibilityWhere(PROP).AND as { OR: unknown[] }[];
+    expect(and[0]!.OR).toContainEqual({ propertyId: null });
   });
 });
 

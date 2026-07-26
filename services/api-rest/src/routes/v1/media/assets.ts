@@ -18,6 +18,7 @@ import { requireRole } from '@sparx/api-core/auth';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { getStorage } from '../../../lib/storage.js';
+import { mediaSiteVisibilityWhere, resolveListScope } from '../../../lib/property.js';
 import { conflict, notFound } from '@sparx/api-core/errors';
 
 const ListQuery = z.object({
@@ -49,6 +50,15 @@ const ListQuery = z.object({
   // "video", "audio") so the dashboard's asset picker can scope to type
   // without doing the substring match client-side.
   type: z.string().max(63).optional(),
+  // Site scope (docs/49). Absent → the active site (`x-sparx-property-id`), which is
+  // the picker's default so it only shows this site's media + shared. `all` reads
+  // across every site the actor may see. An explicit id targets one site.
+  property: z.string().max(64).optional(),
+  // Auto-group filter (docs/49) — 'brand' | 'product' | 'marketing' | 'content'. The
+  // picker's group tabs pass this; absent = every group.
+  source: z.string().max(32).optional(),
+  // Manual-collection filter (docs/49) — only assets pinned to this collection.
+  collection: z.string().uuid().optional(),
   // `limit` is a legacy alias for `take`, still used by the asset-picker
   // modal's single bulk fetch — offset pagination (`take`/`skip` + `total`)
   // is what the media library list page uses, matching every other list.
@@ -84,6 +94,7 @@ interface AssetRow {
   altText: string | null;
   caption: string | null;
   status: string;
+  source: string | null;
   processingError: string | null;
   usageCount: number;
   createdAt: Date;
@@ -120,6 +131,7 @@ function serializeAsset(row: AssetRow, variants: VariantRow[] = []) {
     alt_text: row.altText,
     caption: row.caption,
     status: row.status,
+    source: row.source,
     processing_error: row.processingError,
     usage_count: row.usageCount,
     // Originals are private — the dashboard fetches them via a separate
@@ -161,16 +173,27 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
   // ──────────────────────────────────────────────────────────────────────
 
   app.get('/v1/media/assets', async (request) => {
-    requireRole(request, 'viewer');
+    const auth = requireRole(request, 'viewer');
     const q = ListQuery.parse(request.query);
     const take = Math.min(q.take ?? q.limit ?? 50, 250);
     const skip = q.skip ?? 0;
+
+    // Site scope (docs/49) — this site's media + shared (property_id NULL). SKIPPED
+    // when resolving an explicit id set: those resolve by id regardless of the active
+    // site, so an asset referenced by a product/page never vanishes just because a
+    // different site is in focus (the same N+1-avoiding path the composer galleries use).
+    const scope = q.ids
+      ? undefined
+      : await resolveListScope(auth, q.property, request.headers['x-sparx-property-id']);
 
     const where: Prisma.MediaAssetWhereInput = {
       deletedAt: null,
       ...(q.ids ? { id: { in: q.ids } } : {}),
       ...(q.status ? { status: q.status } : {}),
       ...(q.type ? { mimeType: { startsWith: q.type } } : {}),
+      // 'none' is the "Uploaded" group — assets with no source label (source IS NULL).
+      ...(q.source ? (q.source === 'none' ? { source: null } : { source: q.source }) : {}),
+      ...(q.collection ? { collections: { some: { collectionId: q.collection } } } : {}),
       ...(q.q
         ? {
             OR: [
@@ -180,6 +203,7 @@ const mediaAssetRoutes: FastifyPluginAsync = (app) => {
             ],
           }
         : {}),
+      ...(scope ? mediaSiteVisibilityWhere(scope) : {}),
     };
 
     const [page, total] = await withRequestTenant(request, (tx) =>

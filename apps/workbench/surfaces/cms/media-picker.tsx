@@ -22,6 +22,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -34,11 +35,18 @@ import {
   DialogContent,
   DialogDescription,
   DialogTitle,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  Input,
   SearchInput,
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ImageOff, ImagePlus, Plus, Trash2, Upload } from 'lucide-react';
+import { Check, FolderPlus, ImageOff, ImagePlus, Plus, Trash2, Upload } from 'lucide-react';
 import { PaneScope } from '../../lib/dock/window-boundary';
 import {
   fetchAsset,
@@ -47,6 +55,12 @@ import {
   useUploadMedia,
   type MediaAsset,
 } from './media';
+import {
+  useAddToCollection,
+  useCreateCollection,
+  useMediaCollections,
+  useRemoveFromCollection,
+} from './media-collections';
 
 /** What `pick()` resolves to — enough for a field (id) AND for an in-body image
  *  (a real src to render). */
@@ -56,9 +70,12 @@ export interface PickedAsset {
   filename: string;
 }
 
-const MediaPickerContext = createContext<{ pick: () => Promise<PickedAsset | null> } | null>(null);
+const MediaPickerContext = createContext<{
+  pick: () => Promise<PickedAsset | null>;
+  pickMany: () => Promise<PickedAsset[] | null>;
+} | null>(null);
 
-/** Open the shared picker and await a choice. Must be used under a
+/** Open the shared picker for a SINGLE choice and await it. Must be used under a
  *  `MediaPickerProvider` — every content field is, so this never throws in
  *  practice. */
 export function useMediaPicker(): () => Promise<PickedAsset | null> {
@@ -69,34 +86,77 @@ export function useMediaPicker(): () => Promise<PickedAsset | null> {
   return ctx.pick;
 }
 
-export function MediaPickerProvider({ children }: { children: ReactNode }) {
+/** Open the shared picker for MANY choices at once and await them, in the order
+ *  they were selected — for a carousel field where the old flow forced a
+ *  one-at-a-time "pick, reopen, pick" loop. Resolves null on cancel, [] never
+ *  (the confirm button is disabled with nothing selected). */
+export function useMediaMultiPicker(): () => Promise<PickedAsset[] | null> {
+  const ctx = useContext(MediaPickerContext);
+  if (!ctx) {
+    throw new Error('useMediaMultiPicker must be used within a MediaPickerProvider.');
+  }
+  return ctx.pickMany;
+}
+
+/** The auto-group an upload made in THIS provider belongs to (docs/49) — the surface
+ *  sets it so a picture uploaded from the logo slot is Brand, from the social composer
+ *  is Marketing, etc., with no filing. Absent = a plain "Uploaded" library file. */
+export type MediaSource = 'brand' | 'product' | 'marketing' | 'content';
+
+export function MediaPickerProvider({
+  children,
+  source,
+}: {
+  children: ReactNode;
+  source?: MediaSource;
+}) {
   const [open, setOpen] = useState(false);
-  const resolverRef = useRef<((asset: PickedAsset | null) => void) | null>(null);
+  const [multiple, setMultiple] = useState(false);
+  // One resolver handles both modes; `pick`/`pickMany` normalize what it settles
+  // to their own promise's shape, so storing the wider union stays type-safe.
+  const resolverRef = useRef<((result: PickedAsset | PickedAsset[] | null) => void) | null>(null);
 
   const pick = useCallback(
     () =>
       new Promise<PickedAsset | null>((resolve) => {
-        resolverRef.current = resolve;
+        resolverRef.current = (result) => {
+          resolve(Array.isArray(result) ? (result[0] ?? null) : result);
+        };
+        setMultiple(false);
         setOpen(true);
       }),
     []
   );
 
-  const settle = useCallback((asset: PickedAsset | null) => {
-    resolverRef.current?.(asset);
+  const pickMany = useCallback(
+    () =>
+      new Promise<PickedAsset[] | null>((resolve) => {
+        resolverRef.current = (result) => {
+          resolve(result == null ? null : Array.isArray(result) ? result : [result]);
+        };
+        setMultiple(true);
+        setOpen(true);
+      }),
+    []
+  );
+
+  const settle = useCallback((result: PickedAsset | PickedAsset[] | null) => {
+    resolverRef.current?.(result);
     resolverRef.current = null;
     setOpen(false);
   }, []);
 
-  const value = useMemo(() => ({ pick }), [pick]);
+  const value = useMemo(() => ({ pick, pickMany }), [pick, pickMany]);
 
   return (
     <MediaPickerContext.Provider value={value}>
       {children}
       {open ? (
         <MediaPickerDialog
-          onPick={(asset) => {
-            settle(asset);
+          multiple={multiple}
+          source={source}
+          onResolve={(result) => {
+            settle(result);
           }}
           onCancel={() => {
             settle(null);
@@ -109,31 +169,130 @@ export function MediaPickerProvider({ children }: { children: ReactNode }) {
 
 /* ── The browser dialog ─────────────────────────────────────────────────── */
 
+// The picker's automatic groups (docs/49), derived from each asset's upload `source`
+// — no manual filing. `filter` is the value sent to the library query; `undefined`
+// is "All", `'none'` is the "Uploaded" bucket (source IS NULL). Shown as a fixed row
+// so the organization is always legible, even when a group is momentarily empty.
+const MEDIA_GROUPS: { label: string; filter: string | undefined }[] = [
+  { label: 'All', filter: undefined },
+  { label: 'Brand', filter: 'brand' },
+  { label: 'Product', filter: 'product' },
+  { label: 'Marketing', filter: 'marketing' },
+  { label: 'Content', filter: 'content' },
+  { label: 'Uploaded', filter: 'none' },
+];
+
 function MediaPickerDialog({
-  onPick,
+  multiple,
+  source,
+  onResolve,
   onCancel,
 }: {
-  onPick: (asset: PickedAsset) => void;
+  multiple: boolean;
+  source?: MediaSource;
+  onResolve: (result: PickedAsset | PickedAsset[]) => void;
   onCancel: () => void;
 }) {
   const toast = useToast();
   const [search, setSearch] = useState('');
-  const library = useMediaLibrary(search, true);
-  const upload = useUploadMedia();
+  // What's being browsed. A source auto-group (`group`) and a manual `collectionId`
+  // are mutually exclusive selections — picking one clears the other. Independent of
+  // `source`, which is where a NEW upload is FILED, not what you're looking at.
+  const [group, setGroup] = useState<string | undefined>(undefined);
+  const [collectionId, setCollectionId] = useState<string | undefined>(undefined);
+  const library = useMediaLibrary(search, true, group, collectionId);
+  const upload = useUploadMedia(source);
   const fileRef = useRef<HTMLInputElement | null>(null);
+  // Multi-select only: the running selection, kept in the order tiles were
+  // tapped so a carousel publishes in the order the operator built it.
+  const [selected, setSelected] = useState<PickedAsset[]>([]);
+
+  // Collections (the manual "boards"). Loaded alongside the grid; the group row
+  // lists them, and each tile's menu adds/removes membership.
+  const collections = useMediaCollections();
+  const createCollection = useCreateCollection();
+  const addToCollection = useAddToCollection();
+  const removeFromCollection = useRemoveFromCollection();
+  const [creatingCollection, setCreatingCollection] = useState(false);
+  const [newCollectionName, setNewCollectionName] = useState('');
+  const newCollectionRef = useRef<HTMLInputElement>(null);
+  const collectionList = collections.data ?? [];
+  const activeCollection = collectionList.find((c) => c.id === collectionId);
+
+  // Focus the name field the moment the inline "New collection" input appears — the
+  // user just clicked to make one, so they mean to type immediately.
+  useEffect(() => {
+    if (creatingCollection) newCollectionRef.current?.focus();
+  }, [creatingCollection]);
+
+  const showSource = (value: string | undefined) => {
+    setGroup(value);
+    setCollectionId(undefined);
+  };
+  const showCollection = (id: string) => {
+    setCollectionId(id);
+    setGroup(undefined);
+  };
+  const submitNewCollection = () => {
+    const name = newCollectionName.trim();
+    if (!name) return;
+    createCollection.mutate(name, {
+      onSuccess: (created) => {
+        setCreatingCollection(false);
+        setNewCollectionName('');
+        showCollection(created.id);
+      },
+      onError: () => {
+        toast.add({ title: 'Could not create that collection', type: 'error' });
+      },
+    });
+  };
+  const addAssetTo = (assetId: string, id: string, name: string) => {
+    addToCollection.mutate(
+      { collectionId: id, assetIds: [assetId] },
+      {
+        onSuccess: () => {
+          toast.add({ title: `Saved to ${name}`, type: 'success' });
+        },
+        onError: () => {
+          toast.add({ title: 'Could not save that picture', type: 'error' });
+        },
+      }
+    );
+  };
+  const removeAssetFrom = (assetId: string) => {
+    if (!collectionId) return;
+    removeFromCollection.mutate({ collectionId, assetId });
+  };
 
   const assets = library.data ?? [];
+
+  // In single mode a chosen file resolves immediately; in multi mode it joins
+  // the running selection so the operator can keep adding before confirming.
+  const takePicked = (asset: PickedAsset) => {
+    if (multiple) {
+      setSelected((prev) => (prev.some((p) => p.id === asset.id) ? prev : [...prev, asset]));
+    } else {
+      onResolve(asset);
+    }
+  };
+
+  const toggle = (asset: PickedAsset) => {
+    setSelected((prev) =>
+      prev.some((p) => p.id === asset.id) ? prev.filter((p) => p.id !== asset.id) : [...prev, asset]
+    );
+  };
 
   const onFile = (file: File | undefined) => {
     if (!file) return;
     upload.mutate(file, {
       onSuccess: (assetId) => {
-        // Resolve the newly uploaded file's URL so it can be inserted straight
-        // away — it is almost always the one they wanted, and an in-body image
-        // needs a real src, not just an id.
+        // Resolve the newly uploaded file's URL so it can be used straight away —
+        // it is almost always the one they wanted, and an in-body image needs a
+        // real src, not just an id.
         fetchAsset(assetId)
           .then((asset) => {
-            onPick({ id: asset.id, url: asset.url, filename: asset.filename });
+            takePicked({ id: asset.id, url: asset.url, filename: asset.filename });
           })
           .catch(() => {
             toast.add({
@@ -165,10 +324,11 @@ function MediaPickerDialog({
       >
         <DialogContent className="flex max-h-[calc(100%-2rem)] w-full max-w-2xl flex-col gap-3">
           <div className="flex flex-col gap-1">
-            <DialogTitle>Choose a picture</DialogTitle>
+            <DialogTitle>{multiple ? 'Choose pictures' : 'Choose a picture'}</DialogTitle>
             <DialogDescription>
-              Pick one from your library, or upload a new one. Your choice is not saved until you
-              save the whole page.
+              {multiple
+                ? 'Tap as many as you want — they are added in the order you tap them. Upload a new one, or pick from your library. Nothing is saved until you save the whole page.'
+                : 'Pick one from your library, or upload a new one. Your choice is not saved until you save the whole page.'}
             </DialogDescription>
           </div>
 
@@ -207,6 +367,92 @@ function MediaPickerDialog({
             </Button>
           </div>
 
+          {/* Groups: automatic (source, docs/49) + manual collections + a make-new.
+              A source group and a collection are mutually exclusive selections. */}
+          <div
+            className="flex flex-wrap items-center gap-1"
+            role="tablist"
+            aria-label="Picture groups"
+          >
+            {MEDIA_GROUPS.map((g) => {
+              const active = !collectionId && group === g.filter;
+              return (
+                <Button
+                  key={g.label}
+                  size="sm"
+                  role="tab"
+                  aria-selected={active}
+                  variant={active ? 'soft' : 'ghost'}
+                  color={active ? 'module' : 'neutral'}
+                  onClick={() => {
+                    showSource(g.filter);
+                  }}
+                >
+                  {g.label}
+                </Button>
+              );
+            })}
+
+            {collectionList.length > 0 ? (
+              <span className="bg-base-300 mx-1 h-5 w-px" aria-hidden />
+            ) : null}
+            {collectionList.map((c) => {
+              const active = collectionId === c.id;
+              return (
+                <Button
+                  key={c.id}
+                  size="sm"
+                  role="tab"
+                  aria-selected={active}
+                  variant={active ? 'soft' : 'ghost'}
+                  color={active ? 'module' : 'neutral'}
+                  onClick={() => {
+                    showCollection(c.id);
+                  }}
+                >
+                  {c.name}
+                  <span className="opacity-60">{c.itemCount}</span>
+                </Button>
+              );
+            })}
+
+            {creatingCollection ? (
+              <Input
+                ref={newCollectionRef}
+                size="sm"
+                color="module"
+                className="w-40"
+                placeholder="Collection name…"
+                value={newCollectionName}
+                onChange={(event) => {
+                  setNewCollectionName(event.target.value);
+                }}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter') submitNewCollection();
+                  if (event.key === 'Escape') {
+                    setCreatingCollection(false);
+                    setNewCollectionName('');
+                  }
+                }}
+                onBlur={() => {
+                  if (!newCollectionName.trim()) setCreatingCollection(false);
+                }}
+              />
+            ) : (
+              <Button
+                size="sm"
+                variant="ghost"
+                color="neutral"
+                onClick={() => {
+                  setCreatingCollection(true);
+                }}
+              >
+                <FolderPlus className="size-4" aria-hidden />
+                New collection
+              </Button>
+            )}
+          </div>
+
           <div className="min-h-0 flex-1 overflow-y-auto">
             {library.isError ? (
               <div className="flex flex-col items-start gap-2 p-4">
@@ -232,53 +478,154 @@ function MediaPickerDialog({
                 <Text>
                   {search
                     ? `No pictures match “${search.trim()}”.`
-                    : 'No pictures yet — upload one to get started.'}
+                    : activeCollection
+                      ? `“${activeCollection.name}” is empty — save pictures to it with the folder button on each one.`
+                      : group
+                        ? 'No pictures in this group yet.'
+                        : 'No pictures yet — upload one to get started.'}
                 </Text>
               </div>
             ) : (
               <ul className="grid grid-cols-3 gap-2 @md:grid-cols-4 @2xl:grid-cols-5">
-                {assets.map((asset) => (
-                  <li key={asset.id}>
-                    <button
-                      type="button"
-                      aria-label={`Choose ${asset.filename}`}
-                      className="bg-base-200 rounded-box relative aspect-square w-full overflow-hidden"
-                      onClick={() => {
-                        onPick({ id: asset.id, url: asset.url, filename: asset.filename });
-                      }}
-                    >
-                      {asset.url ? (
-                        <Image
-                          src={asset.url}
-                          alt=""
-                          fill
-                          sizes="160px"
-                          className="object-cover"
-                          // Rendered unoptimized: these are small thumbnails of
-                          // CROSS-ORIGIN tenant media, where the image optimizer's
-                          // host allow-list is environment-fragile (and rejects a
-                          // legitimately-served original outright) — a broken tile
-                          // plus a console error is worse than the browser scaling
-                          // an already-small file. Same reason `next/image`'s host
-                          // check is a correctness risk for stranger-CDN assets.
-                          unoptimized
-                        />
-                      ) : (
-                        <span className="flex h-full items-center justify-center">
-                          <ImageOff className="size-4" aria-hidden />
-                        </span>
-                      )}
-                    </button>
-                  </li>
-                ))}
+                {assets.map((asset) => {
+                  const picked: PickedAsset = {
+                    id: asset.id,
+                    url: asset.url,
+                    filename: asset.filename,
+                  };
+                  const order = multiple ? selected.findIndex((p) => p.id === asset.id) : -1;
+                  const isSelected = order >= 0;
+                  return (
+                    <li key={asset.id} className="relative">
+                      <button
+                        type="button"
+                        aria-label={
+                          multiple
+                            ? `${isSelected ? 'Remove' : 'Add'} ${asset.filename}`
+                            : `Choose ${asset.filename}`
+                        }
+                        aria-pressed={multiple ? isSelected : undefined}
+                        className={`bg-base-200 rounded-box relative aspect-square w-full overflow-hidden ${
+                          isSelected ? 'ring-module ring-2' : ''
+                        }`}
+                        onClick={() => {
+                          if (multiple) toggle(picked);
+                          else onResolve(picked);
+                        }}
+                      >
+                        {asset.url ? (
+                          <Image
+                            src={asset.url}
+                            alt=""
+                            fill
+                            sizes="160px"
+                            className="object-cover"
+                            // Rendered unoptimized: these are small thumbnails of
+                            // CROSS-ORIGIN tenant media, where the image optimizer's
+                            // host allow-list is environment-fragile (and rejects a
+                            // legitimately-served original outright) — a broken tile
+                            // plus a console error is worse than the browser scaling
+                            // an already-small file. Same reason `next/image`'s host
+                            // check is a correctness risk for stranger-CDN assets.
+                            unoptimized
+                          />
+                        ) : (
+                          <span className="flex h-full items-center justify-center">
+                            <ImageOff className="size-4" aria-hidden />
+                          </span>
+                        )}
+                        {isSelected ? (
+                          <span
+                            className="bg-module text-module-content absolute top-1 right-1 flex size-5 items-center justify-center rounded-full text-xs font-semibold"
+                            aria-hidden
+                          >
+                            {order + 1}
+                          </span>
+                        ) : null}
+                      </button>
+
+                      {/* Save-to-collection menu — a SIBLING of the pick button (not
+                          nested: a button in a button is invalid), so opening it never
+                          picks the tile. The "board" a picture goes on. */}
+                      <DropdownMenu>
+                        <DropdownMenuTrigger>
+                          <Button
+                            size="xs"
+                            shape="square"
+                            variant="soft"
+                            color="neutral"
+                            className="absolute top-1 left-1"
+                            aria-label={`Save ${asset.filename} to a collection`}
+                          >
+                            <FolderPlus className="size-3.5" aria-hidden />
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="start">
+                          {activeCollection ? (
+                            <>
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  removeAssetFrom(asset.id);
+                                }}
+                              >
+                                <Trash2 className="size-4" aria-hidden />
+                                Remove from {activeCollection.name}
+                              </DropdownMenuItem>
+                              <DropdownMenuSeparator />
+                            </>
+                          ) : null}
+                          <DropdownMenuLabel>Save to collection</DropdownMenuLabel>
+                          {collectionList.length === 0 ? (
+                            <DropdownMenuItem disabled>
+                              No collections yet — make one above
+                            </DropdownMenuItem>
+                          ) : (
+                            collectionList.map((c) => (
+                              <DropdownMenuItem
+                                key={c.id}
+                                onClick={() => {
+                                  addAssetTo(asset.id, c.id, c.name);
+                                }}
+                              >
+                                {c.name}
+                              </DropdownMenuItem>
+                            ))
+                          )}
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </div>
 
-          <div className="flex justify-end">
-            <Button size="sm" variant="ghost" color="neutral" onClick={onCancel}>
-              Cancel
-            </Button>
+          <div className="flex items-center justify-end gap-2">
+            {multiple ? (
+              <>
+                <Text className="mr-auto text-sm">
+                  {selected.length > 0 ? `${selected.length} selected` : 'Nothing selected yet'}
+                </Text>
+                <Button size="sm" variant="ghost" color="neutral" onClick={onCancel}>
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  color="module"
+                  disabled={selected.length === 0}
+                  onClick={() => {
+                    onResolve(selected);
+                  }}
+                >
+                  <Check className="size-4" aria-hidden />
+                  {selected.length === 1 ? 'Add 1 picture' : `Add ${selected.length} pictures`}
+                </Button>
+              </>
+            ) : (
+              <Button size="sm" variant="ghost" color="neutral" onClick={onCancel}>
+                Cancel
+              </Button>
+            )}
           </div>
         </DialogContent>
       </Dialog>
@@ -351,6 +698,7 @@ export function AssetField({
   disabled?: boolean;
 }) {
   const pick = useMediaPicker();
+  const pickMany = useMediaMultiPicker();
   const ids = useMemo(() => asIds(value, multiple), [value, multiple]);
   const assetsQuery = useMediaAssets(ids);
 
@@ -361,11 +709,16 @@ export function AssetField({
   }, [assetsQuery.data]);
 
   const choose = async () => {
-    const picked = await pick();
-    if (!picked) return;
     if (multiple) {
-      if (!ids.includes(picked.id)) onChange([...ids, picked.id]);
+      // Multi-select: pick a whole batch at once, appended in tap order, and drop
+      // any already on the field so re-opening never duplicates.
+      const picked = await pickMany();
+      if (!picked) return;
+      const additions = picked.map((p) => p.id).filter((id) => !ids.includes(id));
+      if (additions.length > 0) onChange([...ids, ...additions]);
     } else {
+      const picked = await pick();
+      if (!picked) return;
       onChange(picked.id);
     }
   };

@@ -1243,6 +1243,9 @@ export function useUploadMedia() {
         filename: file.name,
         mime_type: file.type,
         byte_size: file.size,
+        // Everything uploaded here is a product image — files it into the picker's
+        // "Product" auto-group (docs/49).
+        source: 'product',
       });
 
       const { apiUrl } = await getTokenState();

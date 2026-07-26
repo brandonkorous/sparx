@@ -7,6 +7,23 @@
 model MediaAsset {
   id               String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   tenantId         String    @map("tenant_id") @db.Uuid
+  // The site this asset belongs to (docs/49 site-scoping; mirrors SocialConnection).
+  // A tenant can own more than one unrelated business, and their brand/product media
+  // must NOT bleed across sites in the picker. NULL = tenant-wide/shared (a group
+  // logo used everywhere, and every asset that predates this column). The library
+  // browse scopes to `property_id = <active site> OR property_id IS NULL`; a NEW
+  // upload is stamped with the site it was uploaded from. onDelete: SetNull — media
+  // is a reusable library asset that may be referenced elsewhere, so deleting a site
+  // FREES its media (back to shared), never destroys it.
+  propertyId       String?   @map("property_id") @db.Uuid
+  // What KIND of thing this asset is, for the picker's automatic groups (docs/49).
+  // Stamped at upload from the surface it came from — 'brand' (logo/identity),
+  // 'product' (a product image), 'marketing' (social/ads), 'content' (CMS body /
+  // author) — so a non-technical owner gets Brand / Product / Marketing groupings
+  // with ZERO manual filing. NULL = a plain library upload ("Uploaded"). A soft
+  // label for grouping only, never a permission boundary; free-form VarChar so the
+  // set can grow without a migration.
+  source           String?   @db.VarChar(32)
   key              String    @db.VarChar(1024)
   originalFilename String    @map("original_filename") @db.VarChar(512)
   mimeType         String    @map("mime_type") @db.VarChar(127)
@@ -28,13 +45,58 @@ model MediaAsset {
   deletedAt        DateTime? @map("deleted_at") @db.Timestamptz
 
   tenant        Tenant             @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property      Property?          @relation(fields: [propertyId], references: [id], onDelete: SetNull)
   variants      MediaVariant[]
   refsTo        ContentReference[]
   authorAvatars Author[]
+  collections   MediaAssetCollection[]
 
   @@index([tenantId, status])
   @@index([tenantId, updatedAt(sort: Desc)])
+  // The scoped library browse: tenant + (this site OR shared), newest first.
+  @@index([tenantId, propertyId, updatedAt(sort: Desc)])
   @@map("media_assets")
+}
+
+// A named, manual collection of media (docs/49) — the "boards" a tenant makes by
+// hand ("Spring campaign", "Hero shots"), ON TOP of the automatic source groups. A
+// collection belongs to one site (property_id) or is shared tenant-wide (NULL), the
+// same scoping as MediaAsset, so it only shows in the right site's picker. tenant_id
+// / property_id kept as plain columns (no relation field) — every query filters them
+// via RLS + withTenant, and the DB FKs are hand-added in the migration; nothing does
+// a relational include through them, so a back-relation on Tenant/Property would be
+// dead weight on those already-huge models.
+model MediaCollection {
+  id         String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String    @map("tenant_id") @db.Uuid
+  propertyId String?   @map("property_id") @db.Uuid
+  name       String    @db.VarChar(120)
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+  deletedAt  DateTime? @map("deleted_at") @db.Timestamptz
+
+  items MediaAssetCollection[]
+
+  @@index([tenantId, propertyId, name])
+  @@map("media_collections")
+}
+
+// The many-to-many between an asset and a collection — an image can live in several
+// collections at once (a hero shot is in "Spring campaign" AND "Homepage"), which is
+// exactly why collections are a join and not a single folder column. Both sides
+// cascade: dropping a collection or an asset removes the membership, never the other.
+model MediaAssetCollection {
+  tenantId     String   @map("tenant_id") @db.Uuid
+  collectionId String   @map("collection_id") @db.Uuid
+  assetId      String   @map("asset_id") @db.Uuid
+  addedAt      DateTime @default(now()) @map("added_at") @db.Timestamptz
+
+  collection MediaCollection @relation(fields: [collectionId], references: [id], onDelete: Cascade)
+  asset      MediaAsset      @relation(fields: [assetId], references: [id], onDelete: Cascade)
+
+  @@id([collectionId, assetId])
+  @@index([tenantId, assetId])
+  @@map("media_asset_collections")
 }
 
 model MediaVariant {

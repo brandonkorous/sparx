@@ -121,7 +121,7 @@ function EntryFields({
   return (
     // One media picker for the whole form — asset fields AND in-body images in
     // the rich-text editor share it through context.
-    <MediaPickerProvider>
+    <MediaPickerProvider source="content">
       <FormSection title="Content">
         <BodyFields fields={type.schema_json.fields} value={body} onChange={onBody} />
       </FormSection>

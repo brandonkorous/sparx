@@ -79,7 +79,7 @@ interface AuthorFieldsProps {
  *  picker the photo field opens. */
 function AuthorFields({ draft, onChange }: AuthorFieldsProps) {
   return (
-    <MediaPickerProvider>
+    <MediaPickerProvider source="content">
       <FormSection title="Name and web address">
         <Field>
           <FieldLabel>Name</FieldLabel>

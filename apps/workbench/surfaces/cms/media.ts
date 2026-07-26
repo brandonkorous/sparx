@@ -92,19 +92,34 @@ function clampUnit(value: number | null | undefined): number {
 
 export const mediaKeys = {
   all: ['cms', 'media'] as const,
-  library: (q: string) => [...mediaKeys.all, 'library', { q }] as const,
+  library: (q: string, source?: string, collection?: string) =>
+    [
+      ...mediaKeys.all,
+      'library',
+      { q, source: source ?? null, collection: collection ?? null },
+    ] as const,
   assets: (ids: string[]) => [...mediaKeys.all, 'assets', [...ids].sort().join(',')] as const,
 };
 
-/** Browse the picture library. Only fetched while the picker is open. */
-export function useMediaLibrary(search: string, enabled: boolean) {
+/** Browse the picture library. Only fetched while the picker is open. `source` scopes
+ *  to one auto-group (brand / product / marketing / content); `collection` scopes to a
+ *  manual collection; absent = all. The active-site scope is applied by the server off
+ *  `x-sparx-property-id`. */
+export function useMediaLibrary(
+  search: string,
+  enabled: boolean,
+  source?: string,
+  collection?: string
+) {
   return useQuery({
-    queryKey: mediaKeys.library(search),
+    queryKey: mediaKeys.library(search, source, collection),
     queryFn: async () => {
       const { items } = await api.list<MediaAssetWire>('/v1/media/assets', {
         type: 'image',
         status: 'ready',
         ...(search ? { q: search } : {}),
+        ...(source ? { source } : {}),
+        ...(collection ? { collection } : {}),
         take: 60,
       });
       return items.map(toAsset);
@@ -161,7 +176,7 @@ export async function fetchAsset(id: string): Promise<MediaAsset> {
  * invalidates the signature. The dev URL comes back RELATIVE (api-rest assumes a
  * proxy the workbench doesn't have), so it is resolved against the API origin.
  */
-export function useUploadMedia() {
+export function useUploadMedia(source?: string) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (file: File) => {
@@ -172,6 +187,9 @@ export function useUploadMedia() {
         filename: file.name,
         mime_type: file.type,
         byte_size: file.size,
+        // The auto-group this upload belongs to (docs/49), passed by the surface
+        // that opened the picker; omitted = a plain "Uploaded" library file.
+        ...(source ? { source } : {}),
       });
 
       const { apiUrl } = await getTokenState();

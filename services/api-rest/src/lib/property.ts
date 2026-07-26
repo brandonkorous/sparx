@@ -98,6 +98,17 @@ export function contentSiteVisibilityWhere(propertyId: string): Prisma.ContentEn
   };
 }
 
+/** Media-library visibility `where` fragment for the active site (docs/49). Media
+ *  carries a DIRECT nullable `property_id` (like SocialConnection), not the
+ *  many-to-many propertyLinks products/content use — an asset belongs to ONE site or
+ *  is shared tenant-wide. So visibility is "this site OR shared (NULL)": a site sees
+ *  its own uploads plus every shared asset, never another site's exclusive media.
+ *  Wrapped in `AND` (like contentSiteVisibilityWhere) so its `OR` never collides
+ *  with a search `OR` at the same object level in the list `where`. */
+export function mediaSiteVisibilityWhere(propertyId: string): Prisma.MediaAssetWhereInput {
+  return { AND: [{ OR: [{ propertyId }, { propertyId: null }] }] };
+}
+
 /** Collection visibility `where` fragment for the active site (docs/49 Model B) —
  *  the same "empty = all, pinned = only those" rule products use, so a collection
  *  scoped to specific sites never surfaces on the others. */

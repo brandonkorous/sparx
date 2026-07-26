@@ -20,6 +20,7 @@ import { requireRole } from '@sparx/api-core/auth';
 import { writeAudit } from '@sparx/api-core/audit';
 import { publish } from '@sparx/api-core/pubsub';
 import { getStorage, originalKey } from '../../../lib/storage.js';
+import { resolvePropertyId } from '../../../lib/property.js';
 import { badRequest, conflict, notFound } from '@sparx/api-core/errors';
 import { env } from '../../../env.js';
 
@@ -48,10 +49,16 @@ const ALLOWED_MIME = new Set([
   'application/pdf',
 ]);
 
+// The surface an upload came from, for the picker's automatic groups (docs/49). A
+// soft grouping label, never a permission boundary — an unknown/absent value just
+// reads as "Uploaded". Kept in sync with the workbench MEDIA_SOURCE labels.
+const MEDIA_SOURCES = ['brand', 'product', 'marketing', 'content'] as const;
+
 const CreateUploadBody = z.object({
   filename: z.string().min(1).max(255),
   mime_type: z.string().min(1).max(127),
   byte_size: z.coerce.number().int().positive().max(MAX_UPLOAD_BYTES),
+  source: z.enum(MEDIA_SOURCES).optional(),
 });
 
 // Content-type from a storage key's file extension — used by the local-mode
@@ -98,10 +105,24 @@ const uploadRoutes: FastifyPluginAsync = (app) => {
 
     const storage = getStorage();
 
+    // Stamp the site this upload belongs to (docs/49) so it stays out of OTHER sites'
+    // pickers. Resolves the active site from `x-sparx-property-id`, failing closed to
+    // the tenant's primary — a new asset always belongs to exactly one site (a tenant
+    // can later mark it shared). Existing assets predate this and are NULL = shared.
+    const activeHeader = request.headers['x-sparx-property-id'];
+    const propertyId = await resolvePropertyId(
+      auth,
+      Array.isArray(activeHeader) ? activeHeader[0] : activeHeader
+    );
+
     const { asset, presigned } = await withRequestTenant(request, async (tx) => {
       const created = await tx.mediaAsset.create({
         data: {
           tenantId: auth.tenantId,
+          propertyId,
+          // The picker-group label the calling surface passed (docs/49) — 'brand' /
+          // 'product' / 'marketing' / 'content', else NULL = "Uploaded".
+          source: input.source ?? null,
           // Key is finalised after we know the asset id (so it can include
           // /originals/<assetId>/<filename>).
           key: '',

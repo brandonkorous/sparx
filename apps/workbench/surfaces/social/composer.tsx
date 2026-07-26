@@ -1471,7 +1471,7 @@ function ComposerInner({ ctx }: { ctx: SurfaceContext }) {
 export function SocialComposerSurface({ ctx }: { ctx: SurfaceContext }) {
   // The media browser is mounted once here so the compose fields can open it.
   return (
-    <MediaPickerProvider>
+    <MediaPickerProvider source="marketing">
       <ComposerInner ctx={ctx} />
     </MediaPickerProvider>
   );

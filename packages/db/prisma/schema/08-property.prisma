@@ -228,6 +228,10 @@ model Property {
   pages        Page[]
   contentTypes ContentType[]
 
+  // Media library (docs/49 site-scoping). An asset belongs to one site, or is
+  // shared tenant-wide (property_id NULL); SetNull on delete keeps the asset.
+  mediaAssets MediaAsset[]
+
   // CRM audience (docs/131 §5) — a segment draws from one business's customers
   // and feeds its broadcasts. Nullable (a cross-business audience is real);
   // SegmentMember inherits and has no relation here.
