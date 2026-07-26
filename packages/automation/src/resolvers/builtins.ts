@@ -190,6 +190,65 @@ async function hydrateOrder(ctx: TenantCtx, orderId: string): Promise<ResolvedFi
   return fields;
 }
 
+// ─── subscription (commerce auto-ship) ───────────────────────────────────────
+
+async function hydrateSubscription(
+  ctx: TenantCtx,
+  subscriptionId: string
+): Promise<ResolvedFields> {
+  const s = await ctx.tx.subscription.findUnique({
+    where: { id: subscriptionId },
+    select: {
+      id: true,
+      status: true,
+      currency: true,
+      intervalUnit: true,
+      intervalCount: true,
+      currentPeriodEnd: true,
+      nextOccurrenceAt: true,
+      pausedUntil: true,
+      cancelledAt: true,
+      customerId: true,
+    },
+  });
+  if (!s) return {};
+  const fields: ResolvedFields = {
+    'subscription.id': s.id,
+    'subscription.status': s.status,
+    'subscription.currency': s.currency,
+    'subscription.intervalUnit': s.intervalUnit,
+    'subscription.intervalCount': s.intervalCount,
+    'subscription.currentPeriodEnd': s.currentPeriodEnd,
+    'subscription.nextOccurrenceAt': s.nextOccurrenceAt,
+    'subscription.pausedUntil': s.pausedUntil,
+    'subscription.isCancelled': s.cancelledAt !== null,
+  };
+  // Merge the customer so `customer.email` (the send recipient + the `is_set` guard)
+  // and `customer.id` (the entity ref) resolve. The subscription has no site of its
+  // own, so hydrateCustomer's PROPERTY_FIELD (the customer's site, or none) stands.
+  Object.assign(fields, await hydrateCustomer(ctx, s.customerId));
+  return fields;
+}
+
+// ─── return / RMA (docs/impl transactional-email §4 P3) ──────────────────────
+
+async function hydrateReturn(ctx: TenantCtx, returnId: string): Promise<ResolvedFields> {
+  const r = await ctx.tx.returnRequest.findUnique({
+    where: { id: returnId },
+    select: { id: true, status: true, preferredOutcome: true, orderId: true },
+  });
+  if (!r) return {};
+  const fields: ResolvedFields = {
+    'return.id': r.id,
+    'return.status': r.status,
+    'return.preferredOutcome': r.preferredOutcome,
+  };
+  // Merge the order (which merges its customer) so `customer.email` (recipient +
+  // `is_set` guard), `order.*`, and the `order.id` ref all resolve for the send.
+  Object.assign(fields, await hydrateOrder(ctx, r.orderId));
+  return fields;
+}
+
 // ─── registration ────────────────────────────────────────────────────────────
 
 const CUSTOMER_EVENTS = [
@@ -213,6 +272,25 @@ const ORDER_EVENTS = [
   'order.cancelled',
   'order.refunded',
 ];
+// Commerce subscription lifecycle (docs/implementation/transactional-email §4 P2).
+// Each carries `subscriptionId` in its payload; the resolver hydrates the row +
+// its customer so the lifecycle emails (and any tenant automation) resolve the
+// recipient and the subscription facts.
+const SUBSCRIPTION_EVENTS = [
+  'subscription.created',
+  'subscription.renewed',
+  'subscription.payment_failed',
+  'subscription.paused',
+  'subscription.resumed',
+  'subscription.cancelled',
+];
+// Returns / RMA lifecycle (docs/impl transactional-email §4 P3) — payload carries
+// `returnId`; the resolver hydrates the return + its order + customer.
+const RETURN_EVENTS = ['return.approved', 'return.received', 'return.refunded'];
+// B2B order approval outcomes (docs/impl transactional-email §4 P3) — the buyer's
+// pending order was approved (→ placed) or rejected (→ cancelled). Both carry
+// `orderId`, so they resolve through the order hydrator like any other order event.
+const B2B_ORDER_EVENTS = ['b2b.order.approved', 'b2b.order.rejected'];
 
 let installed = false;
 
@@ -232,6 +310,15 @@ export function installBuiltinResolvers(): void {
     registerResolver(ev, (ctx, p) => hydrateDeal(ctx, str(p.dealId ?? p.id)));
   }
   for (const ev of ORDER_EVENTS) {
+    registerResolver(ev, (ctx, p) => hydrateOrder(ctx, str(p.orderId ?? p.id)));
+  }
+  for (const ev of SUBSCRIPTION_EVENTS) {
+    registerResolver(ev, (ctx, p) => hydrateSubscription(ctx, str(p.subscriptionId ?? p.id)));
+  }
+  for (const ev of RETURN_EVENTS) {
+    registerResolver(ev, (ctx, p) => hydrateReturn(ctx, str(p.returnId ?? p.id)));
+  }
+  for (const ev of B2B_ORDER_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateOrder(ctx, str(p.orderId ?? p.id)));
   }
 

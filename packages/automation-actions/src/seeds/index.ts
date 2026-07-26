@@ -21,6 +21,8 @@ import {
   B2B_ACCOUNT_APPROVED,
   B2B_INVOICE_DUE_NUDGE,
   B2B_NEW_ACCOUNT_TASK,
+  B2B_ORDER_APPROVED_EMAIL,
+  B2B_ORDER_REJECTED_EMAIL,
   B2B_OVERDUE_ESCALATION,
   B2B_QUOTE_EXPIRING,
   B2B_QUOTE_RECEIVED,
@@ -36,6 +38,10 @@ import {
   COMMERCE_ABANDONED_CART_NUDGE,
   COMMERCE_HIGH_VALUE_ORDER_ALERT,
   COMMERCE_LOW_INVENTORY_ALERT,
+  COMMERCE_ORDER_CANCELLED_EMAIL,
+  COMMERCE_ORDER_DELIVERED_EMAIL,
+  COMMERCE_ORDER_REFUNDED_EMAIL,
+  COMMERCE_PAYMENT_FAILED_EMAIL,
   COMMERCE_POST_PURCHASE_REVIEW,
   COMMERCE_REFUND_CRM_NOTE,
 } from './commerce.js';
@@ -47,6 +53,15 @@ import {
   INVOICING_RECEIPT_ON_PAID,
   INVOICING_REMINDER_3D,
 } from './invoicing.js';
+import {
+  SUBSCRIPTION_CANCELLED_EMAIL,
+  SUBSCRIPTION_CONFIRMED_EMAIL,
+  SUBSCRIPTION_PAUSED_EMAIL,
+  SUBSCRIPTION_PAYMENT_FAILED_EMAIL,
+  SUBSCRIPTION_RENEWED_EMAIL,
+  SUBSCRIPTION_RESUMED_EMAIL,
+} from './subscriptions.js';
+import { RETURN_APPROVED_EMAIL, RETURN_RECEIVED_EMAIL, RETURN_REFUNDED_EMAIL } from './returns.js';
 import { CHAT_NO_RESPONSE_ALERT, CHAT_SATISFACTION_SURVEY } from './chat.js';
 import { INVENTORY_AUTO_REORDER } from './inventory.js';
 import { FORM_HANDLE_SUBMISSIONS } from './forms.js';
@@ -66,10 +81,12 @@ export interface SystemAutomationSeed {
 
 /**
  * Every platform-seeded system automation, grouped by owning module — the full
- * catalog (docs/90 §3b). 28 seeds: the no-email defaults (tags, tasks, notes,
+ * catalog (docs/90 §3b). 45 seeds: the no-email defaults (tags, tasks, notes,
  * internal staff alerts, the paused inventory auto-reorder) + the locked B2B
- * dunning + the 14 email-sending defaults that reference a provisioned
- * Builder-email template by `key`. An email seed
+ * dunning + the 31 email-sending defaults that reference a provisioned
+ * Builder-email template by `key` (incl. the four order-lifecycle emails, the six
+ * subscription lifecycle emails, the three returns/RMA emails, and the two B2B
+ * order-approval outcomes). An email seed
  * installs on its OWNING module's activation (a commerce tenant gets abandoned-cart
  * the moment commerce is on); its send is then gated by the `email.send_campaign`
  * action's `module: 'email'` gate until the email module is active (docs/90 §4 —
@@ -89,6 +106,21 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   { module: 'commerce', spec: COMMERCE_REFUND_CRM_NOTE },
   { module: 'commerce', spec: COMMERCE_ABANDONED_CART_NUDGE },
   { module: 'commerce', spec: COMMERCE_POST_PURCHASE_REVIEW },
+  { module: 'commerce', spec: COMMERCE_ORDER_DELIVERED_EMAIL },
+  { module: 'commerce', spec: COMMERCE_ORDER_CANCELLED_EMAIL },
+  { module: 'commerce', spec: COMMERCE_ORDER_REFUNDED_EMAIL },
+  { module: 'commerce', spec: COMMERCE_PAYMENT_FAILED_EMAIL },
+  // Commerce subscription lifecycle (docs/impl transactional-email §4 P2)
+  { module: 'commerce', spec: SUBSCRIPTION_CONFIRMED_EMAIL },
+  { module: 'commerce', spec: SUBSCRIPTION_RENEWED_EMAIL },
+  { module: 'commerce', spec: SUBSCRIPTION_PAYMENT_FAILED_EMAIL },
+  { module: 'commerce', spec: SUBSCRIPTION_PAUSED_EMAIL },
+  { module: 'commerce', spec: SUBSCRIPTION_RESUMED_EMAIL },
+  { module: 'commerce', spec: SUBSCRIPTION_CANCELLED_EMAIL },
+  // Returns / RMA (docs/impl transactional-email §4 P3)
+  { module: 'commerce', spec: RETURN_APPROVED_EMAIL },
+  { module: 'commerce', spec: RETURN_RECEIVED_EMAIL },
+  { module: 'commerce', spec: RETURN_REFUNDED_EMAIL },
   // B2B
   { module: 'b2b', spec: B2B_OVERDUE_ESCALATION },
   { module: 'b2b', spec: B2B_NEW_ACCOUNT_TASK },
@@ -96,6 +128,9 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   { module: 'b2b', spec: B2B_QUOTE_RECEIVED },
   { module: 'b2b', spec: B2B_INVOICE_DUE_NUDGE },
   { module: 'b2b', spec: B2B_QUOTE_EXPIRING },
+  // B2B order approval outcomes (docs/impl transactional-email §4 P3)
+  { module: 'b2b', spec: B2B_ORDER_APPROVED_EMAIL },
+  { module: 'b2b', spec: B2B_ORDER_REJECTED_EMAIL },
   // Invoicing
   { module: 'invoicing', spec: INVOICING_ESTIMATE_APPROVED_TASK },
   { module: 'invoicing', spec: INVOICING_REMINDER_3D },

@@ -94,6 +94,84 @@ export const COMMERCE_ABANDONED_CART_NUDGE: SystemAutomationSpec = {
   status: 'active',
 };
 
+/** The order-lifecycle transactional emails (docs/implementation/transactional-email
+ *  §4 P1) — the counterparts to order-confirmation that were missing. Each fires on
+ *  its matching `order.*` event (all four are ORDER_EVENTS in the trigger resolver,
+ *  so `customer.email` + the `order` refs resolve) and sends a provisioned Builder
+ *  email by key. Transactional, so a marketing unsubscribe never withholds them; the
+ *  `is_set` guard skips a guest order with no emailable address. */
+export const COMMERCE_ORDER_DELIVERED_EMAIL: SystemAutomationSpec = {
+  name: 'Order delivered — email',
+  description: 'Emails the customer when their order is marked delivered.',
+  trigger: { kind: 'event', eventType: 'order.delivered' },
+  conditions: {
+    logic: 'AND',
+    conditions: [{ field: 'customer.email', operator: 'is_set' }],
+  },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'order-delivered', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+export const COMMERCE_ORDER_CANCELLED_EMAIL: SystemAutomationSpec = {
+  name: 'Order cancelled — email',
+  description: 'Emails the customer when their order is cancelled.',
+  trigger: { kind: 'event', eventType: 'order.cancelled' },
+  conditions: {
+    logic: 'AND',
+    conditions: [{ field: 'customer.email', operator: 'is_set' }],
+  },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'order-cancelled', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+export const COMMERCE_ORDER_REFUNDED_EMAIL: SystemAutomationSpec = {
+  name: 'Order refunded — email',
+  description: 'Emails the customer when a refund is issued for their order.',
+  trigger: { kind: 'event', eventType: 'order.refunded' },
+  conditions: {
+    logic: 'AND',
+    conditions: [{ field: 'customer.email', operator: 'is_set' }],
+  },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'order-refunded', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+export const COMMERCE_PAYMENT_FAILED_EMAIL: SystemAutomationSpec = {
+  name: 'Payment failed — email',
+  description: 'Emails the customer when their order payment fails, so they can retry.',
+  trigger: { kind: 'event', eventType: 'order.payment_failed' },
+  conditions: {
+    logic: 'AND',
+    conditions: [{ field: 'customer.email', operator: 'is_set' }],
+  },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'payment-failed', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
 /** Ask for a review a few days after an order is fulfilled. Event-driven off
  *  `order.fulfilled`; the 3-day delay gives the order time to arrive before the
  *  ask (docs/90 — `wait(3d)`). Marketing. */

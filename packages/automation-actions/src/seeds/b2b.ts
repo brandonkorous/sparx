@@ -176,3 +176,38 @@ export const B2B_QUOTE_EXPIRING: SystemAutomationSpec = {
   locked: false,
   status: 'active',
 };
+
+/** Tell the buyer when their pending-approval order is approved (→ placed) by an
+ *  approver at their organization (docs/impl transactional-email §4 P3). The event
+ *  carries the order, so it resolves through the order source. Transactional. */
+export const B2B_ORDER_APPROVED_EMAIL: SystemAutomationSpec = {
+  name: 'B2B order approved — email',
+  description: 'Emails the buyer when their pending order is approved.',
+  trigger: { kind: 'event', eventType: 'b2b.order.approved' },
+  conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'b2b-order-approved', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+/** Tell the buyer when their pending-approval order is rejected (→ cancelled).
+ *  Transactional. */
+export const B2B_ORDER_REJECTED_EMAIL: SystemAutomationSpec = {
+  name: 'B2B order rejected — email',
+  description: 'Emails the buyer when their pending order is not approved.',
+  trigger: { kind: 'event', eventType: 'b2b.order.rejected' },
+  conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'b2b-order-rejected', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};

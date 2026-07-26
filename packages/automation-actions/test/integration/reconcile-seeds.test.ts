@@ -78,12 +78,15 @@ describe('reconcileSystemSeeds (backfill)', () => {
     const summary = await reconcileSystemSeeds(appDb);
 
     // The active tenant now holds the full B2B catalog: the Locked dunning ladder,
-    // the no-email onboarding task, and the four email-sending defaults — plus the
+    // the no-email onboarding task, and the email-sending defaults (quotes, invoice
+    // reminder, account approved, + the two order-approval outcomes) — plus the
     // always-on (`module: null`) seeds, which reconcile installs for every tenant.
     const active = await systemAutomations(activeTenant);
     expect(active.map((a) => a.name).sort()).toEqual([
       'B2B account approved',
       'B2B invoice due reminder',
+      'B2B order approved — email',
+      'B2B order rejected — email',
       'B2B overdue escalation',
       'B2B quote expiring',
       'B2B quote received',
@@ -113,9 +116,9 @@ describe('reconcileSystemSeeds (backfill)', () => {
     await reconcileSystemSeeds(appDb);
     await reconcileSystemSeeds(appDb);
 
-    // The six B2B seeds + the always-on form handler, installed once — a second
+    // The eight B2B seeds + the always-on form handler, installed once — a second
     // pass adds no duplicate.
     const rows = await systemAutomations(tenantId);
-    expect(rows).toHaveLength(7);
+    expect(rows).toHaveLength(9);
   });
 });
