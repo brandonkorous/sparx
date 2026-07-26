@@ -69,3 +69,21 @@ export {
   formSubmissionConfirmationSubject,
   type FormSubmissionConfirmationEmailProps,
 } from './form-submission-confirmation';
+
+export {
+  BillingReceiptEmail,
+  billingReceiptSubject,
+  type BillingReceiptEmailProps,
+} from './billing-receipt';
+
+export {
+  BillingPaymentFailedEmail,
+  billingPaymentFailedSubject,
+  type BillingPaymentFailedEmailProps,
+} from './billing-payment-failed';
+
+export {
+  BillingTrialEndingEmail,
+  billingTrialEndingSubject,
+  type BillingTrialEndingEmailProps,
+} from './billing-trial-ending';

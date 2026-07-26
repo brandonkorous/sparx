@@ -27,8 +27,10 @@ import {
   toEmailHtml,
   resolveEmailTree,
   type EmailDocument,
+  type EmailHeadExtras,
   type EmailResolveHost,
 } from '@wizeworks/silicaui-builder/email';
+import { emailBrandFontHref } from '@sparx/site-themes';
 import {
   createSilicaResolver,
   defaultSilicaFormat,
@@ -40,7 +42,7 @@ import {
 import { defaultBrand, type BrandTokens } from '../components/brand';
 import type { SendableEmail } from '../types';
 import { applyBrandColors } from './brand-colors';
-import { composeSendDocument, type EmailCompliance } from './frame';
+import { composeSendDocument, type EmailCompliance, type FooterLink } from './frame';
 import { emailDocumentToText } from './to-text';
 
 const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
@@ -72,6 +74,10 @@ export interface RenderSilicaEmailInput {
   /** A marketing send injects the legal footer (unsubscribe + address) and is
    *  gated on compliance upstream; a transactional send omits it. Default false. */
   marketing?: boolean;
+  /** Resolved footer links (account · contact · privacy · terms · …) the caller
+   *  built from the site's account portal + published legal pages. Rendered as the
+   *  footer's utility/legal row; omitted → that row is absent. */
+  footerLinks?: FooterLink[];
 }
 
 export interface RenderSilicaEmailOptions {
@@ -116,6 +122,7 @@ export function renderSilicaEmail(
     brand,
     marketing: input.marketing ?? false,
     compliance: input.compliance,
+    footerLinks: input.footerLinks,
   });
 
   // 2. Resolve once — substitutes `data` bindings and silica's native `{{token}}`
@@ -126,7 +133,24 @@ export function renderSilicaEmail(
 
   // 3. Project to HTML, then interpolate the tokens native resolution doesn't
   //    reach (href / image src / raw HTML nodes survive projection verbatim).
-  const html = interpolateEmailTokens(toEmailHtml(resolvedDoc), resolveToken);
+  //
+  //    The tenant's brand FACES are loaded with a Google Fonts <link> built from the
+  //    same source the storefront uses (`emailBrandFontHref` over the resolved brand's
+  //    font stacks) — tenant-generic, never a hardcoded platform face. Apple Mail /
+  //    iOS Mail honour it; Gmail/Outlook strip the <link> and fall back to the stack.
+  const fontHref = emailBrandFontHref([brand.fontHeading, brand.fontBody]);
+  const head: EmailHeadExtras | undefined = fontHref
+    ? {
+        raw:
+          '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+          `<link rel="stylesheet" href="${fontHref.replace(/&/g, '&amp;')}">`,
+      }
+    : undefined;
+  const html = interpolateEmailTokens(
+    toEmailHtml(resolvedDoc, head ? { head } : undefined),
+    resolveToken
+  );
 
   // 4. Plain text from the resolved tree, tokens interpolated the same way.
   const text = interpolateEmailTokens(emailDocumentToText(resolvedDoc), resolveToken);

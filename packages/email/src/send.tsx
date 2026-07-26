@@ -71,6 +71,21 @@ import {
   formSubmissionConfirmationSubject,
   type FormSubmissionConfirmationEmailProps,
 } from './templates/form-submission-confirmation';
+import {
+  BillingReceiptEmail,
+  billingReceiptSubject,
+  type BillingReceiptEmailProps,
+} from './templates/billing-receipt';
+import {
+  BillingPaymentFailedEmail,
+  billingPaymentFailedSubject,
+  type BillingPaymentFailedEmailProps,
+} from './templates/billing-payment-failed';
+import {
+  BillingTrialEndingEmail,
+  billingTrialEndingSubject,
+  type BillingTrialEndingEmailProps,
+} from './templates/billing-trial-ending';
 
 // Template registry + dispatcher. Two surfaces:
 //
@@ -108,7 +123,10 @@ export type TemplateId =
   | 'job-application-confirmation'
   | 'team-invitation'
   | 'form-submission-notification'
-  | 'form-submission-confirmation';
+  | 'form-submission-confirmation'
+  | 'billing-receipt'
+  | 'billing-payment-failed'
+  | 'billing-trial-ending';
 
 export type TemplateSend =
   | {
@@ -213,6 +231,27 @@ export type TemplateSend =
       template: 'form-submission-confirmation';
       to: string;
       props: FormSubmissionConfirmationEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'billing-receipt';
+      to: string;
+      props: BillingReceiptEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'billing-payment-failed';
+      to: string;
+      props: BillingPaymentFailedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'billing-trial-ending';
+      to: string;
+      props: BillingTrialEndingEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -480,6 +519,54 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'form-submission-confirmation',
+      };
+    }
+    case 'billing-receipt': {
+      const element = wrap(<BillingReceiptEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: billingReceiptSubject,
+        html,
+        text,
+        templateId: 'billing-receipt',
+      };
+    }
+    case 'billing-payment-failed': {
+      const element = wrap(<BillingPaymentFailedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: billingPaymentFailedSubject,
+        html,
+        text,
+        templateId: 'billing-payment-failed',
+      };
+    }
+    case 'billing-trial-ending': {
+      const element = wrap(<BillingTrialEndingEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: billingTrialEndingSubject,
+        html,
+        text,
+        templateId: 'billing-trial-ending',
       };
     }
   }

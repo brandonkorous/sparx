@@ -74,7 +74,10 @@ describe('the provisioned default emails, on silica', () => {
     );
     expect(out.subject).toBe('Your order 1042 is confirmed');
     expect(out.html).toContain('Thanks for your order, Rosa');
-    expect(out.html).toContain('Total: $88.00');
+    // The order total is now the emphasized hero row of the summary card — the
+    // `{{order.total}}` token still resolves, just under an "Order total" label.
+    expect(out.html).toContain('Order total');
+    expect(out.html).toContain('$88.00');
   });
 
   it('falls back when a token has no value, rather than leaving a hole in the copy', () => {
@@ -91,21 +94,25 @@ describe('the provisioned default emails, on silica', () => {
     expect(out.html).toContain('Thanks for your order, there');
   });
 
-  it('shows a conditional block when its data is present', () => {
+  it('shows an optional card row when its data is present', () => {
     const out = renderSilicaEmail(
       { doc: docFor('order-confirmation'), to: 'a@b.test', data: orderData },
       { brand }
     );
-    expect(out.html).toContain('Shipping to: 12 Harbour Rd, Portland, OR 97201');
+    // The shipping address is an optional row of the summary card (label over value),
+    // not a prose "Shipping to: …" line — the label and the resolved value both show.
+    expect(out.html).toContain('Shipping to');
+    expect(out.html).toContain('12 Harbour Rd, Portland, OR 97201');
   });
 
-  it('DROPS a conditional block when its data is absent — no dangling label', () => {
+  it('DROPS an optional card row when its data is absent — no dangling label', () => {
     const { shippingAddress: _omitted, ...order } = orderData.order;
     const out = renderSilicaEmail(
       { doc: docFor('order-confirmation'), to: 'a@b.test', data: { ...orderData, order } },
       { brand }
     );
-    expect(out.html).not.toContain('Shipping to:');
+    expect(out.html).not.toContain('Shipping to');
+    expect(out.html).not.toContain('12 Harbour Rd');
     // The rest of the email is unaffected.
     expect(out.html).toContain('Cedar planter');
   });
@@ -120,6 +127,152 @@ describe('the provisioned default emails, on silica', () => {
     expect(out.html).toContain('#0f766e');
     expect(out.html).not.toContain('#111827');
     expect(out.html).toContain('Georgia, serif');
+  });
+
+  it('renders the summary card: a semantic status cue and a rounded, inset panel', () => {
+    const out = renderSilicaEmail(
+      { doc: docFor('order-confirmation'), to: 'a@b.test', data: orderData },
+      { brand }
+    );
+    // The status cue carries the state in a FIXED semantic color (success green) — the
+    // same for every tenant, independent of the brand hue, so "Confirmed" never reads
+    // as a warning on a red-branded site.
+    expect(out.html).toContain('✓ Confirmed');
+    expect(out.html).toContain('#15803d');
+    // The card is a rounded, bordered panel (silicaui 0.33 section box-decoration).
+    expect(out.html).toContain('border-radius:16px');
+  });
+
+  it('renders the order-lifecycle emails: each with its own semantic status cue', () => {
+    const refunded = renderSilicaEmail(
+      {
+        doc: docFor('order-refunded'),
+        to: 'a@b.test',
+        data: { ...orderData, order: { ...orderData.order, refundTotal: '$88.00' } },
+      },
+      { brand }
+    );
+    // Money coming back gets a success cue and the refund amount as the emphasized hero.
+    expect(refunded.html).toContain('✓ Refunded');
+    expect(refunded.html).toContain('Refund amount');
+    expect(refunded.html).toContain('$88.00');
+
+    // Delivered is a success; cancelled is an error; payment-failed is a warning.
+    const delivered = renderSilicaEmail(
+      { doc: docFor('order-delivered'), to: 'a@b.test', data: orderData },
+      { brand }
+    );
+    expect(delivered.html).toContain('✓ Delivered');
+
+    const cancelled = renderSilicaEmail(
+      { doc: docFor('order-cancelled'), to: 'a@b.test', data: orderData },
+      { brand }
+    );
+    expect(cancelled.html).toContain('Cancelled');
+    // The FIXED error semantic red, independent of the (teal) brand hue.
+    expect(cancelled.html).toContain('#b91c1c');
+
+    const failed = renderSilicaEmail(
+      { doc: docFor('payment-failed'), to: 'a@b.test', data: orderData },
+      { brand }
+    );
+    expect(failed.html).toContain('Action needed');
+    expect(failed.html).toContain('Amount due');
+  });
+
+  it('drops the cancellation reason row when no reason is given', () => {
+    const withReason = renderSilicaEmail(
+      {
+        doc: docFor('order-cancelled'),
+        to: 'a@b.test',
+        data: { ...orderData, order: { ...orderData.order, cancelReason: 'Out of stock' } },
+      },
+      { brand }
+    );
+    expect(withReason.html).toContain('Reason');
+    expect(withReason.html).toContain('Out of stock');
+
+    // Absent reason ⇒ the optional row self-drops, no dangling "Reason" label.
+    const noReason = renderSilicaEmail(
+      { doc: docFor('order-cancelled'), to: 'a@b.test', data: orderData },
+      { brand }
+    );
+    expect(noReason.html).not.toContain('Reason');
+  });
+
+  it('renders the subscription lifecycle emails with their own status cues', () => {
+    const subData = {
+      site: { name: 'Northwind Supply' },
+      customer: { firstName: 'Rosa' },
+      subscription: {
+        status: 'active',
+        interval: 'every month',
+        amount: '$42.00',
+        nextOrderDate: 'Aug 15, 2026',
+        manageUrl: 'https://northwind.test/account/subscriptions',
+      },
+    };
+
+    const confirmed = renderSilicaEmail(
+      { doc: docFor('subscription-confirmed'), to: 'a@b.test', data: subData },
+      { brand }
+    );
+    expect(confirmed.html).toContain('✓ Active');
+    expect(confirmed.html).toContain('every month');
+    expect(confirmed.html).toContain('Aug 15, 2026');
+
+    const failed = renderSilicaEmail(
+      { doc: docFor('subscription-payment-failed'), to: 'a@b.test', data: subData },
+      { brand }
+    );
+    expect(failed.html).toContain('Action needed');
+    expect(failed.html).toContain('$42.00');
+
+    const cancelled = renderSilicaEmail(
+      { doc: docFor('subscription-cancelled'), to: 'a@b.test', data: subData },
+      { brand }
+    );
+    expect(cancelled.html).toContain('Cancelled');
+    expect(cancelled.html).toContain('#b91c1c'); // fixed error red
+  });
+
+  it('renders the returns + B2B-order-outcome emails with their status cues', () => {
+    const data = {
+      site: { name: 'Northwind Supply' },
+      customer: { firstName: 'Rosa' },
+      order: {
+        number: '1042',
+        total: '$88.00',
+        statusUrl: 'https://northwind.test/account/orders',
+      },
+      return: {
+        outcome: 'refund',
+        refundAmount: '$60.00',
+        refundMethod: 'your original payment method',
+        manageUrl: 'https://northwind.test/account/orders',
+      },
+    };
+
+    const refunded = renderSilicaEmail(
+      { doc: docFor('return-refunded'), to: 'a@b.test', data },
+      { brand }
+    );
+    expect(refunded.html).toContain('✓ Refunded');
+    expect(refunded.html).toContain('$60.00');
+
+    const approved = renderSilicaEmail(
+      { doc: docFor('b2b-order-approved'), to: 'a@b.test', data },
+      { brand }
+    );
+    expect(approved.html).toContain('✓ Approved');
+    expect(approved.html).toContain('$88.00');
+
+    const rejected = renderSilicaEmail(
+      { doc: docFor('b2b-order-rejected'), to: 'a@b.test', data },
+      { brand }
+    );
+    expect(rejected.html).toContain('Not approved');
+    expect(rejected.html).toContain('#b91c1c'); // fixed error red
   });
 
   it('composes the legal footer onto a marketing default, and not a transactional one', () => {

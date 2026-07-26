@@ -7,6 +7,11 @@ export {
   type RenderSilicaEmailInput,
   type RenderSilicaEmailOptions,
 } from './render-silica-email';
-export { composeSendDocument, type EmailCompliance, type ComposeOptions } from './frame';
+export {
+  composeSendDocument,
+  type EmailCompliance,
+  type ComposeOptions,
+  type FooterLink,
+} from './frame';
 export { applyBrandColors } from './brand-colors';
 export { emailDocumentToText } from './to-text';

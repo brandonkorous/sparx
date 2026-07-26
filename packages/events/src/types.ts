@@ -335,7 +335,10 @@ export interface EmailSendPayload {
     | 'magic-link'
     | 'login-otp'
     | 'form-submission-notification'
-    | 'form-submission-confirmation';
+    | 'form-submission-confirmation'
+    | 'billing-receipt'
+    | 'billing-payment-failed'
+    | 'billing-trial-ending';
   /** Shape is enforced by @sparx/email's TemplateSend.props on render. */
   props: Record<string, unknown>;
   /** Optional From override; defaults to SPARX_EMAIL_FROM env in worker. */

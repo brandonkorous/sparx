@@ -41,6 +41,56 @@ export function brandFontHref(families: (string | null | undefined)[]): string |
     .join('&')}&display=swap`;
 }
 
+/** System / CSS-generic families an EMAIL can render without a network load — the
+ *  email counterpart to `BUNDLED_FONTS`. It deliberately does NOT list Geist/Inter:
+ *  a mail client bundles nothing, so a tenant's real brand face is fetched even when
+ *  the sparx apps bundle it. Only true system faces + CSS generics are skipped. */
+const EMAIL_SYSTEM_FONTS = new Set([
+  'system-ui',
+  'ui-sans-serif',
+  'ui-serif',
+  'ui-monospace',
+  'sans-serif',
+  'serif',
+  'monospace',
+  '-apple-system',
+  'BlinkMacSystemFont',
+  'Arial',
+  'Helvetica',
+  'Helvetica Neue',
+  'Georgia',
+  'Times New Roman',
+  'Times',
+  'Verdana',
+  'Segoe UI',
+  'Roboto',
+]);
+
+/**
+ * A Google Fonts stylesheet URL for the brand faces an EMAIL must load — the first
+ * family of each passed font STACK (e.g. `"'Geist', Arial, …"` → `Geist`), minus the
+ * system/generic faces that need no fetch. Same css2 request shape as `brandFontHref`
+ * so a mail client and the storefront pull identical faces, but with the email
+ * exclusion set (nothing is bundled in a mail client — even Geist is fetched).
+ *
+ * This is what makes email typography TENANT-GENERIC: it reads whatever families the
+ * tenant's resolved brand names, never a hardcoded platform face. `null` when every
+ * family is a system face → no `<link>`, the system stack renders.
+ */
+export function emailBrandFontHref(stacks: (string | null | undefined)[]): string | null {
+  const families = Array.from(
+    new Set(
+      stacks
+        .map((s) => firstStackFamily(s ?? undefined))
+        .filter((f): f is string => !!f && !EMAIL_SYSTEM_FONTS.has(f))
+    )
+  );
+  if (families.length === 0) return null;
+  return `https://fonts.googleapis.com/css2?${families
+    .map((f) => `family=${f.replace(/ /g, '+')}:wght@400;500;600;700`)
+    .join('&')}&display=swap`;
+}
+
 /** The minimal silica-`Theme` shape `themeFontFamilies` reads. Typed structurally
  *  (not imported from silicaui-html) so this package stays dependency-free, matching
  *  the `SilicaTheme` reproduction in `v2/silica-css.ts`. */

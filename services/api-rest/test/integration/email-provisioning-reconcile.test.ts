@@ -12,9 +12,13 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import type { FastifyBaseLogger } from 'fastify';
 import crypto from 'node:crypto';
-import { prisma } from '@sparx/db';
+import { type Prisma, prisma } from '@sparx/db';
 import { DEFAULT_EMAIL_TEMPLATES } from '@sparx/builder-schemas';
 import { reconcileEmailProvisioning } from '../../src/lib/email-provisioning.js';
+// The pre-redesign bodies (welcome-customer, order-confirmation), captured from the
+// code they replaced — used to seed a "still the untouched old default" row and prove
+// the reconcile re-designs it while leaving an edited row alone.
+import oldBodies from './old-email-bodies.fixture.json';
 
 const noop = (): void => undefined;
 const logger = {
@@ -63,6 +67,52 @@ async function defaultKeyCount(tenantId: string): Promise<number> {
   });
 }
 
+/** Overwrite a tenant-wide default's silica draft+published documents (owner-context,
+ *  RLS GUC set) — used to plant an OLD-design body a tenant is still holding. */
+async function setSilicaDocs(tenantId: string, key: string, doc: unknown): Promise<void> {
+  await prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    await tx.builderEmail.updateMany({
+      where: { key, propertyId: null },
+      data: {
+        silicaDraftDocument: doc as Prisma.InputJsonValue,
+        silicaPublishedDocument: doc as Prisma.InputJsonValue,
+      },
+    });
+  });
+}
+
+async function publishedDoc(tenantId: string, key: string): Promise<unknown> {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    const row = await tx.builderEmail.findFirst({
+      where: { key, propertyId: null },
+      select: { silicaPublishedDocument: true },
+    });
+    return row?.silicaPublishedDocument ?? null;
+  });
+}
+
+/** The `align` of the first button node found anywhere in a stored document — the
+ *  redesign centres the welcome CTA (`center`), the old default left-aligned it. */
+function firstButtonAlign(doc: unknown): string | undefined {
+  let found: string | undefined;
+  const walk = (n: unknown): void => {
+    if (found !== undefined) return;
+    if (Array.isArray(n)) n.forEach(walk);
+    else if (n && typeof n === 'object') {
+      const o = n as Record<string, unknown>;
+      if (o.kind === 'button' && typeof o.align === 'string') {
+        found = o.align;
+        return;
+      }
+      Object.values(o).forEach(walk);
+    }
+  };
+  walk(doc);
+  return found;
+}
+
 beforeAll(async () => {
   await prisma.$queryRaw`SELECT 1`;
 });
@@ -94,5 +144,34 @@ describe('email provisioning reconcile (backfill)', () => {
 
     await reconcileEmailProvisioning(logger);
     expect(await defaultKeyCount(tenantId)).toBe(DEFAULT_COUNT);
+  });
+
+  it('re-designs a still-pristine old default, but never an edited one', async () => {
+    const tenantId = await makeEmailActiveTenant();
+    await reconcileEmailProvisioning(logger); // provisions the CURRENT-design rows
+
+    // Plant the OLD welcome body verbatim — a tenant provisioned before the redesign.
+    await setSilicaDocs(tenantId, 'welcome-customer', oldBodies['welcome-customer']);
+    // Plant an EDITED old order body — same base, but the tenant changed a word, so it
+    // must be treated as theirs and left untouched.
+    const editedOrder = JSON.parse(
+      JSON.stringify(oldBodies['order-confirmation']).replace(
+        'Your order is confirmed',
+        'Your order is confirmed — EDITED-BY-TENANT'
+      )
+    );
+    await setSilicaDocs(tenantId, 'order-confirmation', editedOrder);
+
+    // Sanity: the planted welcome is the old, left-aligned CTA.
+    expect(firstButtonAlign(await publishedDoc(tenantId, 'welcome-customer'))).toBe('left');
+
+    await reconcileEmailProvisioning(logger);
+
+    // The pristine old welcome is refreshed to the current design (centred CTA)…
+    expect(firstButtonAlign(await publishedDoc(tenantId, 'welcome-customer'))).toBe('center');
+    // …and the edited order keeps the tenant's words — never clobbered.
+    expect(JSON.stringify(await publishedDoc(tenantId, 'order-confirmation'))).toContain(
+      'EDITED-BY-TENANT'
+    );
   });
 });

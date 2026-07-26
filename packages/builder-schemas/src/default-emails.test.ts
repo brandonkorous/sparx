@@ -12,10 +12,10 @@ function* walk(node: BuilderNode): Generator<BuilderNode> {
 const types = (root: BuilderNode): string[] => [...walk(root)].map((nd) => nd.type);
 
 describe('DEFAULT_EMAIL_TEMPLATES', () => {
-  it('ships exactly the 22 documented templates with unique keys', () => {
+  it('ships exactly the 37 documented templates with unique keys', () => {
     const keys = DEFAULT_EMAIL_TEMPLATES.map((t) => t.key);
-    expect(keys).toHaveLength(22);
-    expect(new Set(keys).size).toBe(22);
+    expect(keys).toHaveLength(37);
+    expect(new Set(keys).size).toBe(37);
     expect(keys).toEqual(
       expect.arrayContaining([
         'welcome-customer',
@@ -35,6 +35,24 @@ describe('DEFAULT_EMAIL_TEMPLATES', () => {
         // docs/93 — folded in from coded templates
         'order-confirmation',
         'shipping-confirmation',
+        // docs/implementation/transactional-email §4 P1 — order lifecycle
+        'order-delivered',
+        'order-cancelled',
+        'order-refunded',
+        'payment-failed',
+        // §4 P2 — commerce subscription lifecycle
+        'subscription-confirmed',
+        'subscription-renewed',
+        'subscription-payment-failed',
+        'subscription-paused',
+        'subscription-resumed',
+        'subscription-cancelled',
+        // §4 P3 — returns / RMA + B2B order outcomes
+        'return-approved',
+        'return-received',
+        'return-refunded',
+        'b2b-order-approved',
+        'b2b-order-rejected',
         // docs/79 — Scheduling module booking notifications (the legacy B2B-fleet
         // appointment-* templates were retired 2026-07-14, docs/79 §15.7)
         'booking-confirmation',

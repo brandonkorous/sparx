@@ -29,6 +29,7 @@ import {
 
 import {
   applyEntitySnapshot,
+  resolveEmailFooterLinks,
   resolveSilicaEmailData,
   type EmailRecipientRef,
 } from './email-data.js';
@@ -156,6 +157,9 @@ export async function renderBuilderEmailDoc(
 
   const unsubUrl = args.marketing ? unsubscribeUrl(ctx.tenantId, args.to) : undefined;
   const brand = (await brandService.resolveEmailBrand(ctx, args.propertyId ?? null)) ?? undefined;
+  // The footer's utility + legal links (account · contact · privacy · terms · …) for
+  // THIS site — same published-legal-page source as the storefront footer.
+  const footerLinks = await resolveEmailFooterLinks(ctx, args.propertyId ?? null);
 
   // ONE engine (docs/120 slice 7): every email — including one authored on the retired
   // sparx builder, which `emailService` converts on read — renders through silica.
@@ -171,6 +175,7 @@ export async function renderBuilderEmailDoc(
         ...(args.physicalAddress ? { physicalAddress: args.physicalAddress } : {}),
         ...(unsubUrl ? { unsubscribeUrl: unsubUrl } : {}),
       },
+      footerLinks,
     },
     { brand }
   );

@@ -28,7 +28,7 @@ import {
 } from '@sparx/builder-schemas';
 import type { ServiceContext } from '@sparx/email-platform';
 
-import { resolveActivePropertyName } from './property.js';
+import { resolveActivePropertyName, resolvePrimaryPropertyId } from './property.js';
 import { loadSenderIdentity } from './tenant-email.js';
 import { bookingIcsUrl } from './scheduling-ical.js';
 
@@ -49,6 +49,10 @@ export interface EmailRecipientRef {
   bookingId?: string | null;
   /** The waitlist entry a waitlist-offer send is about (docs/79 §7). */
   waitlistEntryId?: string | null;
+  /** The commerce subscription a subscription-* send is about (docs/impl transactional-email P2). */
+  subscriptionId?: string | null;
+  /** The return/RMA a return-* send is about (docs/impl transactional-email P3). */
+  returnId?: string | null;
 }
 
 // Public api-rest origin for media URLs (GET /v1/public/media/:id) — REST-specific
@@ -77,6 +81,72 @@ function siteLink(slug: string, path: string): string {
 function homeUrl(slug: string): string {
   const url = siteLink(slug, '');
   return url === '' ? '/' : url;
+}
+
+/** A CMS slug → a human label (`privacy-policy` → `Privacy Policy`) — the fallback
+ *  when a footer placement has no explicit label override. */
+function prettifyLegalSlug(slug: string): string {
+  return slug
+    .split('-')
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ');
+}
+
+/** One resolved footer link — an absolute URL (or `mailto:`) plus its label. */
+export interface EmailFooterLink {
+  label: string;
+  href: string;
+}
+
+/**
+ * The footer's utility + legal links for a site: the customer ACCOUNT portal, a
+ * CONTACT mailto (only when the site set a public reply-to — never the owner's
+ * private account email), and the site's PUBLISHED footer legal pages
+ * (privacy · terms · returns · …).
+ *
+ * The legal links come from the SAME `siteDocPlacement` source the storefront footer
+ * reads ([content.ts] `/v1/public/legal/placements`), filtered to published entries,
+ * so the email footer and the site footer never disagree and no link is ever dead.
+ * A brand-new site with nothing published yields just the account link.
+ */
+export async function resolveEmailFooterLinks(
+  ctx: ServiceContext,
+  propertyId: string | null
+): Promise<EmailFooterLink[]> {
+  const [tenant, identity, siteId] = await Promise.all([
+    withTenant(ctx, (tx) =>
+      tx.tenant.findUnique({ where: { id: ctx.tenantId }, select: { slug: true } })
+    ),
+    loadSenderIdentity(ctx.tenantId, propertyId),
+    propertyId ?? resolvePrimaryPropertyId(ctx.tenantId),
+  ]);
+  const slug = tenant?.slug ?? '';
+  const links: EmailFooterLink[] = [{ label: 'Your account', href: siteLink(slug, '/account') }];
+  // Only a deliberately-public reply-to becomes a Contact link; we never expose the
+  // owner's private account email in a customer-facing footer.
+  if (identity.replyTo) links.push({ label: 'Contact', href: `mailto:${identity.replyTo}` });
+
+  const rows = await withTenant(ctx, (tx) =>
+    tx.siteDocPlacement.findMany({
+      where: {
+        placement: 'footer',
+        enabled: true,
+        OR: [{ propertyId: null }, { propertyId: siteId }],
+      },
+      orderBy: { position: 'asc' },
+      select: { label: true, entry: { select: { slug: true, status: true, deletedAt: true } } },
+    })
+  );
+  for (const r of rows) {
+    const e = r.entry;
+    if (!e?.slug || e.status !== 'published' || e.deletedAt) continue;
+    links.push({
+      label: r.label ?? prettifyLegalSlug(e.slug),
+      href: siteLink(slug, `/${e.slug}`),
+    });
+  }
+  return links;
 }
 
 /** Decimal-dollar money (orders / quotes / invoices) → `$1,234.50`. */
@@ -285,7 +355,10 @@ async function resolveOrder(
         status: true,
         total: true,
         subtotal: true,
+        refundTotal: true,
         placedAt: true,
+        deliveredAt: true,
+        cancelledReason: true,
         shippingAddress: true,
         items: {
           orderBy: { createdAt: 'asc' },
@@ -313,6 +386,12 @@ async function resolveOrder(
     status: order.status,
     total: money(order.total),
     subtotal: money(order.subtotal),
+    // The amount refunded (order-refunded email hero) and the lifecycle fields the
+    // delivered / cancelled emails read. Empty-string when absent so an optional
+    // card row self-drops (a cancelled order with no reason shows no "Reason" line).
+    refundTotal: money(order.refundTotal),
+    deliveredAt: order.deliveredAt ? dateLabel(order.deliveredAt) : '',
+    cancelReason: order.cancelledReason ?? '',
     placedAt: dateLabel(order.placedAt),
     reviewUrl,
     statusUrl,
@@ -478,6 +557,112 @@ async function resolveWaitlist(
     // Book-now goes straight to the service's public booking page.
     bookUrl: siteLink(slug, `/book/${w.serviceId}`),
     manageUrl: siteLink(slug, '/account/bookings'),
+  };
+}
+
+// ── subscription (commerce auto-ship, docs/impl transactional-email P2) ──────
+
+async function resolveSubscription(
+  ctx: ServiceContext,
+  ref: EmailRecipientRef | undefined,
+  slug: string
+): Promise<Record<string, unknown>> {
+  if (!ref?.subscriptionId) return {};
+  const s = await withTenant(ctx, (tx) =>
+    tx.subscription.findUnique({
+      where: { id: ref.subscriptionId! },
+      select: {
+        status: true,
+        intervalUnit: true,
+        intervalCount: true,
+        nextOccurrenceAt: true,
+        pausedUntil: true,
+        currentPeriodEnd: true,
+        items: { select: { quantity: true, unitPriceCents: true } },
+      },
+    })
+  );
+  if (!s) return {};
+  // "every month" / "every 2 weeks" — the plain-language cadence for the copy.
+  const n = s.intervalCount;
+  const interval = `every ${n === 1 ? '' : `${n} `}${s.intervalUnit}${n === 1 ? '' : 's'}`;
+  const amountCents = s.items.reduce((sum, it) => sum + it.unitPriceCents * it.quantity, 0);
+  return {
+    status: s.status,
+    interval,
+    amount: moneyCents(amountCents),
+    itemCount: String(s.items.reduce((c, it) => c + it.quantity, 0)),
+    nextOrderDate: s.nextOccurrenceAt ? dateLabel(s.nextOccurrenceAt) : '',
+    pausedUntil: s.pausedUntil ? dateLabel(s.pausedUntil) : '',
+    currentPeriodEnd: s.currentPeriodEnd ? dateLabel(s.currentPeriodEnd) : '',
+    // The customer's self-service subscription management page.
+    manageUrl: siteLink(slug, '/account/subscriptions'),
+  };
+}
+
+// ── return / RMA (docs/impl transactional-email §4 P3) ───────────────────────
+
+/** A refund-method code → plain language for the copy. */
+function refundMethodLabel(code: string | null): string {
+  switch (code) {
+    case 'account_credit':
+      return 'account credit';
+    case 'gift_card':
+      return 'a gift card';
+    case 'original_payment':
+      return 'your original payment method';
+    default:
+      return '';
+  }
+}
+
+async function resolveReturn(
+  ctx: ServiceContext,
+  ref: EmailRecipientRef | undefined,
+  slug: string
+): Promise<Record<string, unknown>> {
+  if (!ref?.returnId) return {};
+  const r = await withTenant(ctx, (tx) =>
+    tx.returnRequest.findUnique({
+      where: { id: ref.returnId! },
+      select: {
+        status: true,
+        preferredOutcome: true,
+        refundedAmountCents: true,
+        refundIssuedAs: true,
+        labels: {
+          orderBy: { createdAt: 'desc' },
+          take: 1,
+          select: { trackingUrl: true, labelMediaId: true },
+        },
+      },
+    })
+  );
+  if (!r) return {};
+  const label = r.labels[0];
+  const OUTCOME: Record<string, string> = {
+    refund: 'refund',
+    account_credit: 'account credit',
+    exchange: 'exchange',
+    repair: 'repair',
+  };
+  // The prepaid return label — the carrier's tracking page wins, else the stored
+  // label media (the PDF), else the customer's returns page. Built imperatively so
+  // precedence is explicit and an empty string never sticks.
+  const hasLabel = Boolean(label?.trackingUrl) || Boolean(label?.labelMediaId);
+  let labelUrl = siteLink(slug, '/account/orders');
+  if (label?.labelMediaId) labelUrl = mediaUrl(label.labelMediaId, slug);
+  if (label?.trackingUrl) labelUrl = label.trackingUrl;
+  return {
+    status: r.status,
+    outcome: OUTCOME[r.preferredOutcome] ?? r.preferredOutcome,
+    // The refund figure (return-refunded hero); '' until a refund is settled so the
+    // optional row self-drops on the approved/received notices.
+    refundAmount: r.refundedAmountCents != null ? moneyCents(r.refundedAmountCents) : '',
+    refundMethod: refundMethodLabel(r.refundIssuedAs),
+    labelUrl,
+    hasLabel: hasLabel ? 'yes' : '',
+    manageUrl: siteLink(slug, '/account/orders'),
   };
 }
 
@@ -795,6 +980,12 @@ async function loadEmailSources(
   }
   if (keys.has('waitlist')) {
     tasks.push(resolveWaitlist(ctx, ref, slug).then((v) => void (out.waitlist = v)));
+  }
+  if (keys.has('subscription')) {
+    tasks.push(resolveSubscription(ctx, ref, slug).then((v) => void (out.subscription = v)));
+  }
+  if (keys.has('return')) {
+    tasks.push(resolveReturn(ctx, ref, slug).then((v) => void (out.return = v)));
   }
   if (keys.has('cart')) {
     tasks.push(resolveCart(ctx, ref, slug).then((v) => void (out.cart = v)));

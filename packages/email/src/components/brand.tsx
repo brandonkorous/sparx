@@ -37,6 +37,10 @@ export interface BrandTokens {
   logoUrl?: string;
   /** Store name — wordmark fallback + footer. */
   siteName?: string;
+  /** The site's social links, rendered as self-contained badges in the footer.
+   *  Platform is a free string here; the footer maps it to silica's supported
+   *  badge set and drops the rest. */
+  socials?: { platform: string; url: string }[];
 }
 
 export const defaultBrand: BrandTokens = {

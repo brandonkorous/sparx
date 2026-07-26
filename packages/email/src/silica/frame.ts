@@ -14,6 +14,7 @@ import type {
   HtmlNode,
   ImageNode,
   SectionNode,
+  SpacerNode,
   TextNode,
 } from '@wizeworks/silicaui-builder/email';
 
@@ -28,11 +29,22 @@ export interface EmailCompliance {
   physicalAddress?: string;
 }
 
+/** A resolved footer link — an absolute URL (or `mailto:`) plus its label. The
+ *  caller resolves these per-site (the account portal, a contact address, and the
+ *  site's PUBLISHED legal pages) so the footer only ever shows live links. */
+export interface FooterLink {
+  label: string;
+  href: string;
+}
+
 export interface ComposeOptions {
   brand: BrandTokens;
   /** Marketing sends inject the legal footer; transactional sends don't. */
   marketing: boolean;
   compliance?: EmailCompliance;
+  /** Resolved utility + legal footer links (account · contact · privacy · terms · …).
+   *  Empty/omitted → those rows are simply absent. */
+  footerLinks?: FooterLink[];
 }
 
 function escapeHtml(value: string): string {
@@ -49,6 +61,21 @@ function escapeHtml(value: string): string {
 function makeIder(prefix: string): () => string {
   let n = 0;
   return () => `${prefix}-${n++}`;
+}
+
+/** A thin brand-colour bar across the very top — an immediate, quiet brand signal
+ *  before the wordmark (a common transactional-email device). Uses the resolved brand
+ *  primary directly, like the rest of the frame chrome (no `Auto` flag to repaint). */
+function brandBarSection(brand: BrandTokens, id: () => string): SectionNode {
+  const bar: SpacerNode = { id: id(), kind: 'spacer', height: 4 };
+  return {
+    id: id(),
+    kind: 'section',
+    bg: brand.primary,
+    paddingX: 0,
+    paddingY: 0,
+    children: [bar],
+  };
 }
 
 /** The wordmark header: the brand logo when set, else the site name as a bold
@@ -93,32 +120,114 @@ function wordmarkSection(brand: BrandTokens, id: () => string): SectionNode {
   };
 }
 
-/** The CAN-SPAM legal footer (marketing only): the one-click unsubscribe line and
- *  the physical address, as a raw-HTML node so the per-send URL/address inline
- *  exactly. Muted, small type on the page background. */
-function legalSection(
+/** Display labels for the social platforms we footer-link, so a stored `twitter`
+ *  reads "X" and casing is right ("TikTok", not "Tiktok"). Any other platform key
+ *  is title-cased as a fallback rather than dropped. */
+const SOCIAL_LABEL: Record<string, string> = {
+  facebook: 'Facebook',
+  instagram: 'Instagram',
+  x: 'X',
+  twitter: 'X',
+  linkedin: 'LinkedIn',
+  youtube: 'YouTube',
+  tiktok: 'TikTok',
+  pinterest: 'Pinterest',
+};
+
+/** A centered row of `·`-separated links (`Your account · Contact · Privacy`), the
+ *  shape both the utility/legal row and the social row take. Returns '' when there's
+ *  nothing to show so the row drops out. `marginBottom` tunes the gap to the next
+ *  tier; `1.9` line-height keeps a wrapped row readable. */
+function linkRow(links: FooterLink[], base: string, color: string, marginBottom: number): string {
+  const items = links
+    .filter((l) => l?.href && l?.label)
+    .map(
+      (l) =>
+        `<a href="${escapeHtml(l.href)}" style="color:${color};text-decoration:none">${escapeHtml(
+          l.label
+        )}</a>`
+    );
+  if (items.length === 0) return '';
+  return `<p style="margin:0 0 ${marginBottom}px;font-size:13px;line-height:1.9;${base}">${items.join(
+    ' &middot; '
+  )}</p>`;
+}
+
+/** The site's socials mapped to labelled links for the social row (unsupported /
+ *  urlless entries dropped). */
+function socialLinks(brand: BrandTokens): FooterLink[] {
+  return (brand.socials ?? [])
+    .filter((s) => s?.url && s.url.trim().length > 0)
+    .map((s) => {
+      const key = s.platform.toLowerCase().trim();
+      return { label: SOCIAL_LABEL[key] ?? key.charAt(0).toUpperCase() + key.slice(1), href: s.url };
+    });
+}
+
+/**
+ * The footer, composed on EVERY send — so no email just stops dead after the last
+ * button. A hairline rule sets it off from the body, then, centered and tiered from
+ * most prominent to fine print:
+ *
+ *   1. the business name, linked home (identity / sign-off);
+ *   2. the utility + legal link row — the account portal, contact, and the site's
+ *      PUBLISHED legal pages (privacy · terms · returns · …), resolved by the caller
+ *      so every link is live;
+ *   3. the social links row;
+ *   4. on a MARKETING send, the CAN-SPAM one-click unsubscribe line (a transactional
+ *      send has nothing to opt out of);
+ *   5. a small legal line — business name + postal address.
+ *
+ * Each tier steps DOWN in size so the eye reads identity first and fine print last.
+ * A raw-HTML node so per-send URLs inline exactly; muted, small, centered type — a
+ * footer is the sanctioned place for small text.
+ */
+function footerSection(
   brand: BrandTokens,
-  compliance: EmailCompliance | undefined,
+  opts: { marketing: boolean; compliance?: EmailCompliance; footerLinks?: FooterLink[] },
   id: () => string
 ): SectionNode {
-  const unsubscribe = compliance?.unsubscribeUrl ?? '#';
-  const address = compliance?.physicalAddress;
-  const line = `margin:0 0 8px;font-size:12px;line-height:1.5;color:${brand.foreground};font-family:${brand.fontBody}`;
-  const html =
-    `<p style="${line}">You’re receiving this because you opted in. ` +
-    `<a href="${unsubscribe}" style="color:${brand.primary}">Unsubscribe</a></p>` +
-    (address
-      ? `<p style="margin:0;font-size:12px;line-height:1.5;color:${brand.foreground};font-family:${brand.fontBody}">${escapeHtml(
-          address
-        )}</p>`
-      : '');
+  const name = escapeHtml(brand.siteName ?? 'sparx');
+  const base = `font-family:${brand.fontBody};color:${brand.foreground};text-align:center`;
+  const parts: string[] = [
+    // `{{site.url}}` resolves in the shared token pass over the composed document —
+    // the same site this send is on behalf of, so the sign-off links home.
+    `<p style="margin:0 0 12px;font-size:15px;font-weight:bold;line-height:1.4;${base}">` +
+      `<a href="{{site.url}}" style="color:inherit;text-decoration:none">${name}</a></p>`,
+    // Utility + legal links (account, contact, privacy, terms…) then socials — both
+    // in the brand link colour so the two rows read as one link block.
+    linkRow(opts.footerLinks ?? [], base, brand.primary, 8),
+    linkRow(socialLinks(brand), base, brand.primary, 12),
+  ];
+  if (opts.marketing) {
+    const unsubscribe = opts.compliance?.unsubscribeUrl ?? '#';
+    parts.push(
+      `<p style="margin:0 0 10px;font-size:13px;line-height:1.6;${base}">You’re receiving this because you opted in. ` +
+        `<a href="${unsubscribe}" style="color:${brand.primary}">Unsubscribe</a></p>`
+    );
+  }
+  // The legal fine print — business name + postal address, one line at the very
+  // bottom. CAN-SPAM wants the address on marketing; a transactional receipt reads
+  // better with it too.
+  if (opts.compliance?.physicalAddress) {
+    parts.push(
+      `<p style="margin:0;font-size:12px;line-height:1.5;${base}">${name} &middot; ${escapeHtml(
+        opts.compliance.physicalAddress
+      )}</p>`
+    );
+  }
+  // A top rule inside the footer content gives the separation a section can't (no
+  // border on sections) without depending on the faint muted-vs-white bg contrast.
+  const html = `<div style="border-top:1px solid ${brand.border};padding-top:20px">${parts
+    .filter(Boolean)
+    .join('')}</div>`;
   const node: HtmlNode = { id: id(), kind: 'html', html };
   return {
     id: id(),
     kind: 'section',
     bg: brand.muted,
     paddingX: 24,
-    paddingY: 20,
+    paddingY: 24,
     children: [node],
   };
 }
@@ -128,9 +237,14 @@ function legalSection(
  *  sections are preserved in order between the two frame sections. */
 export function composeSendDocument(doc: EmailDocument, opts: ComposeOptions): EmailDocument {
   const id = makeIder('sx-frame');
+  const brandBar = brandBarSection(opts.brand, id);
   const header = wordmarkSection(opts.brand, id);
-  const footer = opts.marketing ? legalSection(opts.brand, opts.compliance, id) : null;
-  const children: SectionNode[] = [header, ...doc.root.children, ...(footer ? [footer] : [])];
+  const footer = footerSection(
+    opts.brand,
+    { marketing: opts.marketing, compliance: opts.compliance, footerLinks: opts.footerLinks },
+    id
+  );
+  const children: SectionNode[] = [brandBar, header, ...doc.root.children, footer];
   const root: EmailBody = { ...doc.root, children };
   return { ...doc, root };
 }

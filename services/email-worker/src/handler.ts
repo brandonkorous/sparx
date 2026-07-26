@@ -168,6 +168,34 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
       roleTitle: z.string().min(1),
     }),
   }),
+  z.object({
+    template: z.literal('billing-receipt'),
+    ...TemplateMeta,
+    props: z.object({
+      accountName: z.string().optional(),
+      amountLabel: z.string().min(1),
+      periodLabel: z.string().optional(),
+      invoiceUrl: z.string().url(),
+    }),
+  }),
+  z.object({
+    template: z.literal('billing-payment-failed'),
+    ...TemplateMeta,
+    props: z.object({
+      accountName: z.string().optional(),
+      amountLabel: z.string().min(1),
+      updateUrl: z.string().url(),
+    }),
+  }),
+  z.object({
+    template: z.literal('billing-trial-ending'),
+    ...TemplateMeta,
+    props: z.object({
+      accountName: z.string().optional(),
+      trialEndLabel: z.string().min(1),
+      manageUrl: z.string().url(),
+    }),
+  }),
 ]);
 
 // Pre-rendered "raw" send — used by broadcasts (render once, send to many) and

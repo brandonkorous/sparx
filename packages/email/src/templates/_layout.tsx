@@ -1,11 +1,13 @@
 import * as React from 'react';
 import { Body, Container, Head, Html, Preview, Section } from '@react-email/components';
 import { EmailDivider, EmailMuted, EmailWordmark, useBrand } from '../components';
-import { spacing } from '../components/tokens';
+import { colors, spacing } from '../components/tokens';
 
-// Shared email frame. The header (wordmark + divider) and footer (divider +
-// muted note) are baked in here so every template inherits brand chrome —
-// callers just compose body content as children.
+// Shared email frame — the platform (bucket-B) twin of the silica redesign's frame
+// (docs/impl transactional-email §4 P5). Every coded template inherits the same
+// chrome: a thin brand-color top bar, the wordmark header, and a tiered footer, so
+// a person's password-reset reads like their order-confirmation. Callers compose
+// only body content as children.
 //
 // Hand-rolled HTML/CSS via @react-email/components: the rendered output is
 // table-based markup that survives every popular mail client. Brand colors +
@@ -14,7 +16,7 @@ import { spacing } from '../components/tokens';
 interface EmailLayoutProps {
   preview: string;
   children: React.ReactNode;
-  /** Brief tagline rendered in the footer. */
+  /** Brief tagline rendered on the first footer line. */
   footerNote?: string;
   /** Render the built-in wordmark header (wordmark + divider). Default `true` — the
    *  CODED templates (welcome-merchant, password-reset, chat-notification) rely on
@@ -45,24 +47,48 @@ export function EmailLayout({ preview, children, footerNote, header = true }: Em
             borderRadius: 8,
             margin: '0 auto',
             maxWidth: 560,
-            padding: `${spacing.xl}px`,
+            // Padding lives on the inner section so the brand bar can sit flush to
+            // the top edge; `overflow:hidden` keeps it inside the rounded corners.
+            padding: 0,
+            overflow: 'hidden',
           }}
         >
-          {header ? (
-            <>
-              <Section>
-                <EmailWordmark />
-              </Section>
+          {/* The thin brand-color top bar — the same signal the silica frame opens
+              with, tying the platform emails to the tenant-facing ones. */}
+          <Section
+            style={{
+              backgroundColor: brand.primary,
+              height: 4,
+              lineHeight: '4px',
+              fontSize: 0,
+            }}
+          >
+            &nbsp;
+          </Section>
 
-              <EmailDivider />
-            </>
-          ) : null}
+          <Section style={{ padding: `${spacing.xl}px` }}>
+            {header ? (
+              <>
+                <Section>
+                  <EmailWordmark />
+                </Section>
 
-          {children}
+                <EmailDivider />
+              </>
+            ) : null}
 
-          <EmailDivider />
+            {children}
 
-          <EmailMuted>{footerNote ?? `${brand.siteName ?? 'sparx'} · Sent with sparx`}</EmailMuted>
+            <EmailDivider />
+
+            {/* Tiered footer: a tagline line over a legal line, both muted. */}
+            <EmailMuted style={{ margin: 0 }}>
+              {footerNote ?? `${brand.siteName ?? 'sparx'} · Sent with sparx`}
+            </EmailMuted>
+            <EmailMuted style={{ margin: `${spacing.xs}px 0 0`, color: colors.textMuted }}>
+              WizeWorks · sparx.works
+            </EmailMuted>
+          </Section>
         </Container>
       </Body>
     </Html>

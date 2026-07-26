@@ -26,14 +26,16 @@
 import type { SectionNode } from '@wizeworks/silicaui-builder/email';
 
 import {
+  actionLink,
   button,
   copyBlock,
-  divider,
+  detailPanel,
   emailDoc,
   heading,
   itemsTable,
   para,
   when,
+  type DetailStatus,
 } from './silica-email-kit';
 import type { SilicaEmailDocument } from './email-silica';
 
@@ -45,7 +47,7 @@ const welcomeCustomer = (): SectionNode[] => [
     para(
       'Hi {{customer.firstName ?? "there"}} — thanks for creating an account. You’re all set: browse the latest, track your orders, and check out faster every time.'
     ),
-    button('Start shopping', '{{site.url}}'),
+    button('Start shopping', '{{site.url}}', 'center'),
   ]),
 ];
 
@@ -55,7 +57,7 @@ const winBack = (): SectionNode[] => [
     para(
       'We haven’t seen you at {{site.name}} in a bit, {{customer.firstName ?? "there"}}. There’s plenty new since your last visit — come take a look.'
     ),
-    button('See what’s new', '{{site.url}}'),
+    button('See what’s new', '{{site.url}}', 'center'),
   ]),
 ];
 
@@ -65,9 +67,12 @@ const abandonedCart = (): SectionNode[] => [
     para('Your cart is saved and ready whenever you are. Here’s what you left at {{site.name}}:'),
   ]),
   ...itemsTable('cart.items'),
+  // A single-row total callout — the items above ARE the summary, so the card just
+  // anchors the amount rather than repeating a record header.
+  detailPanel([{ label: 'Cart total', value: '{{cart.total}}', emphasize: true }]),
   copyBlock([
-    para('<b>Total: {{cart.total}}</b>'),
-    button('Complete your order', '{{cart.recoveryUrl}}'),
+    button('Complete your order', '{{cart.recoveryUrl}}', 'center'),
+    para('Items in your cart aren’t reserved — check out to make them yours.'),
   ]),
 ];
 
@@ -79,7 +84,7 @@ const postPurchaseReview = (): SectionNode[] => [
     ),
   ]),
   ...itemsTable('order.items'),
-  copyBlock([button('Leave a review', '{{order.reviewUrl}}')]),
+  copyBlock([button('Leave a review', '{{order.reviewUrl}}', 'center')]),
 ];
 
 const chatSatisfaction = (): SectionNode[] => [
@@ -88,7 +93,7 @@ const chatSatisfaction = (): SectionNode[] => [
     para(
       'Thanks for chatting with {{site.name}}, {{customer.firstName ?? "there"}}. We’d love a quick word on how the conversation went.'
     ),
-    button('Rate your chat', '{{site.url}}'),
+    button('Rate your chat', '{{site.url}}', 'center'),
   ]),
 ];
 
@@ -101,21 +106,36 @@ const b2bAccountApproved = (): SectionNode[] => [
       'Good news — {{b2bAccount.companyName}} has been approved for a wholesale account with {{site.name}}. You can sign in and order at your account pricing now.'
     ),
   ]),
-  when('b2bAccount.creditLimit', [
-    para('Your credit line is {{b2bAccount.creditLimit}} on {{b2bAccount.paymentTerms}} terms.'),
-  ]),
-  copyBlock([button('Go to your portal', '{{b2bAccount.portalUrl}}')]),
+  detailPanel(
+    [
+      { label: 'Account', value: '{{b2bAccount.companyName}}' },
+      { label: 'Credit line', value: '{{b2bAccount.creditLimit}}', ref: 'b2bAccount.creditLimit' },
+      {
+        label: 'Payment terms',
+        value: '{{b2bAccount.paymentTerms}}',
+        ref: 'b2bAccount.paymentTerms',
+      },
+    ],
+    { status: { label: '✓ Approved', role: 'success' } }
+  ),
+  copyBlock([button('Go to your portal', '{{b2bAccount.portalUrl}}', 'center')]),
 ];
 
 const b2bQuoteReceived = (): SectionNode[] => [
   copyBlock([
     heading('Your quote is ready'),
-    para('Here are the details for quote {{quote.number}}:'),
+    para('Here are the details for quote {{quote.number}} from {{site.name}}:'),
   ]),
+  detailPanel(
+    [
+      { label: 'Quote', value: '{{quote.number}}' },
+      { label: 'Quote total', value: '{{quote.total}}', emphasize: true },
+      { label: 'Valid until', value: '{{quote.validUntil}}', ref: 'quote.validUntil' },
+    ],
+    { status: { label: 'Ready to review', role: 'info' } }
+  ),
   ...itemsTable('quote.items'),
-  copyBlock([para('<b>Total: {{quote.total}}</b>')]),
-  when('quote.validUntil', [para('Valid until {{quote.validUntil}}.')]),
-  copyBlock([button('Review &amp; approve', '{{quote.reviewUrl}}')]),
+  copyBlock([button('Review &amp; approve', '{{quote.reviewUrl}}', 'center')]),
 ];
 
 const b2bQuoteExpiring = (): SectionNode[] => [
@@ -124,18 +144,32 @@ const b2bQuoteExpiring = (): SectionNode[] => [
     para(
       'Heads-up — quote {{quote.number}} expires on {{quote.validUntil}}. Approve it before then to lock in your pricing.'
     ),
-    para('<b>Total: {{quote.total}}</b> · Expires {{quote.validUntil}}'),
-    button('Approve now', '{{quote.reviewUrl}}'),
   ]),
+  detailPanel(
+    [
+      { label: 'Quote', value: '{{quote.number}}' },
+      { label: 'Quote total', value: '{{quote.total}}', emphasize: true },
+      { label: 'Expires', value: '{{quote.validUntil}}' },
+    ],
+    { status: { label: 'Expires soon', role: 'warning' } }
+  ),
+  copyBlock([button('Approve now', '{{quote.reviewUrl}}', 'center')]),
 ];
 
 const b2bInvoiceDue = (): SectionNode[] => [
   copyBlock([
-    heading('Invoice {{invoice.number}}'),
+    heading('Your invoice is due soon'),
     para('A reminder that invoice {{invoice.number}} is due in {{invoice.daysUntilDue}} days.'),
-    para('<b>Amount due: {{invoice.balance}}</b> · Due {{invoice.dueDate}}'),
-    button('Pay now', '{{invoice.payUrl}}'),
   ]),
+  detailPanel(
+    [
+      { label: 'Invoice', value: '{{invoice.number}}' },
+      { label: 'Amount due', value: '{{invoice.balance}}', emphasize: true },
+      { label: 'Due date', value: '{{invoice.dueDate}}' },
+    ],
+    { status: { label: 'Due soon', role: 'info' } }
+  ),
+  copyBlock([button('Pay now', '{{invoice.payUrl}}', 'center')]),
 ];
 
 // ── Invoicing + dunning ──────────────────────────────────────────────────────
@@ -147,41 +181,60 @@ const invoicingReminder = (): SectionNode[] => [
       'Just a friendly reminder that invoice {{invoice.number}} is due on {{invoice.dueDate}}. Here’s a summary:'
     ),
   ]),
+  detailPanel(
+    [
+      { label: 'Invoice', value: '{{invoice.number}}' },
+      { label: 'Balance due', value: '{{invoice.balance}}', emphasize: true },
+      { label: 'Due date', value: '{{invoice.dueDate}}' },
+    ],
+    { status: { label: 'Due soon', role: 'info' } }
+  ),
   ...itemsTable('invoice.items'),
-  copyBlock([
-    para('<b>Balance due: {{invoice.balance}}</b> · Due {{invoice.dueDate}}'),
-    button('Pay invoice', '{{invoice.payUrl}}'),
-  ]),
+  copyBlock([button('Pay invoice', '{{invoice.payUrl}}', 'center')]),
 ];
 
-/** The three dunning notices differ only in tone + the escalation line, so they share
- *  a shape: the same heading/copy/amount/CTA spine, authored per notice. */
-const dunning = (title: string, body: string, tail?: SectionNode[]): SectionNode[] => [
-  copyBlock([
-    heading(title),
-    para(body),
-    para('<b>Amount due: {{invoice.balance}}</b> · {{invoice.overdueDays}} days overdue'),
-  ]),
+/** The three dunning notices differ only in tone + escalation, so they share a shape:
+ *  a heading + copy, then the summary card whose STATUS escalates
+ *  (warning → warning → error) and whose balance is the emphasized hero, then the
+ *  Pay CTA. `tail` carries the final notice's credit-hold warning. */
+const dunning = (
+  title: string,
+  body: string,
+  status: DetailStatus,
+  tail?: SectionNode[]
+): SectionNode[] => [
+  copyBlock([heading(title), para(body)]),
+  detailPanel(
+    [
+      { label: 'Invoice', value: '{{invoice.number}}' },
+      { label: 'Amount due', value: '{{invoice.balance}}', emphasize: true },
+      { label: 'Days overdue', value: '{{invoice.overdueDays}}' },
+    ],
+    { status }
+  ),
   ...(tail ?? []),
-  copyBlock([button('Pay now', '{{invoice.payUrl}}')]),
+  copyBlock([button('Pay now', '{{invoice.payUrl}}', 'center')]),
 ];
 
 const invoicingOverdue = (): SectionNode[] =>
   dunning(
     'Your invoice is past due',
-    'Invoice {{invoice.number}} was due on {{invoice.dueDate}} and is now {{invoice.overdueDays}} days overdue. Please submit payment at your earliest convenience.'
+    'Invoice {{invoice.number}} was due on {{invoice.dueDate}} and is now {{invoice.overdueDays}} days overdue. Please submit payment at your earliest convenience.',
+    { label: 'Past due', role: 'warning' }
   );
 
 const invoicingOverdue2 = (): SectionNode[] =>
   dunning(
     'Second notice',
-    'Our records show invoice {{invoice.number}} remains unpaid and is now {{invoice.overdueDays}} days overdue. Please arrange payment to keep your account in good standing.'
+    'Our records show invoice {{invoice.number}} remains unpaid and is now {{invoice.overdueDays}} days overdue. Please arrange payment to keep your account in good standing.',
+    { label: 'Second notice', role: 'warning' }
   );
 
 const invoicingOverdueFinal = (): SectionNode[] =>
   dunning(
     'Final notice',
     'Invoice {{invoice.number}} is now {{invoice.overdueDays}} days overdue and requires immediate attention. This is the final reminder before your account is escalated.',
+    { label: 'Final notice', role: 'error' },
     [
       when('invoice.overdueDays', [
         para(
@@ -198,8 +251,14 @@ const invoicingReceipt = (): SectionNode[] => [
       'We’ve received your payment in full for invoice {{invoice.number}}. Here’s a summary for your records:'
     ),
   ]),
+  detailPanel(
+    [
+      { label: 'Invoice', value: '{{invoice.number}}' },
+      { label: 'Total paid', value: '{{invoice.total}}', emphasize: true },
+    ],
+    { status: { label: '✓ Paid', role: 'success' } }
+  ),
   ...itemsTable('invoice.items'),
-  copyBlock([para('<b>Total paid: {{invoice.total}}</b>')]),
 ];
 
 // ── Commerce ─────────────────────────────────────────────────────────────────
@@ -211,70 +270,468 @@ const orderConfirmation = (): SectionNode[] => [
       'Thanks for your order, {{customer.firstName ?? "there"}} — we’re getting it ready. Here’s a summary of order {{order.number}}:'
     ),
   ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Order total', value: '{{order.total}}', emphasize: true },
+      // The resolver supplies `order.shippingAddress` as an already-formatted one-line
+      // string; the row self-drops for a digital order with no shipping address.
+      { label: 'Shipping to', value: '{{order.shippingAddress}}', ref: 'order.shippingAddress' },
+    ],
+    { status: { label: '✓ Confirmed', role: 'success' } }
+  ),
   ...itemsTable('order.items'),
-  copyBlock([para('<b>Total: {{order.total}}</b>')]),
-  // The legacy tree bound `order.shippingAddress.oneLine`, but the resolver supplies
-  // `order.shippingAddress` as an already-formatted one-line string — the old binding
-  // could never have resolved. Bound to the real path here.
-  when('order.shippingAddress', [para('Shipping to: {{order.shippingAddress}}')]),
-  copyBlock([button('View your order', '{{order.statusUrl}}')]),
+  copyBlock([button('View your order', '{{order.statusUrl}}', 'center')]),
 ];
 
 const shippingConfirmation = (): SectionNode[] => [
   copyBlock([
     heading('Your order is on its way'),
     para('Good news, {{customer.firstName ?? "there"}} — order {{order.number}} has shipped.'),
-    para('Carrier: {{shipping.carrier}} · Tracking: {{shipping.trackingNumber}}'),
   ]),
-  when('shipping.trackingNumber', [button('Track your package', '{{shipping.trackingUrl}}')]),
-  copyBlock([divider()]),
+  detailPanel(
+    [
+      { label: 'Carrier', value: '{{shipping.carrier}}', ref: 'shipping.carrier' },
+      // The tracking number is what the recipient opened the email for — the hero.
+      {
+        label: 'Tracking number',
+        value: '{{shipping.trackingNumber}}',
+        emphasize: true,
+        ref: 'shipping.trackingNumber',
+      },
+    ],
+    { status: { label: 'Shipped', role: 'info' } }
+  ),
+  when('shipping.trackingNumber', [
+    button('Track your package', '{{shipping.trackingUrl}}', 'center'),
+  ]),
   ...itemsTable('order.items'),
+];
+
+// ── Commerce: order lifecycle (docs/implementation/transactional-email §4 P1) ─
+// The counterparts to order-confirmation that were missing: the "delivered",
+// "cancelled", "refunded", and "payment problem" moments. Each is triggered by a
+// system-automation seed on the matching `order.*` event and resolves the same
+// `order` data source, so it reads the same tokens as order-confirmation plus the
+// three the resolver was extended with (refundTotal · cancelReason · deliveredAt).
+
+const orderDelivered = (): SectionNode[] => [
+  copyBlock([
+    heading('Your order was delivered'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your order {{order.number}} has been delivered. We hope it’s everything you expected.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Order total', value: '{{order.total}}', emphasize: true },
+      { label: 'Delivered', value: '{{order.deliveredAt}}', ref: 'order.deliveredAt' },
+    ],
+    { status: { label: '✓ Delivered', role: 'success' } }
+  ),
+  copyBlock([
+    button('Leave a review', '{{order.reviewUrl}}', 'center'),
+    para('Something not right? Reply to this email and we’ll make it right.'),
+  ]),
+];
+
+const orderCancelled = (): SectionNode[] => [
+  copyBlock([
+    heading('Your order was cancelled'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} has been cancelled. Here’s a summary of what was cancelled:'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Order total', value: '{{order.total}}', emphasize: true },
+      { label: 'Reason', value: '{{order.cancelReason}}', ref: 'order.cancelReason' },
+    ],
+    { status: { label: 'Cancelled', role: 'error' } }
+  ),
+  copyBlock([
+    button('View order details', '{{order.statusUrl}}', 'center'),
+    para(
+      'If you were charged for this order, a refund will be issued to your original payment method.'
+    ),
+  ]),
+];
+
+const orderRefunded = (): SectionNode[] => [
+  copyBlock([
+    heading('Your refund is on the way'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we’ve processed a refund for order {{order.number}}.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      // The amount coming back is the one fact the recipient opened the email for.
+      { label: 'Refund amount', value: '{{order.refundTotal}}', emphasize: true },
+      { label: 'Order total', value: '{{order.total}}' },
+    ],
+    { status: { label: '✓ Refunded', role: 'success' } }
+  ),
+  copyBlock([
+    button('View order details', '{{order.statusUrl}}', 'center'),
+    para(
+      'Refunds are returned to your original payment method and usually take 5–10 business days to appear.'
+    ),
+  ]),
+];
+
+const paymentFailed = (): SectionNode[] => [
+  copyBlock([
+    heading('There was a problem with your payment'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we couldn’t process the payment for order {{order.number}}, so it’s on hold for now.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Amount due', value: '{{order.total}}', emphasize: true },
+    ],
+    { status: { label: 'Action needed', role: 'warning' } }
+  ),
+  copyBlock([
+    button('Update payment', '{{order.statusUrl}}', 'center'),
+    para('Update your payment details to complete your order — we’ll take it from there.'),
+  ]),
+];
+
+// ── Commerce: subscription lifecycle (docs/impl transactional-email §4 P2) ────
+// Auto-ship recurring commerce. Each is triggered by a system-automation seed on
+// the matching `subscription.*` event and reads the `subscription` data source
+// (status · interval · amount · nextOrderDate · pausedUntil · manageUrl).
+
+const subscriptionConfirmed = (): SectionNode[] => [
+  copyBlock([
+    heading('Your subscription is active'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — you’re all set. We’ll take care of the rest and send each order automatically.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Delivery', value: '{{subscription.interval}}' },
+      { label: 'Next order', value: '{{subscription.nextOrderDate}}', emphasize: true },
+      { label: 'Each order', value: '{{subscription.amount}}' },
+    ],
+    { status: { label: '✓ Active', role: 'success' } }
+  ),
+  copyBlock([
+    button('Manage subscription', '{{subscription.manageUrl}}', 'center'),
+    para('Skip an order, change the delivery date, or cancel any time — it’s all in your account.'),
+  ]),
+];
+
+const subscriptionRenewed = (): SectionNode[] => [
+  copyBlock([
+    heading('Your subscription renewed'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your latest order is on its way. Here’s a summary for your records:'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Amount charged', value: '{{subscription.amount}}', emphasize: true },
+      { label: 'Delivery', value: '{{subscription.interval}}' },
+      {
+        label: 'Next order',
+        value: '{{subscription.nextOrderDate}}',
+        ref: 'subscription.nextOrderDate',
+      },
+    ],
+    { status: { label: '✓ Renewed', role: 'success' } }
+  ),
+  copyBlock([button('Manage subscription', '{{subscription.manageUrl}}', 'center')]),
+];
+
+const subscriptionPaymentFailed = (): SectionNode[] => [
+  copyBlock([
+    heading('There was a problem with your subscription payment'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we couldn’t process the payment for your latest order, so it’s paused for now.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Amount due', value: '{{subscription.amount}}', emphasize: true },
+      { label: 'Delivery', value: '{{subscription.interval}}' },
+    ],
+    { status: { label: 'Action needed', role: 'warning' } }
+  ),
+  copyBlock([
+    button('Update payment', '{{subscription.manageUrl}}', 'center'),
+    para('Update your payment details and we’ll retry automatically — no need to reorder.'),
+  ]),
+];
+
+const subscriptionPaused = (): SectionNode[] => [
+  copyBlock([
+    heading('Your subscription is paused'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your subscription is on hold. You won’t be charged and no orders will ship until it resumes.'
+    ),
+  ]),
+  detailPanel(
+    [
+      {
+        label: 'Paused until',
+        value: '{{subscription.pausedUntil}}',
+        emphasize: true,
+        ref: 'subscription.pausedUntil',
+      },
+      { label: 'Delivery', value: '{{subscription.interval}}' },
+    ],
+    { status: { label: 'Paused', role: 'info' } }
+  ),
+  copyBlock([
+    button('Resume subscription', '{{subscription.manageUrl}}', 'center'),
+    para('Ready sooner? You can resume any time from your account.'),
+  ]),
+];
+
+const subscriptionResumed = (): SectionNode[] => [
+  copyBlock([
+    heading('Your subscription is active again'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — welcome back. Your subscription has resumed and your next order is scheduled.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Next order', value: '{{subscription.nextOrderDate}}', emphasize: true },
+      { label: 'Delivery', value: '{{subscription.interval}}' },
+      { label: 'Each order', value: '{{subscription.amount}}' },
+    ],
+    { status: { label: '✓ Active', role: 'success' } }
+  ),
+  copyBlock([button('Manage subscription', '{{subscription.manageUrl}}', 'center')]),
+];
+
+const subscriptionCancelled = (): SectionNode[] => [
+  copyBlock([
+    heading('Your subscription was cancelled'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your subscription has been cancelled and no further orders will ship.'
+    ),
+  ]),
+  detailPanel(
+    [
+      {
+        label: 'Access until',
+        value: '{{subscription.currentPeriodEnd}}',
+        ref: 'subscription.currentPeriodEnd',
+      },
+      { label: 'Delivery', value: '{{subscription.interval}}' },
+    ],
+    { status: { label: 'Cancelled', role: 'error' } }
+  ),
+  copyBlock([
+    button('Start a new subscription', '{{subscription.manageUrl}}', 'center'),
+    para('Changed your mind? You can start a new subscription whenever you’re ready.'),
+  ]),
+];
+
+// ── Commerce: returns / RMA (docs/impl transactional-email §4 P3) ────────────
+// Triggered on `return.approved` / `return.received` / `return.refunded`; read the
+// `return` data source (status · outcome · refundAmount · refundMethod · labelUrl)
+// plus the `order` source for the order number.
+
+const returnApproved = (): SectionNode[] => [
+  copyBlock([
+    heading('Your return is approved'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we’ve approved your return for order {{order.number}}. Here’s what happens next.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Return method', value: 'Ships back for a {{return.outcome}}' },
+    ],
+    { status: { label: '✓ Approved', role: 'success' } }
+  ),
+  when('return.hasLabel', [button('Print your return label', '{{return.labelUrl}}', 'center')]),
+  copyBlock([
+    para('Pack the items securely and send them back — we’ll take it from there once they arrive.'),
+  ]),
+];
+
+const returnReceived = (): SectionNode[] => [
+  copyBlock([
+    heading('We’ve received your return'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your return for order {{order.number}} is back with us. Thanks for sending it in.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Next step', value: 'We’re processing your {{return.outcome}}' },
+    ],
+    { status: { label: 'Received', role: 'info' } }
+  ),
+  copyBlock([
+    button('View your order', '{{return.manageUrl}}', 'center'),
+    para('We’ll email you again the moment your {{return.outcome}} is on its way.'),
+  ]),
+];
+
+const returnRefunded = (): SectionNode[] => [
+  copyBlock([
+    heading('Your refund is complete'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we’ve refunded your return for order {{order.number}}.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Refund amount', value: '{{return.refundAmount}}', emphasize: true },
+      { label: 'Refunded to', value: '{{return.refundMethod}}', ref: 'return.refundMethod' },
+    ],
+    { status: { label: '✓ Refunded', role: 'success' } }
+  ),
+  copyBlock([
+    button('View your order', '{{return.manageUrl}}', 'center'),
+    para('Refunds usually take 5–10 business days to appear, depending on your bank.'),
+  ]),
+];
+
+// ── B2B: order approval outcomes (docs/impl transactional-email §4 P3) ────────
+// The buyer's pending order was approved (→ placed) or rejected (→ cancelled) by an
+// approver at their organization. Both read the `order` source.
+
+const b2bOrderApproved = (): SectionNode[] => [
+  copyBlock([
+    heading('Your order is approved'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} has been approved and is now being processed.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Order total', value: '{{order.total}}', emphasize: true },
+    ],
+    { status: { label: '✓ Approved', role: 'success' } }
+  ),
+  copyBlock([button('View your order', '{{order.statusUrl}}', 'center')]),
+];
+
+const b2bOrderRejected = (): SectionNode[] => [
+  copyBlock([
+    heading('Your order wasn’t approved'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} wasn’t approved, so it hasn’t been placed.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Order total', value: '{{order.total}}' },
+    ],
+    { status: { label: 'Not approved', role: 'error' } }
+  ),
+  copyBlock([
+    button('View your order', '{{order.statusUrl}}', 'center'),
+    para('Have a question about this decision? Reach out to your account manager any time.'),
+  ]),
 ];
 
 // ── Scheduling: the industry-agnostic `booking` source (docs/79 §10) ─────────
 // The legacy B2B-fleet `appointment` source (service_appointments) was retired
 // 2026-07-14 (docs/79 §15.7) — B2B fleet bookings are Bookings too.
 
-/** location / staff / add-to-calendar are the cross-type optionals every booking kind
- *  (appointment · class · reservation · rental) may or may not carry. */
-const bookingBody = (title: string, lead: string, cta: string): SectionNode[] => [
+/**
+ * The shared booking body: a short warm lead, then the DETAIL PANEL that carries the
+ * what / when / where at a glance (service + time are always shown; duration /
+ * location / host drop when a given booking kind — appointment · class · reservation
+ * · rental — doesn't carry them), one primary action, a quiet "add to calendar" link
+ * beneath it, and a closing reassurance line. The panel is the point: a reader should
+ * find the time without reading a sentence.
+ */
+const bookingBody = (
+  title: string,
+  lead: string,
+  cta: string,
+  reassurance: string,
+  status: DetailStatus
+): SectionNode[] => [
   copyBlock([heading(title), para(lead)]),
-  when('booking.location', [para('Location: {{booking.location}}')]),
-  when('booking.staff', [para('With: {{booking.staff}}')]),
-  copyBlock([button(cta, '{{booking.manageUrl}}')]),
-  when('booking.addToCalendarUrl', [button('Add to calendar', '{{booking.addToCalendarUrl}}')]),
+  detailPanel(
+    [
+      { label: 'Service', value: '{{booking.service}}' },
+      // The date/time is the one fact the recipient opened the email to check —
+      // rendered large + brand-coloured so the eye lands on it first.
+      { label: 'When', value: '{{booking.when}}', emphasize: true },
+      { label: 'Duration', value: '{{booking.duration}}', ref: 'booking.duration' },
+      { label: 'Location', value: '{{booking.location}}', ref: 'booking.location' },
+      { label: 'With', value: '{{booking.staff}}', ref: 'booking.staff' },
+    ],
+    { status }
+  ),
+  copyBlock([button(cta, '{{booking.manageUrl}}', 'center')]),
+  when('booking.addToCalendarUrl', [actionLink('Add to calendar', '{{booking.addToCalendarUrl}}')]),
+  copyBlock([para(reassurance)]),
 ];
 
 const bookingConfirmation = (): SectionNode[] =>
   bookingBody(
     'Your booking is confirmed',
-    'Hi {{customer.firstName ?? "there"}} — your {{booking.service}} is booked for {{booking.when}}.',
-    'Manage booking'
+    'Hi {{customer.firstName ?? "there"}} — you’re all set. Here are the details:',
+    'Manage booking',
+    'Need to reschedule or cancel? You can manage this booking any time with the button above.',
+    { label: '✓ Confirmed', role: 'success' }
   );
 
 const bookingReminder = (): SectionNode[] =>
   bookingBody(
     'A reminder about your upcoming booking',
-    'Hi {{customer.firstName ?? "there"}} — a reminder that your {{booking.service}} is coming up on {{booking.when}}.',
-    'Manage booking'
+    'Hi {{customer.firstName ?? "there"}} — a friendly reminder about your upcoming booking:',
+    'Manage booking',
+    'Need to reschedule or cancel? You can manage this booking any time with the button above.',
+    { label: 'Upcoming', role: 'info' }
   );
 
 const bookingRescheduled = (): SectionNode[] =>
   bookingBody(
     'Your booking has been rescheduled',
-    'Hi {{customer.firstName ?? "there"}} — your {{booking.service}} has been moved to {{booking.when}}.',
-    'Manage booking'
+    'Hi {{customer.firstName ?? "there"}} — your booking has moved. Here are the new details:',
+    'Manage booking',
+    'Need to make another change? You can manage this booking any time with the button above.',
+    { label: 'Rescheduled', role: 'warning' }
   );
 
 const bookingCancelled = (): SectionNode[] => [
   copyBlock([
     heading('Your booking was cancelled'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — your {{booking.service}} scheduled for {{booking.when}} has been cancelled.'
+      'Hi {{customer.firstName ?? "there"}} — your booking has been cancelled. Here’s what was cancelled:'
     ),
   ]),
-  when('booking.cancellationReason', [para('Reason: {{booking.cancellationReason}}')]),
-  copyBlock([button('Book another time', '{{booking.bookUrl}}')]),
+  detailPanel(
+    [
+      { label: 'Service', value: '{{booking.service}}' },
+      { label: 'Was scheduled for', value: '{{booking.when}}', emphasize: true },
+      {
+        label: 'Reason',
+        value: '{{booking.cancellationReason}}',
+        ref: 'booking.cancellationReason',
+      },
+    ],
+    { status: { label: 'Cancelled', role: 'error' } }
+  ),
+  copyBlock([
+    button('Book another time', '{{booking.bookUrl}}', 'center'),
+    para('We’d love to see you again — book a new time whenever you’re ready.'),
+  ]),
 ];
 
 // Owner-facing counterpart of booking-confirmation (docs/79 §10) — sent to the
@@ -285,34 +742,55 @@ const bookingCancelled = (): SectionNode[] => [
 const bookingNotificationInternal = (): SectionNode[] => [
   copyBlock([
     heading('{{booking.newHeadline}}'),
-    para('{{customer.fullName ?? "A customer"}} booked {{booking.service}} for {{booking.when}}.'),
+    para('{{customer.fullName ?? "A customer"}} booked {{booking.service}}.'),
   ]),
   when('booking.pendingApproval', [
     para(
       'This booking is a request awaiting your approval — confirm or decline it from your dashboard.'
     ),
   ]),
-  when('booking.staff', [para('With: {{booking.staff}}')]),
-  when('booking.location', [para('Location: {{booking.location}}')]),
-  when('booking.partySize', [para('Party size: {{booking.partySize}}')]),
-  copyBlock([
-    divider(),
-    para('Customer: {{customer.fullName ?? "—"}}'),
-    para('Email: {{customer.email}}'),
+  // The booking facts, scannable at a glance — this is an operational alert, so the
+  // owner should read the time and where without parsing prose.
+  detailPanel(
+    [
+      { label: 'Service', value: '{{booking.service}}' },
+      { label: 'When', value: '{{booking.when}}', emphasize: true },
+      { label: 'With', value: '{{booking.staff}}', ref: 'booking.staff' },
+      { label: 'Location', value: '{{booking.location}}', ref: 'booking.location' },
+      { label: 'Party size', value: '{{booking.partySize}}', ref: 'booking.partySize' },
+    ],
+    { status: { label: 'New booking', role: 'info' } }
+  ),
+  // A second card for the customer's contact details, so a callback is one glance away.
+  detailPanel([
+    { label: 'Customer', value: '{{customer.fullName ?? "—"}}' },
+    { label: 'Email', value: '{{customer.email}}' },
+    { label: 'Company', value: '{{customer.company}}', ref: 'customer.company' },
   ]),
-  when('customer.company', [para('Company: {{customer.company}}')]),
-  when('booking.addToCalendarUrl', [button('Add to calendar', '{{booking.addToCalendarUrl}}')]),
+  when('booking.addToCalendarUrl', [
+    button('Add to calendar', '{{booking.addToCalendarUrl}}', 'center'),
+  ]),
 ];
 
 const waitlistOffer = (): SectionNode[] => [
   copyBlock([
     heading('A spot just opened up'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — good news: a spot opened for {{waitlist.service}} in your requested window ({{waitlist.window}}). Book now to claim it.'
+      'Hi {{customer.firstName ?? "there"}} — good news: a spot opened for {{waitlist.service}} in your requested window. Book now to claim it.'
     ),
   ]),
-  when('waitlist.offerExpires', [para('This offer is held until {{waitlist.offerExpires}}.')]),
-  copyBlock([button('Book your spot', '{{waitlist.bookUrl}}')]),
+  detailPanel(
+    [
+      { label: 'Service', value: '{{waitlist.service}}' },
+      { label: 'Available window', value: '{{waitlist.window}}', emphasize: true },
+      { label: 'Held until', value: '{{waitlist.offerExpires}}', ref: 'waitlist.offerExpires' },
+    ],
+    { status: { label: 'Spot available', role: 'success' } }
+  ),
+  copyBlock([
+    button('Book your spot', '{{waitlist.bookUrl}}', 'center'),
+    para('Spots fill quickly — this one’s held just for you until the time above.'),
+  ]),
 ];
 
 // ── The registry ─────────────────────────────────────────────────────────────
@@ -336,6 +814,21 @@ const SILICA_EMAIL_BODIES: Record<string, SectionNode[]> = {
   'invoicing-receipt': invoicingReceipt(),
   'order-confirmation': orderConfirmation(),
   'shipping-confirmation': shippingConfirmation(),
+  'order-delivered': orderDelivered(),
+  'order-cancelled': orderCancelled(),
+  'order-refunded': orderRefunded(),
+  'payment-failed': paymentFailed(),
+  'subscription-confirmed': subscriptionConfirmed(),
+  'subscription-renewed': subscriptionRenewed(),
+  'subscription-payment-failed': subscriptionPaymentFailed(),
+  'subscription-paused': subscriptionPaused(),
+  'subscription-resumed': subscriptionResumed(),
+  'subscription-cancelled': subscriptionCancelled(),
+  'return-approved': returnApproved(),
+  'return-received': returnReceived(),
+  'return-refunded': returnRefunded(),
+  'b2b-order-approved': b2bOrderApproved(),
+  'b2b-order-rejected': b2bOrderRejected(),
   'booking-confirmation': bookingConfirmation(),
   'booking-reminder': bookingReminder(),
   'booking-rescheduled': bookingRescheduled(),

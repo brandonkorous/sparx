@@ -33,6 +33,7 @@ import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { BuilderNotFoundError } from '../errors';
+import { isPriorDefaultBody } from './email-default-refresh';
 
 function toDto(row: BuilderEmail): BuilderEmailDto {
   return {
@@ -456,6 +457,54 @@ async function repairLegacyRows(tx: Prisma.TransactionClient): Promise<number> {
 }
 
 /**
+ * Refresh every tenant-wide default row that is STILL the untouched shipped default to
+ * the CURRENT shipped body (docs/120) — so a tenant provisioned before a default was
+ * redesigned picks the new design up, without ever clobbering an edit.
+ *
+ * A row qualifies only when BOTH its draft and its published body are recognised as a
+ * prior shipped default (id-stripped content match, `isPriorDefaultBody`): any tenant
+ * edit — or even an unpublished draft change — takes the row out of the set and it is
+ * left entirely alone. A row already on the current design isn't a PRIOR default, so it
+ * doesn't match and the pass is idempotent. Per-SITE overrides (property_id set) are an
+ * explicit "customize for this site" the tenant owns, so they're never touched here.
+ *
+ * Runs per tenant inside `provisionDefaultEmails`, so it rides both `module.activated`
+ * and the 6-hourly reconcile — the same deployable path as `repairLegacyRows`, never a
+ * one-off DB script.
+ */
+async function refreshRedesignedDefaults(tx: Prisma.TransactionClient): Promise<number> {
+  const rows = await tx.builderEmail.findMany({
+    where: { propertyId: null, key: { not: null } },
+  });
+  let refreshed = 0;
+  for (const row of rows) {
+    const key = row.key;
+    if (!key) continue;
+    const def = getDefaultEmailTemplate(key);
+    if (!def) continue; // a custom-keyed row with no code default — nothing to refresh to
+    const draftDoc = row.silicaDraftDocument as SilicaEmailDocument | null;
+    const publishedDoc = row.silicaPublishedDocument as SilicaEmailDocument | null;
+    // Replace ONLY when both sides are still an untouched shipped default.
+    if (!isPriorDefaultBody(key, draftDoc) || !isPriorDefaultBody(key, publishedDoc)) continue;
+    await tx.builderEmail.update({
+      where: { id: row.id },
+      data: {
+        silicaDraftDocument: asDocJson(def.doc),
+        silicaPublishedDocument: asDocJson(def.doc),
+        // Keep the mirrored fields in lock-step with the refreshed document, so a
+        // future subject/name change on a default lands here too. publishedAt is left
+        // as-is: the row stays published, this only swaps its content.
+        subject: def.subject,
+        preheader: def.preheader,
+        name: def.name,
+      },
+    });
+    refreshed += 1;
+  }
+  return refreshed;
+}
+
+/**
  * Provision the tenant's default email templates (docs/91) — the keyed, tenant-wide
  * (`property_id = null`) Builder emails that back the platform automations. Published
  * immediately (draft == published) so they're send-ready. Idempotent: only the keys not
@@ -472,9 +521,12 @@ async function repairLegacyRows(tx: Prisma.TransactionClient): Promise<number> {
  */
 export function provisionDefaultEmails(
   ctx: ServiceContext
-): Promise<{ provisioned: number; repaired: number }> {
+): Promise<{ provisioned: number; repaired: number; refreshed: number }> {
   return withTenant(ctx, async (tx) => {
     const repaired = await repairLegacyRows(tx);
+    // Repair FIRST (legacy tree → silica), THEN refresh: refresh matches on the silica
+    // body, so a just-converted row is already comparable.
+    const refreshed = await refreshRedesignedDefaults(tx);
 
     const existing = await tx.builderEmail.findMany({
       where: { propertyId: null, key: { not: null } },
@@ -482,7 +534,23 @@ export function provisionDefaultEmails(
     });
     const have = new Set(existing.map((e) => e.key));
     const missing = DEFAULT_EMAIL_TEMPLATES.filter((t) => !have.has(t.key));
-    if (missing.length === 0) return { provisioned: 0, repaired };
+    if (missing.length === 0) {
+      // Nothing new to create, but a refresh may still have re-designed existing rows —
+      // audit that on its own so the redesign rollout is traceable per tenant.
+      if (refreshed > 0) {
+        await writeAuditLog({
+          tx,
+          tenantId: ctx.tenantId,
+          actorId: ctx.userId ?? null,
+          actorType: 'system',
+          action: 'builder.emails.refreshed',
+          entityType: 'BuilderEmail',
+          entityId: null,
+          diff: { after: { refreshed, repaired } },
+        });
+      }
+      return { provisioned: 0, repaired, refreshed };
+    }
 
     const last = await tx.builderEmail.findFirst({
       orderBy: { position: 'desc' },
@@ -521,9 +589,11 @@ export function provisionDefaultEmails(
       action: 'builder.emails.provisioned',
       entityType: 'BuilderEmail',
       entityId: null,
-      diff: { after: { count: missing.length, keys: missing.map((m) => m.key), repaired } },
+      diff: {
+        after: { count: missing.length, keys: missing.map((m) => m.key), repaired, refreshed },
+      },
     });
-    return { provisioned: missing.length, repaired };
+    return { provisioned: missing.length, repaired, refreshed };
   });
 }
 

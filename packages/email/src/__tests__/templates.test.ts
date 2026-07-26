@@ -91,6 +91,60 @@ describe('sendTemplate', () => {
     expect(send?.templateId).toBe('welcome-merchant');
   });
 
+  it('renders the sparx-billing receipt with the amount + invoice link', async () => {
+    const rendered = await _renderTemplateForTest({
+      template: 'billing-receipt',
+      to: 'owner@example.test',
+      props: {
+        accountName: 'Bob’s Parts',
+        amountLabel: '$49.00',
+        periodLabel: 'Jul 1 – Jul 31, 2026',
+        invoiceUrl: 'https://invoice.stripe.com/i/abc',
+      },
+    });
+    expect(rendered.subject).toBe('Your sparx receipt');
+    expect(rendered.html).toContain('$49.00');
+    expect(rendered.html).toContain('https://invoice.stripe.com/i/abc');
+    expect(rendered.text).toContain('$49.00');
+    expect(rendered.templateId).toBe('billing-receipt');
+  });
+
+  it('renders the sparx-billing payment-failed notice with the update link', async () => {
+    const rendered = await _renderTemplateForTest({
+      template: 'billing-payment-failed',
+      to: 'owner@example.test',
+      props: { amountLabel: '$49.00', updateUrl: 'https://invoice.stripe.com/i/abc' },
+    });
+    expect(rendered.subject).toMatch(/problem with your sparx payment/i);
+    expect(rendered.html).toContain('$49.00');
+    expect(rendered.html).toContain('https://invoice.stripe.com/i/abc');
+    expect(rendered.templateId).toBe('billing-payment-failed');
+  });
+
+  it('renders the sparx-billing trial-ending notice with the end date + manage link', async () => {
+    const rendered = await _renderTemplateForTest({
+      template: 'billing-trial-ending',
+      to: 'owner@example.test',
+      props: { trialEndLabel: 'Aug 5, 2026', manageUrl: 'https://sparx.works/settings/billing' },
+    });
+    expect(rendered.subject).toBe('Your sparx trial ends soon');
+    expect(rendered.html).toContain('Aug 5, 2026');
+    expect(rendered.html).toContain('https://sparx.works/settings/billing');
+    expect(rendered.templateId).toBe('billing-trial-ending');
+  });
+
+  it('wraps every coded template in the shared frame — tiered footer legal line', async () => {
+    // The frame is defined once in _layout.tsx; assert it cascades by checking a
+    // template unrelated to billing carries the new tiered footer legal line.
+    const rendered = await _renderTemplateForTest({
+      template: 'welcome-merchant',
+      to: 'owner@example.test',
+      props: { name: 'Brandon', dashboardUrl: 'https://app.sparx.works/welcome' },
+    });
+    expect(rendered.html).toContain('sparx.works');
+    expect(rendered.text).toContain('WizeWorks');
+  });
+
   it('rejects unknown providers via env validation', () => {
     // Sanity: provider selection only triggers on the next getEmailProvider()
     // call; with the cache already set, this is more about doc'ing the API.

@@ -15,6 +15,7 @@
 // stale copy of the old palette sitting in the database.
 
 import type {
+  EmailColorDefaults,
   EmailDocument,
   EmailNode,
   LayoutChild,
@@ -30,57 +31,102 @@ import type { BrandTokens } from '../components/brand';
  *  exactly as they set it. */
 const UNSET_FONT = 'Arial, Helvetica, sans-serif';
 
-/** Repaint one node's auto-tracking color fields. Every branch is guarded by that
- *  field's own `Auto` flag, so a hand-picked color always survives. */
-function repaint(node: EmailNode, brand: BrandTokens): EmailNode {
+/** The semantic status colours — FIXED, not brand-derived: a success is green and a
+ *  warning is amber regardless of the tenant's palette, and the sparx theme system
+ *  models no semantic tokens anyway. Chosen dark enough to read on a light card
+ *  (email renders the light palette only). */
+const SEMANTIC = {
+  info: '#1d4ed8',
+  success: '#15803d',
+  warning: '#b45309',
+  error: '#b91c1c',
+} as const;
+
+/** The full role → colour map a `*Role` field resolves against (silicaui 0.33). The
+ *  surface/brand roles come from the tenant's resolved brand (theme-adaptive); the
+ *  semantic roles are the fixed constants above. */
+function roleMap(brand: BrandTokens): EmailColorDefaults {
+  return {
+    primary: brand.primary,
+    primaryContent: brand.primaryForeground,
+    baseContent: brand.foreground,
+    base100: brand.background,
+    base200: brand.muted,
+    base300: brand.border,
+    secondary: brand.accent,
+    accent: brand.accent,
+    neutral: brand.foreground,
+    ...SEMANTIC,
+  };
+}
+
+/** Repaint one node's auto-tracking colour fields. Every branch is guarded by that
+ *  field's own `Auto` flag (so a hand-picked colour always survives) and honours the
+ *  node's optional `*Role` (0.33) — falling back to that field's historical default
+ *  role when unset, so pre-role documents repaint exactly as before. */
+function repaint(node: EmailNode, roles: EmailColorDefaults): EmailNode {
   switch (node.kind) {
-    case 'text':
-      return node.colorAuto ? { ...node, color: brand.foreground } : node;
+    case 'text': {
+      let n = node;
+      if (n.colorAuto) n = { ...n, color: roles[n.colorRole ?? 'baseContent'] };
+      if (n.linkColorAuto) n = { ...n, linkColor: roles[n.linkColorRole ?? 'primary'] };
+      return n;
+    }
     case 'button':
       return {
         ...node,
-        ...(node.bgAuto ? { bg: brand.primary } : {}),
-        ...(node.colorAuto ? { color: brand.primaryForeground } : {}),
+        ...(node.bgAuto ? { bg: roles[node.bgRole ?? 'primary'] } : {}),
+        ...(node.colorAuto ? { color: roles[node.colorRole ?? 'primaryContent'] } : {}),
+        ...(node.borderColorAuto ? { borderColor: roles[node.borderColorRole ?? 'primary'] } : {}),
       };
     case 'divider':
-      return node.colorAuto ? { ...node, color: brand.border } : node;
+      return node.colorAuto ? { ...node, color: roles.base300 } : node;
     case 'section':
-      return node.bgAuto ? { ...node, bg: brand.background } : node;
+      return {
+        ...node,
+        ...(node.bgAuto ? { bg: roles[node.bgRole ?? 'base100'] } : {}),
+        ...(node.borderColorAuto
+          ? { borderColor: roles[node.borderColorRole ?? 'base300'] }
+          : {}),
+      };
     default:
       return node;
   }
 }
 
-function walkChild(child: LayoutChild, brand: BrandTokens): LayoutChild {
+function walkChild(child: LayoutChild, roles: EmailColorDefaults): LayoutChild {
   if (child.kind === 'columns') {
     return {
       ...child,
       children: child.children.map((col) => ({
         ...col,
-        children: col.children.map((c) => walkChild(c, brand)),
+        children: col.children.map((c) => walkChild(c, roles)),
       })),
     };
   }
-  return repaint(child, brand) as LayoutChild;
+  return repaint(child, roles) as LayoutChild;
 }
 
-function walkSection(section: SectionNode, brand: BrandTokens): SectionNode {
-  const painted = repaint(section, brand) as SectionNode;
-  return { ...painted, children: painted.children.map((c) => walkChild(c, brand)) };
+function walkSection(section: SectionNode, roles: EmailColorDefaults): SectionNode {
+  const painted = repaint(section, roles) as SectionNode;
+  return { ...painted, children: painted.children.map((c) => walkChild(c, roles)) };
 }
 
-/** Repaint an email document in `brand`, honoring every node's `*Auto` flags. Pure —
- *  returns a new document and never mutates the stored one. */
+/** Repaint an email document in `brand`, honoring every node's `*Auto` flags +
+ *  `*Role` (0.33). Pure — returns a new document and never mutates the stored one. */
 export function applyBrandColors(doc: EmailDocument, brand: BrandTokens): EmailDocument {
+  const roles = roleMap(brand);
   const root = doc.root;
   return {
     ...doc,
     root: {
       ...root,
-      ...(root.bgAuto ? { bg: brand.muted } : {}),
-      ...(root.contentBgAuto ? { contentBg: brand.background } : {}),
+      // The body's canvas tracks base200 (its `bgAuto` default) and its content
+      // surface base100 — via the same role map, honoring any explicit role.
+      ...(root.bgAuto ? { bg: roles[root.bgRole ?? 'base200'] } : {}),
+      ...(root.contentBgAuto ? { contentBg: roles[root.contentBgRole ?? 'base100'] } : {}),
       ...(root.fontFamily === UNSET_FONT ? { fontFamily: brand.fontBody } : {}),
-      children: root.children.map((s) => walkSection(s, brand)),
+      children: root.children.map((s) => walkSection(s, roles)),
     },
   };
 }

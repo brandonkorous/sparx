@@ -308,6 +308,167 @@ const shippingConfirmation = (): BuilderNode =>
     lineItems('order.items'),
   ]);
 
+// ── Order lifecycle (docs/implementation/transactional-email §4 P1) — the
+// counterparts to order-confirmation: delivered, cancelled, refunded, payment
+// problem. Silica bodies carry the polished design; these legacy trees exist only
+// because the `draft_tree`/`published_tree` columns are still NOT NULL.
+
+const orderDelivered = (): BuilderNode =>
+  body([
+    heading('Your order was delivered'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your order {{order.number}} has been delivered. We hope it’s everything you expected.'
+    ),
+    para('Order total: {{order.total}}'),
+    button('Leave a review', '{{order.reviewUrl}}'),
+  ]);
+
+const orderCancelled = (): BuilderNode =>
+  body([
+    heading('Your order was cancelled'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} has been cancelled. Order total: {{order.total}}.'
+    ),
+    conditional('order.cancelReason', [para('Reason: {{order.cancelReason}}')]),
+    para(
+      'If you were charged for this order, a refund will be issued to your original payment method.'
+    ),
+    button('View order details', '{{order.statusUrl}}'),
+  ]);
+
+const orderRefunded = (): BuilderNode =>
+  body([
+    heading('Your refund is on the way'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we’ve processed a refund of {{order.refundTotal}} for order {{order.number}}.'
+    ),
+    para(
+      'Refunds are returned to your original payment method and usually take 5–10 business days to appear.'
+    ),
+    button('View order details', '{{order.statusUrl}}'),
+  ]);
+
+const paymentFailed = (): BuilderNode =>
+  body([
+    heading('There was a problem with your payment'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we couldn’t process the payment for order {{order.number}}, so it’s on hold. Amount due: {{order.total}}.'
+    ),
+    para('Update your payment details to complete your order — we’ll take it from there.'),
+    button('Update payment', '{{order.statusUrl}}'),
+  ]);
+
+// ── Subscription lifecycle (docs/impl transactional-email §4 P2) — auto-ship
+// recurring commerce. Silica bodies carry the design; these legacy trees exist
+// only for the NOT-NULL tree columns.
+
+const subscriptionConfirmed = (): BuilderNode =>
+  body([
+    heading('Your subscription is active'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — you’re all set. We’ll send each order automatically, {{subscription.interval}}. Next order: {{subscription.nextOrderDate}} ({{subscription.amount}}).'
+    ),
+    button('Manage subscription', '{{subscription.manageUrl}}'),
+  ]);
+
+const subscriptionRenewed = (): BuilderNode =>
+  body([
+    heading('Your subscription renewed'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your latest order is on its way. Amount charged: {{subscription.amount}}. Next order: {{subscription.nextOrderDate}}.'
+    ),
+    button('Manage subscription', '{{subscription.manageUrl}}'),
+  ]);
+
+const subscriptionPaymentFailed = (): BuilderNode =>
+  body([
+    heading('There was a problem with your subscription payment'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we couldn’t process the payment for your latest order ({{subscription.amount}}), so it’s paused. Update your payment details and we’ll retry automatically.'
+    ),
+    button('Update payment', '{{subscription.manageUrl}}'),
+  ]);
+
+const subscriptionPaused = (): BuilderNode =>
+  body([
+    heading('Your subscription is paused'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your subscription is on hold. No orders will ship until it resumes.'
+    ),
+    conditional('subscription.pausedUntil', [para('Paused until {{subscription.pausedUntil}}.')]),
+    button('Resume subscription', '{{subscription.manageUrl}}'),
+  ]);
+
+const subscriptionResumed = (): BuilderNode =>
+  body([
+    heading('Your subscription is active again'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — welcome back. Your subscription has resumed; next order: {{subscription.nextOrderDate}}.'
+    ),
+    button('Manage subscription', '{{subscription.manageUrl}}'),
+  ]);
+
+const subscriptionCancelled = (): BuilderNode =>
+  body([
+    heading('Your subscription was cancelled'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your subscription has been cancelled and no further orders will ship.'
+    ),
+    conditional('subscription.currentPeriodEnd', [
+      para('You’ll keep access until {{subscription.currentPeriodEnd}}.'),
+    ]),
+    button('Start a new subscription', '{{subscription.manageUrl}}'),
+  ]);
+
+// ── Returns / RMA + B2B order outcomes (docs/impl transactional-email §4 P3).
+// Silica bodies carry the design; these legacy trees exist only for the NOT-NULL
+// tree columns.
+
+const returnApproved = (): BuilderNode =>
+  body([
+    heading('Your return is approved'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we’ve approved your return for order {{order.number}} (for a {{return.outcome}}). Pack the items securely and send them back.'
+    ),
+    conditional('return.hasLabel', [button('Print your return label', '{{return.labelUrl}}')]),
+  ]);
+
+const returnReceived = (): BuilderNode =>
+  body([
+    heading('We’ve received your return'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your return for order {{order.number}} is back with us. We’re processing your {{return.outcome}} and will email you again shortly.'
+    ),
+    button('View your order', '{{return.manageUrl}}'),
+  ]);
+
+const returnRefunded = (): BuilderNode =>
+  body([
+    heading('Your refund is complete'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — we’ve refunded {{return.refundAmount}} for your return on order {{order.number}}. Refunds usually take 5–10 business days to appear.'
+    ),
+    button('View your order', '{{return.manageUrl}}'),
+  ]);
+
+const b2bOrderApproved = (): BuilderNode =>
+  body([
+    heading('Your order is approved'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} ({{order.total}}) has been approved and is now being processed.'
+    ),
+    button('View your order', '{{order.statusUrl}}'),
+  ]);
+
+const b2bOrderRejected = (): BuilderNode =>
+  body([
+    heading('Your order wasn’t approved'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — order {{order.number}} wasn’t approved, so it hasn’t been placed. Reach out to your account manager with any questions.'
+    ),
+    button('View your order', '{{order.statusUrl}}'),
+  ]);
+
 // ── Scheduling-module booking trees (docs/79 §10) ────────────────────────────
 // The industry-agnostic booking record (appointment | class | reservation |
 // rental) — the legacy B2B-fleet `appointment` trees were retired 2026-07-14
@@ -614,6 +775,171 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     sources: ['customer', 'order', 'shipping', 'tenant'],
     refs: ['customerId', 'orderId', 'fulfillmentId'],
     tree: shippingConfirmation(),
+  },
+  {
+    key: 'order-delivered',
+    name: 'Order delivered',
+    type: 'transactional',
+    category: 'order',
+    subject: 'Your order {{order.number}} was delivered',
+    preheader: 'It’s arrived — we hope you love it.',
+    sources: ['customer', 'order', 'tenant'],
+    refs: ['customerId', 'orderId'],
+    tree: orderDelivered(),
+  },
+  {
+    key: 'order-cancelled',
+    name: 'Order cancelled',
+    type: 'transactional',
+    category: 'order',
+    subject: 'Your order {{order.number}} was cancelled',
+    preheader: 'About your recent order.',
+    sources: ['customer', 'order', 'tenant'],
+    refs: ['customerId', 'orderId'],
+    tree: orderCancelled(),
+  },
+  {
+    key: 'order-refunded',
+    name: 'Order refunded',
+    type: 'transactional',
+    category: 'order',
+    subject: 'Your refund for {{order.number}} is on the way',
+    preheader: '{{order.refundTotal}} is being returned to you.',
+    sources: ['customer', 'order', 'tenant'],
+    refs: ['customerId', 'orderId'],
+    tree: orderRefunded(),
+  },
+  {
+    key: 'payment-failed',
+    name: 'Payment failed',
+    type: 'transactional',
+    category: 'order',
+    subject: 'There was a problem with your payment',
+    preheader: 'Your order {{order.number}} is on hold.',
+    sources: ['customer', 'order', 'tenant'],
+    refs: ['customerId', 'orderId'],
+    tree: paymentFailed(),
+  },
+  {
+    key: 'subscription-confirmed',
+    name: 'Subscription confirmed',
+    type: 'transactional',
+    category: 'subscription',
+    subject: 'Your subscription is active',
+    preheader: 'Next order {{subscription.nextOrderDate}}.',
+    sources: ['customer', 'subscription', 'tenant'],
+    refs: ['customerId', 'subscriptionId'],
+    tree: subscriptionConfirmed(),
+  },
+  {
+    key: 'subscription-renewed',
+    name: 'Subscription renewed',
+    type: 'transactional',
+    category: 'subscription',
+    subject: 'Your subscription renewed',
+    preheader: 'Your latest order is on its way.',
+    sources: ['customer', 'subscription', 'tenant'],
+    refs: ['customerId', 'subscriptionId'],
+    tree: subscriptionRenewed(),
+  },
+  {
+    key: 'subscription-payment-failed',
+    name: 'Subscription payment failed',
+    type: 'transactional',
+    category: 'subscription',
+    subject: 'There was a problem with your subscription payment',
+    preheader: 'Update your payment to keep your subscription active.',
+    sources: ['customer', 'subscription', 'tenant'],
+    refs: ['customerId', 'subscriptionId'],
+    tree: subscriptionPaymentFailed(),
+  },
+  {
+    key: 'subscription-paused',
+    name: 'Subscription paused',
+    type: 'transactional',
+    category: 'subscription',
+    subject: 'Your subscription is paused',
+    preheader: 'No orders will ship until it resumes.',
+    sources: ['customer', 'subscription', 'tenant'],
+    refs: ['customerId', 'subscriptionId'],
+    tree: subscriptionPaused(),
+  },
+  {
+    key: 'subscription-resumed',
+    name: 'Subscription resumed',
+    type: 'transactional',
+    category: 'subscription',
+    subject: 'Your subscription is active again',
+    preheader: 'Next order {{subscription.nextOrderDate}}.',
+    sources: ['customer', 'subscription', 'tenant'],
+    refs: ['customerId', 'subscriptionId'],
+    tree: subscriptionResumed(),
+  },
+  {
+    key: 'subscription-cancelled',
+    name: 'Subscription cancelled',
+    type: 'transactional',
+    category: 'subscription',
+    subject: 'Your subscription was cancelled',
+    preheader: 'About your recent subscription.',
+    sources: ['customer', 'subscription', 'tenant'],
+    refs: ['customerId', 'subscriptionId'],
+    tree: subscriptionCancelled(),
+  },
+  {
+    key: 'return-approved',
+    name: 'Return approved',
+    type: 'transactional',
+    category: 'return',
+    subject: 'Your return for {{order.number}} is approved',
+    preheader: 'Here’s how to send your items back.',
+    sources: ['customer', 'order', 'return', 'tenant'],
+    refs: ['customerId', 'orderId', 'returnId'],
+    tree: returnApproved(),
+  },
+  {
+    key: 'return-received',
+    name: 'Return received',
+    type: 'transactional',
+    category: 'return',
+    subject: 'We’ve received your return',
+    preheader: 'Your return for {{order.number}} is back with us.',
+    sources: ['customer', 'order', 'return', 'tenant'],
+    refs: ['customerId', 'orderId', 'returnId'],
+    tree: returnReceived(),
+  },
+  {
+    key: 'return-refunded',
+    name: 'Return refunded',
+    type: 'transactional',
+    category: 'return',
+    subject: 'Your refund for {{order.number}} is complete',
+    preheader: '{{return.refundAmount}} has been refunded.',
+    sources: ['customer', 'order', 'return', 'tenant'],
+    refs: ['customerId', 'orderId', 'returnId'],
+    tree: returnRefunded(),
+  },
+  {
+    key: 'b2b-order-approved',
+    name: 'B2B order approved',
+    type: 'transactional',
+    category: 'notification',
+    subject: 'Your order {{order.number}} is approved',
+    preheader: 'It’s approved and being processed.',
+    sources: ['customer', 'order', 'tenant'],
+    refs: ['customerId', 'orderId'],
+    tree: b2bOrderApproved(),
+  },
+  {
+    key: 'b2b-order-rejected',
+    name: 'B2B order rejected',
+    type: 'transactional',
+    category: 'notification',
+    subject: 'About your order {{order.number}}',
+    preheader: 'Your order wasn’t approved.',
+    sources: ['customer', 'order', 'tenant'],
+    refs: ['customerId', 'orderId'],
+    tree: b2bOrderRejected(),
   },
   {
     key: 'booking-confirmation',

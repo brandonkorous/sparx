@@ -95,6 +95,21 @@ function parseBrandOverride(value: unknown): BrandOverride | null {
   return value && typeof value === 'object' ? value : null;
 }
 
+/** The site's social links out of its free-form `settings` JSON — the SAME shape the
+ *  storefront reads (`{ platform, url }[]`) — so the footer's social row matches the
+ *  live site. Defensive: the column is unvalidated, so anything malformed is dropped. */
+function extractSocials(settings: unknown): { platform: string; url: string }[] {
+  const raw = (settings as { socials?: unknown } | null)?.socials;
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(
+    (s): s is { platform: string; url: string } =>
+      !!s &&
+      typeof s === 'object' &&
+      typeof (s as { platform?: unknown }).platform === 'string' &&
+      typeof (s as { url?: unknown }).url === 'string'
+  );
+}
+
 /**
  * Resolve the email brand for a send, or `null` when there's no brand identity
  * (the caller then renders with @sparx/email's sparx defaults). When `propertyId`
@@ -113,15 +128,15 @@ export async function resolveEmailBrand(
       propertyId
         ? tx.property.findUnique({
             where: { id: propertyId },
-            select: { name: true, brandOverride: true },
+            select: { name: true, brandOverride: true, settings: true },
           })
         : Promise.resolve(null),
-      // The tenant's PRIMARY site name — the fallback when no specific property is
-      // in scope (a tenant-wide send). Only read when we don't already have the
-      // active property row.
+      // The tenant's PRIMARY site name + socials — the fallback when no specific
+      // property is in scope (a tenant-wide send). Only read when we don't already
+      // have the active property row.
       propertyId
         ? Promise.resolve(null)
-        : tx.property.findFirst({ where: { isPrimary: true }, select: { name: true } }),
+        : tx.property.findFirst({ where: { isPrimary: true }, select: { name: true, settings: true } }),
     ]);
 
     const override = parseBrandOverride(propertyRow?.brandOverride);
@@ -174,9 +189,14 @@ export async function resolveEmailBrand(
     // preset; unset tokens inherit the preset. Email uses the light palette only.
     const overlay = brandIdentityOverlay(brand);
     const compiled = compileTokens(DEFAULT_THEME_KEY, { light: overlay }).light;
-    return tokensToBrand(compiled, {
-      logoUrl: logoUrlFor(brand.logoLightMediaId, slug),
-      siteName,
-    });
+    // The active site's socials (else the primary's) — for the footer's social row.
+    const socials = extractSocials(propertyRow?.settings ?? primaryProperty?.settings);
+    return {
+      ...tokensToBrand(compiled, {
+        logoUrl: logoUrlFor(brand.logoLightMediaId, slug),
+        siteName,
+      }),
+      ...(socials.length ? { socials } : {}),
+    };
   });
 }

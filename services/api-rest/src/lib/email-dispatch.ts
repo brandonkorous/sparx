@@ -191,6 +191,8 @@ export async function runEmailDispatchTick(logger: FastifyBaseLogger): Promise<T
             quoteId: strOrNull(refs.quoteId),
             billingDocumentId: strOrNull(refs.billingDocumentId),
             b2bAccountId: strOrNull(refs.b2bAccountId),
+            subscriptionId: strOrNull(refs.subscriptionId),
+            returnId: strOrNull(refs.returnId),
           };
           // Render via the shared core (docs/93 §2): resolve this recipient's data
           // (overlaying the trigger-time snapshot), interpolate the subject/preheader

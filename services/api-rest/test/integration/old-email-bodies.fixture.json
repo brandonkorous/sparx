@@ -1,0 +1,339 @@
+{
+  "welcome-customer": {
+    "version": "1",
+    "subject": "s",
+    "preheader": "p",
+    "root": {
+      "id": "body",
+      "kind": "body",
+      "width": 600,
+      "children": [
+        {
+          "id": "def-s-section-4",
+          "kind": "section",
+          "bg": "#ffffff",
+          "bgAuto": true,
+          "paddingX": 24,
+          "paddingY": 24,
+          "children": [
+            {
+              "id": "def-s-text-1",
+              "kind": "text",
+              "html": "Welcome to {{site.name}}",
+              "align": "left",
+              "color": "#18181b",
+              "colorAuto": true,
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "lineHeight": 36
+            },
+            {
+              "id": "def-s-text-2",
+              "kind": "text",
+              "html": "Hi {{customer.firstName ?? \"there\"}} — thanks for creating an account. You’re all set: browse the latest, track your orders, and check out faster every time.",
+              "align": "left",
+              "color": "#18181b",
+              "colorAuto": true,
+              "fontSize": 16,
+              "fontWeight": "normal",
+              "lineHeight": 26
+            },
+            {
+              "id": "def-s-button-3",
+              "kind": "button",
+              "label": "Start shopping",
+              "href": "{{site.url}}",
+              "bg": "#111827",
+              "bgAuto": true,
+              "color": "#ffffff",
+              "colorAuto": true,
+              "radius": 6,
+              "align": "left",
+              "paddingX": 24,
+              "paddingY": 12
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "order-confirmation": {
+    "version": "1",
+    "subject": "s",
+    "preheader": "p",
+    "root": {
+      "id": "body",
+      "kind": "body",
+      "width": 600,
+      "children": [
+        {
+          "id": "def-s-section-168",
+          "kind": "section",
+          "bg": "#ffffff",
+          "bgAuto": true,
+          "paddingX": 24,
+          "paddingY": 24,
+          "children": [
+            {
+              "id": "def-s-text-166",
+              "kind": "text",
+              "html": "Your order is confirmed",
+              "align": "left",
+              "color": "#18181b",
+              "colorAuto": true,
+              "fontSize": 28,
+              "fontWeight": "bold",
+              "lineHeight": 36
+            },
+            {
+              "id": "def-s-text-167",
+              "kind": "text",
+              "html": "Thanks for your order, {{customer.firstName ?? \"there\"}} — we’re getting it ready. Here’s a summary of order {{order.number}}:",
+              "align": "left",
+              "color": "#18181b",
+              "colorAuto": true,
+              "fontSize": 16,
+              "fontWeight": "normal",
+              "lineHeight": 26
+            }
+          ]
+        },
+        {
+          "id": "def-s-section-177",
+          "kind": "section",
+          "bg": "#ffffff",
+          "bgAuto": true,
+          "paddingX": 24,
+          "paddingY": 8,
+          "children": [
+            {
+              "id": "def-s-columns-175",
+              "kind": "columns",
+              "children": [
+                {
+                  "id": "def-s-column-170",
+                  "kind": "column",
+                  "widthPct": 58,
+                  "children": [
+                    {
+                      "id": "def-s-text-169",
+                      "kind": "text",
+                      "html": "Item",
+                      "align": "left",
+                      "color": "#18181b",
+                      "colorAuto": true,
+                      "fontSize": 14,
+                      "fontWeight": "semibold",
+                      "lineHeight": 22
+                    }
+                  ]
+                },
+                {
+                  "id": "def-s-column-172",
+                  "kind": "column",
+                  "widthPct": 14,
+                  "children": [
+                    {
+                      "id": "def-s-text-171",
+                      "kind": "text",
+                      "html": "Qty",
+                      "align": "right",
+                      "color": "#18181b",
+                      "colorAuto": true,
+                      "fontSize": 14,
+                      "fontWeight": "semibold",
+                      "lineHeight": 22
+                    }
+                  ]
+                },
+                {
+                  "id": "def-s-column-174",
+                  "kind": "column",
+                  "widthPct": 28,
+                  "children": [
+                    {
+                      "id": "def-s-text-173",
+                      "kind": "text",
+                      "html": "Amount",
+                      "align": "right",
+                      "color": "#18181b",
+                      "colorAuto": true,
+                      "fontSize": 14,
+                      "fontWeight": "semibold",
+                      "lineHeight": 22
+                    }
+                  ]
+                }
+              ],
+              "stackOnMobile": false
+            },
+            {
+              "id": "def-s-divider-176",
+              "kind": "divider",
+              "color": "#e4e4e7",
+              "colorAuto": true,
+              "thickness": 1
+            }
+          ]
+        },
+        {
+          "id": "def-s-section-185",
+          "kind": "section",
+          "bg": "#ffffff",
+          "bgAuto": true,
+          "paddingX": 24,
+          "paddingY": 8,
+          "children": [
+            {
+              "id": "def-s-columns-184",
+              "kind": "columns",
+              "children": [
+                {
+                  "id": "def-s-column-179",
+                  "kind": "column",
+                  "widthPct": 58,
+                  "children": [
+                    {
+                      "id": "def-s-text-178",
+                      "kind": "text",
+                      "html": "Item",
+                      "align": "left",
+                      "color": "#18181b",
+                      "colorAuto": true,
+                      "fontSize": 16,
+                      "fontWeight": "normal",
+                      "lineHeight": 26,
+                      "data": {
+                        "kind": "value",
+                        "ref": "name"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "def-s-column-181",
+                  "kind": "column",
+                  "widthPct": 14,
+                  "children": [
+                    {
+                      "id": "def-s-text-180",
+                      "kind": "text",
+                      "html": "1",
+                      "align": "right",
+                      "color": "#18181b",
+                      "colorAuto": true,
+                      "fontSize": 16,
+                      "fontWeight": "normal",
+                      "lineHeight": 26,
+                      "data": {
+                        "kind": "value",
+                        "ref": "quantity"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "id": "def-s-column-183",
+                  "kind": "column",
+                  "widthPct": 28,
+                  "children": [
+                    {
+                      "id": "def-s-text-182",
+                      "kind": "text",
+                      "html": "—",
+                      "align": "right",
+                      "color": "#18181b",
+                      "colorAuto": true,
+                      "fontSize": 16,
+                      "fontWeight": "normal",
+                      "lineHeight": 26,
+                      "data": {
+                        "kind": "value",
+                        "ref": "lineTotal"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "stackOnMobile": false
+            }
+          ],
+          "data": {
+            "kind": "collection",
+            "ref": "order.items"
+          }
+        },
+        {
+          "id": "def-s-section-187",
+          "kind": "section",
+          "bg": "#ffffff",
+          "bgAuto": true,
+          "paddingX": 24,
+          "paddingY": 24,
+          "children": [
+            {
+              "id": "def-s-text-186",
+              "kind": "text",
+              "html": "<b>Total: {{order.total}}</b>",
+              "align": "left",
+              "color": "#18181b",
+              "colorAuto": true,
+              "fontSize": 16,
+              "fontWeight": "normal",
+              "lineHeight": 26
+            }
+          ]
+        },
+        {
+          "id": "def-s-section-189",
+          "kind": "section",
+          "bg": "#ffffff",
+          "bgAuto": true,
+          "paddingX": 24,
+          "paddingY": 8,
+          "children": [
+            {
+              "id": "def-s-text-188",
+              "kind": "text",
+              "html": "Shipping to: {{order.shippingAddress}}",
+              "align": "left",
+              "color": "#18181b",
+              "colorAuto": true,
+              "fontSize": 16,
+              "fontWeight": "normal",
+              "lineHeight": 26
+            }
+          ],
+          "data": {
+            "kind": "value",
+            "ref": "order.shippingAddress"
+          }
+        },
+        {
+          "id": "def-s-section-191",
+          "kind": "section",
+          "bg": "#ffffff",
+          "bgAuto": true,
+          "paddingX": 24,
+          "paddingY": 24,
+          "children": [
+            {
+              "id": "def-s-button-190",
+              "kind": "button",
+              "label": "View your order",
+              "href": "{{order.statusUrl}}",
+              "bg": "#111827",
+              "bgAuto": true,
+              "color": "#ffffff",
+              "colorAuto": true,
+              "radius": 6,
+              "align": "left",
+              "paddingX": 24,
+              "paddingY": 12
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

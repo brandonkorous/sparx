@@ -55,6 +55,9 @@ export interface EmailProvisioningReconcileResult {
   acquired: boolean;
   tenants: number;
   provisioned: number;
+  /** Existing default rows re-designed to the current shipped body (redesign rollout),
+   *  counted across the fleet. Only ever refreshes rows a tenant hasn't edited. */
+  refreshed: number;
 }
 
 /**
@@ -67,12 +70,18 @@ export interface EmailProvisioningReconcileResult {
 export async function reconcileEmailProvisioning(
   logger: FastifyBaseLogger
 ): Promise<EmailProvisioningReconcileResult> {
-  const SKIPPED: EmailProvisioningReconcileResult = { acquired: false, tenants: 0, provisioned: 0 };
+  const SKIPPED: EmailProvisioningReconcileResult = {
+    acquired: false,
+    tenants: 0,
+    provisioned: 0,
+    refreshed: 0,
+  };
   return withAdvisoryTickLock(EMAIL_PROVISIONING_RECONCILE_LOCK_KEY, SKIPPED, async () => {
     const rows = await prisma.$queryRaw<{ tenant_id: string }[]>`
       SELECT tenant_id FROM find_tenants_with_active_module('email')
     `;
     let provisioned = 0;
+    let refreshed = 0;
     for (const { tenant_id } of rows) {
       try {
         const result = await emailService.provisionDefaultEmails({
@@ -80,18 +89,19 @@ export async function reconcileEmailProvisioning(
           userId: undefined,
         });
         provisioned += result.provisioned;
+        refreshed += result.refreshed;
       } catch (err) {
         // One tenant's failure must not abort the fleet pass — log and continue.
         logger.error({ err, tenantId: tenant_id }, 'email-provisioning-reconcile: tenant failed');
       }
     }
-    if (provisioned > 0) {
+    if (provisioned > 0 || refreshed > 0) {
       logger.info(
-        { tenants: rows.length, provisioned },
-        'email-provisioning-reconcile: backfilled default emails'
+        { tenants: rows.length, provisioned, refreshed },
+        'email-provisioning-reconcile: backfilled/refreshed default emails'
       );
     }
-    return { acquired: true, tenants: rows.length, provisioned };
+    return { acquired: true, tenants: rows.length, provisioned, refreshed };
   });
 }
 
