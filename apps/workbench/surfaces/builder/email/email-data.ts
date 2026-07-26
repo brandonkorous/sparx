@@ -16,7 +16,7 @@
 
 import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
-import type { EmailFrame } from '@wizeworks/silicaui-builder/email';
+import type { EmailColorDefaults, EmailFrame } from '@wizeworks/silicaui-builder/email';
 import type { PresentationOverlayV2, TenantBrandColumns } from '@sparx/site-themes';
 import { api } from '../../../lib/api/client';
 
@@ -226,17 +226,22 @@ export function useSiteBrandInfos() {
   });
 }
 
-/** The branded chrome the canvas renders around the authored body — the brand bar +
- *  wordmark (header) and the tiered legal footer (footer), as silicaui 0.34's
- *  host-owned `EmailFrame`. Resolved SERVER-SIDE from the active site's brand + its
- *  published footer links (the same `buildEmailFrame` the real send composes), so the
- *  edit canvas shows the exact chrome that ships — inert, un-editable, never part of
- *  the saved document. Keyed without the site id because a site switch reloads the
- *  whole app (see `switchSite`), refetching this fresh. */
-export function useEmailFrame() {
+/** Everything the canvas needs to render the email as it ships, resolved SERVER-SIDE
+ *  from the active site's brand: the inert `frame` (brand bar + wordmark + legal
+ *  footer, silicaui 0.34) AND the `colors` map the send paints with. The studio feeds
+ *  `colors` to the canvas theme so silica repaints every block in the EXACT brand +
+ *  semantic colours the inbox gets (not the site page theme, which can diverge), and
+ *  passes `frame` to `<EmailBuilder frame>`. Keyed without the site id because a site
+ *  switch reloads the whole app (see `switchSite`), refetching this fresh. */
+export interface EmailChrome {
+  frame: EmailFrame;
+  colors: EmailColorDefaults;
+}
+
+export function useEmailChrome() {
   return useQuery({
-    queryKey: ['builder', 'emails', 'frame'],
-    queryFn: () => api.get<EmailFrame>('/v1/builder/emails/frame'),
+    queryKey: ['builder', 'emails', 'chrome'],
+    queryFn: () => api.get<EmailChrome>('/v1/builder/emails/frame'),
     staleTime: 300_000,
   });
 }

@@ -60,6 +60,17 @@ function roleMap(brand: BrandTokens): EmailColorDefaults {
   };
 }
 
+/** The role → colour map the send paints with, for a resolved brand — exported so the
+ *  email STUDIO can feed the SAME map to its canvas (silica's `resolveEmailColorDefaults`
+ *  / `setColorDefaults`), so the edit canvas repaints every `*Auto` field in exactly the
+ *  colours the send uses. Without this the studio derived canvas colours from the site
+ *  PAGE theme (`compileThemeForTenant`), which can diverge from — or fail to resolve at
+ *  all against — the email brand, leaving the canvas on silica's neutral defaults (a
+ *  black button, no status colour) while the real send shipped the brand. */
+export function emailBrandColorDefaults(brand: BrandTokens): EmailColorDefaults {
+  return roleMap(brand);
+}
+
 /** Repaint one node's auto-tracking colour fields. Every branch is guarded by that
  *  field's own `Auto` flag (so a hand-picked colour always survives) and honours the
  *  node's optional `*Role` (0.33) — falling back to that field's historical default

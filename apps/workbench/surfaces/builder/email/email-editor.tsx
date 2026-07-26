@@ -65,7 +65,11 @@ import {
 } from 'lucide-react';
 import { EmailBuilder } from '@wizeworks/silicaui-builder/email/react';
 import type { EmailBuilderHost } from '@wizeworks/silicaui-builder/email/react';
-import type { EmailDocument, EmailProject } from '@wizeworks/silicaui-builder/email';
+import type {
+  EmailColorDefaults,
+  EmailDocument,
+  EmailProject,
+} from '@wizeworks/silicaui-builder/email';
 import { THEME_PRESETS, type Theme } from '@wizeworks/silicaui-html';
 import { compileThemeForTenant, compiledToSilicaTheme } from '@sparx/site-themes';
 import {
@@ -91,7 +95,7 @@ import {
   useCreateEmail,
   useCustomizeEmailForSite,
   useDeleteEmail,
-  useEmailFrame,
+  useEmailChrome,
   useEmails,
   usePreviewEmail,
   usePublishEmail,
@@ -131,6 +135,36 @@ const EMAIL_SEMANTIC_TOKENS: Record<string, string> = {
   '--color-error': '#b91c1c',
 };
 
+/** Turn the send's resolved role→hex map (`EmailChrome.colors`, from the server) into
+ *  the silica `Theme` the canvas reads. silica's `resolveEmailColorDefaults` pulls each
+ *  role straight back off these `--color-*` tokens, so `resolveEmailColorDefaults(theme)`
+ *  === the send's map — the canvas repaints every `*Auto` field in EXACTLY the colours
+ *  the inbox gets (brand primary/base + the fixed semantics), instead of the site page
+ *  theme, which can diverge or fail to resolve and drop the canvas to silica's neutral
+ *  defaults (the black button). */
+function emailColorsToTheme(c: EmailColorDefaults): Theme {
+  return {
+    name: 'email-brand',
+    mode: 'light',
+    tokens: {
+      '--color-primary': c.primary,
+      '--color-primary-content': c.primaryContent,
+      '--color-base-content': c.baseContent,
+      '--color-base-100': c.base100,
+      '--color-base-200': c.base200,
+      '--color-base-300': c.base300,
+      '--color-secondary': c.secondary,
+      '--color-accent': c.accent,
+      '--color-neutral': c.neutral,
+      '--color-info': c.info,
+      '--color-success': c.success,
+      '--color-warning': c.warning,
+      '--color-error': c.error,
+    },
+    dark: {},
+  };
+}
+
 /** The email binding vocabulary as silica data sources — drives the built-in
  *  binding picker and the inline `{{` autocomplete. Static (the email sources are
  *  code-defined), so built once at module load rather than per render. */
@@ -168,28 +202,30 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   const { data: sites } = useSites();
   const { data: activeSite } = useActiveSiteId();
 
-  // The canvas paints the tenant's real brand (docs/49) — the same compile the
-  // storefront uses, over the active site's effective brand. silica's own
-  // `setColorDefaults` repaints EVERY node still on its default (`*Auto`) from this
-  // theme, resolving each node's role exactly as the send's `applyBrandColors` does
-  // — so the canvas button/status/tint match the Preview, not just newly-inserted
-  // blocks. These are fast cached reads; a failure degrades to the neutral preset
-  // rather than blocking the studio. The send-composed FRAME (brand bar/wordmark/
-  // legal footer) renders too, as inert chrome around the body — see `useEmailFrame`
-  // below — so the canvas now shows the full email, not just the editable body.
+  // Everything the canvas needs to render the email as it SHIPS, resolved server-side
+  // from the active site's EMAIL brand (docs/impl transactional-email §7): the inert
+  // `frame` (brand bar/wordmark/legal footer, silicaui 0.34) AND the exact `colors`
+  // map the send paints with. Feeding `colors` to the canvas theme is what makes the
+  // edit canvas match the inbox — silica's `setColorDefaults` repaints every `*Auto`
+  // block from it, in the brand primary/base + fixed semantics the send uses, instead
+  // of the site PAGE theme (which for some sites resolves to nothing and drops the
+  // canvas to silica's neutral defaults — the black button).
+  const chrome = useEmailChrome();
+  const chromeSettled = !chrome.isLoading;
+
+  // The site page theme + brand — the FALLBACK colour source, used only until the
+  // chrome read settles or if it fails. (Left in place so a chrome hiccup degrades to
+  // the previous behaviour rather than a bare canvas.)
   const brand = useTenantBrand();
   const siteConfig = useSiteBuilderConfig();
   const siteBrands = useSiteBrandInfos();
   const brandSettled = !brand.isLoading && !siteConfig.isLoading;
 
-  // The send-composed brand chrome (brand bar + wordmark + legal footer) the canvas
-  // renders as inert frame around the authored body (silicaui 0.34) — resolved
-  // server-side to the SAME frame the real send uses. A live render prop, so it
-  // streams in without gating the editor; a failed/absent read just leaves the canvas
-  // frameless (the Preview still composes it).
-  const frame = useEmailFrame();
-
   const canvasTheme = useMemo<Theme>(() => {
+    // The real thing: the send's own resolved colour map → the canvas repaints in
+    // exactly the inbox colours. Everything below is the fallback for before this
+    // settles / if it failed.
+    if (chrome.data?.colors) return emailColorsToTheme(chrome.data.colors);
     if (!brand.data || !siteConfig.data) return FALLBACK_THEME;
     try {
       const property = siteBrands.data?.find((s) => s.id === activeSite?.propertyId);
@@ -211,7 +247,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     } catch {
       return FALLBACK_THEME;
     }
-  }, [brand.data, siteConfig.data, siteBrands.data, activeSite?.propertyId]);
+  }, [chrome.data, brand.data, siteConfig.data, siteBrands.data, activeSite?.propertyId]);
 
   // The email being edited. Starts unresolved; an effect settles it once the
   // catalog loads — to the deep-linked id, else the first email. `{id:'new'}`
@@ -532,11 +568,12 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   }
 
   const doc = docRef.current;
-  // Also wait for the brand to settle so the canvas mounts in the tenant's colours
-  // from first paint — `<EmailBuilder>` reads the theme at mount. "Settled" is
-  // loaded-or-failed, so a brand read that errors falls straight through to the
-  // preset rather than hanging the studio.
-  if (isPending || !emails || !active || !doc || !brandSettled) {
+  // Also wait for the canvas colours to settle so the editor opens in the send's real
+  // colours from first paint — never a flash of silica's neutral defaults that then
+  // repaints. "Settled" is loaded-or-failed for BOTH the chrome (colours + frame) and
+  // the fallback brand read, so an errored read falls straight through to the fallback
+  // rather than hanging the studio.
+  if (isPending || !emails || !active || !doc || !chromeSettled || !brandSettled) {
     return (
       <p className="p-4 text-sm" role="status">
         Loading…
@@ -730,7 +767,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
         document={doc}
         host={HOST}
         theme={canvasTheme}
-        frame={frame.data ?? undefined}
+        frame={chrome.data?.frame ?? undefined}
         onChange={onChange}
         onSendTest={onSendTest}
         persistKey={null}

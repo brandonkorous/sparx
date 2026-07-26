@@ -1,6 +1,6 @@
 # Transactional email — coverage + build tracker
 
-Version: 0.4
+Version: 0.5
 Author: Brandon Korous
 Last Updated: 2026-07-26
 
@@ -399,3 +399,43 @@ The catalog was bumped `^0.33.0 → ^0.34.0` (all 11 `@wizeworks/silicaui*` entr
 installed. **Net: the edit canvas now shows the full email — brand bar, wordmark, branded
 body (colours + semantic status), and the legal footer — matching the Preview/send, with
 the frame still un-deletable and always current-brand.**
+
+## 8. Live-send quality pass (2026-07-26) — spacing, footer, canvas colours
+
+A real test-send to a Gmail inbox (Template tenant) surfaced three defects the canvas
+diagnosis had partly hidden. All fixed + verified by rendering the redesigned bodies with
+a real Playwright screenshot (ember-brand tenant, full compliance) before shipping.
+
+1. **Cramped vertical rhythm (systemic).** `copyBlock` stacked heading → lead → button in
+   one section with NO gap between blocks — the projector gives siblings no rhythm of
+   their own, so they rendered touching. Fixed: a `spaced()` helper interleaves a
+   `spacer(16)` between every pair of `copyBlock` children (edges left to the section's
+   `paddingY`). `packages/builder-schemas/src/silica-email-kit.ts`.
+2. **Bare footer ("business name" and nothing else) on test-send + preview.** The footer
+   chrome composed, but the account/contact/legal `footerLinks` were only passed on the
+   live automation path — `renderPreview` + `prepareTestSend` called the renderer without
+   them. Fixed: both now take `footerLinks`, and the routes resolve them
+   (`resolveEmailFooterLinks`) and pass them through. `builder-email-service.ts` +
+   `services/api-rest/src/routes/v1/builder/emails.ts`.
+3. **Canvas colours fell to silica's neutral defaults entirely** (black button, dark
+   status — not just the button). Root cause: the canvas theme came from the site PAGE
+   theme (`compileThemeForTenant`), which for this site resolved to nothing → silica's
+   `DEFAULT_EMAIL_COLORS`. Fixed: the `/v1/builder/emails/frame` endpoint now returns
+   `{ frame, colors }` where `colors` is the send's OWN role→hex map
+   (`emailBrandColorDefaults` = `applyBrandColors`'s `roleMap`); the studio builds the
+   canvas theme from `colors`, so `resolveEmailColorDefaults(canvasTheme)` === the send
+   map and the canvas repaints in exactly the inbox colours. Endpoint response +
+   `buildFrame`→`buildChrome`, workbench `useEmailFrame`→`useEmailChrome`.
+
+**Rollout to existing tenants.** The `copyBlock` change alters every body's fingerprint,
+so `PRIOR_DEFAULT_BODY_FINGERPRINTS` was regenerated: the currently-deployed (pre-spacing)
+fingerprint for ALL 37 keys is appended (the 15 P1–P5 keys had NO prior entry at all — a
+pre-existing gap that failed the "every key covered" test, since tests aren't in the
+pre-push guard). Pristine default rows now refresh to the spaced design on the next
+activation / 6-h reconcile; edited or custom rows are untouched. **Caveat:** a tenant that
+CUSTOM-authored an email (e.g. Template's "Maren & Wilde" welcome) is not pristine, so it
+keeps its authored body — it must be re-authored or reset to pick up the new defaults.
+
+All green: builder-schemas 250, builder 68 (refresh test now passes), email 34,
+email-platform 10; typecheck + lint clean across builder(-schemas)/email(-platform)/
+api-rest/workbench.

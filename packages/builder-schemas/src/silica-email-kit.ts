@@ -346,8 +346,25 @@ export function emailDoc(subject: string, preheader: string, body: SectionNode[]
   };
 }
 
+/** Separate a run of stacked blocks with a real gap. The projector gives sibling
+ *  content nodes NO vertical rhythm of their own, so a heading, its lead paragraph
+ *  and a CTA button stacked in one section render TOUCHING. A `spacer` between each
+ *  pair is the schema's own way to space blocks — it survives projection as a true
+ *  gap (same device `detailPanel` uses between its rows). Edges are left to the
+ *  section's own `paddingY`, so a spacer only ever goes BETWEEN two blocks. */
+function spaced(children: ContentNode[], gap = 16): LayoutChild[] {
+  const out: LayoutChild[] = [];
+  children.forEach((child, i) => {
+    if (i > 0) out.push(spacer(gap));
+    out.push(child);
+  });
+  return out;
+}
+
 /** A one-section body — the shape almost every default takes: a heading, some copy,
- *  and a call to action, with any conditionals appended as their own sections. */
+ *  and a call to action, with any conditionals appended as their own sections. The
+ *  blocks are spaced apart (`spaced`) so the heading, lead and CTA breathe instead of
+ *  colliding. */
 export function copyBlock(children: ContentNode[]): SectionNode {
-  return section(children);
+  return section(spaced(children));
 }

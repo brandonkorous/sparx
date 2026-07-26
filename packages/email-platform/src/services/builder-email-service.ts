@@ -11,8 +11,8 @@
 // emailService) so this package stays free of a @sparx/builder dependency — the same
 // injection pattern templateService uses for section data (docs/31 §8).
 
-import { renderSilicaEmail, buildEmailFrame } from '@sparx/email/silica';
-import type { EmailFrame, FooterLink } from '@sparx/email/silica';
+import { renderSilicaEmail, buildEmailFrame, emailBrandColorDefaults } from '@sparx/email/silica';
+import type { EmailColorDefaults, EmailFrame, FooterLink } from '@sparx/email/silica';
 import { defaultBrand } from '@sparx/email';
 import type { DataSources, SilicaEmailDocument } from '@sparx/builder-schemas';
 
@@ -74,7 +74,8 @@ export async function renderPreview(
   ctx: ServiceContext,
   doc: BuilderEmailDoc,
   resolveSilicaData: ResolveSilicaEmailData = noSilicaEmailDataResolver,
-  propertyId?: string | null
+  propertyId?: string | null,
+  footerLinks?: FooterLink[]
 ): Promise<RenderedPreview> {
   const [brand, data] = await Promise.all([
     resolveEmailBrand(ctx, propertyId),
@@ -87,33 +88,45 @@ export async function renderPreview(
       subject: doc.subject,
       preheader: doc.preheader,
       data,
+      // The account/contact/legal links the real send composes into the footer — pass
+      // them here too so the preview footer isn't just the business name (docs/impl
+      // transactional-email §7). Resolved per-site by the caller.
+      footerLinks,
     },
     { brand: brand ?? undefined }
   );
   return { subject: rendered.subject, html: rendered.html, text: rendered.text };
 }
 
-/** The branded chrome the email studio's canvas renders around the authored body —
- *  the SAME `EmailFrame` the send composes (`buildEmailFrame`), resolved from the
- *  active site's brand + its published legal/footer links, so the edit canvas shows
- *  the real brand bar / wordmark / footer instead of just the bare body (silicaui
- *  0.34 `<EmailBuilder frame>`). `propertyId` scopes the brand + links to the active
- *  site, matching the preview + send. `marketing:false` (no per-recipient unsubscribe
- *  line on the canvas) + no per-send compliance — the canvas is a design surface, not
- *  a specific recipient's copy. The caller resolves `footerLinks` (its content
- *  package has the legal-placement source); absent → the footer's utility row is just
- *  the account link. */
-export async function buildFrame(
+/** Everything the email studio's canvas needs to render the email exactly as it
+ *  ships — resolved from the active site's brand, ONCE, server-side. */
+export interface EmailChrome {
+  /** The brand bar + wordmark (header) and tiered legal footer (footer) rendered as
+   *  inert chrome around the authored body (silicaui 0.34 `<EmailBuilder frame>`). */
+  frame: EmailFrame;
+  /** The role→hex colour map the send paints with. The studio builds its canvas theme
+   *  from THIS (not the site page theme) so silica's live repaint colours every block
+   *  in exactly the brand + fixed-semantic colours the inbox gets. */
+  colors: EmailColorDefaults;
+}
+
+/** The canvas chrome + colour map for the active site (docs/impl transactional-email
+ *  §7). Both derive from the SAME `resolveEmailBrand(ctx, propertyId)` the preview +
+ *  send use, so the edit canvas can't diverge from what ships. `marketing:false` (no
+ *  per-recipient unsubscribe line on the canvas) + no per-send compliance — the canvas
+ *  is a design surface, not one recipient's copy. The caller resolves `footerLinks`
+ *  (its content package has the legal-placement source); absent → the footer's utility
+ *  row is just the account link. */
+export async function buildChrome(
   ctx: ServiceContext,
   propertyId?: string | null,
   footerLinks?: FooterLink[]
-): Promise<EmailFrame> {
-  const brand = await resolveEmailBrand(ctx, propertyId);
-  return buildEmailFrame({
-    brand: brand ?? defaultBrand,
-    marketing: false,
-    footerLinks,
-  });
+): Promise<EmailChrome> {
+  const brand = (await resolveEmailBrand(ctx, propertyId)) ?? defaultBrand;
+  return {
+    frame: buildEmailFrame({ brand, marketing: false, footerLinks }),
+    colors: emailBrandColorDefaults(brand),
+  };
 }
 
 /** The deliverable a staff test-send produces: a fully-rendered email ready to
@@ -141,7 +154,8 @@ export async function prepareTestSend(
   doc: BuilderEmailDoc,
   rawInput: unknown,
   resolveSilicaData: ResolveSilicaEmailData = noSilicaEmailDataResolver,
-  propertyId?: string | null
+  propertyId?: string | null,
+  footerLinks?: FooterLink[]
 ): Promise<PreparedTestSend> {
   const { to } = TestSendInput.parse(rawInput);
   const [brand, settings] = await Promise.all([
@@ -153,7 +167,9 @@ export async function prepareTestSend(
   ]);
 
   // The test copy is rendered by the SAME projector + frame the real send uses, so
-  // it's a true smoke test rather than an approximation.
+  // it's a true smoke test rather than an approximation — including the footer's
+  // account/contact/legal links (the live automation path passes these; a test send
+  // that dropped them would smoke-test a footer no recipient ever gets).
   const rendered = renderSilicaEmail(
     {
       doc: doc.silicaDoc,
@@ -161,6 +177,7 @@ export async function prepareTestSend(
       subject: doc.subject,
       preheader: doc.preheader,
       data: await resolveSilicaData(doc.silicaDoc, { email: to }),
+      footerLinks,
     },
     { brand: brand ?? undefined }
   );

@@ -145,19 +145,19 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     return ok(email);
   });
 
-  // The branded chrome (brand bar + wordmark + tiered legal footer) the studio's
-  // edit canvas renders as inert frame around the authored body (silicaui 0.34
-  // `<EmailBuilder frame>`), so the canvas shows the real header/footer instead of a
-  // bare body. Built from the SAME per-site brand + published footer links the real
-  // send composes (`buildEmailFrame`), so the canvas can't diverge from what ships.
-  // A static (`/frame`) route, so Fastify matches it ahead of `/:id`.
+  // The studio canvas's chrome + colour map (docs/impl transactional-email §7): the
+  // brand bar + wordmark + tiered legal footer rendered as inert frame around the body
+  // (silicaui 0.34 `<EmailBuilder frame>`), AND the role→hex colour map the send paints
+  // with — so the edit canvas repaints in the exact colours + shows the exact chrome
+  // the inbox gets. Both from the SAME per-site brand + published footer links the real
+  // send composes. A static (`/frame`) route, so Fastify matches it ahead of `/:id`.
   app.get('/v1/builder/emails/frame', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
     const ctx = await toBuilderContext(request);
     const footerLinks = await resolveEmailFooterLinks(ctx, ctx.propertyId);
-    const frame = await builderEmailService.buildFrame(ctx, ctx.propertyId, footerLinks);
-    return ok(frame);
+    const chrome = await builderEmailService.buildChrome(ctx, ctx.propertyId, footerLinks);
+    return ok(chrome);
   });
 
   // Render the DRAFT body to inlined HTML + plain text for the editor preview.
@@ -172,12 +172,16 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const ctx = await toBuilderContext(request);
     const { id } = IdParam.parse(request.params);
-    const email = await emailService.get(ctx, id);
+    const [email, footerLinks] = await Promise.all([
+      emailService.get(ctx, id),
+      resolveEmailFooterLinks(ctx, ctx.propertyId),
+    ]);
     const preview = await builderEmailService.renderPreview(
       ctx,
       { silicaDoc: email.silicaDoc, subject: email.subject, preheader: email.preheader },
       silicaEmailDataResolver(ctx, ctx.propertyId),
-      ctx.propertyId
+      ctx.propertyId,
+      footerLinks
     );
     return ok(preview);
   });
@@ -193,13 +197,17 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     // send for that site — the same per-site brand as the preview + canvas (docs/49).
     const ctx = await toBuilderContext(request);
     const { id } = IdParam.parse(request.params);
-    const email = await emailService.get(ctx, id);
+    const [email, footerLinks] = await Promise.all([
+      emailService.get(ctx, id),
+      resolveEmailFooterLinks(ctx, ctx.propertyId),
+    ]);
     const prepared = await builderEmailService.prepareTestSend(
       ctx,
       { silicaDoc: email.silicaDoc, subject: email.subject, preheader: email.preheader },
       request.body,
       silicaEmailDataResolver(ctx, ctx.propertyId),
-      ctx.propertyId
+      ctx.propertyId,
+      footerLinks
     );
     await publish(request.log, 'email.send', ctx.tenantId, null, {
       kind: 'raw',
