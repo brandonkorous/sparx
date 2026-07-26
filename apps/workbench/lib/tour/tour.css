@@ -218,6 +218,39 @@
     transform: none;
   }
 }
+
+/* Sparky peeking from BEHIND the offer card (module-tour-offers.tsx) — the same
+   brand device as the sign-in pane, adapted to a corner-pinned card. The offer
+   sits bottom-right against the status bar, so unlike auth's multi-edge roam
+   there is room to emerge from ONE corner only: the top-left. This is a wrapper
+   anchored to the card's top-left; the mascot's own bob/blink live on the inner
+   span (mascot.css), so this transform never fights them.
+
+   The resting pose (motion off) is the settled peek — most of Sparky tucked
+   behind the opaque card, head + shoulder leaning out over the top-left corner.
+   With motion, a single rise from fully-behind to that pose, delayed so the card
+   lands first; `both` holds the end pose (no drift back). No loop — this is a
+   greeting on a working surface, not ambient motion. */
+.sparky-tour-peek {
+  top: 0;
+  left: 0;
+  transform: translate(-30%, -62%) rotate(-8deg);
+  will-change: transform;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sparky-tour-peek {
+    animation: sparky-tour-peek-in 620ms 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+}
+@keyframes sparky-tour-peek-in {
+  from {
+    /* tucked down into the card — fully behind the opaque surface, unseen */
+    transform: translate(2%, 12%) rotate(4deg);
+  }
+  to {
+    transform: translate(-30%, -62%) rotate(-8deg);
+  }
+}
 @keyframes sparx-tour-pop {
   from {
     opacity: 0;

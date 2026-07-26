@@ -54,7 +54,12 @@ const TourOutcome = z.object({
 });
 const TourPrefs = z.object({
   welcome: TourOutcome.optional(),
-  modules: z.record(z.enum(TOUR_MODULES), TourOutcome).optional(),
+  // `partialRecord`, not `record`: in Zod v4 an enum-keyed `z.record` is
+  // EXHAUSTIVE — it rejects any object missing an enum key. A tour patch only
+  // ever carries the one module just answered (`{ modules: { commerce } }`), so
+  // `record` 422'd every write (and would reject the partial map on read-back
+  // too, degrading `tour` to `{}`). `partialRecord` allows the subset.
+  modules: z.partialRecord(z.enum(TOUR_MODULES), TourOutcome).optional(),
 });
 
 const PreferencesPatch = z.object({

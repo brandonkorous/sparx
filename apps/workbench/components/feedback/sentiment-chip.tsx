@@ -128,7 +128,11 @@ export function SentimentChip() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger>
-        <Button color="neutral" variant="ghost" size="xs">
+        {/* Loud on purpose: a filled `info` chip that breathes until opened,
+            so the quarterly ask actually pulls the eye on the status shelf.
+            The flash is dropped the moment the popover opens — see globals.css
+            `.sparx-pulse-nudge`. */}
+        <Button color="info" size="xs" className={open ? undefined : 'sparx-pulse-nudge'}>
           How’s sparx going?
         </Button>
       </PopoverTrigger>

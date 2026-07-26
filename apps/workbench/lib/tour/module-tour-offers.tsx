@@ -210,34 +210,39 @@ function OfferCard({
       module={module}
       className="sparx-tour-offer fixed right-4 bottom-14 z-40 w-80 max-w-[calc(100vw-2rem)]"
     >
-      {/* Border + base tone carry the lift — no shadow (house rule). The module
-          hue on the border says which tool this belongs to. */}
-      <Card
-        role="region"
-        aria-label={`Tour offer for ${label}`}
-        className="border-module bg-base-100 relative flex gap-3 p-3"
-      >
+      {/* Sparky rides BEHIND the card and pokes out the top-left corner (z-0), the
+          way he peeks from behind the sign-in pane. The opaque card (z-10) occludes
+          whatever hasn't leaned past the corner. Decorative + click-through, so it
+          never intercepts a "Show me" / "No thanks". */}
+      <div className="sparky-tour-peek pointer-events-none absolute z-0">
         <SparkMascot
-          size={44}
+          size={76}
           bob
           blink
           tone={theme === 'dark' ? 'dark' : 'light'}
           title="sparky"
-          className="mt-0.5 shrink-0"
         />
-        <div className="min-w-0 flex-1">
-          <p className="pr-5 font-medium">New to {label}?</p>
-          <p className="mt-0.5 text-sm">
-            Take a quick tour — about a minute, and you can stop any time.
-          </p>
-          <div className="mt-2.5 flex gap-2">
-            <Button color="module" size="sm" onClick={onAccept}>
-              Show me
-            </Button>
-            <Button variant="ghost" color="neutral" size="sm" onClick={onDismiss}>
-              No thanks
-            </Button>
-          </div>
+      </div>
+
+      {/* Border + base tone carry the lift — no shadow (house rule). The module
+          hue on the border says which tool this belongs to. Opaque + z-10 so it
+          hides the part of Sparky still tucked behind it. */}
+      <Card
+        role="region"
+        aria-label={`Tour offer for ${label}`}
+        className="border-module bg-base-100 relative z-10 p-3.5"
+      >
+        <p className="pr-5 font-medium">New to {label}?</p>
+        <p className="mt-0.5 text-sm">
+          Take a quick tour — about a minute, and you can stop any time.
+        </p>
+        <div className="mt-2.5 flex gap-2">
+          <Button color="module" size="sm" onClick={onAccept}>
+            Show me
+          </Button>
+          <Button variant="ghost" color="neutral" size="sm" onClick={onDismiss}>
+            No thanks
+          </Button>
         </div>
         {/* The always-there quick dismiss. Icon-weight ghost, top-right corner. */}
         <Button

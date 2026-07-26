@@ -309,3 +309,24 @@ h6 {
     transform: translate(-50%, -50%) rotate(0deg);
   }
 }
+
+/* Feedback pulse chip — a gentle attention "breath" so the once-a-quarter
+   sentiment ask actually gets noticed on the quiet status shelf. Motion only:
+   a scale + brightness glint, never a shadow or a text opacity-fade. Stops on
+   its own once the operator opens the popover (the class is dropped in React). */
+@media (prefers-reduced-motion: no-preference) {
+  .sparx-pulse-nudge {
+    animation: sparx-pulse-nudge 2.4s ease-in-out infinite;
+  }
+}
+@keyframes sparx-pulse-nudge {
+  0%,
+  100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  50% {
+    transform: scale(1.05);
+    filter: brightness(1.12);
+  }
+}
