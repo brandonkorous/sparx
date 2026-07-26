@@ -21,6 +21,9 @@ export type SparxModule =
   | 'inventory'
   | 'chat'
   | 'scheduling'
+  // Social (docs/133) — organic posting to Facebook/Instagram/Pinterest. A real
+  // independently-gated module (it owns a dashboard surface), simply priced at $0.
+  | 'social'
   // Automations, SEO + Finance are platform surfaces (always-on, not separately
   // billed), but they own a brand color so their pages read in-module. They are
   // intentionally NOT in moduleManifests — they get no gated sidebar slot.
@@ -70,6 +73,9 @@ const MODULE_COLORS: Record<SparxModule, ModuleColors> = {
   // Scheduling rose — distinct from AI's magenta-pink and Commerce's orange,
   // claiming the open red/rose slot on the module hue wheel.
   scheduling: { color: '#F43F5E', tint: '#FFF1F2', text: '#BE123C', content: WHITE },
+  // Social blue — blue-600, the social-network blue; distinct from Email's sky
+  // (#0EA5E9) and Builder's indigo (#6366F1). White ink passes AA on the fill.
+  social: { color: '#2563EB', tint: '#EFF6FF', text: '#1D4ED8', content: WHITE },
   automations: { color: '#D946EF', tint: '#FDF4FF', text: '#A21CAF', content: WHITE },
   // SEO yellow is bright; on-fill ink is dark for legibility.
   seo: { color: '#EAB308', tint: '#FEFCE8', text: '#854D0E', content: AMBER_INK },

@@ -27,7 +27,7 @@
     primary, secondary, accent, neutral, info, success, warning, error, danger, module,
     module-builder, module-commerce, module-cms, module-crm, module-invoicing, module-email,
     module-b2b, module-dropship, module-inventory, module-chat, module-scheduling, module-ai,
-    module-automations, module-seo;
+    module-automations, module-seo, module-social;
 }
 
 /* Tailwind v4 needs to see @sparx/ui sources so utility classes used inside the

@@ -25,6 +25,7 @@ import {
   ReceiptText,
   Search,
   Send,
+  Share2,
   ShoppingCart,
   Sparkles,
   Truck,
@@ -58,11 +59,13 @@ export interface ModuleEntry {
   /** Marketing landing route, when one exists. Omitted ⇒ no "Learn" link yet
    *  (invoicing / inventory / chat pages are not built). */
   href?: string;
-  /** A free platform capability rather than a billable module: `price` is 0 and
-   *  it is never charged, bundled, or required. SEO ships with every tenant;
-   *  Automations unlocks once any one module is active. They are NOT in
-   *  ModuleSlug and have no dashboard manifest — but a visitor reads them as
-   *  modules, so they belong in the menu, the footer, and the switchboard. */
+  /** Renders as a $0 "Free" tile: `price` is 0 and it is never charged, bundled,
+   *  or required. Two kinds carry it — free PLATFORM CAPABILITIES (SEO ships with
+   *  every tenant; Automations unlocks once any one module is active; neither is a
+   *  ModuleSlug or has a dashboard manifest), AND Social (docs/133), which IS a
+   *  real independently-gated ModuleSlug that simply costs nothing. All read as
+   *  modules to a visitor, so they belong in the menu, the footer, and the
+   *  switchboard. */
   free?: boolean;
 }
 
@@ -182,6 +185,16 @@ export const MODULES: ModuleEntry[] = [
     href: '/ai',
   },
   {
+    id: 'social',
+    label: 'Social',
+    title: 'One post, every network.',
+    description:
+      'Compose once and publish to Facebook, Instagram and Pinterest — pulled from the same products and media, each image auto-cropped to fit, scheduled or posted now. Free with sparx.',
+    price: 0,
+    free: true,
+    href: '/social',
+  },
+  {
     id: 'seo',
     label: 'SEO',
     title: 'Get found, on every page.',
@@ -231,6 +244,7 @@ export const MODULE_COLOR: Record<MarketingModule, string> = {
   ai: 'module-ai',
   seo: 'module-seo',
   automations: 'module-automations',
+  social: 'module-social',
 };
 
 export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
@@ -248,6 +262,7 @@ export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
   ai: 'bg-module-ai',
   seo: 'bg-module-seo',
   automations: 'bg-module-automations',
+  social: 'bg-module-social',
 };
 
 export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
@@ -265,6 +280,7 @@ export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
   ai: 'border-module-ai',
   seo: 'border-module-seo',
   automations: 'border-module-automations',
+  social: 'border-module-social',
 };
 
 /** Module glyphs — the SAME Lucide icons the dashboard sidebar uses (each
@@ -287,4 +303,5 @@ export const MODULE_ICON: Record<MarketingModule, LucideIcon> = {
   ai: Sparkles,
   seo: Search,
   automations: Workflow,
+  social: Share2,
 };

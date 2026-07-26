@@ -116,6 +116,13 @@ const MODULE_COLORS = {
     bg: 'bg-module-automations',
     ink: 'text-module-automations',
   },
+  // A real, independently-gated module (docs/133) that is simply priced at $0 —
+  // unlike SEO/Automations above, which are platform capabilities, not ModuleSlugs.
+  social: {
+    color: 'var(--color-module-social)',
+    bg: 'bg-module-social',
+    ink: 'text-module-social',
+  },
 } as const;
 
 export type MarketingModule = keyof typeof MODULE_COLORS;

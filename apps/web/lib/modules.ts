@@ -12,7 +12,16 @@ import type { MarketingModule } from '@/components/marketing/primitives';
  *  Add a slug here when its page ships. */
 export type ModulePageSlug = Extract<
   MarketingModule,
-  'builder' | 'commerce' | 'cms' | 'crm' | 'email' | 'b2b' | 'ai' | 'dropship' | 'scheduling'
+  | 'builder'
+  | 'commerce'
+  | 'cms'
+  | 'crm'
+  | 'email'
+  | 'b2b'
+  | 'ai'
+  | 'dropship'
+  | 'scheduling'
+  | 'social'
 >;
 
 export interface ModuleFeature {
@@ -505,6 +514,56 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
         'A flat $29/mo — unlimited staff, resources, locations, and bookings, with no per-seat, per-staff, or per-cover fees, ever. It requires nothing else; deposits just need a connected payment gateway. One bill with everything else, off anytime.',
     },
   },
+  social: {
+    slug: 'social',
+    module: 'social',
+    label: 'Social',
+    headlinePrimary: 'One post,',
+    headlineSecondary: 'every network',
+    title: 'sparx Social — One post, every network.',
+    description:
+      'Compose a post once and publish to Facebook, Instagram, and Pinterest — from the same products and media you already have, each image auto-cropped to fit, scheduled or posted now. Free with sparx.',
+    lede: 'Compose a post once, drop in your photos, and send it to Facebook, Instagram, and Pinterest at the time you choose. sparx crops each image to the shape every platform wants, keeps your products and media one click away, and holds each post for approval before it reaches a live account. Free with every sparx plan.',
+    features: [
+      {
+        number: '01',
+        title: 'Compose once, post everywhere.',
+        body: 'Write the caption a single time and pick which accounts it goes to. sparx fans it out to your Facebook Page, Instagram, and Pinterest boards — no re-typing, no logging into three apps.',
+      },
+      {
+        number: '02',
+        title: 'The right shape, automatically.',
+        body: 'Upload one photo and sparx derives the feed, story, and landscape crops each network wants — attention-aware, with a draggable focal point so the subject is never cut off. One upload, correct renditions everywhere.',
+      },
+      {
+        number: '03',
+        title: 'Schedule or post now.',
+        body: 'Send it this instant or line it up for later. Scheduled posts sit in one queue you can see and reorder, and they publish on time without you being at the keyboard.',
+      },
+      {
+        number: '04',
+        title: 'Approvals before it goes live.',
+        body: 'Nothing reaches a live account unreviewed unless you decide it should. Require approval by default, override per post, and control who on your team is allowed to publish to the brand’s accounts.',
+      },
+      {
+        number: '05',
+        title: 'Straight from your catalog.',
+        body: 'Post the product you’re already selling or a picture from your media library — the same records the rest of sparx uses. No export, no re-uploading the same photo into yet another tool.',
+      },
+      {
+        number: '06',
+        title: 'Free, and it’s yours.',
+        body: 'Organic posting is free with every sparx plan. Connect your own Facebook, Instagram, and Pinterest accounts in a click, and disconnect them just as easily — your reach and your audience stay yours.',
+      },
+    ],
+    pricing: {
+      price: 'Free',
+      period: '',
+      modifier: '',
+      bundleNote:
+        'Free with sparx. Organic posting to Facebook, Instagram, and Pinterest for every tenant — switch it on alongside whatever modules you run, at no added cost and on the same one bill.',
+    },
+  },
 };
 
 export const MODULE_ORDER: ModulePageSlug[] = [
@@ -517,6 +576,7 @@ export const MODULE_ORDER: ModulePageSlug[] = [
   'ai',
   'dropship',
   'scheduling',
+  'social',
 ];
 
 export function getModule(slug: string): ModuleMeta | undefined {

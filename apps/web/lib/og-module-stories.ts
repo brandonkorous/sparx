@@ -140,6 +140,19 @@ const CARDS: Record<string, ModuleStoryCard> = {
       name: 'corner-market',
     },
   },
+  social: {
+    lead: 'Your reach,',
+    module: 'social',
+    story: {
+      tense: 'future',
+      industry: 'apparel',
+      audience: 'people',
+      cust: ['shop', 'ship'],
+      lines: [['email'], ['crm']],
+      slots: {},
+      name: 'field-day-supply',
+    },
+  },
 };
 
 /** Render the story OG card for a built module page (its route slug). Throws on an

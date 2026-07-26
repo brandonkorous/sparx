@@ -34,6 +34,7 @@ const MODULE_GROUP: Record<MarketingModule, ModuleGroup> = {
   email: 'Growth',
   ai: 'Growth',
   automations: 'Growth',
+  social: 'Growth',
 };
 
 export interface ModuleNavItem {

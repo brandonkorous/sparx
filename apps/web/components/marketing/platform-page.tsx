@@ -106,7 +106,7 @@ function PlatformHero() {
         <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
           <Text variant="lead" className="text-ink-muted max-w-[600px]">
             sparx is a modular operating system for the web. Builder, Commerce, CMS, CRM, Invoicing,
-            Email, B2B, Dropship, Inventory, Live Chat, Scheduling, and AI — plus SEO and
+            Email, B2B, Dropship, Inventory, Live Chat, Scheduling, and AI — plus Social, SEO, and
             Automations free with any of them — running on one shared data layer, behind one
             dashboard, on one bill. A publisher, a shop, a wholesale distributor, and a CRM-only
             team are all equally first-class. Selling is one capability, never the assumption.
@@ -158,6 +158,7 @@ function OneSystem() {
     { label: 'AI', module: 'ai' },
     { label: 'Dropship', module: 'dropship' },
     { label: 'Scheduling', module: 'scheduling' },
+    { label: 'Social', module: 'social' },
   ];
 
   return (

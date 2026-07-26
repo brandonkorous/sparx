@@ -230,6 +230,8 @@
   --color-module-automations-content: #ffffff;
   --color-module-seo: #eab308; /* yellow — dark on-fill ink for legibility */
   --color-module-seo-content: #422006;
+  --color-module-social: #2563eb; /* blue-600 — the social-network blue, distinct from email's sky */
+  --color-module-social-content: #ffffff;
   --color-module-finance: #16a34a; /* money green (green-600, deeper than success) */
   --color-module-finance-content: #052e16; /* white fails AA on this fill */
   --color-module-partner: #6d28d9; /* violet-700, one notch deeper than chat */
