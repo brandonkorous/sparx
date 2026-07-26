@@ -62,9 +62,13 @@ function dateLabel(unixSeconds: number): string {
   }).format(new Date(unixSeconds * 1000));
 }
 
-/** The dashboard billing-settings page — where a tenant adds/updates a card. */
+/** The workbench billing page — where a tenant adds/updates a card. `/settings/billing`
+ *  is a friendly redirect route that translates to the `finance.subscription` pane
+ *  (apps/workbench/app/settings/billing), the same emitters-use-a-readable-path
+ *  convention as the domain-renewal email's `/settings/domains`. The base defaults to
+ *  the app host (matching services/domain-worker), NOT the marketing site. */
 function billingSettingsUrl(): string {
-  const base = env.SPARX_DASHBOARD_URL ?? 'https://sparx.works';
+  const base = env.SPARX_DASHBOARD_URL ?? 'https://app.sparx.works';
   return `${base.replace(/\/$/, '')}/settings/billing`;
 }
 

@@ -595,8 +595,11 @@ async function resolveSubscription(
     nextOrderDate: s.nextOccurrenceAt ? dateLabel(s.nextOccurrenceAt) : '',
     pausedUntil: s.pausedUntil ? dateLabel(s.pausedUntil) : '',
     currentPeriodEnd: s.currentPeriodEnd ? dateLabel(s.currentPeriodEnd) : '',
-    // The customer's self-service subscription management page.
-    manageUrl: siteLink(slug, '/account/subscriptions'),
+    // The customer's storefront account home. NOTE: a dedicated
+    // `/account/subscriptions` storefront page does not exist yet — until it does,
+    // "Manage subscription" lands on the account home rather than a dead 404.
+    // Repoint here once that page ships (docs/impl transactional-email §4 P2 follow-up).
+    manageUrl: siteLink(slug, '/account'),
   };
 }
 
