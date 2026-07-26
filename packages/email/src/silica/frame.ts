@@ -160,7 +160,10 @@ function socialLinks(brand: BrandTokens): FooterLink[] {
     .filter((s) => s?.url && s.url.trim().length > 0)
     .map((s) => {
       const key = s.platform.toLowerCase().trim();
-      return { label: SOCIAL_LABEL[key] ?? key.charAt(0).toUpperCase() + key.slice(1), href: s.url };
+      return {
+        label: SOCIAL_LABEL[key] ?? key.charAt(0).toUpperCase() + key.slice(1),
+        href: s.url,
+      };
     });
 }
 

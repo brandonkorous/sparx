@@ -136,7 +136,10 @@ export async function resolveEmailBrand(
       // have the active property row.
       propertyId
         ? Promise.resolve(null)
-        : tx.property.findFirst({ where: { isPrimary: true }, select: { name: true, settings: true } }),
+        : tx.property.findFirst({
+            where: { isPrimary: true },
+            select: { name: true, settings: true },
+          }),
     ]);
 
     const override = parseBrandOverride(propertyRow?.brandOverride);

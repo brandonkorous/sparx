@@ -85,9 +85,7 @@ function repaint(node: EmailNode, roles: EmailColorDefaults): EmailNode {
       return {
         ...node,
         ...(node.bgAuto ? { bg: roles[node.bgRole ?? 'base100'] } : {}),
-        ...(node.borderColorAuto
-          ? { borderColor: roles[node.borderColorRole ?? 'base300'] }
-          : {}),
+        ...(node.borderColorAuto ? { borderColor: roles[node.borderColorRole ?? 'base300'] } : {}),
       };
     default:
       return node;
