@@ -17,6 +17,7 @@ import {
   createSocialPost,
   deleteSocialPost,
   getSocialPost,
+  listSocialConnections,
   listSocialPosts,
   markPostPublishing,
   rejectSocialPost,
@@ -48,6 +49,16 @@ async function emitLifecycle(
 const uuid = () => z.string().uuid();
 
 // ── Read ────────────────────────────────────────────────────────────────────
+
+const listConnections: McpToolDefinition = {
+  name: 'list_social_connections',
+  description:
+    'List the tenant’s connected social accounts and the publish targets under each (the pages / profiles / boards a post can go to — Facebook Pages, Instagram, Pinterest boards, etc.). Use a target’s `id` as create_social_post → `targets[].targetId`. Only targets with `enabled: true` accept posts. Each connection carries a `propertyId` (the site it speaks for; null = tenant-wide). Connecting a NEW account is not doable here — it needs an OAuth sign-in in the app.',
+  scope: 'read:social',
+  confirmation: false,
+  input: z.object({}),
+  run: (ctx) => listSocialConnections(ctx),
+};
 
 const listPosts: McpToolDefinition = {
   name: 'list_social_posts',
@@ -219,7 +230,7 @@ const publishPost: McpToolDefinition = {
   },
 };
 
-export const readTools: McpToolDefinition[] = [listPosts, getPost];
+export const readTools: McpToolDefinition[] = [listConnections, listPosts, getPost];
 export const writeTools: McpToolDefinition[] = [
   createPost,
   updatePost,

@@ -759,9 +759,21 @@ module "social_worker_cloudrun" {
       name      = "SOCIAL_TOKEN_KEY"
       secret_id = "social-token-key"
     },
-    # The per-platform token-REFRESH client secrets bind here at go-live (one block per
-    # platform, uncommented once its `gcloud secrets versions add` lands) — see the
-    # SECRET SEQUENCING checklist in this service's header comment. Left unbound now
+    # Pinterest went live 2026-07-25. The adapter's token REFRESH (refresh()) auths the
+    # app with HTTP Basic (client id + secret), so the worker binds BOTH halves — the id
+    # is bound from Secret Manager (not a plain env_var) to match how it was provisioned.
+    # Publish itself uses the per-tenant Bearer token, not these.
+    {
+      name      = "PINTEREST_APP_ID"
+      secret_id = "pinterest-app-id"
+    },
+    {
+      name      = "PINTEREST_APP_SECRET"
+      secret_id = "pinterest-app-secret"
+    },
+    # The remaining per-platform token-REFRESH client secrets bind here at go-live (one
+    # block per platform, uncommented once its `gcloud secrets versions add` lands) — see
+    # the SECRET SEQUENCING checklist in this service's header comment. Left unbound now
     # because a Cloud Run env-from-secret binding requires an existing secret version.
   ]
 

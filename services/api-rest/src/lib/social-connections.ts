@@ -6,58 +6,20 @@
 
 import { Prisma, withTenant } from '@sparx/db';
 import type { SocialPlatform, SocialTargetRef } from '@sparx/social';
+// The READ view (list connections + targets) now lives in @sparx/social/service so
+// the REST route AND the `list_social_connections` MCP tool drive the SAME query —
+// one service, many transports. Re-exported here so this lib stays the api-rest
+// connect surface's single import. The provisioning below (upsert / target-sync /
+// toggle / disconnect) is adapter- + crypto-bound and stays in api-rest.
+import {
+  listSocialConnections,
+  type SocialConnectionView,
+  type SocialTargetView,
+} from '@sparx/social/service';
 import type { SocialContext } from './social-context.js';
 
-// ── read views ──────────────────────────────────────────────────────────────────
-
-export interface SocialTargetView {
-  id: string;
-  externalTargetId: string;
-  name: string;
-  avatarUrl: string | null;
-  enabled: boolean;
-}
-
-export interface SocialConnectionView {
-  id: string;
-  platform: string;
-  status: string;
-  /** Which site this connection speaks for (docs/133 §5); null = tenant-wide. */
-  propertyId: string | null;
-  displayName: string | null;
-  externalId: string | null;
-  avatarUrl: string | null;
-  connectedAt: string;
-  targets: SocialTargetView[];
-}
-
-/** The tenant's social connections + their targets, for the manage UI. */
-export async function listSocialConnections(ctx: SocialContext): Promise<SocialConnectionView[]> {
-  const rows = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
-    tx.socialConnection.findMany({
-      where: { tenantId: ctx.tenantId },
-      orderBy: { createdAt: 'asc' },
-      include: { targets: { orderBy: { name: 'asc' } } },
-    })
-  );
-  return rows.map((r) => ({
-    id: r.id,
-    platform: r.platform,
-    status: r.status,
-    propertyId: r.propertyId,
-    displayName: r.displayName,
-    externalId: r.externalId,
-    avatarUrl: r.avatarUrl,
-    connectedAt: r.createdAt.toISOString(),
-    targets: r.targets.map((t) => ({
-      id: t.id,
-      externalTargetId: t.externalTargetId,
-      name: t.name,
-      avatarUrl: t.avatarUrl,
-      enabled: t.enabled,
-    })),
-  }));
-}
+export { listSocialConnections };
+export type { SocialConnectionView, SocialTargetView };
 
 // ── connection upsert ─────────────────────────────────────────────────────────────
 

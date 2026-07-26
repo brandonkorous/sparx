@@ -1,6 +1,6 @@
 # Social module — implementation tracker
 
-Version: 0.2
+Version: 0.3
 Author: Brandon Korous
 Last Updated: 2026-07-25
 
@@ -87,6 +87,21 @@ touches the tenant's own site and so can't come from the traffic pipeline.
 ## 3. Decision log
 
 Newest first. Each entry: the decision, and the reason it beat the alternative.
+
+### 2026-07-25 — MCP agent parity: added `list_social_connections`
+
+The social MCP already had full compose/lifecycle parity, but an agent had no way
+to DISCOVER the target ids `create_social_post` needs — a keyhole (can post, can't
+see where). Fixed by moving the connections read view into `@sparx/social`
+(`connections.ts` → `@sparx/social/service`, api-rest re-exports it — one service,
+many transports) and adding one `read:social` tool `list_social_connections`
+(returns each connection + its targets: `id`, `name`, `enabled`, `propertyId`).
+Now: **list connections → (upload media via `@sparx/media/mcp`) → create draft →
+schedule/publish** is fully agent-drivable. Account CONNECT (OAuth) stays out of
+MCP by design. Design note: [mcp-media-agent-parity.md](mcp-media-agent-parity.md)
+(also scopes the media site-scoping + auto-groups/collections work — NOT built
+yet). Code-complete; ships with the next api-mcp deploy (tool is `social`-module
+gated, so it only appears for tenants with the flag on). 🟡
 
 ### 2026-07-25 — RESUME HERE: two more FB-image fixes pushed, verification pending
 

@@ -9,3 +9,4 @@
 export type { SocialContext } from './context.js';
 export * from './posts.js';
 export * from './lifecycle.js';
+export * from './connections.js';
