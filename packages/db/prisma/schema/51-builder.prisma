@@ -350,6 +350,45 @@ model BuilderEmailVersion {
   @@map("builder_email_versions")
 }
 
+// A tenant's SAVED EMAIL BLOCKS (docs/impl transactional-email Slice 9) — the
+// account-level, server-backed library that silicaui's EmailBuilder renders via
+// its `savedBlocks` controlled prop. It replaces silica's browser-`localStorage`
+// default so a saved block follows the whole team across devices and is shared
+// tenant-wide, instead of being trapped in one person's browser.
+//
+// Each row is a named, self-contained EmailNode snapshot — a section / card / CTA
+// the author stamped "Save as block". Inserting one deep-clones + re-stamps ids
+// (silica's `stampIds`), so a block is a TEMPLATE, not a live master: editing an
+// inserted copy never touches the saved definition, matching silica's own
+// no-propagating-instances model for email (unlike a multi-page site's symbols).
+//
+// Tenant-scoped + FORCE RLS. `tenant_id` is a scalar (+ a hand-SQL FK in the
+// migration), matching BuilderEmailVersion — no back-relation forced onto Tenant;
+// cascade-on-tenant-delete rides that FK.
+model BuilderEmailBlock {
+  id       String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId String @map("tenant_id") @db.Uuid
+
+  // Author-given label shown in the palette's saved-blocks group.
+  name String @db.VarChar(255)
+
+  // The saved EmailNode subtree, verbatim silica shape. The builder stamps fresh
+  // ids on every insert, so this stored copy is a template snapshot, never a live
+  // instance and never mutated after save.
+  node Json
+
+  // Who saved it. Null for a system path. No FK — users live in the Better Auth
+  // instance and a deleted user must not take the shared library with them.
+  actorId String? @map("actor_id") @db.Uuid
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  // The library list for a tenant, newest first.
+  @@index([tenantId, createdAt])
+  @@map("builder_email_blocks")
+}
+
 // A TENANT-AUTHORED component (docs/53) — the user's own reusable building block,
 // composed in the builder rather than shipped in code. Distinct from SYSTEM
 // components (the in-code registry, which carry a renderLeaf function): a tenant

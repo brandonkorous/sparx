@@ -25,7 +25,19 @@ import { bindingSourceKey } from './runtime';
 // Re-export under a sparx-namespaced alias so consumers (`emailService`, the
 // dashboard editor, `@sparx/email`'s silica renderer) get the type without each
 // taking its own direct `silicaui-builder/email` dependency edge.
-export type { SilicaEmailDocument };
+export type { SilicaEmailDocument, SilicaEmailNode };
+
+/** A silica `EmailNode` — the unit a "Save as block" stores. Validated
+ *  STRUCTURALLY (silica owns the full node shape, sparx never parses it): an
+ *  object carrying a string `kind`. Stored opaquely as JSONB, the same contract as
+ *  {@link SilicaEmailDocumentInput}. */
+export const SilicaEmailNodeInput = z.custom<SilicaEmailNode>(
+  (v) => {
+    if (typeof v !== 'object' || v === null) return false;
+    return typeof (v as { kind?: unknown }).kind === 'string';
+  },
+  { message: 'Expected a silica EmailNode (an object with a string `kind`)' }
+);
 
 /** A silica `EmailDocument` — `{ version, subject, preheader, root: EmailBody }`.
  *  Validated structurally (silica owns the full node shape): an object carrying

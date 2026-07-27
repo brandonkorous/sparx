@@ -205,6 +205,83 @@ export function useRestoreEmailVersion(id: string) {
   });
 }
 
+// ── Saved blocks library (docs/impl transactional-email Slice 9) ──────────────
+//
+// The tenant's account-level, server-backed saved-block library. silica's
+// `<EmailBuilder>` defaults to keeping "Save as block" in browser localStorage —
+// trapped in one browser, lost on a device change, unshareable. Handing it the
+// `savedBlocks` controlled prop + `onSavedBlocksChange` makes THIS the source of
+// truth: a block follows the whole team across devices and is shared tenant-wide.
+// The node is opaque here (a silica `EmailNode`), same as `silicaDoc` — only the
+// composer types it, so this data layer stays free of the email engine.
+
+export const EMAIL_BLOCKS_KEY = ['builder', 'email-blocks'];
+
+/** One saved block as `/v1/builder/email-blocks` returns it. Mirrors silica's
+ *  `SavedBlock` ({ id, name, node, savedAt }); `node` is opaque here. */
+export interface SavedEmailBlock {
+  id: string;
+  name: string;
+  /** Opaque silica `EmailNode`. Typed properly only inside the composer. */
+  node: unknown;
+  /** Epoch ms the block was saved — silica orders the palette library by it. */
+  savedAt: number;
+}
+
+/** The tenant's whole saved-block library, newest first. Always fetched (the
+ *  composer needs it mounted so the Insert palette's saved group is populated). */
+export function useSavedEmailBlocks() {
+  return useQuery({
+    queryKey: EMAIL_BLOCKS_KEY,
+    queryFn: () =>
+      api.get<{ blocks: SavedEmailBlock[] }>('/v1/builder/email-blocks').then((r) => r.blocks),
+    staleTime: 300_000,
+  });
+}
+
+// Each mutation reconciles the cache on SETTLE, not just success: the editor
+// optimistically writes silica's `next` list (with a temp id for a save) into the
+// cache for instant palette feedback, so refetching after BOTH success and failure
+// is what replaces the temp id with the server row — or rolls the optimistic entry
+// back if the write failed.
+
+/** Save a block. Returns the SERVER row (with its assigned id) so the optimistic
+ *  temp-id entry silica handed the host reconciles on refetch — the crux of
+ *  controlled mode over fire-and-forget writes. */
+export function useCreateSavedEmailBlock() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { name: string; node: unknown }) =>
+      api.post<SavedEmailBlock>('/v1/builder/email-blocks', input),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: EMAIL_BLOCKS_KEY });
+    },
+  });
+}
+
+/** Rename a saved block. */
+export function useRenameSavedEmailBlock() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { id: string; name: string }) =>
+      api.patch<{ id: string }>(`/v1/builder/email-blocks/${input.id}`, { name: input.name }),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: EMAIL_BLOCKS_KEY });
+    },
+  });
+}
+
+/** Delete a saved block. */
+export function useDeleteSavedEmailBlock() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => api.delete(`/v1/builder/email-blocks/${id}`),
+    onSettled: () => {
+      void queryClient.invalidateQueries({ queryKey: EMAIL_BLOCKS_KEY });
+    },
+  });
+}
+
 /** Queue a staff smoke test through the real send path (email-worker → Mailgun in
  *  prod), rendered exactly as a real send. */
 export function useSendEmailTest(id: string) {

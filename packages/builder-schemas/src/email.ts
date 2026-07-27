@@ -11,7 +11,11 @@
 
 import { z } from 'zod';
 import { BuilderNodeSchema, type BuilderNode } from './node';
-import { SilicaEmailDocumentInput, type SilicaEmailDocument } from './email-silica';
+import {
+  SilicaEmailDocumentInput,
+  SilicaEmailNodeInput,
+  type SilicaEmailDocument,
+} from './email-silica';
 
 /** The shape the API returns. `tree` is always the DRAFT tree (what the editor
  *  edits); `published`/`publishedAt` describe the last snapshot. */
@@ -101,3 +105,18 @@ export const SyncSilicaEmailInput = z.object({
   doc: SilicaEmailDocumentInput,
 });
 export type SyncSilicaEmailInput = z.infer<typeof SyncSilicaEmailInput>;
+
+/** Save a block into the tenant's saved-block library (docs/impl transactional-email
+ *  Slice 9) — silica's `SavedBlockChange { type: 'save' }`. The node is validated
+ *  structurally (silica owns the shape); the name is the author's label. */
+export const CreateSavedEmailBlockInput = z.object({
+  name: z.string().min(1).max(255),
+  node: SilicaEmailNodeInput,
+});
+export type CreateSavedEmailBlockInput = z.infer<typeof CreateSavedEmailBlockInput>;
+
+/** Rename a saved block — silica's `SavedBlockChange { type: 'rename' }`. */
+export const RenameSavedEmailBlockInput = z.object({
+  name: z.string().min(1).max(255),
+});
+export type RenameSavedEmailBlockInput = z.infer<typeof RenameSavedEmailBlockInput>;

@@ -14,6 +14,10 @@
 //   GET    /v1/builder/emails/:id/preview  → render the DRAFT body to inlined HTML
 //   POST   /v1/builder/emails/:id/test-send→ render the draft + queue delivery via
 //                                            email-worker (the single egress path)
+//   GET    /v1/builder/email-blocks        → the tenant's saved-block library
+//   POST   /v1/builder/email-blocks        → save a block (returns the server row)
+//   PATCH  /v1/builder/email-blocks/:blockId  → rename a saved block
+//   DELETE /v1/builder/email-blocks/:blockId  → delete a saved block
 //
 // Bodies are validated by the service-layer Zod schemas (the established route ↔
 // service boundary), so api-rest keeps no @sparx/builder-schemas dependency. The
@@ -23,9 +27,10 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { emailService, emailVersionService } from '@sparx/builder';
+import { emailService, emailVersionService, savedEmailBlockService } from '@sparx/builder';
 import { builderEmailService } from '@sparx/email-platform';
 import { ok } from '@sparx/api-core/envelope';
+import { notFound } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
 import { publish } from '@sparx/api-core/pubsub';
 import {
@@ -38,6 +43,7 @@ import { resolveEmailFooterLinks, silicaEmailDataResolver } from '../../../lib/e
 
 const IdParam = z.object({ id: z.string().uuid() });
 const RestoreVersionParam = z.object({ id: z.string().uuid(), versionId: z.string().uuid() });
+const BlockParam = z.object({ blockId: z.string().uuid() });
 const PropertyParam = z.object({ propertyId: z.string().uuid() });
 const CustomizeBody = z.object({ key: z.string().min(1).max(63) });
 
@@ -173,6 +179,58 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
       versionId
     );
     return ok(email);
+  });
+
+  // ── Saved blocks library (docs/impl transactional-email Slice 9) ───────────────
+  // The tenant's account-level, server-backed saved-block library that silica's
+  // `<EmailBuilder savedBlocks onSavedBlocksChange>` controlled prop renders,
+  // replacing its browser-localStorage default so a saved block follows the whole
+  // team across devices and is shared tenant-wide. Tenant-scoped (not per-email):
+  // a `/email-blocks` path, never under `/:id`, so it can't be a per-email nested
+  // resource and never collides with the email-id param route. Routes map 1:1 onto
+  // silica's SavedBlockChange intents (save / rename / delete).
+  app.get('/v1/builder/email-blocks', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const blocks = await savedEmailBlockService.listSavedEmailBlocks(
+      toBuilderTenantContext(request)
+    );
+    return ok({ blocks });
+  });
+
+  app.post('/v1/builder/email-blocks', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const block = await savedEmailBlockService.createSavedEmailBlock(
+      toBuilderTenantContext(request),
+      request.body
+    );
+    return ok(block);
+  });
+
+  app.patch('/v1/builder/email-blocks/:blockId', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { blockId } = BlockParam.parse(request.params);
+    const renamed = await savedEmailBlockService.renameSavedEmailBlock(
+      toBuilderTenantContext(request),
+      blockId,
+      request.body
+    );
+    if (!renamed) throw notFound('saved block', blockId);
+    return ok({ id: blockId });
+  });
+
+  app.delete('/v1/builder/email-blocks/:blockId', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { blockId } = BlockParam.parse(request.params);
+    const removed = await savedEmailBlockService.deleteSavedEmailBlock(
+      toBuilderTenantContext(request),
+      blockId
+    );
+    if (!removed) throw notFound('saved block', blockId);
+    return ok({ id: blockId });
   });
 
   // The studio canvas's chrome + colour map (docs/impl transactional-email §7): the

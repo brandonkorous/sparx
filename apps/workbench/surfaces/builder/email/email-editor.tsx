@@ -30,6 +30,7 @@
 // (real client rendering, real per-recipient data), not the canvas approximation.
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useQueryClient } from '@sparx/query';
 import {
   Alert,
   AlertContent,
@@ -71,8 +72,16 @@ import {
   Upload,
   X,
 } from 'lucide-react';
-import { EmailBuilder } from '@wizeworks/silicaui-builder/email/react';
-import type { EmailBuilderHost } from '@wizeworks/silicaui-builder/email/react';
+import {
+  EmailBuilder,
+  clearLocalSavedBlocks,
+  readLocalSavedBlocks,
+} from '@wizeworks/silicaui-builder/email/react';
+import type {
+  EmailBuilderHost,
+  SavedBlock,
+  SavedBlockChange,
+} from '@wizeworks/silicaui-builder/email/react';
 import type {
   EmailColorDefaults,
   EmailDocument,
@@ -104,25 +113,31 @@ import {
   emailErrorMessage,
   emailStatus,
   useCreateEmail,
+  useCreateSavedEmailBlock,
   useCustomizeEmailForSite,
   useDeleteEmail,
+  useDeleteSavedEmailBlock,
   useEmailChrome,
   useEmails,
   useEmailVersions,
   usePreviewEmail,
   usePublishEmail,
   useRenameEmail,
+  useRenameSavedEmailBlock,
   useRestoreEmailVersion,
+  useSavedEmailBlocks,
   useSaveEmailDoc,
   useSendEmailTest,
   useSiteBrandInfos,
   useSiteBuilderConfig,
   useTenantBrand,
+  EMAIL_BLOCKS_KEY,
   type EmailCheck,
   type EmailCheckLevel,
   type EmailDesign,
   type EmailPreview,
   type EmailVersion,
+  type SavedEmailBlock,
 } from './email-data';
 
 /** The neutral fallback theme — used only until the tenant brand loads, or if the
@@ -323,6 +338,78 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   const customize = useCustomizeEmailForSite();
   const restore = useRestoreEmailVersion(targetId);
   const versions = useEmailVersions(targetId, historyOpen);
+
+  // ── Saved blocks (docs/impl transactional-email Slice 9) ──────────────────────
+  // silica's `savedBlocks` controlled prop: THIS is the source of truth (an
+  // account-level, server-backed library shared tenant-wide) instead of silica's
+  // browser-localStorage default. We render the server list and, on each author
+  // action, optimistically write silica's `next` into the cache (instant palette
+  // feedback) then fire the matching mutation — which refetches on settle, so a
+  // save's temp id is replaced by the real server id and a failed write rolls back.
+  const queryClient = useQueryClient();
+  const savedBlocks = useSavedEmailBlocks();
+  const createBlock = useCreateSavedEmailBlock();
+  const renameBlock = useRenameSavedEmailBlock();
+  const deleteBlock = useDeleteSavedEmailBlock();
+
+  const onBlockError = useCallback(
+    (error: unknown) => {
+      toast.add({
+        title: 'Could not update your saved blocks',
+        description: emailErrorMessage(error, 'Nothing was changed. Try again.'),
+        type: 'error',
+      });
+    },
+    [toast]
+  );
+
+  const onSavedBlocksChange = useCallback(
+    (next: SavedBlock[], change: SavedBlockChange) => {
+      // Render silica's next list immediately so the palette updates without a
+      // round-trip; the mutation's settle-refetch reconciles it with server truth.
+      queryClient.setQueryData<SavedEmailBlock[]>(EMAIL_BLOCKS_KEY, next);
+      switch (change.type) {
+        case 'save':
+          createBlock.mutate(
+            { name: change.block.name, node: change.block.node },
+            { onError: onBlockError }
+          );
+          break;
+        case 'rename':
+          renameBlock.mutate({ id: change.id, name: change.name }, { onError: onBlockError });
+          break;
+        case 'delete':
+          deleteBlock.mutate(change.id, { onError: onBlockError });
+          break;
+      }
+    },
+    [queryClient, createBlock, renameBlock, deleteBlock, onBlockError]
+  );
+
+  // One-time migration off silica's browser-local library: the first time the
+  // server list settles, adopt any blocks an author saved BEFORE the host owned the
+  // library (they'd otherwise be orphaned the moment `savedBlocks` is supplied) —
+  // upload each, then clear local so this never runs twice (a later mount reads an
+  // empty local list). Guarded by a ref so React's double-invoke in dev is a no-op.
+  const migratedLocalRef = useRef(false);
+  useEffect(() => {
+    if (migratedLocalRef.current || !savedBlocks.isSuccess) return;
+    migratedLocalRef.current = true;
+    const local = readLocalSavedBlocks();
+    if (local.length === 0) return;
+    void (async () => {
+      for (const block of local) {
+        try {
+          await createBlock.mutateAsync({ name: block.name, node: block.node });
+        } catch {
+          // A single failed adoption shouldn't abandon the rest or re-orphan the
+          // batch; skip it and keep going. The rest still migrate.
+        }
+      }
+      clearLocalSavedBlocks();
+      void queryClient.invalidateQueries({ queryKey: EMAIL_BLOCKS_KEY });
+    })();
+  }, [savedBlocks.isSuccess, createBlock, queryClient]);
 
   const createNew = useCallback(async () => {
     try {
@@ -862,6 +949,8 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
           onChange={onChange}
           onSendTest={onSendTest}
           persistKey={null}
+          savedBlocks={(savedBlocks.data ?? []) as unknown as SavedBlock[]}
+          onSavedBlocksChange={onSavedBlocksChange}
           toolbarSlot={toolbar}
         />
 

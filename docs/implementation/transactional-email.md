@@ -1,6 +1,6 @@
 # Transactional email — coverage + build tracker
 
-Version: 1.4
+Version: 1.5
 Author: Brandon Korous
 Last Updated: 2026-07-27
 
@@ -789,7 +789,10 @@ meta)` idiom the builder already uses, NOT a set of write callbacks):
   blocks still work within a session/device.
 
 This is the successor to the closed 0.33/0.34 asks (frame, `toolbarSlot`, subject/preheader
-relocation) — pending Brandon's greenlight to build (both sides).
+relocation). **✅ Delivered in silicaui 0.35.0** exactly as designed above — the controlled
+`savedBlocks` prop, `onSavedBlocksChange(next, change)`, the `SavedBlockChange` intent union,
+`readLocalSavedBlocks()` + `clearLocalSavedBlocks()` migration seam, and a `getSavedBlockNode()`
+that now reads the host-owned list when one is mounted. Our side is built in **§17 (Slice 9)**.
 
 ## 16. Slice 8 — "unpublished changes" indicator (2026-07-27, uncommitted)
 
@@ -808,3 +811,49 @@ that gap ("I changed it, but did customers get it?"). Slice 8 surfaces it.
 
 **Verified:** builder-schemas 252 + builder 68 tests pass; builder / builder-schemas /
 workbench / api-rest typecheck + lint + prettier clean.
+
+## 17. Slice 9 — server-backed saved blocks (2026-07-27, uncommitted)
+
+The §15 silicaui ask shipped in **0.35.0**, so this closes the last item on the "10/10" list
+that needed an external change. The tenant's saved-block library moves from silica's browser
+`localStorage` (trapped in one browser, lost on a device/user change, unshareable) to an
+**account-level, server-backed library shared tenant-wide** via silica's `savedBlocks`
+controlled prop.
+
+- **Install:** catalog bumped `^0.34.2 → ^0.35.0` for all 11 `@wizeworks/silicaui*` packages
+  ([pnpm-workspace.yaml](../../pnpm-workspace.yaml)); `pnpm install` clean; the three consumers
+  (workbench / email / builder-schemas) typecheck against 0.35.0 with no incidental breakage.
+- **DB:** new `BuilderEmailBlock` model + `builder_email_blocks` migration
+  ([51-builder.prisma](../../packages/db/prisma/schema/51-builder.prisma),
+  [20270120000000_builder_email_blocks](../../packages/db/prisma/migrations/20270120000000_builder_email_blocks/migration.sql))
+  — tenant-scoped `{ name, node (JSONB), actorId }`, FORCE RLS + `tenant_isolation`, `tenant_id`
+  as a scalar + hand-SQL FK (no back-relation on Tenant), additive/no backfill. Mirrors the
+  Slice-5 `builder_email_versions` shape.
+- **Contract:** `SilicaEmailNodeInput` (structural, opaque — an object with a string `kind`) +
+  `CreateSavedEmailBlockInput` / `RenameSavedEmailBlockInput`
+  ([email-silica.ts](../../packages/builder-schemas/src/email-silica.ts),
+  [email.ts](../../packages/builder-schemas/src/email.ts)).
+- **Service:** `savedEmailBlockService` (list / create / rename / delete), 1:1 with silica's
+  `SavedBlockChange` intents; create returns the SERVER row so the host reconciles the
+  optimistic temp id; rename/delete return a boolean so a stale id 404s
+  ([saved-email-block-service.ts](../../packages/builder/src/services/saved-email-block-service.ts)).
+- **REST:** `GET/POST /v1/builder/email-blocks` + `PATCH/DELETE /v1/builder/email-blocks/:blockId`
+  — a `/email-blocks` path (tenant-level, never under `/:id`), no builder-schemas dep in the
+  route ([emails.ts](../../services/api-rest/src/routes/v1/builder/emails.ts)).
+- **Workbench:** `useSavedEmailBlocks` + create/rename/delete hooks (opaque `node`, like
+  `silicaDoc`), each reconciling the cache on **settle** so a save's temp id → server id and a
+  failed write rolls back ([email-data.ts](../../apps/workbench/surfaces/builder/email/email-data.ts)).
+  The studio ([email-editor.tsx](../../apps/workbench/surfaces/builder/email/email-editor.tsx))
+  renders `savedBlocks` + `onSavedBlocksChange` (optimistic `setQueryData(next)` → matching
+  mutation), and runs a **one-time migration** (`readLocalSavedBlocks` → upload each →
+  `clearLocalSavedBlocks`) the first time the server list settles, so pre-existing browser-local
+  blocks aren't orphaned.
+
+**Verified:** migration applied to local docker (`prisma migrate deploy`; `builder_email_blocks`
+confirmed `rls=t force=t` + `builder_email_blocks_tenant_isolation` policy via psql) + client
+regenerated; **builder / builder-schemas / workbench / api-rest all typecheck + lint clean**;
+builder 68 + builder-schemas 252 tests pass. Migration also applies in prod via the DB Migrate
+workflow on the next push to `main`.
+
+**Decoupled (not built):** the same seam for SITE-builder symbols (§15) remains a separate
+data-model decision, deliberately out of scope here.
