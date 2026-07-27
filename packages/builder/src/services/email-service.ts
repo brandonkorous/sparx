@@ -34,6 +34,8 @@ import { publishBuilderEvent } from '../events';
 import type { ServiceContext } from '../errors';
 import { BuilderNotFoundError } from '../errors';
 import { isPriorDefaultBody } from './email-default-refresh';
+import { captureEmailVersionTx } from './email-version-service';
+import { canonicalJson } from './artifact-service';
 
 function toDto(row: BuilderEmail): BuilderEmailDto {
   return {
@@ -55,6 +57,7 @@ function toDto(row: BuilderEmail): BuilderEmailDto {
     // An email is "published" once EITHER the legacy sparx tree OR a silica
     // document has been snapshotted (parallel-run).
     published: row.publishedTree != null || row.silicaPublishedDocument != null,
+    hasUnpublishedChanges: hasUnpublishedChanges(row),
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
     key: row.key,
@@ -98,6 +101,16 @@ function silicaPublished(row: BuilderEmail): SilicaEmailDocument {
     row.subject,
     row.preheader
   );
+}
+
+/** True when a PUBLISHED email's DRAFT has diverged from its live published version —
+ *  saved edits recipients aren't getting yet. Compares the resolved silica documents by
+ *  CANONICAL form (key-order / round-trip noise doesn't count as a change). False for an
+ *  unpublished email — the `published:false` state already says everything there. */
+function hasUnpublishedChanges(row: BuilderEmail): boolean {
+  const isPublished = row.publishedTree != null || row.silicaPublishedDocument != null;
+  if (!isPublished) return false;
+  return canonicalJson(silicaDraft(row)) !== canonicalJson(silicaPublished(row));
 }
 
 /** The send/preview projection (PublishedEmailDto) of a row, or null when it has
@@ -357,6 +370,16 @@ export async function publishSilica(ctx: ServiceContext, id: string): Promise<Bu
         publishedAt: new Date(),
       },
     });
+    // Snapshot this publish into the append-only version history (Slice 5), inside the
+    // same transaction so a rolled-back publish leaves no orphan version. A no-op
+    // republish (identical to the last version) is deduped away and adds no row.
+    await captureEmailVersionTx(
+      tx,
+      ctx,
+      id,
+      existing.silicaDraftDocument as unknown as SilicaEmailDocument,
+      ctx.userId ?? null
+    );
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -375,6 +398,48 @@ export async function publishSilica(ctx: ServiceContext, id: string): Promise<Bu
     payload: { emailId: dto.id, name: dto.name },
   });
   return dto;
+}
+
+/** Restore a published version into the DRAFT (docs/impl transactional-email Slice 5) —
+ *  NON-DESTRUCTIVE by design. It loads the chosen version's document back onto the draft
+ *  (and mirrors its subject/preheader), leaving the live PUBLISHED document untouched, so
+ *  the author reviews the reinstated version in the studio and re-publishes it — an email
+ *  goes to real inboxes, so a restore never silently republishes. The returned DTO carries
+ *  the restored draft, which the studio remounts on. Audited (a deliberate, low-frequency
+ *  act, unlike autosave). */
+export async function restoreEmailVersion(
+  ctx: ServiceContext,
+  emailId: string,
+  versionId: string
+): Promise<BuilderEmailDto> {
+  return withTenant(ctx, async (tx) => {
+    const version = await tx.builderEmailVersion.findFirst({
+      where: { id: versionId, emailId },
+      select: { id: true, document: true },
+    });
+    if (!version) throw new BuilderNotFoundError('BuilderEmailVersion', versionId);
+
+    const doc = version.document as unknown as SilicaEmailDocument;
+    const updated = await tx.builderEmail.update({
+      where: { id: emailId },
+      data: {
+        silicaDraftDocument: version.document as Prisma.InputJsonValue,
+        subject: doc.subject ?? '',
+        preheader: emptyToNull(doc.preheader),
+      },
+    });
+    await writeAuditLog({
+      tx,
+      tenantId: ctx.tenantId,
+      actorId: ctx.userId ?? null,
+      actorType: 'user',
+      action: 'builder.email.version.restored',
+      entityType: 'BuilderEmail',
+      entityId: emailId,
+      diff: { after: { versionId, name: updated.name } },
+    });
+    return toDto(updated);
+  });
 }
 
 /** The send/preview read (docs/52 §6): the PUBLISHED tree of an email by id, or

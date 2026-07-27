@@ -14,6 +14,33 @@ import { colors, fontFamily } from './tokens';
 // (storefront theme tokens → settings override → sparx defaults), light palette
 // only (email-client dark mode is unreliable).
 
+/** The brand's DARK-theme surfaces — the SAME dark palette the tenant's SITE uses
+ *  (resolved from `@sparx/site-themes`' dark tokens). When a brand carries this, the
+ *  send emits an `@media (prefers-color-scheme: dark)` block that remaps the light
+ *  neutrals to these values, so a dark-mode client (Apple Mail / iOS Mail / Outlook
+ *  for Mac) renders the email in the same dark theme as the site rather than the light
+ *  design on a dark screen. Neutrals are required; brand hues are optional — omit
+ *  `primary`/`accent`/`primaryForeground` and they stay their light value (unmapped),
+ *  which is right when the brand doesn't shift its hue for dark. Gmail / Outlook.com
+ *  ignore all of this and force-invert on their own terms — dark mode is progressive
+ *  enhancement, never a design to rely on. */
+export interface BrandDark {
+  /** Content surface (the inner card) in dark. */
+  background: string;
+  /** Body + heading text in dark. */
+  foreground: string;
+  /** Page background + subtle fills in dark. */
+  muted: string;
+  /** Hairlines / dividers / borders in dark. */
+  border: string;
+  /** Filled-button / brand-bar hue in dark (omit → same as light). */
+  primary?: string;
+  /** Text on top of `primary` in dark (omit → same as light). */
+  primaryForeground?: string;
+  /** Link / secondary accent in dark (omit → same as light). */
+  accent?: string;
+}
+
 export interface BrandTokens {
   /** Filled-button / link / wordmark accent. */
   primary: string;
@@ -29,6 +56,9 @@ export interface BrandTokens {
   muted: string;
   /** Hairlines + dividers + card border. */
   border: string;
+  /** The brand's dark-theme surfaces (see `BrandDark`). Absent → light-only: the send
+   *  emits no dark-mode CSS and the email renders its light design everywhere. */
+  dark?: BrandDark;
   /** CSS font-family stack for headings (name + web-safe fallback). */
   fontHeading: string;
   /** CSS font-family stack for body copy. */
@@ -54,6 +84,16 @@ export const defaultBrand: BrandTokens = {
   fontHeading: fontFamily,
   fontBody: fontFamily,
   siteName: 'sparx',
+  // The sparx default theme's DARK neutrals (the `apex` preset's dark tokens in
+  // @sparx/site-themes) — so an unbranded send still renders a real dark theme on a
+  // dark-mode client, not the light card on a black screen. Brand hue (`primary`) is
+  // omitted deliberately: sparx keeps its accent in both modes.
+  dark: {
+    background: '#0b1120',
+    foreground: '#e2e8f0',
+    muted: '#111827',
+    border: '#1f2937',
+  },
 };
 
 const BrandContext = React.createContext<BrandTokens>(defaultBrand);

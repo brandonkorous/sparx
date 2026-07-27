@@ -17,8 +17,25 @@ export {
 // Re-exported so the frame's consumers (the email studio's canvas via the server, the
 // send path) type the chrome without a direct @wizeworks/silicaui-builder dependency.
 export type { EmailFrame } from '@wizeworks/silicaui-builder/email';
-export { applyBrandColors, emailBrandColorDefaults } from './brand-colors';
+export {
+  applyBrandColors,
+  emailBrandColorDefaults,
+  emailBrandDarkColorDefaults,
+} from './brand-colors';
+// Dark-mode CSS generators — `buildDarkModeCss` is the `@media`-wrapped block the send
+// injects; `darkModeRules` is the same rules UNGATED, for the studio's dark preview (an
+// iframe can't be forced into a dark OS preference, so the toggle applies them directly).
+export { buildDarkModeCss, darkModeRules } from './dark-mode';
 // The role→hex map shape silica's `resolveEmailColorDefaults` produces; re-exported so
 // the studio types its canvas colour map without a direct silicaui-builder dep.
 export type { EmailColorDefaults } from '@wizeworks/silicaui-builder/email';
 export { emailDocumentToText } from './to-text';
+// Pre-send checks (Gmail-clipping size, dead links, missing image descriptions,
+// misspelled personalization tags, subject/preview text) — the confidence layer under
+// the studio's "Preview & Check". Runs server-side alongside `renderPreview`.
+export {
+  lintEmailRender,
+  type EmailCheck,
+  type EmailCheckLevel,
+  type LintEmailInput,
+} from './lint';

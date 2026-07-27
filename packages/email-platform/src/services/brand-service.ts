@@ -10,10 +10,13 @@
 // with no brand identity at all yields null (caller renders @sparx/email's
 // sparx defaultBrand).
 //
-// Light palette only (email-client dark mode is unreliable). We read concrete
-// token values — never CSS custom properties — because React Email inlines
-// styles and `var(--…)` doesn't survive in Gmail/Outlook. Theme compilation is
-// delegated to @sparx/site-themes; we never fork a second registry.
+// Light palette is the base; the brand also carries its site's DARK neutrals
+// (`BrandTokens.dark`, from the preset's dark tokens) so the silica send can emit an
+// `@media (prefers-color-scheme: dark)` block aligned to the site (docs/impl
+// transactional-email §10) — progressive enhancement for Apple/Outlook-Mac, ignored by
+// Gmail/Outlook.com. We read concrete token values — never CSS custom properties —
+// because React Email inlines styles and `var(--…)` doesn't survive in Gmail/Outlook.
+// Theme compilation is delegated to @sparx/site-themes; we never fork a second registry.
 
 import { withTenant } from '@sparx/db';
 import {
@@ -189,17 +192,30 @@ export async function resolveEmailBrand(
     if (!hasIdentity) return null;
 
     // Overlay the (merged) brand's identity palette/typography over the default
-    // preset; unset tokens inherit the preset. Email uses the light palette only.
+    // preset; unset tokens inherit the preset. The identity applies to BOTH modes (a
+    // brand's primary/accent/fonts are the same in light and dark), so we compile both
+    // and carry the dark NEUTRALS onto the brand — the send emits an
+    // `@media (prefers-color-scheme: dark)` block from them, aligning the email's dark
+    // mode to the SITE's dark theme (docs/impl transactional-email §10).
     const overlay = brandIdentityOverlay(brand);
-    const compiled = compileTokens(DEFAULT_THEME_KEY, { light: overlay }).light;
+    const compiled = compileTokens(DEFAULT_THEME_KEY, { light: overlay, dark: overlay });
     // The active site's socials (else the primary's) — for the footer's social row.
     const socials = extractSocials(propertyRow?.settings ?? primaryProperty?.settings);
     return {
-      ...tokensToBrand(compiled, {
+      ...tokensToBrand(compiled.light, {
         logoUrl: logoUrlFor(brand.logoLightMediaId, slug),
         siteName,
       }),
       ...(socials.length ? { socials } : {}),
+      dark: {
+        background: compiled.dark.colorBackground,
+        foreground: compiled.dark.colorForeground,
+        muted: compiled.dark.colorMuted,
+        border: compiled.dark.colorBorder,
+        primary: compiled.dark.colorPrimary,
+        primaryForeground: compiled.dark.colorPrimaryForeground,
+        accent: compiled.dark.colorAccent,
+      },
     };
   });
 }

@@ -8,6 +8,7 @@ export * as layoutService from './layout-service';
 export * as formService from './form-submit-service';
 export * as formDefinitionService from './form-definition-service';
 export * as emailService from './email-service';
+export * as emailVersionService from './email-version-service';
 export * as componentService from './component-service';
 export * as bindingService from './binding-service';
 export * as surfaceCssService from './surface-css-service';

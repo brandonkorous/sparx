@@ -9,6 +9,8 @@
 //   PATCH  /v1/builder/emails/:id          → rename / set subject·preheader / save tree
 //   DELETE /v1/builder/emails/:id          → remove
 //   POST   /v1/builder/emails/:id/publish  → snapshot draft → published
+//   GET    /v1/builder/emails/:id/versions → publish history, newest first
+//   POST   …/:id/versions/:versionId/restore → load a version back into the draft
 //   GET    /v1/builder/emails/:id/preview  → render the DRAFT body to inlined HTML
 //   POST   /v1/builder/emails/:id/test-send→ render the draft + queue delivery via
 //                                            email-worker (the single egress path)
@@ -21,7 +23,7 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { emailService } from '@sparx/builder';
+import { emailService, emailVersionService } from '@sparx/builder';
 import { builderEmailService } from '@sparx/email-platform';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
@@ -35,6 +37,7 @@ import { requireTenantProperty } from '../../../lib/property.js';
 import { resolveEmailFooterLinks, silicaEmailDataResolver } from '../../../lib/email-data.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
+const RestoreVersionParam = z.object({ id: z.string().uuid(), versionId: z.string().uuid() });
 const PropertyParam = z.object({ propertyId: z.string().uuid() });
 const CustomizeBody = z.object({ key: z.string().min(1).max(63) });
 
@@ -142,6 +145,33 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const { id } = IdParam.parse(request.params);
     const email = await emailService.publishSilica(toBuilderTenantContext(request), id);
+    return ok(email);
+  });
+
+  // ── Version history / rollback (docs/impl transactional-email Slice 5) ─────────
+  // Every publish snapshots the document into an append-only history; restore loads a
+  // chosen version back into the DRAFT (non-destructive — the author reviews + re-publishes,
+  // never a silent republish to inboxes).
+  app.get('/v1/builder/emails/:id/versions', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const { id } = IdParam.parse(request.params);
+    const versions = await emailVersionService.listEmailVersions(
+      toBuilderTenantContext(request),
+      id
+    );
+    return ok({ versions });
+  });
+
+  app.post('/v1/builder/emails/:id/versions/:versionId/restore', async (request) => {
+    requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const { id, versionId } = RestoreVersionParam.parse(request.params);
+    const email = await emailService.restoreEmailVersion(
+      toBuilderTenantContext(request),
+      id,
+      versionId
+    );
     return ok(email);
   });
 

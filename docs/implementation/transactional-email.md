@@ -1,8 +1,8 @@
 # Transactional email — coverage + build tracker
 
-Version: 0.5
+Version: 1.4
 Author: Brandon Korous
-Last Updated: 2026-07-26
+Last Updated: 2026-07-27
 
 > The **living** status + decision log for sparx's transactional & lifecycle email.
 > It answers three questions the design docs don't: what the platform actually
@@ -439,3 +439,372 @@ keeps its authored body — it must be re-authored or reset to pick up the new d
 All green: builder-schemas 250, builder 68 (refresh test now passes), email 34,
 email-platform 10; typecheck + lint clean across builder(-schemas)/email(-platform)/
 api-rest/workbench.
+
+## 9. Email-builder "10/10" initiative (2026-07-27)
+
+A standing goal: make the workbench email builder best-in-class. An inventory scored
+seven dimensions; personalization (loops via `itemsTable`, conditionals via `when`,
+15 sources, fallbacks) and template breadth (37 defaults) already score 8–9. The weak
+axis is **pre-send confidence (5/10)** — the studio could render but not _check_.
+
+### Slice 1 — "Preview & Check" (shipped, uncommitted)
+
+The Preview dialog became **Preview & check**: a device toggle (desktop 600px / mobile
+375px), a **plain-text view** (the `text` part was rendered but never shown), and a
+collapsible **pre-send checklist**.
+
+- New `@sparx/email/silica` export `lintEmailRender({ doc, html, subject, preheader })`
+  → `EmailCheck[]` ([lint.ts](../../packages/email/src/silica/lint.ts)). Six always-on
+  categories (so it reads as a checklist, green when clean): subject, preview text,
+  links (dead `#`/empty → error; `example.com` → warning), image descriptions (missing
+  alt), personalization tags (unknown source root → error), and **email size** (Gmail's
+  ~102 KB clipping cliff). Copy is written for a non-technical owner.
+- Runs server-side in `renderPreview` (needs the real projected byte size); `checks`
+  rides on `RenderedPreview` → the `/preview` route → the studio dialog.
+- **Calibration:** validated against all 37 shipped defaults (zero findings) AND a
+  deliberately-broken email (catches every issue). No check may false-positive on our
+  own templates.
+
+### Finding — the merge-tag catalog is a SUBSET of what the resolver resolves
+
+Building the tag check surfaced a real gap: `EMAIL_SOURCES` (the flat catalog driving
+autocomplete + the merge-tag picker) does **not** include `subscription.*` or `return.*`
+— yet `resolveSubscription`/`resolveReturn` ([api-rest email-data.ts](../../services/api-rest/src/lib/email-data.ts))
+resolve them at send, and the subscription-_/return-_ templates use them. Same for
+resolver-only order fields (`order.shippingAddress`, `order.deliveredAt`,
+`order.cancelReason`, `order.refundTotal`) and `booking.newHeadline`. So the tokens DO
+resolve — they're just undiscoverable in the author's picker, and can't be field-validated.
+The tag check is therefore **root-level only** for now (catches `{{oder.total}}`, misses
+`{{customer.frstName}}`). **Follow-up:** complete `EMAIL_SOURCES` to match the resolver,
+which (a) puts those tags in autocomplete and (b) unlocks accurate field-level validation.
+
+### Remaining roadmap (impact-ordered)
+
+2. Dark mode, actually designed — ship `@media (prefers-color-scheme: dark)` CSS in the
+   send `head` (today `colorScheme:'light dark'` is declared but no dark CSS ships).
+3. Complete the merge-tag catalog (the finding above) + persistent saved blocks
+   (`useSavedBlocks` is unwired to the server) + richer palette via `host.catalog()`.
+4. Binding diagnostics surfaced in-canvas (`host.onDiagnostic`) + in-inspector merge-tag
+   picker (`host.inspectorPanels`).
+5. Email version history / rollback + re-enable local crash-recovery (`persistKey`).
+
+## 10. Slice 2 — dark mode, aligned to the site (2026-07-27, uncommitted)
+
+Dark mode was **declared** (silica emits the `color-scheme`/`supported-color-schemes`
+`<meta>` pair + `:root` rule) but not **designed** — on a dark-mode client the email
+showed its light design on a dark screen. Now it renders the tenant's own **site dark
+theme**, per Brandon's direction ("our brand defines the light and dark theme for the
+site, and the emails should align to the site").
+
+**How.** silica's `EmailBody.colorScheme` doc delegates the dark DESIGN to the host,
+"supplied via the projector's `head.css` hook". The projected HTML has no class hooks
+(only `.sui-col`), so the block remaps **by value**: for each neutral the light render
+used, a rule keyed to that exact hex — as a `bgcolor="…"` attribute or a `color: …`
+inline-style substring — overrides it to the brand's dark counterpart. Because the light
+hexes come from the same role map the projector paints with, the selectors match by
+construction; brand hues that don't shift and the fixed semantic colours emit no rule
+and survive.
+
+**Wiring.**
+
+- `BrandTokens.dark?: BrandDark` ([brand.tsx](../../packages/email/src/components/brand.tsx))
+  — the site's dark neutrals (+ optional dark brand hue). `defaultBrand.dark` carries the
+  sparx default theme's dark neutrals so even an unbranded send renders a real dark theme.
+- `brand-service` ([brand-service.ts](../../packages/email-platform/src/services/brand-service.ts))
+  now compiles BOTH modes (`compileTokens(key, { light: overlay, dark: overlay })`) and
+  attaches `dark` — so the email dark palette IS the site's dark palette.
+- `emailBrandDarkColorDefaults(brand)` ([brand-colors.ts](../../packages/email/src/silica/brand-colors.ts))
+  builds the dark role map (unset brand hues fall back to light → unmapped).
+- `buildDarkModeCss(light, dark)` ([dark-mode.ts](../../packages/email/src/silica/dark-mode.ts))
+  emits the `@media (prefers-color-scheme: dark)` block; `render-silica-email` feeds it via
+  `EmailHeadExtras.css`.
+
+**Verified:** default brand → surfaces `#FFFFFF→#0b1120` / `#F8FAFC→#111827`, text
+`#0F172A→#e2e8f0`, borders → dark, sparx accent preserved; a branded tenant additionally
+shifts its hue to the site's dark value (`#4f46e5→#6366f1`). Selectors match the rendered
+hexes exactly (case preserved). Email 37 tests (+3 dark-mode) + email-platform 10 green;
+typecheck + lint + prettier clean.
+
+**Seeing it — Light/Dark preview toggle.** Dark mode is invisible in the light canvas,
+so Preview & Check gained a **Light/Dark toggle** (shown only when the brand has a dark
+palette). An iframe can't be forced to report a dark OS preference, so `renderPreview`
+also returns the dark rules UNGATED (`darkModeRules`, no `@media`); the dialog strips the
+send's `@media` block for a deterministic light view, and injects the ungated rules for
+dark — so the owner sees the exact dark theme a dark-mode client renders, regardless of
+their own OS. `darkModeRules`/`buildDarkModeCss` split in `dark-mode.ts`; `darkCss` on the
+preview response → `EmailPreview` → `previewSrcDoc` in the studio.
+
+**Known refinement (not blocking):** the fixed semantic status colours (success green,
+etc.) are NOT remapped for dark — the theme system models no dark semantics, so remapping
+would mean inventing colours. On a dark surface a mid-dark green reads dimmer than ideal;
+lightening semantics in dark is a follow-up once the theme system carries dark semantics.
+Gmail / Outlook.com force-invert regardless — dark mode remains progressive enhancement.
+
+## 11. Slice 3 — merge-tag catalog completed + field-level validation (2026-07-27, uncommitted)
+
+The pre-send **Personalization tags** check (Slice 1) could only validate a token's
+_source root_ (`{{oder.total}}` → unknown source). It could NOT validate the _field_
+(`{{order.totl}}`), because the send-time resolver (api-rest `email-data.ts`) resolved
+MORE than the binding catalog (`EMAIL_SOURCES` in
+[binding.ts](../../packages/builder-schemas/src/binding.ts)) declared — so field-checking
+would have flagged our own shipping templates. A check that false-positives on our own
+defaults is worse than no check, so Slice 1 stayed root-only and flagged the gap.
+
+**The gap, closed.** `EMAIL_SOURCES` now mirrors the resolver EXACTLY:
+
+- **`subscription`** source added (status / interval / amount / itemCount / nextOrderDate /
+  pausedUntil / currentPeriodEnd / manageUrl) — mirrors `resolveSubscription`.
+- **`return`** source added (status / outcome / refundAmount / refundMethod / labelUrl /
+  hasLabel / manageUrl) — mirrors `resolveReturn`.
+- **`order`** gained `refundTotal` / `deliveredAt` / `cancelReason` / `shippingAddress`.
+- **`booking`** gained `newHeadline` / `pendingApproval`.
+
+Side benefit: those tags now appear in the author's `{{` autocomplete, the Merge tags
+reference panel, and the MCP `list_merge_tags` tool — they resolved at send but were
+invisible to authors before.
+
+**Field-level validation, now on.** `checkMergeTags`
+([lint.ts](../../packages/email/src/silica/lint.ts)) builds its vocabulary straight from
+`EMAIL_CATALOG`, so a new source/field is covered the moment it lands — no second list.
+Rules: an unknown ROOT is a source typo; a known OBJECT source with an unknown FIELD is a
+field typo; both render blank, so both are errors. ARRAY sources (products, CMS
+collections) and LOOP aliases (`item`, `items`, `product`, `commerce`, `cms`) iterate —
+their fields belong to the loop's record, not the flat catalog — so those roots are
+validated at the root only. The historical `tenant` alias reuses `site`'s fields plus the
+back-compat `siteUrl`/`storeUrl` URLs.
+
+**Verified.** Every shipped default's token maps to a catalog field, so the
+`lint.test.ts` "every shipped default passes clean" tripwire stays green; a new case
+proves a field typo (`{{customer.frstName}}`) errors while a loop token (`{{item.…}}`)
+stays clean. builder-schemas 250, email 42 (+1), email-platform 10 — all green;
+typecheck + lint + prettier clean.
+
+## 12. Slice 4 — richer Insert palette (curated content blocks) (2026-07-27, uncommitted)
+
+The Email Builder's Insert palette was the bare 8 silica primitives (text, image,
+button, divider, spacer, columns, social, html/video). A best-in-class builder also
+offers **pre-composed content blocks** — a summary card, a call to action, a callout —
+so an author drops a polished, on-brand section in one move instead of hand-assembling
+section → border → radius → rows → spacers. Slice 4 adds them.
+
+**What's available already (not rebuilt).** Confirmed against the installed `@wizeworks/
+silicaui-builder@0.34.2` type surface: the workbench already passes a full
+`EmailBuilderHost` — `resolveBinding`/`resolveCollection` (live data resolution in the
+canvas) + `dataSources()` (the real binding picker). So the binding picker, live
+resolution, and `{{` autocomplete are wired. `host.onDiagnostic` (an earlier roadmap
+note) **does not exist** in 0.34.2 — it's a silicaui ask, not something to build here.
+
+**What Slice 4 adds — `host.catalog()`.**
+
+- `EMAIL_CONTENT_BLOCKS` ([email-content-blocks.ts](../../packages/builder-schemas/src/email-content-blocks.ts))
+  — four curated `EmailPaletteItem`s (Text block, Summary card, Call to action, Callout),
+  each a single pre-composed section built from the `silica-email-kit` factories, keyed
+  `sx-*` so they never clash with a built-in.
+- Wired via `host.catalog = () => ({ extend: EMAIL_CONTENT_BLOCKS })` in
+  [email-editor.tsx](../../apps/workbench/surfaces/builder/email/email-editor.tsx) —
+  MERGE semantics, so these ADD to silica's built-in catalog rather than replace it.
+- `calloutCard(children)` added to the kit — a tinted, bordered card wrapping free
+  content (the marketing twin of `detailPanel`). Both now share one `CARD` box-decoration
+  constant, so the card look is defined once (the `detailPanel` refactor is byte-identical
+  — the shipped-default render assertions are unchanged).
+
+**Two silica guarantees make it safe + on-brand for free:** `EmailEditor.insert` runs
+`stampIds` which RECURSES over the whole inserted subtree, so a composed block's authored
+`def-` ids never collide (even dropped twice); and every colour is a neutral default
+paired with its `*Auto` flag, so `setColorDefaults` (editor) and the send's brand pass
+repaint each block in the tenant's own theme. Copy is deliberately placeholder — a
+starting layout to overwrite, carrying no data binding (the author personalizes via the
+binding picker or `{{tokens}}`).
+
+**Verified.** New `email-content-blocks.test.ts` (2 cases): every block is a single
+top-level `section` with a unique `sx-` key; `make()` yields fresh, internally-unique ids
+each call (the layer-drag / React-key footgun). builder-schemas 252 (+2), email 42
+(kit refactor byte-identical), workbench typecheck + lint clean; prettier clean.
+
+## 13. Slice 5 — email version history / rollback (2026-07-27, uncommitted)
+
+`publishSilica` was a one-way overwrite: `silica_published_document` held exactly the last
+publish, so there was no answer to "what did this email look like before I published that
+change", and no way back from a bad publish except re-authoring by hand — the worst
+position for a non-technical owner who just pushed a mistake to a LIVE transactional email.
+The SITE builder already solved this (docs/126: `builder_releases` + content-addressed
+`builder_page_artifacts`); Slice 5 mirrors that convention onto emails.
+
+**New table — `builder_email_versions`** (append-only, tenant-scoped + FORCE RLS,
+[schema](../../packages/db/prisma/schema/51-builder.prisma) +
+[migration](../../packages/db/prisma/migrations/20270119000000_builder_email_versions/migration.sql)).
+One row per publish: the full silica `EmailDocument` snapshot, content-addressed by `hash`
+(reusing artifact-service's `hashTree`/`canonicalJson`) for no-op dedupe, plus a
+denormalized `subject` + `actor_id`. Simpler than the site's release/manifest tables
+because an email is ONE self-contained document — no multi-tree manifest. A dedicated
+table (not the property-scoped site tables) because an email's `property_id` is nullable
+(tenant-wide defaults). `tenant_id` is a scalar + hand-SQL FK, so no back-relation is
+forced onto `Tenant`; cascade rides the email FK. Additive — no backfill, no FORCE-RLS
+backfill footgun; history begins accumulating from the next publish.
+
+**Service** ([email-version-service.ts](../../packages/builder/src/services/email-version-service.ts)):
+`captureEmailVersionTx` (seals the just-published doc inside `publishSilica`'s transaction,
+skips a byte-identical no-op republish) + `listEmailVersions`. **Restore lives in
+`emailService.restoreEmailVersion`** (it returns a full email DTO; keeping it there avoids
+an import cycle) and is deliberately **NON-DESTRUCTIVE and to the DRAFT** — it loads the
+chosen version onto `silica_draft_document` for the author to review in the studio and
+re-publish. An email goes to real inboxes, so a restore never silently republishes (unlike
+the site's republish-forward). Both `publishSilica` capture and restore write an audit log.
+
+**Routes** ([emails.ts](../../services/api-rest/src/routes/v1/builder/emails.ts)):
+`GET /v1/builder/emails/:id/versions` + `POST …/:id/versions/:versionId/restore`.
+
+**Studio** ([email-editor.tsx](../../apps/workbench/surfaces/builder/email/email-editor.tsx)):
+a **History** button (shown once an email has been published) opens a dialog listing every
+published version newest-first, each with a **Restore** action behind a confirm ("nothing
+goes live until you Publish"). The live version is badged "Live now". Restore pushes the
+returned draft into the query cache, resets the seed guard, and bumps a remount key so
+`<EmailBuilder>` re-mounts on the restored draft. `useEmailVersions` is lazy (fetched only
+when the panel opens).
+
+**Deliberately NOT done — local crash-recovery (`persistKey`).** The earlier roadmap paired
+this with version history, but re-enabling silica's local IndexedDB draft recovery now
+CONFLICTS with the server-owned draft model: on mount it would restore a stale local draft
+over the server draft — including over a just-restored version or another device's save.
+The studio already guards navigation loss (explicit Save + dirty leave-guard), so
+`persistKey` stays `null`; genuine crash-recovery would need conflict resolution against the
+server draft and is a separate, deliberate follow-up.
+
+**Verified.** `prisma generate` run (user-authorized; dev down) so the new model's types
+resolve. @sparx/db, @sparx/builder, @sparx/api-rest, @sparx/workbench typecheck clean;
+builder 68 tests + builder-schemas 252 + email 42 pass; lint + prettier clean. **Operational
+note:** the migration is authored as a file (applies in prod via the DB Migrate workflow);
+the migration was ALSO applied to LOCAL docker (`prisma migrate deploy`, user-authorized) —
+`builder_email_versions` exists locally with `rls=true force=true` + the tenant-isolation
+policy (verified), so the local publish path works.
+
+## 14. Slice 6 — deeper Preview & Check (deliverability + accessibility) (2026-07-27, uncommitted)
+
+The pre-send checklist (Slice 1) had six checks. Slice 6 deepens the "confidence before
+send" pillar — the original weakest dimension — with three more, each **calibrated against
+all 37 shipped defaults so it never false-positives** (the `lint.test.ts` "every shipped
+default passes clean" tripwire stays green):
+
+- **Subject length** (folded into the existing Subject row, no new row): warns when the
+  subject is long enough that inboxes truncate the end (~90 chars). `{{tokens}}` are counted
+  at a nominal RENDERED width, so a token-heavy but visually short subject isn't flagged.
+  Longest real default subject ≈ 63 chars → all pass.
+- **Link wording** (new `link-text` row, accessibility): warns on a link/button label that
+  doesn't say where it goes ("click here", "here", a bare URL) — worst on a screen reader,
+  which reads links out of context. A tight vague-label set, so a real CTA ("View your
+  order", "Read more") is never flagged; every shipped CTA is descriptive → all pass.
+- **Text and images** (new `image-text` row, deliverability + readability): warns on an
+  image-heavy, text-sparse email (inboxes block images by default and spam filters distrust
+  image-only mail, so it can arrive blank). Only fires with content images present AND < 40
+  chars of copy; the wordmark/footer live in the host frame (not walked), and the defaults
+  are text-led → all pass.
+
+All in [lint.ts](../../packages/email/src/silica/lint.ts); the studio checklist renders the
+new rows with no UI change (it maps `EmailCheck[]` generically). **Verified:** email 45
+tests (+3: long-subject warns / token-subject passes, vague-vs-descriptive link label,
+image-only email); the shipped-default tripwire green with 8 rows now; typecheck + lint +
+prettier clean.
+
+## 15. Slice 7 — pick a picture from the library (media picker) (2026-07-27, uncommitted)
+
+The email builder's image fields were plain URL inputs — an author had to paste an image
+URL, a technical act every other builder surface (CMS, site, commerce) spares them with the
+shared media browser. **This turned out NOT to be a silicaui ask** (contrary to an earlier
+assumption): silica's email host has no `pickAsset`, but it exposes `inspectorPanels?(node)`
+whose `ctx.update()` writes through the engine's own mutation path — a host panel on the
+asset-bearing kinds is all a picker needs (docs/120 §6 already noted this; the dashboard had
+built one, the workbench had not).
+
+- [email-asset-panel.tsx](../../apps/workbench/surfaces/builder/email/email-asset-panel.tsx)
+  (new) — `emailInspectorPanels(node)` returns a **Picture** panel on `image` (writes `src`),
+  `video` (writes `thumbnail`), and `section` (writes `bgImage`); each shows the current
+  picture + a Choose/Change button (and Remove for the optional thumbnail/background). It
+  writes the picked asset's **URL** (a mail client fetches cross-origin — an id is meaningless).
+- Wired into the host as `inspectorPanels: emailInspectorPanels`, and `<EmailBuilder>` is
+  wrapped in `<MediaPickerProvider source="marketing">` so the panel resolves the SAME
+  `useMediaPicker()` browser the CMS/site/commerce fields use (uploads file under Marketing).
+  The panel renders above the built-in Settings; the built-in URL field stays, so a pasted
+  URL still works.
+
+**Verified:** workbench typecheck + lint + prettier clean. (Reused the proven `MediaPicker`,
+so no new screenshots per the verify-by-typecheck rule.)
+
+### The one genuine remaining silicaui ask — server-persistable saved blocks
+
+Everything else on the "10/10" list is now in our control and built. The single feature that
+truly needs a silicaui change is **persisting "saved blocks" to the account** (best-in-class
+reusable content blocks that sync across devices/users). Raised with WizeWorks; their design
+review corrected two facts below and reshaped the API — this section reflects the **agreed
+design**, not the original request.
+
+- **Today:** `<EmailBuilder>`'s `useSavedBlocks()` persists `SavedBlock[]` (`{id, name, node,
+savedAt}`) to **browser `localStorage`** (key `silicaui-email-saved-blocks`) — NOT IndexedDB,
+  which is the separate _draft-autosave_ (`persistKey`) path. Exposed via `getSavedBlockNode`
+  (a non-hook accessor the Canvas uses to resolve `saved:<id>` drags outside React render) + a
+  "Saved" section in the Insert palette. There is **no host seam** to observe or redirect that
+  persistence, so a saved block survives a reload but not a device or user change, and can't be
+  shared. WizeWorks frames this as an inconsistency in their OWN contract (the only authoring
+  artifact a host cannot persist), so it qualifies on universal merit — not a sparx-specific ask.
+- **Agreed design — a CONTROLLED collection** (matching the `document`/`onChange(project, ops,
+meta)` idiom the builder already uses, NOT a set of write callbacks):
+
+  ```ts
+  savedBlocks?: readonly SavedBlock[];              // present → host-owned (controlled)
+  onSavedBlocksChange?(
+    next: SavedBlock[],                             // resulting optimistic list
+    change:
+      | { type: 'save'; block: SavedBlock }
+      | { type: 'rename'; id: string; name: string }
+      | { type: 'delete'; id: string },
+  ): void;
+  ```
+
+  Omit `savedBlocks` → today's local behavior, byte-for-byte (no forced migration). Supply it →
+  the host owns the list, persists to its backend, and re-renders with the authoritative array —
+  so **server-assigned ids, failed saves, and cross-device sync all just work**, because the
+  array is the single source of truth rather than a shadow copy. One intent arg covers all three
+  verbs. Plus an exported `readLocalSavedBlocks()` so a host can one-time-migrate a user's
+  existing browser-local blocks on first login instead of orphaning them.
+
+  > This SUPERSEDES the originally-requested `savedBlocks?()` + `onSaveBlock?`/`onRenameBlock?`/
+  > `onDeleteBlock?` shape. That was a "half-seam": fire-and-forget writes into an async backend,
+  > with no path for the server's id to come back, no way to surface a failure, and drift when the
+  > host's list and the builder's optimistic list disagree. The controlled prop fixes all of that.
+  > (The original ask also wrongly cited "the site builder persists symbols via host callbacks" —
+  > it does not: `Site.symbols` is document-scoped and flows through `onChange`, which actually
+  > argues FOR the controlled-collection shape.)
+
+- **Implementation wrinkle (theirs):** `getSavedBlockNode()` reads the module store directly for
+  outside-render drag resolution, so under a controlled list that store must be kept mirrored
+  from the prop (a `useEffect` sync) or a host block's drag-insert returns undefined. Their
+  scoped estimate: ~half a day incl. tests, on the silica side.
+- **Our side (the other half):** consuming it is a Slice-5-shaped build — a new tenant-scoped
+  `SavedBlock` table + REST + wiring the controlled prop (fetch the tenant's blocks, pass them in,
+  persist on `onSavedBlocksChange`, reconcile the server id back into state).
+- **Also raised, deliberately DECOUPLED:** WizeWorks offered the same seam for the SITE builder's
+  symbols (a multi-site tenant can't share symbols across the account today, since `Site.symbols`
+  is per-property/document-scoped). That's a separate data-model decision on our side, not to be
+  bundled into this ask.
+- **Workaround:** none clean — the store is silica-internal. Not blocking; local-only saved
+  blocks still work within a session/device.
+
+This is the successor to the closed 0.33/0.34 asks (frame, `toolbarSlot`, subject/preheader
+relocation) — pending Brandon's greenlight to build (both sides).
+
+## 16. Slice 8 — "unpublished changes" indicator (2026-07-27, uncommitted)
+
+A published transactional email keeps sending its LAST published version while an author
+edits + saves the draft — so a saved edit isn't live until the next Publish. Nothing signalled
+that gap ("I changed it, but did customers get it?"). Slice 8 surfaces it.
+
+- `BuilderEmailDto.hasUnpublishedChanges` ([email.ts](../../packages/builder-schemas/src/email.ts))
+  — computed in `toDto` ([email-service.ts](../../packages/builder/src/services/email-service.ts))
+  as `published && canonicalJson(draftDoc) !== canonicalJson(publishedDoc)` (reusing
+  artifact-service's canonical encoding, so key-order / round-trip noise never counts as a
+  change). Always false for an unpublished email — the `published:false` state says that already.
+- The studio ([email-editor.tsx](../../apps/workbench/surfaces/builder/email/email-editor.tsx))
+  shows a soft **"Unpublished changes"** warning badge beside the Published badge when the flag
+  is set; it clears on Publish (draft == published) via the normal query invalidation.
+
+**Verified:** builder-schemas 252 + builder 68 tests pass; builder / builder-schemas /
+workbench / api-rest typecheck + lint + prettier clean.

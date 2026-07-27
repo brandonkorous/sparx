@@ -312,6 +312,45 @@ function MediaPickerDialog({
     });
   };
 
+  // Multi-select mode: upload a whole batch at once (the file input is `multiple`
+  // there). Uploads run in parallel but are added to the running selection in the
+  // FILE ORDER the operator chose — a carousel must publish in that order, so we
+  // can't append as each network round-trip happens to finish. A partial failure
+  // adds the ones that worked and tells the operator how many didn't.
+  const onFiles = async (files: File[]) => {
+    if (files.length === 0) return;
+    const settled = await Promise.allSettled(files.map((file) => upload.mutateAsync(file)));
+    const uploaded: PickedAsset[] = [];
+    let failed = 0;
+    for (const result of settled) {
+      if (result.status !== 'fulfilled') {
+        failed += 1;
+        continue;
+      }
+      try {
+        const asset = await fetchAsset(result.value);
+        uploaded.push({ id: asset.id, url: asset.url, filename: asset.filename });
+      } catch {
+        // Uploaded to the library but its URL would not resolve — it is still
+        // pickable from the grid, so count it as a soft failure for the summary.
+        failed += 1;
+      }
+    }
+    for (const asset of uploaded) takePicked(asset);
+    if (failed > 0) {
+      const allFailed = failed === files.length;
+      toast.add({
+        title: allFailed
+          ? 'Could not upload those pictures'
+          : `${String(failed)} of ${String(files.length)} did not upload`,
+        description: allFailed
+          ? 'Nothing was added. Try again in a moment.'
+          : 'The rest are in your library — pick them from the grid.',
+        type: allFailed ? 'error' : 'warning',
+      });
+    }
+  };
+
   return (
     // PaneScope portals the dialog into the pane that opened it, so choosing a
     // picture on one docked entry does not black out the pane beside it.
@@ -346,10 +385,15 @@ function MediaPickerDialog({
               ref={fileRef}
               type="file"
               accept="image/*"
+              // Match the picker's mode: multi-select lets you upload a whole
+              // batch at once, single stays one file.
+              multiple={multiple}
               className="hidden"
               onChange={(event) => {
-                onFile(event.target.files?.[0]);
+                const files = Array.from(event.target.files ?? []);
                 event.target.value = '';
+                if (multiple) void onFiles(files);
+                else onFile(files[0]);
               }}
             />
             <Button

@@ -29,7 +29,7 @@
 // STEP BEYOND that — the final, email-safe projected HTML, rendered by the server
 // (real client rendering, real per-recipient data), not the canvas approximation.
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
   Alert,
   AlertContent,
@@ -51,13 +51,21 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import {
+  AlertTriangle,
   Check,
+  ChevronDown,
   Copy,
   Eye,
+  History,
+  Monitor,
+  Moon,
   Pencil,
   Plus,
+  RotateCcw,
   Save,
+  Smartphone,
   SplitSquareHorizontal,
+  Sun,
   Tags,
   Trash2,
   Upload,
@@ -76,6 +84,7 @@ import {
   createSilicaResolver,
   defaultSilicaFormat,
   emailMergeTags,
+  EMAIL_CONTENT_BLOCKS,
   EMAIL_SOURCES,
   groupMergeTags,
   SAMPLE_EMAIL_DATA,
@@ -83,6 +92,8 @@ import {
   type MergeTag,
 } from '@sparx/builder-schemas';
 import { WelcomeEmptyState } from '../../../components/welcome-empty-state';
+import { MediaPickerProvider } from '../../cms/media-picker';
+import { emailInspectorPanels } from './email-asset-panel';
 import { PaneScope } from '../../../lib/dock/window-boundary';
 import { useConfirm } from '../../../lib/confirm';
 import { useDirtySource } from '../../../lib/workbench/dirty';
@@ -97,16 +108,21 @@ import {
   useDeleteEmail,
   useEmailChrome,
   useEmails,
+  useEmailVersions,
   usePreviewEmail,
   usePublishEmail,
   useRenameEmail,
+  useRestoreEmailVersion,
   useSaveEmailDoc,
   useSendEmailTest,
   useSiteBrandInfos,
   useSiteBuilderConfig,
   useTenantBrand,
+  type EmailCheck,
+  type EmailCheckLevel,
   type EmailDesign,
   type EmailPreview,
+  type EmailVersion,
 } from './email-data';
 
 /** The neutral fallback theme — used only until the tenant brand loads, or if the
@@ -184,6 +200,13 @@ const HOST: EmailBuilderHost = (() => {
     resolveBinding: resolver.resolveBinding,
     resolveCollection: resolver.resolveCollection,
     dataSources: () => DATA_SOURCES,
+    // Curated content blocks ON TOP of silica's built-in 8 primitives (merge, not
+    // replace) — a summary card / CTA / callout an author drops in one move, in the
+    // base design language, repainted to the tenant brand on insert.
+    catalog: () => ({ extend: EMAIL_CONTENT_BLOCKS }),
+    // A picture picker on image/video/section nodes — pick from the media library
+    // instead of pasting a URL (needs the MediaPickerProvider wrapping the builder).
+    inspectorPanels: emailInspectorPanels,
   };
 })();
 
@@ -269,6 +292,10 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   const renameInputRef = useRef<HTMLInputElement>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [rendered, setRendered] = useState<EmailPreview | null>(null);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  // Bumped on a version restore to force `<EmailBuilder>` to remount on the reseeded
+  // draft — the active email id alone doesn't change, so it can't drive the remount.
+  const [remountKey, setRemountKey] = useState(0);
 
   const active: EmailDesign | null = activeId
     ? (emails?.find((e) => e.id === activeId) ?? null)
@@ -294,6 +321,8 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   const remove = useDeleteEmail(targetId);
   const sendTest = useSendEmailTest(targetId);
   const customize = useCustomizeEmailForSite();
+  const restore = useRestoreEmailVersion(targetId);
+  const versions = useEmailVersions(targetId, historyOpen);
 
   const createNew = useCallback(async () => {
     try {
@@ -463,6 +492,39 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     });
   };
 
+  const onRestore = async (version: EmailVersion) => {
+    if (!active || version.current) return;
+    const when = new Date(version.createdAt).toLocaleString();
+    const ok = await confirm({
+      title: 'Restore this version?',
+      description: `This replaces what's on the canvas with the version published ${when}. Your current draft is overwritten, but nothing goes live until you Publish — so you can review it first.`,
+      confirmLabel: 'Restore to canvas',
+      cancelLabel: 'Cancel',
+      color: 'warning',
+    });
+    if (!ok) return;
+    try {
+      await restore.mutateAsync(version.id);
+      // The server rewrote the draft; reseed the canvas from it and remount so the
+      // restored content replaces what silica currently holds.
+      seededForId.current = null;
+      setRemountKey((k) => k + 1);
+      setDirty(false);
+      setHistoryOpen(false);
+      toast.add({
+        title: 'Version restored',
+        description: 'Review it on the canvas, then Publish to make it live.',
+        type: 'success',
+      });
+    } catch (error) {
+      toast.add({
+        title: 'Could not restore',
+        description: emailErrorMessage(error, 'Nothing was changed. Try again.'),
+        type: 'error',
+      });
+    }
+  };
+
   const onDelete = async () => {
     if (!active) return;
     const ok = await confirm({
@@ -591,7 +653,8 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     preview.isPending ||
     create.isPending ||
     remove.isPending ||
-    customize.isPending;
+    customize.isPending ||
+    restore.isPending;
 
   // ONE toolbar — the same move the site Editor makes (studio-surface.tsx). The
   // switcher, its lifecycle (rename/new/delete/customize), the status badge, and the
@@ -691,6 +754,16 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
       <Badge color={status.tone} variant="soft" size="sm">
         {status.label}
       </Badge>
+      {active.hasUnpublishedChanges ? (
+        <Badge
+          color="warning"
+          variant="soft"
+          size="sm"
+          title="You've saved changes that aren't live yet — Publish to send them to recipients."
+        >
+          Unpublished changes
+        </Badge>
+      ) : null}
       {active.scope === 'site' ? (
         <Badge color="module" variant="soft" size="sm">
           This site only
@@ -714,6 +787,21 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="ml-auto flex flex-wrap items-center gap-2">
         <MergeTagsMenu />
+        {active.published ? (
+          <Button
+            size="sm"
+            variant="outline"
+            color="neutral"
+            disabled={busy}
+            title="Publish history"
+            onClick={() => {
+              setHistoryOpen(true);
+            }}
+          >
+            <History className="size-4" aria-hidden />
+            <span className="hidden @lg:inline">History</span>
+          </Button>
+        ) : null}
         <Button
           size="sm"
           variant="outline"
@@ -761,29 +849,42 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
   // Editor's `<Builder>`. `key` remounts the engine when the switcher moves to
   // another email so it loads that document.
   return (
-    <div className="h-full">
-      <EmailBuilder
-        key={active.id}
-        document={doc}
-        host={HOST}
-        theme={canvasTheme}
-        frame={chrome.data?.frame ?? undefined}
-        onChange={onChange}
-        onSendTest={onSendTest}
-        persistKey={null}
-        toolbarSlot={toolbar}
-      />
-
-      {rendered ? (
-        <PreviewDialog
-          open={previewOpen}
-          preview={rendered}
-          onOpenChange={(next) => {
-            setPreviewOpen(next);
-          }}
+    // MediaPickerProvider makes the shared picture browser available to the host's
+    // inspector panel (email-asset-panel) — uploads from here file under "Marketing".
+    <MediaPickerProvider source="marketing">
+      <div className="h-full">
+        <EmailBuilder
+          key={`${active.id}:${remountKey}`}
+          document={doc}
+          host={HOST}
+          theme={canvasTheme}
+          frame={chrome.data?.frame ?? undefined}
+          onChange={onChange}
+          onSendTest={onSendTest}
+          persistKey={null}
+          toolbarSlot={toolbar}
         />
-      ) : null}
-    </div>
+
+        {rendered ? (
+          <PreviewDialog
+            open={previewOpen}
+            preview={rendered}
+            onOpenChange={(next) => {
+              setPreviewOpen(next);
+            }}
+          />
+        ) : null}
+
+        <HistoryDialog
+          open={historyOpen}
+          onOpenChange={setHistoryOpen}
+          versions={versions.data ?? null}
+          loading={versions.isPending && versions.fetchStatus !== 'idle'}
+          restoringId={restore.isPending ? (restore.variables ?? null) : null}
+          onRestore={onRestore}
+        />
+      </div>
+    </MediaPickerProvider>
   );
 }
 
@@ -872,10 +973,134 @@ function MergeTagItem({ tag }: { tag: MergeTag }) {
   );
 }
 
+/** The severity → Badge colour + label for the checklist summary. `pass` never shows a
+ *  summary badge (the summary is the green "Ready" state itself). */
+const CHECK_TONE: Record<EmailCheckLevel, 'success' | 'warning' | 'danger'> = {
+  pass: 'success',
+  warning: 'warning',
+  error: 'danger',
+};
+
+/** One row of the pre-send checklist: a severity icon + the category and its plain-
+ *  language finding. A green check for a pass, an amber/red triangle for a finding. */
+function CheckRow({ check }: { check: EmailCheck }) {
+  const tone =
+    check.level === 'pass'
+      ? 'text-success'
+      : check.level === 'warning'
+        ? 'text-warning'
+        : 'text-danger';
+  return (
+    <li className="flex items-start gap-2">
+      {check.level === 'pass' ? (
+        <Check className={`mt-0.5 size-4 shrink-0 ${tone}`} aria-hidden />
+      ) : (
+        <AlertTriangle className={`mt-0.5 size-4 shrink-0 ${tone}`} aria-hidden />
+      )}
+      <span className="flex min-w-0 flex-col">
+        <span className="font-medium">{check.title}</span>
+        <span className="text-sm">{check.detail}</span>
+      </span>
+    </li>
+  );
+}
+
+/** The pre-send checklist — a collapsible confidence panel above the preview. Auto-open
+ *  when anything needs attention, collapsed to a single green line when the email is
+ *  clean. The summary badge is the at-a-glance verdict; the list is the detail. */
+function PreviewChecks({ checks }: { checks: EmailCheck[] }) {
+  const errorCount = checks.filter((c) => c.level === 'error').length;
+  const issueCount = checks.filter((c) => c.level !== 'pass').length;
+  const [open, setOpen] = useState(issueCount > 0);
+
+  const summaryTone: EmailCheckLevel = errorCount ? 'error' : issueCount ? 'warning' : 'pass';
+  const summary = errorCount
+    ? `${issueCount} thing${issueCount === 1 ? '' : 's'} to fix before sending`
+    : issueCount
+      ? `${issueCount} suggestion${issueCount === 1 ? '' : 's'}`
+      : 'Ready to send — every check passed';
+  const badgeLabel = errorCount ? 'Action needed' : issueCount ? 'Review' : 'Ready';
+
+  return (
+    <div className="border-base-300 rounded-md border">
+      <button
+        type="button"
+        className="flex w-full items-center gap-2 px-3 py-2 text-left"
+        aria-expanded={open}
+        onClick={() => {
+          setOpen((o) => !o);
+        }}
+      >
+        <Badge color={CHECK_TONE[summaryTone]} variant="soft" size="sm">
+          {badgeLabel}
+        </Badge>
+        <span className="min-w-0 flex-1 truncate font-medium">{summary}</span>
+        <ChevronDown
+          className={`size-4 shrink-0 transition-transform ${open ? 'rotate-180' : ''}`}
+          aria-hidden
+        />
+      </button>
+      {open ? (
+        <ul className="border-base-300 flex flex-col gap-2.5 border-t px-3 py-3">
+          {checks.map((c) => (
+            <CheckRow key={c.id} check={c} />
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
+}
+
+/** A two-option segmented toggle built from silica Buttons — the active option is a
+ *  solid module button, the other a ghost. Used for the device + view switches. */
+function Segmented<T extends string>({
+  value,
+  onChange,
+  options,
+}: {
+  value: T;
+  onChange: (next: T) => void;
+  options: { value: T; label: string; icon?: ReactNode }[];
+}) {
+  return (
+    <div className="border-base-300 flex items-center gap-1 rounded-md border p-0.5">
+      {options.map((opt) => (
+        <Button
+          key={opt.value}
+          size="sm"
+          color={opt.value === value ? 'module' : 'neutral'}
+          variant={opt.value === value ? 'soft' : 'ghost'}
+          onClick={() => {
+            onChange(opt.value);
+          }}
+        >
+          {opt.icon}
+          {opt.label}
+        </Button>
+      ))}
+    </div>
+  );
+}
+
+/** The iframe document for the visual preview at a chosen colour scheme. The send's
+ *  `@media (prefers-color-scheme: dark)` block is stripped first so the toggle is
+ *  DETERMINISTIC regardless of the viewer's OS (an iframe can't be told to report a dark
+ *  preference); then, for dark, the same rules are injected UNGATED so they apply
+ *  unconditionally — showing the exact dark theme a dark-mode client would render. */
+function previewSrcDoc(html: string, darkCss: string, scheme: 'light' | 'dark'): string {
+  const light = html.replace(/@media \(prefers-color-scheme:dark\)\{[\s\S]*?\}\}/, '');
+  if (scheme === 'light' || !darkCss) return light;
+  const style = `<style>${darkCss}</style>`;
+  return light.includes('</head>') ? light.replace('</head>', `${style}</head>`) : style + light;
+}
+
 /** The final, email-safe render of the draft — what a recipient actually receives,
- *  brand frame and all. In an isolated iframe so the email's own inline styles
- *  can't leak into (or be broken by) the app's. A read-only view that holds no
- *  work, so a dialog is right: abandoning it loses nothing. */
+ *  brand frame and all — PLUS the pre-send checklist. The visual view is an isolated
+ *  iframe (so the email's own inline styles can't leak into, or be broken by, the app's)
+ *  shown at a real desktop (600px) or mobile (375px) width, in light or (when the brand
+ *  has one) its dark theme; the plain-text view shows the alternative body every client
+ *  falls back to. A read-only view that holds no work, so a dialog is right: abandoning
+ *  it loses nothing. */
 function PreviewDialog({
   open,
   preview,
@@ -885,29 +1110,192 @@ function PreviewDialog({
   preview: EmailPreview;
   onOpenChange: (next: boolean) => void;
 }) {
+  const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop');
+  const [view, setView] = useState<'visual' | 'text'>('visual');
+  const [scheme, setScheme] = useState<'light' | 'dark'>('light');
+  const hasDark = preview.darkCss.trim() !== '';
+
   return (
     <PaneScope>
       <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent className="flex h-[calc(100%-2rem)] max-w-2xl flex-col overflow-hidden">
+        <DialogContent className="flex h-[calc(100%-2rem)] max-w-3xl flex-col gap-3 overflow-hidden">
           <div className="flex items-start justify-between gap-3">
-            <DialogTitle>Preview</DialogTitle>
+            <DialogTitle>Preview &amp; check</DialogTitle>
             <DialogClose>
               <Button size="sm" variant="ghost" color="neutral" shape="square" aria-label="Close">
                 <X className="size-4" aria-hidden />
               </Button>
             </DialogClose>
           </div>
-          <div className="border-base-300 flex flex-col gap-0.5 border-b pb-2">
+
+          <div className="flex flex-col gap-0.5">
             <Text className="text-xs">What lands in the inbox as</Text>
             <Text className="font-medium">
               {preview.subject.trim() === '' ? 'No subject line' : preview.subject}
             </Text>
           </div>
-          <iframe
-            title="Email preview"
-            srcDoc={preview.html}
-            className="bg-base-100 min-h-0 w-full flex-1 rounded border-0"
-          />
+
+          <PreviewChecks checks={preview.checks} />
+
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <Segmented
+              value={view}
+              onChange={setView}
+              options={[
+                { value: 'visual', label: 'Visual' },
+                { value: 'text', label: 'Plain text' },
+              ]}
+            />
+            {view === 'visual' ? (
+              <div className="flex flex-wrap items-center gap-2">
+                {hasDark ? (
+                  <Segmented
+                    value={scheme}
+                    onChange={setScheme}
+                    options={[
+                      {
+                        value: 'light',
+                        label: 'Light',
+                        icon: <Sun className="size-4" aria-hidden />,
+                      },
+                      {
+                        value: 'dark',
+                        label: 'Dark',
+                        icon: <Moon className="size-4" aria-hidden />,
+                      },
+                    ]}
+                  />
+                ) : null}
+                <Segmented
+                  value={device}
+                  onChange={setDevice}
+                  options={[
+                    {
+                      value: 'desktop',
+                      label: 'Desktop',
+                      icon: <Monitor className="size-4" aria-hidden />,
+                    },
+                    {
+                      value: 'mobile',
+                      label: 'Mobile',
+                      icon: <Smartphone className="size-4" aria-hidden />,
+                    },
+                  ]}
+                />
+              </div>
+            ) : null}
+          </div>
+
+          {view === 'visual' ? (
+            <div className="bg-base-200 min-h-0 flex-1 overflow-auto rounded-md p-4">
+              <div
+                className={`mx-auto h-full max-w-full ${device === 'mobile' ? 'w-[375px]' : 'w-[600px]'}`}
+              >
+                <iframe
+                  title="Email preview"
+                  srcDoc={previewSrcDoc(preview.html, preview.darkCss, scheme)}
+                  className="bg-base-100 h-full w-full rounded border-0"
+                />
+              </div>
+            </div>
+          ) : (
+            <div className="bg-base-200 min-h-0 flex-1 overflow-auto rounded-md p-4">
+              <pre className="bg-base-100 rounded-md p-4 font-mono text-sm break-words whitespace-pre-wrap">
+                {preview.text.trim() === '' ? 'No plain-text body.' : preview.text}
+              </pre>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+    </PaneScope>
+  );
+}
+
+/** The publish history — every version this email was published as, newest first, each
+ *  restorable to the canvas. Restore is non-destructive (it loads the version onto the
+ *  DRAFT for review; nothing goes live until the author Publishes), so this is a pane-
+ *  adjacent dialog: it holds no unsaved work of its own. */
+function HistoryDialog({
+  open,
+  onOpenChange,
+  versions,
+  loading,
+  restoringId,
+  onRestore,
+}: {
+  open: boolean;
+  onOpenChange: (next: boolean) => void;
+  versions: EmailVersion[] | null;
+  loading: boolean;
+  restoringId: string | null;
+  onRestore: (version: EmailVersion) => void;
+}) {
+  return (
+    <PaneScope>
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent className="flex max-h-[calc(100%-2rem)] max-w-lg flex-col gap-3 overflow-hidden">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex flex-col gap-0.5">
+              <DialogTitle>Publish history</DialogTitle>
+              <Text className="text-sm">
+                Every version you’ve published. Restore one to bring it back to the canvas — nothing
+                goes live until you Publish it again.
+              </Text>
+            </div>
+            <DialogClose>
+              <Button size="sm" variant="ghost" color="neutral" shape="square" aria-label="Close">
+                <X className="size-4" aria-hidden />
+              </Button>
+            </DialogClose>
+          </div>
+
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {loading ? (
+              <p className="p-4 text-sm" role="status">
+                Loading…
+              </p>
+            ) : !versions || versions.length === 0 ? (
+              <p className="text-base-content/70 p-4 text-sm">
+                No published versions yet. Each time you publish, a version is saved here so you can
+                roll back.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {versions.map((v) => (
+                  <li
+                    key={v.id}
+                    className="border-base-300 flex items-center gap-3 rounded-md border px-3 py-2"
+                  >
+                    <span className="flex min-w-0 flex-1 flex-col">
+                      <span className="font-medium">{new Date(v.createdAt).toLocaleString()}</span>
+                      {v.subject.trim() !== '' ? (
+                        <span className="text-base-content/70 truncate text-sm">{v.subject}</span>
+                      ) : null}
+                    </span>
+                    {v.current ? (
+                      <Badge color="success" variant="soft" size="sm">
+                        Live now
+                      </Badge>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        color="neutral"
+                        loading={restoringId === v.id}
+                        disabled={restoringId !== null}
+                        onClick={() => {
+                          onRestore(v);
+                        }}
+                      >
+                        <RotateCcw className="size-4" aria-hidden />
+                        Restore
+                      </Button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </DialogContent>
       </Dialog>
     </PaneScope>

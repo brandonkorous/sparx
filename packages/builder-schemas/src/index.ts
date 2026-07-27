@@ -31,6 +31,7 @@ export * from './silica-class-policy';
 export * from './site-sync';
 export * from './email-silica';
 export * from './silica-email-kit';
+export * from './email-content-blocks';
 export * from './default-emails-silica';
 export * from './email-legacy-to-silica';
 export * from './silica-data-needs';

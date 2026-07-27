@@ -524,6 +524,13 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('status', 'Status'),
       text('total', 'Total'),
       text('subtotal', 'Subtotal'),
+      // The amount refunded (order-refunded hero) and the lifecycle fields the
+      // delivered / cancelled emails read; each is empty when it doesn't apply, so
+      // an optional row self-drops (a cancelled order with no reason shows no line).
+      text('refundTotal', 'Refund total'),
+      text('deliveredAt', 'Delivered date'),
+      text('cancelReason', 'Cancellation reason'),
+      text('shippingAddress', 'Shipping address'),
       text('placedAt', 'Date'),
       text('reviewUrl', 'Review link'),
       text('statusUrl', 'Order status link'),
@@ -622,6 +629,45 @@ export const EMAIL_SOURCES: DataSource[] = [
     ],
   },
   {
+    // A commerce auto-ship subscription (docs/impl transactional-email P2) — the
+    // renewal reminder / paused / cancelled notices. `interval` is plain-language
+    // cadence ("every 2 weeks"); the optional date fields are empty until they apply.
+    key: 'subscription',
+    label: 'Subscription',
+    module: 'commerce',
+    cardinality: 'object',
+    recordType: 'subscription',
+    fields: [
+      text('status', 'Status'),
+      text('interval', 'Frequency'),
+      text('amount', 'Amount'),
+      text('itemCount', 'Item count'),
+      text('nextOrderDate', 'Next order date'),
+      text('pausedUntil', 'Paused until'),
+      text('currentPeriodEnd', 'Current period ends'),
+      text('manageUrl', 'Manage link'),
+    ],
+  },
+  {
+    // A return / RMA (docs/impl transactional-email P3) — the received / approved /
+    // refunded notices. `refundAmount` is empty until a refund settles, and `hasLabel`
+    // is non-empty only when a prepaid label exists (gates the "print your label" line).
+    key: 'return',
+    label: 'Return',
+    module: 'commerce',
+    cardinality: 'object',
+    recordType: 'return',
+    fields: [
+      text('status', 'Status'),
+      text('outcome', 'Requested outcome'),
+      text('refundAmount', 'Refund amount'),
+      text('refundMethod', 'Refund method'),
+      text('labelUrl', 'Return label link'),
+      text('hasLabel', 'Has return label'),
+      text('manageUrl', 'Manage link'),
+    ],
+  },
+  {
     // The Scheduling module's booking (docs/79) — the industry-agnostic
     // appointment/class/reservation/rental record. B2B fleet appointments are
     // Bookings too (Booking.b2bAccountId/assetRef) — the legacy B2B-only
@@ -645,6 +691,12 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('manageUrl', 'Manage link'),
       text('bookUrl', 'Book-again link'),
       text('addToCalendarUrl', 'Add-to-calendar link'),
+      // Owner-facing helpers for the internal new-booking alert: `newHeadline` varies
+      // the heading wording ("New booking" vs "New booking request"), and
+      // `pendingApproval` is non-empty only for a requires-approval booking still
+      // awaiting a decision (gates the action-needed line).
+      text('newHeadline', 'New-booking headline'),
+      text('pendingApproval', 'Pending approval'),
     ],
   },
   {

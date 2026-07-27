@@ -11,8 +11,15 @@
 // emailService) so this package stays free of a @sparx/builder dependency — the same
 // injection pattern templateService uses for section data (docs/31 §8).
 
-import { renderSilicaEmail, buildEmailFrame, emailBrandColorDefaults } from '@sparx/email/silica';
-import type { EmailColorDefaults, EmailFrame, FooterLink } from '@sparx/email/silica';
+import {
+  renderSilicaEmail,
+  buildEmailFrame,
+  emailBrandColorDefaults,
+  emailBrandDarkColorDefaults,
+  darkModeRules,
+  lintEmailRender,
+} from '@sparx/email/silica';
+import type { EmailCheck, EmailColorDefaults, EmailFrame, FooterLink } from '@sparx/email/silica';
 import { defaultBrand } from '@sparx/email';
 import type { DataSources, SilicaEmailDocument } from '@sparx/builder-schemas';
 
@@ -60,6 +67,15 @@ export interface RenderedPreview {
   subject: string;
   html: string;
   text: string;
+  /** Pre-send checklist run over the composed document + projected HTML — surfaced in
+   *  the studio's "Preview & Check" so a business owner catches a blank personalization
+   *  tag, a dead link, or a Gmail-clipping body BEFORE they hit send. */
+  checks: EmailCheck[];
+  /** The dark-theme override rules (ungated — no `@media`), for the studio's Light/Dark
+   *  preview toggle. Empty when the brand has no dark palette. The SEND wraps the same
+   *  rules in `@media (prefers-color-scheme: dark)`; the preview applies them directly
+   *  because an iframe can't be forced to report a dark OS preference. */
+  darkCss: string;
 }
 
 /** Render a Builder email to inlined HTML + plain text for the editor preview.
@@ -95,7 +111,24 @@ export async function renderPreview(
     },
     { brand: brand ?? undefined }
   );
-  return { subject: rendered.subject, html: rendered.html, text: rendered.text };
+  // Checks read the AUTHORED subject/preheader (raw `{{tokens}}` intact) so a misspelled
+  // tag is caught by path, and the FINAL projected HTML so the size check matches what
+  // actually ships (frame included).
+  const checks = lintEmailRender({
+    doc: doc.silicaDoc,
+    html: rendered.html,
+    subject: doc.subject,
+    preheader: doc.preheader,
+  });
+  // The dark override rules for the Light/Dark preview toggle, from the SAME resolved
+  // brand the render used (merged over defaults so a partial/absent brand still resolves
+  // its dark neutrals). Empty when the brand carries no dark palette.
+  const effectiveBrand = { ...defaultBrand, ...(brand ?? {}) };
+  const darkColors = emailBrandDarkColorDefaults(effectiveBrand);
+  const darkCss = darkColors
+    ? darkModeRules(emailBrandColorDefaults(effectiveBrand), darkColors)
+    : '';
+  return { subject: rendered.subject, html: rendered.html, text: rendered.text, checks, darkCss };
 }
 
 /** Everything the email studio's canvas needs to render the email exactly as it

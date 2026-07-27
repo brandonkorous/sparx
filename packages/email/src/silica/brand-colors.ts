@@ -71,6 +71,31 @@ export function emailBrandColorDefaults(brand: BrandTokens): EmailColorDefaults 
   return roleMap(brand);
 }
 
+/** The DARK role → colour map, for a brand that carries a `dark` palette (its site's
+ *  dark theme). Same shape as the light map, so a diff against `emailBrandColorDefaults`
+ *  drives the `@media (prefers-color-scheme: dark)` remap. A brand hue the dark palette
+ *  doesn't override falls back to its light value, so it's left unmapped (no remap rule)
+ *  — right when the brand keeps its hue across modes. Returns null when the brand has no
+ *  dark palette (→ the send emits no dark CSS and renders light everywhere). Semantic
+ *  roles stay the FIXED light-readable constants: the theme system models no dark
+ *  semantics, so remapping them would mean inventing colours. */
+export function emailBrandDarkColorDefaults(brand: BrandTokens): EmailColorDefaults | null {
+  const d = brand.dark;
+  if (!d) return null;
+  return {
+    primary: d.primary ?? brand.primary,
+    primaryContent: d.primaryForeground ?? brand.primaryForeground,
+    baseContent: d.foreground,
+    base100: d.background,
+    base200: d.muted,
+    base300: d.border,
+    secondary: d.accent ?? brand.accent,
+    accent: d.accent ?? brand.accent,
+    neutral: d.foreground,
+    ...SEMANTIC,
+  };
+}
+
 /** Repaint one node's auto-tracking colour fields. Every branch is guarded by that
  *  field's own `Auto` flag (so a hand-picked colour always survives) and honours the
  *  node's optional `*Role` (0.33) — falling back to that field's historical default

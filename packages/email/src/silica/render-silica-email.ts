@@ -41,7 +41,12 @@ import {
 
 import { defaultBrand, type BrandTokens } from '../components/brand';
 import type { SendableEmail } from '../types';
-import { applyBrandColors } from './brand-colors';
+import {
+  applyBrandColors,
+  emailBrandColorDefaults,
+  emailBrandDarkColorDefaults,
+} from './brand-colors';
+import { buildDarkModeCss } from './dark-mode';
 import { composeSendDocument, type EmailCompliance, type FooterLink } from './frame';
 import { emailDocumentToText } from './to-text';
 
@@ -139,14 +144,22 @@ export function renderSilicaEmail(
   //    font stacks) — tenant-generic, never a hardcoded platform face. Apple Mail /
   //    iOS Mail honour it; Gmail/Outlook strip the <link> and fall back to the stack.
   const fontHref = emailBrandFontHref([brand.fontHeading, brand.fontBody]);
-  const head: EmailHeadExtras | undefined = fontHref
-    ? {
-        raw:
-          '<link rel="preconnect" href="https://fonts.googleapis.com">' +
-          '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
-          `<link rel="stylesheet" href="${fontHref.replace(/&/g, '&amp;')}">`,
-      }
-    : undefined;
+  const fontRaw = fontHref
+    ? '<link rel="preconnect" href="https://fonts.googleapis.com">' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>' +
+      `<link rel="stylesheet" href="${fontHref.replace(/&/g, '&amp;')}">`
+    : '';
+  //    Dark mode: the send declares `color-scheme: light dark` (silica emits the meta),
+  //    and — when the brand carries its site's dark palette — an `@media (prefers-color-
+  //    scheme: dark)` block that flips surfaces/text/borders to that dark theme via the
+  //    projector's `head.css` hook. Built from the diff between the light role map the
+  //    doc was just painted with and the brand's dark role map, so it aligns to the site.
+  const darkColors = emailBrandDarkColorDefaults(brand);
+  const darkCss = darkColors ? buildDarkModeCss(emailBrandColorDefaults(brand), darkColors) : '';
+  const head: EmailHeadExtras | undefined =
+    fontRaw || darkCss
+      ? { ...(fontRaw ? { raw: fontRaw } : {}), ...(darkCss ? { css: darkCss } : {}) }
+      : undefined;
   const html = interpolateEmailTokens(
     toEmailHtml(resolvedDoc, head ? { head } : undefined),
     resolveToken

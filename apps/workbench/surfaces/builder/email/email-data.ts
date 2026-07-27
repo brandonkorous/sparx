@@ -33,6 +33,9 @@ export interface EmailDesign {
   silicaDoc: unknown;
   /** Whether a published snapshot exists (this draft may sit ahead of it). */
   published: boolean;
+  /** True when this email is published but its draft has since diverged — saved edits
+   *  recipients aren't getting until the next Publish. */
+  hasUnpublishedChanges: boolean;
   publishedAt: string | null;
   position: number;
   /** The built-in identity for a provisioned default (`welcome-customer`, …), or
@@ -44,15 +47,40 @@ export interface EmailDesign {
   updatedAt: string;
 }
 
+/** A single pre-send check (mirrors `@sparx/email`'s `EmailCheck` — duplicated because
+ *  a client component must not import the server email package, the same way
+ *  `EMAIL_SEMANTIC_TOKENS` is duplicated). */
+export type EmailCheckLevel = 'pass' | 'warning' | 'error';
+export interface EmailCheck {
+  id: string;
+  level: EmailCheckLevel;
+  title: string;
+  detail: string;
+}
+
 /** The rendered, email-safe output of the DRAFT — the branded HTML a recipient
- *  actually receives, plus its plain-text alternative. */
+ *  actually receives, its plain-text alternative, the pre-send checklist, and the
+ *  dark-theme override rules for the Light/Dark preview toggle (empty when the brand
+ *  has no dark palette). */
 export interface EmailPreview {
   subject: string;
   html: string;
   text: string;
+  checks: EmailCheck[];
+  darkCss: string;
 }
 
 export const EMAILS_KEY = ['builder', 'emails'];
+
+/** One entry in an email's publish history (mirrors `emailVersionService`'s
+ *  `EmailVersionSummary`). `current` marks the version that is published right now. */
+export interface EmailVersion {
+  id: string;
+  subject: string;
+  actorId: string | null;
+  createdAt: string;
+  current: boolean;
+}
 
 /** Every email design on the account. `listOrSeed` provisions the defaults on the
  *  first call, so this resolves to a populated list rather than an empty one. */
@@ -142,6 +170,38 @@ export function usePublishEmail(id: string) {
 export function usePreviewEmail(id: string) {
   return useMutation({
     mutationFn: () => api.get<EmailPreview>(`/v1/builder/emails/${id}/preview`),
+  });
+}
+
+/** An email's publish history, newest first. Lazy — only fetched when the History
+ *  panel is open (`enabled`), since most editing sessions never open it. */
+export function useEmailVersions(id: string, enabled: boolean) {
+  return useQuery({
+    queryKey: ['builder', 'emails', id, 'versions'],
+    queryFn: () =>
+      api
+        .get<{ versions: EmailVersion[] }>(`/v1/builder/emails/${id}/versions`)
+        .then((r) => r.versions),
+    enabled: enabled && id !== '' && id !== 'new',
+  });
+}
+
+/** Restore a published version into the DRAFT (non-destructive — it loads the version
+ *  onto the draft for review, it does NOT republish). The server returns the email with
+ *  its restored draft; we push that straight into the caches so the studio reseeds the
+ *  canvas from it without waiting for a refetch. */
+export function useRestoreEmailVersion(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (versionId: string) =>
+      api.post<EmailDesign>(`/v1/builder/emails/${id}/versions/${versionId}/restore`),
+    onSuccess: (email) => {
+      queryClient.setQueryData<EmailDesign[]>(EMAILS_KEY, (prev) =>
+        prev?.map((e) => (e.id === email.id ? email : e))
+      );
+      queryClient.setQueryData(['builder', 'emails', email.id], email);
+      void queryClient.invalidateQueries({ queryKey: ['builder', 'emails', id, 'versions'] });
+    },
   });
 }
 

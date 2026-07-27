@@ -122,10 +122,14 @@ describe('the provisioned default emails, on silica', () => {
       { doc: docFor('order-confirmation'), to: 'a@b.test', data: orderData },
       { brand }
     );
-    // The CTA tracks the brand primary (silica's neutral #111827 must be gone), and
-    // the body font follows the brand too.
+    // The CTA tracks the brand primary (silica's neutral #111827 must be gone from the
+    // LIGHT design), and the body font follows the brand too. #111827 now appears
+    // legitimately inside the dark-mode `@media` block (it's the sparx dark `muted`
+    // surface any brand without its own dark palette inherits), so strip that block
+    // before asserting the light render carries no default black.
+    const lightOnly = out.html.replace(/@media \(prefers-color-scheme:dark\)\{[\s\S]*?\}\}/, '');
     expect(out.html).toContain('#0f766e');
-    expect(out.html).not.toContain('#111827');
+    expect(lightOnly).not.toContain('#111827');
     expect(out.html).toContain('Georgia, serif');
   });
 

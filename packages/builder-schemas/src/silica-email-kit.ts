@@ -277,6 +277,26 @@ export interface DetailStatus {
  * An OPTIONAL row (`ref`) still drops whole — label, value, and trailing gap — via
  * the same `hideWhenEmpty` mechanism as `when()`, never leaving a dangling label.
  */
+/** The shared "inset card" box-decoration (silicaui 0.33 section fields): a rounded,
+ *  hairline-bordered panel whose fill + border track the theme roles, inset from the
+ *  email edges. Both the label→value `detailPanel` and the free-content `calloutCard`
+ *  wear it, so the card look is defined ONCE. `satisfies` keeps the role/align values
+ *  as their narrow literal types while checking the shape against `SectionNode`. */
+const CARD = {
+  paddingX: 20,
+  bg: C.base200,
+  bgAuto: true,
+  bgRole: 'base200',
+  borderColor: C.base300,
+  borderColorAuto: true,
+  borderColorRole: 'base300',
+  borderWidth: 1,
+  radius: 16,
+  marginX: 24,
+  marginY: 8,
+  align: 'left',
+} satisfies Partial<SectionNode>;
+
 export function detailPanel(rows: DetailRow[], opts: { status?: DetailStatus } = {}): SectionNode {
   const row = (r: DetailRow): ColumnsNode => {
     const value = r.emphasize
@@ -299,23 +319,15 @@ export function detailPanel(rows: DetailRow[], opts: { status?: DetailStatus } =
     );
   }
   children.push(...rows.map(row));
-  return {
-    ...section(children, 18),
-    paddingX: 20,
-    // Tinted fill + hairline border that track the theme (0.33 roles), rounded, and
-    // inset from the email edges by the outer margin.
-    bg: C.base200,
-    bgAuto: true,
-    bgRole: 'base200',
-    borderColor: C.base300,
-    borderColorAuto: true,
-    borderColorRole: 'base300',
-    borderWidth: 1,
-    radius: 16,
-    marginX: 24,
-    marginY: 8,
-    align: 'left',
-  };
+  return { ...section(children, 18), ...CARD };
+}
+
+/** A tinted, bordered card wrapping FREE content (a heading, prose, a button) — the
+ *  marketing twin of `detailPanel`'s data card. It's the "draw the eye to one
+ *  message" block: a promo, a notice, a highlighted next step. Same inset card chrome
+ *  as `detailPanel` (shared `CARD`), with the children spaced apart so they breathe. */
+export function calloutCard(children: ContentNode[]): SectionNode {
+  return { ...section(spaced(children), 18), ...CARD };
 }
 
 // ── The document ─────────────────────────────────────────────────────────────

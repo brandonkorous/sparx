@@ -27,6 +27,11 @@ export interface BuilderEmailDto {
    *  opens on the author's real content rather than a blank document. */
   silicaDoc: SilicaEmailDocument;
   published: boolean;
+  /** True when this email IS published but its DRAFT has since diverged from the live
+   *  published version — i.e. saved edits that recipients aren't getting yet. Drives the
+   *  studio's "unpublished changes" cue so an author doesn't assume a saved edit is live.
+   *  Always false for an unpublished email (the `published:false` state already says so). */
+  hasUnpublishedChanges: boolean;
   publishedAt: string | null;
   position: number;
   /** The built-in identity for a provisioned default (docs/91) — `welcome-customer`,
