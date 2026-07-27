@@ -40,8 +40,14 @@ export interface PlatformOAuthCreds {
  *  missing → the adapter reports `isConfigured() === false` and the platform stays
  *  `coming_soon` until ops sets the env (mirrors channels, docs/133 §6). */
 export function readPlatformCreds(idVar: string, secretVar: string): PlatformOAuthCreds | null {
-  const clientId = process.env[idVar];
-  const clientSecret = process.env[secretVar];
+  // Trim, always: a client key/secret is a bare token with no legitimate surrounding
+  // whitespace, and secrets loaded from Secret Manager routinely carry a trailing
+  // newline (`echo "x" |` instead of `printf %s`). Left untrimmed, that newline rides
+  // into the OAuth `client_key` query param as `%0A`, and the provider rejects the
+  // authorize request with a bare "correct the following: client_key" — a brutal
+  // footgun to diagnose. One trim here immunizes every platform against it.
+  const clientId = process.env[idVar]?.trim();
+  const clientSecret = process.env[secretVar]?.trim();
   if (!clientId || !clientSecret) return null;
   return { clientId, clientSecret };
 }
