@@ -141,9 +141,9 @@ export async function resolvePostAssets(
  *  DNS-only host that bypasses CF, so the origin's clean 200 reaches them.
  *
  *  Instagram/Threads/Pinterest (`image_url`) + Google Business Profile (`sourceUrl`).
- *  TikTok is deliberately EXCLUDED: it pulls a VIDEO (range/206 is expected for a video
- *  ingest, not a bug) AND requires the source domain be URL-ownership-verified in its app
- *  — so it stays on the already-verified CDN host until media-direct is verified there. */
+ *  TikTok is NOT a whole-platform member because it SPLITS by media kind — see
+ *  `needsDirectHost`: its PHOTO posts belong here (same 206 wall), its VIDEO ingest does
+ *  not (range/206 is expected for a video pull, and video verification is separate). */
 const URL_FETCH_PLATFORMS: ReadonlySet<SocialPlatform> = new Set<SocialPlatform>([
   'instagram',
   'threads',
@@ -155,6 +155,18 @@ const URL_FETCH_PLATFORMS: ReadonlySet<SocialPlatform> = new Set<SocialPlatform>
  *  CF-bypassing direct host), vs. a byte-upload platform that keeps the CDN host. */
 export function isUrlFetchPlatform(platform: SocialPlatform): boolean {
   return URL_FETCH_PLATFORMS.has(platform);
+}
+
+/** Whether a given (platform, media kind) must fetch from the CF-bypassing direct host.
+ *  The pure URL-fetch platforms always do. TikTok is a SPLIT: its PHOTO posts pull an
+ *  `image_url` and hit the same Cloudflare-206-on-range rejection Instagram/Pinterest do,
+ *  so photos need the clean-200 direct host; its VIDEO ingest expects range/206, so video
+ *  stays on the CDN host. NOTE: the direct host (`MEDIA_DIRECT_BASE_URL`) must be
+ *  URL-ownership-verified in the TikTok app for photo posting to succeed. */
+export function needsDirectHost(platform: SocialPlatform, kind: 'image' | 'video'): boolean {
+  if (isUrlFetchPlatform(platform)) return true;
+  if (platform === 'tiktok' && kind === 'image') return true;
+  return false;
 }
 
 /** Swap a variant URL's public (CDN) host prefix for the direct-origin host. Pure over
@@ -184,7 +196,7 @@ export function mediaRefsForPlatform(
   return assets.map((a) => {
     const url = a.crops[aspect] ?? a.baseUrl;
     return {
-      url: isUrlFetchPlatform(platform)
+      url: needsDirectHost(platform, a.kind)
         ? swapMediaHost(url, env.MEDIA_PUBLIC_BASE_URL, env.MEDIA_DIRECT_BASE_URL)
         : url,
       kind: a.kind,

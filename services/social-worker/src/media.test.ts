@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { isUrlFetchPlatform, preferredAspectFor, swapMediaHost, variantUrlPath } from './media.js';
+import {
+  isUrlFetchPlatform,
+  needsDirectHost,
+  preferredAspectFor,
+  swapMediaHost,
+  variantUrlPath,
+} from './media.js';
 
 // Lock the platform → crop mapping (docs/133 §8). The media worker generates only the
 // four core crops (1:1 / 4:5 / 9:16 / 16:9); every platform's declared ratio snaps to
@@ -73,11 +79,26 @@ describe('URL-fetch host routing', () => {
     for (const p of ['instagram', 'threads', 'pinterest', 'google_business'] as const) {
       expect(isUrlFetchPlatform(p)).toBe(true);
     }
-    // Byte-upload (facebook/linkedin/youtube), text (x), and video-pull (tiktok — range
-    // is expected for a video ingest + needs its own domain verification) keep the CDN host.
+    // Byte-upload (facebook/linkedin/youtube), text (x), and TikTok (splits by kind — see
+    // needsDirectHost, so it's not a whole-platform member) keep the CDN host here.
     for (const p of ['facebook_page', 'linkedin', 'youtube', 'x', 'tiktok'] as const) {
       expect(isUrlFetchPlatform(p)).toBe(false);
     }
+  });
+
+  it('routes TikTok PHOTO posts to the direct host but leaves its video on the CDN host', () => {
+    // TikTok photo posts pull an image_url → same 206 wall as Instagram/Pinterest.
+    expect(needsDirectHost('tiktok', 'image')).toBe(true);
+    // TikTok video ingest expects range/206 → stays on the CDN host.
+    expect(needsDirectHost('tiktok', 'video')).toBe(false);
+    // The pure URL-fetch platforms need the direct host for either kind.
+    for (const p of ['instagram', 'threads', 'pinterest', 'google_business'] as const) {
+      expect(needsDirectHost(p, 'image')).toBe(true);
+      expect(needsDirectHost(p, 'video')).toBe(true);
+    }
+    // Byte-upload platforms never swap.
+    expect(needsDirectHost('facebook_page', 'image')).toBe(false);
+    expect(needsDirectHost('youtube', 'video')).toBe(false);
   });
 
   it('swaps the public base prefix for the direct base, path intact', () => {
