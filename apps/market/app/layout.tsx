@@ -11,7 +11,7 @@ import type { Metadata } from 'next';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import { Inter } from 'next/font/google';
-import { ChunkReloadGuard } from '@/components/chunk-reload-guard';
+import { ChunkReloadGuard } from '@sparx/app-kit';
 
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';

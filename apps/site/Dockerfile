@@ -19,6 +19,7 @@ FROM base AS builder
 # Workspace metadata first — maximises layer cache reuse across source changes.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/site/package.json apps/site/
+COPY packages/app-kit/package.json packages/app-kit/
 # @sparx/brand — the single home for the spark/wordmark/mascot geometry + BRAND
 # constants. @sparx/ui re-exports from it, so every app that pulls in ui needs it.
 COPY packages/brand/package.json packages/brand/
@@ -43,6 +44,7 @@ COPY packages/chat-widget/package.json packages/chat-widget/
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter @sparx/site...
 
+COPY packages/app-kit packages/app-kit
 COPY packages/brand packages/brand
 COPY packages/ui packages/ui
 COPY packages/cms-editor packages/cms-editor

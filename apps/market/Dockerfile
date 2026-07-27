@@ -28,6 +28,7 @@ COPY apps/market/package.json apps/market/
 # @sparx/commerce-schemas (pure-zod: MARKET_CATEGORIES + the category taxonomy) and
 # its only workspace dep, @sparx/crm-schemas. silicaui + silicaui-react are npm deps
 # resolved by pnpm install below, so they need no COPY.
+COPY packages/app-kit/package.json packages/app-kit/
 COPY packages/brand/package.json packages/brand/
 COPY packages/commerce-schemas/package.json packages/commerce-schemas/
 COPY packages/crm-schemas/package.json packages/crm-schemas/
@@ -36,6 +37,7 @@ COPY packages/crm-schemas/package.json packages/crm-schemas/
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter @sparx/market...
 
+COPY packages/app-kit packages/app-kit
 COPY packages/brand packages/brand
 COPY packages/commerce-schemas packages/commerce-schemas
 COPY packages/crm-schemas packages/crm-schemas

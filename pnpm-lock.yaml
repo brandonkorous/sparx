@@ -141,6 +141,9 @@ importers:
 
   apps/market:
     dependencies:
+      '@sparx/app-kit':
+        specifier: workspace:*
+        version: link:../../packages/app-kit
       '@sparx/brand':
         specifier: workspace:*
         version: link:../../packages/brand
@@ -199,6 +202,9 @@ importers:
 
   apps/site:
     dependencies:
+      '@sparx/app-kit':
+        specifier: workspace:*
+        version: link:../../packages/app-kit
       '@sparx/builder-render':
         specifier: workspace:*
         version: link:../../packages/builder-render
@@ -287,6 +293,9 @@ importers:
 
   apps/web:
     dependencies:
+      '@sparx/app-kit':
+        specifier: workspace:*
+        version: link:../../packages/app-kit
       '@sparx/attribution':
         specifier: workspace:*
         version: link:../../packages/attribution
@@ -387,6 +396,9 @@ importers:
       '@sparx/api-client':
         specifier: workspace:*
         version: link:../../packages/api-client
+      '@sparx/app-kit':
+        specifier: workspace:*
+        version: link:../../packages/app-kit
       '@sparx/attribution':
         specifier: workspace:*
         version: link:../../packages/attribution
@@ -557,6 +569,21 @@ importers:
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
+
+  packages/app-kit:
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.15
+      react:
+        specifier: ^19.0.0
+        version: 19.2.6
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
   packages/attribution:
     devDependencies:

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import Script from 'next/script';
 import { QueryProvider } from '@sparx/query/provider';
 import { ImperativeAlertDialogProvider, ToastProvider } from '@wizeworks/silicaui-react';
-import { ChunkReloadGuard } from '../components/chunk-reload-guard';
+import { ChunkReloadGuard } from '@sparx/app-kit';
 import { PostHogProvider } from '../components/posthog-provider';
 import { THEME_INIT_SCRIPT } from '../lib/theme';
 // MUST load before globals.css: declares the cascade-layer order so silicaui's

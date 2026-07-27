@@ -1,8 +1,8 @@
 # silicaui migration — market pilot notes + rollout playbook
 
-Version: 1.0
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-07-06
+Last Updated: 2026-07-27
 
 The `apps/market` migration off `@sparx/ui` and onto **silicaui** (`silicaui` CSS
 plugin + `silicaui-react`), run as the deliberate first/simplest pilot to surface
@@ -51,8 +51,11 @@ Four moving parts, replacing the single `@sparx/ui` dependency:
    plus derived `mx-*` chrome aliases. `<html data-theme="sparx">`.
 4. **App-local glue** — the sparx-specific bits that were never design-library:
    [`sparx-brand.tsx`](../apps/market/components/sparx-brand.tsx) (Wordmark +
-   SparxMark), [`chunk-reload-guard.tsx`](../apps/market/components/chunk-reload-guard.tsx),
+   SparxMark), a local copy of the chunk-reload guard, and
    [`lib/status.ts`](../apps/market/lib/status.ts) (statusTone/statusLabel).
+
+   The chunk guard has since moved to [`@sparx/app-kit`](../packages/app-kit/) —
+   see §5, and the cost of having kept it app-local, below.
 
 `@sparx/ui` is fully severed — no import, no `transpilePackages` entry, no
 Dockerfile COPY.
@@ -137,6 +140,24 @@ extract them so the brand is defined once:
 - **`@sparx/app-kit`** — the framework/brand glue: `Wordmark`/`SparxMark`,
   `ChunkReloadGuard`, `statusTone`/`statusLabel`. This is the residue that proves
   `@sparx/ui` doesn't fully dissolve into silicaui — every app has a little of it.
+
+**Outcome (2026-07-27).** Both landed, but split differently and — for app-kit —
+a release too late. `@sparx/brand` absorbed the theme AND `Wordmark`/`SparxMark`
+(brand marks belong with the brand, not with framework glue); `statusTone`/
+`statusLabel` stayed in `@sparx/ui`, being design vocabulary rather than glue.
+That left [`@sparx/app-kit`](../packages/app-kit/) holding the chunk-load guard
+alone, extracted only after the delay had cost something real: the copies drifted
+into four apps, the Next 16 upgrade moved the default bundler to Turbopack, and
+the shared detector — written against webpack's wording — stopped matching. Every
+app's stale-build recovery was dead in production for the whole of that window,
+and each release dropped operators on a generic crash screen instead of the
+"a new version is ready" reload it was built to show.
+
+The lesson is narrower than "extract earlier". **Glue that duplicates is glue
+whose failure is silent.** `Wordmark` drifting is visible on sight; a chunk-error
+regex that no longer matches fails by doing nothing at all, in four places, only
+on the deploys nobody is watching. Rank the extraction backlog by whether a stale
+copy would announce itself — not by how much code it saves.
 
 Then proceed to the harder surfaces (dashboard, site, the builder) where tenant
 theming, the `[data-theme]` canvas islands, and the persisted `BuilderNode.class`

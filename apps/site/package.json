@@ -12,6 +12,7 @@
     "clean": "rm -rf .turbo .next *.tsbuildinfo"
   },
   "dependencies": {
+    "@sparx/app-kit": "workspace:*",
     "@sparx/builder-render": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/chat-widget": "workspace:*",

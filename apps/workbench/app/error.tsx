@@ -17,7 +17,7 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '../lib/chunk-error';
+import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
 
 export default function WorkbenchError({
   error,

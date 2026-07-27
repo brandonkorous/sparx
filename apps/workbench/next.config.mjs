@@ -36,6 +36,7 @@ const config = {
   // must be transpiled rather than treated as a prebuilt dependency. workbench
   // is its first consumer — it had never been through a bundler before.
   transpilePackages: [
+    '@sparx/app-kit',
     '@wizeworks/silicaui-react',
     '@wizeworks/silicaui-charts',
     // The rich-text editor (bootcamp description) ships a client TipTap surface.

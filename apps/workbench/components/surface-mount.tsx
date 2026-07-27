@@ -18,6 +18,7 @@ import { Component, Suspense, useEffect, type ErrorInfo, type ReactNode } from '
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
+import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
 import { ModuleScope } from './module-scope';
 import { PaneWaiting } from './pane-waiting';
 import { getSurface } from '../lib/surfaces/registry';
@@ -38,31 +39,47 @@ export class PaneErrorBoundary extends Component<PaneErrorBoundaryProps, { error
 
   override componentDidCatch(error: Error, info: ErrorInfo) {
     console.error('[workbench] pane crashed', error, info.componentStack);
+    // A release purged the chunk this pane's surface needed. onReset() re-mounts
+    // the same dead import, so per-pane isolation has nothing left to isolate —
+    // only a full reload fetches the new build. Shared cooldown with
+    // ChunkReloadGuard and the route boundaries stops a broken build looping.
+    if (isChunkLoadError(error)) reloadOnceForStaleBuild();
   }
 
   override render() {
     if (!this.state.error) return this.props.children;
+    const stale = isChunkLoadError(this.state.error);
 
     return (
       <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
         <AlertTriangle className="text-warning size-6" aria-hidden />
         <div>
-          <p className="font-medium">This panel ran into a problem</p>
+          <p className="font-medium">
+            {stale ? 'A new version of sparx is ready' : 'This panel ran into a problem'}
+          </p>
           <p className="mt-1 text-sm">
-            Nothing else in your workspace was affected. Try loading it again.
+            {stale
+              ? 'This tab was left open across an update. Reload to load the latest version — your panel arrangement comes back.'
+              : 'Nothing else in your workspace was affected. Try loading it again.'}
           </p>
         </div>
-        <Button
-          color="neutral"
-          variant="outline"
-          size="sm"
-          onClick={() => {
-            this.setState({ error: null });
-            this.props.onReset();
-          }}
-        >
-          Try again
-        </Button>
+        {stale ? (
+          <Button color="primary" size="sm" onClick={() => window.location.reload()}>
+            Reload
+          </Button>
+        ) : (
+          <Button
+            color="neutral"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              this.setState({ error: null });
+              this.props.onReset();
+            }}
+          >
+            Try again
+          </Button>
+        )}
       </div>
     );
   }

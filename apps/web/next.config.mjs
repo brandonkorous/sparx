@@ -7,6 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const config = {
   reactStrictMode: true,
   transpilePackages: [
+    '@sparx/app-kit',
     '@sparx/ui',
     '@sparx/brand',
     '@sparx/forms',

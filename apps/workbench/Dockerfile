@@ -21,6 +21,7 @@ COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/workbench/package.json apps/workbench/
 # The workbench's direct workspace deps are deliberately few — it is a browser-
 # rendered app whose only server surface is Better Auth + the /api/token BFF:
+COPY packages/app-kit/package.json packages/app-kit/
 COPY packages/api-client/package.json packages/api-client/
 COPY packages/auth/package.json packages/auth/
 COPY packages/brand/package.json packages/brand/
@@ -67,6 +68,7 @@ RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter @sparx/workbench...
 
 # Source for every workspace dep + the app itself.
+COPY packages/app-kit packages/app-kit
 COPY packages/api-client packages/api-client
 COPY packages/auth packages/auth
 COPY packages/brand packages/brand

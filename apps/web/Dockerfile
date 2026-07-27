@@ -19,6 +19,7 @@ FROM base AS builder
 # Workspace metadata first — maximises layer cache reuse across source changes.
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
 COPY apps/web/package.json apps/web/
+COPY packages/app-kit/package.json packages/app-kit/
 COPY packages/ui/package.json packages/ui/
 COPY packages/brand/package.json packages/brand/
 # @sparx/forms — client form-validation engine behind silica's FieldStatus (react peer only).
@@ -33,6 +34,7 @@ COPY packages/story-schemas/package.json packages/story-schemas/
 RUN --mount=type=cache,id=pnpm,target=/root/.local/share/pnpm/store \
     pnpm install --frozen-lockfile --filter @sparx/web...
 
+COPY packages/app-kit packages/app-kit
 COPY packages/ui packages/ui
 COPY packages/brand packages/brand
 COPY packages/forms packages/forms

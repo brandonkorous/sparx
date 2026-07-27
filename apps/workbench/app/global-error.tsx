@@ -9,7 +9,7 @@
 // exists to prevent.
 
 import { useEffect } from 'react';
-import { isChunkLoadError, reloadOnceForStaleBuild } from '../lib/chunk-error';
+import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
 
 export default function GlobalError({
   error,

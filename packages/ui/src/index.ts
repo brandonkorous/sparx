@@ -278,7 +278,10 @@ export {
 } from './components/overlay/command-palette';
 
 // ── System / runtime ──────────────────────────────────────
-export { ChunkReloadGuard } from './components/system/chunk-reload-guard';
+// ChunkReloadGuard moved to `@sparx/app-kit`. It never belonged here: it has no
+// appearance, no variant and no token — it is framework glue, and living in the
+// design library is what let three more copies of it grow in apps that don't
+// depend on @sparx/ui. Import it (and `isChunkLoadError`) from '@sparx/app-kit'.
 
 // ── Navigation ────────────────────────────────────────────
 export {

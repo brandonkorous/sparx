@@ -12,6 +12,7 @@
     "clean": "rm -rf .turbo .next *.tsbuildinfo"
   },
   "dependencies": {
+    "@sparx/app-kit": "workspace:*",
     "@sparx/brand": "workspace:*",
     "@sparx/commerce-schemas": "workspace:*",
     "@stripe/react-stripe-js": "^3.7.0",
