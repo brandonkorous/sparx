@@ -33,8 +33,10 @@ export { Wordmark, type WordmarkProps } from './components/brand/wordmark';
 export {
   Spark,
   SparxMark,
+  AppIcon,
   type SparkProps,
   type SparxMarkProps,
+  type AppIconProps,
 } from './components/brand/sparx-mark';
 export { MadeWithSparx, type MadeWithSparxProps } from './components/brand/made-with-sparx';
 export {

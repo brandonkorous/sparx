@@ -8,5 +8,6 @@
 // marketing bundles that deliberately avoid the component-library shell.
 
 export { Spark, SparxMark, type SparkProps, type SparxMarkProps } from './spark';
+export { AppIcon, type AppIconProps } from './app-icon';
 export { Wordmark, type WordmarkProps } from './wordmark';
 export { SparkMascot, type SparkMascotProps, type SparkExpression } from './spark-mascot';

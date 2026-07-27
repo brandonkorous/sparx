@@ -24,7 +24,7 @@ import { HeroStoryRotator } from './hero-story';
  */
 export function LandingV3Hero() {
   return (
-    <section data-theme="dark" className="bg-base-100 h-dvh place-content-center">
+    <section data-theme="dark" className="bg-base-100 min-h-dvh place-content-center py-8">
       <div className="@container mx-auto max-w-7xl px-6">
         <div className="grid grid-cols-1 items-center gap-16 @4xl:grid-cols-2">
           <div className="flex flex-col gap-8">

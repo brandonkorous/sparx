@@ -3,7 +3,7 @@ import { CardBody } from '@wizeworks/silicaui-react';
 // Server-safe class builder (package root is a 'use client' bundle).
 import { clickableCardClasses } from '@wizeworks/silicaui-react/server';
 import { Container, Display, Spark, Text } from '../primitives';
-import { OfficialWordmark, OfficialMark } from './assets';
+import { OfficialWordmark, OfficialMark, OfficialAppIcon } from './assets';
 
 interface Asset {
   name: string;
@@ -50,32 +50,53 @@ const ASSETS: Asset[] = [
     preview: <OfficialWordmark variant="color" className="w-[170px]" />,
   },
   {
-    name: 'Monogram — color',
+    name: 'Mark — color',
     format: 'SVG · vector',
     href: '/brand/sparx-mark.svg',
     bg: 'light',
     preview: <OfficialMark variant="color" size={56} />,
   },
   {
-    name: 'Monogram — reversed',
+    name: 'Mark — reversed',
     format: 'SVG · for dark',
     href: '/brand/sparx-mark-light.svg',
     bg: 'dark',
     preview: <OfficialMark variant="light" size={56} />,
   },
   {
-    name: 'App icon',
+    name: 'Mark — color',
     format: 'PNG · 512px',
     href: '/brand/sparx-mark.png',
     bg: 'light',
     preview: <OfficialMark variant="color" size={56} />,
   },
   {
+    name: 'App icon — color',
+    format: 'SVG · vector',
+    href: '/brand/sparx-app-icon.svg',
+    bg: 'light',
+    preview: <OfficialAppIcon variant="color" size={56} />,
+  },
+  {
+    name: 'App icon — reversed',
+    format: 'SVG · for dark',
+    href: '/brand/sparx-app-icon-light.svg',
+    bg: 'dark',
+    preview: <OfficialAppIcon variant="light" size={56} />,
+  },
+  {
+    name: 'App icon — color',
+    format: 'PNG · 512px',
+    href: '/brand/sparx-app-icon.png',
+    bg: 'light',
+    preview: <OfficialAppIcon variant="color" size={56} />,
+  },
+  {
     name: 'Favicon',
     format: 'ICO · multi-size',
     href: '/brand/sparx-favicon.ico',
     bg: 'light',
-    preview: <OfficialMark variant="color" size={40} />,
+    preview: <OfficialAppIcon variant="color" size={40} />,
   },
 ];
 
@@ -93,8 +114,8 @@ export function DownloadsSection() {
             <Spark />
           </Display>
           <Text size={18}>
-            The wordmark, monogram, and icon set, ready to drop in. Keep the “x” its spark color,
-            keep the clear space, and don’t recolor the letterforms. Need editable source, a
+            The wordmark, the mark, and the app icon set, ready to drop in. Keep the “x” its spark
+            color, keep the clear space, and don’t recolor the letterforms. Need editable source, a
             one-color variant, or something bespoke? Email{' '}
             <a href="mailto:brand@sparx.works" className="text-base-content">
               brand@sparx.works

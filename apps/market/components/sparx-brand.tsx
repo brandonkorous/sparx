@@ -4,4 +4,4 @@
 // one-file change in @sparx/brand, never a per-app hunt. (market transpiles
 // @sparx/brand and deliberately avoids the @sparx/ui shell graph — these leaf
 // components have no such coupling.)
-export { Spark, SparxMark, Wordmark, type WordmarkProps } from '@sparx/brand/react';
+export { Spark, SparxMark, AppIcon, Wordmark, type WordmarkProps } from '@sparx/brand/react';

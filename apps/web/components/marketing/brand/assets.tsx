@@ -7,11 +7,16 @@ import * as React from 'react';
  * paths; these render the static PNG/SVG files for press downloads and previews,
  * with the "x" in the brand spark color.
  *
- * Variants (wordmark and monogram share the scheme):
+ * Variants (wordmark, mark, and app icon share one scheme):
  *   color    — dark letters + spark "x" (primary, for light surfaces)
  *   light    — white letters + spark "x" (reversed, for dark surfaces)
  *   black    — dark-on-light lockup (one-color use)
  *   white    — white-on-dark lockup (one-color use)
+ *
+ * The mark and the app icon are two DIFFERENT marks, not two sizes of one: the
+ * mark is the "x" drawn on transparency; the app icon is a full-bleed field with
+ * that same "x" knocked out of it. Both are generated from the shared geometry by
+ * scripts/generate-brand-icons.mjs — never hand-edit the files under public/brand.
  */
 
 export type ArtworkVariant = 'color' | 'light' | 'black' | 'white';
@@ -28,6 +33,13 @@ const MARK_SRC: Record<ArtworkVariant, string> = {
   light: '/brand/sparx-mark-light.svg',
   black: '/brand/sparx-mark-black.svg',
   white: '/brand/sparx-mark-white.svg',
+};
+
+const APP_ICON_SRC: Record<ArtworkVariant, string> = {
+  color: '/brand/sparx-app-icon.svg',
+  light: '/brand/sparx-app-icon-light.svg',
+  black: '/brand/sparx-app-icon-black.svg',
+  white: '/brand/sparx-app-icon-white.svg',
 };
 
 export function OfficialWordmark({
@@ -67,6 +79,26 @@ export function OfficialMark({
     <img
       src={MARK_SRC[variant]}
       alt="sparx mark"
+      width={size}
+      height={size}
+      className={`block ${className ?? ''}`}
+    />
+  );
+}
+
+export function OfficialAppIcon({
+  variant = 'color',
+  size = 64,
+  className,
+}: {
+  variant?: ArtworkVariant;
+  size?: number;
+  className?: string;
+}) {
+  return (
+    <img
+      src={APP_ICON_SRC[variant]}
+      alt="sparx app icon"
       width={size}
       height={size}
       className={`block ${className ?? ''}`}

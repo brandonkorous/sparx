@@ -62,4 +62,15 @@ The sparx wordmark renders with the **"x" always in sparx Ember `#e04631`** — 
 
 This previously read "sparx Indigo `#6366F1`". That is **wrong and out of date**: the wordmark "x" and the Builder module hue SPLIT. Ember is the brand primary; Indigo `#6366f1` is now only `--color-module-builder`. The code is the authority — [packages/brand/src/marks.ts](../brand/src/marks.ts) `BRAND.primary = '#e04631'`, commented "the primary brand color and the wordmark 'x'", with `builder: '#6366f1'` as a separate module entry.
 
-**Never re-inline the art or the "x" hex.** The spark/wordmark/mascot geometry and the `BRAND` constants live in `@sparx/brand` ([marks.ts](../brand/src/marks.ts)); the React components (`Spark`, `Wordmark`, `SparkMascot`) come from `@sparx/brand/react`. `@sparx/ui`, market, and the marketing site all re-export from there — change the art in ONE place.
+**Never re-inline the art or the "x" hex.** The mark/wordmark/mascot geometry and the `BRAND` constants live in `@sparx/brand` ([marks.ts](../brand/src/marks.ts)); the React components (`Spark`, `AppIcon`, `Wordmark`, `SparkMascot`) come from `@sparx/brand/react`. `@sparx/ui`, market, and the marketing site all re-export from there — change the art in ONE place.
+
+## Two marks, not one
+
+The 2026-07 refresh retired the four-lobed spark glyph. What replaced it is **two** distinct marks that must not be swapped for each other:
+
+- **`<Spark>`** (alias `<SparxMark>`) — the "x" standing alone, one color, on transparency. `SPARK_PATH`. This is the INLINE glyph: a bullet, an avatar, a stand-in wherever the wordmark would fall below 16px. Optically centred in its viewBox, so it needs no caller-side nudging at 20–24px.
+- **`<AppIcon>`** — the favicon / install-tile lockup: a full-bleed field of `--color-primary` with the "x" **knocked out** of it, arms running off all four edges. `ICON_FIELD_PATH`. The letterform here is negative space, so this is one filled path, not a framed copy of `<Spark>`. Corners stay hard — every OS applies its own mask, and pre-rounding double-rounds on iOS/macOS.
+
+The knocked-out counter is backed with **sparx ink** (`--color-secondary`) wherever the icon must be opaque, so a tab, an iOS home screen, and an Android tile all read identically. `counter="none"` gives a true knockout for a known surface (one-color press artwork).
+
+**Static icon files are generated, never hand-edited.** [scripts/generate-brand-icons.mjs](../../scripts/generate-brand-icons.mjs) parses the geometry + hexes straight out of `marks.ts` and rewrites every favicon, app icon, PWA tile, and press asset across `apps/web`, `apps/workbench`, `apps/market`, `apps/site`, and `images/new/favicons/`. Change the artwork in `marks.ts`, run `node scripts/generate-brand-icons.mjs`, done — a hand-edit to any of those files is drift waiting to happen.

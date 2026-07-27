@@ -96,7 +96,7 @@ export function TypeSection() {
           <Note title="Two weights only">
             400 (regular) and 500 (medium) — never 600 or 700, which feel heavy against the clean
             sparx UI. The wordmark is the one deliberate exception: it sets in a bold display face
-            so its letterforms match the monogram.
+            so its letterforms match the mark.
           </Note>
           <Note title="Fallback stack">
             <div className="flex flex-wrap items-center gap-2">

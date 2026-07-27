@@ -1,15 +1,18 @@
 import * as React from 'react';
-import { SPARK_PATH, SPARK_STROKE_WIDTH, SPARK_VIEWBOX } from '../marks';
+import { SPARK_PATH, SPARK_VIEWBOX } from '../marks';
 
-// The sparx spark — the brand mark / app-icon glyph. ONE shape, ONE color,
-// across every theme (the mark is not two-tone and never inverts). Geometry is
-// the single source of truth in ../marks; only the color is a prop here.
+// The sparx mark — the "x", standing alone. ONE shape, ONE color, across every
+// theme (the mark is not two-tone and never inverts). Geometry is the single
+// source of truth in ../marks; only the color is a prop here.
 //
 // Theming: `color` defaults to the `--color-primary` token so the mark tracks
 // light/dark + any nested <ModuleProvider> automatically. Pass a literal hex
 // only where that token can't resolve (a tenant public site on its own `--st-*`
-// theme, or a static export). The stroke rounds the spark's outer corners, so
-// fill and stroke share the color to match the source artwork exactly.
+// theme, or a static export).
+//
+// This is the INLINE glyph — optically centred with air around it, sized to sit
+// beside type. The favicon/app-icon lockup is a DIFFERENT mark (a full-bleed
+// field with the "x" knocked out of it): see <AppIcon>.
 
 export interface SparkProps extends Omit<React.SVGProps<SVGSVGElement>, 'children' | 'color'> {
   /** Rendered size in px (square). Default 24. */
@@ -32,20 +35,13 @@ export function Spark({ size = 24, title, color = 'var(--color-primary)', ...res
       {...rest}
     >
       {title ? <title>{title}</title> : null}
-      <path
-        d={SPARK_PATH}
-        fill={color}
-        stroke={color}
-        strokeWidth={SPARK_STROKE_WIDTH}
-        strokeLinejoin="round"
-        strokeLinecap="square"
-      />
+      <path d={SPARK_PATH} fill={color} />
     </svg>
   );
 }
 
 // Back-compat alias. `SparxMark` used to be the two-tone "sx" monogram; the
-// brand's mark is now the single spark, so the old name resolves to <Spark>.
+// brand's mark is now the single "x", so the old name resolves to <Spark>.
 // The retired `accentColor` prop maps to `color` so existing call sites keep
 // working without an edit.
 export interface SparxMarkProps extends Omit<SparkProps, 'color'> {

@@ -1,4 +1,4 @@
-// A faint, tiled sparx-spark watermark for a recessed base-200 canvas.
+// A faint, tiled sparx-mark watermark for a recessed base-200 canvas.
 //
 // Decorative only (aria-hidden) — the sanctioned faded case — so it whispers the
 // brand behind the base-100 surfaces lifted onto the canvas without competing with

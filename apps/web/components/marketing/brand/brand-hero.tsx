@@ -14,7 +14,7 @@ import { OfficialWordmark } from './assets';
  *  <Section id> below the hero so the chips deep-link cleanly. */
 export const BRAND_SECTIONS = [
   { id: 'wordmark', label: 'Wordmark' },
-  { id: 'monogram', label: 'Spark mark' },
+  { id: 'monogram', label: 'The mark' },
   { id: 'mascot', label: 'Sparky' },
   { id: 'misuse', label: 'Misuse' },
   { id: 'color', label: 'Primary color' },

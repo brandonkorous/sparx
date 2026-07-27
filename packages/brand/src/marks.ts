@@ -61,15 +61,45 @@ export const MODULE_HEX = {
 
 export type ModuleKey = keyof typeof MODULE_HEX;
 
-// ── Spark (the mark / app icon) ──────────────────────────────────────────────
-// One shape, one color, across every theme. Drawn from images/new/SVG/spark.svg
-// (viewBox 0 0 160 160). The stroke rounds the outer corners, so faithful
-// rendering keeps fill AND stroke the same color.
+// ── Spark (the mark) ─────────────────────────────────────────────────────────
+// The sparx "x", standing alone. One shape, one color, across every theme.
+// Drawn from images/new/SVG/icon.svg (viewBox 0 0 160 160) — the same letterform
+// as the wordmark's "x", which is why the mark and the lockup read as one brand.
+//
+// Optically centred inside the viewBox (110.9 × 103.3 of 160, ~24px of air on
+// every side), so it sits correctly as an inline glyph at 20–24px with no
+// caller-side nudging. Pure fill, no stroke — the 2026-07 refresh retired the
+// four-lobed spark glyph (and with it SPARK_STROKE_WIDTH) for this letterform.
 
 export const SPARK_VIEWBOX = '0 0 160 160' as const;
-export const SPARK_STROKE_WIDTH = 6.07 as const;
 export const SPARK_PATH =
-  'M69.8,102.93l-39.68,35.9,24.54-44.95c3.68-6.74,2.34-15.12-3.26-20.37l-28.12-26.37,39.25,13.3c5.65,1.91,11.9.57,16.26-3.51l38.25-35.76-22.45,44.38c-3.58,7.08-1.93,15.7,4.03,20.94l38.1,33.55-49.38-20.19c-5.95-2.43-12.78-1.24-17.54,3.08Z';
+  'M108.14,131.63l-27.88-34.9-27.88,34.9h-27.67l41.09-51.42-31.69-42.3,19.91-9.53,26.02,34.69,26.02-34.69h27.26l-38.82,51.83,41.1,51.42h-27.47Z';
+
+// ── App icon (the knockout tile) ─────────────────────────────────────────────
+// The favicon / app-icon lockup: a full-bleed field of brand color with the "x"
+// KNOCKED OUT of it, arms running off all four edges. Drawn from
+// images/new/SVG/icon-square.svg (viewBox 0 0 160 160).
+//
+// This is a distinct mark from SPARK_PATH above, not a container for it — the
+// "x" here is the negative space, so the tile is ONE path (the field) and the
+// letterform is whatever shows through it. Hard corners on purpose: every OS
+// applies its own corner mask, and pre-rounding double-rounds on iOS/macOS.
+//
+// The counter (the knocked-out "x") is transparent in vector form. Where the
+// format demands opacity — .ico, apple-touch-icon, the maskable PWA tile — it is
+// backed with sparx ink; see ICON_COUNTER_VAR / BRAND.ink.
+
+export const ICON_VIEWBOX = '0 0 160 160' as const;
+
+/** The brand-color field. Fill it; the "x" is the hole left behind. */
+export const ICON_FIELD_PATH =
+  'M65.05,160L147.43,160L106.24,108.44Z' +
+  'M0,0L0,160L24.17,160L84.88,84.03L38.07,21.53L67.49,7.45L100.63,58.71L139.07,7.45L160,7.45L160,0Z' +
+  'M160,124.96L160,40.36L127.29,84.03Z';
+
+/** Token backing the knocked-out counter wherever the icon must be opaque.
+ *  `--color-secondary` IS sparx ink (#0c1433) — see theme.css. */
+export const ICON_COUNTER_VAR = 'var(--color-secondary)' as const;
 
 // ── Wordmark (the "sparx" lockup) ────────────────────────────────────────────
 // Drawn from images/new/SVG/logo-{dark,light}.svg (viewBox 0 0 380.55 160). The
