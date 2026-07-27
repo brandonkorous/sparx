@@ -41,6 +41,9 @@ export interface EmailDesign {
   /** The built-in identity for a provisioned default (`welcome-customer`, …), or
    *  null for a custom email the tenant created. */
   key: string | null;
+  /** The campaign an author's link clicks report under (docs/impl transactional-email
+   *  Slice 10). Null → clicks report under the email's name; a value overrides it. */
+  trackingCampaign: string | null;
   /** `tenant` — shared by every site; `site` — a per-site override/custom. */
   scope: 'tenant' | 'site';
   createdAt: string;
@@ -123,6 +126,20 @@ export function useRenameEmail(id: string) {
   const invalidate = useInvalidate();
   return useMutation({
     mutationFn: (name: string) => api.patch<EmailDesign>(`/v1/builder/emails/${id}`, { name }),
+    onSuccess: () => {
+      invalidate(id);
+    },
+  });
+}
+
+/** Set (or clear) this email's link-tracking campaign override — a settings PATCH,
+ *  saved immediately like a rename, separate from the silica-doc Save. `null` clears
+ *  it back to the email's name. */
+export function useSetEmailCampaign(id: string) {
+  const invalidate = useInvalidate();
+  return useMutation({
+    mutationFn: (trackingCampaign: string | null) =>
+      api.patch<EmailDesign>(`/v1/builder/emails/${id}`, { trackingCampaign }),
     onSuccess: () => {
       invalidate(id);
     },

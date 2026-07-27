@@ -285,6 +285,13 @@ model BuilderEmail {
   // Catalog ordering (cf. BuilderPage.position).
   position                Int   @default(0)
 
+  // Link-click tracking campaign override (docs/impl transactional-email Slice 10).
+  // At send, every on-site link in this email is tagged so the tenant's analytics
+  // credit the click (and any order that follows) to the email. The campaign the
+  // clicks report under defaults to the email's `name`; setting this overrides it —
+  // e.g. grouping several sends under one "Spring Sale". Null = use the name.
+  trackingCampaign String? @map("tracking_campaign") @db.VarChar(64)
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 

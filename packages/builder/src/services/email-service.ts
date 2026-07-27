@@ -61,6 +61,7 @@ function toDto(row: BuilderEmail): BuilderEmailDto {
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
     key: row.key,
+    trackingCampaign: row.trackingCampaign,
     // property_id present ⇒ a per-site override/custom; absent ⇒ tenant-wide.
     scope: row.propertyId ? 'site' : 'tenant',
     createdAt: row.createdAt.toISOString(),
@@ -123,6 +124,8 @@ function toPublished(row: BuilderEmail): PublishedEmailDto | null {
     name: row.name,
     subject: row.subject,
     preheader: row.preheader,
+    key: row.key,
+    trackingCampaign: row.trackingCampaign,
     silicaDoc: silicaPublished(row),
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
   };
@@ -146,6 +149,9 @@ function defaultPublished(key: string): PublishedEmailDto | null {
     name: def.name,
     subject: def.subject,
     preheader: def.preheader,
+    key,
+    // A code-shipped fallback has no author override — clicks report under its name.
+    trackingCampaign: null,
     // The code-shipped fallback is a silica document (docs/120) — a tenant with no row
     // for this key renders through the same engine as everyone else.
     silicaDoc: def.doc,
@@ -247,6 +253,9 @@ export async function update(
     if (input.subject !== undefined) data.subject = input.subject;
     if (input.preheader !== undefined) data.preheader = emptyToNull(input.preheader);
     if (input.tree !== undefined) data.draftTree = asJson(input.tree);
+    // A cleared campaign ('' or null) resets to the email's name at send.
+    if (input.trackingCampaign !== undefined)
+      data.trackingCampaign = emptyToNull(input.trackingCampaign);
 
     const updated = await tx.builderEmail.update({ where: { id }, data });
     return toDto(updated);
@@ -755,6 +764,8 @@ export function getDraftById(ctx: ServiceContext, id: string): Promise<Published
       name: row.name,
       subject: row.subject,
       preheader: row.preheader,
+      key: row.key,
+      trackingCampaign: row.trackingCampaign,
       // The DRAFT silica document — converted from the sparx tree for a row that
       // predates the cutover, exactly as the published read does.
       silicaDoc: silicaDraft(row),

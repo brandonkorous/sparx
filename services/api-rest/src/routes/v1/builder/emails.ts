@@ -28,7 +28,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { emailService, emailVersionService, savedEmailBlockService } from '@sparx/builder';
-import { builderEmailService } from '@sparx/email-platform';
+import { builderEmailService, emailTrackingService } from '@sparx/email-platform';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { requireRole } from '@sparx/api-core/auth';
@@ -264,12 +264,21 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
       emailService.get(ctx, id),
       resolveEmailFooterLinks(ctx, ctx.propertyId),
     ]);
+    // The same tracking the send uses — so the preview shows the real tagged links
+    // AND the "your clicks are counted" check reads this email's campaign (docs/impl
+    // transactional-email Slice 10).
+    const tracking = await emailTrackingService.resolveEmailTracking(
+      ctx,
+      { key: email.key, name: email.name, trackingCampaign: email.trackingCampaign },
+      ctx.propertyId
+    );
     const preview = await builderEmailService.renderPreview(
       ctx,
       { silicaDoc: email.silicaDoc, subject: email.subject, preheader: email.preheader },
       silicaEmailDataResolver(ctx, ctx.propertyId),
       ctx.propertyId,
-      footerLinks
+      footerLinks,
+      tracking
     );
     return ok(preview);
   });
@@ -289,13 +298,19 @@ const builderEmailRoutes: FastifyPluginAsync = (app) => {
       emailService.get(ctx, id),
       resolveEmailFooterLinks(ctx, ctx.propertyId),
     ]);
+    const tracking = await emailTrackingService.resolveEmailTracking(
+      ctx,
+      { key: email.key, name: email.name, trackingCampaign: email.trackingCampaign },
+      ctx.propertyId
+    );
     const prepared = await builderEmailService.prepareTestSend(
       ctx,
       { silicaDoc: email.silicaDoc, subject: email.subject, preheader: email.preheader },
       request.body,
       silicaEmailDataResolver(ctx, ctx.propertyId),
       ctx.propertyId,
-      footerLinks
+      footerLinks,
+      tracking
     );
     await publish(request.log, 'email.send', ctx.tenantId, null, {
       kind: 'raw',

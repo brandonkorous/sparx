@@ -40,6 +40,16 @@ export interface LintEmailInput {
   html: string;
   subject: string;
   preheader?: string | null;
+  /** Link-click tracking context (docs/impl transactional-email Slice 10). Present when
+   *  the preview has site context: drives the plain-language "your clicks are tracked"
+   *  line + the off-site-link note. Omitted → the tracking check is skipped entirely
+   *  (no site to attribute to). */
+  tracking?: {
+    /** The tenant site host(s) whose links get attributed (lower-cased). */
+    hosts: readonly string[];
+    /** The campaign name the author's clicks will report under (the email's name). */
+    campaign: string;
+  };
 }
 
 // ── document walk ────────────────────────────────────────────────────────────────
@@ -345,6 +355,95 @@ function checkImageText(nodes: AnyNode[]): EmailCheck {
   };
 }
 
+/** The href of every `<a>` inside a text node's html. */
+function anchorHrefs(html: string): string[] {
+  const out: string[] = [];
+  const re = /<a\b[^>]*\bhref="([^"]*)"/gi;
+  let m: RegExpExecArray | null;
+  while ((m = re.exec(html)) !== null) out.push((m[1] ?? '').replace(/&amp;/g, '&'));
+  return out;
+}
+
+/** An author link is OFF-SITE — unmeasurable by the tenant's own analytics — when it's a
+ *  concrete absolute http(s) URL to some other host. A site-relative link, or one built
+ *  from a `{{token}}` (an order/product URL, which resolves to the tenant's own site), is
+ *  treated as on-site: those are what tracking exists for. `mailto:`/`tel:`/anchors carry
+ *  no click to a page, so they don't count either way. */
+function classifyAuthorLink(
+  href: string,
+  hosts: readonly string[]
+): 'on-site' | 'off-site' | 'none' {
+  const h = href.trim();
+  if (h === '' || h === '#' || /^(mailto:|tel:|sms:)/i.test(h)) return 'none';
+  if (h.includes('{{')) return 'on-site'; // a token URL resolves to the tenant site.
+  let url: URL;
+  try {
+    url = new URL(h);
+  } catch {
+    return 'on-site'; // relative → same site.
+  }
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return 'none';
+  const host = url.hostname.toLowerCase().replace(/^www\./, '');
+  return hosts.some((x) => x.toLowerCase().replace(/^www\./, '') === host) ? 'on-site' : 'off-site';
+}
+
+/** The plain-language "your clicks are counted" line (docs/impl transactional-email
+ *  Slice 10). Reassures the owner that every on-site link is measured under the email's
+ *  campaign, and notes any off-site links their reports can't follow. Always informational
+ *  (a pass) — an off-site link (a shipping carrier, a social profile) is normal, not a
+ *  mistake — the point is that they KNOW which clicks show up in their reports. */
+function checkLinkTracking(
+  nodes: AnyNode[],
+  tracking: NonNullable<LintEmailInput['tracking']>
+): EmailCheck {
+  let onSite = 0;
+  let offSite = 0;
+  const classify = (href: string) => {
+    const kind = classifyAuthorLink(href, tracking.hosts);
+    if (kind === 'on-site') onSite += 1;
+    else if (kind === 'off-site') offSite += 1;
+  };
+  for (const n of nodes) {
+    if (
+      (n.kind === 'button' || n.kind === 'image' || n.kind === 'video') &&
+      typeof n.href === 'string'
+    ) {
+      classify(n.href);
+    }
+    if (n.kind === 'text' && typeof n.html === 'string') {
+      for (const href of anchorHrefs(n.html)) classify(href);
+    }
+  }
+
+  const offNote =
+    offSite > 0
+      ? ` ${plural(offSite, 'link goes', 'links go')} to another website, which your reports can't follow.`
+      : '';
+
+  if (onSite === 0 && offSite === 0) {
+    return {
+      id: 'link-tracking',
+      level: 'pass',
+      title: 'Click tracking',
+      detail: 'This email has no links to track yet.',
+    };
+  }
+  if (onSite === 0) {
+    return {
+      id: 'link-tracking',
+      level: 'pass',
+      title: 'Click tracking',
+      detail: `Every link in this email goes to another website, so clicks won't show in your reports.${offNote}`,
+    };
+  }
+  return {
+    id: 'link-tracking',
+    level: 'pass',
+    title: 'Click tracking',
+    detail: `${plural(onSite, 'link is', 'links are')} tracked — clicks show in your reports under "${tracking.campaign}".${offNote}`,
+  };
+}
+
 function checkMergeTags(
   nodes: AnyNode[],
   subject: string,
@@ -444,6 +543,9 @@ export function lintEmailRender(input: LintEmailInput): EmailCheck[] {
     checkMergeTags(nodes, input.subject, input.preheader),
     checkSize(input.html),
   ];
+  // Only when the preview carries site context — otherwise there's no site to attribute
+  // clicks to and the line would be meaningless.
+  if (input.tracking) checks.push(checkLinkTracking(nodes, input.tracking));
   const rank: Record<EmailCheckLevel, number> = { error: 0, warning: 1, pass: 2 };
   return checks.sort((a, b) => rank[a.level] - rank[b.level]);
 }

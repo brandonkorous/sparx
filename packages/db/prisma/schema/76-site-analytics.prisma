@@ -43,11 +43,20 @@ model SiteAnalyticsEvent {
   // Normalized request path (query string + hash stripped), e.g. "/shop".
   path String @db.VarChar(2048)
 
-  // Referrer classification (search | direct | social | referral) + the bare
+  // Traffic classification (search | direct | social | referral | email) + the bare
   // referrer host (e.g. "instagram.com") for the "top referrer" line. Null host
-  // for direct hits.
+  // for direct hits. `email` is set when the hit carries `utm_medium=email` from a
+  // link in one of the tenant's own sent emails (docs/impl transactional-email
+  // Slice 10) — it wins over the referrer-based classes.
   source       String  @default("direct") @map("source") @db.VarChar(20)
   referrerHost String? @map("referrer_host") @db.VarChar(255)
+
+  // The email campaign this hit came from (docs/impl transactional-email Slice 10) —
+  // the `utm_campaign` on an `email`-source hit (the sending email's name by
+  // default), so the tenant's reports break "Email" down by which email drove the
+  // visit. Null for every non-email hit. Not PII; the raw query string is still
+  // stripped from `path`.
+  campaign String? @db.VarChar(64)
 
   // Salted daily-rotating visitor + session hashes (never an IP). Two hits with
   // the same visitorHash on the same UTC day are the same person; the session

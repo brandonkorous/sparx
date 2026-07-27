@@ -20,3 +20,4 @@ export * as brandService from './brand-service';
 export * as broadcastService from './broadcast-service';
 export * as analyticsService from './analytics-service';
 export * as builderEmailService from './builder-email-service';
+export * as emailTrackingService from './email-tracking-service';

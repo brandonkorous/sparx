@@ -174,6 +174,7 @@ export const COMMERCE_SALES_METRICS: readonly MetricDefinition[] = [
         social: 'Social media',
         referral: 'Other websites',
         direct: 'Direct / typed-in',
+        email: 'Email',
         unattributed: 'Unattributed',
       };
       const breakdown = await ctx.run((tx) =>
@@ -184,6 +185,33 @@ export const COMMERCE_SALES_METRICS: readonly MetricDefinition[] = [
         rows: rows.map((r) => ({
           key: r.source,
           label: SOURCE_LABEL[r.source] ?? r.source,
+          value: r.revenueCents,
+          sharePct: r.sharePct,
+        })),
+      };
+    },
+  },
+  {
+    id: 'commerce.revenue.by_email_campaign',
+    module: 'commerce',
+    label: 'Revenue from your emails',
+    unit: 'currency',
+    grains: ALL_GRAINS,
+    shapes: ['breakdown'],
+    additive: true,
+    scope: 'tenant',
+    async resolve(ctx): Promise<MetricData> {
+      // The email slice of "revenue by traffic source", one level deeper: which SENT
+      // EMAIL the sales came from (docs/impl transactional-email Slice 10). Answers
+      // "how much did the Welcome email make" in the owner's own reports.
+      const breakdown = await ctx.run((tx) =>
+        reportingService.emailCampaignRevenue(svc(ctx, tx), serviceRange(ctx))
+      );
+      const rows = ctx.limit ? breakdown.byCampaign.slice(0, ctx.limit) : breakdown.byCampaign;
+      return {
+        rows: rows.map((r) => ({
+          key: r.campaign,
+          label: r.campaign,
           value: r.revenueCents,
           sharePct: r.sharePct,
         })),

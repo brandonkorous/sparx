@@ -1779,6 +1779,76 @@ export async function attributionBreakdown(
   });
 }
 
+// ─── Email-campaign revenue (docs/impl transactional-email Slice 10) ──────────
+// The per-campaign drill of the `email` attribution source: which SENT EMAIL the
+// revenue came from. Only `email`-source orders carry a campaign, so it's the
+// email slice of attributionBreakdown one level deeper — answering "how much did
+// the Welcome email actually make" for a non-technical owner.
+
+export interface EmailCampaignRevenueRow {
+  campaign: string;
+  orders: number;
+  revenueCents: number;
+  sharePct: number;
+}
+
+export interface EmailCampaignRevenueBreakdown {
+  rangeLabel: string;
+  totalOrders: number;
+  totalRevenueCents: number;
+  byCampaign: EmailCampaignRevenueRow[];
+  currency: string;
+}
+
+export async function emailCampaignRevenue(
+  ctx: ServiceContext,
+  range?: DateRange
+): Promise<EmailCampaignRevenueBreakdown> {
+  const to = range ? new Date(range.to) : new Date();
+  const from = range
+    ? new Date(range.from)
+    : new Date(Date.now() - CHANNEL_DEFAULT_DAYS * 86_400_000);
+  const label = range ? rangeLabel(range) : `Last ${CHANNEL_DEFAULT_DAYS} days`;
+
+  return withTenant(ctx, async (tx) => {
+    const groups = await tx.order.groupBy({
+      by: ['attributionCampaign'],
+      where: {
+        placedAt: { gte: from, lte: to },
+        status: { not: 'cancelled' },
+        attributionSource: 'email',
+        attributionCampaign: { not: null },
+      },
+      _count: { _all: true },
+      _sum: { total: true },
+    });
+
+    const rows = groups.map((g) => ({
+      campaign: g.attributionCampaign ?? 'Email',
+      orders: g._count._all,
+      revenueCents: decimalToCents(g._sum.total),
+    }));
+    const totalRevenueCents = rows.reduce((s, r) => s + r.revenueCents, 0);
+    const totalOrders = rows.reduce((s, r) => s + r.orders, 0);
+
+    const byCampaign: EmailCampaignRevenueRow[] = rows
+      .map((r) => ({
+        ...r,
+        sharePct:
+          totalRevenueCents > 0 ? +((r.revenueCents / totalRevenueCents) * 100).toFixed(1) : 0,
+      }))
+      .sort((a, b) => b.revenueCents - a.revenueCents);
+
+    return {
+      rangeLabel: label,
+      totalOrders,
+      totalRevenueCents,
+      byCampaign,
+      currency: DEFAULT_CURRENCY,
+    };
+  });
+}
+
 // ─── Channel revenue consolidation (docs/27 §8, docs/106 §4.4) ────────────────
 //
 // The richer sibling of channelBreakdown: it CONSOLIDATES every sales channel —

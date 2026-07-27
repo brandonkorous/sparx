@@ -30,6 +30,7 @@ import {
 } from '../schemas/broadcasts';
 import { audienceScope } from './audience-scope';
 import { resolveEmailBrand } from './brand-service';
+import { resolveEmailTracking } from './email-tracking-service';
 import { get as getSettings } from './settings-service';
 
 const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
@@ -51,6 +52,9 @@ async function loadPublishedBuilderEmail(
   ctx: ServiceContext,
   builderEmailId: string
 ): Promise<{
+  name: string;
+  key: string | null;
+  trackingCampaign: string | null;
   subject: string;
   preheader: string | null;
   silicaDoc: SilicaEmailDocument;
@@ -62,6 +66,10 @@ async function loadPublishedBuilderEmail(
   if (row.publishedTree == null && row.silicaPublishedDocument == null) return null;
   const stored = row.silicaPublishedDocument as SilicaEmailDocument | null;
   return {
+    // Identity for link-click attribution (docs/impl transactional-email Slice 10).
+    name: row.name,
+    key: row.key,
+    trackingCampaign: row.trackingCampaign,
     subject: row.subject,
     preheader: row.preheader,
     silicaDoc:
@@ -289,6 +297,15 @@ async function enqueueAndMark(
     // The same propertyId scopes `{{tenant.name}}` so body copy matches the brand.
     const brand = await resolveEmailBrand(ctx, broadcast.propertyId);
     const data = await resolveSilicaEmailData(silicaDoc, undefined, broadcast.propertyId);
+    // Attribution: tag this email's on-site links so a click (and any order that
+    // follows) is credited to the email in the tenant's own analytics (docs/impl
+    // transactional-email Slice 10). The personalized branch below defers to the
+    // dispatch tick (api-rest `renderBuilderEmailDoc`), which tags there.
+    const tracking = await resolveEmailTracking(
+      ctx,
+      { key: doc.key, name: doc.name, trackingCampaign: doc.trackingCampaign },
+      broadcast.propertyId
+    );
     // `marketing: true` injects the legal footer. The unsubscribe URL is per-recipient
     // and a render-once body has no recipient, so it falls back to `#` — exactly what
     // the retired `unsubscribe_link` node did on this same path.
@@ -300,6 +317,7 @@ async function enqueueAndMark(
         preheader: broadcast.preheader,
         data,
         marketing: true,
+        ...(tracking ? { tracking } : {}),
       },
       { brand: brand ?? undefined }
     );

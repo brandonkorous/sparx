@@ -30,6 +30,17 @@ export { buildDarkModeCss, darkModeRules } from './dark-mode';
 // the studio types its canvas colour map without a direct silicaui-builder dep.
 export type { EmailColorDefaults } from '@wizeworks/silicaui-builder/email';
 export { emailDocumentToText } from './to-text';
+// Send-time link-click attribution (docs/impl transactional-email Slice 10): tags
+// on-site links so the tenant's own analytics credit the email. The lint layer
+// (`lintEmailRender`) reuses these to tell the author, in plain language, which
+// links will be tracked and which are off-site.
+export {
+  tagEmailHtmlLinks,
+  tagEmailTextLinks,
+  tagTrackedUrl,
+  EMAIL_UTM_MEDIUM,
+  type EmailLinkTracking,
+} from './link-tracking';
 // Pre-send checks (Gmail-clipping size, dead links, missing image descriptions,
 // misspelled personalization tags, subject/preview text) — the confidence layer under
 // the studio's "Preview & Check". Runs server-side alongside `renderPreview`.

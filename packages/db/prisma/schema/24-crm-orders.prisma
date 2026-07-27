@@ -89,9 +89,14 @@ model Order {
   // distinguishes "looked and found nothing" from "never looked" — a backfill
   // needs it to know which orders it still owes work to. Vocabulary matches
   // SiteAnalyticsEvent.source so reports need no mapping table.
-  attributionSource       String?   @map("attribution_source") @db.VarChar(20) // search | direct | social | referral
+  attributionSource       String?   @map("attribution_source") @db.VarChar(20) // search | direct | social | referral | email
   attributionReferrerHost String?   @map("attribution_referrer_host") @db.VarChar(255) // e.g. "instagram.com"; null for direct
   attributionLandingPath  String?   @map("attribution_landing_path") @db.VarChar(2048) // first path this visitor saw that day
+  // The email campaign that produced this order (docs/impl transactional-email Slice 10):
+  // copied from the matched first-touch pageview's `campaign` when its source is `email`,
+  // so "Revenue by traffic source" can drill Email → per-campaign. Null for every
+  // non-email (or unattributed) order. Same value space as SiteAnalyticsEvent.campaign.
+  attributionCampaign     String?   @map("attribution_campaign") @db.VarChar(64)
   attributionResolvedAt   DateTime? @map("attribution_resolved_at") @db.Timestamptz
 
   // Set when this order was created by accepting a BillingDocument (a quote) —

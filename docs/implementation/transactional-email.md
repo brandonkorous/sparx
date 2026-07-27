@@ -1,6 +1,6 @@
 # Transactional email — coverage + build tracker
 
-Version: 1.5
+Version: 1.6
 Author: Brandon Korous
 Last Updated: 2026-07-27
 
@@ -857,3 +857,52 @@ workflow on the next push to `main`.
 
 **Decoupled (not built):** the same seam for SITE-builder symbols (§15) remains a separate
 data-model decision, deliberately out of scope here.
+
+## 18. Slice 10 — measurable email links (click + revenue attribution) (2026-07-27, uncommitted)
+
+The email builder could not answer "did anyone click, and did it lead to a sale?" — a 10/10
+gap. Bare links landed on the storefront with no referrer (mail clients strip it), so the
+tenant's own analytics recorded the visit as **direct** and the email got zero credit. Slice 10
+makes every email's links measurable **end-to-end**, in the tenant's own reports, with zero
+configuration for the owner.
+
+**How it works (two sides).**
+
+- **Send tags on-site links.** New `@sparx/email/silica` `link-tracking.ts` (`tagEmailHtmlLinks` /
+  `tagEmailTextLinks` / `tagTrackedUrl`) rewrites every link to the tenant's own site with
+  `utm_source=<email key/slug>` · `utm_medium=email` · `utm_campaign=<the email's name>`, over the
+  final post-interpolation URLs. **On-site only** — a carrier/social/partner link can't be measured
+  by the tenant's analytics, so it's left alone; `mailto:`/`tel:`/anchors and any author-set
+  `utm_source` are never touched. Wired into `renderSilicaEmail` (last step), so **every** send path
+  tags: transactional/automation (`tenant-email.ts`), broadcasts (`broadcast-service`), preview +
+  test-send. Tracked hosts + campaign resolve once via `emailTrackingService.resolveEmailTracking`
+  (email-platform): the tenant's verified custom domains + the `SPARX_SITE_BASE` host; campaign =
+  the author override (`BuilderEmail.trackingCampaign`) else the email's name; `undefined` (no-op)
+  when there's no site host (dev).
+- **Analytics reads it.** The storefront beacon (`apps/site`) forwards the landing URL's
+  `utm_medium`/`utm_campaign` on the **first** pageview only; the collect route accepts them; the
+  classifier (`site-analytics.ts`) returns `source='email'` on `utm_medium=email` (ahead of the
+  referrer) and stores the campaign (new `site_analytics_events.campaign` column). Orders inherit it
+  for free — `resolveOrderAttribution` already copies the first-touch pageview's source, and now its
+  campaign too (new `orders.attribution_campaign`).
+
+**What the owner sees.** Preview & Check gains a plain-language line — _"3 links are tracked —
+clicks show in your reports under 'Welcome email.' 1 link goes to another website, which your
+reports can't follow."_ A **Tracking** popover in the studio explains it and lets them name the
+campaign (defaults to the email's name). In their reports: **Email** is now a named traffic source
+(both "Where visits came from" and "Revenue by traffic source"), plus two per-campaign drills —
+`builder.traffic.email_campaigns` ("Visits from your emails") and `commerce.revenue.by_email_campaign`
+("Revenue from your emails") — so _Welcome email → 38 visits → 4 orders → $612_ is answerable.
+
+**DB (applied to local docker, regenerated):** additive nullable columns on three FORCE-RLS tables —
+`site_analytics_events.campaign`, `orders.attribution_campaign`, `builder_emails.tracking_campaign`
+(migration `20270121000000_email_link_attribution`); no backfill.
+
+**Not built (flagged, separate):** **form-submission** email attribution. Forms capture only
+referrer/IP/UA in a JSON `context` blob with no source column and no `resolveOrderAttribution`-style
+resolver — they lack the whole attribution spine, not just the email slice, so email→form
+attribution is a separate build on top of generic form attribution.
+
+**Verified:** email 59 (+14 link-tracking) · builder 68 · builder-schemas 252 · email-platform 10 ·
+commerce 48 tests pass; email / builder-schemas / builder / email-platform / commerce / api-rest /
+workbench / site typecheck + lint + prettier clean.

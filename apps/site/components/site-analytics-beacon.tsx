@@ -23,6 +23,19 @@ interface SiteAnalyticsBeaconProps {
   propertySlug?: string;
 }
 
+/** The email-attribution utm keys off the CURRENT landing URL — the only two we read
+ *  (docs/impl transactional-email Slice 10). Returns nothing unless `utm_medium` is
+ *  present, so a normal visit sends no utm at all. Read once, on the landing pageview,
+ *  never on later in-site navigations (which would re-credit the email for browsing). */
+function landingUtm(): { utmMedium?: string; utmCampaign?: string } {
+  if (typeof window === 'undefined') return {};
+  const params = new URLSearchParams(window.location.search);
+  const medium = params.get('utm_medium');
+  if (!medium) return {};
+  const campaign = params.get('utm_campaign');
+  return { utmMedium: medium, ...(campaign ? { utmCampaign: campaign } : {}) };
+}
+
 function analyticsAllowed(): boolean {
   if (typeof navigator !== 'undefined' && navigator.doNotTrack === '1') return false;
   if (typeof document === 'undefined') return false;
@@ -138,6 +151,9 @@ export function SiteAnalyticsBeacon({
     if (!apiUrl || !tenantSlug || !pathname) return;
     if (lastSent.current === pathname) return;
     if (!analyticsAllowed()) return;
+    // The landing pageview (first of this mount) carries the email-click utm; later
+    // in-site navigations must not, or every click would re-credit the email.
+    const isLanding = lastSent.current === null;
     lastSent.current = pathname;
 
     const url = `${apiUrl}/v1/public/site/collect?tenant=${encodeURIComponent(tenantSlug)}`;
@@ -147,6 +163,7 @@ export function SiteAnalyticsBeacon({
         path: pathname,
         referrer: document.referrer || undefined,
         ...(propertySlug ? { property: propertySlug } : {}),
+        ...(isLanding ? landingUtm() : {}),
       })
     );
   }, [apiUrl, tenantSlug, propertySlug, pathname]);

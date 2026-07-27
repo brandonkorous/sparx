@@ -1,7 +1,7 @@
 // First-party site analytics — public ingestion (docs/97 §5, docs/08).
 //
 //   POST /v1/public/site/collect?tenant=<slug>
-//     body: { path, referrer?, type?, property?, metrics? }
+//     body: { path, referrer?, type?, property?, utmMedium?, utmCampaign?, metrics? }
 //
 // The storefront beacon (apps/site) calls this on each pageview, and once per
 // page load with `type:'vital'` + a `metrics` map (web-vitals RUM). Cookieless +
@@ -21,6 +21,7 @@ import {
   deriveVisitor,
   isBot,
   isDoNotTrack,
+  normalizeCampaign,
   normalizePath,
   referrerHost,
 } from '../../../lib/site-analytics.js';
@@ -30,6 +31,12 @@ const CollectBody = z.object({
   referrer: z.string().max(2048).optional(),
   type: z.enum(['pageview', 'signup', 'vital']).optional(),
   property: z.string().min(1).max(63).optional(),
+  // Email-link attribution (docs/impl transactional-email Slice 10): the beacon
+  // forwards the landing URL's `utm_medium` / `utm_campaign` (the ONLY utm keys we
+  // read — the rest of the query string is never sent or stored). A hit with
+  // `utm_medium=email` is classified `email` and its campaign recorded.
+  utmMedium: z.string().max(64).optional(),
+  utmCampaign: z.string().max(128).optional(),
   // Web-vitals RUM (type='vital' only): metric name → value. Server-validated
   // against the allowlist + sane bounds below before any row is written.
   metrics: z.record(z.string().max(16), z.number().finite()).optional(),
@@ -62,7 +69,10 @@ const siteAnalyticsRoutes: FastifyPluginAsync = async (app) => {
     const selfHost =
       (request.headers['x-forwarded-host'] as string | undefined) ?? request.headers.host ?? null;
     const refHost = referrerHost(body.referrer);
-    const source = classifySource(refHost, selfHost);
+    const source = classifySource(refHost, selfHost, body.utmMedium);
+    // Campaign is meaningful only for an email-sourced hit; every other source
+    // leaves it null.
+    const campaign = source === 'email' ? normalizeCampaign(body.utmCampaign) : null;
     const now = new Date();
     const { visitorHash, sessionHash } = deriveVisitor(tenantId, request.ip, userAgent, now);
     const country =
@@ -88,6 +98,7 @@ const siteAnalyticsRoutes: FastifyPluginAsync = async (app) => {
         propertyId,
         path,
         source,
+        campaign,
         referrerHost: refHost,
         visitorHash,
         sessionHash,

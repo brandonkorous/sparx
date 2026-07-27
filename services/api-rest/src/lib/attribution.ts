@@ -64,7 +64,7 @@ export async function resolveOrderAttribution(input: ResolveOrderAttributionInpu
           createdAt: { gte: startOfUtcDay(now) },
         },
         orderBy: { createdAt: 'asc' },
-        select: { source: true, referrerHost: true, path: true },
+        select: { source: true, campaign: true, referrerHost: true, path: true },
       });
 
       await tx.order.update({
@@ -75,6 +75,10 @@ export async function resolveOrderAttribution(input: ResolveOrderAttributionInpu
           // (staff / B2B / POS / phone / renewal, or a visit on another day —
           // docs/128 §5), distinct from "never looked" (resolvedAt IS NULL).
           attributionSource: firstTouch?.source ?? null,
+          // The email campaign carries across the same visit→order bridge (docs/impl
+          // transactional-email Slice 10), so "Revenue by traffic source" can drill
+          // Email → per-campaign. Only ever set on an `email`-source first touch.
+          attributionCampaign: firstTouch?.campaign ?? null,
           attributionReferrerHost: firstTouch?.referrerHost ?? null,
           attributionLandingPath: firstTouch?.path ?? null,
           attributionResolvedAt: now,

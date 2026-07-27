@@ -20,7 +20,7 @@ import { publish } from '@sparx/api-core/pubsub';
 import type { RawEmailSendPayload } from '@sparx/events';
 import { renderSilicaEmail } from '@sparx/email/silica';
 import { emailService } from '@sparx/builder';
-import { brandService } from '@sparx/email-platform';
+import { brandService, emailTrackingService } from '@sparx/email-platform';
 import {
   interpolateEmailTokens,
   resolvePath,
@@ -160,6 +160,15 @@ export async function renderBuilderEmailDoc(
   // The footer's utility + legal links (account · contact · privacy · terms · …) for
   // THIS site — same published-legal-page source as the storefront footer.
   const footerLinks = await resolveEmailFooterLinks(ctx, args.propertyId ?? null);
+  // Attribution: tag this email's on-site links so a click (and any order that
+  // follows) is credited to the email in the tenant's own analytics (docs/impl
+  // transactional-email Slice 10). undefined when there's no site host to attribute
+  // to (dev / no custom domain), in which case links ship untagged.
+  const tracking = await emailTrackingService.resolveEmailTracking(
+    ctx,
+    { key: args.doc.key, name: args.doc.name, trackingCampaign: args.doc.trackingCampaign },
+    args.propertyId ?? null
+  );
 
   // ONE engine (docs/120 slice 7): every email — including one authored on the retired
   // sparx builder, which `emailService` converts on read — renders through silica.
@@ -176,6 +185,7 @@ export async function renderBuilderEmailDoc(
         ...(unsubUrl ? { unsubscribeUrl: unsubUrl } : {}),
       },
       footerLinks,
+      ...(tracking ? { tracking } : {}),
     },
     { brand }
   );

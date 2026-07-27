@@ -47,6 +47,10 @@ export interface BuilderEmailDto {
    *  has no property; `'site'` once a site forks it. Lets the editor badge an
    *  override and offer the fork only on a shared default. */
   scope: 'tenant' | 'site';
+  /** The campaign an author's link clicks report under (docs/impl transactional-email
+   *  Slice 10). Null → clicks report under the email's `name`; a value overrides it
+   *  (e.g. grouping sends under one "Spring Sale"). Drives the studio's tracking field. */
+  trackingCampaign: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -57,6 +61,11 @@ export interface PublishedEmailDto {
   name: string;
   subject: string;
   preheader: string | null;
+  /** The built-in default key (`welcome-customer`, …) or null for a custom email —
+   *  the stable `utm_source` for link tracking (docs/impl transactional-email Slice 10). */
+  key: string | null;
+  /** The link-tracking campaign override; null → use `name`. */
+  trackingCampaign: string | null;
   /** The PUBLISHED silica document — the ONE thing the send renders (docs/120
    *  slice 7). Never null: an email authored on the retired sparx engine is
    *  converted from its stored tree on read (`emailTreeToSilica`), so the send path
@@ -85,6 +94,9 @@ export const UpdateEmailInput = z
     subject: z.string().max(255).optional(),
     preheader: z.string().max(255).nullish(),
     tree: BuilderNodeSchema.optional(),
+    // Link-tracking campaign override (docs/impl transactional-email Slice 10);
+    // null clears it (back to the email's name), '' is coerced to null in the service.
+    trackingCampaign: z.string().max(64).nullish(),
   })
   .refine((v) => Object.values(v).some((field) => field !== undefined), {
     message: 'Provide at least one field to update.',

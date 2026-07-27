@@ -21,6 +21,7 @@ const SOURCE_LABEL: Record<string, string> = {
   direct: 'Typed in or bookmarked',
   social: 'Social media',
   referral: 'Other websites',
+  email: 'Email',
   unknown: 'Other',
 };
 
@@ -199,6 +200,31 @@ export const BUILDER_TRAFFIC_METRICS: readonly MetricDefinition[] = [
         rows: limited.map((r) => ({
           key: r.source,
           label: sourceLabel(r.source),
+          value: r.visits,
+          sharePct: total > 0 ? Math.round((r.visits / total) * 100) : 0,
+        })),
+      };
+    },
+  },
+  {
+    id: 'builder.traffic.email_campaigns',
+    module: 'builder',
+    label: 'Visits from your emails',
+    unit: 'count',
+    grains: ALL_GRAINS,
+    shapes: ['breakdown'],
+    additive: true,
+    scope: 'property',
+    async resolve(ctx): Promise<MetricData> {
+      const propertyId = siteOf(ctx);
+      const { from, toExclusive } = ctx.range;
+      const rows = await ctx.run((tx) => reports.emailCampaigns(tx, propertyId, from, toExclusive));
+      const total = rows.reduce((sum, r) => sum + r.visits, 0);
+      const limited = ctx.limit ? rows.slice(0, ctx.limit) : rows;
+      return {
+        rows: limited.map((r) => ({
+          key: r.campaign,
+          label: r.campaign,
           value: r.visits,
           sharePct: total > 0 ? Math.round((r.visits / total) * 100) : 0,
         })),

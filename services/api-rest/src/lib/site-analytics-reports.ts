@@ -294,6 +294,38 @@ export async function sources(
   return rows.map((r) => ({ source: r.source, visits: Number(r.visits) }));
 }
 
+// ── Email campaigns (visits from the tenant's own sent emails) ───────
+// The per-campaign drill of the `email` source (docs/impl transactional-email
+// Slice 10): which SENT EMAIL drove the visits. Only `email`-source rows carry a
+// campaign, so this is just the source breakdown one level deeper.
+export interface EmailCampaignRow {
+  campaign: string;
+  visits: number;
+}
+interface RawEmailCampaign {
+  campaign: string | null;
+  visits: number;
+}
+
+export async function emailCampaigns(
+  tx: TxClient,
+  propertyId: string,
+  from: Date,
+  toExclusive: Date
+): Promise<EmailCampaignRow[]> {
+  const rows = await tx.$queryRaw<RawEmailCampaign[]>`
+    SELECT campaign, COUNT(DISTINCT visitor_hash)::int AS visits
+    FROM site_analytics_events
+    WHERE property_id = ${propertyId}::uuid
+      AND type = 'pageview'
+      AND source = 'email'
+      AND campaign IS NOT NULL
+      AND created_at >= ${from} AND created_at < ${toExclusive}
+    GROUP BY campaign ORDER BY visits DESC
+  `;
+  return rows.map((r) => ({ campaign: r.campaign ?? 'Email', visits: Number(r.visits) }));
+}
+
 // ── Web vitals (avg per metric over the window) ──────────────────────
 export interface SiteVitals {
   load: number | null; // avg page load time, ms (rounded)

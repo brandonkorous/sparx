@@ -15,7 +15,12 @@ import { createHash } from 'node:crypto';
 const SALT = process.env.SITE_ANALYTICS_SALT ?? 'sparx-dev-analytics-salt';
 const SESSION_WINDOW_MS = 30 * 60 * 1000;
 
-export type AnalyticsSource = 'search' | 'social' | 'referral' | 'direct';
+export type AnalyticsSource = 'search' | 'social' | 'referral' | 'direct' | 'email';
+
+/** `utm_medium` value sparx puts on every tracked email link (kept in sync with
+ *  `@sparx/email/silica`'s `EMAIL_UTM_MEDIUM`). A hit carrying it is classified
+ *  `email`, ahead of any referrer-based class. */
+const EMAIL_UTM_MEDIUM = 'email';
 
 // Referrer-host fragments → source class. Substring match keeps the list short
 // (e.g. "google." catches google.com / google.co.uk / news.google.com).
@@ -46,14 +51,31 @@ export function referrerHost(referrer: string | null | undefined): string | null
   }
 }
 
-/** Classify a referrer host against the site's own host: same host = direct. */
-export function classifySource(refHost: string | null, selfHost: string | null): AnalyticsSource {
+/** Classify a hit's source. An explicit `utm_medium=email` (a click from one of the
+ *  tenant's own sent emails, docs/impl transactional-email Slice 10) WINS over the
+ *  referrer — mail clients routinely strip the referrer, so without this the click
+ *  would misclassify as `direct` and the email would get no credit. Otherwise falls
+ *  back to the referrer-host classification (same host as the site = direct). */
+export function classifySource(
+  refHost: string | null,
+  selfHost: string | null,
+  utmMedium?: string | null
+): AnalyticsSource {
+  if (utmMedium?.trim().toLowerCase() === EMAIL_UTM_MEDIUM) return 'email';
   if (!refHost) return 'direct';
   // Same host as the site itself = direct (selfHost null → never matches refHost).
   if (refHost === selfHost?.toLowerCase().replace(/^www\./, '')) return 'direct';
   if (SEARCH_HOSTS.some((h) => refHost.includes(h))) return 'search';
   if (SOCIAL_HOSTS.some((h) => refHost.includes(h))) return 'social';
   return 'referral';
+}
+
+/** Sanitize a `utm_campaign` for storage: trimmed, capped to the column width, null
+ *  when empty. Only meaningful on an `email`-source hit. */
+export function normalizeCampaign(raw: string | null | undefined): string | null {
+  if (typeof raw !== 'string') return null;
+  const trimmed = raw.trim();
+  return trimmed === '' ? null : trimmed.slice(0, 64);
 }
 
 /** Strip query/hash, collapse to a bounded, leading-slash path. */

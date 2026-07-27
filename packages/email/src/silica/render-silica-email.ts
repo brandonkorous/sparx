@@ -49,6 +49,7 @@ import {
 import { buildDarkModeCss } from './dark-mode';
 import { composeSendDocument, type EmailCompliance, type FooterLink } from './frame';
 import { emailDocumentToText } from './to-text';
+import { tagEmailHtmlLinks, tagEmailTextLinks, type EmailLinkTracking } from './link-tracking';
 
 const FALLBACK_FROM = 'sparx <noreply@sparx.email>';
 
@@ -83,6 +84,12 @@ export interface RenderSilicaEmailInput {
    *  built from the site's account portal + published legal pages. Rendered as the
    *  footer's utility/legal row; omitted → that row is absent. */
   footerLinks?: FooterLink[];
+  /** Link-click attribution (docs/impl transactional-email Slice 10). When present,
+   *  every ON-SITE link in the rendered send is tagged with UTM params so the
+   *  tenant's own analytics attribute the click (and any order/visit that follows)
+   *  to this email. Omit for a static/preview render with no site context — links
+   *  ship untagged. Off-site links are never tagged regardless. */
+  tracking?: EmailLinkTracking;
 }
 
 export interface RenderSilicaEmailOptions {
@@ -168,6 +175,13 @@ export function renderSilicaEmail(
   // 4. Plain text from the resolved tree, tokens interpolated the same way.
   const text = interpolateEmailTokens(emailDocumentToText(resolvedDoc), resolveToken);
 
+  // 5. Attribution: tag on-site links so the tenant's analytics credit this email
+  //    (docs/impl transactional-email Slice 10). Runs LAST, on the concrete
+  //    post-interpolation URLs, over both bodies identically — a no-op when the
+  //    caller passed no `tracking` (static/preview render) or the URL is off-site.
+  const trackedHtml = input.tracking ? tagEmailHtmlLinks(html, input.tracking) : html;
+  const trackedText = input.tracking ? tagEmailTextLinks(text, input.tracking) : text;
+
   const subject = interpolateEmailTokens(input.subject ?? input.doc.subject, resolveToken);
 
   return {
@@ -175,7 +189,7 @@ export function renderSilicaEmail(
     to: input.to,
     replyTo: input.replyTo,
     subject,
-    html,
-    text,
+    html: trackedHtml,
+    text: trackedText,
   };
 }

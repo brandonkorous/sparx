@@ -19,7 +19,13 @@ import {
   darkModeRules,
   lintEmailRender,
 } from '@sparx/email/silica';
-import type { EmailCheck, EmailColorDefaults, EmailFrame, FooterLink } from '@sparx/email/silica';
+import type {
+  EmailCheck,
+  EmailColorDefaults,
+  EmailFrame,
+  EmailLinkTracking,
+  FooterLink,
+} from '@sparx/email/silica';
 import { defaultBrand } from '@sparx/email';
 import type { DataSources, SilicaEmailDocument } from '@sparx/builder-schemas';
 
@@ -91,7 +97,8 @@ export async function renderPreview(
   doc: BuilderEmailDoc,
   resolveSilicaData: ResolveSilicaEmailData = noSilicaEmailDataResolver,
   propertyId?: string | null,
-  footerLinks?: FooterLink[]
+  footerLinks?: FooterLink[],
+  tracking?: EmailLinkTracking
 ): Promise<RenderedPreview> {
   const [brand, data] = await Promise.all([
     resolveEmailBrand(ctx, propertyId),
@@ -108,17 +115,22 @@ export async function renderPreview(
       // them here too so the preview footer isn't just the business name (docs/impl
       // transactional-email §7). Resolved per-site by the caller.
       footerLinks,
+      // Tag on-site links so the preview shows the SAME tracked URLs the send ships
+      // (docs/impl transactional-email Slice 10). Absent → untagged (no site context).
+      ...(tracking ? { tracking } : {}),
     },
     { brand: brand ?? undefined }
   );
   // Checks read the AUTHORED subject/preheader (raw `{{tokens}}` intact) so a misspelled
   // tag is caught by path, and the FINAL projected HTML so the size check matches what
-  // actually ships (frame included).
+  // actually ships (frame included). The tracking context adds the plain-language
+  // "your clicks are counted" line, scoped to this email's campaign.
   const checks = lintEmailRender({
     doc: doc.silicaDoc,
     html: rendered.html,
     subject: doc.subject,
     preheader: doc.preheader,
+    ...(tracking ? { tracking: { hosts: tracking.hosts, campaign: tracking.campaign } } : {}),
   });
   // The dark override rules for the Light/Dark preview toggle, from the SAME resolved
   // brand the render used (merged over defaults so a partial/absent brand still resolves
@@ -188,7 +200,8 @@ export async function prepareTestSend(
   rawInput: unknown,
   resolveSilicaData: ResolveSilicaEmailData = noSilicaEmailDataResolver,
   propertyId?: string | null,
-  footerLinks?: FooterLink[]
+  footerLinks?: FooterLink[],
+  tracking?: EmailLinkTracking
 ): Promise<PreparedTestSend> {
   const { to } = TestSendInput.parse(rawInput);
   const [brand, settings] = await Promise.all([
@@ -211,6 +224,9 @@ export async function prepareTestSend(
       preheader: doc.preheader,
       data: await resolveSilicaData(doc.silicaDoc, { email: to }),
       footerLinks,
+      // A test send goes through the SAME tag pass as a real send, so a staff click
+      // is attributed identically (docs/impl transactional-email Slice 10).
+      ...(tracking ? { tracking } : {}),
     },
     { brand: brand ?? undefined }
   );

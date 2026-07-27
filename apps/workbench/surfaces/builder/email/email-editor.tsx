@@ -60,6 +60,7 @@ import {
   History,
   Monitor,
   Moon,
+  MousePointerClick,
   Pencil,
   Plus,
   RotateCcw,
@@ -127,6 +128,7 @@ import {
   useRestoreEmailVersion,
   useSavedEmailBlocks,
   useSaveEmailDoc,
+  useSetEmailCampaign,
   useSendEmailTest,
   useSiteBrandInfos,
   useSiteBuilderConfig,
@@ -874,6 +876,11 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
 
       <div className="ml-auto flex flex-wrap items-center gap-2">
         <MergeTagsMenu />
+        <TrackingMenu
+          emailId={active.id}
+          emailName={active.name}
+          campaign={active.trackingCampaign}
+        />
         {active.published ? (
           <Button
             size="sm"
@@ -1059,6 +1066,92 @@ function MergeTagItem({ tag }: { tag: MergeTag }) {
         )}
       </button>
     </li>
+  );
+}
+
+/** Link-tracking control (docs/impl transactional-email Slice 10). Every on-site link in
+ *  an email is tracked automatically at send, so this popover is REASSURANCE + one lever:
+ *  it explains, in plain language, that clicks show up in the owner's reports, and lets
+ *  them name the campaign those clicks group under (the email's name by default). Saved
+ *  immediately on blur/Enter, like a rename — not part of the doc Save. */
+function TrackingMenu({
+  emailId,
+  emailName,
+  campaign,
+}: {
+  emailId: string;
+  emailName: string;
+  campaign: string | null;
+}) {
+  const toast = useToast();
+  const setCampaign = useSetEmailCampaign(emailId);
+  const [draft, setDraft] = useState(campaign ?? '');
+
+  // Re-seed when switching emails (the component stays mounted across the switcher).
+  useEffect(() => {
+    setDraft(campaign ?? '');
+  }, [campaign, emailId]);
+
+  const commit = () => {
+    const next = draft.trim() === '' ? null : draft.trim();
+    if (next === (campaign ?? null)) return;
+    setCampaign.mutate(next, {
+      onError: (error) => {
+        setDraft(campaign ?? '');
+        toast.add({
+          title: 'Could not update tracking',
+          description: emailErrorMessage(error, 'The campaign name was left as it was.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  return (
+    <PaneScope>
+      <Popover>
+        <PopoverTrigger>
+          <Button size="sm" variant="outline" color="neutral">
+            <MousePointerClick className="size-4" aria-hidden />
+            <span className="hidden @md:inline">Tracking</span>
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent className="flex w-80 flex-col gap-3 p-3">
+          <div className="flex flex-col gap-1">
+            <Heading level={2} className="text-sm font-semibold">
+              Click tracking
+            </Heading>
+            <Text className="text-sm">
+              Links in this email that go to your own site are tracked automatically, so clicks —
+              and any sales that follow — show up in your reports. Links to other websites can’t be
+              tracked.
+            </Text>
+          </div>
+          <label className="flex flex-col gap-1">
+            <span className="text-sm font-medium">Campaign name</span>
+            <Input
+              size="sm"
+              color="module"
+              value={draft}
+              placeholder={emailName}
+              aria-label="Campaign name"
+              onChange={(event) => {
+                setDraft(event.target.value);
+              }}
+              onBlur={commit}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter') event.currentTarget.blur();
+                if (event.key === 'Escape') setDraft(campaign ?? '');
+              }}
+            />
+            <Text className="text-xs">
+              How these clicks appear in your reports. Leave blank to use the email’s name
+              {emailName ? ` (“${emailName}”)` : ''}.
+            </Text>
+          </label>
+        </PopoverContent>
+      </Popover>
+    </PaneScope>
   );
 }
 
