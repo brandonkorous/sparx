@@ -64,24 +64,58 @@ export interface TriggerEventDef {
 }
 
 /** Curated event suggestions, grouped by the part of the business they come
- *  from. Free text is still allowed — these are offered, not enforced. */
+ *  from. Free text is still allowed — these are offered, not enforced.
+ *
+ *  Every entry here corresponds to an event the automation ENGINE actually
+ *  publishes and (where fields matter) has a registered resolver for, so the
+ *  suggestions never dangle a trigger that can't fire or resolves nothing. */
 export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
+  // ── Selling — orders ──
   { eventType: 'order.placed', label: 'An order is placed', module: 'commerce' },
+  { eventType: 'order.paid', label: 'An order is paid', module: 'commerce' },
   { eventType: 'order.fulfilled', label: 'An order is fulfilled', module: 'commerce' },
+  { eventType: 'order.delivered', label: 'An order is delivered', module: 'commerce' },
   { eventType: 'order.cancelled', label: 'An order is cancelled', module: 'commerce' },
-  { eventType: 'commerce.order.refunded', label: 'An order is refunded', module: 'commerce' },
-  { eventType: 'product.published', label: 'A product goes live', module: 'commerce' },
+  { eventType: 'order.refunded', label: 'An order is refunded', module: 'commerce' },
+  { eventType: 'order.payment_failed', label: 'An order payment fails', module: 'commerce' },
+  // ── Selling — subscriptions ──
+  { eventType: 'subscription.created', label: 'A subscription starts', module: 'commerce' },
+  { eventType: 'subscription.renewed', label: 'A subscription renews', module: 'commerce' },
+  {
+    eventType: 'subscription.payment_failed',
+    label: 'A subscription payment fails',
+    module: 'commerce',
+  },
+  { eventType: 'subscription.paused', label: 'A subscription is paused', module: 'commerce' },
+  { eventType: 'subscription.resumed', label: 'A subscription resumes', module: 'commerce' },
+  { eventType: 'subscription.cancelled', label: 'A subscription is cancelled', module: 'commerce' },
+  // ── Selling — returns ──
+  { eventType: 'return.approved', label: 'A return is approved', module: 'commerce' },
+  { eventType: 'return.received', label: 'A return is received', module: 'commerce' },
+  { eventType: 'return.refunded', label: 'A return is refunded', module: 'commerce' },
+  // ── Selling — inventory ──
+  { eventType: 'inventory.low', label: 'A product runs low on stock', module: 'commerce' },
+  { eventType: 'inventory.depleted', label: 'A product sells out', module: 'commerce' },
+  // ── Content ──
+  { eventType: 'product.published', label: 'A product goes live', module: 'cms' },
   {
     eventType: 'content.entry.published',
     label: 'An article or page is published',
     module: 'cms',
   },
+  { eventType: 'form.submitted', label: 'A form on your site is submitted', module: 'cms' },
+  // ── Customers (CRM) ──
   { eventType: 'crm.customer.created', label: 'A new customer is added', module: 'crm' },
   { eventType: 'crm.customer.updated', label: 'A customer’s details change', module: 'crm' },
-  { eventType: 'crm.deal.stage_changed', label: 'A sales deal moves stage', module: 'crm' },
-  { eventType: 'crm.deal.won', label: 'A sales deal is won', module: 'crm' },
-  { eventType: 'crm.deal.lost', label: 'A sales deal is lost', module: 'crm' },
+  { eventType: 'crm.customer.subscribed', label: 'A customer opts in to marketing', module: 'crm' },
+  { eventType: 'crm.deal.created', label: 'A sales deal is created', module: 'crm' },
+  {
+    eventType: 'crm.deal.stage_changed',
+    label: 'A sales deal changes stage (e.g. won or lost)',
+    module: 'crm',
+  },
   { eventType: 'crm.task.created', label: 'A task is created', module: 'crm' },
+  // ── Invoicing ──
   {
     eventType: 'crm.billing_document.created',
     label: 'A quote, estimate or invoice is created',
@@ -102,16 +136,25 @@ export const TRIGGER_EVENTS: readonly TriggerEventDef[] = [
     label: 'A quote is converted to an order',
     module: 'invoicing',
   },
+  {
+    eventType: 'crm.billing_document.stage_changed',
+    label: 'A quote or invoice changes stage',
+    module: 'invoicing',
+  },
+  // ── Wholesale (B2B) ──
+  { eventType: 'crm.b2b_account.created', label: 'A wholesale account is created', module: 'b2b' },
+  { eventType: 'b2b.order.approved', label: 'A wholesale order is approved', module: 'b2b' },
+  { eventType: 'b2b.order.rejected', label: 'A wholesale order is rejected', module: 'b2b' },
   { eventType: 'b2b.invoice.overdue', label: 'A wholesale invoice is overdue', module: 'b2b' },
   {
     eventType: 'b2b.account.credit_hold',
     label: 'A wholesale account goes on credit hold',
     module: 'b2b',
   },
+  // ── Email ──
   { eventType: 'email.opened', label: 'A marketing email is opened', module: 'email' },
   { eventType: 'email.clicked', label: 'A link in an email is clicked', module: 'email' },
   { eventType: 'email.bounced', label: 'A marketing email bounces', module: 'email' },
-  { eventType: 'form.submitted', label: 'A form on your site is submitted', module: 'cms' },
 ];
 
 /** A scheduled trigger scans a kind of record on a timer; these are the kinds it
@@ -126,6 +169,13 @@ export const SCAN_ENTITIES: readonly ScanEntityDef[] = [
   { entity: 'customer', label: 'Customers', module: 'crm' },
   { entity: 'b2b_account', label: 'Wholesale accounts', module: 'b2b' },
   { entity: 'billing_document', label: 'Quotes & invoices', module: 'invoicing' },
+  { entity: 'cart', label: 'Abandoned carts', module: 'commerce' },
+  // A quote IS a billing document (the b2b-quotes workflow), so it shares the
+  // invoicing hue with billing_document above.
+  { entity: 'quote', label: 'Quotes awaiting a decision', module: 'invoicing' },
+  // No 'chat' module hue exists (the ModuleSlug union has no 'chat'), and chat
+  // lives under Customers — so conversations wear the CRM hue.
+  { entity: 'conversation', label: 'Chat conversations', module: 'crm' },
 ];
 
 export function scanEntityLabel(entity: string): string {
@@ -159,7 +209,15 @@ export const DAYS_OF_WEEK = [
 export function moduleForEventType(eventType: string): ModuleSlug {
   if (eventType.startsWith('crm.billing_document.')) return 'invoicing';
   const head = eventType.split('.')[0] ?? '';
-  if (head === 'order' || head === 'product' || head === 'variant' || head === 'inventory') {
+  if (
+    head === 'order' ||
+    head === 'product' ||
+    head === 'variant' ||
+    head === 'inventory' ||
+    head === 'return' ||
+    head === 'subscription' ||
+    head === 'payment'
+  ) {
     return 'commerce';
   }
   if (head === 'crm' || head === 'customer' || head === 'deal') return 'crm';
@@ -239,9 +297,9 @@ export type ConfigFieldType =
    */
   | 'multiselect';
 
-/** Where a `multiselect` gets its choices. One name per live-data list, so the form
- *  stays declarative and the fetching stays in one place. */
-export type ConfigOptionSource = 'social-targets';
+/** Where a `select`/`multiselect` gets its choices. One name per live-data list, so
+ *  the form stays declarative and the fetching stays in one place. */
+export type ConfigOptionSource = 'social-targets' | 'email-sequences';
 
 export interface ActionConfigField {
   key: string;
@@ -251,7 +309,8 @@ export interface ActionConfigField {
   placeholder?: string;
   help?: string;
   options?: readonly { value: string; label: string }[];
-  /** For `multiselect` — which live list to offer. */
+  /** For a `multiselect` (pick several) or a `select` (pick one) — which live
+   *  list to offer, when the choices only exist at runtime. */
   optionSource?: ConfigOptionSource;
   /** Shown in place of the list when the source has nothing to offer yet. */
   emptyHint?: string;
@@ -503,17 +562,41 @@ export const ACTION_DEFS: readonly ActionDef[] = [
     type: 'email.sequence_add',
     label: 'Add to an email sequence',
     module: 'email',
-    description: 'Not available yet — email sequences are still being built.',
-    mode: 'json',
-    available: false,
+    description:
+      'Start the customer on a multi-touch email sequence — a welcome series, a follow-up, a nurture. The sequence sends each email on its own schedule.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      {
+        key: 'sequenceId',
+        label: 'Which sequence',
+        type: 'select',
+        required: true,
+        optionSource: 'email-sequences',
+        help: 'Which sequence to start them on.',
+        emptyHint: 'No sequences yet — create one under Email → Sequences.',
+      },
+    ],
   },
   {
     type: 'email.sequence_remove',
     label: 'Remove from an email sequence',
     module: 'email',
-    description: 'Not available yet — email sequences are still being built.',
-    mode: 'json',
-    available: false,
+    description:
+      'Take the customer out of an email sequence, so they stop getting the rest of its emails.',
+    mode: 'fields',
+    available: true,
+    configFields: [
+      {
+        key: 'sequenceId',
+        label: 'Which sequence',
+        type: 'select',
+        required: true,
+        optionSource: 'email-sequences',
+        help: 'Which sequence to take them out of.',
+        emptyHint: 'No sequences yet — create one under Email → Sequences.',
+      },
+    ],
   },
   // ── Wholesale (B2B) ──
   {

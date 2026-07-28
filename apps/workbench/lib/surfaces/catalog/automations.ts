@@ -13,9 +13,10 @@
 // automations hue. The module tags a rule carries (Customers, Email, …) wear
 // THEIR module's hue via a nested scope inside the surface itself.
 
-import { History, ListChecks, Workflow } from 'lucide-react';
+import { History, ListChecks, Sparkles, Workflow } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
 import { AutomationsListSurface } from '../../../surfaces/automations/automations-list';
+import { RecipeGallerySurface } from '../../../surfaces/automations/recipe-gallery';
 import { AutomationDetailSurface } from '../../../surfaces/automations/automation-detail';
 import { AutomationRunsSurface } from '../../../surfaces/automations/automation-runs';
 import { AutomationRunDetailSurface } from '../../../surfaces/automations/run-detail';
@@ -34,6 +35,18 @@ export const AUTOMATION_SURFACES: SurfaceDefinition[] = [
     component: AutomationsListSurface,
     createSurface: 'automations.detail',
     createLabel: 'New automation',
+  },
+  {
+    // The friendly, goal-organised face of the ~45 automations sparx pre-installs.
+    // Sits right under the list: same rules, but browse-by-outcome with a big
+    // ON/OFF switch instead of a table for someone who does not think in rules.
+    key: 'automations.recipes',
+    title: 'Recipe library',
+    module: 'automations',
+    icon: Sparkles,
+    order: 2,
+    keywords: ['templates', 'recipes', 'pre-built', 'library', 'turn on', 'ready-made', 'gallery'],
+    component: RecipeGallerySurface,
   },
   {
     key: 'automations.detail',

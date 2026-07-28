@@ -36,6 +36,7 @@ import {
   type ConfigOptionSource,
 } from './automations-catalog';
 import { useSocialOverview } from '../social/data';
+import { useSequences } from '../email/sequences-data';
 
 type Config = Record<string, unknown>;
 
@@ -162,22 +163,69 @@ function MultiSelectField({
   );
 }
 
-/** The live choices behind a `multiselect`. One hook per source, so adding a second
- *  source later is a case here rather than a new field type. */
+/** The live choices behind an `optionSource` (a `multiselect` or a live `select`).
+ *  One hook, switching on source, so adding another source later is a case here
+ *  rather than a new field type. Both underlying hooks are always called so hook
+ *  order stays stable regardless of which source is asked for. */
 function useConfigOptions(source: ConfigOptionSource | undefined): {
   value: string;
   label: string;
 }[] {
   const overview = useSocialOverview();
-  if (source !== 'social-targets') return [];
-  const out: { value: string; label: string }[] = [];
-  for (const connection of overview.data?.connections ?? []) {
-    if (connection.status !== 'active') continue;
-    for (const target of connection.targets) {
-      if (target.enabled) out.push({ value: target.id, label: target.name });
+  const sequences = useSequences();
+
+  if (source === 'social-targets') {
+    const out: { value: string; label: string }[] = [];
+    for (const connection of overview.data?.connections ?? []) {
+      if (connection.status !== 'active') continue;
+      for (const target of connection.targets) {
+        if (target.enabled) out.push({ value: target.id, label: target.name });
+      }
     }
+    return out;
   }
-  return out;
+
+  if (source === 'email-sequences') {
+    return (sequences.data ?? []).map((sequence) => ({
+      value: sequence.id,
+      label: sequence.name,
+    }));
+  }
+
+  return [];
+}
+
+/** Pick ONE from a list only the server knows — today, the tenant's own email
+ *  sequences. The static-`options` sibling of this is the `select` branch below;
+ *  this is the runtime-list branch, named by {@link ActionConfigField.optionSource}. */
+function DynamicSelectField({
+  field,
+  config,
+  onConfig,
+}: {
+  field: ActionConfigField;
+  config: Config;
+  onConfig: (next: Config) => void;
+}) {
+  const options = useConfigOptions(field.optionSource);
+  const raw = config[field.key];
+
+  if (options.length === 0) {
+    return <Text className="text-sm">{field.emptyHint ?? 'Nothing to choose from yet.'}</Text>;
+  }
+
+  return (
+    <Select
+      color="module"
+      aria-label={field.label}
+      value={typeof raw === 'string' ? raw : ''}
+      items={Object.fromEntries(options.map((o) => [o.value, o.label]))}
+      placeholder="Choose…"
+      onValueChange={(next) => {
+        onConfig(setKey(config, field.key, next));
+      }}
+    />
+  );
 }
 
 function FieldInput({
@@ -246,6 +294,9 @@ function FieldInput({
     case 'multiselect':
       return <MultiSelectField field={field} config={config} onConfig={onConfig} />;
     case 'select':
+      if (field.optionSource) {
+        return <DynamicSelectField field={field} config={config} onConfig={onConfig} />;
+      }
       return (
         <Select
           color="module"
