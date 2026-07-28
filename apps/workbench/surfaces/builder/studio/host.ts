@@ -20,9 +20,9 @@ import {
   type DataSources,
 } from '@sparx/builder-schemas';
 import {
-  COMMERCE_CATALOG,
   HOST_COMPONENTS,
   SITE_CATALOG,
+  SPARX_CATALOG,
   validateResponsiveVocabulary,
 } from '@sparx/silica-catalog';
 
@@ -101,8 +101,13 @@ export function buildStudioHost(opts: StudioHostOptions): BuilderHost {
     resolveBinding: resolver.resolveBinding,
     resolveCollection: resolver.resolveCollection,
     dataSources: () => opts.dataSources,
+    // `SPARX_CATALOG` is the commerce composites AND the section library in one list
+    // (slice 19). Merging it whole rather than naming its halves here is deliberate:
+    // a host that reaches for `COMMERCE_CATALOG` alone ships a builder with no
+    // galleries, no price list, no opening hours and no menu, and nothing about that
+    // omission is visible until an author goes looking for a block that is not there.
     catalog: () => ({
-      extend: [...COMMERCE_CATALOG, ...SITE_CATALOG] as unknown as PaletteGroup[],
+      extend: [...SPARX_CATALOG, ...SITE_CATALOG] as unknown as PaletteGroup[],
     }),
     hostComponents: hostComponentDefs,
     ...(validateClass ? { validateClass } : {}),

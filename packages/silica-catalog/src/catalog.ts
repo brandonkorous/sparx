@@ -1,10 +1,17 @@
-// The grouped palette metadata the dashboard host merges into silica's Insert
-// palette (`mergeCatalog(paletteGroups(), { extend: COMMERCE_CATALOG })`). One
-// group — "Products" — of the commerce-domain composites; silica's own groups
-// (layout, content, marketing blocks, forms…) carry everything else.
+// The grouped palette metadata the studio host merges into silica's Insert palette
+// (`mergeCatalog(paletteGroups(), { extend: SPARX_CATALOG })`).
+//
+// TWO HALVES, and the split is meaningful. `COMMERCE_CATALOG` is the commerce-domain
+// composites that BIND THE SPINE — a product card, a repeating grid, a buy box — and
+// they are here because they know about products. `SECTION_CATALOG` is the section
+// library (docs/builder-audit slice 19): the galleries, comparisons, timelines, price
+// lists, menus and forms that any business needs and that no engine can ship, because
+// the engine's 18 blocks are a good spine for a software marketing page and a thin one
+// for a photographer, a restaurant or a garage. See `sections/index.ts`.
 
 import type { CatalogGroup } from './types';
 import { buyBox, collectionHeader, productCard, productsBlock } from './commerce';
+import { SECTION_CATALOG } from './sections';
 
 /** sparx's `host.catalog().extend` — the commerce composites silica doesn't ship.
  *  Icons are silica `IconName`s (the dashboard adapter narrows the `string` type). */
@@ -62,3 +69,18 @@ export const COMMERCE_CATALOG: CatalogGroup[] = [
  *  a genuinely tenant-owned chrome composite (one that SHOULD freeze once authored)
  *  belongs here, not in the host registry. */
 export const SITE_CATALOG: CatalogGroup[] = [];
+
+/**
+ * Everything sparx adds to the Insert palette, in one list.
+ *
+ * The order is the order an author sees: the commerce composites first (they are the
+ * ones that bind live data and the ones a shop reaches for constantly), then the
+ * section library grouped by what a page is FOR — pictures, choosing, how it works,
+ * people, where and when, getting in touch, writing, selling.
+ *
+ * One export so a host cannot merge half of it. The studio wires
+ * `mergeCatalog(paletteGroups(), { extend: SPARX_CATALOG })`; a host that merged only
+ * `COMMERCE_CATALOG` would silently ship a builder missing every section, which is
+ * exactly the state this slice existed to end.
+ */
+export const SPARX_CATALOG: CatalogGroup[] = [...COMMERCE_CATALOG, ...SECTION_CATALOG];

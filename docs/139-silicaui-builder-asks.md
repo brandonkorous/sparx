@@ -1,6 +1,6 @@
 # 139 — silicaui-builder: the open asks (verified against 0.35.0)
 
-**Version:** 1.3.0
+**Version:** 1.4.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-28
 
@@ -230,7 +230,50 @@ is the thing that gets it wrong, and this one did before it was fixed.
 
 ---
 
-## 10 — Not an ask: a house-rule conflict to settle
+## 10 — Conditional visibility: a node that renders only when a condition holds
+
+**Priority: high, and it keeps costing us host cores.** A silica tree has no way to say "show this
+node only if…". Every time that need appears, the answer has been to move the whole region into a
+sparx **host core** so React can make the decision — which works, but each one converts an
+author-editable region into an opaque mount point the tenant can style around and nothing more.
+
+**The list is already four long**, and every entry is the same missing primitive:
+
+| Where                        | The condition that could not be expressed                             |
+| ---------------------------- | --------------------------------------------------------------------- |
+| `site.brand`                 | show logo / name / both — two bound children always both render       |
+| `site.legal-links`           | render nothing at all — heading included — when nothing is published  |
+| `site.theme-toggle`          | hide unless the tenant's appearance policy offers both themes         |
+| `site.pagination` (slice 23) | no Previous on page one, no Next on the last, hide when one page fits |
+
+The pagination case is the clearest, because the alternative is visibly broken rather than merely
+absent: a hand-authored pager binding `commerce.productPrevUrl` renders a **dead "Previous" link on
+page one of every site on the platform**, and offers a page 25 that does not exist. There is no
+authoring workaround — an empty bound `href` still renders a clickable anchor.
+
+**What a host cannot do today.** `resolveTree` substitutes values and expands collections; it never
+DROPS a node. A host-side pre-pass cannot stand in for it either: a condition on an item-scoped ref
+(`item.compareAtPrice` — "show the Sale badge only when there is one") can only be evaluated per
+item, inside the expansion the engine owns. Evaluating before `resolveTree` has no item scope;
+evaluating after it, the scope is gone and the values are already inlined into the markup.
+
+**The ask.** A `when` on `NodeBase` — a ref plus a small, closed predicate set (`present` /
+`empty` / `eq` / `neq` / `gt` / `lt`), evaluated against the same scope the node's own binding
+resolves in, with the node and its subtree omitted from the output when it fails. Closed rather
+than an expression language on purpose: an author who can write a contradiction mostly produces an
+invisible section they cannot debug.
+
+**Generic-first check:** it passes easily — a CMS hiding an empty author bio, an email tool hiding
+a discount block when there is no discount, and a static-site generator hiding a "Read more" link
+on a short post are the same feature. Nothing about it is sparx-shaped.
+
+**What sparx does until then:** keeps paying the host-core tax. `site.pagination` is the fourth
+core that exists mainly because of this gap, and each one is a region the tenant can no longer
+author.
+
+---
+
+## 11 — Not an ask: a house-rule conflict to settle
 
 Two shipped `@wizeworks/silicaui-html` blocks — **"Content — prose section"** and **"Feature —
 media split"** — declare an `eyebrow` part. That is the exact pattern
