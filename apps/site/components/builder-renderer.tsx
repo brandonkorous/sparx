@@ -321,21 +321,7 @@ export function BuilderRenderer({ tree, data }: { tree: BuilderNode; data: DataS
   );
 }
 
-/** The site LAYOUT renderer (docs/45 §2.6): the published chrome tree, with the
- *  routed page dropped at its `Outlet`. The chrome binds to the `site` sources
- *  (nav / identity / social) resolved by `loadSiteData`. */
-export function BuilderSiteChrome({
-  tree,
-  data,
-  children,
-}: {
-  tree: BuilderNode;
-  data: DataSources;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="bx-render" data-builder-layout>
-      <RenderNode node={tree} scope={{ root: data }} outlet={children} />
-    </div>
-  );
-}
+// `BuilderSiteChrome` — the site LAYOUT renderer (docs/45 §2.6) — was deleted with the
+// root layout branch that mounted it. `BuilderRenderer` above stays: the catch-all
+// `[...slug]` route still reaches this tier for a CMS article, which the silica engine
+// does not own.

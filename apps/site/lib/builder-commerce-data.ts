@@ -159,6 +159,11 @@ export async function loadCommerceData(
         collection: s.from === 'collection' ? s.id : undefined,
         category: s.from === 'category' ? s.id : undefined,
         limit: s.limit ?? 24,
+        // The author's order and tag filter (slice 23), sent to the API rather than
+        // applied here: sorting an already-capped page of 24 reorders those 24 instead
+        // of choosing the top 24, which is a different list wearing the right label.
+        ...(s.sort ? { sort: s.sort } : {}),
+        ...(s.tag ? { tag: s.tag } : {}),
       }).then((products) => {
         sources[collectionSourceKey(s)] = products.map((p) =>
           productToBuilderRecord(p, tenantSlug, currency)

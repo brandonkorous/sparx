@@ -18,7 +18,25 @@ import {
   productsBlock,
 } from './commerce';
 import { COMMERCE_CATALOG } from './catalog';
+import { HOST_KEYS } from './host-nodes';
 import { renderSilicaBody } from './render';
+
+/** The first host node in a tree carrying `component`. Used to assert not just that a
+ *  core is present but HOW it was stamped — a pinned core and an unpinned one look
+ *  identical in the rendered HTML and differ only in `locked`. */
+function findHost(
+  node: unknown,
+  component: string
+): { component?: string; locked?: string } | undefined {
+  const n = node as { kind?: string; component?: string; locked?: string; children?: unknown[] };
+  if (!n || typeof n !== 'object') return undefined;
+  if (n.kind === 'host' && n.component === component) return n;
+  for (const child of n.children ?? []) {
+    const hit = findHost(child, component);
+    if (hit) return hit;
+  }
+  return undefined;
+}
 
 // A trivial host mirroring what @sparx/builder-schemas' resolver does — short refs
 // off the scoped item, `commerce.product`/`product` off fixed data — inline so this
@@ -154,6 +172,31 @@ describe('products — the one configurable block', () => {
   it('presets (productGrid / featuredProducts) are just this block', () => {
     expect(collectionRef(productGrid())).toBe('commerce.product');
     expect(collectionRef(featuredProducts())).toBe('commerce.featured');
+  });
+
+  it('puts page links under a whole-catalog GRID, and never under a rail', () => {
+    // The catalog grid is the one that runs out of room — it shows 24 and the shop has
+    // more. A rail is a curation ("Featured", "New in"), and a Next button under a
+    // curated strip is a curation that forgot it was one.
+    const grid = toHtml(resolveTree(productGrid(), host));
+    expect(grid).toContain(`data-sui-host="${HOST_KEYS.sitePagination}"`);
+
+    const rail = toHtml(resolveTree(featuredProducts(), host));
+    expect(rail).not.toContain(HOST_KEYS.sitePagination);
+
+    // Nor under a category grid: those are a chosen slice, not the catalog.
+    const category = toHtml(
+      resolveTree(productsBlock({ source: 'commerce.category.studio-goods' }), host)
+    );
+    expect(category).not.toContain(HOST_KEYS.sitePagination);
+  });
+
+  it('leaves the pager UNLOCKED, so a tenant who wants no pager can delete it', () => {
+    // Every other seeded core is `locked: "host"` because removing it would break a
+    // transaction. This one is a convenience under a grid the tenant may later remove.
+    const pager = findHost(productGrid(), HOST_KEYS.sitePagination);
+    expect(pager).toBeTruthy();
+    expect(pager?.locked).toBeUndefined();
   });
 });
 

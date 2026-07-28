@@ -10,10 +10,9 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { ArticleJsonLd } from '@/components/article-json-ld';
-import { BuilderRenderer } from '@/components/builder-renderer';
-import { PageView } from '@/components/page-view';
-import { getPublishedBuilderCollection } from '@/lib/builder';
-import { loadBuilderData, postToBuilderRecord } from '@/lib/builder-data';
+// `postToBuilderRecord` shapes a post for the RESOLVER, not for the deleted builder
+// renderer — the silica host reads the same record shape, so the name outlived the tier.
+import { postToBuilderRecord } from '@/lib/builder-data';
 import { getPublishedSilicaCollection } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
@@ -24,7 +23,11 @@ import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { resolveSite } from '@/lib/site-context';
 
-export const dynamic = 'force-dynamic';
+// NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
+// forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
+// overrode the revalidate window + purge tags each read in lib/* already declares. This
+// route still renders per-request either way, because `resolveSite()` reads the Host
+// header; what changed is that its data is now cached and purged on publish.
 
 interface BlogPageProps {
   params: Promise<{ slug: string }>;
@@ -109,7 +112,8 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
     sitePreview ? { previewToken: sitePreview } : {}
   );
   if (silicaTemplate) {
-    const host = await buildSilicaHost(site.slug, silicaTemplate.root, {
+    // No `searchParams`: a post is one record, so nothing on this page paginates.
+    const { resolver } = await buildSilicaHost(site.slug, silicaTemplate.root, {
       record: { key: 'blog_post', value: postToBuilderRecord(post, site.slug) },
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,
@@ -125,7 +129,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
         <SilicaFunctionalBody
           root={silicaTemplate.root}
           symbols={silicaTemplate.symbols}
-          host={host}
+          host={resolver}
           renderHost={storefrontHostRenderer({
             site,
             recordId: post.id,
@@ -136,34 +140,15 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
     );
   }
 
-  // The generic per-record router (docs/44 §3 B): a published `cms.blog_post`
-  // collection template renders the post through the node tree, binding THIS entry
-  // as `blog_post`. Falls through to the legacy render when none is published.
-  const builderTemplate = await getPublishedBuilderCollection(site.slug, 'cms.blog_post', post.id);
-  if (builderTemplate) {
-    const data = await loadBuilderData(
-      site.slug,
-      builderTemplate.tree,
-      {
-        key: 'blog_post',
-        value: postToBuilderRecord(post, site.slug),
-      },
-      site.commerce.defaultCurrency
-    );
-    return (
-      <>
-        <ArticleJsonLd post={post} site={site} />
-        <BuilderRenderer tree={builderTemplate.tree} data={data} />
-      </>
-    );
-  }
-
-  // No builder template published — degrade to a bare CMS article so the post is
-  // still readable (PageView already renders the body doc + title).
-  return (
-    <>
-      <ArticleJsonLd post={post} site={site} />
-      <PageView entry={post} />
-    </>
-  );
+  // UNREACHABLE below this point (docs/127 §6). Two tiers used to follow — a published
+  // sparx-builder `cms.blog_post` template, then a bare `PageView` of the entry —
+  // and neither could run: the silica branch above takes every post, because a 404
+  // from api-rest resolves to the code-authored `cms.blog_post` record template, and
+  // that template is guaranteed to exist by `RECORD_TEMPLATES` + its exhaustiveness
+  // test. (`cms.blog_post` going missing from the OLD if-chain is precisely the silent
+  // bug that registry was built to make impossible — see record-templates.ts.)
+  //
+  // Loud, not silent: a post rendering as a blank draft with nothing to explain why is
+  // the exact failure this route has already had once.
+  throw new Error(`No silica template resolved for blog post "${post.slug ?? post.id}"`);
 }

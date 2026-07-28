@@ -42,9 +42,31 @@ export function entityPinKey(entity: string, id: string): string {
   return `${entity}:${id}`;
 }
 
-/** A stable key for a collection source: `all`, `collection:<id>`, `category:<id>`. */
-export function collectionSourceKey(source: { from: string; id?: string }): string {
-  return source.from === 'all' || !source.id ? source.from : `${source.from}:${source.id}`;
+/**
+ * A stable key for a collection source: `all`, `collection:<id>`, `category:<id>`,
+ * plus the ordering and tag filter when the author set either.
+ *
+ * The suffix matters because the key is what two repeaters on one page SHARE. Two
+ * grids over the whole catalog — one newest-first, one showing only the `sale` tag —
+ * are two different lists, and without the suffix the second would silently render
+ * the first one's records. A source with no sort and no tag keys exactly as it always
+ * did, so every stored binding resolves unchanged.
+ *
+ * Computed identically at author time and render time and never persisted, so the
+ * format can change without a migration.
+ */
+export function collectionSourceKey(source: {
+  from: string;
+  id?: string;
+  sort?: string;
+  tag?: string;
+}): string {
+  const base = source.from === 'all' || !source.id ? source.from : `${source.from}:${source.id}`;
+  const suffix = [
+    ...(source.sort ? [`sort=${source.sort}`] : []),
+    ...(source.tag ? [`tag=${source.tag}`] : []),
+  ];
+  return suffix.length > 0 ? `${base}|${suffix.join('|')}` : base;
 }
 
 /** The shape of a node's binding the resolver + ref-walk read (a structural subset
@@ -54,7 +76,7 @@ export interface NodeBinding {
   entity?: string;
   id?: string;
   cmsType?: string;
-  source?: { from: string; id?: string; limit?: number };
+  source?: { from: string; id?: string; limit?: number; sort?: string; tag?: string };
   action?: string;
   href?: string;
 }
@@ -204,15 +226,17 @@ export interface EntityRef {
 export interface BindingRefs {
   /** Entity pins (`{ entity, id }`) — product / collection / category / cms. */
   entities: EntityRef[];
-  /** Collection sources to iterate (each loads a product array). */
-  sources: { from: string; id?: string; limit?: number }[];
+  /** Collection sources to iterate (each loads a product array). Carries the
+   *  author's `sort` / `tag` so the loader can ask the API for the right list
+   *  rather than reorder an already-capped page of the wrong one. */
+  sources: { from: string; id?: string; limit?: number; sort?: string; tag?: string }[];
 }
 
 /** Collect every entity pin + collection source in a tree, deduped by their
  *  stable keys. Drives the by-id batch fetch in both data loaders. */
 export function collectBindingRefs(node: BindableNode): BindingRefs {
   const entities = new Map<string, EntityRef>();
-  const sources = new Map<string, { from: string; id?: string; limit?: number }>();
+  const sources = new Map<string, BindingRefs['sources'][number]>();
   const walk = (n: BindableNode): void => {
     const b = n.binding;
     if (b) {

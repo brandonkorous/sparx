@@ -136,6 +136,26 @@ export const HOST_KEYS = {
    *  non-empty. Not pinned: the tenant owns where the links sit (a footer column, a
    *  bottom bar, beside the copyright). */
   siteLegalLinks: 'site.legal-links',
+  /** PAGE LINKS for a bound list on this page — Previous / 1 2 3 / Next, plus
+   *  "Showing 25–48 of 137".
+   *
+   *  A host core because pagination is almost entirely CONDITIONAL, and a bound tree
+   *  has no conditional (the same wall `site.brand`'s `show` and `site.legal-links`
+   *  hit). There is no Previous link on page one, no Next on the last, the current
+   *  page is text rather than a link, the window of numbers around it changes as you
+   *  walk, and the whole control must not render at all when everything fits on one
+   *  page. Every one of those is a decision, and a repeated `<a>` bound to a list of
+   *  URLs can express none of them — it would render a dead "Previous" on page one of
+   *  every site on the platform.
+   *
+   *  It also has to build URLs that PRESERVE the rest of the query string, so a
+   *  reader who filtered and then paged does not lose the filter. That is a
+   *  computation over the live request, which is exactly what a host core is for.
+   *
+   *  `list` names which bound collection it drives, for the rare page carrying two.
+   *  Not pinned: the tenant owns where their pager sits, and a page with no list on
+   *  it should be able to delete it. */
+  sitePagination: 'site.pagination',
 } as const;
 
 export type HostComponentKey = (typeof HOST_KEYS)[keyof typeof HOST_KEYS];
@@ -336,6 +356,38 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     ],
     // Not pinned: the tenant owns their footer layout. Pinning would leave an
     // undeletable empty box on a site with no legal pages published yet.
+    pinned: false,
+  },
+  {
+    key: HOST_KEYS.sitePagination,
+    label: 'Page links (older / newer)',
+    category: 'brand',
+    // `layout`, not a chevron: the curated silica icon set is UI-oriented and an
+    // UNREGISTERED name renders empty (the footgun this file's cart entry already
+    // documents), so a core only ever picks a name proven in use here.
+    icon: 'layout',
+    hint: 'Previous / next links for a list on this page, so visitors can reach everything rather than only the first 24. Hides itself when everything already fits.',
+    // Full-width under the grid it pages, with the same page gutter every seeded
+    // section uses so it lines up with the list above it.
+    defaultClass: 'mx-auto w-full max-w-6xl px-6 pb-12',
+    props: [
+      {
+        name: 'list',
+        label: 'Which list',
+        type: 'select',
+        // Blank = the only paginated list on the page, which is the normal case and
+        // means an author never has to answer this question.
+        default: '',
+        options: [
+          { value: '', label: 'The list on this page' },
+          { value: 'commerce.product', label: 'Products' },
+          { value: 'cms.blog_post', label: 'Blog posts' },
+        ],
+      },
+    ],
+    // Not pinned: a pager belongs to the list the tenant placed, so they own whether
+    // it is there at all. Pinning would leave an undeletable control under a page
+    // whose grid they later removed.
     pinned: false,
   },
   {

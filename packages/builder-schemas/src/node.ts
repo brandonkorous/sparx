@@ -58,6 +58,19 @@ export type Device = z.infer<typeof Device>;
 export const BindingEntity = z.enum(['product', 'collection', 'category', 'cms']);
 export type BindingEntity = z.infer<typeof BindingEntity>;
 
+/** How a collection repeater ORDERS what it shows. The same vocabulary the public
+ *  product API takes, so an author's choice is passed through rather than
+ *  re-implemented over an already-fetched page — sorting after a `limit` would sort
+ *  the first 24 rather than pick the top 24, which is a different list. */
+export const CollectionSortSchema = z.enum([
+  'newest',
+  'price-asc',
+  'price-desc',
+  'title-asc',
+  'title-desc',
+]);
+export type CollectionSort = z.infer<typeof CollectionSortSchema>;
+
 /** Where a collection REPEATER sources its products: a specific collection or
  *  category (by id), or the whole catalog (`all`). */
 export const CollectionSourceSchema = z.object({
@@ -66,6 +79,19 @@ export const CollectionSourceSchema = z.object({
   id: z.string().max(255).optional(),
   /** Cap the repeater (default applied at load time). */
   limit: z.number().int().min(1).max(48).optional(),
+  /** Order. Omitted = the catalog's own default order, which is what every existing
+   *  stored binding means and must keep meaning. */
+  sort: CollectionSortSchema.optional(),
+  /**
+   * Narrow to products carrying this tag — the one filter the catalog can express
+   * with no schema at all, since `tags` is already how "featured" is marked.
+   *
+   * Deliberately a single tag rather than a query language. An author asking for "the
+   * summer range on the home page" is asking for exactly this, and a filter builder
+   * that can express contradictions ("tag is A and tag is B") mostly produces empty
+   * grids the author cannot debug.
+   */
+  tag: z.string().max(64).optional(),
 });
 export type CollectionSource = z.infer<typeof CollectionSourceSchema>;
 

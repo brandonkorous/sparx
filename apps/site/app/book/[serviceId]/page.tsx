@@ -14,6 +14,8 @@ import { storefrontHostRenderer } from '@/components/silica-host-cores';
 import { getBookableService } from '@/lib/scheduling';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
+// KEEPS `force-dynamic` for the same reason as /book (docs/127 §6): a stale slot list
+// is visible to the customer as an appointment they can pick but not actually get.
 export const dynamic = 'force-dynamic';
 
 interface Props {

@@ -559,7 +559,17 @@ export async function getProductsByIds(
  *  degrades to empty rather than erroring. */
 export async function getProductsFull(
   tenantSlug: string,
-  opts: { ids?: string[]; collection?: string; category?: string; limit?: number } = {}
+  opts: {
+    ids?: string[];
+    collection?: string;
+    category?: string;
+    limit?: number;
+    /** The author's chosen order for a bound repeater. Omitted = the catalog's own
+     *  in-stock-first default. */
+    sort?: string;
+    /** Narrow to products carrying this tag — the author's one-field filter. */
+    tag?: string;
+  } = {}
 ): Promise<PublicProduct[]> {
   if (opts.ids?.length === 0) return [];
   try {
@@ -571,6 +581,8 @@ export async function getProductsFull(
         collection: opts.collection,
         category: opts.category,
         limit: opts.limit,
+        sort: opts.sort,
+        tag: opts.tag,
       },
       [`commerce:${tenantSlug}:products`]
     );

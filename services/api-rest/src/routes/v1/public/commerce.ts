@@ -742,6 +742,12 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
         collection: z.string().uuid().optional(),
         category: z.string().uuid().optional(),
         limit: z.coerce.number().int().min(1).max(48).default(24),
+        // A bound repeater's author-chosen order and tag filter (docs/builder-audit
+        // slice 23). Both are applied in the QUERY rather than over the fetched page,
+        // because sorting or filtering after `take` picks from the first 24 rows
+        // instead of from the catalog — a different list, and a quietly wrong one.
+        sort: z.enum(['newest', 'price-asc', 'price-desc', 'title-asc', 'title-desc']).optional(),
+        tag: z.string().max(64).optional(),
       })
       .parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
@@ -762,12 +768,30 @@ const publicCommerceRoutes: FastifyPluginAsync = (app) => {
       ...(ids ? { id: { in: ids } } : {}),
       ...(q.collection ? { collectionLinks: { some: { collectionId: q.collection } } } : {}),
       ...(q.category ? { categoryLinks: { some: { categoryId: q.category } } } : {}),
+      ...(q.tag ? { tags: { has: q.tag } } : {}),
     };
+    // The default keeps in-stock products first, which is the right merchandising
+    // answer when nobody has asked for anything else. An EXPLICIT sort is what the
+    // author asked for and is honoured literally — silently keeping the in-stock
+    // preference in front of "price, low to high" would produce an order that is not
+    // the one they picked and that they cannot correct.
+    const orderBy: Prisma.ProductOrderByWithRelationInput[] =
+      q.sort === 'newest'
+        ? [{ createdAt: 'desc' }]
+        : q.sort === 'price-asc'
+          ? [{ priceMinCents: 'asc' }]
+          : q.sort === 'price-desc'
+            ? [{ priceMinCents: 'desc' }]
+            : q.sort === 'title-asc'
+              ? [{ title: 'asc' }]
+              : q.sort === 'title-desc'
+                ? [{ title: 'desc' }]
+                : [{ inStock: 'desc' }, { updatedAt: 'desc' }];
     const [rows, inventoryActive] = await Promise.all([
       withTenant({ tenantId }, (tx) =>
         tx.product.findMany({
           where,
-          orderBy: [{ inStock: 'desc' }, { updatedAt: 'desc' }],
+          orderBy,
           // An id pin returns every requested product; a source is capped.
           take: ids ? undefined : q.limit,
           select: fullProductSelect(propertyId),

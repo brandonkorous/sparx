@@ -9,9 +9,6 @@ import { notFound } from 'next/navigation';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SectionRenderer } from '@/components/section-renderer';
-import { BuilderRenderer } from '@/components/builder-renderer';
-import { getPublishedBuilderCollection } from '@/lib/builder';
-import { loadBuilderData, productToBuilderRecord } from '@/lib/builder-data';
 import { getPublishedSilicaCollection } from '@/lib/silica';
 import { buildSilicaHost, productToSilicaRecord } from '@/lib/silica-data';
 import { SilicaBody } from '@/components/silica-chrome';
@@ -33,7 +30,11 @@ import { isSampleRequested, SAMPLE_PRODUCT, SAMPLE_PRODUCT_EXTRAS } from '@/lib/
 import { getPublishedSite, resolveTemplateSections } from '@/lib/site';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
-export const dynamic = 'force-dynamic';
+// NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
+// forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
+// overrode the revalidate window + purge tags each read in lib/* already declares. This
+// route still renders per-request either way, because `resolveSite()` reads the Host
+// header; what changed is that its data is now cached and purged on publish.
 
 interface PageProps {
   params: Promise<{ handle: string }>;
@@ -107,49 +108,30 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
       one(sp.sparxSitePreview) ? { previewToken: one(sp.sparxSitePreview) } : {}
     );
     if (silicaTemplate) {
-      const host = await buildSilicaHost(site.slug, silicaTemplate.root, {
+      // No `searchParams`: a product detail page is one record, so nothing paginates.
+      const { resolver } = await buildSilicaHost(site.slug, silicaTemplate.root, {
         record: { key: 'product', value: productToSilicaRecord(product, site.slug) },
         currency: site.commerce.defaultCurrency,
         locale: site.commerce.defaultLocale,
       });
       // Bare, like the catch-all route — the root layout's silica chrome frames it
       // at the Outlet; the template owns its own section widths.
-      return <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={host} />;
+      return (
+        <SilicaBody root={silicaTemplate.root} symbols={silicaTemplate.symbols} host={resolver} />
+      );
     }
   }
 
-  // The sparx-builder per-record router (docs/44 §3 B): a published Builder
-  // `commerce.product` collection template renders the PDP through the node tree
-  // — with the interactive Tier-2 buy-box — binding THIS product as `product`.
-  // Falls through to the legacy section template when none is published, so a
-  // tenant without a builder product page is unaffected. Sample-data previews
-  // (the merchant designing before a product exists) keep the legacy path.
-  if (!sample) {
-    const builderTemplate = await getPublishedBuilderCollection(
-      site.slug,
-      'commerce.product',
-      product.id
-    );
-    if (builderTemplate) {
-      const currency = site.commerce.defaultCurrency;
-      const data = await loadBuilderData(
-        site.slug,
-        builderTemplate.tree,
-        {
-          key: 'product',
-          value: productToBuilderRecord(product, site.slug, currency),
-        },
-        currency
-      );
-      // Render the builder tree BARE — exactly like the catch-all page route
-      // ([...slug]). The template owns its own width (full-bleed hero sections,
-      // contained content), so no centered container wrapper or breadcrumbs: those
-      // would cap every section at the content max-width and sit under the
-      // overlay header. The site chrome (header/footer) still frames it via the
-      // root layout's Outlet.
-      return <BuilderRenderer tree={builderTemplate.tree} data={data} />;
-    }
-  }
+  // The sparx-builder per-record tier that used to sit here is GONE (docs/127 §6): it
+  // lived inside the same `if (!sample)` guard as the silica branch above, and within
+  // that guard `getPublishedSilicaCollection` cannot return null — api-rest 404s when
+  // no template is published, and the client answers that 404 with the code-authored
+  // `commerce.product` record template, which always exists (`RECORD_TEMPLATES`).
+  //
+  // The LEGACY SECTION path below is a different matter and stays: `sample` skips the
+  // silica branch entirely, so a merchant designing a product page against fixtures —
+  // before any real product exists — still lands here. Deleting it would take that
+  // feature with it.
 
   // The commerce:product layout: the merchant's published one, or the seeded
   // default (parity). A site-preview token resolves the draft instead. In preview

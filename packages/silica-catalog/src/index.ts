@@ -19,6 +19,8 @@ export * from './host-nodes';
 export * from './ensure-ids';
 export * from './upgrade-frame';
 export * from './catalog';
+export * from './sections';
 export * from './site-chrome';
 export * from './site';
 export * from './render';
+export * from './responsive-images';

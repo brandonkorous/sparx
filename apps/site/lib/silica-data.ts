@@ -31,7 +31,7 @@ import {
   type PublicProduct,
   type PublicProductListItem,
 } from './commerce';
-import { getEntriesByIds, publicGet, type ApiEntry } from './content';
+import { getEntriesByIds, publicGetPaged, type ApiEntry } from './content';
 import { mediaUrl } from './media';
 
 /** How many products the `commerce.featured` rail shows at most — a curated
@@ -39,37 +39,92 @@ import { mediaUrl } from './media';
 const FEATURED_LIMIT = 8;
 
 /**
- * How many records a bound COLLECTION grid renders (docs/127 §8).
+ * How many records a bound COLLECTION grid renders PER PAGE (docs/127 §8).
  *
- * This was a bare `24` inlined at each fetch. At the catalog sizes this platform
- * targets that is not a page size, it is silent data loss: a tenant with 137 products
- * saw 24 of them, the storefront showed no pagination, and nothing anywhere said the
- * other 113 existed — not to the shopper, not to the author, not to a log.
- *
- * Named here so there is ONE number, and paired with the `*Total` / `*HasMore` roots
- * below so the truncation is at least VISIBLE while real pagination is designed.
+ * This was a bare `24` inlined at each fetch, and it was not a page size — it was
+ * silent data loss. A tenant with 137 products saw 24 of them, the storefront showed
+ * no pagination, and nothing anywhere said the other 113 existed: not to the shopper,
+ * not to the author, not to a log. It is a real page size now (slice 23): the rest of
+ * the catalog is reachable at `?page=2`, and the `site.pagination` core renders the
+ * links that get you there.
  */
 const COLLECTION_PAGE_SIZE = 24;
 
-/** Publish "how many there really are" alongside a truncated list, so a template can
- *  bind `commerce.productTotal` / `commerce.productHasMore` ("Showing 24 of 137",
- *  "View all") instead of the list silently ending. Also logs the truncation: an
- *  author who never binds those still leaves a trail worth finding. */
-function setListMeta(
-  root: DataSources,
-  key: string,
-  shown: number,
-  total: number,
-  label: string
-): void {
-  setAtPath(root, `${key}Total`, total);
-  setAtPath(root, `${key}HasMore`, total > shown);
-  if (total > shown) {
-    console.warn(
-      `[silica-data] ${label}: showing ${shown} of ${total} — the rest are not rendered ` +
-        `and the storefront offers no pagination yet (docs/127 §8).`
-    );
-  }
+/**
+ * What a bound collection on this page is showing, and how to move it.
+ *
+ * The storefront hands this to the `site.pagination` host core, which is where the
+ * links are actually rendered — a bound tree cannot express "no Previous link on page
+ * one", so the platform renders that part in React (the same reasoning that made the
+ * brand mark a host core; see `host-nodes.ts`).
+ */
+export interface ListPaging {
+  /** The root key this describes — `commerce.product`, `cms.blog_post`. */
+  source: string;
+  /**
+   * The URL query parameter that moves this list.
+   *
+   * `page` when it is the only paginated list on the page, which is nearly always —
+   * a plain `?page=2` is what a reader bookmarks and a search engine crawls. A page
+   * carrying TWO bound collections (a product grid and a journal index) cannot share
+   * one parameter without moving both at once, so each takes a suffixed one instead.
+   */
+  param: string;
+  page: number;
+  perPage: number;
+  /** How many records exist. `null` where the source cannot tell us — the CMS entries
+   *  endpoint counts only when asked by page number, so a cursor-walked list has no
+   *  total and the pager says "Next" rather than "of 9". */
+  total: number | null;
+  totalPages: number | null;
+  /** True when there is at least one more page. Always knowable, even where `total`
+   *  is not — which is why the pager is built on this and not on the total. */
+  hasMore: boolean;
+}
+
+/** The resolver plus what it paginated. Two values because the render walk and the
+ *  pagination core need different halves of the same fetch, and re-deriving either
+ *  from the other is how they end up disagreeing about what page you are on. */
+export interface SilicaHost {
+  resolver: SilicaResolver;
+  paging: ListPaging[];
+}
+
+/** The URL-safe short name for a source key: `commerce.product` → `product`,
+ *  `cms.blog_post` → `blog-post`. Only used when a page has more than one paginated
+ *  list and they need to move independently. */
+function pagingParamFor(source: string, alone: boolean): string {
+  if (alone) return 'page';
+  const last = source.split('.').pop() ?? source;
+  return `page-${last.replace(/_/g, '-')}`;
+}
+
+/** Read a page number out of the route's search params. Anything that is not a
+ *  positive integer is page one — a hand-edited `?page=banana` should show the first
+ *  page, never an error. */
+function pageFrom(
+  params: Record<string, string | string[] | undefined> | undefined,
+  param: string
+): number {
+  const raw = params?.[param];
+  const value = Array.isArray(raw) ? raw[0] : raw;
+  const n = Number.parseInt(value ?? '', 10);
+  return Number.isFinite(n) && n >= 1 ? n : 1;
+}
+
+/** Publish the paging facts alongside the list itself, so a template can bind
+ *  `commerce.productTotal` / `commerce.productHasMore` / `commerce.productFrom`
+ *  ("Showing 25–48 of 137") without the pagination core, and the core can render real
+ *  links with them. Every key is set even when there is one page — an absent ref
+ *  resolves as "not found" and leaves authored placeholder text on the page. */
+function setListMeta(root: DataSources, key: string, shown: number, paging: ListPaging): void {
+  const from = shown === 0 ? 0 : (paging.page - 1) * paging.perPage + 1;
+  setAtPath(root, `${key}Total`, paging.total);
+  setAtPath(root, `${key}HasMore`, paging.hasMore);
+  setAtPath(root, `${key}Page`, paging.page);
+  setAtPath(root, `${key}Pages`, paging.totalPages);
+  setAtPath(root, `${key}From`, from);
+  setAtPath(root, `${key}To`, shown === 0 ? 0 : from + shown - 1);
 }
 
 /** A product in the shape the silica commerce composites bind (scope-relative
@@ -216,16 +271,20 @@ function formatEntryDate(iso: string): string {
   return d.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
-// Fetches ONE MORE than it renders (docs/127 §8). The entries endpoint returns a bare
-// array through `publicGet`, so there is no total to read — but asking for n+1 and
-// seeing n+1 come back is a definitive "there are more", which is the fact the
-// storefront actually needs. The extra row is sliced off before rendering.
-async function listEntries(tenantSlug: string, type: string): Promise<ApiEntry[]> {
-  return publicGet<ApiEntry[]>(
+/** One page of a CMS type, with the total the numbered walk reports (slice 23 added
+ *  `?page=` to the public entries endpoint precisely so a blog index can say "page 4
+ *  of 9" in a URL a reader bookmarks and a crawler follows — a cursor cannot). */
+async function listEntries(
+  tenantSlug: string,
+  type: string,
+  page: number
+): Promise<{ items: ApiEntry[]; total: number }> {
+  const { data, meta } = await publicGetPaged<ApiEntry[]>(
     '/v1/public/content/entries',
-    { tenant: tenantSlug, type, limit: COLLECTION_PAGE_SIZE + 1 },
+    { tenant: tenantSlug, type, limit: COLLECTION_PAGE_SIZE, page },
     { tag: `entries:${tenantSlug}:${type}` }
   );
+  return { items: data, total: meta.total ?? data.length };
 }
 
 /** Assign `value` at a dotted key, creating nested objects (`cms.blog_post`
@@ -295,12 +354,13 @@ function siteRoot(site: SilicaSiteData): DataSources {
 }
 
 /** Fetch every source the silica tree binds and return the synchronous
- *  `ResolveHost` the render primitive resolves against. A failed fetch degrades
- *  that source to empty rather than failing the page. `record` (a collection
- *  template's in-scope record) injects a single object at its key so `<key>.*`
- *  refs resolve; `site` supplies the chrome's brand identity + socials (always,
- *  since the frame binds `site.*` regardless of what the tree walk detects);
- *  `currency`/`locale` drive price formatting. */
+ *  `ResolveHost` the render primitive resolves against, plus what it paginated.
+ *  A failed fetch degrades that source to empty rather than failing the page.
+ *  `record` (a collection template's in-scope record) injects a single object at its
+ *  key so `<key>.*` refs resolve; `site` supplies the chrome's brand identity +
+ *  socials (always, since the frame binds `site.*` regardless of what the tree walk
+ *  detects); `currency`/`locale` drive price formatting; `searchParams` is the route's
+ *  raw query, which is where the page number lives. */
 export async function buildSilicaHost(
   tenantSlug: string,
   tree: SilicaNode,
@@ -309,9 +369,12 @@ export async function buildSilicaHost(
     site?: SilicaSiteData;
     currency?: string;
     locale?: string;
+    /** The route's search params, forwarded verbatim. Omitted → page one, which is
+     *  the right answer for the frame and for any route with no list on it. */
+    searchParams?: Record<string, string | string[] | undefined>;
   } = {}
-): Promise<SilicaResolver> {
-  const { currency = 'USD', locale = 'en-US', record, site } = opts;
+): Promise<SilicaHost> {
+  const { currency = 'USD', locale = 'en-US', record, site, searchParams } = opts;
   const needs = collectSilicaSourceNeeds(tree);
   const root: DataSources = site ? siteRoot(site) : {};
   const tasks: Promise<void>[] = [];
@@ -320,6 +383,23 @@ export async function buildSilicaHost(
   // which are on the page (docs/118). Each is its own fetch, run in parallel. The
   // in-scope PDP product is excluded from every BOUNDED rail (they're cross-sell).
   const p = needs.products;
+
+  // WHICH LISTS ON THIS PAGE ARE PAGINATED, decided before any fetch, because the
+  // answer decides the query parameter each one reads. Only the UNBOUNDED sources
+  // qualify — the whole-catalog grid and every CMS type. The rails (featured / new /
+  // related) and the category grids are deliberately capped curations: a "Featured"
+  // strip with a Next button underneath it is not a feature, it is a curation that
+  // forgot it was one.
+  const pagedSources = [
+    ...(p.catalog ? ['commerce.product'] : []),
+    ...needs.cmsTypes.map((t) => `cms.${t}`),
+  ];
+  const alone = pagedSources.length === 1;
+  const paging: ListPaging[] = [];
+  const requestedPage = (source: string): { param: string; page: number } => {
+    const param = pagingParamFor(source, alone);
+    return { param, page: pageFrom(searchParams, param) };
+  };
   const currentProductId =
     record?.key === 'product' ? (record.value as { id?: string } | undefined)?.id : undefined;
   const notCurrent = (i: PublicProductListItem) => i.id !== currentProductId;
@@ -330,16 +410,42 @@ export async function buildSilicaHost(
       .slice(0, FEATURED_LIMIT)
       .map((i) => toSilicaProduct(i, tenantSlug));
 
-  // Base catalog fetch (default sort) — the whole-catalog grid, the featured slice,
-  // and product pins all read from ONE list.
-  if (p.catalog || p.featured || needs.productPins.length > 0) {
+  // Which page the catalog grid is on, and therefore whether the base fetch below can
+  // still serve it. On page one — nearly always — it can, and this stays the single
+  // request it has always been.
+  const catalogPage = p.catalog ? requestedPage('commerce.product') : null;
+  const catalogOnBase = catalogPage?.page === 1;
+
+  /** Record what a catalog fetch actually returned, so the pager can move it. */
+  const recordCatalogPaging = (shown: number, total: number): void => {
+    if (!catalogPage) return;
+    const totalPages = Math.max(1, Math.ceil(total / COLLECTION_PAGE_SIZE));
+    const entry: ListPaging = {
+      source: 'commerce.product',
+      param: catalogPage.param,
+      page: catalogPage.page,
+      perPage: COLLECTION_PAGE_SIZE,
+      total,
+      totalPages,
+      hasMore: catalogPage.page < totalPages,
+    };
+    paging.push(entry);
+    setListMeta(root, 'commerce.product', shown, entry);
+  };
+
+  // Base catalog fetch (default sort, page one) — the featured slice and the product
+  // pins always read from it, and so does the whole-catalog grid while the reader is
+  // on page one. Deeper pages get their own request below: a "Featured" rail built
+  // from page 3 of the catalog would be showing whatever happened to sort there,
+  // which is not a curation at all.
+  if (catalogOnBase || p.featured || needs.productPins.length > 0) {
     tasks.push(
       listProducts(tenantSlug, { perPage: COLLECTION_PAGE_SIZE })
         .then(({ items, total }) => {
           const products = items.map((i) => toSilicaProduct(i, tenantSlug));
-          if (p.catalog) {
+          if (catalogOnBase) {
             setAtPath(root, 'commerce.product', products);
-            setListMeta(root, 'commerce.product', products.length, total, 'product catalog');
+            recordCatalogPaging(products.length, total);
           }
           if (p.featured) {
             // "Featured" = products the merchant tagged `featured` (a no-schema curation
@@ -363,9 +469,23 @@ export async function buildSilicaHost(
           }
         })
         .catch(() => {
-          if (p.catalog) setAtPath(root, 'commerce.product', []);
+          if (catalogOnBase) setAtPath(root, 'commerce.product', []);
           if (p.featured) setAtPath(root, 'commerce.featured', []);
         })
+    );
+  }
+
+  // Page two and beyond — its own request, because the base fetch above is pinned to
+  // page one for the rails that depend on it.
+  if (catalogPage && !catalogOnBase) {
+    tasks.push(
+      listProducts(tenantSlug, { perPage: COLLECTION_PAGE_SIZE, page: catalogPage.page })
+        .then(({ items, total }) => {
+          const products = items.map((i) => toSilicaProduct(i, tenantSlug));
+          setAtPath(root, 'commerce.product', products);
+          recordCatalogPaging(products.length, total);
+        })
+        .catch(() => setAtPath(root, 'commerce.product', []))
     );
   }
 
@@ -402,25 +522,28 @@ export async function buildSilicaHost(
   }
 
   for (const type of needs.cmsTypes) {
+    const key = `cms.${type}`;
+    const requested = requestedPage(key);
     tasks.push(
-      listEntries(tenantSlug, type)
-        .then((entries) => {
-          const shown = entries.slice(0, COLLECTION_PAGE_SIZE);
+      listEntries(tenantSlug, type, requested.page)
+        .then(({ items, total }) => {
           setAtPath(
             root,
-            `cms.${type}`,
-            shown.map((e) => toSilicaEntry(e, tenantSlug, type))
+            key,
+            items.map((e) => toSilicaEntry(e, tenantSlug, type))
           );
-          // n+1 came back → there is at least one more. No exact total available here,
-          // so `*Total` is deliberately not set rather than guessed.
-          const hasMore = entries.length > COLLECTION_PAGE_SIZE;
-          setAtPath(root, `cms.${type}HasMore`, hasMore);
-          if (hasMore) {
-            console.warn(
-              `[silica-data] cms.${type}: showing ${shown.length} entries, more exist — ` +
-                `the storefront offers no pagination yet (docs/127 §8).`
-            );
-          }
+          const totalPages = Math.max(1, Math.ceil(total / COLLECTION_PAGE_SIZE));
+          const entry: ListPaging = {
+            source: key,
+            param: requested.param,
+            page: requested.page,
+            perPage: COLLECTION_PAGE_SIZE,
+            total,
+            totalPages,
+            hasMore: requested.page < totalPages,
+          };
+          paging.push(entry);
+          setListMeta(root, key, items.length, entry);
         })
         .catch(() => setAtPath(root, `cms.${type}`, []))
     );
@@ -451,5 +574,11 @@ export async function buildSilicaHost(
   // `commerce.product`).
   if (record) setAtPath(root, record.key, record.value);
 
-  return createSilicaResolver({ root, format: makeFormat(currency, locale) });
+  return {
+    resolver: createSilicaResolver({ root, format: makeFormat(currency, locale) }),
+    // Sorted so the order is the tree's, not whichever fetch finished first — the
+    // pagination core picks a list by name, but a surface listing them should not
+    // reshuffle between requests.
+    paging: paging.sort((a, b) => a.source.localeCompare(b.source)),
+  };
 }

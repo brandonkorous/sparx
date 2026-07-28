@@ -1,13 +1,15 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.2.0
+Version: 2.7.0
 Author: Brandon Korous
 Last Updated: 2026-07-28
 
-> **Status — WAVES 1 AND 2 COMPLETE (2026-07-28).** Slices 1–11 are committed and pushed
-> as `d839df26` (_feat(builder): pre-publish site check, silica-native saved pieces,
-> shared authoring vocabulary_) plus `5f1e1d75` for the market-projection test fix; both
-> are on `origin/main`. **Slices 12 and 22 are UNCOMMITTED in the working tree:**
+> **Status — WAVES 1 AND 2 COMPLETE; WAVE 4 IS DONE BUT FOR THE BLUEPRINT SHELF; WAVE 3 IS SILICAUI-BLOCKED (2026-07-28).**
+> Slices
+> 1–11 are committed and pushed as `d839df26` (_feat(builder): pre-publish site check,
+> silica-native saved pieces, shared authoring vocabulary_) plus `5f1e1d75` for the
+> market-projection test fix; both are on `origin/main`. **Slices 12, 22, 23, 19 and 20 are
+> UNCOMMITTED in the working tree:**
 >
 > - **12 — the publish-time budget:** `packages/site-lint` (`budget.ts` + its tests, plus
 >   the `walk.ts` / `content.ts` / `types.ts` / `lint.ts` / `index.ts` edges),
@@ -19,9 +21,35 @@ Last Updated: 2026-07-28
 >   the new route in `routes/v1/builder/analytics.ts`), `apps/workbench`
 >   (`builder/page-results.tsx`, `builder/page-results-data.ts`, the catalog entry in
 >   `lib/surfaces/catalog/builder.ts`).
+> - **23 — collection pagination:** `apps/site` (`lib/silica-data.ts`, `lib/silica.ts`,
+>   `lib/content.ts`, `lib/commerce.ts`, `lib/builder-commerce-data.ts`,
+>   `components/pagination.tsx`, the new `components/list-pagination.tsx`,
+>   `components/silica-host-cores.tsx`, and the five routes that build a host),
+>   `packages/silica-catalog` (`host-nodes.ts`, `commerce.ts` + both tests),
+>   `packages/builder-schemas` (`node.ts`, `runtime.ts`, `binding-spine.test.ts`),
+>   `packages/builder` (the MCP authoring vocabulary), `services/api-rest`
+>   (`public/content.ts`, `public/commerce.ts`), `apps/workbench` (`studio/host-cores.tsx`).
+> - **19 — the section library:** the new `packages/silica-catalog/src/sections/`
+>   (ten files + `sections.test.ts`), plus `catalog.ts` / `index.ts` and the studio host's
+>   `catalog()` merge.
+> - **20 — responsive images:** `services/api-rest` (`pickVariant` + the `w` parameter in
+>   `routes/v1/public/media.ts`, its new `media.test.ts`), `packages/silica-catalog` (the new
+>   `responsive-images.ts` + its test, one line in `render.ts`, the `index.ts` export),
+>   `apps/site` (`lib/media.ts`, `lib/image-loader.ts` — comment corrections only),
+>   `apps/market` (`lib/image-loader.ts` — same).
+> - **21 — ISR + the dead-tier deletion:** `apps/site` (twelve route directives, the two
+>   `book` routes' justifications, dead-branch deletions in `app/page.tsx`,
+>   `app/layout.tsx`, `app/blog/[slug]`, `app/products/[handle]`, the `BuilderSiteChrome`
+>   removal in `components/builder-renderer.tsx`, `getNavigationMenu` in `lib/site.ts`,
+>   and four DELETED components: `site-header`, `site-footer`, `header-scroll`,
+>   `mobile-nav`), plus `docs/127-site-read-path-remediation.md` §6.
+> - **The ISR purge publisher** (slice 21's blocker, not the slice): `packages/events`
+>   (`types.ts`), `services/api-rest` (the new `lib/builder-events.ts` + two calls in
+>   `routes/v1/builder/site.ts`), `services/cache-revalidation-worker` (its test),
+>   `docs/brain/api-events/event-catalog.md`.
 >
-> **No new workspace package in either**, so **no `pnpm install` and no Dockerfile change
-> is needed**. **The file-ownership boundary
+> **No new workspace package in any of them**, so **no `pnpm install` and no Dockerfile
+> change is needed**. **The file-ownership boundary
 > that used to live here is retired** — it listed which files were ours and which were the
 > parallel social agent's, and the eleven committed slices no longer need separating. The
 > social agent is still working in this checkout, so the standing rule survives it: stage
@@ -45,17 +73,19 @@ Last Updated: 2026-07-28
 > **Gates at the last full pass:** typecheck + lint clean across `@sparx/site-lint`,
 > `@sparx/site-themes`, `@sparx/silica-catalog`, `@sparx/builder`, `@sparx/builder-schemas`,
 > `@sparx/db`, `@sparx/seo-audit`, `@sparx/api-rest`, `@sparx/site`, `@sparx/workbench`.
-> Unit tests: **94 site-lint** (78 + 13 for the budget + 3 for the route table's record
-> types), 89 site-themes, 158 silica-catalog, and the api-rest suite — **275 across 54
-> files, all passing**, verified in full after slice 12; slice 22 adds 10 more for
-> `assemble`. `apps/workbench` has no test script by design (no automated UI specs).
+> Unit tests: **94 site-lint** · 89 site-themes · **174 silica-catalog** (158 + 14 for the
+> section library and the seeded pager) · **273 builder-schemas** · 73 builder · and the
+> **full api-rest suite at 285 across 55 files, all passing**, re-run after slices 22 and 23. `apps/workbench` has no test script by design (no automated UI specs).
 >
 > **Not settled by any of that — only a browser can:** preview-vs-draft (slice 1) · two-tab
 > undo, where `Ctrl+Z` must move only your own node (5) · a saved piece round-tripping and
 > a master edit reaching its instances (7) · the Check panel's **Show me** landing on the
 > right node for all three scopes, and **Open** landing on the right page from the weight
 > list (11, 12) · the Page results table against a site with real traffic, where the
-> collection-template row is the one to look at (22).
+> collection-template row is the one to look at (22) · **`?page=2` actually rendering the
+> second page, and the pager hiding itself when everything fits** (23) · **how the 66 new
+> sections look on a real theme** — they pass every structural check there is, and "does
+> it look good" is not one a test can make (19).
 >
 > **Decisions taken, so they are not re-litigated:**
 >
@@ -229,10 +259,71 @@ Upstream. Filed in [doc 139](../139-silicaui-builder-asks.md); [02-silicaui-asks
 Where "no better in the world" is actually won or lost.
 
 - [ ] **18. 20–40 blueprints.** Across verticals — a shop, a services business, a publisher, a restaurant, a studio, a B2B distributor, a nonprofit. The machinery is done; the shelf is empty. — _cost-decision (authoring time) · L_
-- [ ] **19. Section catalog from 18 toward 80–120.** Galleries, comparison tables, timelines, process, careers, locations, menus, case studies, before/after, calculators. — _in-our-control + silicaui · L_
-- [ ] **20. Image pipeline.** Three or four widths generated on upload, `srcset` / `sizes` on emit, focal point in the picker. — _cost-decision (storage vs transform service) · M_
-- [ ] **21. ISR the storefront.** Remove `force-dynamic` where the tag-purge pipeline already covers invalidation; delete the dead legacy render tiers beneath the always-true silica branch. — _cost-decision (staleness risk; likely reduces spend) · M_
-  > **Blocked on a purge that does not exist yet, found during slice 8.** `cache-revalidation-worker` maps `builder.*` / `sitebuilder.*` events onto the `builder:<slug>` tag — but NOTHING emits one: neither `siteService.publish` nor `artifactService.restoreRelease` publishes an event, and there is no `builder.*` member in the `EventType` union. That is harmless only because all 19 storefront routes are `force-dynamic`, which is exactly what this slice removes. Turning on ISR without wiring both paths would mean a publish shows nothing and a ROLLBACK leaves the broken page live — the failure the rollback exists to fix, made permanent.
+
+  > **NOT STARTED.** `assertRequiredMedia` in `api-rest/lib/marketplace/ingest.ts` refuses any bundle missing `media/icon.png` and `media/preview.png`, and the failure is at ingest, so a bundle without them never reaches storage.
+  >
+  > **~~"two real images that no amount of code can produce"~~ — that was wrong, and it was the load-bearing claim in this entry.** Corrected 2026-07-28 after actually checking:
+  >
+  > - **`preview.png` is defined as a screenshot.** [docs/guides/building-a-template.md](../guides/building-a-template.md) spells it out: "~1600×1000 — the card hero / **screenshot of the home page**". A blueprint's home page is a silica tree we can render; screenshotting it is mechanical, not artistic.
+  > - **`icon.png` is a 512×512 catalog tile**, and this repo already renders PNGs programmatically in **15 places** via Satori `ImageResponse` — `apps/site/app/api/og/route.tsx`, `apps/web/lib/og-*.tsx`, three `opengraph-image.tsx` routes. Composing a tile from the blueprint's own theme colors is the same machinery.
+  > - **Content imagery is not a blocker either.** Blueprints **hot-link** external photography — 27 such URLs across the shipped bundle and the ten component bundles — and the public media resolver passes an absolute `http(s)` key through verbatim precisely for blueprint installs (docs/54 §6).
+  >
+  > What genuinely cannot be produced here is **original photography** or a **bespoke per-vertical logo**. Neither is required by the ingest, and neither is what those two files are: they are marketplace CARD art for the "pick a starting point" screen, not site content.
+  >
+  > For scale: the one shipped bundle (`marketplace-catalog/blueprints/sparx/`) is ~3,500 lines of `blueprint.ts` + `site.json` + `content.json` + `welcome-email.json`, plus the two PNGs. Twenty to forty of those is still a content project — which is what the _cost-decision (authoring time)_ tag says — but it is an **authoring** cost, not a blocked one.
+  >
+  > **Slice 19 is the raw material.** The 66-section library is exactly what a vertical blueprint composes, so the per-blueprint cost is far lower than when this line was first written.
+
+- [x] **19. Section catalog from 18 toward 80–120.** Galleries, comparison tables, timelines, process, careers, locations, menus, case studies, before/after, calculators. — _in-our-control + silicaui · L_
+
+  > **Landed at 88 blocks — 18 from the engine plus 70 sparx entries** (4 commerce composites and a **66-section library**), in `packages/silica-catalog/src/sections/`. With the 14 host cores the Insert palette now offers 102 things. The engine's 18 are a good spine for a software marketing page and a thin one for everything this platform actually serves: with no gallery it could not be used by a photographer, with no opening hours not by a shop, with no menu not by a restaurant, with no price list not by a garage.
+  >
+  > **Ten groups, named for what a page is FOR** rather than for a component taxonomy: Page structure · Pictures · Helping people choose · How it works · People and proof · Where and when · Getting in touch · Writing · Selling (+ the existing Products). The audience is a non-technical owner, so the palette hint IS the product — the test fails a row whose hint is under 20 characters.
+  >
+  > **The house rules are STRUCTURAL, not a review checklist.** Everything is built from `sections/_shell.ts`, which has no slot above a heading, so an eyebrow cannot be authored through the kit at all. `sections.test.ts` then checks the whole library: no class outside the declared vocabulary, no viewport variant, no gradient, no `shadow-*`, no faded ink on readable text, no `text-xs` anywhere, and every `text-sm` carrying the shared `caption()` string verbatim — so small text can only enter through the one helper that means "deliberately not competing for attention".
+  >
+  > **Two of those tests were wrong before they were right, and the fix is the interesting part.** Counting small-text nodes failed a _correct_ six-tile gallery, because it was measuring how many cards a section had rather than whether anything was too small to read; it became the caption-class check instead. And a length check on the rendered HTML cannot see a DROPPED TAG — `toHtml` sanitises to an allowlist, so an opening-hours table silently becoming a pile of divs passes it. There is now an explicit assertion that `<table>`/`<address>`/`<form>/<label>/<input>/<textarea>`/`<dl>`/`<aside>`/`<ol>`/`<figcaption>` survive the round trip, because the semantics are the whole point of those sections.
+  >
+  > **Deliberate omissions, each for a reason.** No calculator — a real one needs inputs a catalog block cannot know, so `cost_examples` gives three worked jobs instead and can never quote wrong. No before/after drag-slider — it hides half the evidence behind an interaction, is hostile to a keyboard, and prints as one arbitrary frame; two labelled pictures make the same argument everywhere. No divider or spacer block — decoration and whitespace-in-a-box are the editorial formatting RULE #2 bans. No stock-icon feature row: generic icons above generic headings add nothing a reader can use and are the fastest way to make a page look generated.
+  >
+  > **Stamped, not host cores** — and `sections/index.ts` states why: a section is tenant content, so freezing at insert is the correct trade (the author owns every node). A host core is the opposite trade, reserved for regions the platform must keep improving forever. Only three sections use the behaviour runtime (an autoplaying showcase, a single-open FAQ, and every form); the rest are CSS-only, including the photo strip, which scrolls with a finger, a wheel and a keyboard with nothing to hydrate.
+  >
+  > One palette-wiring hazard closed on the way: the studio merged `COMMERCE_CATALOG` by name, so a host reaching for it alone would ship a builder with no sections and nothing visible to say so. There is now a single `SPARX_CATALOG` export and that is what the host merges.
+
+- [x] **20. Image pipeline.** Three or four widths generated on upload, `srcset` / `sizes` on emit, focal point in the picker. — _~~cost-decision (storage vs transform service)~~ → in-our-control · M_
+
+  > **THE COST DECISION WAS ALREADY MADE AND ALREADY PAID — the tag was stale.** `media-worker` has been generating **400 / 800 / 1200 / 2000 px in three formats** on every upload since it shipped (`VARIANT_WIDTHS` in its `env.ts`), and `media_variants` rows exist for all of them. There was no storage question left to answer and no transform service to buy. Focal point is likewise present (`focal_point_x/y` on `media_assets`, with a focal-aware cover crop in the worker).
+  >
+  > **The bug was never the ladder — it was that 2000px was what EVERYONE got.** The resolver `GET /v1/public/media/:id` picked `variants.reduce((a, b) => b.width > a.width ? b : a)` — literally "the widest" — and there was no way to ask for anything else. Meanwhile `siteImageLoader` (and the marketplace's) had been appending `?w=<px>` to every `next/image` srcset entry all along, and `RedirectQuery` was `z.object({ tenant })`, so zod stripped the parameter without a word. Every srcset on the storefront was a lie: four URLs, one file, always the largest.
+  >
+  > **The fix is `pickVariant`** ([public/media.ts](../../services/api-rest/src/routes/v1/public/media.ts)) — narrowest variant covering `w`, **clamped to the widest** when the source was too small to produce one. That clamp is the whole design. It is what dissolves the three-way decision this entry used to pose: derivation is safe precisely because naming a rung that does not exist can no longer 404. No per-page round trip (a), no widths frozen onto the node at publish (b), and no giving up the top rungs (c).
+  >
+  > **Emit is a tree transform at the one render seam** ([responsive-images.ts](../../packages/silica-catalog/src/responsive-images.ts), step 5 of `renderComposedTree`). It runs AFTER resolution, because a product card's image URL comes from the record — and after lowering, because a product card's image is an `Image` **atom**, not an `<img>`, and silica's `Image.expand` builds a fixed attribute set (`src`/`alt`/`loading`) that drops a `srcset` prop silently. Components whose expansion is an image are expanded through silica's own exported `expandComponent` rather than a local re-implementation, so the `ratio` → aspect-class mapping cannot drift. `sizes` is `100vw` — never under-fetches, and captures the win that matters, since 100vw on a phone is ~390px — except for a fixed-size image (`size-16`, `w-12`), which gets real pixels, because a 64px avatar at 100vw would still pull the 2000px rung on a wide display.
+  >
+  > **On whether 2000px was ever a good call (asked 2026-07-28): keep it.** Storage is the cheap axis and is already spent; egress is the expensive one and is driven by what gets SERVED, which `sizes` now decides. Dropping the rung would cap the platform at 1200px, which upscales — visibly — on any laptop-width full-bleed hero, and would still leave a phone over-fetching 3×. Wrong lever. The one genuine follow-up is **`avif` content negotiation** (~20–30 % smaller than webp, already generated): it needs an `Accept`-keyed choice on an edge-cached 302, so it must ship with a matching `Vary` or one browser's avif gets served to another that cannot decode it. `w` carries no such risk — it is part of the URL, so each rung is its own cache key.
+
+- [x] **21. ISR the storefront.** Remove `force-dynamic` where the tag-purge pipeline already covers invalidation; delete the dead legacy render tiers beneath the always-true silica branch. — _cost-decision (staleness risk; likely reduces spend) · M_
+
+  > **What "ISR" actually means here, corrected.** Full-route static rendering was never available and never will be: `resolveSite()` awaits `headers()` to map Host → tenant, so every storefront route is dynamically rendered by construction — which is also the guarantee that no tenant's page can ever be served on another tenant's domain. The whole win is the **Data Cache**. `force-dynamic` was forcing `cache: 'no-store'` on every fetch beneath it, which meant the `revalidate` windows and the `builder:` / `tenant:` / `commerce:` tags each reader in `apps/site/lib/*` declares were decorative for as long as it was there. Removing it activates the policy that was already written.
+  >
+  > **Twelve routes flipped**; eleven keep the directive, each for a stated reason — `cart`, `checkout`, the five `account/*`, `api/health` (per-visitor or liveness), `search` (a query surface), and `book` + `book/[serviceId]`, which is a judgement call rather than the owner's list: appointment availability is the one read where staleness is visible to a customer as a slot they can pick but not get.
+  >
+  > **The purge chain was verified end to end before flipping anything**, since a cache with a broken purge is worse than no cache. Five publish paths emit (`page`/`layout`/`email` services through `installBuilderPubSubBridge`, plus site publish/rollback through `lib/builder-events.ts`), the worker matches `builder.*` **by prefix**, resolves the envelope's `tenantId` to a slug, and posts the `builder` scope — which is in `SCOPES`. Written up in [docs/127 §6](../127-site-read-path-remediation.md), now marked DONE.
+  >
+  > **The "dead legacy tiers" line was only PARTLY true, and the difference matters.** Verified per route rather than trusted:
+  >
+  > - **Genuinely dead, deleted** — the home route's three fallback tiers (`getPublishedSilicaHome` cannot return null: api-rest 404s and the client answers with the starter, whose `starterPages` always has a Home at `/`); the blog route's builder tier and bare-`PageView` tier; the product route's builder tier; and the root layout's `<BuilderSiteChrome>` + `<SiteHeader>`/`<SiteFooter>` branches (`getPublishedSilicaFrame` always returns a frame once `site` resolves).
+  > - **NOT dead, kept** — the catch-all `[...slug]` legacy path, because `getPublishedSilicaPage` returns null for any slug that is neither published nor a starter slug, which is every CMS article. And the product route's legacy SECTION path, because `sample` skips the silica branch entirely so a merchant can design a PDP against fixtures before a real product exists. `lib/builder.ts`, `lib/site.ts`, `BuilderRenderer` and `SectionRenderer` therefore all stay.
+  >
+  > **Two real bugs fell out of it.** The root layout computed `legalLinks` under `if (site && !builderLayout)` — a leftover guard that, once the silica frame always rendered, left the footer's `site.legal-links` host core EMPTY for any tenant still carrying a builder-layout row. And the layout was paying for `getPublishedBuilderLayout`, `listCollections`, and up to two `getNavigationMenu` reads on every request to feed chrome that could not render: **four api-rest round trips per page load, removed.**
+  >
+  > Net **−505 lines** in `apps/site`, including four fully orphaned components (`site-header`, `site-footer`, `header-scroll`, `mobile-nav`). Where a tier was deleted and something must still be returned, the terminal is a `throw` with a named cause rather than a silent fallback — except in the root layout, which wraps every route, where an unreachable branch degrades to a bare `<main>`: a site with no chrome is degraded, a site that 500s is off.
+  > **~~Blocked on a purge that does not exist yet~~ — THE BLOCKER IS CLEARED (2026-07-28).** Found during slice 8: `cache-revalidation-worker` mapped `builder.*` onto the `builder:<slug>` tag and every storefront read already carried the tag, but NOTHING emitted the event — no `builder.*` member in the `EventType` union, and neither publish nor rollback published anything. Dead code that looked healthy, because all 19 routes are `force-dynamic` so nothing is cached.
+  >
+  > That is now wired, because it is pure engineering with no ongoing cost and it is the precondition for the rest: `builder.published` and `builder.rolled_back` are real `EventType` members, published best-effort **after** the write commits by `POST /v1/builder/site/publish` and `POST /v1/builder/site/releases/:id/restore` (`api-rest/lib/builder-events.ts`). The worker's test now asserts the two names that genuinely exist rather than four plausible ones nobody emitted, plus the prefix behaviour separately. The brain's [event catalog](../brain/api-events/event-catalog.md) records the shape to watch for: a consumer branch with no publisher is silent until caching is switched on.
+  >
+  > **What remains is the cost decision, and it is the owner's.** Removing `force-dynamic` trades a staleness risk for spend that most likely FALLS (fewer origin renders). Nothing else blocks it.
+
 - [x] **22. Close the measurability loop.** A Pages list in the Builder module showing, per page: views · visitors · conversion · revenue attributed · SEO score · load time. Consumes the already-built `top-pages` and `sources` endpoints joined to the existing order attribution. — _in-our-control · M_
 
   > This is the builder's equivalent of what email attribution did for email: the owner finds out whether the thing they built worked.
@@ -249,7 +340,24 @@ Where "no better in the world" is actually won or lost.
   >
   > **Where the honesty is.** Conversion is `null`, not 0%, when nobody came — 0% reads as failure rather than as silence. An unmeasured load time is `neutral`, never green: painting "we have no idea" the same colour as "fast" is the one thing this must not do. Folded load times are re-weighted by sample count, so a path measured twice cannot outvote one measured two thousand times. Traffic on paths no page owns (products, posts, legal) is reported in `otherPaths` rather than dropped, so the totals reconcile with the traffic card instead of quietly disagreeing with it. With Commerce off the money columns are absent rather than permanently zero. One known limitation, stated in the code: a folded template's `visitors` is a SUM across its records, so one person who browsed four products counts four times — deduplicating would cost a `COUNT(DISTINCT)` per template, and the surface words it as visits.
 
-- [ ] **23. Collection pagination**, plus sort, filter and conditional visibility in the binder. Removes the silent 24-record cap. — _in-our-control + silicaui · L_
+- [x] **23. Collection pagination**, plus sort, filter and conditional visibility in the binder. Removes the silent 24-record cap. — _in-our-control + silicaui · L_
+
+  > **This was silent DATA LOSS, not a page size.** A bound `commerce.product` grid fetched 24 records, the storefront offered no pagination, and nothing said the other 113 existed — not to the shopper, not to the author, not to a log. It is a real page size now: `?page=2` reaches the rest, and `COLLECTION_PAGE_SIZE` is one named constant instead of a `24` inlined at each fetch.
+  >
+  > **The pager is a HOST CORE (`site.pagination`), and that is the whole design decision.** Pagination is almost entirely conditional — no Previous on page one, no Next on the last, the current page is text not a link, the number window shifts as you walk, and the control must render _nothing_ when everything fits. A bound tree has no conditional, so a hand-authored pager would ship a **dead "Previous" on page one of every site on the platform** and offer a page 25 that is not there. Same wall `site.brand`'s `show` and `site.legal-links` hit; it is now filed as [doc 139 §10](../139-silicaui-builder-asks.md) with all four cases, because each one costs an author-editable region.
+  >
+  > **Unpinned, and seeded only where it belongs.** `productsBlock` embeds the pager under a whole-catalog GRID and never under a rail — a Next button below a "Featured" strip is a curation that forgot it was one. It has to be added at authoring time rather than retrofitted: a stamped tree freezes at publish (docs/122), so a block inserted today is the only one this can reach. Unlocked, unlike every other seeded core, because it is a convenience under a grid the tenant may later delete — which tripped the `site-chrome.test.ts` deletability tripwire exactly as designed, and the assertion is now set-based rather than order-based.
+  >
+  > **The CMS endpoint gained `?page=`, additively.** `/v1/public/content/entries` was cursor-only, and a cursor cannot express "page 4 of 9" in a URL a reader bookmarks or a crawler follows — there is no fourth cursor to put in a link until you have walked the first three. A request naming a page gets offset paging plus a real `total`; every existing caller keeps its cursor, its `next_cursor` and its cost. A page past the end is an empty page, not a 404.
+  >
+  > **Sort and filter live on the BINDING and are applied by the API.** `source` now takes `sort` (newest / price / title) and `tag`, threaded into `products/full`. Applied in the query, never over the fetched page: sorting after `take` reorders the first 24 instead of choosing the top 24, which is a different list wearing the right label. `collectionSourceKey` carries them, so two grids over the same catalog with different sorts are two lists rather than one silently shared — and a source with neither keys **byte-identically to before**, or every bound grid already published would look up a source nobody loaded.
+  >
+  > **A separate fetch for page 2+.** The base catalog request feeds the featured rail and the product pins as well as the grid, so it stays pinned to page one; a deeper page gets its own request. A "Featured" rail built from page 3 of the catalog is whatever happened to sort there.
+  >
+  > **Two bugs found on the way.** The HOME route never asked whether its tree had a host node, so **every host core an author placed on their home page rendered as an empty div** — a brand mark, a theme toggle, the pager, all silently nothing. `treeHasHostNode` was private to the catch-all route; it is now shared in `lib/silica.ts` and the home route branches on it. And `components/pagination.tsx` painted itself with two inline `style` blocks including a hand-written `marginTop: '3rem'`; migrated to utilities under the touching-it-means-fixing-it rule.
+  >
+  > **Conditional visibility is NOT built — it is filed.** `resolveTree` substitutes and expands; it never drops a node, and a host pre-pass cannot stand in because an item-scoped condition (`show the Sale badge only when there is a compare-at price`) can only be evaluated inside the expansion the engine owns. Doc 139 §10 asks for a `when` on `NodeBase` with a small closed predicate set.
+
 - [ ] **24. Cursors and selection presence**, plus per-node soft locks. — _silicaui-ask · M_
 
 ---

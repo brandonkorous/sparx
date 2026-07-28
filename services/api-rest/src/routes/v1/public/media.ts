@@ -60,13 +60,55 @@ const CONTENT_TYPES: Record<string, string> = {
 // verbatim (blueprint installs, docs/54 §6) — so this is the one path that makes
 // both kinds of media render. Tenant resolved by slug (tenants is non-RLS), then
 // an RLS-scoped asset lookup so an id can't leak another tenant's media.
-const RedirectQuery = z.object({ tenant: z.string().min(1).max(63) });
+// `w` is the CSS width the caller intends to paint the image at. It is OPTIONAL and
+// advisory — see pickVariant. `q` (quality) is accepted-and-ignored: next/image's
+// loader appends it, zod strips it, and our variants are pre-encoded at fixed
+// quality, so there is nothing to honour. It stays in the URL only because it makes
+// Next treat each srcset entry as a distinct cache key.
+const RedirectQuery = z.object({
+  tenant: z.string().min(1).max(63),
+  w: z.coerce.number().int().min(1).max(5000).optional(),
+});
 const RedirectParams = z.object({ id: z.string().uuid() });
+
+/**
+ * Choose which stored variant to serve for a requested CSS width.
+ *
+ * The ladder is a CLAMP, not a lookup: take the NARROWEST variant at least as wide as
+ * `w`, and fall back to the widest when every variant is smaller than asked. That last
+ * clause is the whole point — `media-worker` SKIPS widths above the source (upscaling
+ * buys nothing), so a 900px upload simply has no 1200 or 2000 variant. A caller asking
+ * for one gets the 900 instead of a 404.
+ *
+ * That is what makes a *derived* `srcset` safe. Callers can name the full width ladder
+ * for every image without knowing which rungs a given asset actually has — the
+ * alternative was either a per-image round trip to look the widths up, or freezing them
+ * onto the node at publish time. Both were avoidable; this is the reason.
+ *
+ * Omitting `w` keeps the historical behaviour (the widest available), so a bare
+ * resolver URL with no width hint still renders at full quality.
+ */
+export function pickVariant<T extends { format: string; width: number }>(
+  variants: readonly T[],
+  w?: number
+): T | null {
+  if (variants.length === 0) return null;
+  // Prefer webp: universal support + strong compression. avif is smaller still, but
+  // choosing it would have to key off the Accept header, and this redirect is edge-
+  // cached — varying on Accept without a matching Vary is how one browser's avif
+  // gets served to another browser that cannot decode it.
+  const webp = variants.filter((v) => v.format === 'webp');
+  const pool = webp.length > 0 ? webp : variants;
+  const widest = pool.reduce((a, b) => (b.width > a.width ? b : a));
+  if (w === undefined) return widest;
+  const fits = pool.filter((v) => v.width >= w);
+  return fits.length > 0 ? fits.reduce((a, b) => (b.width < a.width ? b : a)) : widest;
+}
 
 const publicMediaRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/media/:id', async (request, reply) => {
     const { id } = RedirectParams.parse(request.params);
-    const { tenant: slug } = RedirectQuery.parse(request.query);
+    const { tenant: slug, w } = RedirectQuery.parse(request.query);
     // Cached in lib/tenant-slug.ts (docs/127 §5).
     const tenantId = await requireTenantIdBySlug(slug);
     const asset = await withTenant({ tenantId }, (tx) =>
@@ -119,11 +161,8 @@ const publicMediaRoutes: FastifyPluginAsync = (app) => {
         select: { format: true, width: true, key: true },
       })
     );
-    if (variants.length > 0) {
-      // Prefer webp (universal support + strong compression); widest available.
-      const webp = variants.filter((v) => v.format === 'webp');
-      const pool = webp.length > 0 ? webp : variants;
-      const best = pool.reduce((a, b) => (b.width > a.width ? b : a));
+    const best = pickVariant(variants, w);
+    if (best) {
       // Stored key is `<tenantId>/variants/<assetId>/<filename>`; the route is
       // /v1/public/media/variants/:tenantId/:assetId/:filename — drop the middle
       // `/variants/` segment so the 3-param route matches (shared helper — same

@@ -1,35 +1,33 @@
-// Storefront root layout. Resolves the tenant from the Host, injects the
-// tenant's theme tokens (light + dark), frames every page in header/footer
-// chrome, and mounts the client providers.
+// Storefront root layout. Resolves the tenant from the Host, injects the tenant's theme
+// tokens (light + dark), frames every page in the silica FRAME, and mounts the client
+// providers.
 //
-// When the tenant has a published Site Builder snapshot, its compiled tokens
-// (a superset of the CommerceSiteTheme columns — adds foreground/border/container)
-// and its data-driven header/footer/announcement blocks take over. Without a
-// snapshot the legacy themeToCss(CommerceSiteTheme) path and collection-derived
-// chrome still render, so brand-new stores look polished out of the box.
+// ONE chrome tier, not three. The frame is the tenant's published silica layout, or the
+// code-authored starter frame until they publish one — so a brand-new site is live
+// rather than blank, and the header/footer are real editable nodes either way. The two
+// tiers that used to sit beneath it (a sparx-Builder chrome shell, and a hand-built
+// SiteHeader/SiteFooter pair driven by the snapshot's layout blocks) were unreachable
+// and are gone; see the chrome branch below.
 //
-// Unknown hosts (no tenant) render a bare frame — the page-level not-found
-// handles the "store not found" messaging.
+// The published Site Builder snapshot is still read, but ONLY for the appearance policy
+// and the compiled theme tokens — not for chrome.
+//
+// Unknown hosts (no tenant) render a bare frame — the page-level not-found handles the
+// "store not found" messaging.
 
 import type { Metadata } from 'next';
 import { cookies, headers } from 'next/headers';
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 
-import type { HeaderConfig, FooterConfig, AnnouncementConfig } from '@sparx/sitebuilder-schemas';
-
 import { CartProvider } from '@/components/cart-provider';
 import { CustomerProvider } from '@/components/customer-provider';
 import { WishlistProvider } from '@/components/wishlist-provider';
 import { MiniCart } from '@/components/mini-cart';
-import { ModeToggle } from '@/components/mode-toggle';
 import { PreviewBridge } from '@/components/preview-bridge';
 import { RevealController } from '@/components/reveal-controller';
 import { MotionController } from '@/components/motion-controller';
-import { SiteHeader, type NavItem } from '@/components/site-header';
-import { SiteFooter, type FooterColumn } from '@/components/site-footer';
 import { SiteSuspended } from '@/components/site-suspended';
-import { BuilderSiteChrome } from '@/components/builder-renderer';
 import { SilicaChrome } from '@/components/silica-chrome';
 import { storefrontHostRenderer } from '@/components/silica-host-cores';
 import { SilicaBehaviors } from '@/components/silica-behaviors';
@@ -43,10 +41,8 @@ import {
   brandFontHref,
   themeFontFamilies,
 } from '@sparx/site-themes';
-import { listCollections } from '@/lib/commerce';
 import { getLegalFooterLinks, type LegalLink } from '@/lib/legal';
-import { getPublishedBuilderLayout, getPublishedBuilderStyles } from '@/lib/builder';
-import { loadSiteData } from '@/lib/builder-data';
+import { getPublishedBuilderStyles } from '@/lib/builder';
 import { ConsentManager } from '@/components/consent/consent-manager';
 import { SiteAnalyticsBeacon } from '@/components/site-analytics-beacon';
 import { TopProgressBar } from '@/components/top-progress-bar';
@@ -57,12 +53,7 @@ import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
 import { resolveActivePropertySlug, resolveSite, type SiteTheme } from '@/lib/site-context';
 import { buildCommerceSiteThemeCss } from '@/lib/theme';
-import {
-  getPublishedSite,
-  getNavigationMenu,
-  type NavNode,
-  type PublishedSnapshot,
-} from '@/lib/site';
+import { getPublishedSite, type PublishedSnapshot } from '@/lib/site';
 
 // MUST be first: declares the cascade-layer order so `st-legacy` (the legacy
 // site.css defaults) ranks BENEATH site-ui's `components` layer. Without this,
@@ -80,7 +71,6 @@ import '@sparx/section-template-react/section-template.css';
 // `@layer st-legacy` (see layers.css). Plain compiled CSS — no preflight.
 import '@sparx/site-ui/styles.css';
 
-const FOOTER_YEAR = 2026; // static so SSR output stays deterministic/cacheable
 const THEME_COOKIE = 'sparx_theme';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -199,41 +189,10 @@ const REVEAL_INIT_SCRIPT = `(function(){try{if(window.matchMedia&&window.matchMe
 // the tenant runs a consent mode.
 const CONSENT_INIT_SCRIPT = `(function(){try{var m=document.cookie.match(/(?:^|;\\s*)sparx_consent_state=([^;]+)/);if(!m)return;var s=JSON.parse(decodeURIComponent(m[1]));var g=['strictly_necessary'];['preferences','analytics','marketing'].forEach(function(c){if(s[c])g.push(c)});document.documentElement.setAttribute('data-consent',g.join(' '));}catch(e){}})();`;
 
-// ── Header / footer chrome from the snapshot's layout blocks ─────────────────
-
-function navNodesToItems(nodes: NavNode[]): NavItem[] {
-  return nodes.map((n) => ({ label: n.label, href: n.href }));
-}
-
-const isExternal = (href: string) => /^https?:\/\//i.test(href);
-
-/** Empty/whitespace config strings → null so callers fall back to defaults. */
-function blankToNull(value: string | undefined): string | null {
-  return value && value.length > 0 ? value : null;
-}
-
-// Map a nav menu into footer columns: a top-level item WITH children becomes a
-// titled column; loose top-level leaves collect under a single "Links" column.
-function navNodesToFooterColumns(nodes: NavNode[]): FooterColumn[] {
-  const columns: FooterColumn[] = [];
-  const loose: FooterColumn['links'] = [];
-  for (const node of nodes) {
-    if (node.children.length > 0) {
-      columns.push({
-        title: node.label,
-        links: node.children.map((c) => ({
-          label: c.label,
-          href: c.href,
-          external: isExternal(c.href),
-        })),
-      });
-    } else {
-      loose.push({ label: node.label, href: node.href, external: isExternal(node.href) });
-    }
-  }
-  if (loose.length > 0) columns.unshift({ title: 'Links', links: loose });
-  return columns;
-}
+// The nav-menu → header-items and nav-menu → footer-columns mappers that lived here,
+// plus the `blankToNull` config helper, went with the `<SiteHeader>` / `<SiteFooter>`
+// chrome they fed. A silica frame authors its nav and footer as real nodes, so there is
+// nothing left to map a `NavNode` INTO.
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   // Three independent resolutions, awaited together (docs/127 §9). `resolveSite` and
@@ -267,24 +226,24 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // — header/footer/announcement — in the editor preview, not just published.
   const sitePreviewToken = hdrs.get('x-sparx-site-preview') ?? undefined;
 
-  // Four INDEPENDENT reads, awaited together (docs/127 §9). They were sequential, so
-  // chrome sat four api-rest round-trips deep before it could render — on a path that
-  // is `no-store`, meaning every request paid all four. None of them feeds another:
+  // Three INDEPENDENT reads, awaited together (docs/127 §9). They were sequential once,
+  // so chrome sat several api-rest round-trips deep before it could render. None of
+  // them feeds another:
   //
-  //   · snapshot      — the legacy Site Builder publish snapshot, read here for THEME
-  //   · builderLayout — the sparx Builder chrome shell (docs/45), WINS over legacy
-  //                     header/footer when present ("Builder owns it, else fall
-  //                     through", cf. docs/44 §2.5)
-  //   · silicaFrame   — the silica engine's published FRAME (docs/118 Stage 6), which
-  //                     wins over BOTH of the above by the same additive rule. Null
-  //                     until a silica layout is published, so a non-silica tenant is
-  //                     byte-for-byte unchanged
+  //   · snapshot      — the legacy Site Builder publish snapshot. Read ONLY for the
+  //                     appearance policy + the compiled theme now; its header/footer
+  //                     layout blocks went with the chrome tiers that consumed them
+  //   · silicaFrame   — the silica engine's FRAME (docs/118 Stage 6). Never null once
+  //                     `site` resolves: a 404 falls back to the code starter frame
   //   · surfaceCss    — the compiled Surface stylesheet (docs/47 §5): the utilities
   //                     authored as node `class` strings across the published trees.
   //                     '' until class-first authoring is in use
-  const [snapshot, builderLayout, silicaFrame, surfaceCss] = await Promise.all([
+  //
+  // A FOURTH read — `getPublishedBuilderLayout` — used to sit here. It fed the deleted
+  // `<BuilderSiteChrome>` branch and nothing else, so every request on every route paid
+  // for an answer that could not change what rendered.
+  const [snapshot, silicaFrame, surfaceCss] = await Promise.all([
     site ? getPublishedSite(site.slug, sitePreviewToken, activePropertySlug ?? undefined) : null,
-    site ? getPublishedBuilderLayout(site.slug) : null,
     site
       ? getPublishedSilicaFrame(
           site.slug,
@@ -374,101 +333,30 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   }
   const dynamicPolicy = policy === 'auto' || policy === 'toggle' ? policy : null;
 
-  // Site-layout render data — built after the appearance policy resolves so the
-  // Builder `ThemeToggle` node can auto-hide unless both themes are offered.
-  const siteData =
-    site && builderLayout ? loadSiteData(site, { policy, initial: initialTheme }) : null;
-
-  // Resolve header/footer/announcement from the snapshot's layout blocks.
-  const blocks: PublishedSnapshot['layout'] = snapshot?.layout ?? [];
-  const headerBlock = blocks.find((b) => b.slot === 'header' && b.visible);
-  const footerBlock = blocks.find((b) => b.slot === 'footer' && b.visible);
-  const announceBlock = blocks.find((b) => b.slot === 'announcement' && b.visible);
-
-  const headerConfig = (headerBlock?.config ?? {}) as Partial<HeaderConfig>;
-  const footerConfig = (footerBlock?.config ?? {}) as Partial<FooterConfig>;
-  const announceConfig = (announceBlock?.config ?? {}) as Partial<AnnouncementConfig>;
-
-  // Default chrome (no snapshot, or snapshot block without a menu): derive nav
-  // from the tenant's collections so a brand-new store still has working links.
-  // Skipped entirely when a Builder layout owns the chrome.
-  let collectionNav: NavItem[] = [];
-  if (site && !builderLayout) {
-    try {
-      const collections = await listCollections(site.slug);
-      collectionNav = collections.slice(0, 4).map((c) => ({
-        label: c.name,
-        href: `/collections/${c.handle}`,
-      }));
-    } catch {
-      collectionNav = [];
-    }
-  }
-
-  let nav: NavItem[] = [
-    { label: 'Shop all', href: '/products' },
-    ...collectionNav,
-    { label: 'Collections', href: '/collections' },
-  ];
-
-  let footerColumns: FooterColumn[] = [
-    {
-      title: 'Shop',
-      links: [
-        { label: 'All products', href: '/products' },
-        { label: 'Collections', href: '/collections' },
-        { label: 'Search', href: '/search' },
-      ],
-    },
-    {
-      title: 'Account',
-      links: [
-        { label: 'Sign in', href: '/account' },
-        { label: 'Orders', href: '/account/orders' },
-        { label: 'Cart', href: '/cart' },
-      ],
-    },
-    {
-      title: 'Info',
-      links: [{ label: 'Contact', href: '/contact' }],
-    },
-  ];
-
-  // Snapshot nav menus override the defaults when present + non-empty.
-  if (site && !builderLayout && headerBlock?.navigationMenuId) {
-    const items = await getNavigationMenu(site.slug, headerBlock.navigationMenuId);
-    if (items.length > 0) nav = navNodesToItems(items);
-  }
-  if (site && !builderLayout && footerBlock?.navigationMenuId) {
-    const items = await getNavigationMenu(site.slug, footerBlock.navigationMenuId);
-    const cols = navNodesToFooterColumns(items);
-    if (cols.length > 0) footerColumns = cols;
-  }
-
-  // Legal pages (privacy/terms/cookie-policy/…) resolve from doc placements
-  // (docs/42) and append as a "Legal" column — independent of whether the
-  // footer above is default or nav-menu-driven, since legal links are
-  // compliance-driven, not editorial. Omitted entirely when nothing is
-  // published yet.
+  // ── What used to live here ───────────────────────────────────────────────────
+  // Roughly ninety lines that existed ONLY to feed the two deleted chrome tiers: the
+  // snapshot's header/footer/announcement layout blocks, a default nav derived from the
+  // tenant's collections, three hardcoded footer columns, and two navigation-menu reads
+  // that overrode them. All of it fed `<SiteHeader>` / `<SiteFooter>`, which could not
+  // render (see the chrome branch below). A silica frame carries its own nav and footer
+  // as authored nodes.
   //
-  // Hoisted out of the `if` because a SILICA frame needs the same list: its footer
-  // carries a `site.legal-links` host core instead of a hand-authored column, and it
-  // must resolve to exactly what the default footer would have shown. One fetch, both
-  // chromes — they can't drift.
-  let legalLinks: LegalLink[] = [];
-  if (site && !builderLayout) {
-    legalLinks = await getLegalFooterLinks(site.slug, activePropertySlug ?? undefined);
-    if (legalLinks.length > 0) {
-      footerColumns = [
-        ...footerColumns,
-        { title: 'Legal', links: legalLinks.map((l) => ({ label: l.label, href: l.href })) },
-      ];
-    }
-  }
+  // Deleting it removes THREE api-rest round trips from every single page load — one
+  // `listCollections` plus up to two `getNavigationMenu` — and the whole
+  // `getPublishedBuilderLayout` read below, on a path the root layout pays on every
+  // request.
 
-  const announcement =
-    announceBlock && announceConfig.enabled && announceConfig.text ? announceConfig.text : null;
-  const socialLinks = footerConfig.socialLinks ?? [];
+  // Legal pages (privacy/terms/cookie-policy/…) resolve from doc placements (docs/42).
+  // This survived the deletion because the SILICA frame needs it too: its footer carries
+  // a `site.legal-links` host core rather than a hand-authored column.
+  //
+  // The guard was `if (site && !builderLayout)` — a leftover from when a published
+  // sparx-Builder layout suppressed the default footer. That had become an actual bug
+  // rather than dead weight: a tenant who still had a builder layout row got an EMPTY
+  // legal-links core on a silica frame that renders regardless.
+  const legalLinks: LegalLink[] = site
+    ? await getLegalFooterLinks(site.slug, activePropertySlug ?? undefined)
+    : [];
 
   // Site-wide structured data (docs/50): Organization identity (logo + social
   // `sameAs`) and a WebSite with the storefront search action — so search and
@@ -569,15 +457,23 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               >
                 <StorefrontBuilderRuntime>
                   <div className="flex min-h-[100dvh] flex-col">
-                    {silicaActive && silicaFrame.frame ? (
-                      // The silica engine's published frame owns the chrome (docs/118
-                      // Stage 6): the routed page drops at the frame's own Outlet.
-                      // The frame carries its own <main> landmark (id="st-main"), so
-                      // children pass in directly — no second <main> wrapper.
+                    {/* The silica engine's frame owns the chrome (docs/118 Stage 6): the
+                        routed page drops at the frame's own Outlet, and the frame carries
+                        its own <main> landmark (id="st-main"), so children pass in
+                        directly with no second <main> wrapper.
+
+                        There is no `silicaActive` ternary here any more. Two alternatives
+                        used to follow — a published sparx-Builder layout, then a
+                        hand-built SiteHeader/SiteFooter pair — and inside this `site ?`
+                        branch neither could ever run: `getPublishedSilicaFrame` answers a
+                        404 with the code-authored starter frame, so `silicaFrame.frame` is
+                        non-null whenever `site` is. The no-site case is the `:` arm at the
+                        bottom of this file and is unaffected. */}
+                    {silicaFrame.frame ? (
                       <SilicaChrome
                         frame={silicaFrame.frame.root}
                         symbols={silicaFrame.symbols}
-                        host={silicaHost ?? undefined}
+                        host={silicaHost?.resolver}
                         // The chrome's host cores (the brand mark) render live from the
                         // resolved site, so Site settings reach the header with no
                         // re-publish.
@@ -595,52 +491,18 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       >
                         {children}
                       </SilicaChrome>
-                    ) : builderLayout && siteData ? (
-                      // A published Builder layout owns the chrome: render its tree
-                      // with the page dropped at the Outlet (docs/45 §2.6).
-                      <BuilderSiteChrome tree={builderLayout.tree} data={siteData}>
-                        <main
-                          className="flex-[1_0_auto] focus:outline-none"
-                          id="st-main"
-                          tabIndex={-1}
-                        >
-                          {children}
-                        </main>
-                      </BuilderSiteChrome>
                     ) : (
-                      <>
-                        <SiteHeader
-                          site={site}
-                          nav={nav}
-                          announcement={announcement}
-                          announcementHref={blankToNull(announceConfig.linkUrl)}
-                          showSearch={headerConfig.showSearch ?? true}
-                          logoPlacement={headerConfig.logoPlacement ?? 'left'}
-                          overlay={headerConfig.overlay ?? false}
-                          modeToggle={
-                            policy === 'toggle' ? <ModeToggle initial={initialTheme} /> : undefined
-                          }
-                        />
-                        <main
-                          className="flex-[1_0_auto] focus:outline-none"
-                          id="st-main"
-                          tabIndex={-1}
-                        >
-                          {children}
-                        </main>
-                        <SiteFooter
-                          site={site}
-                          columns={footerColumns}
-                          year={FOOTER_YEAR}
-                          copyright={blankToNull(footerConfig.copyright)}
-                          socialLinks={socialLinks.map((s) => ({
-                            platform: s.platform,
-                            url: s.url,
-                          }))}
-                          variant={footerConfig.variant ?? 'columns'}
-                          tagline={blankToNull(footerConfig.tagline)}
-                        />
-                      </>
+                      // Unreachable by construction (see above), kept as a bare landmark
+                      // rather than a throw: the root layout wraps EVERY route, so
+                      // failing here would take the whole storefront down instead of one
+                      // page. A site with no chrome is degraded; a site that 500s is off.
+                      <main
+                        className="flex-[1_0_auto] focus:outline-none"
+                        id="st-main"
+                        tabIndex={-1}
+                      >
+                        {children}
+                      </main>
                     )}
                   </div>
                   <MiniCart />

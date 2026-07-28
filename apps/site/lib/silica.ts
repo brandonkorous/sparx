@@ -279,3 +279,22 @@ export async function getPublishedSilicaCollection(
     return starterCollectionDto(recordType);
   }
 }
+
+/**
+ * Does the tree embed a host core (`kind:"host"`)?
+ *
+ * Such a page renders through the React walk, so the core mounts live, rather than
+ * through the faster HTML-string path where `toHtml` lowers it to an empty
+ * `<div data-sui-host>` and nothing ever fills it.
+ *
+ * Shared rather than per-route: it lived privately in the catch-all route, so the HOME
+ * route never asked the question — and every host core an author placed on their home
+ * page rendered as an empty div. A brand mark, a theme toggle, or the page-links core
+ * on `/` silently did nothing, with no error anywhere to explain it.
+ */
+export function treeHasHostNode(node: unknown): boolean {
+  if (!node || typeof node !== 'object') return false;
+  const n = node as { kind?: string; children?: unknown[] };
+  if (n.kind === 'host') return true;
+  return Array.isArray(n.children) && n.children.some(treeHasHostNode);
+}

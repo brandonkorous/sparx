@@ -1,6 +1,11 @@
 // SSR pagination — renders prev/next + a windowed set of page links, each
 // preserving the current query params. Link-based so it works without JS and
 // every page is independently cacheable.
+//
+// The two inline `style` blocks this used to carry are gone (slice 23): a hand-written
+// `marginTop: '3rem'` is outside the spacing scale and cannot respond to anything, and
+// the rule against painting with `style` exists precisely so a control looks the same
+// wherever it is placed. Both were plain flex layout, so both are utilities now.
 
 import { Button } from '@wizeworks/silicaui-react';
 
@@ -11,19 +16,29 @@ export interface PaginationProps {
   currentParams: Record<string, string | string[] | undefined>;
   page: number;
   totalPages: number;
+  /**
+   * The query parameter this pager moves. `page` unless the route carries more than
+   * one paginated list.
+   *
+   * It is the parameter that gets REPLACED in every href built here, which means the
+   * others survive — so paging the products on a page that also lists journal entries
+   * does not silently reset the journal to page one.
+   */
+  param?: string;
 }
 
 function hrefFor(
   basePath: string,
   params: Record<string, string | string[] | undefined>,
-  page: number
+  page: number,
+  param: string
 ): string {
   const sp = new URLSearchParams();
   for (const [k, v] of Object.entries(params)) {
-    if (k === 'page' || v === undefined) continue;
+    if (k === param || v === undefined) continue;
     sp.set(k, Array.isArray(v) ? (v[0] ?? '') : v);
   }
-  if (page > 1) sp.set('page', String(page));
+  if (page > 1) sp.set(param, String(page));
   const qs = sp.toString();
   return qs ? `${basePath}?${qs}` : basePath;
 }
@@ -34,24 +49,20 @@ function pageWindow(page: number, total: number): number[] {
   return [...pages].filter((p) => p >= 1 && p <= total).sort((a, b) => a - b);
 }
 
-export function Pagination({ basePath, currentParams, page, totalPages }: PaginationProps) {
+export function Pagination({
+  basePath,
+  currentParams,
+  page,
+  totalPages,
+  param = 'page',
+}: PaginationProps) {
   const window = pageWindow(page, totalPages);
 
   return (
-    <nav
-      aria-label="Pagination"
-      style={{
-        display: 'flex',
-        gap: '0.4rem',
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginTop: '3rem',
-        flexWrap: 'wrap',
-      }}
-    >
+    <nav aria-label="Pagination" className="mt-12 flex flex-wrap items-center justify-center gap-2">
       {page > 1 ? (
         <ButtonLink
-          href={hrefFor(basePath, currentParams, page - 1)}
+          href={hrefFor(basePath, currentParams, page - 1, param)}
           color="neutral"
           variant="ghost"
         >
@@ -62,7 +73,7 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
       {window.map((p, i) => {
         const gap = i > 0 && p - window[i - 1]! > 1;
         return (
-          <span key={p} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+          <span key={p} className="inline-flex items-center gap-2">
             {gap ? <span className="text-base-content">…</span> : null}
             {p === page ? (
               // The current page is not a link. A plain <Button> (no `render`)
@@ -73,7 +84,7 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
               </Button>
             ) : (
               <ButtonLink
-                href={hrefFor(basePath, currentParams, p)}
+                href={hrefFor(basePath, currentParams, p, param)}
                 color="neutral"
                 variant="ghost"
               >
@@ -86,7 +97,7 @@ export function Pagination({ basePath, currentParams, page, totalPages }: Pagina
 
       {page < totalPages ? (
         <ButtonLink
-          href={hrefFor(basePath, currentParams, page + 1)}
+          href={hrefFor(basePath, currentParams, page + 1, param)}
           color="neutral"
           variant="ghost"
         >

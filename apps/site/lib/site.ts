@@ -242,26 +242,10 @@ interface NavMenu {
   items: NavNode[];
 }
 
-/** Resolve a CMS NavigationMenu id into renderable, href-resolved nav nodes.
- *  Returns [] on any failure so the layout falls back to its default links. */
-export async function getNavigationMenu(tenantSlug: string, menuId: string): Promise<NavNode[]> {
-  try {
-    const res = await fetch(
-      `${BASE_URL}/v1/public/content/navigation/${encodeURIComponent(menuId)}?tenant=${encodeURIComponent(tenantSlug)}`,
-      {
-        next: {
-          revalidate: 300,
-          tags: ['sparx-storefront', `content:${tenantSlug}`, `site:${tenantSlug}`],
-        },
-      }
-    );
-    const json = (await res.json()) as SuccessEnvelope<NavMenu> | ErrorEnvelope;
-    if (!res.ok || 'error' in json) return [];
-    return json.data.items;
-  } catch {
-    return [];
-  }
-}
+// `getNavigationMenu(tenantSlug, menuId)` — resolve a menu BY ID — was deleted with the
+// root layout's `<SiteHeader>` / `<SiteFooter>` chrome, its only caller. Nothing binds
+// nav by menu id any more: a silica frame binds BY LOCATION, which is what the function
+// below does.
 
 /** Resolve a CMS NavigationMenu BY LOCATION ('header' / 'footer') into nav nodes.
  *  The Builder site layout (docs/45) binds its chrome nav to a location, not a

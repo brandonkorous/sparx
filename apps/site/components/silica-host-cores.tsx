@@ -29,6 +29,7 @@ import { SiteBrand, toBrandShow } from '@/components/brand/site-brand';
 import { ArticleBody } from '@/components/cms/article-body';
 import { ModeToggle } from '@/components/mode-toggle';
 import { LegalFooterLinks, toLegalHeading } from '@/components/legal-footer-links';
+import { ListPagination, type ListPagingFacts } from '@/components/list-pagination';
 import { mediaUrl } from '@/lib/media';
 import type { LegalLink } from '@/lib/legal';
 import type { ResolvedSite } from '@/lib/site-context';
@@ -64,6 +65,15 @@ export interface HostCoreContext {
    *  them for the default footer — the silica frame and the default footer resolve the
    *  same list once, so the two chromes can never disagree about what is published. */
   legalLinks?: LegalLink[];
+  /** What the route's data load actually paginated, for the pagination core. Passed as
+   *  DATA rather than re-derived because only `buildSilicaHost` knows how many records
+   *  there turned out to be — a core that guessed would eventually offer a page that
+   *  is not there. Absent on a route with no bound list, which is the same as empty. */
+  paging?: ListPagingFacts[];
+  /** The route's own path, with no query string — the base every page link is built
+   *  on. A host core cannot read the URL, and building links against the wrong path
+   *  is how a pager on `/journal` sends readers to `/?page=2`. */
+  basePath?: string;
 }
 
 /** Build the storefront `HostRenderer` for a route — a single switch over the pinned
@@ -128,6 +138,18 @@ export function storefrontHostRenderer(ctx: HostCoreContext): HostRenderer {
         return ctx.appearance?.policy === 'toggle' ? (
           <ModeToggle initial={ctx.appearance.initial} />
         ) : null;
+      case HOST_KEYS.sitePagination:
+        // Page links for a bound list on this page. Renders NOTHING unless the route
+        // actually paginated something and there is more than one page — a pager that
+        // invents a page 2 sends a reader to an empty grid.
+        return (
+          <ListPagination
+            paging={ctx.paging ?? []}
+            list={typeof node.props?.list === 'string' ? node.props.list : undefined}
+            basePath={ctx.basePath ?? '/'}
+            searchParams={ctx.searchParams ?? {}}
+          />
+        );
       case HOST_KEYS.siteLegalLinks:
         // The tenant's published legal pages, resolved from doc placements by the
         // layout. Renders nothing until at least one is published — which is why the

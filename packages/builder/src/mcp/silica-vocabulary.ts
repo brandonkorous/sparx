@@ -280,6 +280,20 @@ export const SILICA_STYLE_GUIDE = {
       'The storefront only fetches sources it RECOGNIZES by walking the tree for refs (`collectSilicaSourceNeeds`): ' +
       'the `commerce.*`, `cms.*` roots above. `site.*` is always supplied. A ref outside that set is never loaded, so ' +
       'it can never resolve — invent no new source roots.',
+    pagination:
+      'An unbounded source is PAGED, not truncated: `commerce.product` and every `cms.<type>` render 24 records per ' +
+      'page and the rest are reachable at `?page=2`. Alongside the array the host publishes ' +
+      '`<source>Total` / `<source>Page` / `<source>Pages` / `<source>From` / `<source>To` / `<source>HasMore`, so a ' +
+      'bind can say "Showing 25–48 of 137" without any extra fetch. To give visitors the LINKS, place the ' +
+      '`site.pagination` host core under the grid — do not hand-author Previous/Next anchors: there is no conditional ' +
+      'in a bound tree, so an authored pager renders a dead "Previous" on page one and offers a page 25 that is not ' +
+      'there. The core hides itself when everything fits on one page. Its `list` prop names which collection it ' +
+      'drives and is only needed on a page carrying more than one paged list.',
+    sortAndFilter:
+      "A collection binding's `source` takes `sort` (newest | price-asc | price-desc | title-asc | title-desc) and " +
+      '`tag` (show only products carrying that tag) alongside `from` / `id` / `limit`. Both are applied by the API, ' +
+      'so `limit: 6, sort: "price-desc"` is the six most expensive products — NOT the first six re-ordered. Two ' +
+      'repeaters over the same source with different sort/tag are two independent lists and both resolve.',
     collectionTemplates:
       'A page with `recordType` set (via set_page_record_type) is a COLLECTION TEMPLATE — the record of that type is ' +
       "injected as the object scope (e.g. commerce.product → the current product's fields are directly bound, no " +

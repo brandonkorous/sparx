@@ -1,34 +1,34 @@
-// Storefront home. Renders (when present) the tenant's CMS `home` page on
-// top, then a composed commerce homepage: hero, featured collections, and a
-// fresh-products rail. A brand-new store with no content still gets a polished
-// landing page rather than an empty shell.
+// Storefront home. Renders the silica engine's published HOME body — the tenant's own
+// tree once they publish one, and the code-authored starter until then, so a brand-new
+// site is live rather than blank. That is the ONLY tier; see the note at the bottom of
+// the component for what used to sit beneath it and why it could never run.
 
 import type { Metadata } from 'next';
-import Image from 'next/image';
-import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
-import { PageView } from '@/components/page-view';
-import { ProductCard } from '@/components/product-card';
-import { SectionRenderer } from '@/components/section-renderer';
-import { BuilderRenderer } from '@/components/builder-renderer';
-import { listCollections, listProducts } from '@/lib/commerce';
-import { getPageBySlug } from '@/lib/content';
-import { getPublishedBuilderHome, getPublishedBuilderStyles } from '@/lib/builder';
-import { getPublishedSilicaHome } from '@/lib/silica';
+import { getPublishedSilicaHome, treeHasHostNode } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
-import { SilicaBody } from '@/components/silica-chrome';
-import { loadBuilderData } from '@/lib/builder-data';
-import { mediaUrl } from '@/lib/media';
+import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
+import { storefrontHostRenderer } from '@/components/silica-host-cores';
 import { ogImageUrl } from '@/lib/og';
-import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
-import { ButtonLink } from '@/components/button-link';
 
-export const dynamic = 'force-dynamic';
+// NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
+// forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
+// overrode the revalidate window + purge tags each read in lib/* already declares. This
+// route still renders per-request either way, because `resolveSite()` reads the Host
+// header; what changed is that its data is now cached and purged on publish.
 
 interface RootPageProps {
-  searchParams?: Promise<{ sparxPreview?: string; sparxSitePreview?: string }>;
+  // Open-ended beyond the two preview tokens: a home page can carry a paginated list
+  // (a product grid, a journal index), whose `?page=` — or `?page-blog-post=` when
+  // two lists share the URL — is read by the data loader rather than named here.
+  searchParams?: Promise<
+    { sparxPreview?: string; sparxSitePreview?: string } & Record<
+      string,
+      string | string[] | undefined
+    >
+  >;
 }
 
 // The silica engine's published HOME page owns `/` (docs/118 Stage 6) — title it
@@ -92,182 +92,51 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
     sp.sparxSitePreview ? { previewToken: sp.sparxSitePreview } : {}
   );
   if (silicaHome) {
-    const host = await buildSilicaHost(site.slug, silicaHome.root, {
+    const { resolver, paging } = await buildSilicaHost(site.slug, silicaHome.root, {
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,
+      // Where `?page=` is read from. A home page carrying a product grid or a journal
+      // index is paginated like any other, and without this it was permanently stuck
+      // on the first 24 records with no way to say so.
+      searchParams: sp,
     });
-    return <SilicaBody root={silicaHome.root} symbols={silicaHome.symbols} host={host} />;
+    // A home page that embeds a host core — the page-links core under a grid, a theme
+    // toggle, the brand mark — renders through the React walk so the core mounts live.
+    // This branch did not exist: every core on a home page lowered to an empty div and
+    // silently rendered nothing, which the catch-all route has always handled.
+    if (treeHasHostNode(silicaHome.root)) {
+      return (
+        <SilicaFunctionalBody
+          root={silicaHome.root}
+          symbols={silicaHome.symbols}
+          host={resolver}
+          renderHost={storefrontHostRenderer({
+            site,
+            propertySlug: (await resolveActivePropertySlug()) ?? undefined,
+            searchParams: sp,
+            paging,
+            basePath: '/',
+          })}
+        />
+      );
+    }
+    return <SilicaBody root={silicaHome.root} symbols={silicaHome.symbols} host={resolver} />;
   }
 
-  // A published Builder HOME page (the slugless singleton) owns `/` and wins over
-  // every legacy path — the same additive "Builder owns it, else fall through"
-  // rule as the [...slug] route (docs/44 §2.5). Per-property (docs/49): each site
-  // resolves its OWN home, so a secondary site renders its home here instead of
-  // inheriting the tenant-wide snapshot. A site-preview token swaps in the DRAFT.
-  const sitePreview = sp.sparxSitePreview;
-  const builderHome = await getPublishedBuilderHome(
-    site.slug,
-    sitePreview ? { previewToken: sitePreview } : {}
-  );
-  if (builderHome) {
-    const data = await loadBuilderData(
-      site.slug,
-      builderHome.tree,
-      undefined,
-      site.commerce.defaultCurrency
-    );
-    const draftCss = sitePreview
-      ? await getPublishedBuilderStyles(site.slug, { previewToken: sitePreview })
-      : '';
-    return (
-      <>
-        {draftCss ? (
-          <style data-surface-preview dangerouslySetInnerHTML={{ __html: draftCss }} />
-        ) : null}
-        <BuilderRenderer tree={builderHome.tree} data={data} />
-      </>
-    );
-  }
-
-  // Site Builder home composition wins when the tenant has published one — or,
-  // with a site-preview token, the current unsaved draft.
-  const snapshot = await getPublishedSite(
-    site.slug,
-    sp.sparxSitePreview,
-    (await resolveActivePropertySlug()) ?? undefined
-  );
-  const homeSections = sectionsForPage(snapshot, 'home');
-  if (homeSections.length > 0) {
-    const { defaultCurrency, defaultLocale } = site.commerce;
-    return (
-      <SectionRenderer
-        sections={homeSections}
-        ctx={{ tenantSlug: site.slug, currency: defaultCurrency, locale: defaultLocale }}
-        definitions={snapshot?.definitions ?? []}
-      />
-    );
-  }
-
-  // Empty-store fallback: the composed commerce homepage.
-  const previewToken = sp.sparxPreview;
-  const [cmsHome, collections, fresh] = await Promise.all([
-    getPageBySlug(site.slug, 'home', previewToken ? { previewToken } : {}).catch(() => null),
-    listCollections(site.slug).catch(() => []),
-    listProducts(site.slug, { sort: 'newest', perPage: 8 }).catch(() => ({ items: [] })),
-  ]);
-
-  const featuredCollections = collections.filter((c) => c.featured).slice(0, 3);
-  const collectionShelf =
-    featuredCollections.length > 0 ? featuredCollections : collections.slice(0, 3);
-  const { defaultCurrency: currency, defaultLocale: locale } = site.commerce;
-
-  return (
-    <>
-      {cmsHome ? <PageView entry={cmsHome} /> : null}
-
-      {!cmsHome ? (
-        <section className="mx-auto w-full max-w-6xl px-6">
-          <div className="flex flex-col items-center gap-6 py-[clamp(3.5rem,8vw,7rem)] text-center">
-            <h1 className="text-base-content max-w-[16ch] text-[clamp(2.5rem,6vw,4.5rem)] leading-[1.04] font-bold tracking-tight">
-              Gear built to perform, priced to move.
-            </h1>
-            <p className="text-base-content max-w-[52ch] text-[clamp(1.05rem,2vw,1.3rem)] leading-relaxed">
-              Browse the full catalog, find exactly what fits, and check out in seconds.
-            </p>
-            <div className="mt-2 flex flex-wrap justify-center gap-3">
-              <ButtonLink href="/products" color="primary" size="lg">
-                Shop all products
-              </ButtonLink>
-              <ButtonLink href="/collections" color="neutral" variant="outline" size="lg">
-                Browse collections
-              </ButtonLink>
-            </div>
-          </div>
-        </section>
-      ) : null}
-
-      {collectionShelf.length > 0 ? (
-        <section className="mx-auto w-full max-w-6xl px-6 py-16">
-          <div className="mb-7 flex items-end justify-between gap-4">
-            <h2 className="text-base-content text-3xl font-semibold tracking-tight">
-              Shop by collection
-            </h2>
-            <Link
-              href="/collections"
-              className="text-primary text-sm font-medium whitespace-nowrap hover:underline"
-            >
-              View all →
-            </Link>
-          </div>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
-            {collectionShelf.map((c) => {
-              const hero = mediaUrl(c.heroMediaId, site.slug);
-              return (
-                <Link
-                  key={c.id}
-                  href={`/collections/${c.handle}`}
-                  className="group rounded-box bg-base-100 text-base-content focus-visible:outline-primary relative flex flex-col overflow-hidden no-underline transition-transform duration-200 hover:-translate-y-1 focus-visible:outline-2 focus-visible:outline-offset-2"
-                >
-                  <div className="bg-base-200 relative aspect-square overflow-hidden">
-                    {hero ? (
-                      <Image
-                        src={hero}
-                        alt={c.name}
-                        fill
-                        sizes="(max-width: 860px) 100vw, 33vw"
-                        className="object-cover transition-transform duration-[400ms] group-hover:scale-105"
-                        style={{ objectFit: 'cover' }}
-                      />
-                    ) : (
-                      <div
-                        className="bg-base-200 text-base-content/40 grid h-full place-items-center text-4xl"
-                        aria-hidden="true"
-                      >
-                        ❖
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex flex-col gap-1 px-1 pt-4 pb-2">
-                    <span className="text-base-content text-base leading-snug font-medium">
-                      {c.name}
-                    </span>
-                    {c.description ? (
-                      <span className="text-base-content text-sm">{c.description}</span>
-                    ) : null}
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        </section>
-      ) : null}
-
-      {fresh.items.length > 0 ? (
-        <section className="mx-auto w-full max-w-6xl px-6 py-16">
-          <div className="mb-7 flex items-end justify-between gap-4">
-            <h2 className="text-base-content text-3xl font-semibold tracking-tight">
-              New arrivals
-            </h2>
-            <Link
-              href="/products?sort=newest"
-              className="text-primary text-sm font-medium whitespace-nowrap hover:underline"
-            >
-              Shop all →
-            </Link>
-          </div>
-          <div className="grid grid-cols-[repeat(auto-fill,minmax(230px,1fr))] gap-[clamp(1rem,2vw,1.75rem)]">
-            {fresh.items.map((p) => (
-              <ProductCard
-                key={p.id}
-                product={p}
-                tenantSlug={site.slug}
-                currency={currency}
-                locale={locale}
-              />
-            ))}
-          </div>
-        </section>
-      ) : null}
-    </>
-  );
+  // UNREACHABLE, and deliberately loud rather than a fallback.
+  //
+  // Three tiers used to live here — a published sparx-Builder home, a Site Builder
+  // section composition, and a hand-composed "empty store" homepage. All three were
+  // dead code: `getPublishedSilicaHome` cannot return null once `site` resolves,
+  // because api-rest 404s when nothing is published and the client answers that 404
+  // with the code-authored starter, whose `starterPages` always contains a Home at `/`
+  // (silica-catalog/site.ts). The tiers could not run, but they still had to be read,
+  // maintained and reasoned about by anyone touching this route — and one of them
+  // hardcoded selling copy onto the homepage of a platform that is content AND/OR
+  // commerce.
+  //
+  // A `throw` rather than a silent fallback: if that invariant is ever broken, this
+  // says so on the first request instead of quietly rendering a tier nobody has looked
+  // at in months.
+  throw new Error(`No silica home resolved for site "${site.slug}" — see lib/silica.ts`);
 }

@@ -1,6 +1,6 @@
 // Public read endpoints for headless storefronts and the marketing site.
 //
-//   GET /v1/public/content/entries          ?tenant=<slug>&type=<key>[&limit=&cursor=]
+//   GET /v1/public/content/entries          ?tenant=<slug>&type=<key>[&limit=&cursor=|&page=]
 //   GET /v1/public/content/entries/by-slug  ?tenant=<slug>&type=<key>&slug=<>
 //   GET /v1/public/content/types/:key       ?tenant=<slug>
 //
@@ -31,12 +31,22 @@ import { resolveBillingPhase, isPlatformTenant } from '@sparx/billing';
 
 // `property` (a stable site slug) scopes content to one web PROPERTY (docs/49
 // Model B). The storefront passes it for non-primary sites; omitted → primary.
+// `page` is ADDITIVE to the cursor, not a replacement, and both are kept on purpose.
+//
+// A cursor is the right walk for a feed that grows while you read it — it cannot skip
+// or repeat a row — and it is what every existing caller uses. But a storefront blog
+// index needs "page 4 of 9" in a URL a reader can bookmark and a search engine can
+// crawl, and a cursor cannot express that: there is no fourth cursor to put in a link
+// until you have walked the first three. So a request that names a page gets offset
+// paging plus a real total; everything else behaves exactly as before, down to the
+// `next_cursor` in the envelope.
 const ListQuery = z.object({
   tenant: z.string().min(1).max(63),
   property: z.string().min(1).max(63).optional(),
   type: z.string().min(1).max(63),
   cursor: z.string().optional(),
   limit: z.coerce.number().int().min(1).max(250).default(50),
+  page: z.coerce.number().int().min(1).max(10_000).optional(),
 });
 
 const BySlugQuery = z.object({
@@ -186,16 +196,46 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     const q = ListQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    // Model B: only entries published to the active site (global or scoped here).
+    const where = {
+      typeKey: q.type,
+      status: 'published',
+      deletedAt: null,
+      ...contentSiteVisibilityWhere(propertyId),
+    };
+    const orderBy = [{ publishedAt: 'desc' as const }, { id: 'desc' as const }];
+
+    // The numbered walk. The COUNT is what makes "page 4 of 9" sayable at all, and
+    // it is only paid for by a caller that asked for a page — the cursor path below
+    // is untouched, so nothing that exists today got slower.
+    if (q.page !== undefined) {
+      const [rows, total] = await withTenant({ tenantId }, (tx) =>
+        Promise.all([
+          tx.contentEntry.findMany({
+            where,
+            orderBy,
+            take: q.limit,
+            skip: (q.page! - 1) * q.limit,
+          }),
+          tx.contentEntry.count({ where }),
+        ])
+      );
+      return paged(rows.map(serializeEntry), {
+        page: q.page,
+        per_page: q.limit,
+        total,
+        total_pages: Math.max(1, Math.ceil(total / q.limit)),
+        // A page past the end is an empty page, not a 404: a reader who bookmarked
+        // page 9 of a blog that shrank should see "nothing here" with working links
+        // back, not an error page.
+        next_cursor: null,
+      });
+    }
+
     const rows = await withTenant({ tenantId }, (tx) =>
       tx.contentEntry.findMany({
-        // Model B: only entries published to the active site (global or scoped here).
-        where: {
-          typeKey: q.type,
-          status: 'published',
-          deletedAt: null,
-          ...contentSiteVisibilityWhere(propertyId),
-        },
-        orderBy: [{ publishedAt: 'desc' }, { id: 'desc' }],
+        where,
+        orderBy,
         take: q.limit + 1,
         ...(q.cursor ? { cursor: { id: q.cursor }, skip: 1 } : {}),
       })

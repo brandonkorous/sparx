@@ -135,6 +135,27 @@ function LegalLinksColumn({ heading, hint }: { heading: string; hint: string }) 
   );
 }
 
+/** The page-links pager at its real size — Prev, a short run of numbers with the
+ *  current one filled, Next.
+ *
+ *  Representative, and it has to be: on the live site this control renders NOTHING
+ *  until there is more than one page of something, and drawing an empty box on the
+ *  canvas would make an author think they had placed it wrong. So the canvas shows
+ *  the shape it takes when it does appear, and the `title` says what decides that. */
+function PagerMark({ hint }: { hint: string }) {
+  return (
+    <span className="flex flex-wrap items-center justify-center gap-2" title={hint}>
+      <span className="btn btn-ghost btn-sm">← Prev</span>
+      {['1', '2', '3'].map((n) => (
+        <span key={n} className={n === '1' ? 'btn btn-primary btn-sm' : 'btn btn-ghost btn-sm'}>
+          {n}
+        </span>
+      ))}
+      <span className="btn btn-ghost btn-sm">Next →</span>
+    </span>
+  );
+}
+
 /** Build the studio's `renderHostNode`, closing over the canvas resolver root so the
  *  brand core can draw the tenant's real mark. Every other core draws a labelled
  *  skeleton keyed by its `component`; a registered-but-unhandled key still renders a
@@ -151,6 +172,9 @@ export function makeRenderHostNode(root: unknown): RenderHostNode {
     }
     if (node.component === HOST_KEYS.siteThemeToggle) {
       return <ThemeToggleMark hint={meta?.hint ?? label} />;
+    }
+    if (node.component === HOST_KEYS.sitePagination) {
+      return <PagerMark hint={meta?.hint ?? label} />;
     }
     if (node.component === HOST_KEYS.siteLegalLinks) {
       return (

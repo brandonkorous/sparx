@@ -122,27 +122,59 @@ Uncached, while `resolvePublicPropertyId` immediately beside it has a 60s TTL ca
 
 ---
 
-## 6. Restore caching — coupled to 126
+## 6. Restore caching — DONE (2026-07-28)
 
-Both active render tiers are `no-store`:
+Originally: both active render tiers were `no-store`, and the purge chain had four
+missing links — no real publisher, no consumer, no `builder` scope on
+`/api/revalidate`, and a malformed payload. All four are now closed:
 
-```ts
-// apps/site/lib/builder.ts:53-58
-// INTERIM: uncached so a publish reflects immediately. Builder content changes on
-// publish, and no tag-purge is wired yet (that's the deferred Pub/Sub→cache-
-// revalidation-worker slice) — a TTL here would just serve stale pages.
-```
+1. **Publisher.** `installBuilderPubSubBridge` is installed in
+   [api-rest/src/index.ts:50](../services/api-rest/src/index.ts#L50), so
+   `builder.page.published` / `builder.layout.published` / `builder.layout.activated` /
+   `builder.email.published` reach Pub/Sub instead of `console.log`. The site-level
+   publish and rollback endpoints emit `builder.published` / `builder.rolled_back`
+   directly through `@sparx/events`
+   ([api-rest/lib/builder-events.ts](../services/api-rest/src/lib/builder-events.ts)).
+2. **Consumer.** `cache-revalidation-worker` maps `builder.*` **by prefix**, so all six
+   names land on the `builder` scope and a seventh needs no worker change.
+3. **Scope.** `builder` is in `SCOPES` in `apps/site/app/api/revalidate/route.ts`, kept
+   separate from `site` because they change on different events.
+4. **Tenant resolution.** The worker looks the slug up from the envelope's `tenantId`
+   and posts `{ tenant: slug, scopes: ['builder'] }`, so the tag it purges
+   (`builder:<slug>`) is the tag the reads carry.
 
-The chain is fully traceable and every link is missing:
+### The route-level directive is part of this, and was the last thing overriding it
 
-1. `publishBuilderEvent` fires, but the publisher is still `LoggingPublisher` — `setPublisher` is never called outside tests ([events.ts:34-50](../packages/builder/src/events.ts#L34))
-2. no subscriber consumes `builder.page.published`; `cache-revalidation-worker` exists but registers no builder topic
-3. `apps/site/app/api/revalidate/route.ts` has **no `builder` scope** in `SCOPES`, so adding fetch tags alone would not be sufficient
-4. the event payload is malformed — `{ pageId: ctx.propertyId, name: 'site' }` puts a property id in a field named `pageId` ([site-service.ts:676](../packages/builder/src/services/site-service.ts#L676)). Harmless only because nothing consumes it
+Every storefront route carried `export const dynamic = 'force-dynamic'`. That does two
+things, and only the first was wanted: it forces dynamic RENDERING, and it forces
+`cache: 'no-store'` on every `fetch` beneath it. The second silently overrode the
+policy each reader in `apps/site/lib/*` already declares — the `revalidate` windows and
+the `builder:` / `tenant:` / `commerce:` tags were decorative for as long as the
+directive was there.
 
-**Fix.** Wire all four: correct the payload, replace the publisher, add a builder consumer to `cache-revalidation-worker`, add the `builder` scope, then restore `next: { revalidate, tags }` on the builder and silica readers.
+**Removing it cannot make a storefront page static**, which is the only dangerous
+outcome: `resolveSite()` awaits `headers()` to route Host → tenant
+([site-context.ts:227](../apps/site/lib/site-context.ts#L227)), so every route is
+dynamically rendered by construction and no tenant's page can be served on another's
+domain. What changes is exclusively the **Data Cache**.
 
-**Coupling.** This is shippable today with slug-based tags. It gets strictly better under [126 §5.3](126-builder-op-protocol.md), where the artifact hash becomes the cache key and CDN caching becomes possible. Do not wait for 126 — do the tag version now and upgrade the key later.
+Per-visitor reads opt out on their own and are unaffected — `customer-client.ts` is
+`no-store` throughout, `commerce.ts` drops to `no-store` whenever a session cookie or a
+preview token is present, and `site-context.ts`'s host lookup is deliberately uncached.
+
+**Routes that keep `force-dynamic`**, each for a stated reason: `cart`, `checkout`, the
+five `account/*` routes and `api/health` (per-visitor or liveness), `search` (a query
+surface — caching per query buys nothing), and `book` + `book/[serviceId]` (appointment
+availability is the one place a 60-second stale read is visible to a customer as a slot
+that is already taken).
+
+**Known over-purge, accepted.** The tag is `builder:<tenantSlug>`, not per-property, so
+publishing one site of a multi-site tenant purges its siblings too. That is wasteful,
+never wrong, and cheaper than threading a property slug through every read.
+
+**Coupling.** This shipped with slug-based tags. It gets strictly better under
+[126 §5.3](126-builder-op-protocol.md), where the artifact hash becomes the cache key
+and CDN caching becomes possible.
 
 ---
 

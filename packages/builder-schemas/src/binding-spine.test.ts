@@ -77,6 +77,26 @@ describe('source + pin keys', () => {
     expect(collectionSourceKey({ from: 'category', id: 'k2' })).toBe('category:k2');
     expect(entityPinKey('product', 'p9')).toBe('product:p9');
   });
+
+  it('keeps a plain source keyed exactly as it always was', () => {
+    // Every binding already stored on every published site has no sort and no tag.
+    // If the suffix changed their key, each one would look up a source nobody loaded
+    // and every bound grid on the platform would render empty.
+    expect(collectionSourceKey({ from: 'all', sort: undefined, tag: undefined })).toBe('all');
+  });
+
+  it('separates two repeaters over the same source that ask for different lists', () => {
+    // The key is what two repeaters on one page SHARE. A newest-first grid and a
+    // sale-tagged grid over the whole catalog are two different lists; sharing a key
+    // would silently render the first one's records in both.
+    const newest = collectionSourceKey({ from: 'all', sort: 'newest' });
+    const onSale = collectionSourceKey({ from: 'all', tag: 'sale' });
+    expect(newest).not.toBe(onSale);
+    expect(newest).not.toBe(collectionSourceKey({ from: 'all' }));
+    expect(
+      collectionSourceKey({ from: 'collection', id: 'c1', sort: 'price-asc', tag: 'sale' })
+    ).toBe('collection:c1|sort=price-asc|tag=sale');
+  });
 });
 
 describe('resolveBinding — kind-aware resolution', () => {

@@ -73,16 +73,29 @@ describe('hostCore — pinning is opt-out, and only the brand opts out', () => {
   it('only placement-owned cores are unpinned; every transaction core stays pinned', () => {
     // A tripwire, not a style rule: a core that wraps a live transaction the tenant must
     // not be able to delete has to stay pinned. The unpinned set is exactly the cores whose
-    // PLACEMENT the tenant legitimately owns — the brand mark, the theme toggle and the
-    // legal links (none is a transaction). If a FOURTH name appears here, either a
-    // functional core just became deletable or a new placement-owned core landed — both
-    // are worth a human look.
-    const unpinned = HOST_COMPONENTS.filter((c) => c.pinned === false).map((c) => c.key);
-    expect(unpinned).toEqual([
-      HOST_KEYS.siteBrand,
-      HOST_KEYS.siteThemeToggle,
-      HOST_KEYS.siteLegalLinks,
-    ]);
+    // PLACEMENT the tenant legitimately owns — the brand mark, the theme toggle, the legal
+    // links and the page-links pager. None is a transaction: deleting any of them costs
+    // the tenant a convenience they chose to place, never a checkout or a booking. If a
+    // name appears here that does NOT fit that description, a functional core just became
+    // deletable and the list should not simply be extended to match.
+    //
+    // `site.pagination` earned its place the same way the legal links did: pinning it
+    // would leave an undeletable control under a page whose grid the tenant later
+    // removed, with nothing to page through.
+    // Sorted on both sides: the assertion is about WHICH cores are unpinned, and
+    // reordering the palette array is not a change to that. Comparing in declaration
+    // order made moving an entry fail a test about deletability.
+    const unpinned = HOST_COMPONENTS.filter((c) => c.pinned === false)
+      .map((c) => c.key)
+      .sort();
+    expect(unpinned).toEqual(
+      [
+        HOST_KEYS.siteBrand,
+        HOST_KEYS.siteThemeToggle,
+        HOST_KEYS.sitePagination,
+        HOST_KEYS.siteLegalLinks,
+      ].sort()
+    );
   });
 });
 

@@ -10,7 +10,7 @@ import { ogImageUrl } from '@/lib/og';
 import { applyRedirect } from '@/lib/redirects';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { getPublishedBuilderPage, getPublishedBuilderStyles } from '@/lib/builder';
-import { getPublishedSilicaPage } from '@/lib/silica';
+import { getPublishedSilicaPage, treeHasHostNode } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
 import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
@@ -19,7 +19,11 @@ import { BuilderRenderer } from '@/components/builder-renderer';
 import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
 import { storefrontHostRenderer } from '@/components/silica-host-cores';
 
-export const dynamic = 'force-dynamic';
+// NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
+// forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
+// overrode the revalidate window + purge tags each read in lib/* already declares. This
+// route still renders per-request either way, because `resolveSite()` reads the Host
+// header; what changed is that its data is now cached and purged on publish.
 
 interface SlugPageProps {
   params: Promise<{ slug: string[] }>;
@@ -33,15 +37,6 @@ function buildSlug(parts: string[]): string {
 }
 
 const one = (v: string | string[] | undefined): string | undefined => (Array.isArray(v) ? v[0] : v);
-
-/** Does the tree embed a pinned host core (`kind:"host"`)? Such a page renders through the
- *  React walk (so the core mounts live) rather than the HTML-string path. */
-function treeHasHostNode(node: unknown): boolean {
-  if (!node || typeof node !== 'object') return false;
-  const n = node as { kind?: string; children?: unknown[] };
-  if (n.kind === 'host') return true;
-  return Array.isArray(n.children) && n.children.some(treeHasHostNode);
-}
 
 export async function generateMetadata({ params, searchParams }: SlugPageProps): Promise<Metadata> {
   const site = await resolveSite();
@@ -183,9 +178,12 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
     sitePreview ? { previewToken: sitePreview } : {}
   );
   if (silicaPage) {
-    const host = await buildSilicaHost(site.slug, silicaPage.root, {
+    const { resolver, paging } = await buildSilicaHost(site.slug, silicaPage.root, {
       currency: site.commerce.defaultCurrency,
       locale: site.commerce.defaultLocale,
+      // Where `?page=` is read from — an authored page carrying a product grid or a
+      // journal index paginates like any other.
+      searchParams: sp,
     });
     // A page that embeds a pinned host core (e.g. the faceted PLP on /shop) renders through
     // the React walk so the core mounts live and can read the route's search params for its
@@ -196,17 +194,19 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
         site,
         propertySlug: (await resolveActivePropertySlug()) ?? undefined,
         searchParams: sp,
+        paging,
+        basePath: `/${slug}`,
       });
       return (
         <SilicaFunctionalBody
           root={silicaPage.root}
           symbols={silicaPage.symbols}
-          host={host}
+          host={resolver}
           renderHost={renderHost}
         />
       );
     }
-    return <SilicaBody root={silicaPage.root} symbols={silicaPage.symbols} host={host} />;
+    return <SilicaBody root={silicaPage.root} symbols={silicaPage.symbols} host={resolver} />;
   }
 
   // A published Builder page owns its slug (docs/44 §2.5): if one exists, render

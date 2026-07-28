@@ -28,7 +28,11 @@ import { getPublishedSite, resolveTemplateSections } from '@/lib/site';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { applyRedirect } from '@/lib/redirects';
 
-export const dynamic = 'force-dynamic';
+// NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
+// forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
+// overrode the revalidate window + purge tags each read in lib/* already declares. This
+// route still renders per-request either way, because `resolveSite()` reads the Host
+// header; what changed is that its data is now cached and purged on publish.
 
 interface PageProps {
   params: Promise<{ handle: string }>;

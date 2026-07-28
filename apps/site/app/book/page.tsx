@@ -15,6 +15,10 @@ import { storefrontHostRenderer } from '@/components/silica-host-cores';
 import { getPublishedSilicaPage, resolveSchedulingEnabled } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
+// KEEPS `force-dynamic` while the content routes dropped it (docs/127 §6). Appointment
+// availability is the one storefront read where a stale answer is visible to the
+// customer as a bookable slot that is already taken — they pick it, and the booking
+// fails at submit. Worth an origin render per visit.
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = { title: 'Book an appointment' };

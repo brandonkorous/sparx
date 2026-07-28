@@ -31,7 +31,7 @@
 import { action, atom, behave, bind, el, repeat, type Node } from '@wizeworks/silicaui-html';
 
 import { bindAttr } from './attr-binding';
-import { HOST_KEYS, functionalShell } from './host-nodes';
+import { HOST_KEYS, functionalShell, hostCore } from './host-nodes';
 import { PLACEHOLDER_IMAGE } from './placeholder';
 
 // The unbound-image placeholder now lives in `placeholder.ts` — record templates in
@@ -130,12 +130,25 @@ function railContainer() {
  *  so existing pages and the starter/blueprints resolve unchanged. */
 export function productsBlock(opts: ProductsBlockOptions = {}): Node {
   const { source = 'commerce.product', layout = 'grid', heading = 'Products' } = opts;
-  return el('section', 'bg-base-100 @container px-6 py-12', {
-    children: [
-      el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: heading }),
-      repeat(layout === 'rail' ? railContainer() : gridContainer(), source),
-    ],
-  });
+  const children: Node[] = [
+    el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: heading }),
+    repeat(layout === 'rail' ? railContainer() : gridContainer(), source),
+  ];
+  // A GRID over the whole catalog gets page links under it, because that grid is the
+  // one that runs out of room: it shows 24 records and the catalog has more. A RAIL is
+  // a curation — "Featured", "New in" — and a Next button under a curated strip is a
+  // curation that forgot it was one, so it gets nothing.
+  //
+  // Safe to include unconditionally on a grid: the core renders NOTHING unless the
+  // route actually paginated something and there is more than one page. An author who
+  // repoints this block at `commerce.featured` is left with an invisible node, not a
+  // broken pager. And it has to be added HERE rather than retrofitted, because a
+  // stamped tree freezes at publish (docs/122) — a block inserted today is the only
+  // one this can ever reach.
+  if (layout === 'grid' && source === 'commerce.product') {
+    children.push(hostCore(HOST_KEYS.sitePagination, 'pt-4'));
+  }
+  return el('section', 'bg-base-100 @container px-6 py-12', { children });
 }
 
 /** A responsive grid over the whole catalog — the shop-all page. A preset of

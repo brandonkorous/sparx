@@ -32,11 +32,47 @@ interface ErrorEnvelope {
   error: { code: string; message: string; request_id?: string };
 }
 
+/** The pagination half of a list envelope. Every field is optional because the
+ *  entries endpoint only counts when asked by page number — a cursor-walked list
+ *  genuinely has no total, and inventing one would be worse than saying so. */
+export interface ContentListMeta {
+  page?: number;
+  per_page?: number;
+  total?: number;
+  total_pages?: number;
+  next_cursor?: string | null;
+}
+
+/**
+ * `publicGet`, but keeping the envelope's `meta`.
+ *
+ * A separate function rather than a wider return on `publicGet`: a dozen callers read
+ * a single record or a bare list and would all have to be changed to unwrap `.data`,
+ * for a field none of them wants. Only a paginated list needs the meta, and it asks
+ * for it here.
+ */
+export async function publicGetPaged<T>(
+  path: string,
+  query: Record<string, string | number>,
+  options: { previewToken?: string; tag?: string } = {}
+): Promise<{ data: T; meta: ContentListMeta }> {
+  const { data, meta } = await publicGetEnvelope<T>(path, query, options);
+  return { data, meta: (meta as ContentListMeta | undefined) ?? {} };
+}
+
 export async function publicGet<T>(
   path: string,
   query: Record<string, string | number>,
   options: { previewToken?: string; tag?: string } = {}
 ): Promise<T> {
+  return (await publicGetEnvelope<T>(path, query, options)).data;
+}
+
+async function publicGetEnvelope<T>(
+  path: string,
+  query: Record<string, string | number>,
+  options: { previewToken?: string; tag?: string } = {}
+): Promise<SuccessEnvelope<T>> {
   const qs = new URLSearchParams(
     Object.fromEntries(Object.entries(query).map(([k, v]) => [k, String(v)]))
   );
@@ -67,7 +103,7 @@ export async function publicGet<T>(
     const message = 'error' in json ? json.error.message : `HTTP ${res.status}`;
     throw Object.assign(new Error(`api-rest ${path}: ${code}: ${message}`), { code });
   }
-  return json.data;
+  return json;
 }
 
 /** Fetch ONE content entry by id (docs/98 Pillar 7 record-display) — a node pinned
