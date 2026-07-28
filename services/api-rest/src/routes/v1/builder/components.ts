@@ -2,6 +2,7 @@
 //
 //   GET    /v1/builder/components                       → list the tenant's components (no tree)
 //   GET    /v1/builder/components?include=tree          → list WITH each latest version tree (editor)
+//   GET    /v1/builder/components?include=silica        → PLACEABLE pieces + their silica masters (studio)
 //   POST   /v1/builder/components                       → create a component (+ version 1)
 //   GET    /v1/builder/components/:key                  → one component (latest version content)
 //   PATCH  /v1/builder/components/:key                  → update identity; tree/propSpec → new version
@@ -26,7 +27,7 @@ const VersionParam = z.object({
   key: z.string().min(1).max(56),
   version: z.coerce.number().int().min(1),
 });
-const ListQuery = z.object({ include: z.enum(['tree']).optional() });
+const ListQuery = z.object({ include: z.enum(['tree', 'silica']).optional() });
 const UpgradeBody = z.object({ version: z.coerce.number().int().min(1).optional() });
 
 const builderComponentRoutes: FastifyPluginAsync = (app) => {
@@ -35,11 +36,17 @@ const builderComponentRoutes: FastifyPluginAsync = (app) => {
     await requireBuilderModule(request);
     const { include } = ListQuery.parse(request.query);
     // `?include=tree` returns each component WITH its latest version tree — what
-    // the Builder editor needs to expand placements live (docs/53 P-B). The
-    // catalog list omits trees (summaries only).
+    // the legacy Builder editor needed to expand placements live (docs/53 P-B).
+    // `?include=silica` returns only the PLACEABLE pieces and their silica masters,
+    // which is what the studio materializes as `tenant:<key>` symbols. The catalog
+    // list omits trees (summaries only).
     const ctx = toBuilderTenantContext(request);
     const components =
-      include === 'tree' ? await componentService.listFull(ctx) : await componentService.list(ctx);
+      include === 'tree'
+        ? await componentService.listFull(ctx)
+        : include === 'silica'
+          ? await componentService.listSilica(ctx)
+          : await componentService.list(ctx);
     return ok({ components });
   });
 

@@ -452,9 +452,23 @@ model BuilderComponentVersion {
   version     Int
 
   // The editable BuilderNode root for this version. Shape validated by @sparx/builder-schemas.
-  tree     Json
+  //
+  // NULLABLE as of the silica cutover. This column is the RETIRED `.bx-*` builder's
+  // node format (`{id, type, props, children}`), which the silica `<Builder>` cannot
+  // render or insert — so a piece holding only this is a legacy row, listed but not
+  // placeable. Every piece authored from the silica studio writes `silicaTree`
+  // instead and leaves this null. Kept (rather than converted) because legacy pages
+  // were RE-SEEDED at the cutover, not migrated: there is no BuilderNode→silica
+  // converter anywhere in the tree, and writing one would resurrect the format we
+  // are retiring. Drop this column once no row has a non-null value.
+  tree       Json?
+  // The silica `Node` root — the placeable master. This is what the studio
+  // materializes into `Site.symbols` as `tenant:<key>` so silica's own component
+  // system (Components board, instances, enterSymbol, live propagation) drives a
+  // TENANT-WIDE piece. Null on legacy rows only.
+  silicaTree Json? @map("silica_tree")
   // PropSpec[] — the instance-fillable slots (docs/53 §5). [] = a fixed component.
-  propSpec Json @default("[]") @map("prop_spec")
+  propSpec   Json  @default("[]") @map("prop_spec")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
 

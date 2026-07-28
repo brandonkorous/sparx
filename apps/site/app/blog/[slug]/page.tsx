@@ -28,7 +28,11 @@ export const dynamic = 'force-dynamic';
 
 interface BlogPageProps {
   params: Promise<{ slug: string }>;
-  searchParams?: Promise<{ sparxPreview?: string }>;
+  // `sparxPreview` authorizes a DRAFT post (the CMS entry); `sparxSitePreview`
+  // authorizes the DRAFT blog-post TEMPLATE (the builder tree that renders it). Two
+  // different drafts, two different tokens — an author restyling the template needs
+  // the second one even when the post itself is long published.
+  searchParams?: Promise<{ sparxPreview?: string; sparxSitePreview?: string }>;
 }
 
 export async function generateMetadata({ params, searchParams }: BlogPageProps): Promise<Metadata> {
@@ -82,7 +86,9 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
   const site = await resolveSite();
   if (!site) notFound();
   const { slug } = await params;
-  const previewToken = (await searchParams)?.sparxPreview;
+  const sp = (await searchParams) ?? {};
+  const previewToken = sp.sparxPreview;
+  const sitePreview = sp.sparxSitePreview;
 
   const post = await getBlogPostBySlug(site.slug, slug, previewToken ? { previewToken } : {});
   if (!post) {
@@ -96,7 +102,12 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
   // with THIS entry injected as the `blog_post` object scope. The record shape
   // (`title` / `excerpt` / `featuredImage:{url,alt}` / `date`) is the same one the
   // sparx path binds, so `postToBuilderRecord` serves both. Null → fall through.
-  const silicaTemplate = await getPublishedSilicaCollection(site.slug, 'cms.blog_post', post.id);
+  const silicaTemplate = await getPublishedSilicaCollection(
+    site.slug,
+    'cms.blog_post',
+    post.id,
+    sitePreview ? { previewToken: sitePreview } : {}
+  );
   if (silicaTemplate) {
     const host = await buildSilicaHost(site.slug, silicaTemplate.root, {
       record: { key: 'blog_post', value: postToBuilderRecord(post, site.slug) },

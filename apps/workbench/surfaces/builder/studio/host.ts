@@ -12,14 +12,19 @@
 // cores from @sparx/silica-catalog) — one catalog, one resolver, no drift.
 
 import type { BuilderHost, PaletteGroup } from '@wizeworks/silicaui-builder/react';
-import type { DataSource as SilicaDataSource } from '@wizeworks/silicaui-html';
+import type { ClassValidator, DataSource as SilicaDataSource } from '@wizeworks/silicaui-html';
 import {
   createSilicaClassValidator,
   createSilicaResolver,
   defaultSilicaFormat,
   type DataSources,
 } from '@sparx/builder-schemas';
-import { COMMERCE_CATALOG, HOST_COMPONENTS, SITE_CATALOG } from '@sparx/silica-catalog';
+import {
+  COMMERCE_CATALOG,
+  HOST_COMPONENTS,
+  SITE_CATALOG,
+  validateResponsiveVocabulary,
+} from '@sparx/silica-catalog';
 
 export interface StudioHostOptions {
   /** The pre-loaded placeholder data root the resolver reads bindings from
@@ -36,6 +41,15 @@ export interface StudioHostOptions {
    *  framework-free module — the client studio passes the React renderer in, so
    *  host.ts never pulls a component bundle. */
   renderHostNode?: BuilderHost['renderHostNode'];
+  /** Opens the tenant's media library for an image field.
+   *
+   *  Without it silica hides its "Browse…" affordance and the image field is a bare
+   *  URL textbox — which asks a non-technical business owner to know what a URL is in
+   *  order to put their own photograph on their own site. Every other surface (CMS,
+   *  commerce, email) already hands them the shared browser; this is the site editor
+   *  reaching the same bar. Passed in like `renderHostNode` so this module stays
+   *  framework-free. */
+  pickAsset?: BuilderHost['pickAsset'];
 }
 
 /** The host cores the Insert palette offers (docs/122) — `HOST_COMPONENTS` mapped
@@ -54,12 +68,35 @@ function hostComponentDefs(): ReturnType<NonNullable<BuilderHost['hostComponents
   }));
 }
 
+/** Run every rule and report the FIRST refusal. silica's own `composeValidators`
+ *  takes a single host validator, and the host has two independent ones: the
+ *  platform's responsive vocabulary and this tenant's optional tighten rules. Both
+ *  can only ADD rejections, so order is cosmetic — the vocabulary goes first because
+ *  its reason names a specific replacement class, which is the more useful thing to
+ *  read when a string trips both. */
+function allOf(rules: readonly ClassValidator[]): ClassValidator | undefined {
+  if (!rules.length) return undefined;
+  return (cls) => {
+    for (const rule of rules) {
+      const verdict = rule(cls);
+      if (!verdict.ok) return verdict;
+    }
+    return { ok: true };
+  };
+}
+
 /** Assemble the sparx `BuilderHost`. The commerce/site catalog is structurally
  *  silica's `PaletteGroup[]` (its `icon` is a silica `IconName`, typed `string` in
  *  the React-free catalog package) — the cast narrows that one nominal gap. */
 export function buildStudioHost(opts: StudioHostOptions): BuilderHost {
   const resolver = createSilicaResolver({ root: opts.root, format: defaultSilicaFormat });
-  const validateClass = createSilicaClassValidator(opts.tenantAllowlist);
+  // The responsive vocabulary is PLATFORM policy, not a tenant setting: a viewport
+  // variant makes the device toggle lie about the page, and no tenant benefits from
+  // opting into that. The tenant allowlist composes on top when they have one.
+  const tenantRules = createSilicaClassValidator(opts.tenantAllowlist);
+  const validateClass = allOf(
+    tenantRules ? [validateResponsiveVocabulary, tenantRules] : [validateResponsiveVocabulary]
+  );
   return {
     resolveBinding: resolver.resolveBinding,
     resolveCollection: resolver.resolveCollection,
@@ -70,5 +107,6 @@ export function buildStudioHost(opts: StudioHostOptions): BuilderHost {
     hostComponents: hostComponentDefs,
     ...(validateClass ? { validateClass } : {}),
     ...(opts.renderHostNode ? { renderHostNode: opts.renderHostNode } : {}),
+    ...(opts.pickAsset ? { pickAsset: opts.pickAsset } : {}),
   };
 }

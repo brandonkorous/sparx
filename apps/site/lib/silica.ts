@@ -138,11 +138,11 @@ function silicaFetchInit(tenantSlug: string, previewToken?: string): RequestInit
  *  home/page fallbacks below (each needing `commerceEnabled`) never re-fetch it —
  *  `getPublishedSilicaFrame` is guaranteed to hit the network at most once. */
 const fetchFrameEnvelope = cache(
-  async (tenantSlug: string): Promise<PublishedSilicaFrameDto | null> => {
+  async (tenantSlug: string, previewToken?: string): Promise<PublishedSilicaFrameDto | null> => {
     try {
       const res = await fetch(
         `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
-        silicaFetchInit(tenantSlug)
+        silicaFetchInit(tenantSlug, previewToken)
       );
       const json = (await res.json()) as SuccessEnvelope<PublishedSilicaFrameDto> | ErrorEnvelope;
       if (!res.ok || 'error' in json) return null;
@@ -163,8 +163,8 @@ interface ModuleFlags {
   cmsEnabled: boolean;
 }
 
-async function resolveModuleFlags(tenantSlug: string): Promise<ModuleFlags> {
-  const data = await fetchFrameEnvelope(tenantSlug);
+async function resolveModuleFlags(tenantSlug: string, previewToken?: string): Promise<ModuleFlags> {
+  const data = await fetchFrameEnvelope(tenantSlug, previewToken);
   return {
     commerceEnabled: data?.commerceEnabled ?? true,
     schedulingEnabled: data?.schedulingEnabled ?? false,
@@ -176,8 +176,8 @@ async function resolveModuleFlags(tenantSlug: string): Promise<ModuleFlags> {
 }
 
 /** Whether the tenant's Commerce module is active — see `resolveModuleFlags`. */
-async function resolveCommerceEnabled(tenantSlug: string): Promise<boolean> {
-  return (await resolveModuleFlags(tenantSlug)).commerceEnabled;
+async function resolveCommerceEnabled(tenantSlug: string, previewToken?: string): Promise<boolean> {
+  return (await resolveModuleFlags(tenantSlug, previewToken)).commerceEnabled;
 }
 
 /** Whether the tenant's Scheduling module is active — the /book route's module gate
@@ -193,10 +193,17 @@ export async function resolveSchedulingEnabled(tenantSlug: string): Promise<bool
  *  no silica layout, so the storefront ALWAYS wears silica chrome (a fresh tenant is
  *  live, not blank); `theme` stays null so the brand-derived theme keeps rendering. */
 export async function getPublishedSilicaFrame(
-  tenantSlug: string
+  tenantSlug: string,
+  opts: { previewToken?: string } = {}
 ): Promise<PublishedSilicaFrameDto> {
-  const data = await fetchFrameEnvelope(tenantSlug);
-  if (!data?.frame) return starterFrameDto(await resolveModuleFlags(tenantSlug));
+  // A preview token serves the DRAFT frame, so unpublished header/footer edits show up
+  // in Preview alongside the page body. Without this the chrome silently stayed on the
+  // published version while the body previewed — the two halves of one page disagreeing
+  // about what "preview" meant.
+  const data = await fetchFrameEnvelope(tenantSlug, opts.previewToken);
+  if (!data?.frame) {
+    return starterFrameDto(await resolveModuleFlags(tenantSlug, opts.previewToken));
+  }
   return data;
 }
 
@@ -213,10 +220,12 @@ export async function getPublishedSilicaHome(
       silicaFetchInit(tenantSlug, opts.previewToken)
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
-    if (!res.ok || 'error' in json) return starterHomeDto(await resolveCommerceEnabled(tenantSlug));
+    if (!res.ok || 'error' in json) {
+      return starterHomeDto(await resolveCommerceEnabled(tenantSlug, opts.previewToken));
+    }
     return json.data;
   } catch {
-    return starterHomeDto(await resolveCommerceEnabled(tenantSlug));
+    return starterHomeDto(await resolveCommerceEnabled(tenantSlug, opts.previewToken));
   }
 }
 
@@ -237,11 +246,11 @@ export async function getPublishedSilicaPage(
     );
     const json = (await res.json()) as SuccessEnvelope<PublishedSilicaPageDto> | ErrorEnvelope;
     if (!res.ok || 'error' in json) {
-      return starterPageDtoForSlug(slug, await resolveModuleFlags(tenantSlug));
+      return starterPageDtoForSlug(slug, await resolveModuleFlags(tenantSlug, opts.previewToken));
     }
     return json.data;
   } catch {
-    return starterPageDtoForSlug(slug, await resolveModuleFlags(tenantSlug));
+    return starterPageDtoForSlug(slug, await resolveModuleFlags(tenantSlug, opts.previewToken));
   }
 }
 

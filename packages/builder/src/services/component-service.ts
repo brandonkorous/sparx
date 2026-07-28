@@ -27,6 +27,8 @@ import {
   type ComponentUsageDto,
   type ComponentVersionDto,
   type PropSpec,
+  type SilicaNode,
+  type SilicaPieceDto,
 } from '@sparx/builder-schemas';
 import type { BuilderComponent, BuilderComponentVersion, Prisma } from '@sparx/db';
 import { withTenant } from '@sparx/db';
@@ -42,7 +44,19 @@ function surfacesOf(row: BuilderComponent): ComponentSurface[] {
   return Array.isArray(s) && s.length > 0 ? (s as ComponentSurface[]) : ['page'];
 }
 
-function toSummary(row: BuilderComponent): ComponentSummaryDto {
+/** A stored tree column → the DTO field. Both columns are nullable since the silica
+ *  cutover, and Prisma types a Json column's null as `JsonValue`, so the check is
+ *  explicit rather than a cast that would quietly turn SQL NULL into an object. */
+function treeOrNull<T>(value: unknown): T | null {
+  return value == null ? null : (value as T);
+}
+
+/** `placeable` needs the LATEST version, which the summary row does not carry — so
+ *  every caller of `toSummary` has to supply it. Passing it in rather than
+ *  defaulting it is deliberate: a default of `false` would silently mark a real
+ *  piece unusable, and a default of `true` would offer an editor for a legacy tree
+ *  nothing can open. Neither is a safe guess, so the type makes it a decision. */
+function toSummary(row: BuilderComponent, placeable: boolean): ComponentSummaryDto {
   return {
     id: row.id,
     key: row.key,
@@ -52,15 +66,18 @@ function toSummary(row: BuilderComponent): ComponentSummaryDto {
     description: row.description,
     surfaces: surfacesOf(row),
     latestVersion: row.latestVersion,
+    placeable,
     createdAt: row.createdAt.toISOString(),
     updatedAt: row.updatedAt.toISOString(),
   };
 }
 
 function toDto(row: BuilderComponent, version: BuilderComponentVersion): ComponentDto {
+  const silicaTree = treeOrNull<SilicaNode>(version.silicaTree);
   return {
-    ...toSummary(row),
-    tree: version.tree as unknown as BuilderNode,
+    ...toSummary(row, silicaTree !== null),
+    tree: treeOrNull<BuilderNode>(version.tree),
+    silicaTree,
     propSpec: (version.propSpec as unknown as PropSpec[]) ?? [],
   };
 }
@@ -68,10 +85,23 @@ function toDto(row: BuilderComponent, version: BuilderComponentVersion): Compone
 function toVersionDto(v: BuilderComponentVersion): ComponentVersionDto {
   return {
     version: v.version,
-    tree: v.tree as unknown as BuilderNode,
+    tree: treeOrNull<BuilderNode>(v.tree),
+    silicaTree: treeOrNull<SilicaNode>(v.silicaTree),
     propSpec: (v.propSpec as unknown as PropSpec[]) ?? [],
     createdAt: v.createdAt.toISOString(),
   };
+}
+
+/** The latest version per component id, from a flat version list. */
+function latestByComponent(
+  versions: BuilderComponentVersion[]
+): Map<string, BuilderComponentVersion> {
+  const latest = new Map<string, BuilderComponentVersion>();
+  for (const v of versions) {
+    const cur = latest.get(v.componentId);
+    if (!cur || v.version > cur.version) latest.set(v.componentId, v);
+  }
+  return latest;
 }
 
 /** The dependency graph (key → its direct component references, from each
@@ -88,17 +118,16 @@ async function buildRefGraph(
   const versions = await tx.builderComponentVersion.findMany({
     where: { componentId: { in: comps.map((c) => c.id) } },
   });
-  const latest = new Map<string, BuilderComponentVersion>();
-  for (const v of versions) {
-    const cur = latest.get(v.componentId);
-    if (!cur || v.version > cur.version) latest.set(v.componentId, v);
-  }
+  const latest = latestByComponent(versions);
   for (const c of comps) {
-    const v = latest.get(c.id);
-    const refs = v
-      ? [...new Set(collectComponentRefs(v.tree as unknown as BuilderNode).map((r) => r.key))]
-      : [];
-    graph.set(c.key, refs);
+    const legacy = treeOrNull<BuilderNode>(latest.get(c.id)?.tree);
+    // A silica-authored piece contributes no edges: `custom:<key>` nesting is a
+    // legacy-tree concept (`collectComponentRefs` walks `props[REF_KEY]`), and a
+    // silica piece nests by holding a symbol INSTANCE, which silica's own
+    // self-nesting guard already refuses. Reading a silica tree with the legacy
+    // walker would find nothing and report it as "no references" — the same answer
+    // by accident, which is worth not relying on.
+    graph.set(c.key, legacy ? [...new Set(collectComponentRefs(legacy).map((r) => r.key))] : []);
   }
   return graph;
 }
@@ -111,9 +140,15 @@ async function buildRefGraph(
 async function assertValidComponent(
   tx: Prisma.TransactionClient,
   key: string,
-  tree: BuilderNode,
+  tree: BuilderNode | null,
   propSpec: PropSpec[]
 ): Promise<void> {
+  // A silica-only piece has no legacy tree to validate. `validateComponentTree` and
+  // the nesting graph are both legacy-format machinery; silica's own engine owns the
+  // equivalent guarantees for a silica master (its class policy on write, its
+  // self-nesting refusal on instance insert). Running the legacy validator over a
+  // silica tree would reject every one of them for having no `type`.
+  if (!tree) return;
   const issues = validateComponentTree(tree, propSpec, { forbidNestedCustom: false });
   const refKeys = [...new Set(collectComponentRefs(tree).map((r) => r.key))];
   if (refKeys.length > 0) {
@@ -143,7 +178,22 @@ export function list(ctx: ServiceContext): Promise<ComponentSummaryDto[]> {
     const rows = await tx.builderComponent.findMany({
       orderBy: [{ group: 'asc' }, { name: 'asc' }],
     });
-    return rows.map(toSummary);
+    if (rows.length === 0) return [];
+    // `placeable` is a fact about the latest VERSION, so the list can no longer be a
+    // single-table read. Selected down to the two columns that decide it rather than
+    // reusing `listFull` — the list renders rows, and shipping every piece's whole
+    // design tree to draw a badge is a payload nobody asked for.
+    const versions = await tx.builderComponentVersion.findMany({
+      where: { componentId: { in: rows.map((r) => r.id) } },
+      select: { componentId: true, version: true, silicaTree: true },
+    });
+    const placeable = new Map<string, boolean>();
+    for (const v of versions) {
+      if (rows.find((r) => r.id === v.componentId)?.latestVersion === v.version) {
+        placeable.set(v.componentId, v.silicaTree != null);
+      }
+    }
+    return rows.map((row) => toSummary(row, placeable.get(row.id) ?? false));
   });
 }
 
@@ -159,17 +209,55 @@ export function listFull(ctx: ServiceContext): Promise<ComponentDto[]> {
     const versions = await tx.builderComponentVersion.findMany({
       where: { componentId: { in: rows.map((r) => r.id) } },
     });
-    const latest = new Map<string, BuilderComponentVersion>();
-    for (const v of versions) {
-      const cur = latest.get(v.componentId);
-      if (!cur || v.version > cur.version) latest.set(v.componentId, v);
-    }
+    const latest = latestByComponent(versions);
     return rows
       .map((row) => {
         const v = latest.get(row.id);
         return v ? toDto(row, v) : null;
       })
       .filter((d): d is ComponentDto => d !== null);
+  });
+}
+
+/** Every PLACEABLE piece, as the studio's palette needs it: identity + the silica
+ *  master. Legacy-only pieces are dropped, not returned with a null tree — the
+ *  studio would have nothing to insert for one, and a palette row that cannot be
+ *  placed is worse than an absent one.
+ *
+ *  Its own read rather than a filter over `listFull` because that carries the legacy
+ *  `tree` too, which for a mixed library means shipping the studio a payload of dead
+ *  format it has no code to read. */
+export function listSilica(ctx: ServiceContext): Promise<SilicaPieceDto[]> {
+  return withTenant(ctx, async (tx) => {
+    const rows = await tx.builderComponent.findMany({
+      orderBy: [{ group: 'asc' }, { name: 'asc' }],
+    });
+    if (rows.length === 0) return [];
+    const versions = await tx.builderComponentVersion.findMany({
+      where: { componentId: { in: rows.map((r) => r.id) } },
+      select: { componentId: true, version: true, silicaTree: true },
+    });
+    const latest = new Map<string, unknown>();
+    for (const v of versions) {
+      if (rows.find((r) => r.id === v.componentId)?.latestVersion === v.version) {
+        latest.set(v.componentId, v.silicaTree);
+      }
+    }
+    const out: SilicaPieceDto[] = [];
+    for (const row of rows) {
+      const root = treeOrNull<SilicaNode>(latest.get(row.id));
+      if (!root) continue;
+      out.push({
+        key: row.key,
+        name: row.name,
+        group: row.group as ComponentGroup,
+        icon: row.icon,
+        description: row.description,
+        version: row.latestVersion,
+        root,
+      });
+    }
+    return out;
   });
 }
 
@@ -231,7 +319,8 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Co
       ]);
     }
     // Nesting/cycle/depth check needs the tenant's component graph (tx-scoped).
-    await assertValidComponent(tx, input.key, input.tree, input.propSpec);
+    // A silica-only piece short-circuits inside (legacy-format machinery).
+    await assertValidComponent(tx, input.key, input.tree ?? null, input.propSpec);
     const component = await tx.builderComponent.create({
       data: {
         tenantId: ctx.tenantId,
@@ -249,7 +338,12 @@ export async function create(ctx: ServiceContext, rawInput: unknown): Promise<Co
         tenantId: ctx.tenantId,
         componentId: component.id,
         version: 1,
-        tree: asJson(input.tree),
+        // Prisma's `null` for a Json column means SQL NULL only via `Prisma.DbNull`;
+        // a bare `null` writes the JSON literal `null`, which reads back as a
+        // present-but-null tree and would make `placeable` true for a piece with no
+        // design. Omitting the key entirely is the unambiguous way to say "absent".
+        ...(input.tree !== undefined ? { tree: asJson(input.tree) } : {}),
+        ...(input.silicaTree !== undefined ? { silicaTree: asJson(input.silicaTree) } : {}),
         propSpec: asJson(input.propSpec),
       },
     });
@@ -294,11 +388,16 @@ export async function update(
     if (input.description !== undefined) identity.description = input.description ?? null;
     if (input.surfaces !== undefined) identity.surfaces = asJson(input.surfaces);
 
-    // A content change → a new version snapshot. Carry forward the unchanged half.
-    const contentChanged = input.tree !== undefined || input.propSpec !== undefined;
+    // A content change → a new version snapshot. Carry forward the unchanged half —
+    // including the OTHER tree column. A silica edit to a piece that also has a
+    // legacy tree must not drop the legacy one (it is what any surviving legacy
+    // placement still renders), and vice versa.
+    const contentChanged =
+      input.tree !== undefined || input.silicaTree !== undefined || input.propSpec !== undefined;
     let versionRow = current;
     if (contentChanged) {
-      const nextTree = input.tree ?? (current.tree as unknown as BuilderNode);
+      const nextTree = input.tree ?? treeOrNull<BuilderNode>(current.tree);
+      const nextSilica = input.silicaTree ?? treeOrNull<SilicaNode>(current.silicaTree);
       const nextPropSpec = input.propSpec ?? (current.propSpec as unknown as PropSpec[]) ?? [];
       await assertValidComponent(tx, key, nextTree, nextPropSpec);
       const nextVersion = existing.latestVersion + 1;
@@ -307,7 +406,8 @@ export async function update(
           tenantId: ctx.tenantId,
           componentId: existing.id,
           version: nextVersion,
-          tree: asJson(nextTree),
+          ...(nextTree !== null ? { tree: asJson(nextTree) } : {}),
+          ...(nextSilica !== null ? { silicaTree: asJson(nextSilica) } : {}),
           propSpec: asJson(nextPropSpec),
         },
       });
@@ -366,10 +466,14 @@ export async function expandTreeForPublish(
     if (!comp) return null;
     const row = byKeyVer.get(`${key}@${version ?? comp.latestVersion}`);
     if (!row) return null;
-    return {
-      tree: row.tree as unknown as BuilderNode,
-      propSpec: (row.propSpec as unknown as PropSpec[]) ?? [],
-    };
+    const tree = treeOrNull<BuilderNode>(row.tree);
+    // A silica-authored piece has no legacy tree, and this expander is the LEGACY
+    // publish path (`custom:*` placements in a `BuilderNode` page). Returning null
+    // drops the placement, which is what a legacy page holding a reference to a
+    // silica-only piece should do — there is nothing in that version it could
+    // render, and emitting a `custom:*` node the storefront cannot resolve would
+    // ship a hole instead of an absence.
+    return tree ? { tree, propSpec: (row.propSpec as unknown as PropSpec[]) ?? [] } : null;
   });
 }
 

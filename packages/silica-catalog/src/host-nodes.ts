@@ -279,7 +279,12 @@ export const HOST_COMPONENTS: HostComponentMeta[] = [
     // The `wordmark` class is load-bearing, not decoration: silicaui's own
     // `.wordmark & :is(svg,img)` rule sizes the mark, so keeping it makes this a real
     // Wordmark rather than a lookalike lockup.
-    defaultClass: 'wordmark inline-flex items-center gap-2.5',
+    // `gap-2`, not the half-step `gap-2.5` this used to carry: the declared authoring
+    // vocabulary has no half steps, so that class only ever compiled because this
+    // source file happens to be @source-scanned. Copied into a tenant's tree it is a
+    // class that emits nothing the moment this line changes — which is precisely the
+    // failure `checkClassString` exists to catch, and it caught this one.
+    defaultClass: 'wordmark inline-flex items-center gap-2',
     // The conditional a BOUND tree cannot express: two bound children always both
     // render, which is why the composite had to tell authors to "delete the part you
     // don't want". The host renders in React, so it can simply choose.
@@ -394,5 +399,8 @@ export function functionalShell(
     );
   }
   children.push(hostCore(key, opts.coreClass, opts.props));
-  return el('section', 'bg-base-100', { children });
+  // `@container`, like every other seeded section: the tenant is expected to add
+  // their own content around the pinned core, and a responsive class they write
+  // there needs an ancestor container to measure or it does nothing at all.
+  return el('section', 'bg-base-100 @container', { children });
 }

@@ -3,12 +3,12 @@
 This folder is the **canonical contract** for everything published to the sparx
 marketplace. There is one template per category:
 
-| Category        | Folder                          | Payload is…                         | Runs code? |
-| --------------- | ------------------------------- | ----------------------------------- | ---------- |
-| **Theme**       | [`theme/`](./theme)             | design tokens (data)                | no         |
-| **Component**   | [`component/`](./component)     | a builder node-tree (data)          | no         |
-| **Blueprint**   | [`blueprint/`](./blueprint)     | a declarative site manifest (data)  | no         |
-| **Integration** | [`integration/`](./integration) | a declarative connector spec (data) | no¹        |
+| Category        | Folder                                                         | Payload is…                         | Runs code? |
+| --------------- | -------------------------------------------------------------- | ----------------------------------- | ---------- |
+| **Theme**       | [`theme/`](./theme)                                            | design tokens (data)                | no         |
+| **Component**   | [`component/`](./component)                                    | a builder node-tree (data)          | no         |
+| **Blueprint**   | [`blueprints/sparx/`](../marketplace-catalog/blueprints/sparx) | a declarative site manifest (data)  | no         |
+| **Integration** | [`integration/`](./integration)                                | a declarative connector spec (data) | no¹        |
 
 ¹ A submitted integration is a **declarative connector** (endpoints, auth, field
 mappings, webhooks) — pure configuration, no executable code. Integrations that

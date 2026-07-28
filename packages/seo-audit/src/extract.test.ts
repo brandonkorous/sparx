@@ -1,6 +1,108 @@
 import { describe, it, expect } from 'vitest';
 
-import { extractBuilderTreeSignals, extractCmsDocSignals } from './extract';
+import {
+  extractBuilderTreeSignals,
+  extractCmsDocSignals,
+  extractSilicaTreeSignals,
+} from './extract';
+
+// ── The silica tree — what the CURRENT builder actually writes ────────────────
+//
+// The regression these lock: a silica page graded through `extractBuilderTreeSignals`
+// returns ALL ZEROES, because nothing in a silica tree has `type: 'Heading'`. That is
+// not a near-miss — it is a scorecard confidently reporting "no H1, no words, no links,
+// no images" about a page full of all four, and it is the only signal a non-technical
+// owner gets about whether their page can be found at all.
+
+describe('extractSilicaTreeSignals', () => {
+  const page = {
+    kind: 'element',
+    tag: 'section',
+    children: [
+      { kind: 'element', tag: 'h1', children: ['The Main Title'] }, // 3 words, 1 H1
+      { kind: 'element', tag: 'h2', children: ['A subsection here'] }, // 3 words
+      { kind: 'element', tag: 'p', children: ['Some body copy with five words.'] }, // 6 words
+      { kind: 'element', tag: 'img', attrs: { alt: 'A described image' } }, // alt ok
+      { kind: 'element', tag: 'img', attrs: { alt: '' } }, // missing alt
+      { kind: 'element', tag: 'img' }, // missing alt
+      { kind: 'element', tag: 'a', attrs: { href: '/products' }, children: ['Shop now'] }, // 2 words, internal
+      { kind: 'element', tag: 'a', attrs: { href: 'https://x.com' }, children: ['External'] }, // 1 word, external
+    ],
+  };
+
+  it('counts H1s, words, images-missing-alt, and internal links', () => {
+    const s = extractSilicaTreeSignals(page);
+    expect(s.h1Count).toBe(1);
+    expect(s.imageCount).toBe(3);
+    expect(s.imagesMissingAlt).toBe(2);
+    expect(s.internalLinkCount).toBe(1);
+    expect(s.wordCount).toBe(3 + 3 + 6 + 2 + 1);
+  });
+
+  it('the LEGACY extractor sees nothing in the same tree (why this exists)', () => {
+    const s = extractBuilderTreeSignals(page);
+    expect(s.h1Count).toBe(0);
+    expect(s.wordCount).toBe(0);
+    expect(s.imageCount).toBe(0);
+    expect(s.internalLinkCount).toBe(0);
+  });
+
+  it('reads copy off silica COMPONENT atoms, which carry it in props not children', () => {
+    const tree = {
+      kind: 'element',
+      tag: 'div',
+      children: [
+        { kind: 'component', component: 'Button', props: { label: 'Buy now', href: '/cart' } },
+        { kind: 'component', component: 'Image', props: { alt: '' } },
+        { kind: 'component', component: 'Image', props: { alt: 'A product photo' } },
+      ],
+    };
+    const s = extractSilicaTreeSignals(tree);
+    expect(s.wordCount).toBe(2);
+    expect(s.internalLinkCount).toBe(1);
+    expect(s.imageCount).toBe(2);
+    expect(s.imagesMissingAlt).toBe(1);
+  });
+
+  it('recurses arbitrarily deep, so a heading inside nested wrappers still counts', () => {
+    const tree = {
+      kind: 'element',
+      tag: 'div',
+      children: [
+        {
+          kind: 'element',
+          tag: 'section',
+          children: [
+            {
+              kind: 'element',
+              tag: 'div',
+              children: [{ kind: 'element', tag: 'h1', children: ['Deep'] }],
+            },
+          ],
+        },
+      ],
+    };
+    expect(extractSilicaTreeSignals(tree).h1Count).toBe(1);
+  });
+
+  it('ignores outlet and host nodes — they carry no authored copy', () => {
+    const tree = {
+      kind: 'element',
+      tag: 'div',
+      children: [{ kind: 'outlet' }, { kind: 'host', component: 'commerce.cart' }],
+    };
+    const s = extractSilicaTreeSignals(tree);
+    expect(s.wordCount).toBe(0);
+    expect(s.h1Count).toBe(0);
+  });
+
+  it('survives junk without throwing (a tree is opaque JSON from the database)', () => {
+    expect(extractSilicaTreeSignals(null).wordCount).toBe(0);
+    expect(extractSilicaTreeSignals(undefined).wordCount).toBe(0);
+    expect(extractSilicaTreeSignals('nonsense').wordCount).toBe(1);
+    expect(extractSilicaTreeSignals({ kind: 'element' }).h1Count).toBe(0);
+  });
+});
 
 describe('extractBuilderTreeSignals', () => {
   it('counts H1s, words, images-missing-alt, and internal links across the tree', () => {

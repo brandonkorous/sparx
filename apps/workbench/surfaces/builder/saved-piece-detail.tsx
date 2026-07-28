@@ -189,7 +189,9 @@ function ManagePiece({
   useDirtySource(dirty, 'You have unsaved changes to this piece. Close anyway?');
 
   const meta = groupMeta(piece.group);
-  const blocks = countBlocks(piece.tree);
+  // Whichever half this piece stores its design in — a silica piece has no legacy
+  // tree, and counting only that one would report every current piece as empty.
+  const blocks = countBlocks(piece.silicaTree ?? piece.tree);
 
   const usageTotal = usage.data?.total ?? 0;
   const state = usageState(usageTotal);
@@ -224,8 +226,9 @@ function ManagePiece({
   };
 
   const editDesign = (event: { shiftKey: boolean; altKey: boolean }) => {
-    // Hands the visual editing to the studio (built separately). The builder
-    // addresses components by their stable key, so that is what travels.
+    // Hands the visual editing to the studio. The piece is materialized there as the
+    // symbol `tenant:<key>`, so the key is all that travels and the studio enters
+    // that master (`ApplyInitialPiece`). Editing it updates every place it appears.
     const target = event.altKey ? 'window' : event.shiftKey ? 'beside' : 'tab';
     ctx.open('builder.studio', { componentId: piece.key }, { target });
   };
@@ -270,7 +273,17 @@ function ManagePiece({
         </Badge>
 
         <div className="ml-auto flex flex-wrap items-center gap-2">
-          <Button size="sm" variant="outline" color="module" onClick={editDesign}>
+          {/* Offered ONLY when the editor can actually open it. A piece built in the
+              retired builder stores its design in a format nothing left can read, so
+              this button would open an empty canvas and leave the owner thinking
+              their piece had been lost. The alert below says what is true instead. */}
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            disabled={!piece.placeable}
+            onClick={editDesign}
+          >
             <Pencil className="size-4" aria-hidden />
             Edit design
           </Button>
@@ -313,6 +326,20 @@ function ManagePiece({
               </AlertDescription>
             </AlertContent>
           </Alert>
+
+          {piece.placeable ? null : (
+            <Alert color="warning" variant="soft">
+              <AlertContent>
+                <AlertTitle>This piece can&apos;t be opened in the editor</AlertTitle>
+                <AlertDescription>
+                  It was built in an earlier version of the site editor, and its design is saved in
+                  a form the current one can&apos;t read. Its name and notes are still yours to edit
+                  here, and anywhere it&apos;s already placed keeps working — but to change how it
+                  looks you&apos;ll need to build it again as a new piece.
+                </AlertDescription>
+              </AlertContent>
+            </Alert>
+          )}
 
           <FormSection
             title="Details"

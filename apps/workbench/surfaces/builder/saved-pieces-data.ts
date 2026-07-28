@@ -46,6 +46,15 @@ export interface PieceSummary {
   description: string | null;
   surfaces: PieceSurface[];
   latestVersion: number;
+  /** Whether the editor can actually open and place this piece.
+   *
+   *  False for a piece authored in the RETIRED builder: its design is stored in that
+   *  builder's node format, which the current editor cannot read. Nothing converts
+   *  between the two (the cutover re-seeded pages rather than migrating them), so
+   *  such a piece is a record of something that once existed, not a usable one. The
+   *  UI has to say that rather than offering an "Edit design" button that opens an
+   *  editor showing nothing. */
+  placeable: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -59,9 +68,15 @@ export interface PieceNode {
   children?: PieceNode[];
 }
 
-/** A saved piece WITH its latest design — the detail read. */
+/** A saved piece WITH its latest design — the detail read.
+ *
+ *  BOTH tree fields are nullable and a piece carries one of them: `tree` on a piece
+ *  built in the retired editor, `silicaTree` on anything current (`placeable`).
+ *  Neither is read for its content here — the detail pane counts blocks and hands
+ *  the design off to the studio — so both stay loosely shaped. */
 export interface Piece extends PieceSummary {
-  tree: PieceNode;
+  tree: PieceNode | null;
+  silicaTree: PieceNode | null;
   propSpec: unknown[];
 }
 

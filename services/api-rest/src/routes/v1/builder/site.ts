@@ -8,6 +8,11 @@
 //   GET    /v1/builder/site/publish-state
 //                                     → what differs between the draft and what
 //                                       visitors are served (the "not live yet" signal)
+//   GET    /v1/builder/site/check    → the pre-publish check over the DRAFT: broken
+//                                       links, missing image descriptions, heading
+//                                       gaps, dead buttons, styling that emits no CSS,
+//                                       unreadable colour pairings, SEO metadata.
+//                                       ADVISORY — publish never consults it
 //   POST   /v1/builder/site/publish  → snapshot every silica draft tree → published,
 //                                       and seal an immutable release (docs/126 §5.3)
 //   GET    /v1/builder/site/releases  → the publish history, newest first
@@ -55,8 +60,27 @@ import { withTenant } from '@sparx/db';
 import { isModuleEnabled } from '@sparx/auth';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
+import { withRequestTenant } from '@sparx/api-core/db';
 import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-context.js';
 import { getBuilderBroadcaster } from '../../../websocket/builder-broadcast.js';
+import { auditAndStore } from '../../../lib/seo-audit.js';
+import { runSiteCheck } from '../../../lib/site-check.js';
+
+/** Re-grade every page of the property that was just published. One pass over the
+ *  property's pages; each audit is independent, so a single bad page cannot take the
+ *  rest of the refresh down with it. */
+async function refreshSiteSeoAudits(
+  request: Parameters<typeof withRequestTenant>[0],
+  tenantId: string,
+  propertyId: string
+): Promise<void> {
+  await withRequestTenant(request, async (tx) => {
+    const pages = await tx.builderPage.findMany({ where: { propertyId }, select: { id: true } });
+    for (const page of pages) {
+      await auditAndStore(tx, tenantId, 'builder_page', page.id).catch(() => undefined);
+    }
+  });
+}
 
 const builderSiteRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/site', async (request) => {
@@ -137,10 +161,42 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     return ok(state);
   });
 
-  app.post('/v1/builder/site/publish', async (request) => {
-    requireRole(request, 'editor');
+  /**
+   * The pre-publish check (docs/builder-audit slice 11) — what a visitor will run into
+   * on the DRAFT: broken links, images with no description, headings that skip a
+   * level, buttons nothing is wired to, styling that emits no CSS, colour pairings
+   * that cannot be read, and missing or duplicated search metadata.
+   *
+   * ADVISORY, AND THE ROUTE BELOW PROVES IT: `POST /publish` does not call this, does
+   * not read its `status`, and cannot be made to. The site belongs to the person who
+   * built it — they may be publishing a link to a page that goes live in an hour. The
+   * check says what happens; the decision is theirs.
+   *
+   * `viewer`, not `editor`: reading what is wrong with a site is not a change to it,
+   * and a reviewer who cannot publish still has every reason to look.
+   */
+  app.get('/v1/builder/site/check', async (request) => {
+    requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const release = await siteService.publish(await toBuilderContext(request));
+    const report = await runSiteCheck(request, await toBuilderContext(request));
+    return ok(report);
+  });
+
+  app.post('/v1/builder/site/publish', async (request) => {
+    const auth = requireRole(request, 'editor');
+    await requireBuilderModule(request);
+    const ctx = await toBuilderContext(request);
+    const release = await siteService.publish(ctx);
+    // Refresh every page's SEO scorecard against what was just made live.
+    //
+    // This is THE publish for a silica site, and it did not do this — only the legacy
+    // per-page route did, which nothing in the current editor calls. So the scorecards
+    // the SEO module shows were never recomputed after a real publish: an owner who
+    // fixed a missing title saw the old grade indefinitely, with nothing saying why.
+    //
+    // Best-effort and AFTER the publish, exactly like the legacy route: a scoring
+    // hiccup must never fail a publish that already succeeded.
+    await refreshSiteSeoAudits(request, auth.tenantId, ctx.propertyId).catch(() => undefined);
     // The release id + hash ride back so the caller can name what it just published —
     // and so a UI can offer "undo" without a second round trip (docs/126 §5.3).
     return ok({ published: true, releaseId: release.id, hash: release.hash });

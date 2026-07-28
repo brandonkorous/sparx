@@ -24,10 +24,19 @@
 //   2. OUT-OF-RANGE STEPS on a family the vocabulary declares (`gap-7` when the
 //      declared gap scale is 0-6,8,10,…). The family is declared, so the intent is
 //      unambiguous and the specific value is provably missing.
+//   3. VIEWPORT VARIANTS (`md:grid-cols-3`). The odd one out: this class DOES compile
+//      and DOES work on the published page. It is flagged because it is invisible in
+//      the tool that authors it — silica's device toggle sets an element's width, not
+//      the window's, so a viewport variant is frozen at whatever the real browser
+//      window happens to be. The author switches to Mobile, sees no change, and
+//      concludes the layout is fine. One vocabulary, container queries, is the fix;
+//      `builder-vocabulary.css` carries the full reasoning and the step mapping.
 //
 // Anything else passes: unknown families are assumed scan-covered rather than guessed
 // at, because a false positive that blocks a legitimate authoring call is worse than a
 // miss here — this is a guard rail, not a whitelist.
+
+import type { ClassValidator } from '@wizeworks/silicaui-html';
 
 import { VOCABULARY_PATTERNS } from './vocabulary-patterns';
 
@@ -35,10 +44,28 @@ import { VOCABULARY_PATTERNS } from './vocabulary-patterns';
 export interface VocabularyIssue {
   /** The offending class, verbatim. */
   className: string;
-  reason: 'arbitrary-value' | 'out-of-range';
+  reason: 'arbitrary-value' | 'out-of-range' | 'viewport-variant';
   /** What to write instead — a concrete nearest legal value, never just "don't". */
   hint: string;
 }
+
+/** Viewport breakpoint → the container step nearest it in px.
+ *
+ *  `sm` 640 → `@2xl` 672 · `md` 768 → `@3xl` 768 (exact) · `lg` 1024 → `@5xl` 1024
+ *  (exact) · `xl` 1280 and `2xl` 1536 → `@5xl`, the top of the declared container
+ *  set. Nothing maps above `@5xl` because a full-bleed section caps its content with
+ *  `max-w-*` well before 1024px of container, so there is no layout left to restate.
+ *
+ *  A translation, not an equivalence: the two axes measure different boxes. It is
+ *  right for the full-bleed sections everything here is authored inside, which is
+ *  where viewport variants got written in the first place. */
+const VIEWPORT_TO_CONTAINER: Record<string, string> = {
+  sm: '@2xl',
+  md: '@3xl',
+  lg: '@5xl',
+  xl: '@5xl',
+  '2xl': '@5xl',
+};
 
 /** Expand one `@source inline(...)` brace pattern into its literal classes.
  *  `{sm:,md:,}gap-{1,2}` → `gap-1 gap-2 sm:gap-1 sm:gap-2 md:gap-1 md:gap-2`. */
@@ -104,6 +131,35 @@ function nearest(values: Set<string>, target: string): string | null {
   );
 }
 
+const VIEWPORT_PREFIXES = new Set(Object.keys(VIEWPORT_TO_CONTAINER));
+
+/** The viewport breakpoint inside a class token, and the class without it.
+ *
+ *  Scans EVERY variant segment, not just the first: `hover:md:text-lg` and
+ *  `md:hover:text-lg` are the same class and both need catching. Container variants
+ *  carry an `@` (`@2xl:`) so they never collide with the viewport names, and a class
+ *  with no variant at all (`max-w-sm`, `text-sm`) has no colon to split on.
+ *
+ *  `max-sm:` — "narrower than sm" — inverts, so it maps to `@max-2xl:` rather than
+ *  `@2xl:`. Getting that backwards would hide exactly the content it was meant to
+ *  show, which is worse than leaving the class alone. */
+export function viewportVariant(className: string): { container: string; rest: string } | null {
+  const parts = className.split(':');
+  if (parts.length < 2) return null;
+  for (let i = 0; i < parts.length - 1; i += 1) {
+    const raw = parts[i]!;
+    const below = raw.startsWith('max-');
+    const prefix = below ? raw.slice(4) : raw;
+    if (!VIEWPORT_PREFIXES.has(prefix)) continue;
+    const step = VIEWPORT_TO_CONTAINER[prefix]!;
+    return {
+      container: below ? `@max-${step.slice(1)}` : step,
+      rest: parts.filter((_, j) => j !== i).join(':'),
+    };
+  }
+  return null;
+}
+
 /** Check ONE class token. Null when it is fine (or not our business). */
 export function checkClass(className: string): VocabularyIssue | null {
   if (!className) return null;
@@ -114,6 +170,24 @@ export function checkClass(className: string): VocabularyIssue | null {
       className,
       reason: 'arbitrary-value',
       hint: 'Arbitrary values only compile where Tailwind can SEE them, and an authored tree is never scanned — this emits no CSS at all. Use a scale token instead (e.g. `leading-none` rather than `leading-[1.05]`).',
+    };
+  }
+
+  // 2. Viewport variants author against the browser WINDOW. Everything on this
+  //    platform is authored through a canvas that fakes the device by setting an
+  //    element's width, so a viewport variant is the one class that renders correctly
+  //    on the live page and lies in the preview — the tenant switches to Mobile, sees
+  //    the desktop layout, and has no way to know the control did nothing.
+  const viewport = viewportVariant(className);
+  if (viewport) {
+    return {
+      className,
+      reason: 'viewport-variant',
+      hint:
+        `\`${className}\` is measured against the browser window, so the builder's phone and tablet ` +
+        `previews cannot reflow it — the design changes on a real device but never on the canvas. ` +
+        `Write \`${viewport.container}:${viewport.rest}\` instead, and make sure some parent carries ` +
+        `\`@container\` (every seeded section, the nav and the footer already do).`,
     };
   }
 
@@ -176,3 +250,34 @@ export function checkTreeClasses(node: unknown): VocabularyIssue[] {
   walk(node);
   return [...seen.values()];
 }
+
+/** The write-time half of the responsive rule — a silica `ClassValidator` that
+ *  REFUSES a class string containing a viewport variant, with the container class to
+ *  write instead.
+ *
+ *  Why a refusal here when the MCP path only WARNS. The two surfaces fail differently.
+ *  An MCP write has already been persisted by the time the tree is inspected, so
+ *  rejecting it would trade a page the agent can fix for a page that does not exist.
+ *  `Editor.setClass` runs this BEFORE it commits and hands the reason straight back to
+ *  the Classes field the author is typing in — nothing is lost, and the correction is
+ *  one token away in the box already under their cursor. A warning there would be a
+ *  warning nobody reads, and the two vocabularies drift back apart within a release.
+ *
+ *  This is deliberately the ONLY rule here. It is not a re-run of `checkClassString`:
+ *  an arbitrary value or an out-of-range step is a class that emits no CSS, which is
+ *  bad but recoverable and sometimes intentional while an author is mid-thought.
+ *  Blocking every one of them at keystroke time would make the field feel broken. */
+export const validateResponsiveVocabulary: ClassValidator = (cls) => {
+  for (const token of cls.split(/\s+/)) {
+    const viewport = token ? viewportVariant(token) : null;
+    if (!viewport) continue;
+    return {
+      ok: false,
+      reason:
+        `${token} sizes itself against the browser window, so the phone and tablet previews ` +
+        `can't show what it does. Use ${viewport.container}:${viewport.rest} instead — it measures ` +
+        `the space the block is actually in, which is what the preview changes.`,
+    };
+  }
+  return { ok: true };
+};

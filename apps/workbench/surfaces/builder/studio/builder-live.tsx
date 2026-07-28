@@ -19,6 +19,7 @@
 
 import { useEditor } from '@wizeworks/silicaui-builder/react';
 import type { Op } from '@wizeworks/silicaui-builder/react';
+import type { Site } from '@wizeworks/silicaui-html';
 import { useEffect, useRef, useState, type MutableRefObject } from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { Badge, Button } from '@wizeworks/silicaui-react';
@@ -66,9 +67,20 @@ interface Props {
   onReload: () => void;
   /** Batch ids THIS client authored (Slice 4), so it skips the echo of its own ops. */
   ownBatchesRef: MutableRefObject<Set<string>>;
+  /** Another author's edit landed on this canvas. It deliberately never reaches
+   *  `<Builder onChange>` (a remote op must not echo back to its sender), so the
+   *  studio is told here — its undo history computes each inverse against the
+   *  document as it stood a moment earlier, and that snapshot has just moved. */
+  onRemoteApplied: (site: Site) => void;
 }
 
-export function BuilderLiveSync({ propertyId, baselineIdsRef, onReload, ownBatchesRef }: Props) {
+export function BuilderLiveSync({
+  propertyId,
+  baselineIdsRef,
+  onReload,
+  ownBatchesRef,
+  onRemoteApplied,
+}: Props) {
   const editor = useEditor();
   const [presence, setPresence] = useState<BuilderPresence[]>([]);
   const [reloadHints, setReloadHints] = useState<string[]>([]);
@@ -76,6 +88,8 @@ export function BuilderLiveSync({ propertyId, baselineIdsRef, onReload, ownBatch
   const [, forceTick] = useState(0);
   const lastSeqRef = useRef(0);
   const socketRef = useRef<BuilderSocket | null>(null);
+  const onRemoteAppliedRef = useRef(onRemoteApplied);
+  onRemoteAppliedRef.current = onRemoteApplied;
 
   // Apply a relayed batch to the live document and advance our sequence, keeping the
   // save-baseline in step. Held in a ref so the socket handlers (bound once on connect)
@@ -83,6 +97,7 @@ export function BuilderLiveSync({ propertyId, baselineIdsRef, onReload, ownBatch
   const applyRelayed = (ops: RelayOp[], seq: number): void => {
     if (ops.length) {
       editor.applyRemoteOps(ops as unknown as Op[]);
+      onRemoteAppliedRef.current(editor.extractSite());
       for (const op of ops) {
         if (op.kind === 'page.create') {
           const id = (op.page as { id?: string } | undefined)?.id;

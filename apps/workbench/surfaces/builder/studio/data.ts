@@ -16,6 +16,7 @@ import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
 import type {
   BindingCatalog,
+  SilicaPieceDto,
   SitePublishState,
   SiteSyncInput,
   StoredSilicaSite,
@@ -301,6 +302,53 @@ export function useRestoreDraftVersion() {
   });
 }
 
+// ── Page settings (how one page appears in search + when shared) ─────────────
+//
+// These columns live on the `BuilderPage` ROW, not in the silica tree: silica's `Page`
+// is deliberately flat (`{id,name,slug,root}`) and has no home for domain metadata. The
+// silica page id IS the row id, so the same `/v1/builder/pages/:id` endpoints serve
+// both. This is the gap that made the whole SEO chain dead weight — the storefront read
+// these fields on every render, the audit graded them, and nothing in the editor could
+// ever set them.
+
+/** What one page says about itself to search engines and social cards. */
+export interface PageSeo {
+  seoTitle: string | null;
+  seoDescription: string | null;
+  canonical: string | null;
+  ogImage: string | null;
+  noindex: boolean;
+}
+
+export const PAGE_SEO_KEY = (pageId: string) => ['builder', 'page-seo', pageId];
+
+/** The stored settings for ONE page. Fetched only while the drawer is open, and only
+ *  for a page the server actually has — a page created in this session has no row until
+ *  the next Save, so asking for it would 404. */
+export function usePageSeo(pageId: string | null, enabled: boolean) {
+  return useQuery({
+    queryKey: PAGE_SEO_KEY(pageId ?? 'none'),
+    queryFn: () => api.get<PageSeo>(`/v1/builder/pages/${encodeURIComponent(pageId!)}`),
+    enabled: enabled && Boolean(pageId),
+    staleTime: 10_000,
+  });
+}
+
+/** Persist one page's settings. Separate from the site sync on purpose: the site
+ *  reconcile owns TREES, these are row columns, and folding them into that payload
+ *  would widen a contract the op-log and the live relay both speak. The studio still
+ *  presents ONE Save — it flushes these right after the sync. */
+export function useUpdatePageSeo() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ pageId, seo }: { pageId: string; seo: Partial<PageSeo> }) =>
+      api.patch<unknown>(`/v1/builder/pages/${encodeURIComponent(pageId)}`, seo),
+    onSuccess: (_data, { pageId }) => {
+      void queryClient.invalidateQueries({ queryKey: PAGE_SEO_KEY(pageId) });
+    },
+  });
+}
+
 /** Snapshot every silica draft tree → published, sealing a release. */
 export function usePublishSite() {
   const queryClient = useQueryClient();
@@ -347,6 +395,201 @@ export function useSiteOrigin(propertyId: string | null) {
     enabled: Boolean(propertyId),
     staleTime: 300_000,
   });
+}
+
+/* ── Publish history (docs/126 §5.3) ──────────────────────────────────────── */
+
+export const RELEASES_KEY = ['builder', 'site', 'releases'] as const;
+
+/** One immutable publish. Shape mirrors `artifactService.ReleaseSummary`. */
+export interface ReleaseDto {
+  id: string;
+  hash: string;
+  pageCount: number;
+  /** publish | restore — a restore republishes an old manifest forward as a new release. */
+  source: string;
+  restoredFromId: string | null;
+  actorId: string | null;
+  createdAt: string;
+  /** True for the release visitors are being served RIGHT NOW (the newest). */
+  current: boolean;
+}
+
+/** What a restore actually moved — `artifactService.RestoreResult`. Surfaced so the
+ *  toast can be specific rather than saying "restored" and leaving the author to
+ *  discover that three pages went dark. */
+export interface RestoreReleaseResult {
+  releaseId: string;
+  hash: string;
+  pagesRestored: number;
+  pagesUnpublished: number;
+  entriesSkipped: number;
+}
+
+/** The property's publish history, newest first. Fetched only while the drawer is
+ *  open, like the draft versions beside it. */
+export function useReleases(enabled: boolean) {
+  return useQuery({
+    queryKey: RELEASES_KEY,
+    queryFn: () => api.get<ReleaseDto[]>('/v1/builder/site/releases'),
+    enabled,
+    staleTime: 10_000,
+  });
+}
+
+/**
+ * Roll the LIVE site back to an earlier release.
+ *
+ * Unlike a draft restore, this changes what visitors see the moment it returns —
+ * there is no publish step between. History stays append-only (the old manifest is
+ * republished FORWARD as a new release), so the rollback is itself rollbackable.
+ *
+ * Invalidates the publish state too: "Published / not live yet" is computed from the
+ * draft-vs-published comparison, and a rollback almost always makes the draft differ
+ * from what is live again.
+ */
+export function useRestoreRelease() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (releaseId: string) =>
+      api.post<RestoreReleaseResult>(
+        `/v1/builder/site/releases/${encodeURIComponent(releaseId)}/restore`
+      ),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: RELEASES_KEY });
+      void queryClient.invalidateQueries({ queryKey: PUBLISH_STATE_KEY });
+    },
+  });
+}
+
+/* ── Tenant-wide saved pieces ─────────────────────────────────────────────── */
+
+export const SILICA_PIECES_KEY = ['builder', 'components', 'silica'] as const;
+
+/**
+ * The tenant's PLACEABLE saved pieces — the ones with a silica master. Merged into
+ * the document's symbol map before `<Builder>` mounts (`withTenantPieces`), which is
+ * why this has to settle alongside the site read rather than stream in later: a
+ * symbol map arriving after mount would not reach the engine, which reads `document`
+ * once.
+ *
+ * Degrades to an EMPTY list on failure, deliberately. A failed piece read means the
+ * author's library is missing from the Components board for this session — annoying,
+ * and recoverable by reloading. Holding the whole editor shut over it would turn a
+ * secondary feature's outage into "you cannot edit your website", which is a far
+ * worse trade for the same cause.
+ *
+ * The endpoint is TENANT-scoped (docs/53) — no `?property=`. That is the entire
+ * point: the same library reaches every site the business owns.
+ */
+export function useSilicaPieces() {
+  return useQuery({
+    queryKey: SILICA_PIECES_KEY,
+    queryFn: () =>
+      api
+        .get<{ components: SilicaPieceDto[] }>('/v1/builder/components?include=silica')
+        .then((r) => r.components)
+        .catch<SilicaPieceDto[]>(() => []),
+  });
+}
+
+export interface SavePieceInput {
+  key: string;
+  name: string;
+  root: unknown;
+}
+
+/**
+ * Write a tenant master back to the library — one call per piece whose design
+ * actually changed (`changedTenantMasters`), issued as part of the studio's single
+ * Save. Each one snapshots a new version server-side, so a piece keeps the same
+ * version history any other editor here would give it.
+ *
+ * The list is invalidated but NOT refetched into the open editor: the engine already
+ * holds the edited master on its canvas, and pushing a server copy back into a live
+ * document would either be a no-op or clobber an edit made in the meantime.
+ */
+export function useSaveSilicaPiece() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ key, name, root }: SavePieceInput) =>
+      api.patch(`/v1/builder/components/${encodeURIComponent(key)}`, { name, silicaTree: root }),
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: SILICA_PIECES_KEY });
+      // The Saved-pieces LIST pane docks beside the studio often enough that a
+      // stale "last updated" there after a save reads as the save not landing.
+      void queryClient.invalidateQueries({ queryKey: ['builder', 'components'] });
+    },
+  });
+}
+
+/* ── The pre-publish check ────────────────────────────────────────────────── */
+
+/** How much a finding matters. NEVER whether a publish may proceed — the server
+ *  route says the same thing, and the publish endpoint does not consult it. */
+export type CheckSeverity = 'error' | 'warning' | 'suggestion';
+
+/** Which authored tree a finding lives in — the tree the fix happens in, which is
+ *  not always the page it was seen on. */
+export type CheckScope = 'page' | 'frame' | 'symbol' | 'site';
+
+/** Where a finding is, precisely enough to open the right thing and select the right
+ *  block. `ownerId` is a page id for `page`, a symbol id for `symbol`, null otherwise. */
+export interface CheckLocation {
+  scope: CheckScope;
+  ownerId: string | null;
+  ownerName: string;
+  nodeId: string | null;
+  nodePath: string;
+  seenOn: string[];
+}
+
+export interface CheckFinding {
+  rule: string;
+  severity: CheckSeverity;
+  title: string;
+  detail: string;
+  evidence?: string;
+  location: CheckLocation;
+}
+
+export interface SiteCheckReport {
+  status: 'pass' | 'warn' | 'fail';
+  findings: CheckFinding[];
+  counts: Record<CheckSeverity, number>;
+  pagesChecked: number;
+}
+
+export const SITE_CHECK_KEY = ['builder', 'site', 'check'] as const;
+
+/**
+ * Check the site the way a visitor meets it.
+ *
+ * Reads the SAVED DRAFT, which is why every caller here saves first: the report would
+ * otherwise describe the state before the edit the author is about to publish, and a
+ * check that is one save behind is worse than none — it says "clean" about work it has
+ * not seen.
+ *
+ * `enabled` gates it to when the drawer is open or a publish is being decided. It is a
+ * full walk of every page's composed document plus a handful of roster reads, so it is
+ * not something to run on every keystroke.
+ */
+export function useSiteCheck(enabled: boolean) {
+  return useQuery({
+    queryKey: SITE_CHECK_KEY,
+    queryFn: () => api.get<SiteCheckReport>('/v1/builder/site/check'),
+    enabled,
+    // Always refetched on open: the point of the panel is what is wrong RIGHT NOW.
+    staleTime: 0,
+    gcTime: 0,
+  });
+}
+
+/** The check, fetched imperatively — what the publish flow needs. A hook cannot be
+ *  awaited inside a click handler, and the publish decision has to be made with the
+ *  answer in hand rather than a render later. */
+export function getSiteCheck(): Promise<SiteCheckReport> {
+  return api.get<SiteCheckReport>('/v1/builder/site/check');
 }
 
 /** The server's own sentence for a 4xx (it names the exact problem); a 5xx falls

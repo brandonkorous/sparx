@@ -100,7 +100,11 @@ export default async function ProductDetailPage({ params, searchParams }: PagePr
     const silicaTemplate = await getPublishedSilicaCollection(
       site.slug,
       'commerce.product',
-      product.id
+      product.id,
+      // A site-preview token resolves the DRAFT template, so an author restyling the
+      // product page can see it before it goes live — the same rule the home and page
+      // routes follow. The legacy `getPublishedSite` read below already honoured this.
+      one(sp.sparxSitePreview) ? { previewToken: one(sp.sparxSitePreview) } : {}
     );
     if (silicaTemplate) {
       const host = await buildSilicaHost(site.slug, silicaTemplate.root, {

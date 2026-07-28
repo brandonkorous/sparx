@@ -82,10 +82,12 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
       notFound();
     }
     const propertySlug = await resolveActivePropertySlug();
+    const sitePreview = typeof sp.sparxSitePreview === 'string' ? sp.sparxSitePreview : undefined;
     const published = await getPublishedSilicaCollection(
       site.slug,
       'commerce.collection',
-      collection.id
+      collection.id,
+      sitePreview ? { previewToken: sitePreview } : {}
     );
     const shell = published?.root ?? collectionDetailPage();
     const renderHost = storefrontHostRenderer({

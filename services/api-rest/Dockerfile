@@ -69,6 +69,11 @@ COPY packages/builder-schemas ./packages/builder-schemas
 # routes pull it in. Dependency-free beyond @wizeworks/silicaui-html. Omitting it
 # crashloops api-rest with ERR_MODULE_NOT_FOUND.
 COPY packages/silica-catalog ./packages/silica-catalog
+# The pre-publish check engine (GET /v1/builder/site/check). Pure TypeScript; its only
+# workspace edges are silica-catalog (already above) and site-themes (already above).
+# Same crashloop as the note above if it is missing — `lib/site-check.ts` imports it at
+# module load, so the route file cannot even be registered without it.
+COPY packages/site-lint ./packages/site-lint
 COPY packages/builder ./packages/builder
 COPY packages/blueprints ./packages/blueprints
 COPY packages/marketplace-schemas ./packages/marketplace-schemas

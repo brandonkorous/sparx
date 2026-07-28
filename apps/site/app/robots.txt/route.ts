@@ -21,9 +21,24 @@ export async function GET(request: Request) {
   const origin = `${protocol}//${host}`;
   const site = await resolveSite();
 
-  // Shared exclusions applied to every crawler group: the internal API and any
-  // leaked preview-token URL.
-  const disallow = ['Disallow: /api/', 'Disallow: /*?sparxPreview='];
+  // Shared exclusions applied to every crawler group: the internal API, any leaked
+  // preview-token URL, and the transactional pages.
+  //
+  // The transactional block was missing, and `@sparx/site-lint` is what surfaced it:
+  // the seeded site ships editable Cart / Search / Login / Register / Forgot password
+  // / Reset password pages, the linter reported all six as having no search
+  // description, and the right answer turned out not to be "write six descriptions"
+  // but that none of them belongs in an index at all. A password-reset page in search
+  // results is a support ticket waiting to happen, and a crawler working through
+  // per-visitor cart URLs spends the site's crawl budget on pages that are empty for
+  // everyone but the person who filled them.
+  const disallow = [
+    'Disallow: /api/',
+    'Disallow: /*?sparxPreview=',
+    'Disallow: /cart',
+    'Disallow: /checkout',
+    'Disallow: /account/',
+  ];
   // AI / answer-engine crawlers we explicitly welcome (docs/50) — sparx is
   // AI-native, so storefronts opt INTO model + answer-engine discovery. They get
   // the same exclusions as everyone else, just named so the intent is on record.

@@ -88,6 +88,83 @@ function walkBuilder(node: unknown, out: ContentSignals): void {
   for (const child of asArray(n.children)) walkBuilder(child, out);
 }
 
+// ── silica node tree (@wizeworks/silicaui-html) ───────────────────────────────
+//
+// The shape the CURRENT builder writes, and the one that actually reaches visitors.
+// Structurally different from the legacy tree above, which is why grading a silica page
+// with `extractBuilderTreeSignals` returned zeroes for everything: no `type: 'Heading'`
+// node exists, so every page scored 0 H1s, 0 words and 0 links no matter what was on it.
+//
+//   · `{kind:'element', tag:'h1'|'a'|'img'|…, attrs, children}` — text lives in
+//     `children` as plain STRINGS, not in a `text` prop.
+//   · `{kind:'component', component:'Button'|'Image'|…, props}` — silica atoms; the
+//     visible words are in `props.label` / `props.text` / `props.children`.
+//   · `{kind:'outlet'}` / `{kind:'host', …}` — structural or host-owned; they carry no
+//     authored copy of their own, so they contribute nothing.
+//
+// Bound nodes (`data`) are counted as authored structure but their RESOLVED text is not
+// available here — a product template's title comes from the record at render time. That
+// is honest rather than wrong: the template's own words are what the author controls.
+
+/** Attribute/prop lookup that tolerates either casing silica emits. */
+function attr(bag: Record<string, unknown>, key: string): string {
+  return str(bag[key]);
+}
+
+/** Words visible on a component node — silica atoms carry copy in props, not children. */
+function componentWords(props: Record<string, unknown>): number {
+  return (
+    countWords(str(props.label)) +
+    countWords(str(props.text)) +
+    countWords(str(props.title)) +
+    countWords(str(props.heading))
+  );
+}
+
+export function extractSilicaTreeSignals(tree: unknown): ContentSignals {
+  const out = emptySignals();
+  walkSilica(tree, out);
+  return out;
+}
+
+function walkSilica(node: unknown, out: ContentSignals): void {
+  // A text child is a bare string — the primary way silica carries copy.
+  if (typeof node === 'string') {
+    out.wordCount += countWords(node);
+    return;
+  }
+  const n = asRecord(node);
+  if (!n) return;
+
+  const kind = str(n.kind);
+  if (kind === 'element') {
+    const tag = str(n.tag).toLowerCase();
+    const attrs = asRecord(n.attrs) ?? {};
+    if (tag === 'h1') out.h1Count += 1;
+    if (tag === 'img') {
+      out.imageCount += 1;
+      if (countWords(attr(attrs, 'alt')) === 0) out.imagesMissingAlt += 1;
+    }
+    if (tag === 'a') {
+      const href = attr(attrs, 'href');
+      if (href && isInternalHref(href)) out.internalLinkCount += 1;
+    }
+  } else if (kind === 'component') {
+    const props = asRecord(n.props) ?? {};
+    out.wordCount += componentWords(props);
+    const component = str(n.component);
+    if (component === 'Image' || component === 'Avatar') {
+      out.imageCount += 1;
+      if (countWords(str(props.alt)) === 0) out.imagesMissingAlt += 1;
+    }
+    // A silica `Button`/`Link` atom carries its destination in props, not attrs.
+    const href = str(props.href);
+    if (href && isInternalHref(href)) out.internalLinkCount += 1;
+  }
+
+  for (const child of asArray(n.children)) walkSilica(child, out);
+}
+
 // ── CMS rich-text doc (TipTap / ProseMirror) ──────────────────────────────────
 //
 // Mirrors the node walk in `@sparx/cms-editor`'s `renderDocToHtml`: `heading`

@@ -39,11 +39,11 @@ import { siteFooter, siteNavbar, type SiteChromeOptions } from './site-chrome';
  *  Commerce-less tenant gets no "Browse the shop" CTA (there's no `/shop` page
  *  to send visitors to — see `starterPages`). */
 function hero(commerceEnabled: boolean): Node {
-  return el('section', 'bg-base-100 px-6 py-20 text-center', {
+  return el('section', 'bg-base-100 @container px-6 py-20 text-center', {
     children: [
       el('div', 'mx-auto flex max-w-2xl flex-col items-center gap-5', {
         children: [
-          el('h1', 'text-4xl font-bold tracking-tight text-base-content sm:text-5xl', {
+          el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
             text: 'Your work, beautifully online.',
           }),
           el('p', 'text-lg text-base-content', {
@@ -80,7 +80,7 @@ function hero(commerceEnabled: boolean): Node {
 /** A closing call-to-action band. Neutral: works whether the next step is adding a
  *  product, writing a post, or inviting a teammate. */
 function ctaBand(): Node {
-  return el('section', 'bg-primary px-6 py-16 text-center', {
+  return el('section', 'bg-primary @container px-6 py-16 text-center', {
     children: [
       el('div', 'mx-auto flex max-w-2xl flex-col items-center gap-4', {
         children: [
@@ -108,14 +108,14 @@ function featureTrio(): Node {
         el('p', 'text-base-content', { text: body }),
       ],
     });
-  return el('section', 'bg-base-200 px-6 py-16', {
+  return el('section', 'bg-base-200 @container px-6 py-16', {
     children: [
       el('div', 'mx-auto max-w-5xl', {
         children: [
           el('h2', 'mb-8 text-2xl font-semibold text-base-content', {
             text: 'What you can do here',
           }),
-          el('div', 'grid gap-6 sm:grid-cols-3', {
+          el('div', 'grid gap-6 @2xl:grid-cols-3', {
             children: [
               card(
                 'Publish',
@@ -140,7 +140,7 @@ function featureTrio(): Node {
 /** The About page editorial body — a real, editable starting narrative (no eyebrow
  *  kicker), sized for comfortable reading. */
 function aboutContent(): Node {
-  return el('section', 'bg-base-100 px-6 py-16', {
+  return el('section', 'bg-base-100 @container px-6 py-16', {
     children: [
       el('div', 'mx-auto flex max-w-2xl flex-col gap-5', {
         children: [
@@ -162,7 +162,7 @@ function aboutContent(): Node {
 /** The Contact page — a simple, editable prompt (no live form yet; the form node
  *  lands with the commerce/forms migration). */
 function contactContent(): Node {
-  return el('section', 'bg-base-100 px-6 py-16 text-center', {
+  return el('section', 'bg-base-100 @container px-6 py-16 text-center', {
     children: [
       el('div', 'mx-auto flex max-w-xl flex-col items-center gap-4', {
         children: [
@@ -185,12 +185,22 @@ function contactContent(): Node {
 /** The shared shell: the branded nav, a flex-grown main holding the single Outlet
  *  (every page body drops in here), and the branded footer. The `min-h-screen
  *  flex-col` column pins the footer to the bottom on short pages. The main carries
- *  id="st-main" so the storefront skip-link targets it. Exactly one Outlet. */
+ *  id="st-main" so the storefront skip-link targets it. Exactly one Outlet.
+ *
+ *  `@container` on the `<main>` is the backstop for the whole responsive
+ *  vocabulary: a page body drops into the Outlet, and an author who writes
+ *  `@2xl:grid-cols-2` on a section they added themselves needs SOME ancestor
+ *  declaring a query container or the class resolves against nothing and does
+ *  silently nothing. The seeded sections each declare their own (nearest wins, and
+ *  both are full-bleed, so the two agree); this covers everything else. */
 function frameRoot(opts: SiteChromeOptions = {}): Node {
   return el('div', 'flex min-h-screen flex-col bg-base-100', {
     children: [
       siteNavbar(opts),
-      el('main', 'flex-1', { attrs: { id: 'st-main', tabindex: -1 }, children: [outlet()] }),
+      el('main', 'flex-1 @container', {
+        attrs: { id: 'st-main', tabindex: -1 },
+        children: [outlet()],
+      }),
       siteFooter(opts),
     ],
   });

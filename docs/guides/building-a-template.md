@@ -15,8 +15,9 @@ content → media → validate → ingest → install, plus how to turn a design
 a working template. Read it once and you can build and ship a template from scratch.
 
 > Source of truth for the schema is [`@sparx/blueprints`](../../packages/blueprints/src/manifest.ts)
-> (`manifest.ts`, `validate.ts`). The bundle contract skeleton is
-> [`marketplace-templates/blueprint/`](../../marketplace-templates/blueprint/). The
+> (`manifest.ts`, `validate.ts`). The complete worked example is
+> [`marketplace-catalog/blueprints/sparx/`](../../marketplace-catalog/blueprints/sparx/) —
+> the first-party reference bundle, captured from the live sparx Template site. The
 > ingest is [`services/api-rest/src/lib/marketplace/ingest.ts`](../../services/api-rest/src/lib/marketplace/ingest.ts);
 > the installer is [`services/api-rest/src/lib/blueprint-installer.ts`](../../services/api-rest/src/lib/blueprint-installer.ts).
 
@@ -94,12 +95,21 @@ blueprints/<slug>/
 The only rule is **self-containment**: every file in the graph is pure data with
 **relative** imports and **no `@sparx/*`** (the entry is imported from outside any
 workspace package, and Phase-2 sandboxes the graph). Each part `export default`s its
-slice; the entry stitches them back together. `marketplace-catalog/blueprints/farm-fresh/`
-is the worked example. Its **generator** is split the same way — a `_gen/farm-fresh/`
-module folder (`_kit`, `theme`, `media`, `sections`, `layout`, `pages/*`, `manifest`, `emit`)
-behind a thin `_gen/gen-farm-fresh.ts` entry — so the authoring source is never one
-wall either. (The shared `node()` id counter advances in call order, so `manifest.ts` invokes
-the page trees in a fixed order; keep that order stable across edits.)
+slice; the entry stitches them back together. `marketplace-catalog/blueprints/sparx/` is
+the worked example: `blueprint.ts` imports `./site.json` (the captured site),
+`./content.json` (the journal posts), and `./welcome-email.json`.
+
+**Two ways to author the site trees.** The heavy, error-prone part of a blueprint is its
+silica page trees. There are two paths:
+
+- **Capture** (what `sparx` does): build the site once in the real studio editor on a
+  tenant, then pull it as DATA — `blueprint:capture` locally, or the MCP `get_silica_site`
+  read — into `site.json`. The trees carry real, stable ids and reinstall byte-identical;
+  no `node()` authoring, no generator.
+- **Generate from scratch** (for a blueprint with no live site to capture): author the trees
+  with the `node()` helper in a generator under `_gen/` and serialize to `blueprint.ts` (the
+  same mechanism the theme/component bundles use — see `_gen/gen-theme-bundles.ts`). Keep the
+  `node()` call order stable across edits (the shared id counter advances in call order).
 
 ### `sparx.json`
 
@@ -176,12 +186,13 @@ checks. Top-level shape (full field reference:
 > committed file fails to resolve (`ERR_MODULE_NOT_FOUND`). Author the trees with the
 > `node()` helper in a **generator** under `marketplace-catalog/_gen/` that imports the
 > helper by **relative path** (`../../packages/builder-schemas/src/index`) and
-> serializes the compiled manifest to `blueprint.ts` as `export default { … }`. See the
-> [`_gen/farm-fresh/`](../../marketplace-catalog/_gen/farm-fresh/) generator
-> (run via [`_gen/gen-farm-fresh.ts`](../../marketplace-catalog/_gen/gen-farm-fresh.ts))
-> → [`blueprints/farm-fresh/blueprint.ts`](../../marketplace-catalog/blueprints/farm-fresh/) for the worked example. (The `marketplace-templates/blueprint/` skeleton shows the
-> authoring vocabulary with the import; that import is only for reading — the shipped
-> bundle ships the serialized output.)
+> serializes the compiled manifest to `blueprint.ts` as `export default { … }`. The
+> theme + component bundles use exactly this generator mechanism — see
+> [`_gen/gen-theme-bundles.ts`](../../marketplace-catalog/_gen/gen-theme-bundles.ts) and
+> [`_gen/gen-component-bundles.ts`](../../marketplace-catalog/_gen/gen-component-bundles.ts).
+> A **captured** blueprint like [`sparx`](../../marketplace-catalog/blueprints/sparx/) skips
+> this entirely: its `site.json` comes from `blueprint:capture` / the MCP `get_silica_site`
+> read, already serialized, so there is no `node()` authoring to generate.
 
 ### Minimal manifest skeleton (authoring view)
 
@@ -225,8 +236,8 @@ const manifest = {
 export default manifest;
 ```
 
-Start from the fuller skeleton at
-[`marketplace-templates/blueprint/blueprint.ts`](../../marketplace-templates/blueprint/blueprint.ts).
+Start from the complete worked example at
+[`marketplace-catalog/blueprints/sparx/blueprint.ts`](../../marketplace-catalog/blueprints/sparx/blueprint.ts).
 
 ---
 

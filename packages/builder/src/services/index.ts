@@ -20,3 +20,8 @@ export * as nodeIndexService from './node-index-service';
 export * as artifactService from './artifact-service';
 export * as opLogService from './op-log-service';
 export * as draftVersionService from './draft-version-service';
+
+// Types callers pass INTO a service. The namespace exports above carry functions, not
+// the types their parameters speak, so anything a transport must name — a stage, an
+// option union — is re-exported here.
+export type { SiteStage } from './site-service';

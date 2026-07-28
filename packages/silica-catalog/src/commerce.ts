@@ -60,7 +60,10 @@ function productCardNode(extraClass = ''): Node {
           }),
           'image'
         ),
-        el('div', 'flex flex-col gap-1.5 p-4', {
+        // `gap-2`, not the half-step `gap-1.5`: the declared vocabulary has no half
+        // steps, so `gap-1.5` compiles only while this file is @source-scanned and
+        // emits nothing once the class is living in a tenant's stored tree.
+        el('div', 'flex flex-col gap-2 p-4', {
           children: [
             bind(el('h3', 'font-semibold text-base-content', { text: 'Product name' }), 'title'),
             bind(el('p', 'text-lg font-bold text-primary', { text: '$0.00' }), 'price'),
@@ -204,32 +207,50 @@ function addToCartForm(): Node {
  *  pinning the product scopes every descendant to `item.*`. */
 export function buyBox(): Node {
   return repeat(
-    el('div', 'grid gap-8 @2xl:grid-cols-2 @container', {
+    // TWO elements, not one — and this is the trap the whole container-query
+    // vocabulary has to get right. `@container` marks an element as a query container
+    // for its DESCENDANTS; a `@2xl:` class on that SAME element resolves against the
+    // nearest ANCESTOR container instead. The previous single div
+    // (`grid gap-8 @2xl:grid-cols-2 @container`) therefore never measured itself: on
+    // the PDP it happened to work, because `productDetailPage`'s section is a
+    // container — but that section is full-bleed while the buy box is capped at
+    // `max-w-6xl` inside it, so the split was keyed to the WINDOW width wearing a
+    // container query's clothes. Drop the same block standalone into a page column and
+    // it splits on the page's width, not its own. Splitting the div makes the box
+    // measure the space it was actually given, which is the entire point.
+    el('div', '@container', {
       children: [
-        bind(
-          atom('Image', 'aspect-square w-full rounded-box object-cover', {
-            src: PLACEHOLDER_IMAGE,
-            alt: 'Product image',
-          }),
-          'image'
-        ),
-        el('div', 'flex flex-col gap-4', {
+        el('div', 'grid gap-8 @2xl:grid-cols-2', {
           children: [
             bind(
-              el('h1', 'text-3xl font-bold text-base-content', { text: 'Product name' }),
-              'title'
+              atom('Image', 'aspect-square w-full rounded-box object-cover', {
+                src: PLACEHOLDER_IMAGE,
+                alt: 'Product image',
+              }),
+              'image'
             ),
-            el('div', 'flex items-baseline gap-3', {
+            el('div', 'flex flex-col gap-4', {
               children: [
-                bind(el('span', 'text-2xl font-bold text-primary', { text: '$0.00' }), 'price'),
                 bind(
-                  el('span', 'text-lg text-base-content line-through', { text: '' }),
-                  'compareAtPrice'
+                  el('h1', 'text-3xl font-bold text-base-content', { text: 'Product name' }),
+                  'title'
                 ),
+                el('div', 'flex items-baseline gap-3', {
+                  children: [
+                    bind(el('span', 'text-2xl font-bold text-primary', { text: '$0.00' }), 'price'),
+                    bind(
+                      el('span', 'text-lg text-base-content line-through', { text: '' }),
+                      'compareAtPrice'
+                    ),
+                  ],
+                }),
+                bind(
+                  el('div', 'text-base-content', { text: 'Product description.' }),
+                  'description'
+                ),
+                addToCartForm(),
               ],
             }),
-            bind(el('div', 'text-base-content', { text: 'Product description.' }), 'description'),
-            addToCartForm(),
           ],
         }),
       ],
@@ -303,11 +324,11 @@ export function categoryDetailPage(): Node {
  *  carry record binds, which is why this one is plain text the tenant edits in the
  *  studio rather than a bind that can fail to nothing. */
 export function shopHeader(): Node {
-  return el('section', 'bg-base-100 px-6 pt-12 pb-4', {
+  return el('section', 'bg-base-100 @container px-6 pt-12 pb-4', {
     children: [
       el('div', 'mx-auto w-full max-w-6xl', {
         children: [
-          el('h1', 'text-4xl font-bold tracking-tight text-base-content sm:text-5xl', {
+          el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
             text: 'Shop',
           }),
           el('p', 'mt-4 max-w-2xl text-lg leading-relaxed text-base-content', {
@@ -320,7 +341,7 @@ export function shopHeader(): Node {
 }
 
 export function collectionHeader(): Node {
-  return el('section', 'bg-base-100 px-6 py-12 text-center', {
+  return el('section', 'bg-base-100 @container px-6 py-12 text-center', {
     children: [
       bind(el('h1', 'text-4xl font-bold text-base-content', { text: 'Collection' }), 'title'),
       bind(

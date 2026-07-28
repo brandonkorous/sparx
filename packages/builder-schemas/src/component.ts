@@ -9,6 +9,7 @@
 
 import { z } from 'zod';
 import { BuilderNodeSchema, type BuilderNode } from './node';
+import { SilicaTreeInput, type SilicaNode } from './site-sync';
 
 // ── Group + surfaces (mirror the dashboard registry's PaletteGroup / EditorSurface) ──
 
@@ -178,10 +179,18 @@ export function readComponentRef(props: Record<string, unknown>): ComponentRef |
 
 // ── DTOs ──────────────────────────────────────────────────────────────────────
 
-/** A single immutable version of a component. */
+/** A single immutable version of a component.
+ *
+ *  TWO tree fields, and a version carries at least one. `tree` is the RETIRED
+ *  `.bx-*` builder's node format, present only on rows authored before the silica
+ *  cutover — the surviving editor cannot open one. `silicaTree` is the placeable
+ *  master the silica studio reads and writes. See the
+ *  `20270123000000_builder_component_silica_tree` migration for why legacy trees are
+ *  kept rather than converted. */
 export interface ComponentVersionDto {
   version: number;
-  tree: BuilderNode;
+  tree: BuilderNode | null;
+  silicaTree: SilicaNode | null;
   propSpec: PropSpec[];
   createdAt: string;
 }
@@ -197,10 +206,34 @@ export interface ComponentDto {
   description: string | null;
   surfaces: ComponentSurface[];
   latestVersion: number;
-  tree: BuilderNode;
+  /** The legacy `.bx-*` tree, or null. Present only on pre-cutover rows; nothing
+   *  can open one. `placeable` below is what a caller should branch on. */
+  tree: BuilderNode | null;
+  /** The silica master — what the studio materializes as a `tenant:<key>` symbol. */
+  silicaTree: SilicaNode | null;
   propSpec: PropSpec[];
   createdAt: string;
   updatedAt: string;
+}
+
+/** One placeable saved piece, as the silica studio consumes it.
+ *
+ *  The studio materializes each of these into `Site.symbols` under the id
+ *  `tenant:<key>`, which hands the whole thing to silica's own component system —
+ *  the Components board lists it, inserting one creates a live INSTANCE, editing the
+ *  master propagates to every instance, and `enterSymbol` opens it. That is why this
+ *  carries `root` and not a rendered preview: silica needs the editable tree.
+ *
+ *  `version` travels so the studio can tell a stale materialized symbol from a
+ *  current one without diffing trees. */
+export interface SilicaPieceDto {
+  key: string;
+  name: string;
+  group: ComponentGroup;
+  icon: string;
+  description: string | null;
+  version: number;
+  root: SilicaNode;
 }
 
 /** Where a component is placed — the delete-impact / where-used read (docs/53
@@ -226,26 +259,46 @@ export interface ComponentSummaryDto {
   description: string | null;
   surfaces: ComponentSurface[];
   latestVersion: number;
+  /** Whether the surviving editor can actually open and place this piece — i.e.
+   *  whether its latest version carries a silica tree.
+   *
+   *  On the SUMMARY on purpose, even though it is derived from the version the
+   *  summary does not carry. Without it the list has no way to tell a placeable
+   *  piece from a legacy one, so it would offer "Edit design" on every row and let
+   *  a third of them open an editor that renders nothing — which is the defect
+   *  this whole slice exists to close, reproduced one screen earlier. */
+  placeable: boolean;
   createdAt: string;
   updatedAt: string;
 }
 
 // ── Service inputs (parsed at the service boundary, never by the DB) ──────────
 
-export const CreateComponentInput = z.object({
-  key: ComponentKey,
-  name: z.string().min(1).max(120),
-  group: ComponentGroup.default('content'),
-  icon: z.string().max(64).default('box'),
-  description: z.string().max(500).nullish(),
-  surfaces: z.array(ComponentSurface).min(1).default(['page']),
-  tree: BuilderNodeSchema,
-  propSpec: PropSpecListSchema.default([]),
-});
+/** Create a component. Exactly one tree field is expected in practice — every new
+ *  piece comes from the silica studio and sends `silicaTree` — but `tree` stays
+ *  accepted so the legacy fixtures and the marketplace ingest path keep working
+ *  until they are retired. At least one is required; neither would store a version
+ *  no editor could ever open. */
+export const CreateComponentInput = z
+  .object({
+    key: ComponentKey,
+    name: z.string().min(1).max(120),
+    group: ComponentGroup.default('content'),
+    icon: z.string().max(64).default('box'),
+    description: z.string().max(500).nullish(),
+    surfaces: z.array(ComponentSurface).min(1).default(['page']),
+    tree: BuilderNodeSchema.optional(),
+    silicaTree: SilicaTreeInput.optional(),
+    propSpec: PropSpecListSchema.default([]),
+  })
+  .refine((v) => v.tree !== undefined || v.silicaTree !== undefined, {
+    message: 'A piece needs a design — provide silicaTree.',
+    path: ['silicaTree'],
+  });
 export type CreateComponentInput = z.infer<typeof CreateComponentInput>;
 
-/** Patch a component. Providing `tree` or `propSpec` creates a NEW version
- *  (the service bumps `latestVersion`); the identity fields update in place. */
+/** Patch a component. Providing `tree`, `silicaTree` or `propSpec` creates a NEW
+ *  version (the service bumps `latestVersion`); the identity fields update in place. */
 export const UpdateComponentInput = z
   .object({
     name: z.string().min(1).max(120).optional(),
@@ -254,6 +307,7 @@ export const UpdateComponentInput = z
     description: z.string().max(500).nullish(),
     surfaces: z.array(ComponentSurface).min(1).optional(),
     tree: BuilderNodeSchema.optional(),
+    silicaTree: SilicaTreeInput.optional(),
     propSpec: PropSpecListSchema.optional(),
   })
   .refine((v) => Object.values(v).some((field) => field !== undefined), {

@@ -12,6 +12,10 @@
     "./brand-palette": {
       "types": "./src/brand-palette.ts",
       "default": "./src/brand-palette.ts"
+    },
+    "./color": {
+      "types": "./src/v2/color.ts",
+      "default": "./src/v2/color.ts"
     }
   },
   "files": [

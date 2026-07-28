@@ -37,9 +37,9 @@ import { PLACEHOLDER_IMAGE } from './placeholder';
  *  category chip or a kicker ("Article", "01 / 03") whose only job is to introduce the
  *  heading, and those are banned. A publication date is a fact about the thing. */
 function masthead(): Node {
-  return el('section', 'w-full bg-base-200 text-base-content', {
+  return el('section', 'w-full @container bg-base-200 text-base-content', {
     children: [
-      el('div', 'mx-auto w-full max-w-5xl px-6 pt-12 pb-16 sm:pt-16 sm:pb-20', {
+      el('div', 'mx-auto w-full max-w-5xl px-6 pt-12 pb-16 @2xl:pt-16 @2xl:pb-20', {
         children: [
           el(
             'a',
@@ -65,7 +65,7 @@ function masthead(): Node {
               bind(
                 el(
                   'h1',
-                  'max-w-4xl text-4xl font-bold leading-tight tracking-tight text-base-content sm:text-5xl',
+                  'max-w-4xl text-4xl font-bold leading-tight tracking-tight text-base-content @2xl:text-5xl',
                   { text: 'Post title' }
                 ),
                 'title'
@@ -91,7 +91,7 @@ function masthead(): Node {
  *  illustrates, so describing it would make a screen reader announce the same sentence
  *  twice; an empty alt marks it decorative, which is the correct treatment here. */
 function featuredImage(): Node {
-  return el('section', 'w-full bg-base-100', {
+  return el('section', 'w-full @container bg-base-100', {
     children: [
       el('div', 'mx-auto w-full max-w-5xl px-6 py-10', {
         children: [
@@ -117,9 +117,9 @@ function featuredImage(): Node {
  *  `max-w-3xl`, not the page's `max-w-5xl`: this band is nothing but body text, and a
  *  line much past ~75 characters is measurably harder to read. */
 function articleBody(): Node {
-  return el('section', 'w-full bg-base-100 text-base-content', {
+  return el('section', 'w-full @container bg-base-100 text-base-content', {
     children: [
-      el('div', 'mx-auto w-full max-w-3xl px-6 pb-20 sm:pb-24', {
+      el('div', 'mx-auto w-full max-w-3xl px-6 pb-20 @2xl:pb-24', {
         children: [hostCore(HOST_KEYS.cmsArticleBody, 'w-full')],
       }),
     ],
@@ -132,13 +132,13 @@ function articleBody(): Node {
  *  needs a topic taxonomy the CMS does not have, so a rail here would be
  *  newest-across-the-blog wearing a label that claims more than it knows. */
 function backToIndex(): Node {
-  return el('section', 'w-full bg-base-200 text-base-content', {
+  return el('section', 'w-full @container bg-base-200 text-base-content', {
     children: [
       el('div', 'mx-auto w-full max-w-5xl px-6 py-16', {
         children: [
           el('div', 'flex flex-col gap-6', {
             children: [
-              el('h2', 'text-2xl font-bold tracking-tight text-base-content sm:text-3xl', {
+              el('h2', 'text-2xl font-bold tracking-tight text-base-content @2xl:text-3xl', {
                 text: 'Keep reading',
               }),
               el('div', undefined, {
@@ -219,11 +219,11 @@ function postCard(): Node {
 export function blogIndexPage(): Node {
   return el('div', 'flex flex-col', {
     children: [
-      el('section', 'w-full bg-base-200 text-base-content', {
+      el('section', 'w-full @container bg-base-200 text-base-content', {
         children: [
-          el('div', 'mx-auto w-full max-w-5xl px-6 py-16 sm:py-20', {
+          el('div', 'mx-auto w-full max-w-5xl px-6 py-16 @2xl:py-20', {
             children: [
-              el('h1', 'text-4xl font-bold tracking-tight text-base-content sm:text-5xl', {
+              el('h1', 'text-4xl font-bold tracking-tight text-base-content @2xl:text-5xl', {
                 text: 'Journal',
               }),
               el('p', 'mt-5 max-w-2xl text-lg leading-relaxed text-base-content', {
@@ -233,12 +233,12 @@ export function blogIndexPage(): Node {
           }),
         ],
       }),
-      el('section', 'w-full bg-base-100', {
+      el('section', 'w-full @container bg-base-100', {
         children: [
           el('div', 'mx-auto w-full max-w-5xl px-6 py-16', {
             children: [
               repeat(
-                el('div', 'grid grid-cols-1 items-stretch gap-6 lg:grid-cols-2', {
+                el('div', 'grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2', {
                   children: [postCard()],
                 }),
                 'cms.blog_post'

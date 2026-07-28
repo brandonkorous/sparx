@@ -23,38 +23,106 @@
  * Both apps import this file so the canvas and the published site can never disagree
  * about what an author may write.
  *
- * Prefix sets cover BOTH axes silica lays out on: viewport breakpoints (what the
- * authoring kit emits) and container queries (what the native blocks use, since a
- * block must adapt to the column it is dropped into, not the window). */
+ * ── ONE RESPONSIVE VOCABULARY: CONTAINER QUERIES ────────────────────────────────
+ *
+ * `@2xl:grid-cols-3` is the sanctioned form. `md:grid-cols-3` is not, and the reason
+ * is the editor canvas: silica's device toggle sets `max-width` on a plain <div>
+ * (`DEVICE_WIDTH = {desktop:'100%', tablet:'768px', mobile:'390px'}`), deliberately
+ * NOT an iframe. A container query measures that div and reflows with it. A VIEWPORT
+ * variant measures the browser window, which never changed — so switching to Mobile
+ * shows a desktop layout at phone width and calls it the phone preview. The tenant
+ * cannot see what their visitors see, which is the entire point of the control.
+ *
+ * A container variant needs an ancestor declaring `@container`. Every seeded section,
+ * the nav and the footer carry one, so anything authored inside them just works.
+ *
+ * THE SET IS FIVE STEPS: `@sm` 384px · `@md` 448 · `@2xl` 672 · `@3xl` 768 · `@5xl`
+ * 1024. Three of them are exact viewport equivalents for translating an existing
+ * class — `sm`→`@2xl` (640≈672), `md`→`@3xl` (768), `lg`→`@5xl` (1024) — and the two
+ * small ones are for a block dropped into a column rather than across a page, which
+ * is what silica's own shipped blocks reach for. It stops at `@5xl` because a
+ * full-bleed section caps its content with `max-w-*` well before that, so there is
+ * nothing left to restate above desktop. Five, not eleven, because each prefix
+ * multiplies every family below (see the weight note).
+ *
+ * `grid-cols-*` / `col-span-*` keep the WIDER prefix list they already declared
+ * (`@lg` `@xl` `@4xl` too). Narrowing a family that was already published would
+ * silently flatten any tree authored against it — the exact failure this file exists
+ * to prevent. They are the two cheapest families, so the surplus costs almost nothing.
+ *
+ * VIEWPORT VARIANTS ARE STILL DECLARED BELOW, and only for compatibility: they are
+ * banned for NEW authoring (`vocabulary-check.ts` both refuses them at write time in
+ * the studio and reports them to an authoring agent), but trees authored before that
+ * ban shipped still contain them and render correctly on a live site — a viewport
+ * variant is wrong in the PREVIEW, not on the page. Dropping them here would silently
+ * flatten those sites.
+ *
+ * WEIGHT, measured (tailwindcss 4.3.0, this file alone, gzipped): 25.7 KB before the
+ * container set, 40.4 KB with it, and ~27.6 KB once the viewport half is deleted. So
+ * about 13 of the 15 KB is the compatibility half, and it is TRANSITIONAL — delete
+ * the viewport declarations once the fleet has published through the sweep and the
+ * cost of speaking one vocabulary is under 2 KB. Nothing else depends on them.
+ * (An eleven-step container set measured 49.0 KB, which is what five buys.) */
+
+/* The two prefix sets, written out once so the families below read as one line each:
+ *   container (sanctioned) → @sm: @md: @2xl: @3xl: @5xl:
+ *   viewport  (legacy)     → sm: md: lg: xl: 2xl:
+ * `@container` itself must be declared: an author marking their own section as a
+ * query container writes it into the tree, where no scanner ever sees it. */
+@source inline('@container');
 
 /* Grid definition + placement. The load-bearing pair: `grid-cols-*` without a
  * matching `col-span-*` is precisely the bug above — the track exists, the item
  * never spans it. */
-@source inline('{sm:,md:,lg:,xl:,2xl:,}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
-@source inline('{@sm:,@md:,@lg:,@xl:,@2xl:,@3xl:,@4xl:,}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
-@source inline('{sm:,md:,lg:,xl:,2xl:,}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}');
 @source inline(
-  '{@sm:,@md:,@lg:,@xl:,@2xl:,@3xl:,@4xl:,}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}'
+  '{@sm:,@md:,@lg:,@xl:,@2xl:,@3xl:,@4xl:,@5xl:,}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}'
 );
+@source inline(
+  '{@sm:,@md:,@lg:,@xl:,@2xl:,@3xl:,@4xl:,@5xl:,}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}'
+);
+@source inline('{sm:,md:,lg:,xl:,2xl:,}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
+@source inline('{sm:,md:,lg:,xl:,2xl:,}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}');
 
 /* Row placement — the same trap on the other axis, for editorial/bento layouts. */
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}grid-rows-{1,2,3,4,5,6}');
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}row-span-{1,2,3,4,5,6,full}');
 @source inline('{sm:,md:,lg:,xl:,}grid-rows-{1,2,3,4,5,6}');
 @source inline('{sm:,md:,lg:,xl:,}row-span-{1,2,3,4,5,6,full}');
 
 /* Explicit line placement, for a section that pins one block to a column range
  * rather than flowing. Absent these, the item lands in the next free cell and the
  * layout looks arbitrary rather than broken — hard to diagnose from the page. */
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}col-start-{1,2,3,4,5,6,7,8,9,10,11,12,13}');
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}col-end-{1,2,3,4,5,6,7,8,9,10,11,12,13}');
 @source inline('{sm:,md:,lg:,xl:,}col-start-{1,2,3,4,5,6,7,8,9,10,11,12,13}');
 @source inline('{sm:,md:,lg:,xl:,}col-end-{1,2,3,4,5,6,7,8,9,10,11,12,13}');
 /* Row placement is the other half of that pair, and it is what an alternating
  * two-column section needs: putting the second child in column 1 does not pull it up
  * out of row 2 on its own, so a mirrored layout without `row-start` silently renders
  * as two stacked rows instead of one flipped one. */
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}row-start-{1,2,3,4,5,6,7}');
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}row-end-{1,2,3,4,5,6,7}');
 @source inline('{sm:,md:,lg:,xl:,}row-start-{1,2,3,4,5,6,7}');
 @source inline('{sm:,md:,lg:,xl:,}row-end-{1,2,3,4,5,6,7}');
 
+/* Display. The show/hide pair is how one piece of chrome serves both a phone and a
+ * desktop — an inline link row `hidden @2xl:flex` beside a `@2xl:hidden` menu. It is
+ * declared HERE rather than left to the scan because the seeded chrome is the only
+ * place in the repo that used it, so sweeping the chrome onto container queries would
+ * otherwise take the viewport half out of the bundle and break the sites already
+ * carrying it. A missing display utility fails in the worst possible way: the nav
+ * renders BOTH halves at once, or neither. */
+@source inline(
+  '{@sm:,@md:,@2xl:,@3xl:,@5xl:,}{hidden,block,inline-block,flex,inline-flex,grid,inline-grid}'
+);
+@source inline('{sm:,md:,lg:,xl:,}{hidden,block,inline-block,flex,inline-flex,grid,inline-grid}');
+
 /* Flex sizing. `flex-1` vs `flex-none` on a row silently decides whether a sidebar
  * keeps its width or collapses to its content. */
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}flex-{1,auto,initial,none}');
+@source inline(
+  '{@sm:,@md:,@2xl:,@3xl:,@5xl:,}{flex-row,flex-col,flex-wrap,flex-nowrap,flex-row-reverse,flex-col-reverse}'
+);
 @source inline('{sm:,md:,lg:,xl:,}flex-{1,auto,initial,none}');
 @source inline(
   '{sm:,md:,lg:,xl:,}{flex-row,flex-col,flex-wrap,flex-nowrap,flex-row-reverse,flex-col-reverse}'
@@ -63,6 +131,7 @@
 /* Ordering — a two-column split almost always needs the media to move above the copy
  * on a phone, and that is expressed as an order swap. Missing, the phone layout is
  * subtly wrong (image first) rather than visibly broken. */
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}order-{1,2,3,4,5,6,first,last,none}');
 @source inline('{sm:,md:,lg:,xl:,}order-{1,2,3,4,5,6,first,last,none}');
 
 /* Column container width. An authored section that sets its own measure is common,
@@ -80,6 +149,12 @@
  *
  * Display type is the single cheapest source of visual drama for a site with no
  * photography budget, so the full scale and weight range is declared here. */
+@source inline(
+  '{@sm:,@md:,@2xl:,@3xl:,@5xl:,}text-{xs,sm,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl}'
+);
+@source inline(
+  '{@sm:,@md:,@2xl:,@3xl:,@5xl:,}font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}'
+);
 @source inline('{sm:,md:,lg:,xl:,}text-{xs,sm,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl}');
 @source inline(
   '{sm:,md:,lg:,xl:,}font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}'
@@ -88,6 +163,8 @@
 /* Letter-spacing and line-height — the difference between large type that reads as
  * designed and large type that reads as an accident. Tight tracking on a display
  * heading is not decoration; without it, oversized text looks unset. */
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}tracking-{tighter,tight,normal,wide,wider,widest}');
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}leading-{none,tight,snug,normal,relaxed,loose}');
 @source inline('{sm:,md:,lg:,xl:,}tracking-{tighter,tight,normal,wide,wider,widest}');
 @source inline('{sm:,md:,lg:,xl:,}leading-{none,tight,snug,normal,relaxed,loose}');
 
@@ -117,6 +194,13 @@
  * padding at all and the headline sat jammed under the header. Generous vertical
  * rhythm is most of what separates a designed page from a cramped one, and it has to
  * be reachable across the whole scale, not just the three values already in use. */
+@source inline(
+  '{@sm:,@md:,@2xl:,@3xl:,@5xl:,}{p,px,py,pt,pb,pl,pr}-{0,1,2,3,4,5,6,8,10,12,14,16,20,24,28,32,40,48}'
+);
+@source inline(
+  '{@sm:,@md:,@2xl:,@3xl:,@5xl:,}{gap,gap-x,gap-y}-{0,1,2,3,4,5,6,8,10,12,14,16,20,24}'
+);
+@source inline('{@sm:,@md:,@2xl:,@3xl:,@5xl:,}{mt,mb,mx,my}-{0,1,2,3,4,5,6,8,10,12,16,20,24,auto}');
 @source inline(
   '{sm:,md:,lg:,xl:,}{p,px,py,pt,pb,pl,pr}-{0,1,2,3,4,5,6,8,10,12,14,16,20,24,28,32,40,48}'
 );

@@ -55,11 +55,17 @@ function navDestinations(opts: SiteChromeOptions): [string, string][] {
   ];
 }
 
-/** A footer link column: a heading + a stack of links. */
+/** A footer link column: a heading + a stack of links.
+ *
+ *  `h2`, not `h3`. A footer column heading is a top-level section of the document,
+ *  and an `h3` here left a hole in the outline on every page whose body ends at an
+ *  `h1` — the reading order went h1 → h3, which a screen-reader user navigating by
+ *  heading hears as a missing section. Its SIZE is a utility class and always was
+ *  (`text-sm`); the level is structure, and the two were confused. */
 function footerColumn(title: string, links: [string, string][]): Node {
   return el('div', 'flex flex-col gap-3', {
     children: [
-      el('h3', 'text-sm font-semibold text-base-content', { text: title }),
+      el('h2', 'text-sm font-semibold text-base-content', { text: title }),
       ...links.map(([label, href]) =>
         el('a', 'text-sm text-base-content transition-colors hover:text-base-content', {
           attrs: { href },
@@ -99,7 +105,12 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
   const destinations = navDestinations(opts);
   return el(
     'nav',
-    'flex items-center justify-between gap-6 border-b border-base-300 bg-base-100 px-6 py-4',
+    // `@container` on the bar itself: the phone/desktop swap below is expressed in
+    // container queries, so the bar has to BE the container they measure. It is
+    // full-bleed, so its width is the viewport width — the swap happens at the same
+    // place a `sm:` would have put it, and now it also happens on the editor canvas,
+    // where the device toggle changes an element's width and never the window's.
+    '@container flex items-center justify-between gap-6 border-b border-base-300 bg-base-100 px-6 py-4',
     {
       attrs: { 'aria-label': 'Primary' },
       children: [
@@ -109,13 +120,13 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
         // improvement to the mark reaches every tenant. A stamped node would freeze at
         // publish (see `HOST_KEYS.siteBrand`). Not pinned: the tenant owns its placement.
         hostCore(HOST_KEYS.siteBrand),
-        el('div', 'flex items-center gap-3 sm:gap-6', {
+        el('div', 'flex items-center gap-3 @2xl:gap-6', {
           children: [
-            el('div', 'hidden items-center gap-6 sm:flex', {
+            el('div', 'hidden items-center gap-6 @2xl:flex', {
               children: destinations.map(([label, href]) => navLink(label, href)),
             }),
             // The SAME links for phones. Without this the header collapsed to a
-            // wordmark and one button below `sm`, so a visitor on a phone could not
+            // wordmark and one button on a narrow bar, so a visitor on a phone could not
             // reach any page — the links were hidden with nothing on the other side
             // of the breakpoint. It shipped in the starter chrome, so every tenant
             // site built on it had no mobile navigation at all.
@@ -132,7 +143,7 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
             // meant for a content disclosure does not transfer to a nav menu.
             //
             // `list-none` on the summary drops the default disclosure triangle.
-            el('details', 'relative sm:hidden', {
+            el('details', 'relative @2xl:hidden', {
               children: [
                 el(
                   'summary',
@@ -155,7 +166,7 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
                             navLink(label, href, 'rounded-btn px-3 py-2 hover:bg-base-200')
                           ),
                           // Sign-in reaches the phone menu too, so a shopper on a phone can
-                          // get to their account (the desktop link is hidden below `sm`).
+                          // get to their account (the desktop link is hidden on a narrow bar).
                           navLink(
                             'Sign in',
                             '/account/login',
@@ -197,13 +208,13 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
  *  copyright line. Neutral, industry-agnostic labels. */
 export function siteFooter(opts: SiteChromeOptions = {}): Node {
   const { commerceEnabled = true } = opts;
-  return el('footer', 'border-t border-base-300 bg-base-200 px-6 py-12', {
+  return el('footer', '@container border-t border-base-300 bg-base-200 px-6 py-12', {
     children: [
       el(
         'div',
         commerceEnabled
-          ? 'mx-auto grid max-w-6xl gap-10 sm:grid-cols-2 lg:grid-cols-4'
-          : 'mx-auto grid max-w-6xl gap-10 sm:grid-cols-3',
+          ? 'mx-auto grid max-w-6xl gap-10 @2xl:grid-cols-2 @5xl:grid-cols-4'
+          : 'mx-auto grid max-w-6xl gap-10 @2xl:grid-cols-3',
         {
           children: [
             el('div', 'flex flex-col gap-3', {

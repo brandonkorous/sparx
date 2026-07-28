@@ -35,10 +35,16 @@ interface RootPageProps {
 // from its own SEO fields, mirroring the [...slug] route's silica branch. Every
 // other home path (legacy Builder, Site Builder, empty-store) keeps the generic
 // layout-level fallback, unchanged.
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({ searchParams }: RootPageProps): Promise<Metadata> {
   const site = await resolveSite();
   if (!site) return {};
-  const silicaHome = await getPublishedSilicaHome(site.slug);
+  // Same preview token as the body below: an author previewing an unpublished home
+  // should see its unpublished title/description too, not the live page's.
+  const sitePreview = (await searchParams)?.sparxSitePreview;
+  const silicaHome = await getPublishedSilicaHome(
+    site.slug,
+    sitePreview ? { previewToken: sitePreview } : {}
+  );
   if (!silicaHome) return {};
 
   const clean = (v: string | null): string | undefined => {
@@ -75,7 +81,16 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
   // over every path below — the same additive rule, one layer up. Rendered end to
   // end through `renderSilicaBody` (SilicaBody), bindings resolved against the sparx
   // host built over its data needs. Null until a silica home is published.
-  const silicaHome = await getPublishedSilicaHome(site.slug);
+  //
+  // A `?sparxSitePreview=` token serves the DRAFT home. This read used to ignore the
+  // token entirely — `sp.sparxSitePreview` was only consulted further down, on the
+  // legacy paths — and because the silica branch ALWAYS resolves (the code starter is
+  // the universal fallback), Preview could never show unpublished work on `/`, the page
+  // authors edit most. A tenant who had never published saw the starter instead.
+  const silicaHome = await getPublishedSilicaHome(
+    site.slug,
+    sp.sparxSitePreview ? { previewToken: sp.sparxSitePreview } : {}
+  );
   if (silicaHome) {
     const host = await buildSilicaHost(site.slug, silicaHome.root, {
       currency: site.commerce.defaultCurrency,

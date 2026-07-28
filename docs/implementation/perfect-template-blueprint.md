@@ -1,21 +1,28 @@
 # Perfect Template → sparx Blueprint
 
-Version: 1.3.0
+Version: 1.5.0
 Author: Brandon Korous
-Last Updated: 2026-07-25
+Last Updated: 2026-07-28
 
 > **Living build doc.** The single source of truth for the "perfect template" effort so
 > it survives context compaction. Update the **Status** table + **Log** as work lands.
 
 > ## ▶ RESUME HERE
 >
-> **STATUS (2026-07-25, session 6b): storefront FULLY on silica; CART-IMG + hero animation
-> live; automated walkthrough clean; the missing-`to` transactional-email bug is FIXED + VERIFIED
-> live (booking email now delivers). A second email bug — non-primary sites' email used the TENANT
-> logo, not the site's — is FIXED (needs an api-rest redeploy). Still perfecting the live site;
-> NOT building the blueprint bundle, no sign-off yet.**
-> Do NOT author `marketplace-catalog/blueprints/sparx/` until Brandon walks the whole site and
-> signs off. That gate is intentional.
+> **STATUS (2026-07-28, session 7): BRANDON SIGNED OFF → THE BUNDLE IS BUILT + INGESTS.**
+> `marketplace-catalog/blueprints/sparx/` is authored + captured from the live Template, passes
+> `safeParseBlueprint`, AND ingests clean locally (`marketplace:ingest` → `wrote blueprints/sparx@1.0.0`):
+> 7 pages · frame · Ember theme · 6 products + `goods` category + `bestsellers` collection · 9 image
+> assets · 3 journal posts · 1 welcome email · `icon.png` (sparx spark 512) · `preview.png` (1600×1000
+> live-home shot). `preview.png` was captured with `npx playwright screenshot --channel=chrome` (drives
+> the system Chrome — sidesteps the un-exposed Playwright MCP + the un-cached playwright browser). See
+> the session-7 Log entry for the full mechanics. **REMAINING (optional, live-verify):** install on a
+> tenant (`POST /v1/blueprints/sparx/install` → `.../go-live`) + eyeball; commit the bundle; prod ingest
+> runs via `marketplace-ingest.yml`.
+>
+> Earlier (session 6b): storefront fully on silica; CART-IMG + hero animation live; the missing-`to`
+> transactional-email bug FIXED + VERIFIED; the non-primary-site email-logo bug FIXED (still needs an
+> api-rest redeploy — see the email-logo follow-up below).
 >
 > **Confirmed live this session (verified in prod HTML/bundle):**
 >
@@ -676,6 +683,53 @@ processed` (no schema-drop), confirming the `to` fix end-to-end. Brandon flagged
   `logoLightMediaId ?? logoMediaId ?? tenant` (+ added `logoLightMediaId` to its local `BrandOverride`
   type). Typecheck + lint clean. Needs an api-rest redeploy (logo is baked into the HTML at render
   time in api-rest). See [[bug_email_per_site_logo_field]].
+- **2026-07-28 (session 7 — BUNDLE SCAFFOLD STARTED, Brandon signed off "build the gold blueprint")** —
+  The sign-off gate is lifted. Began authoring `marketplace-catalog/blueprints/sparx/` (was empty).
+  **Built + VALIDATED through `safeParseBlueprint` (via the ingest's own validator):**
+  `sparx.json` (category:blueprint, payload:blueprint.ts, requires builder/commerce/cms/crm/email,
+  media entries, accent Ember), `blueprint.ts` (the manifest default-export), `README.md` (the
+  capture + fill runbook), a placeholder `site.json` (1 page, schema-valid, marked REPLACE), and a
+  real `welcome-email.json` (generated from the `@sparx/builder-schemas` email kit —
+  `emailDoc`/`section`/`heading`/`text`/`button` — since a blueprint is imported as pure data).
+  **Authored real:** `brand` (sparx Ember `#e04631`/accent `#c1652e`/secondary `#4c9a8e`, Space
+  Grotesk/Inter), `theme` (ThemeDecl: base `apex` + Ember brand look + `{v:2,containerWidth:'1152px'}`,
+  apply:true), the welcome email (universal, `{{customer.firstName}}`/`{{site.name}}`/`{{site.url}}`).
+  **KEY MECHANIC LEARNED:** the ingest does a bare `import(pathToFileURL(blueprint.ts))` with NO
+  workspace resolution + there's no root `@sparx/*` symlink → **blueprint.ts must import ONLY sibling
+  JSON, never `@sparx/*`** (the stale `marketplace-templates/blueprint/blueprint.ts` that imported
+  `seedNode` was itself broken). So authored trees (site, email) are generated to JSON and imported
+  with `with { type: 'json' }`. **MCP reconnected → BUNDLE FILLED FROM LIVE + VALIDATED.** Confirmed
+  the connector is scoped to tenant WizeWorks and the Template is the NON-primary site `c99e0e23…`
+  (passed `propertyId` on every read — the primary is `WizeWorks`, so omitting it would capture the
+  wrong site). **`site.json`** via `get_silica_site` (55KB → saved to a tool-result FILE, not
+  context; a node script transformed it to `SiteDecl` = zero transcription, byte-exact trees): 7
+  pages + frame + Ember theme. The frame uses the `site.brand` host core (NO baked logo media ids →
+  re-skins to the installer's own logo). **`commerce`** from `get_products`/`get_product` (6 goods
+  verbatim) + ADDED a `goods` category + featured `bestsellers` collection (live had neither; makes
+  the /shop facet + Home `commerce.featured` resolve); clean `SPX-*` SKUs, `inventoryPolicy:'continue'`
+  (BUG-009). **`content.json`** from `list_content_entries` (3 posts, tiptap verbatim, featuredImage
+  → `{$asset}`; the media proxy 302'd to the original Unsplash URLs, used directly). **`icon.png`** =
+  the sparx spark (`images/favicons/icon-512.png`). **`preview.png`** = a 1600×1000 shot of the live
+  home, captured via `npx -y playwright@latest screenshot --channel=chrome --viewport-size=1600,1000`
+  (the Playwright MCP was NOT exposed to this session or subagents, and the cached playwright browsers
+  didn't match `playwright@latest`; `--channel=chrome` drives the SYSTEM Chrome and writes the PNG
+  directly — no MCP, no browser download). **Whole bundle passes `safeParseBlueprint` AND
+  `marketplace:ingest` wrote `blueprints/sparx@1.0.0`** (payload compiled, media processed, catalog row
+  upserted): 7 pages · 1 category · 1 collection · 6 products · 9 assets · 3 posts · 1 email.
+- **2026-07-28 (session 7 cont. — OLD-BLUEPRINT CLEANUP, Brandon-confirmed).** The catalog had 5
+  orphan first-party blueprint rows whose source bundles were gone from the repo (`farm-fresh`,
+  `farm-fresh-bowls`, `mosaic`, `forge`, `tempo`). **Local docker:** ran
+  `marketplace:purge-blueprints` (drops ALL first-party rows + artifacts) then `marketplace:ingest`
+  → catalog = **just `sparx`** (verified: 1 row). **Repo:** deleted the legacy-format skeleton
+  `marketplace-templates/blueprint/` (old `seedNode`/`BuilderNode` shape); fixed
+  `docs/guides/building-a-template.md` (it was built around a non-existent `farm-fresh` example +
+  `_gen/farm-fresh/` generator + the deleted skeleton) — repointed the worked example to
+  `blueprints/sparx/` and documented the TWO real authoring paths (capture vs the `node()`
+  generator, pointing at the real `gen-theme-bundles.ts`/`gen-component-bundles.ts`); fixed the
+  broken `blueprint/` row in `marketplace-templates/README.md`. Zero dead `farm-fresh`/
+  `gen-farm-fresh`/`marketplace-templates/blueprint` refs remain. **⬜ PROD (Brandon triggers):**
+  those 5 orphans are likely in the prod catalog too — run the gated `marketplace-purge-blueprints.yml`
+  workflow (typed confirmation), then the ingest workflow re-runs on merge → prod = just `sparx`.
 - **NEXT SESSION STARTS HERE:** (1) After the next api-rest deploy, **re-book on the Template →
   confirm the confirmation email now shows the TEMPLATE logo** (the `to` fix is already verified).
   (2) Optional: build the `patch_silica_node` MCP tool (granular node patch vs full-page replace).

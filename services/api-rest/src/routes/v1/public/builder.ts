@@ -14,14 +14,16 @@
 // No auth (`/v1/public/` is an auth-exempt prefix). Tenant resolved by slug (the
 // tenants table is the only non-RLS row, safe to look up), then an RLS-scoped
 // read via the service. Returns the PUBLISHED tree by default; with a valid
-// `Authorization: Preview <site-preview jwt>` (minted by the dashboard for its own
-// tenant) the page + Surface styles serve the DRAFT instead — the editor's
-// "Preview" tab (docs/45 §2.6). An invalid/expired token throws (never silently
-// downgraded to published).
+// `Authorization: Preview <site-preview jwt>` (minted by the workbench for its own
+// tenant) EVERY read here serves the DRAFT instead — legacy page/home/styles AND
+// the four silica reads (frame, home, page, collection), so the editor's Preview
+// shows unpublished chrome and unpublished bodies together. An invalid/expired
+// token throws (never silently downgraded to published). See `previewStage`.
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { pageService, layoutService, siteService, surfaceCssService } from '@sparx/builder';
+import type { SiteStage } from '@sparx/builder';
 import { ok } from '@sparx/api-core/envelope';
 import { notFound } from '@sparx/api-core/errors';
 import { isModuleEnabled } from '@sparx/auth';
@@ -55,6 +57,29 @@ const TenantQuery = z.object({
 // Cached in lib/tenant-slug.ts (docs/127 §5) — this ran uncached on every storefront
 // read, ~6 per page render, while resolvePublicPropertyId beside it was already cached.
 const resolveTenantBySlug = requireTenantIdBySlug;
+
+/**
+ * Which stage a silica read serves: `draft` under a valid site-preview token, else
+ * `published`.
+ *
+ * Every silica handler must call this. They did not, and the consequence was not
+ * subtle: the token was minted, sent, and ignored, so Preview showed the last
+ * PUBLISHED site on every route — and because the storefront falls back to the code
+ * starter when a property has published nothing, a tenant who had never published saw
+ * the starter rather than their own work. The four legacy handlers above did honour
+ * the token, which is why this read as working.
+ *
+ * `tryVerifySitePreview` still throws on an invalid/expired token rather than
+ * downgrading to published: a preview link that silently shows the live site is worse
+ * than one that says it expired.
+ */
+function previewStage(
+  app: Parameters<typeof tryVerifySitePreview>[0],
+  request: Parameters<typeof tryVerifySitePreview>[1],
+  tenantId: string
+): SiteStage {
+  return tryVerifySitePreview(app, request, tenantId) ? 'draft' : 'published';
+}
 
 const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/public/builder/page', async (request) => {
@@ -120,8 +145,9 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const stage = previewStage(app, request, tenantId);
     const [frame, commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
-      siteService.getPublishedFrame({ tenantId, propertyId }),
+      siteService.getPublishedFrame({ tenantId, propertyId }, stage),
       // Drives the storefront's code-authored starter fallback (silica.ts) — a
       // tenant with no Commerce module never gets Shop/Cart/Orders chrome. Not a
       // gate on this route itself: the frame is always readable publicly.
@@ -141,7 +167,8 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     const q = TenantQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
-    const page = await siteService.getPublishedHome({ tenantId, propertyId });
+    const stage = previewStage(app, request, tenantId);
+    const page = await siteService.getPublishedHome({ tenantId, propertyId }, stage);
     if (!page) throw notFound('Builder home', q.tenant);
     return ok(page);
   });
@@ -150,7 +177,8 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     const q = PageQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
-    const page = await siteService.getPublishedPageBySlug({ tenantId, propertyId }, q.slug);
+    const stage = previewStage(app, request, tenantId);
+    const page = await siteService.getPublishedPageBySlug({ tenantId, propertyId }, q.slug, stage);
     if (!page) throw notFound('Builder page', q.slug);
     return ok(page);
   });
@@ -159,10 +187,12 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     const q = CollectionQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
+    const stage = previewStage(app, request, tenantId);
     const page = await siteService.getPublishedByRecordType(
       { tenantId, propertyId },
       q.recordType,
-      q.recordId
+      q.recordId,
+      stage
     );
     if (!page) throw notFound('Builder collection template', q.recordType);
     return ok(page);

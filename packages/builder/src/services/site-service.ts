@@ -146,9 +146,39 @@ export function load(ctx: PropertyContext): Promise<StoredSilicaSite | null> {
 // Mirror the sparx pageService/layoutService public reads, but off the `silica_*`
 // published columns. Runs parallel to the sparx reads until the storefront flips.
 
-/** A page row is published-in-silica once its silica PUBLISHED tree is set. */
-const isSilicaPublished = (r: Pick<BuilderPage, 'silicaPublishedTree'>): boolean =>
-  r.silicaPublishedTree != null;
+/**
+ * WHICH tree a storefront read serves.
+ *
+ * `published` is the visitor's site. `draft` is the same read against the columns the
+ * EDITOR writes — the editor's Preview, and nothing else. Preview is not a nicety: an
+ * author who cannot see unpublished work before it goes live is publishing blind, and
+ * before this existed the Preview button showed the last published version (or, for a
+ * tenant who had never published, the code starter — i.e. never their own work).
+ *
+ * Modelled as a stage parameter rather than a parallel set of `getDraft*` functions
+ * because the RESOLUTION rules — slug normalization, the home-is-slugless cases, the
+ * override → default → fallback precedence for record templates — must be identical in
+ * both. Two copies of that precedence chain is exactly how a preview starts lying about
+ * which template a product will actually render on.
+ */
+export type SiteStage = 'published' | 'draft';
+
+/** A page row carries a tree for `stage` once that stage's column is set. Published
+ *  gates the storefront; draft gates preview (a page saved but never published still
+ *  previews, which is the whole point).
+ *
+ *  Exported for tests: this one predicate decides whether a visitor sees a page at all,
+ *  so "a published read never consults the draft column" is an invariant worth pinning
+ *  rather than trusting to a two-branch ternary. Getting it backwards would serve
+ *  unpublished work to the public. */
+export function hasStagedTree(r: StagedPageRow, stage: SiteStage): boolean {
+  return stagedTree(r, stage) != null;
+}
+
+/** The tree column for `stage` — the ONLY place the stage→column mapping is written. */
+export function stagedTree(r: StagedPageRow, stage: SiteStage): unknown {
+  return stage === 'draft' ? r.silicaDraftTree : r.silicaPublishedTree;
+}
 
 /** Strip a leading slash so a stored silica slug (`/`, `/shop`) and the storefront's
  *  path segment (`shop`, or `''` for home) compare on equal footing. */
@@ -156,16 +186,21 @@ function normalizeSlug(slug: string | null | undefined): string {
   return (slug ?? '').replace(/^\/+/, '');
 }
 
-/** The property's PUBLISHED site-global symbols (saved components). Read alongside
- *  every page so a body's symbol instances flatten at render. */
-function publishedSymbols(site: BuilderSite | null): Record<string, SilicaSymbolDef> {
-  return symbolsOf(site?.silicaPublishedSymbols);
+/** The property's site-global symbols for `stage` (saved components). Read alongside
+ *  every page so a body's symbol instances flatten at render. Preview reads the DRAFT
+ *  map so a symbol edited but not yet published previews inside every page using it. */
+function stagedSymbols(
+  site: BuilderSite | null,
+  stage: SiteStage
+): Record<string, SilicaSymbolDef> {
+  return symbolsOf(stage === 'draft' ? site?.silicaDraftSymbols : site?.silicaPublishedSymbols);
 }
 
-/** The property's PUBLISHED authored theme, or null when the author never saved one
+/** The property's authored theme for `stage`, or null when the author never saved one
  *  (the storefront then renders the tenant's brand-derived theme). */
-function publishedTheme(site: BuilderSite | null): SilicaTheme | null {
-  return (site?.silicaPublishedTheme as SilicaTheme | null | undefined) ?? null;
+function stagedTheme(site: BuilderSite | null, stage: SiteStage): SilicaTheme | null {
+  const value = stage === 'draft' ? site?.silicaDraftTheme : site?.silicaPublishedTheme;
+  return (value as SilicaTheme | null | undefined) ?? null;
 }
 
 /**
@@ -180,14 +215,13 @@ function publishedTheme(site: BuilderSite | null): SilicaTheme | null {
  * Naming the columns is the whole fix. `silicaPublishedTree` is the only tree here;
  * the other three never leave the database on a storefront read.
  */
-const PUBLISHED_PAGE_SELECT = {
+const PAGE_META_SELECT = {
   id: true,
   name: true,
   slug: true,
   kind: true,
   recordType: true,
   isDefault: true,
-  silicaPublishedTree: true,
   seoTitle: true,
   seoDescription: true,
   canonical: true,
@@ -196,13 +230,25 @@ const PUBLISHED_PAGE_SELECT = {
   publishedAt: true,
 } as const;
 
-/** A page row narrowed to {@link PUBLISHED_PAGE_SELECT}. The published-page helpers
- *  take this rather than the full `BuilderPage` so a future column addition cannot
- *  silently re-widen the read back to every tree. */
-type PublishedPageRow = Pick<BuilderPage, keyof typeof PUBLISHED_PAGE_SELECT>;
+const PUBLISHED_PAGE_SELECT = { ...PAGE_META_SELECT, silicaPublishedTree: true } as const;
+const DRAFT_PAGE_SELECT = { ...PAGE_META_SELECT, silicaDraftTree: true } as const;
 
-/** SEO + lifecycle projection shared by the published page reads. */
-function publishedPageMeta(r: PublishedPageRow) {
+/** ONE tree column per read, chosen by stage — never both. The point of the note above
+ *  is that a storefront read must not drag trees it will discard, and that holds just as
+ *  hard for a preview read: serving the draft is not a licence to select the published
+ *  column too. */
+function pageSelectFor(stage: SiteStage) {
+  return stage === 'draft' ? DRAFT_PAGE_SELECT : PUBLISHED_PAGE_SELECT;
+}
+
+/** A page row narrowed to {@link PAGE_META_SELECT} plus whichever ONE tree column the
+ *  stage asked for. The page helpers take this rather than the full `BuilderPage` so a
+ *  future column addition cannot silently re-widen the read back to every tree. */
+export type StagedPageRow = Pick<BuilderPage, keyof typeof PAGE_META_SELECT> &
+  Partial<Pick<BuilderPage, 'silicaPublishedTree' | 'silicaDraftTree'>>;
+
+/** SEO + lifecycle projection shared by the page reads. */
+function publishedPageMeta(r: StagedPageRow) {
   return {
     seoTitle: r.seoTitle,
     seoDescription: r.seoDescription,
@@ -214,8 +260,9 @@ function publishedPageMeta(r: PublishedPageRow) {
 }
 
 function toPublishedPage(
-  r: PublishedPageRow,
-  symbols: Record<string, SilicaSymbolDef>
+  r: StagedPageRow,
+  symbols: Record<string, SilicaSymbolDef>,
+  stage: SiteStage
 ): PublishedSilicaPageDto {
   return {
     id: r.id,
@@ -223,7 +270,7 @@ function toPublishedPage(
     slug: r.slug ?? '',
     kind: r.kind,
     recordType: r.recordType,
-    root: r.silicaPublishedTree as unknown as SilicaNode,
+    root: stagedTree(r, stage) as SilicaNode,
     symbols,
     ...publishedPageMeta(r),
   };
@@ -234,17 +281,19 @@ function toPublishedPage(
  *  dropping the routed page at its Outlet. `frame` is null when the active layout
  *  has published no silica chrome (the storefront keeps legacy chrome); `theme` is
  *  null when no authored theme is published (brand-derived theme wins). */
-export function getPublishedFrame(ctx: PropertyContext): Promise<PublishedSilicaFrameDto> {
+export function getPublishedFrame(
+  ctx: PropertyContext,
+  stage: SiteStage = 'published'
+): Promise<PublishedSilicaFrameDto> {
   return withTenant(ctx, async (tx) => {
     const [layout, site] = await Promise.all([
       tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
+    const root = stage === 'draft' ? layout?.silicaDraftTree : layout?.silicaPublishedTree;
     const frame: SilicaFrame | null =
-      layout?.silicaPublishedTree != null
-        ? { root: layout.silicaPublishedTree as unknown as SilicaNode, editable: true }
-        : null;
-    return { frame, symbols: publishedSymbols(site), theme: publishedTheme(site) };
+      root != null ? { root: root as unknown as SilicaNode, editable: true } : null;
+    return { frame, symbols: stagedSymbols(site, stage), theme: stagedTheme(site, stage) };
   });
 }
 
@@ -253,7 +302,8 @@ export function getPublishedFrame(ctx: PropertyContext): Promise<PublishedSilica
  *  no silica-published page owns that slug — the storefront falls through. */
 export function getPublishedPageBySlug(
   ctx: PropertyContext,
-  slug: string
+  slug: string,
+  stage: SiteStage = 'published'
 ): Promise<PublishedSilicaPageDto | null> {
   const target = normalizeSlug(slug);
   // Home has its own reader; an empty target here can never resolve.
@@ -267,35 +317,38 @@ export function getPublishedPageBySlug(
         // backfill migration, and an `IN` on the `(tenant, property, slug)` unique index
         // is exact and index-backed regardless.
         where: { propertyId: ctx.propertyId, slug: { in: [target, `/${target}`] } },
-        select: PUBLISHED_PAGE_SELECT,
+        select: pageSelectFor(stage),
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
-    // The published-tree check stays in JS: a Json column's NULL test needs Prisma's
-    // runtime sentinel and this module imports Prisma as a type only.
-    const row = pages.find(isSilicaPublished);
+    // The tree check stays in JS: a Json column's NULL test needs Prisma's runtime
+    // sentinel and this module imports Prisma as a type only.
+    const row = pages.find((p) => hasStagedTree(p, stage));
     if (!row) return null;
-    return toPublishedPage(row, publishedSymbols(site));
+    return toPublishedPage(row, stagedSymbols(site, stage), stage);
   });
 }
 
 /** The published HOME body — the silica page whose slug is `/` (or empty). Lowest
  *  position wins. Null when the property has published no silica home. */
-export function getPublishedHome(ctx: PropertyContext): Promise<PublishedSilicaPageDto | null> {
+export function getPublishedHome(
+  ctx: PropertyContext,
+  stage: SiteStage = 'published'
+): Promise<PublishedSilicaPageDto | null> {
   return withTenant(ctx, async (tx) => {
     const [pages, site] = await Promise.all([
       tx.builderPage.findMany({
         // Home is the slugless page: stored as NULL (a sparx-seeded home), '' or '/'.
         where: { propertyId: ctx.propertyId, OR: [{ slug: null }, { slug: { in: ['', '/'] } }] },
-        select: PUBLISHED_PAGE_SELECT,
+        select: pageSelectFor(stage),
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
-    const row = pages.find(isSilicaPublished);
+    const row = pages.find((p) => hasStagedTree(p, stage));
     if (!row) return null;
-    return toPublishedPage(row, publishedSymbols(site));
+    return toPublishedPage(row, stagedSymbols(site, stage), stage);
   });
 }
 
@@ -315,13 +368,14 @@ export function getPublishedHome(ctx: PropertyContext): Promise<PublishedSilicaP
 export function getPublishedByRecordType(
   ctx: PropertyContext,
   recordType: string,
-  recordId?: string
+  recordId?: string,
+  stage: SiteStage = 'published'
 ): Promise<PublishedSilicaPageDto | null> {
   return withTenant(ctx, async (tx) => {
     const [rows, site] = await Promise.all([
       tx.builderPage.findMany({
         where: { recordType, kind: 'collection', propertyId: ctx.propertyId },
-        select: PUBLISHED_PAGE_SELECT,
+        select: pageSelectFor(stage),
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
@@ -340,12 +394,12 @@ export function getPublishedByRecordType(
 
     const override = overrideId ? rows.find((r) => r.id === overrideId) : undefined;
     const chosen =
-      (override && isSilicaPublished(override) ? override : undefined) ??
-      rows.find((r) => r.isDefault && isSilicaPublished(r)) ??
-      rows.find(isSilicaPublished);
+      (override && hasStagedTree(override, stage) ? override : undefined) ??
+      rows.find((r) => r.isDefault && hasStagedTree(r, stage)) ??
+      rows.find((r) => hasStagedTree(r, stage));
 
     if (!chosen) return null;
-    return toPublishedPage(chosen, publishedSymbols(site));
+    return toPublishedPage(chosen, stagedSymbols(site, stage), stage);
   });
 }
 
@@ -1304,14 +1358,14 @@ export function getPublishedSite(ctx: PropertyContext): Promise<StoredSilicaSite
       where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
-    const pages = allPages.filter(isSilicaPublished);
+    const pages = allPages.filter((p) => hasStagedTree(p, 'published'));
     if (pages.length === 0) return null;
     const [layout, site] = await Promise.all([
       tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
-    const symbols = publishedSymbols(site);
-    const theme = publishedTheme(site);
+    const symbols = stagedSymbols(site, 'published');
+    const theme = stagedTheme(site, 'published');
     return {
       ...(layout?.silicaPublishedTree != null
         ? { frame: { root: layout.silicaPublishedTree as unknown as SilicaNode, editable: true } }
@@ -1380,7 +1434,7 @@ export function getCapturableSite(
       where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
-    const pages = allPages.filter(published ? isSilicaPublished : isSilica);
+    const pages = allPages.filter(published ? (p) => hasStagedTree(p, 'published') : isSilica);
     if (pages.length === 0) return null;
     const [layout, site] = await Promise.all([
       tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),

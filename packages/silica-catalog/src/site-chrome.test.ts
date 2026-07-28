@@ -146,8 +146,8 @@ describe('siteFooter — legal links are live, never hardcoded', () => {
 // These lock the two ways the starter chrome shipped BROKEN, both of which were
 // invisible to every automated check we had because the markup was perfectly valid:
 //
-//   1. The link row was `hidden … sm:flex` with nothing on the other side of the
-//      breakpoint, so below `sm` the header was a wordmark and one button. Every
+//   1. The link row was `hidden … @2xl:flex` with nothing on the other side of the
+//      breakpoint, so on a narrow bar the header was a wordmark and one button. Every
 //      tenant site built on the starter had NO navigation on a phone.
 //   2. The call to action was `atom('Button')`, which lowers to a `<button>` with no
 //      handler — the most prominent control on the site did nothing when clicked.
@@ -197,7 +197,7 @@ describe('siteNavbar — reachable on a phone', () => {
     expect(menu, 'no phone menu in the navbar').not.toBeNull();
 
     // Shown only where the inline row is hidden — the two must not both appear.
-    expect(String(menu!.class)).toContain('sm:hidden');
+    expect(String(menu!.class)).toContain('@2xl:hidden');
 
     // NOT the `Collapse` component: it is an accordion panel whose `.details-content`
     // sets an explicit display, overriding the browser's hiding of a closed
@@ -223,7 +223,10 @@ describe('siteNavbar — reachable on a phone', () => {
     const opts = { commerceEnabled: true, schedulingEnabled: true };
     const nav = siteNavbar(opts);
     const menu = find(nav, (n) => n.tag === 'details');
-    const inlineRow = find(nav, (n) => typeof n.class === 'string' && n.class.includes('sm:flex'));
+    const inlineRow = find(
+      nav,
+      (n) => typeof n.class === 'string' && n.class.includes('@2xl:flex')
+    );
 
     const unique = (xs: string[]) => [...new Set(xs)].sort();
     // The phone menu carries the same DESTINATIONS as the desktop row, plus the account

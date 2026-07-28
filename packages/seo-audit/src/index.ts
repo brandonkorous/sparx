@@ -3,7 +3,11 @@
 // `AuditableEntity` and call `auditEntity` to get a `Scorecard`.
 
 export { auditEntity } from './audit';
-export { extractBuilderTreeSignals, extractCmsDocSignals } from './extract';
+export {
+  extractBuilderTreeSignals,
+  extractCmsDocSignals,
+  extractSilicaTreeSignals,
+} from './extract';
 export type {
   AuditableEntity,
   CategoryKey,

@@ -11,7 +11,9 @@ import {
   auditEntity,
   extractBuilderTreeSignals,
   extractCmsDocSignals,
+  extractSilicaTreeSignals,
   type AuditableEntity,
+  type ContentSignals,
   type EntityType,
   type Scorecard,
 } from '@sparx/seo-audit';
@@ -26,6 +28,23 @@ const words = (s: string): number => {
   const t = s.trim();
   return t ? t.split(/\s+/).length : 0;
 };
+
+/**
+ * Content signals from a page's SILICA tree, or null when the page has none (a legacy
+ * page that predates the engine adoption — those still grade off the sparx columns).
+ *
+ * Published wins over draft for the same reason the legacy path prefers it: the score
+ * describes what visitors can actually find. Before a first publish the draft is graded,
+ * so the number is live while the page is being written rather than appearing from
+ * nowhere at publish time.
+ */
+function silicaSignalsFor(page: {
+  silicaPublishedTree: unknown;
+  silicaDraftTree: unknown;
+}): ContentSignals | null {
+  const tree = page.silicaPublishedTree ?? page.silicaDraftTree;
+  return tree == null ? null : extractSilicaTreeSignals(tree);
+}
 
 /** A best-effort storefront path for the overview link. */
 export function pathFor(type: EntityType, slug: string | null): string | null {
@@ -74,6 +93,8 @@ export async function buildAuditableEntity(
           slug: true,
           draftTree: true,
           publishedTree: true,
+          silicaDraftTree: true,
+          silicaPublishedTree: true,
           publishedAt: true,
           seoTitle: true,
           seoDescription: true,
@@ -85,7 +106,15 @@ export async function buildAuditableEntity(
       if (!page) return null;
       // Audit the published tree when there is one; before first publish, the
       // draft — so the editor shows a live score while authoring.
-      const signals = extractBuilderTreeSignals(page.publishedTree ?? page.draftTree);
+      //
+      // SILICA FIRST. A page built in the current editor stores its tree in the
+      // `silica_*` columns and parks a BLANK placeholder in `draft_tree`, so reading the
+      // legacy columns graded every such page against an empty document: 0 H1s (fail),
+      // 0 words (warn), 0 internal links (warn), and a false "no images" pass. The
+      // scorecard was not merely stale, it was measuring the wrong object — and it is
+      // the only signal a non-technical owner has about whether their page can be found.
+      const signals =
+        silicaSignalsFor(page) ?? extractBuilderTreeSignals(page.publishedTree ?? page.draftTree);
       return {
         entityType: 'builder_page',
         title: emptyToNull(page.seoTitle) ?? page.name,

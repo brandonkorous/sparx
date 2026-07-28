@@ -58,15 +58,34 @@
 @source '../../../packages/builder-schemas/src/starters.ts';
 @source '../../../packages/builder-schemas/src/box-to-class.ts';
 
+/* THE SHARED AUTHORING VOCABULARY — the same file apps/site imports, so the canvas
+   and the published page cannot disagree about what an author may write. It is the
+   home of the CONTAINER-QUERY set (`@2xl:grid-cols-3`), which is the sanctioned
+   responsive vocabulary and the only one the device toggle can actually preview: the
+   toggle resizes an ELEMENT, so a viewport variant is frozen at the real window width.
+   Without this import the canvas emitted no CSS for any container variant while the
+   storefront rendered it — the studio would have shown a broken version of a page that
+   was fine when published, which is the worst direction for that disagreement to run. */
+@import '../../../packages/silica-catalog/src/builder-vocabulary.css';
+
 /* ── Canvas vocabulary safelist ───────────────────────────────────────────
+   The WIDER local set, on top of the shared file above: families that file does not
+   declare (items-/justify-/w-/h-/overflow-, the full silicaui type ladder) plus the
+   silicaui component classes. It should eventually converge into the shared file —
+   two lists covering overlapping families is how they drift.
+
    The site canvas renders the tenant's page tree from the DATABASE, so its
    classes are runtime data Tailwind can never statically scan (the scans above
    only cover catalog SOURCE, not the saved document). Rather than a custom
    compiled layer or `--*` tokens — one silicaui system, no parallel layer — we
    force-generate the builder's silicaui utility vocabulary with `@source
    inline`. This is Tailwind emitting SILICAUI'S OWN utilities at build time,
-   including every responsive variant, so a `lg:grid-cols-12` / `sm:pt-32` on a
-   DB node actually has CSS. The leading empty in `{,sm:,…}` keeps the base.
+   including every responsive variant, so a `@5xl:grid-cols-12` / `@2xl:pt-32` on a
+   DB node actually has CSS. The leading empty in `{,@sm:,…}` keeps the base.
+
+   Each family declares BOTH axes for the same reason the shared file does: the
+   container set is what new authoring uses, and the viewport set stays only so
+   documents written before the ban keep rendering.
 
    The text ladder here MIRRORS silicaui's canonical `TYPE_SCALE`
    (`@wizeworks/silicaui/type-scale`, xs→10xl as of 0.31.0). silica exposes that
@@ -77,6 +96,9 @@
 @source inline(
   '{,sm:,md:,lg:,xl:,2xl:}text-{xs,sm,md,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}'
 );
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}text-{xs,sm,md,base,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,8xl,9xl,10xl}'
+);
 /* silicaui typography display steps (`typography.js`): fluid clamp() hero type,
    emitted as component classes on-demand — so runtime canvas content needs them
    safelisted. Not responsive utilities (they scale by container query), so no
@@ -85,32 +107,65 @@
 @source inline(
   '{,sm:,md:,lg:,xl:,2xl:}font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}'
 );
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}font-{thin,extralight,light,normal,medium,semibold,bold,extrabold,black}'
+);
 @source inline('{,sm:,md:,lg:,xl:,2xl:}leading-{none,tight,snug,normal,relaxed,loose}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}leading-{none,tight,snug,normal,relaxed,loose}');
 @source inline('{,sm:,md:,lg:,xl:,2xl:}tracking-{tighter,tight,normal,wide,wider,widest}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}tracking-{tighter,tight,normal,wide,wider,widest}');
 @source inline('{,sm:,md:,lg:,xl:,2xl:}text-{left,center,right,justify}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}text-{left,center,right,justify}');
 @source inline(
   '{,sm:,md:,lg:,xl:,2xl:}{block,inline-block,inline,flex,inline-flex,grid,inline-grid,hidden}'
 );
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}{block,inline-block,inline,flex,inline-flex,grid,inline-grid,hidden}'
+);
 @source inline('{,sm:,md:,lg:,xl:,2xl:}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}grid-cols-{1,2,3,4,5,6,7,8,9,10,11,12}');
 @source inline('{,sm:,md:,lg:,xl:,2xl:}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}col-span-{1,2,3,4,5,6,7,8,9,10,11,12,full}');
 @source inline(
   '{,sm:,md:,lg:,xl:,2xl:}flex-{row,row-reverse,col,col-reverse,wrap,nowrap,1,auto,initial,none}'
 );
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}flex-{row,row-reverse,col,col-reverse,wrap,nowrap,1,auto,initial,none}'
+);
 @source inline('{,sm:,md:,lg:,xl:,2xl:}items-{start,end,center,baseline,stretch}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}items-{start,end,center,baseline,stretch}');
 @source inline('{,sm:,md:,lg:,xl:,2xl:}justify-{start,end,center,between,around,evenly}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}justify-{start,end,center,between,around,evenly}');
 @source inline('{,sm:,md:,lg:,xl:,2xl:}gap-{x-,y-,}{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32}');
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}gap-{x-,y-,}{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32}'
+);
 @source inline(
   '{,sm:,md:,lg:,xl:,2xl:}{p,px,py,pt,pr,pb,pl}-{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32,36,40,44,48,56,64,72,80,96}'
 );
 @source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}{p,px,py,pt,pr,pb,pl}-{0,1,2,3,4,5,6,7,8,10,12,14,16,20,24,28,32,36,40,44,48,56,64,72,80,96}'
+);
+@source inline(
   '{,sm:,md:,lg:,xl:,2xl:}{m,mx,my,mt,mr,mb,ml}-{0,1,2,3,4,5,6,8,10,12,16,20,24,auto}'
+);
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}{m,mx,my,mt,mr,mb,ml}-{0,1,2,3,4,5,6,8,10,12,16,20,24,auto}'
 );
 @source inline('{,sm:,md:,lg:,xl:,2xl:}w-{full,auto,fit,min,max,screen,1/2,1/3,2/3,1/4,3/4}');
 @source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}w-{full,auto,fit,min,max,screen,1/2,1/3,2/3,1/4,3/4}'
+);
+@source inline(
   '{,sm:,md:,lg:,xl:,2xl:}max-w-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,full,prose}'
 );
+@source inline(
+  '{,@sm:,@md:,@2xl:,@3xl:,@5xl:}max-w-{none,xs,sm,md,lg,xl,2xl,3xl,4xl,5xl,6xl,7xl,full,prose}'
+);
 @source inline('{,sm:,md:,lg:,xl:,2xl:}h-{full,auto,screen,fit}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}h-{full,auto,screen,fit}');
 @source inline('{,sm:,md:,lg:,xl:,2xl:}min-h-{0,full,screen}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}min-h-{0,full,screen}');
 @source inline('rounded-{none,sm,md,lg,xl,2xl,3xl,full,box,field,selector}');
 @source inline('border-{0,2,4,8}');
 @source inline(
@@ -118,6 +173,7 @@
 );
 @source inline('object-{contain,cover,fill,none,scale-down}');
 @source inline('{,sm:,md:,lg:,xl:,2xl:}overflow-{auto,hidden,visible,scroll}');
+@source inline('{,@sm:,@md:,@2xl:,@3xl:,@5xl:}overflow-{auto,hidden,visible,scroll}');
 /* silicaui COMPONENT classes the canvas composes with (emitted on-demand by the
    plugin, so runtime DB content needs them safelisted). navbar is a real silicaui
    component (silicaui/src/components/navbar.js); btn/card/badge are used by the

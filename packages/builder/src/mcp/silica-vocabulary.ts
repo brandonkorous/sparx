@@ -35,6 +35,23 @@ export const SILICA_STYLE_GUIDE = {
     'NON-NEGOTIABLE: every page — and especially the frame — MUST work at phone width; blocks already satisfy this, so ' +
     "preserve their layout classes when you edit copy, don't replace them with a fixed-width arrangement.",
 
+  responsive:
+    'ONE RESPONSIVE VOCABULARY: CONTAINER QUERIES. Write `@2xl:grid-cols-3`, never `md:grid-cols-3`. A viewport ' +
+    "variant (`sm:` `md:` `lg:` `xl:` `2xl:`) measures the browser WINDOW, and the human editor's phone/tablet " +
+    "preview works by changing an ELEMENT's width — so a viewport variant renders correctly on the live site and is " +
+    'frozen in the preview, which is how a broken mobile layout ships without anyone seeing it. The studio now ' +
+    'REJECTS viewport variants at write time; upsert_silica_page returns them as `warnings` rather than refusing the ' +
+    'save, so check that field. ' +
+    'A container variant needs an ancestor carrying `@container` — every seeded section, the nav and the footer ' +
+    'already do, and so does every native block. If you author a bare section of your own, put `@container` on it. ' +
+    'THE FIVE STEPS ARE `@sm` (384px), `@md` (448), `@2xl` (672), `@3xl` (768), `@5xl` (1024) — nothing else emits ' +
+    'CSS for spacing/type/flow, so do not invent `@4xl:py-20`. Translating a breakpoint you already have in mind: ' +
+    '`sm`→`@2xl`, `md`→`@3xl`, `lg`→`@5xl`. `@5xl` is the top of the range (a full-bleed section caps its content ' +
+    'with `max-w-*` long before that). Use `@sm`/`@md` when the thing you are sizing sits in a COLUMN rather than ' +
+    'across the page — that is what they are for. ' +
+    'Watch the one trap: `@container` makes an element a container for its CHILDREN. `@2xl:grid-cols-2` on the SAME ' +
+    'element measures some ancestor instead, usually nothing. Container on the parent, variant on the child.',
+
   authoringKit: {
     description:
       "Only reach for these when composing something a block doesn't already cover (a bespoke section, gluing two " +

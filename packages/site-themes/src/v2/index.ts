@@ -12,3 +12,4 @@ export * from './css';
 export * from './silica-css';
 export * from './legacy';
 export * from './tenant';
+export * from './brand-theme';

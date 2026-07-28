@@ -27,6 +27,7 @@
     "@sparx/crm-schemas": "workspace:*",
     "@sparx/query": "workspace:*",
     "@sparx/silica-catalog": "workspace:*",
+    "@sparx/social": "workspace:*",
     "@sparx/site-themes": "workspace:*",
     "@sparx/story-schemas": "workspace:*",
     "@wizeworks/silicaui": "catalog:",

@@ -16,7 +16,14 @@ import { describe, expect, it } from 'vitest';
 
 import { SiteSyncInput } from '@sparx/builder-schemas';
 
-import { pagesToDelete, symbolsUpdateFor, wouldClobberSite } from './site-service';
+import {
+  hasStagedTree,
+  pagesToDelete,
+  stagedTree,
+  symbolsUpdateFor,
+  wouldClobberSite,
+  type StagedPageRow,
+} from './site-service';
 
 // ── The symbol-library wipe (docs/125 §9.3) ──────────────────────────────────
 //
@@ -189,5 +196,63 @@ describe('wouldClobberSite', () => {
   it('refuses a same-shape site whose ids were all re-minted (id-identity is the test)', () => {
     // Same slugs/count, all-new ids — exactly what a re-seed looks like.
     expect(wouldClobberSite(['a', 'b', 'c'], ['a2', 'b2', 'c2'])).toBe(true);
+  });
+});
+
+// ── Stage selection: which tree a read serves ────────────────────────────────
+//
+// The storefront serves `published`; the editor's Preview serves `draft`. Both go
+// through the SAME readers, discriminated only by these two functions, so this pair is
+// the whole boundary between "what visitors see" and "what the author is still working
+// on". Two failure modes, opposite and both bad:
+//
+//   · published reading the DRAFT column → unpublished work leaks to the public;
+//   · draft reading the PUBLISHED column → Preview shows the live site, which is the
+//     bug this stage parameter exists to fix (the token was minted, sent, and ignored,
+//     so Preview never once showed unpublished work).
+//
+// A two-branch ternary is exactly the kind of thing that gets inverted in a refactor
+// and passes review, so it is pinned here rather than trusted.
+
+/** A page row carrying only what the stage predicate reads. */
+function row(trees: Partial<Pick<StagedPageRow, 'silicaDraftTree' | 'silicaPublishedTree'>>) {
+  return trees as StagedPageRow;
+}
+
+const DRAFT = { kind: 'element', tag: 'div' } as const;
+const LIVE = { kind: 'element', tag: 'section' } as const;
+
+describe('stagedTree / hasStagedTree — the published↔draft boundary', () => {
+  it('published reads the published column, draft reads the draft column', () => {
+    const both = row({ silicaDraftTree: DRAFT, silicaPublishedTree: LIVE });
+    expect(stagedTree(both, 'published')).toBe(LIVE);
+    expect(stagedTree(both, 'draft')).toBe(DRAFT);
+  });
+
+  it('a page saved but NEVER published previews, and stays invisible to visitors', () => {
+    // The whole point of preview: work that has no published counterpart yet.
+    const unpublished = row({ silicaDraftTree: DRAFT, silicaPublishedTree: null });
+    expect(hasStagedTree(unpublished, 'draft')).toBe(true);
+    expect(hasStagedTree(unpublished, 'published')).toBe(false);
+  });
+
+  it('a published page whose draft column is empty still serves visitors', () => {
+    // A page published before the draft column existed, or one never re-opened.
+    const liveOnly = row({ silicaDraftTree: null, silicaPublishedTree: LIVE });
+    expect(hasStagedTree(liveOnly, 'published')).toBe(true);
+    expect(stagedTree(liveOnly, 'published')).toBe(LIVE);
+  });
+
+  it('a row with neither tree resolves at no stage (falls through to the starter)', () => {
+    const empty = row({ silicaDraftTree: null, silicaPublishedTree: null });
+    expect(hasStagedTree(empty, 'published')).toBe(false);
+    expect(hasStagedTree(empty, 'draft')).toBe(false);
+  });
+
+  it('treats an ABSENT column the same as null (the stage did not select it)', () => {
+    // `pageSelectFor` fetches ONE tree column per stage, so the other is undefined
+    // rather than null on every real row. Both must read as "no tree".
+    expect(hasStagedTree(row({ silicaPublishedTree: LIVE }), 'draft')).toBe(false);
+    expect(hasStagedTree(row({ silicaDraftTree: DRAFT }), 'published')).toBe(false);
   });
 });

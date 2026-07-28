@@ -80,6 +80,29 @@ export function bindAttr<T extends ElementNode>(element: T, attr: string, ref: s
 }
 
 /**
+ * Which of THIS element's attributes a carrier child fills at render time.
+ *
+ * The carrier is invisible to anything reading the authored tree: a product card is
+ * an `<a>` with no `href` and no `data` binding of its own, which is indistinguishable
+ * from an anchor somebody forgot to finish. It reads that way to a human scanning the
+ * JSON and it read that way to `@sparx/site-lint`, which reported every product card
+ * on the starter site as "looks like a link but is not one". Exported so a reader can
+ * ask the question the tree cannot answer for itself, in one place — when the engine
+ * resolves children through an attribute binding and this bridge is deleted, its
+ * callers fail to compile rather than quietly going stale.
+ */
+export function carrierBoundAttrs(node: Node): string[] {
+  if (node.kind === 'outlet') return [];
+  const bound: string[] = [];
+  for (const child of node.children ?? []) {
+    if (typeof child === 'string') continue;
+    const attr = carrierAttr(child);
+    if (attr) bound.push(attr);
+  }
+  return bound;
+}
+
+/**
  * Lift every resolved attribute carrier onto its parent and strip the carriers.
  * Runs on the RESOLVED tree, immediately before `toHtml`.
  *

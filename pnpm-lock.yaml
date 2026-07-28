@@ -432,6 +432,9 @@ importers:
       '@sparx/site-themes':
         specifier: workspace:*
         version: link:../../packages/site-themes
+      '@sparx/social':
+        specifier: workspace:*
+        version: link:../../packages/social
       '@sparx/story-schemas':
         specifier: workspace:*
         version: link:../../packages/story-schemas
@@ -1939,6 +1942,28 @@ importers:
         specifier: ^4.1.7
         version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
 
+  packages/site-lint:
+    dependencies:
+      '@sparx/silica-catalog':
+        specifier: workspace:*
+        version: link:../silica-catalog
+      '@sparx/site-themes':
+        specifier: workspace:*
+        version: link:../site-themes
+      '@wizeworks/silicaui-html':
+        specifier: 'catalog:'
+        version: 0.35.0
+    devDependencies:
+      '@types/node':
+        specifier: ^25.9.1
+        version: 25.9.1
+      typescript:
+        specifier: ^6.0.3
+        version: 6.0.3
+      vitest:
+        specifier: ^4.1.7
+        version: 4.1.7(@opentelemetry/api@1.9.1)(@types/node@25.9.1)(@vitest/coverage-v8@4.1.7)(jsdom@29.1.1(@noble/hashes@2.2.0))(vite@8.0.14(@types/node@25.9.1)(esbuild@0.28.0)(jiti@2.7.0)(tsx@4.22.3)(yaml@2.9.0))
+
   packages/site-mcp:
     dependencies:
       zod:
@@ -2631,6 +2656,9 @@ importers:
       '@sparx/seo-audit':
         specifier: workspace:*
         version: link:../../packages/seo-audit
+      '@sparx/site-lint':
+        specifier: workspace:*
+        version: link:../../packages/site-lint
       '@sparx/site-mcp':
         specifier: workspace:*
         version: link:../../packages/site-mcp

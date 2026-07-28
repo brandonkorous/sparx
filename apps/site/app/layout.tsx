@@ -286,7 +286,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     site ? getPublishedSite(site.slug, sitePreviewToken, activePropertySlug ?? undefined) : null,
     site ? getPublishedBuilderLayout(site.slug) : null,
     site
-      ? getPublishedSilicaFrame(site.slug)
+      ? getPublishedSilicaFrame(
+          site.slug,
+          sitePreviewToken ? { previewToken: sitePreviewToken } : {}
+        )
       : Promise.resolve<PublishedSilicaFrameDto>({ frame: null, symbols: {}, theme: null }),
     site ? getPublishedBuilderStyles(site.slug) : '',
   ]);
