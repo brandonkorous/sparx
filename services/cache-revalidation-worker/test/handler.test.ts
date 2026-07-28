@@ -35,15 +35,23 @@ describe('planRevalidation', () => {
     expect(planRevalidation('sitebuilder.rolled_back')).toBe('site');
   });
 
-  it('maps Builder / silica publish events to their own builder scope', () => {
-    for (const type of [
-      'builder.page.published',
-      'builder.layout.published',
-      'builder.layout.activated',
-      'builder.email.published',
-    ]) {
+  it('maps the two builder events that are REALLY published to the builder scope', () => {
+    // `builder.published` / `builder.rolled_back` are the only `builder.*` members of
+    // the `EventType` union, and until 2026-07 there were none at all — this branch
+    // was written against names nobody emitted, so it was dead code that looked
+    // healthy. Both are now published by `POST /v1/builder/site/publish` and
+    // `.../releases/:id/restore`. Anything else here is aspirational; keep this list
+    // matching `packages/events/src/types.ts` rather than inventing plausible names.
+    for (const type of ['builder.published', 'builder.rolled_back']) {
       expect(planRevalidation(type)).toBe('builder');
     }
+  });
+
+  it('still maps any future builder.* name by prefix', () => {
+    // The branch is a prefix match on purpose: a later `builder.email.published` should
+    // purge the same tag without a worker change. This asserts the prefix behaviour
+    // WITHOUT implying those names exist today.
+    expect(planRevalidation('builder.something.new')).toBe('builder');
   });
 
   it('keeps builder and site as SEPARATE scopes', () => {
@@ -51,7 +59,7 @@ describe('planRevalidation', () => {
     // legacy snapshot + nav menus, `builder:` tags the page/layout/frame/style reads.
     // A page publish is the most frequent write in the system and must not evict the
     // snapshot alongside it (docs/127 §6).
-    expect(planRevalidation('builder.page.published')).not.toBe(
+    expect(planRevalidation('builder.published')).not.toBe(
       planRevalidation('sitebuilder.published')
     );
   });

@@ -67,6 +67,7 @@ import { requireBuilderModule, toBuilderContext } from '../../../lib/builder-con
 import { getBuilderBroadcaster } from '../../../websocket/builder-broadcast.js';
 import { auditAndStore } from '../../../lib/seo-audit.js';
 import { runSiteCheck } from '../../../lib/site-check.js';
+import { publishBuilderEvent } from '../../../lib/builder-events.js';
 
 /** Re-grade every page of the property that was just published. One pass over the
  *  property's pages; each audit is independent, so a single bad page cannot take the
@@ -203,6 +204,17 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
     // Best-effort and AFTER the publish, exactly like the legacy route: a scoring
     // hiccup must never fail a publish that already succeeded.
     await refreshSiteSeoAudits(request, auth.tenantId, ctx.propertyId).catch(() => undefined);
+    // The purge signal (roadmap slice 21). Nothing emitted this before, so the
+    // storefront's `builder:<slug>` tag — already on every page/layout/frame/style
+    // read, already mapped by `cache-revalidation-worker` — was never invalidated.
+    // Harmless while every route is `force-dynamic`; a publish that shows nothing the
+    // moment ISR is switched on otherwise. AFTER the publish committed, and
+    // best-effort: a Pub/Sub hiccup must not fail a publish that already succeeded.
+    await publishBuilderEvent('builder.published', auth.tenantId, auth.actorId, {
+      propertyId: ctx.propertyId,
+      releaseId: release.id,
+      hash: release.hash,
+    });
     // The release id + hash ride back so the caller can name what it just published —
     // and so a UI can offer "undo" without a second round trip (docs/126 §5.3).
     return ok({ published: true, releaseId: release.id, hash: release.hash });
@@ -224,12 +236,21 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
   });
 
   app.post('/v1/builder/site/releases/:releaseId/restore', async (request) => {
-    requireRole(request, 'editor');
+    const auth = requireRole(request, 'editor');
     await requireBuilderModule(request);
     const { releaseId } = request.params as { releaseId: string };
+    const ctx = await toBuilderContext(request);
     // Republishes the old manifest FORWARD as a new release — history is append-only,
     // so a restore is itself restorable. The counts describe what actually moved.
-    const result = await artifactService.restoreRelease(await toBuilderContext(request), releaseId);
+    const result = await artifactService.restoreRelease(ctx, releaseId);
+    // A rollback changes what visitors are served just as much as a publish does, and
+    // it is the path where a stale cache does the most damage: the whole point of a
+    // rollback is to take a broken page down, and a cache that kept serving it would
+    // make the fix look like it did nothing.
+    await publishBuilderEvent('builder.rolled_back', auth.tenantId, auth.actorId, {
+      propertyId: ctx.propertyId,
+      releaseId,
+    });
     return ok(result);
   });
 

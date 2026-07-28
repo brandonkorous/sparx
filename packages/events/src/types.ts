@@ -43,6 +43,22 @@ export type EventType =
   // Webhooks / redirects
   | 'redirect.added'
   | 'redirect.removed'
+  // ─── Site builder ───────────────────────────────────────────────────
+  // A site's DRAFT became what visitors are served — a publish, or a rollback to
+  // an earlier release. `cache-revalidation-worker` maps `builder.*` onto the
+  // `builder:<slug>` tag, which is what the storefront's page/layout/frame/style
+  // reads are tagged with.
+  //
+  // THESE HAD NO PUBLISHER, and the consumer side has been waiting for them: the
+  // worker's `builder.` branch was written and the tag was already on every read,
+  // but nothing ever emitted the event. That was harmless only because all 19
+  // storefront routes are `force-dynamic` — nothing is cached, so nothing needs
+  // purging. It becomes a data-loss-shaped bug the moment ISR is turned on
+  // (roadmap slice 21): a publish would show nothing, and a ROLLBACK would leave
+  // the broken page live, which is the exact failure a rollback exists to undo.
+  // So the publisher lands FIRST, and ISR becomes a switch rather than a rewrite.
+  | 'builder.published'
+  | 'builder.rolled_back'
   // ─── Commerce ───────────────────────────────────────────────────────
   // Catalog
   | 'product.created'
