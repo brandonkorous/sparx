@@ -57,6 +57,13 @@ COPY packages/silica-catalog/package.json packages/silica-catalog/
 COPY packages/site-themes/package.json packages/site-themes/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/story-schemas/package.json packages/story-schemas/
+# The social calendar renders its empty posting slots from `slotOccurrences`, so the
+# recurring-time maths is imported from @sparx/social rather than reimplemented — the
+# plan a person sees has to be the plan the filler runs. Its root barrel is pure, but the
+# package DECLARES @sparx/api-core, so api-core comes along for the filtered install
+# (its own closure — cms-schemas, db, events — is already above).
+COPY packages/api-core/package.json packages/api-core/
+COPY packages/social/package.json packages/social/
 # Root postinstall runs `pnpm --filter @sparx/db db:generate`, which needs
 # both the schema source AND the prisma config file (the multi-file schema
 # lives in prisma/schema/, declared in prisma.config.ts).
@@ -94,6 +101,8 @@ COPY packages/silica-catalog packages/silica-catalog
 COPY packages/site-themes packages/site-themes
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/story-schemas packages/story-schemas
+COPY packages/api-core packages/api-core
+COPY packages/social packages/social
 COPY apps/workbench apps/workbench
 
 # Generate Prisma client (@sparx/auth imports @sparx/db which re-exports it).

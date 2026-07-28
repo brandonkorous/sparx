@@ -33,7 +33,7 @@ import {
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
 import { CalendarPlus, ChevronLeft, ChevronRight, Plus, ServerCrash } from 'lucide-react';
-import { slotOccurrences } from '@sparx/social';
+import { slotOccurrences } from '@sparx/social/cadence';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';

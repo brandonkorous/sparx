@@ -31,9 +31,16 @@ mistake. And never "re-skin" a silicaui component:
 
 Colors come from tokens, never hex: `--color-neutral`, `--color-primary`, `--color-module-<slug>`
 (all registered with the plugin in each app's `globals.css`). A hardcoded hex cannot respond to
-light/dark, so it is wrong even when it looks right on the screen you tested. The only sanctioned
-literal-hex context is edge-runtime OG images (Satori can't resolve CSS custom properties) —
-those read `MODULE_HEX` from `@sparx/brand`.
+light/dark, so it is wrong even when it looks right on the screen you tested. There are exactly
+**two** sanctioned literal-hex contexts, both because a token genuinely cannot express the value:
+
+1. **Edge-runtime OG images** — Satori can't resolve CSS custom properties; those read `MODULE_HEX`
+   from `@sparx/brand`.
+2. **Other companies' brand marks** — Pinterest red, Facebook blue. They are not ours, mean nothing
+   else, and have no light/dark variant to respond with. Confined to
+   [apps/workbench/components/platform-mark.tsx](apps/workbench/components/platform-mark.tsx)
+   (approved 2026-07-28); the glyph on them is fixed white, which is theme-independent by
+   construction. Do not let this spread — a third-party logo is the only thing it covers.
 
 Detail: [packages/ui/CLAUDE.md](packages/ui/CLAUDE.md), [docs/35-ui-variant-system.md](docs/35-ui-variant-system.md).
 

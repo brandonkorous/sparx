@@ -65,6 +65,7 @@ import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaPickerProvider, AssetField } from '../cms/media-picker';
 import { useMediaAssets, type MediaAsset } from '../cms/media';
 import { PostPreview } from './post-preview';
+import { AccountAvatar } from './post-visuals';
 import {
   canApprove,
   canCompose,
@@ -199,9 +200,13 @@ function DestinationPicker({
                 locked ? 'cursor-default' : 'cursor-pointer'
               }`}
             >
-              <Avatar size="sm" src={dest.avatarUrl ?? undefined} alt={dest.accountName}>
-                {dest.name.replace(/^@/, '').charAt(0).toUpperCase()}
-              </Avatar>
+              <AccountAvatar
+                platform={dest.platform}
+                name={dest.name}
+                src={dest.avatarUrl}
+                title={dest.accountName}
+                size="sm"
+              />
               <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                 <span className="truncate font-medium">{dest.name}</span>
                 <span className="text-sm">
@@ -425,11 +430,14 @@ function MediaThumbs({ ids }: { ids: string[] }) {
  */
 function TargetResults({
   targets,
+  avatarByTargetId,
   canRetry = false,
   retrying = null,
   onRetry,
 }: {
   targets: PostTarget[];
+  /** {socialTargetId → picture}; the post row stores only the name. */
+  avatarByTargetId: Map<string, string | null>;
   canRetry?: boolean;
   /** The post-target id currently being retried, for its button's spinner. */
   retrying?: string | null;
@@ -446,6 +454,12 @@ function TargetResults({
             key={target.id}
             className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-1 border-b py-2 last:border-b-0"
           >
+            <AccountAvatar
+              platform={target.platform}
+              name={target.targetName}
+              src={avatarByTargetId.get(target.socialTargetId)}
+              size="sm"
+            />
             <span className="min-w-0 flex-1 truncate font-medium">{target.targetName}</span>
             <Badge color={meta.tone} variant="soft" size="sm">
               {meta.label}
@@ -1663,6 +1677,7 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
               ) : (
                 <TargetResults
                   targets={post.targets}
+                  avatarByTargetId={avatarByTargetId}
                   canRetry={isAdmin}
                   retrying={retryTarget.isPending ? (retryTarget.variables ?? null) : null}
                   onRetry={doRetryTarget}
