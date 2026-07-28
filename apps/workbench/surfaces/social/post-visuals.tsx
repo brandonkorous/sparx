@@ -11,7 +11,7 @@
 
 import { useMemo } from 'react';
 import Image from 'next/image';
-import { Avatar } from '@wizeworks/silicaui-react';
+import { Avatar, AvatarGroup } from '@wizeworks/silicaui-react';
 import { MessageSquareText, Video } from 'lucide-react';
 import { PlatformMark } from '../../components/platform-mark';
 import { useMediaAssets, type MediaAsset } from '../cms/media';
@@ -175,26 +175,15 @@ export function PostThumb({
 
 /* ── Where it goes: the account avatars ───────────────────────────────────── */
 
-/** How big the platform badge sits relative to the face it corners.
- *
- *  Proportional rather than fixed, so one rule covers the 24px avatar on a list row and
- *  the 40px one on a destination card. Half the face is generous for a badge, and
- *  deliberately so: in the list it lands at ~12px, where the GLYPH is already too small to
- *  read and the brand COLOUR is doing the identifying. A ring in the surface colour keeps
- *  it from reading as part of the picture underneath. */
-const BADGE = 'absolute -right-0.5 -bottom-0.5 size-[52%] ring-2 ring-base-100';
-
 /**
- * One account, as a face wearing its platform.
+ * One destination as a pair of overlapping discs — the network behind, the account's own
+ * face in front.
  *
  * Two things identify a destination and a profile picture only carries one of them. A
  * business whose Facebook Page, Instagram and Pinterest all wear the same logo — which is
  * most businesses, and is exactly what a consistent brand looks like — showed three
- * identical circles, so "where it goes" answered *whose* but never *where*. The badge
- * closes that without spending a row on it.
- *
- * The face stays the larger, primary element: the account is the thing being chosen or
- * reported on, and the network is the qualifier.
+ * identical circles, so "where it goes" answered *whose* but never *where*. The pair
+ * answers both without spending a row on it.
  */
 export function AccountAvatar({
   platform,
@@ -207,17 +196,25 @@ export function AccountAvatar({
   /** The account's own name — its initial is the fallback when there is no picture. */
   name: string;
   src?: string | null;
-  /** Hover text for the whole stack; the badge itself stays decorative. */
+  /** Hover text for the whole stack; the platform disc stays decorative. */
   title?: string;
   size?: 'xs' | 'sm' | 'md';
 }) {
   return (
-    <span className="relative inline-flex shrink-0">
+    // silicaui's own overlapping group, rather than a hand-placed corner badge: it already
+    // owns the overlap distance and the base-100 gap between discs, and two avatars
+    // sitting in a group is what this IS.
+    //
+    // Platform first so it sits BEHIND — the account is what you are picking or reading a
+    // result for, and the network qualifies it.
+    <AvatarGroup>
+      <Avatar size={size}>
+        <PlatformMark platform={platform} className="size-full" />
+      </Avatar>
       <Avatar size={size} src={src ?? undefined} alt={title ?? name} title={title}>
         {name.replace(/^@/, '').charAt(0).toUpperCase()}
       </Avatar>
-      <PlatformMark platform={platform} className={BADGE} />
-    </span>
+    </AvatarGroup>
   );
 }
 
@@ -244,11 +241,11 @@ export function DestinationAvatars({
   const shown = targets.slice(0, max);
   const overflow = targets.length - shown.length;
 
-  // Spaced rather than overlapped (the AvatarGroup this replaced tucked each face under
-  // the next). An overlap would bury the badge of every avatar but the last, which is the
-  // one piece of information the stack was added to carry.
+  // Each destination is its own overlapping pair, and the pairs are SPACED. Running them
+  // all into one group would tuck each disc under the next, so with three destinations
+  // only the last pair would still show both halves.
   return (
-    <span className="flex items-center gap-1">
+    <span className="flex items-center gap-1.5">
       {shown.map((target) => (
         <AccountAvatar
           key={target.id}

@@ -69,6 +69,37 @@ describe('judgeSocialReadiness', () => {
     );
   });
 
+  // Seen live on 2026-07-28: a green "Ready" sitting directly above an amber "this result
+  // cannot be trusted". Every permission really was present, so nothing else fired — and
+  // the badge is what gets scanned, so it must not promise what the caveat withdraws.
+  it('refuses to call a caveated result ready, even with every permission present', () => {
+    const v = judgeSocialReadiness(
+      input({
+        probe: {
+          grantedScopes: ['pages_manage_posts', 'pages_read_engagement'],
+          appReview: 'unknown',
+          detail: 'Meta reports 2 permissions on this connection.',
+          caveat: 'This account has a role on the sparx developer app.',
+        },
+      })
+    );
+    expect(v.verdict).toBe('unverifiable');
+    expect(v.headline).toBe('Cannot be confirmed');
+  });
+
+  it('still reports a clean, uncaveated grant as ready', () => {
+    const v = judgeSocialReadiness(
+      input({
+        probe: {
+          grantedScopes: null,
+          appReview: 'unknown',
+          detail: 'Meta reports 2 permissions on this connection.',
+        },
+      })
+    );
+    expect(v.verdict).toBe('ready');
+  });
+
   it('does not treat an extra granted permission as a problem', () => {
     const v = judgeSocialReadiness(input({ granted: [...input().granted, 'business_management'] }));
     expect(v.verdict).toBe('ready');

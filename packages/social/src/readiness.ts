@@ -151,6 +151,21 @@ export function judgeSocialReadiness({
     };
   }
 
+  // A caveat means the platform's answer does not generalise — most often that this
+  // account holds a role on sparx's own developer app and was therefore handed every
+  // permission regardless of review. The permissions really are all present, so nothing
+  // above fired, and calling that "Ready" in green is precisely the false confidence this
+  // check exists to prevent: the badge is what gets scanned, and it must not promise
+  // something the caveat underneath immediately withdraws.
+  if (accessProbe?.caveat) {
+    return {
+      verdict: 'unverifiable',
+      headline: 'Cannot be confirmed',
+      detail: `${accessProbe.detail} That is not proof of anything on its own — see below.`,
+      missing,
+    };
+  }
+
   return {
     verdict: 'ready',
     headline: 'Ready',

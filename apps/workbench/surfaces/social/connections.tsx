@@ -32,7 +32,9 @@ import {
 } from '@wizeworks/silicaui-react';
 import { LineChart, Link2Off, Plug, Share2, ShieldCheck, Users } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
+import { PlatformMark } from '../../components/platform-mark';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
+import { AccountAvatar } from './post-visuals';
 import { RefreshButton } from '../../components/refresh-button';
 import { FormSection } from '../../components/form-section';
 import { useViewer } from '../../lib/api/shell-data';
@@ -171,7 +173,17 @@ function ConnectionCard({
   return (
     <div className="border-base-300 flex flex-col gap-3 rounded-lg border p-3">
       <div className="flex flex-wrap items-center gap-3">
-        <Avatar url={connection.avatarUrl} />
+        {/* The same overlapping pair the Posts list and the composer use. Every card
+            already names the platform in its meta line, but a name is read and a logo is
+            SEEN — with five accounts connected, the logos are what let someone find the
+            right card without reading any of them. */}
+        <AccountAvatar
+          platform={connection.platform}
+          name={connection.displayName ?? name}
+          src={connection.avatarUrl}
+          title={connection.displayName ?? name}
+          size="md"
+        />
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           <div className="flex flex-wrap items-center gap-2">
             <Text as="span" className="font-semibold">
@@ -245,6 +257,11 @@ function CatalogRow({
   const available = entry.availability === 'available';
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-3 border-b pb-3 last:border-b-0 last:pb-0">
+      {/* Nothing is connected here yet, so there is no face to wear the badge — the
+          platform's own mark IS the avatar, at the same size the connected rows use so
+          the two lists read as one column. Full colour even for "coming soon": the badge
+          beside it already says so, and fading the logo would say it twice. */}
+      <PlatformMark platform={entry.platform} className="size-10" label={entry.name} />
       <div className="flex min-w-0 flex-1 flex-col gap-0.5">
         <Text as="span" className="font-medium">
           {entry.name}
@@ -299,6 +316,7 @@ function ReadinessRow({ result, name }: { result: ConnectionReadiness; name: str
   return (
     <div className="border-base-300 flex flex-col gap-2 border-t pt-3 first:border-t-0 first:pt-0">
       <div className="flex flex-wrap items-center gap-2">
+        <PlatformMark platform={result.platform} className="size-5" />
         <Text className="font-medium">{result.displayName ?? name}</Text>
         <Text className="text-sm">{name}</Text>
         <Badge color={readinessTone(result.verdict)} variant="soft" size="sm" className="ml-auto">

@@ -15,7 +15,6 @@
 
 import { useMemo, useState } from 'react';
 import {
-  Avatar,
   Button,
   EmptyState,
   Heading,
@@ -38,7 +37,8 @@ import {
   type InsightsTopPost,
   type SocialPlatform,
 } from './data';
-import { useAvatarByTargetId, formatWhen } from './post-visuals';
+import { PlatformMark } from '../../components/platform-mark';
+import { AccountAvatar, useAvatarByTargetId, formatWhen } from './post-visuals';
 import { formatMinuteOfDay, localTimezone, useBestTime, WEEKDAY_NAMES } from './planning-data';
 
 /* ── The windows a business thinks in ─────────────────────────────────────── */
@@ -90,13 +90,13 @@ function AccountRow({
   const engagements = account.likes + account.comments + account.shares;
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-2 border-b px-4 py-3 last:border-b-0">
-      <Avatar
+      <AccountAvatar
+        platform={account.platform}
+        name={account.name}
+        src={avatarByTargetId.get(account.socialTargetId)}
+        title={account.name}
         size="sm"
-        src={avatarByTargetId.get(account.socialTargetId) ?? undefined}
-        alt={account.name}
-      >
-        {account.name.replace(/^@/, '').charAt(0).toUpperCase()}
-      </Avatar>
+      />
       <div className="flex min-w-0 flex-1 flex-col">
         <span className="truncate text-base font-medium">{account.name}</span>
         <span className="text-sm">{platformName(account.platform, catalogMap)}</span>
@@ -128,6 +128,10 @@ function TopPostRow({
         className="hover:bg-base-200 flex w-full min-w-0 cursor-pointer flex-wrap items-center gap-x-3 gap-y-2 px-4 py-3 text-left"
         onClick={onOpen}
       >
+        {/* The network only, not the pair: a top-post row carries the destination's NAME
+            but not its id, so there is no profile picture to look up. The platform disc
+            still answers "where did this one do well?" without reading the line. */}
+        <PlatformMark platform={post.platform} className="size-8" />
         <span className="flex min-w-0 flex-1 flex-col gap-1">
           <span className="min-w-0 text-base font-medium break-words">{post.excerpt}</span>
           <span className="text-sm">

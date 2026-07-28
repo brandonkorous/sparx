@@ -358,11 +358,100 @@ Two scorecard rows were wrong when written:
    subscriptions and `WORKBENCH_BASE_URL` are live and verified in `sparxworks`; the apply was
    targeted so Cloudflare never entered the graph. What remains is a deploy of `api-rest` +
    `social-worker`, without which nothing publishes to or consumes those topics.
-2. **The platform applications.** Most have since been filed (TikTok's audit is the one still
-   outstanding as of 2026-07-28). What each unlocks: Meta engagement scopes light up the Inbox for
-   Facebook + Instagram, Meta insights scopes turn reach/views from dashes into numbers with no code
-   change, and the Pinterest / TikTok / YouTube content-API approvals make those platforms
-   connectable at all. See §10 for how to tell when one has landed.
+2. **The platform applications.** Verified in Meta's App Dashboard on 2026-07-28, app
+   `1674943623584234`:
+   - **The app is UNPUBLISHED** — still in Development mode. This is the headline: a development-mode
+     app works ONLY for accounts holding a role on it. No tenant can connect a Facebook Page or
+     Instagram account at all today, review or no review. The Publish page reports "All required app
+     settings are complete", so nothing is blocking it but the decision.
+   - **No permission has been submitted for App Review.** Every one across Instagram, Pages, Threads,
+     Marketing and Catalog reads **"Ready for testing"** — Meta's label for Standard Access — and the
+     per-permission Actions menu still offers "Add to App Review". `instagram_basic` (49 calls),
+     `instagram_content_publish` (45) and `business_management` (31) have real traffic, which is
+     Brandon's own admin account exercising Standard Access, not evidence of approval.
+   - **Threads has 0 API calls** on both `threads_basic` and `threads_content_publish` — that
+     connection has never once succeeded, even for a role-holder.
+
+   **Progress the same day.** WizeWorks is now a Meta **Tech Provider** — an irreversible account
+   classification that gates the entire App Review path and brings stricter data-access
+   requirements. Enabling it auto-staged 13 permissions into the review request; 5 more were added
+   by hand (`pages_read_user_content`, `pages_manage_engagement`, `instagram_manage_comments`,
+   `instagram_manage_insights`, `read_insights`), and the written **"how this app uses it"
+   description is complete for all 13 permissions sparx actually needs**. The submission remains
+   **Not submitted**.
+
+   **Second pass, same day — the submission is now 3 of 5 steps green.** Verification, App settings
+   and **Data handling** all read complete (Data handling was answered after the note above was
+   written). What changed in this pass:
+   - **The submission is down to 15 permissions**, and it now matches the code exactly. Removed
+     `ads_management`, `ads_read` and `Marketing API Access Tier` — nothing in the repo calls them
+     (verified by grepping the adapter scope constants, not by recall). Removal is reversible from
+     the use case's Customize page.
+   - **Every one of the 15 has its description AND its compliance attestation done.**
+     `public_profile` is fully complete. `catalog_management`'s description was written from
+     scratch this pass.
+   - **Reviewer instructions** were empty and are now written — what sparx is, the
+     `app.sparx.works` entry point (NOT `sparx.works`, which is the marketing site the Site URL
+     field points at), the click path to the connect flow, a per-permission map of where a reviewer
+     sees it exercised, and the scope-of-use statement. "Is Facebook Login integrated" = **Yes**
+     (Facebook Login for Business is the connect handshake, even though sparx sign-in is
+     email/password). Geo restrictions answered: none.
+
+   Still required before it can go, none of it engineering:
+   - **Remove the 3 permissions sparx does not use** — `ads_management`, `ads_read`,
+     `Marketing API Access Tier`. They were swept in automatically, and each demands its own
+     screencast of a feature that does not exist. Unsupportable permissions sink whole submissions.
+     [docs/133](../133-social-media-posting.md) §249 puts ads in **Phase 4, explicitly not this
+     module**, so there is nothing to demo and nothing to lose by dropping them.
+
+     > **Correction (2026-07-28):** an earlier revision of this list said **four**, including
+     > `catalog_management`. That was wrong. `catalog_management` **is** used — by the commerce
+     > sales-channel sync in
+     > [packages/channels/src/adapters/meta.ts](../../packages/channels/src/adapters/meta.ts),
+     > which requests `catalog_management,business_management` and pushes the tenant's products
+     > into their own Meta catalog via `items_batch` for Facebook & Instagram Shops. It belongs in
+     > the submission; its description is now written, and its screencast must demo the **channel
+     > sync**, not social posting. The lesson: the removal list came from recall, and the scope
+     > constants in the adapters are the only ground truth.
+
+   - **The per-permission compliance attestation** ("If approved, I agree that any data I receive
+     through X will be used in accordance with the allowed usage"). It lives _inside_ each
+     permission's dialog, under the screencast uploader, which is why it is easy to miss — none of
+     the 18 were ticked. **Done 2026-07-28** for all 15 permissions sparx actually uses;
+     `public_profile` is now fully complete. The 3 above are deliberately left untouched pending
+     the removal decision — ticking a compliance attestation for an ads permission we never call
+     would be attesting to nothing.
+   - **A reviewer test account, and its credentials pasted into the access-code field.** The
+     Reviewer instructions step reads "Needs your review" until an owner confirms it, and the
+     instructions promise credentials in that field. **This is the step that decides the
+     submission**: a reviewer who cannot sign in to `app.sparx.works` and drive the connect flow
+     fails the review regardless of how good the descriptions are. It also presumes api-rest +
+     social-worker are actually deployed (still outstanding, below).
+   - **A screencast per permission** — 14 of them, showing the OAuth flow and the end-to-end
+     experience. `catalog_management`'s must demo the **Commerce → Sales channels** sync, not
+     social posting; the other 13 are the Social module.
+   - **At least one successful API call per permission**, which takes up to 24h to register. Seven
+     read `0 of 1`: `read_insights`, `pages_read_user_content`, `pages_manage_engagement`,
+     `instagram_manage_insights`, `instagram_manage_comments`, `threads_basic`,
+     `threads_content_publish`. The rest already read `Completed`. The unblock is to exercise them
+     once under Standard Access — set `META_INBOX_ENABLED=true`, reconnect, let the inbox sync and
+     metrics sweep run — which is the same work that would fix Threads' zero calls.
+   - **The Data handling questionnaire** — legal declarations about the entity (data controller,
+     country, subprocessors, public-authority requests). The controller answer is **WizeWorks LLC**,
+     not a natural person, matching the DPA. The public-authority answers are now backed by
+     [docs/corporate/legal/](../corporate/legal/), written 2026-07-28 for exactly this.
+   - **The per-permission agreement checkbox, and Submit.** Attestations — the owner's to make.
+
+   What each unlocks once approved: Meta engagement scopes light up the Inbox for Facebook +
+   Instagram, Meta insights scopes turn reach/views from dashes into numbers with no code change, and
+   the Pinterest / TikTok / YouTube content-API approvals make those platforms connectable at all.
+   See §10 for how to tell when one has landed.
+
+   Unrelated but on the same developer account: two **past-due Required Actions** (a platform-policy
+   violation on `stumbleable`, a data-access renewal on `JobSight Pro`), both showing App state
+   **Restricted**. Different apps and a different business, so not a sparx blocker — but unresolved
+   enforcement on an account is not a helpful backdrop to a review submission.
+
 3. **Live verification.** Nothing here has been exercised against a real platform account.
 4. **Two platforms cannot connect at all, for reasons outside the code** (found 2026-07-28 by
    probing each platform's token endpoint with the credentials in Secret Manager):
