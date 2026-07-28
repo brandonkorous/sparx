@@ -64,6 +64,12 @@ COPY packages/story-schemas/package.json packages/story-schemas/
 # (its own closure — cms-schemas, db, events — is already above).
 COPY packages/api-core/package.json packages/api-core/
 COPY packages/social/package.json packages/social/
+# The sequence editor imports @sparx/email-sequences/schemas — the client-safe zod
+# subpath, no db and no server code. The PACKAGE still declares @sparx/db and
+# @sparx/email-sends, and the filtered install resolves what a package DECLARES, not
+# what a surface imports, so email-sends has to be here too (db is already above).
+COPY packages/email-sends/package.json packages/email-sends/
+COPY packages/email-sequences/package.json packages/email-sequences/
 # Root postinstall runs `pnpm --filter @sparx/db db:generate`, which needs
 # both the schema source AND the prisma config file (the multi-file schema
 # lives in prisma/schema/, declared in prisma.config.ts).
@@ -103,6 +109,8 @@ COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/story-schemas packages/story-schemas
 COPY packages/api-core packages/api-core
 COPY packages/social packages/social
+COPY packages/email-sends packages/email-sends
+COPY packages/email-sequences packages/email-sequences
 COPY apps/workbench apps/workbench
 
 # Generate Prisma client (@sparx/auth imports @sparx/db which re-exports it).

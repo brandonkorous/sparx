@@ -79,6 +79,13 @@ COPY packages/blueprints ./packages/blueprints
 COPY packages/marketplace-schemas ./packages/marketplace-schemas
 COPY packages/cms-editor ./packages/cms-editor
 COPY packages/email-platform ./packages/email-platform
+# Email sequences — the /v1/email/sequences routes and the blueprint installer's
+# sequence step both import @sparx/email-sequences at module load. It is a LEAN
+# producer by design (deps: @sparx/db + @sparx/email-sends only, no render/React),
+# so @sparx/email-sends comes with it — the only member of its closure not already
+# copied above. Either one missing → ERR_MODULE_NOT_FOUND at boot.
+COPY packages/email-sends ./packages/email-sends
+COPY packages/email-sequences ./packages/email-sequences
 COPY packages/registrar ./packages/registrar
 COPY packages/godaddy ./packages/godaddy
 COPY packages/payments ./packages/payments
