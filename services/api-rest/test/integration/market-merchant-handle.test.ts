@@ -39,6 +39,12 @@ async function createSite(t: TestTenant, name: string): Promise<string> {
 
 describe('sparx.market merchant identity — site-chosen handle (docs/131 §7)', () => {
   it('projects the merchant under its handle + marketed-site name, not the tenant slug', async () => {
+    // A FRESH handle per run. The handle is GLOBALLY unique, so a fixed one makes this
+    // test pass exactly once against a given database and fail forever after — which is
+    // what happened: an earlier run died before its cleanup, and every subsequent run of
+    // the entire api-rest suite failed on a unique violation deep inside the projection
+    // writer. Randomising means an abandoned row costs the next run nothing.
+    const handle = `savory-donuts-${crypto.randomBytes(3).toString('hex')}`;
     const t = await createTestTenant('owner');
     try {
       await enableCommerce(t.tenantId);
@@ -66,14 +72,14 @@ describe('sparx.market merchant identity — site-chosen handle (docs/131 §7)',
       await marketService.updateMerchantProfile(ctx, {
         enabled: true,
         marketPropertyId: donuts,
-        handle: 'savory-donuts',
+        handle,
       });
 
       // The public projection: slug = the handle (NOT the tenant slug), name = the
       // marketed site's name.
-      const merchant = await marketService.getMerchant('savory-donuts');
+      const merchant = await marketService.getMerchant(handle);
       expect(merchant).not.toBeNull();
-      expect(merchant?.slug).toBe('savory-donuts');
+      expect(merchant?.slug).toBe(handle);
       expect(merchant?.slug).not.toBe(tenant.slug);
       expect(merchant?.name).toBe('Savory Donuts');
 
@@ -84,7 +90,7 @@ describe('sparx.market merchant identity — site-chosen handle (docs/131 §7)',
         await expect(
           marketService.updateMerchantProfile(
             { tenantId: other.tenantId, userId: other.userId },
-            { enabled: true, handle: 'savory-donuts' }
+            { enabled: true, handle }
           )
         ).rejects.toThrow(/already taken/i);
       } finally {

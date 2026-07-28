@@ -3,9 +3,12 @@
 //
 // Convention: tenants are named `test_${random()}` and deleted at the end
 // of the test. ON DELETE CASCADE on tenant_id reaches every CMS table, so
-// dropping the tenant drops every row the test created.
+// dropping the tenant drops every row the test created — with the documented
+// exception of the sparx.market global projections, which `dropTestTenant`
+// removes by hand. See the note there before adding another FK-less table.
 
 import crypto from 'node:crypto';
+import { marketService } from '@sparx/commerce';
 import { prisma } from '@sparx/db';
 import type { FastifyInstance } from 'fastify';
 import type { StaffRole } from '@sparx/api-core/auth';
@@ -77,8 +80,37 @@ export async function seedPrimaryProperty(tenantId: string, name: string): Promi
   });
 }
 
+/**
+ * Tear down a fixture tenant.
+ *
+ * THE CASCADE DOES NOT REACH EVERYTHING, and this comment used to claim it did.
+ * `market_listings` and `market_merchants` are the sparx.market GLOBAL projections
+ * (docs/106 §4.7): cross-tenant readable, and therefore deliberately FK-LESS — the
+ * `Tenant` model says so in as many words and does not relate to them. No FK means no
+ * cascade, so deleting the tenant left both rows behind, permanently, keyed on a
+ * tenant id that no longer exists.
+ *
+ * That is not a cosmetic leak. `market_merchants.slug` is GLOBALLY unique, so one
+ * abandoned row permanently owns a handle: `market-merchant-handle.test.ts` claimed
+ * `savory-donuts`, and every subsequent run of the whole api-rest suite — on any
+ * branch, by anyone sharing that database — died on a unique violation inside
+ * `refreshMerchantOnTx`, with a stack pointing at projection code that was working
+ * correctly. Two orphans were sitting in the local database when this was found.
+ *
+ * So the projection is torn down EXPLICITLY, first, through the service that owns that
+ * teardown — if a third global projection is ever added, this follows automatically.
+ *
+ * It has to run INSIDE a tenant session. "Global" describes the READ policy on these
+ * tables (`SELECT … USING (true)`, so the marketplace can list every seller); writes are
+ * still `tenant_id = current_tenant_id()` under FORCE ROW LEVEL SECURITY. A direct
+ * `prisma.marketMerchant.deleteMany({ where: { tenantId } })` therefore deletes NOTHING
+ * and reports no error — RLS filters the rows out and the delete succeeds against zero
+ * of them. That silent no-op is exactly how this went unnoticed in the first place, so
+ * it is worth stating: on these tables, a delete that appears to work may not have.
+ */
 export async function dropTestTenant(tenantId: string): Promise<void> {
-  // Cascade reaches every tenant-scoped table.
+  await marketService.removeAllMarketProjection({ tenantId });
+  // Everything else IS reached by the cascade.
   await prisma.tenant.delete({ where: { id: tenantId } });
 }
 

@@ -323,8 +323,19 @@ export async function removeMarketListing(ctx: ServiceContext, productId: string
   });
 }
 
-/** Tear down the tenant's entire marketplace presence (on disable): remove every
- *  listing + the merchant directory row in one shot. */
+/**
+ * Tear down the tenant's entire marketplace presence (on disable): remove every
+ * listing + the merchant directory row in one shot.
+ *
+ * ALSO THE ONLY THING THAT CLEANS UP AFTER A DELETED TENANT. `market_listings` and
+ * `market_merchants` are FK-less by design (they are read cross-tenant, so they do not
+ * relate to `Tenant`), which means no `ON DELETE CASCADE` reaches them — deleting a
+ * tenant leaves both rows behind, live and unreferenced. `market_merchants.slug` is
+ * globally unique, so an abandoned row also holds a public handle forever. There is no
+ * tenant-delete path in the product today; the day one ships, it must call this first.
+ * The test fixtures' `dropTestTenant` already does, and the note there explains what it
+ * cost to find out.
+ */
 export async function removeAllMarketProjection(ctx: ServiceContext): Promise<void> {
   await withTenant(ctx, async (tx) => {
     await tx.marketListing.deleteMany({ where: { tenantId: ctx.tenantId } });
