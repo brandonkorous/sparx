@@ -5,7 +5,7 @@ import { LegalSection, LegalP, LegalList } from '@/components/marketing/legal-do
 export const metadata: Metadata = {
   title: 'Security — sparx',
   description:
-    'How sparx protects your data: database-level tenant isolation, encryption everywhere, and an active SOC 2 program.',
+    'How sparx protects your data: database-level tenant isolation, encryption everywhere, phishing-resistant sign-in, and a written policy for government data requests.',
   alternates: { canonical: '/security' },
 };
 
@@ -46,22 +46,54 @@ export default function SecurityPage() {
               </LegalP>
             </LegalSection>
 
+            <LegalSection heading="Signing in">
+              <LegalP>
+                Every account can turn on a second step at sign-in, and we support two kinds.
+                Passkeys are the stronger one — the secret never leaves your device, so there is
+                nothing for a fake sign-in page to steal. Authenticator apps work anywhere, on any
+                phone. Backup codes are stored encrypted rather than in plain text, so a database
+                copy does not hand anyone ten working ways into your account.
+              </LegalP>
+            </LegalSection>
+
             <LegalSection heading="Access & data handling">
               <LegalList
                 items={[
                   'Personal information is excluded from application logs and masked in error reporting.',
-                  'Administrative access is restricted to personnel who need it and is logged.',
+                  'Administrative access is restricted to personnel who need it and is logged. Our support staff cannot assume your session — there is no impersonation.',
                   'Payments run through a PCI-compliant processor — we never store raw card numbers.',
+                  'Credentials you connect — social accounts, AI keys, payment gateways — are encrypted at rest and never displayed back to you once saved.',
+                  'We hold no AI credential of our own, so your data is never sent to an AI provider on our account and is never used to train a model.',
                 ]}
               />
             </LegalSection>
 
+            <LegalSection heading="Government & law-enforcement requests">
+              <LegalP>
+                We have a written policy for what happens when an authority demands data, and we
+                follow it before anything is disclosed: check that the request is a valid legal
+                instrument, challenge it if it is unlawful or overbroad, disclose only the minimum
+                it compels, tell the affected customer unless a court order forbids it, and log
+                every request — including the ones we refuse. Section 10 of the{' '}
+                <a href="/legal/privacy">Privacy Policy</a> and section 9 of the{' '}
+                <a href="/legal/dpa">DPA</a> set out the commitment in full.
+              </LegalP>
+            </LegalSection>
+
             <LegalSection heading="Compliance">
               <LegalP>
-                sparx is undergoing a SOC 2 Type II examination. We offer a GDPR/CCPA-aligned{' '}
-                <a href="/legal/dpa">Data Processing Addendum</a>, and our{' '}
+                We offer a GDPR/CCPA-aligned <a href="/legal/dpa">Data Processing Addendum</a>, we
+                publish the full list of{' '}
+                <a href="/legal/subprocessors">companies that handle data on our behalf</a>, and our{' '}
                 <a href="/legal/privacy">Privacy Policy</a> describes how we handle personal data as
                 both a controller and a processor.
+              </LegalP>
+              <LegalP>
+                We build to the controls a SOC 2 examination covers, but we have not completed one
+                and hold no SOC 2 report today. We would rather tell you that than imply a
+                certificate we cannot produce. When an examination is underway we will say so here,
+                with the auditor and the period named, and the report itself will be available under
+                NDA.
               </LegalP>
             </LegalSection>
 

@@ -18,13 +18,26 @@ export interface LegalDocVersion {
 }
 
 export const LEGAL_DOC_VERSIONS = {
-  terms: { version: '2026-06-02', effectiveDate: '2026-06-02', material: true },
-  privacy: { version: '2026-06-02', effectiveDate: '2026-06-02', material: true },
-  dpa: { version: '2026-06-02', effectiveDate: '2026-06-02', material: true },
-  aup: { version: '2026-06-02', effectiveDate: '2026-06-02', material: true },
+  terms: { version: '2026-07-28', effectiveDate: '2026-07-28', material: true },
+  privacy: { version: '2026-07-28', effectiveDate: '2026-07-28', material: true },
+  dpa: { version: '2026-07-28', effectiveDate: '2026-07-28', material: true },
+  aup: { version: '2026-07-28', effectiveDate: '2026-07-28', material: true },
 } as const satisfies Record<string, LegalDocVersion>;
 
 export type LegalDocType = keyof typeof LEGAL_DOC_VERSIONS;
+
+/** The published subprocessor list (/legal/subprocessors). Versioned like the
+ *  documents above — the DPA promises notice of material changes, and a version
+ *  string is how that notice is evidenced — but deliberately NOT a member of
+ *  LEGAL_DOC_VERSIONS, because that map is the set of documents a tenant
+ *  ACCEPTS. A subprocessor change gives the customer a right to object; it does
+ *  not require them to re-accept a contract, so it must not widen LegalDocType
+ *  and leak into the acceptance vocabulary. */
+export const SUBPROCESSORS_VERSION: LegalDocVersion = {
+  version: '2026-07-28',
+  effectiveDate: '2026-07-28',
+  material: false,
+};
 
 /** The docs every tenant accepts at sign-up. The DPA is required for EU tenants
  *  only (docs/16 §10), so it is offered post-onboarding, not force-accepted. */

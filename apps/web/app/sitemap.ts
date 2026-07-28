@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { LEGAL_DOC_VERSIONS } from '@/lib/legal-versions';
+import { LEGAL_DOC_VERSIONS, SUBPROCESSORS_VERSION } from '@/lib/legal-versions';
 import { MODULE_ORDER, MODULES } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
 import { TOOL_SLUGS } from '@/components/marketing/tools/registry';
@@ -148,6 +148,15 @@ function staticPages(now: Date): MetadataRoute.Sitemap {
     changeFrequency: 'yearly' as const,
     priority: 0.3,
   }));
+  // The subprocessor list is versioned separately from the accepted documents
+  // (it is disclosed, not accepted — see SUBPROCESSORS_VERSION), so it carries
+  // its own entry rather than riding the tuple above.
+  legal.push({
+    url: `${BASE}/legal/subprocessors`,
+    lastModified: new Date(SUBPROCESSORS_VERSION.effectiveDate),
+    changeFrequency: 'yearly' as const,
+    priority: 0.3,
+  });
   return [
     {
       url: `${BASE}/platform`,

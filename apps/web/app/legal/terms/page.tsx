@@ -45,10 +45,12 @@ export default function TermsPage() {
 
       <LegalSection heading="3. The Service & modules">
         <LegalP>
-          sparx is modular. You activate only the modules you use — builder, commerce, CRM, CMS,
-          email, B2B/wholesale, dropship, and AI/MCP integration — and your subscription reflects
-          that selection. We may add, change, or deprecate features over time; we will give
-          reasonable notice of material changes that reduce core functionality you rely on.
+          sparx is modular. You activate only the modules you use — site builder, commerce, CRM,
+          CMS, email, B2B and wholesale, inventory, dropship, scheduling and bookings, forms, social
+          publishing, the marketplace, and AI/MCP integration — and your subscription reflects that
+          selection. A module you have not activated stores no data and runs nothing on your behalf.
+          We may add, change, or deprecate features over time; we will give reasonable notice of
+          material changes that reduce core functionality you rely on.
         </LegalP>
       </LegalSection>
 
@@ -81,15 +83,49 @@ export default function TermsPage() {
         </LegalP>
       </LegalSection>
 
-      <LegalSection heading="7. Third-party services">
+      <LegalSection heading="7. Third-party services & connected accounts">
         <LegalP>
-          The Service integrates with third parties you choose to connect — including payment
-          processors, shipping and tax providers, and email delivery. Your use of those services is
-          governed by their own terms, and we are not responsible for their acts or omissions.
+          The Service integrates with third parties you choose to connect — payment gateways,
+          shipping and tax providers, AI providers, and social media platforms. Your use of those
+          services is governed by their own terms, and we are not responsible for their acts or
+          omissions.
+        </LegalP>
+        <LegalP>
+          Where you connect an account you control — a social profile, an AI provider key, a payment
+          gateway — you authorize us to act on that account to the extent needed to deliver the
+          features you have asked for, and you confirm you are entitled to grant that access. You
+          remain bound by that platform&rsquo;s own rules for anything done through your connection,
+          and you are responsible for what you publish through it. We may suspend a connection
+          without notice if a platform requires it, if the access is revoked, or if using it would
+          put our own standing with that platform at risk. You can disconnect any account at any
+          time, which revokes our access to it.
+        </LegalP>
+        <LegalP>
+          Keys and tokens for connected accounts are encrypted at rest. We never display a stored
+          secret back to you, and we do not use a connected account for any purpose beyond the
+          feature you enabled it for.
         </LegalP>
       </LegalSection>
 
-      <LegalSection heading="8. Intellectual property">
+      <LegalSection heading="8. Domain names">
+        <LegalP>
+          If you register or transfer a domain name through sparx, we do so through an accredited
+          registrar acting as our partner. Registration is subject to that registrar&rsquo;s
+          agreement and to the rules of ICANN and the relevant domain registry, which sit above
+          these Terms — including their requirements about accurate registrant contact details,
+          dispute resolution, and transfer locks.
+        </LegalP>
+        <LegalP>
+          You are the registrant and the domain is yours. You must give accurate contact details and
+          keep them current; an inaccurate registration can cause the domain to be suspended by
+          parties outside our control. Domain fees are charged separately from your subscription,
+          are non-refundable once a registration is submitted, and renew on the registry&rsquo;s
+          cycle rather than yours. If your sparx subscription ends, your domain remains yours — you
+          may transfer it away, and we will not hold it.
+        </LegalP>
+      </LegalSection>
+
+      <LegalSection heading="9. Intellectual property">
         <LegalP>
           The Service, including its software, design, and documentation, is owned by WizeWorks and
           its licensors and is protected by intellectual-property laws. These Terms grant you no
@@ -97,7 +133,7 @@ export default function TermsPage() {
         </LegalP>
       </LegalSection>
 
-      <LegalSection heading="9. Suspension & termination">
+      <LegalSection heading="10. Suspension & termination">
         <LegalP>
           You may cancel at any time from your dashboard. We may suspend or terminate access for
           material breach of these Terms, non-payment, or to comply with law. On termination, your
@@ -106,7 +142,7 @@ export default function TermsPage() {
         </LegalP>
       </LegalSection>
 
-      <LegalSection heading="10. Warranties & disclaimers">
+      <LegalSection heading="11. Warranties & disclaimers">
         <LegalP>
           The Service is provided &ldquo;as is&rdquo; and &ldquo;as available.&rdquo; To the fullest
           extent permitted by law, we disclaim all implied warranties, including merchantability,
@@ -115,7 +151,7 @@ export default function TermsPage() {
         </LegalP>
       </LegalSection>
 
-      <LegalSection heading="11. Limitation of liability">
+      <LegalSection heading="12. Limitation of liability">
         <LegalP>
           To the fullest extent permitted by law, neither party will be liable for indirect,
           incidental, special, consequential, or punitive damages, and our aggregate liability
@@ -124,7 +160,7 @@ export default function TermsPage() {
         </LegalP>
       </LegalSection>
 
-      <LegalSection heading="12. Changes to these Terms">
+      <LegalSection heading="13. Changes to these Terms">
         <LegalP>
           We may update these Terms from time to time. When we make a material change we will notify
           you and, where appropriate, ask you to re-accept. The version and effective date at the
@@ -138,7 +174,7 @@ export default function TermsPage() {
         />
       </LegalSection>
 
-      <LegalSection heading="13. Contact">
+      <LegalSection heading="14. Contact">
         <LegalP>
           Questions about these Terms? Email{' '}
           <a href="mailto:legal@sparx.works">legal@sparx.works</a>.

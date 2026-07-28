@@ -56,17 +56,75 @@ export default function AupPage() {
         />
       </LegalSection>
 
-      <LegalSection heading="4. Email & messaging">
+      <LegalSection heading="4. Email">
         <LegalP>
-          Outbound email and messaging you send through sparx must comply with anti-spam laws (such
-          as CAN-SPAM and GDPR). You must have a lawful basis to contact recipients, honor
-          unsubscribe requests promptly, and not send unsolicited bulk messages. We include
-          one-click unsubscribe in marketing email and may suspend sending that generates abuse
-          complaints.
+          Outbound email you send through sparx must comply with anti-spam laws (such as CAN-SPAM
+          and GDPR). You must have a lawful basis to contact recipients, honor unsubscribe requests
+          promptly, and not send unsolicited bulk messages. We include one-click unsubscribe in
+          marketing email and may suspend sending that generates abuse complaints.
+        </LegalP>
+        <LegalP>
+          Purchased, scraped, rented, and appended lists are not a lawful basis and are not
+          permitted here, whatever the seller told you. Nor may you disguise who a message is from:
+          the sender name, the from address, and the subject line must honestly identify your
+          business and the message.
         </LegalP>
       </LegalSection>
 
-      <LegalSection heading="5. Enforcement">
+      <LegalSection heading="5. Text messages">
+        <LegalP>
+          <strong>
+            Text messaging is held to a stricter standard than email, because the law holds it to
+            one.
+          </strong>{' '}
+          In the United States the Telephone Consumer Protection Act carries statutory damages per
+          message, claimed per recipient, and an email opt-in is not consent to be texted. Getting
+          this wrong is one of the few ways a small business can face a disproportionate legal bill,
+          which is why we are direct about it.
+        </LegalP>
+        <LegalList
+          items={[
+            'Text only people who gave you express consent to be texted, at the number they gave you, for the kind of message you are sending. Consent to marketing texts must be its own, separate opt-in — never bundled into another agreement or a condition of purchase.',
+            'Keep proof of that consent. If a complaint arrives, the burden of showing consent is yours, not ours.',
+            'Honor STOP, UNSUBSCRIBE, and every ordinary way a person says stop, immediately and permanently.',
+            'Identify your business in the message, and respect quiet hours and the other timing rules that apply where the recipient is.',
+            'Do not send marketing texts to a number solely because it appeared on an order or a booking. A transactional relationship is a basis for transactional messages — a confirmation, a reminder — not for promotions.',
+          ]}
+        />
+      </LegalSection>
+
+      <LegalSection heading="6. Publishing to social platforms">
+        <LegalP>
+          When you connect a social account, sparx publishes through the platform&rsquo;s own API
+          under sparx&rsquo;s developer registration. That has a consequence worth stating plainly:
+          serious abuse by one business can get the integration suspended for every business using
+          it. So the platforms&rsquo; rules are our rules.
+        </LegalP>
+        <LegalList
+          items={[
+            'Connect only accounts you own or are authorized to manage, and comply with each platform’s terms and community standards for everything you publish through sparx.',
+            'No artificial engagement, follower or like buying, mass unsolicited messaging, or automated behavior a platform prohibits.',
+            'Do not misrepresent who is posting, and disclose paid or sponsored content where the platform or the law requires it.',
+            'Comments, reviews, and messages that arrive in your inbox are other people’s personal data. Use them to run your business — reply, resolve, moderate — not to build a marketing list, and delete them on request or when a platform requires it.',
+          ]}
+        />
+        <LegalP>
+          We may disconnect an account or suspend social publishing without notice where a platform
+          requires it or where continuing would jeopardize the integration for other customers.
+        </LegalP>
+      </LegalSection>
+
+      <LegalSection heading="7. AI features">
+        <LegalP>
+          AI features run on a provider key you supply, so you are the account holder and that
+          provider&rsquo;s usage policies apply to you directly. Do not use them to generate content
+          that would violate section 2 of this policy, to impersonate a real person, or to produce
+          reviews, testimonials, or endorsements presented as genuine when they are not. Where AI
+          drafts a reply to one of your customers, you remain responsible for what is actually sent.
+        </LegalP>
+      </LegalSection>
+
+      <LegalSection heading="8. Enforcement">
         <LegalP>
           We may investigate suspected violations and may remove content, throttle or suspend
           functionality, or terminate accounts that violate this policy — with notice where
@@ -75,7 +133,7 @@ export default function AupPage() {
         </LegalP>
       </LegalSection>
 
-      <LegalSection heading="6. Reporting & contact">
+      <LegalSection heading="9. Reporting & contact">
         <LegalP>
           To report a violation or ask whether a use case is permitted, email{' '}
           <a href="mailto:abuse@sparx.works">abuse@sparx.works</a>. We update this policy as the

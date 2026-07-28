@@ -351,7 +351,7 @@ export const ENTERPRISE_FEATS = [
   'SSO / SAML + SCIM',
   'Custom SLA with credits',
   'Dedicated support + onboarding',
-  'SOC 2 review + custom MSA',
+  'Security review + custom MSA',
   'Volume pricing',
   'Migration assistance',
 ];
