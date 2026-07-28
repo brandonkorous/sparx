@@ -35,13 +35,18 @@ import site from './site.json' with { type: 'json' };
 // legal footer around this body, so the doc carries neither.
 import welcomeEmail from './welcome-email.json' with { type: 'json' };
 
+// The second touch of the welcome journey — a day-3 follow-up ("a few places to
+// start"), built the same way from the silica email kit. The `sequences` block
+// below stitches the two into a live 2-touch welcome series.
+import welcomeEmail2 from './welcome-email-2.json' with { type: 'json' };
+
 // The 3 universal journal posts, mirrored from the live Template journal
 // (list_content_entries) — tiptap bodies verbatim, featured images by `{ $asset }`.
 import content from './content.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx',
-  version: '1.0.0',
+  version: '1.1.0',
   name: 'sparx',
   summary:
     'A complete, multi-module starter — shop, journal, booking, and wholesale — in the sparx Ember look. Install it, make it yours, and launch a polished working site in minutes.',
@@ -297,9 +302,44 @@ const blueprint = {
     ],
   },
 
-  // ── Emails (a welcome email) ─────────────────────────────────────────────────
-  // Installs draft (the tenant reviews before it sends), per the doc's decision D4.
-  emails: [{ name: 'Welcome', doc: welcomeEmail, publish: false }],
+  // ── Emails (the welcome journey's two touches) ───────────────────────────────
+  // Install draft (the tenant reviews before anything sends), per the doc's D4. The
+  // `sequences` block below references these two by name.
+  emails: [
+    { name: 'Welcome', doc: welcomeEmail, publish: false },
+    { name: 'Welcome — day 3', doc: welcomeEmail2, publish: false },
+  ],
+
+  // ── Sequences (a welcome journey, ready to turn on) ──────────────────────────
+  // The capstone: a real 2-touch welcome SERIES, not a single nudge. A new customer
+  // gets the welcome email on day 0 and the "places to start" follow-up on day 3.
+  // Installs as a DRAFT (`activate: false`) to match the emails' draft posture
+  // (decision D4) — the tenant reviews both emails, publishes them, then turns the
+  // series on (a draining sequence must reference PUBLISHED emails, since dispatch
+  // renders the published version). Once on, pair it with the platform's
+  // on-by-default "Welcome new customers" automation (enrols on crm.customer.created)
+  // for a hands-off first week. `exitOnPurchase` stops the follow-up the moment they
+  // buy — a welcome, not a nag. Steps reference the two emails above by name; the
+  // installer resolves them to real ids.
+  sequences: [
+    {
+      name: 'Welcome series',
+      description:
+        'Greets a new customer on day 0 and follows up on day 3 with a few places to start. Stops early if they’ve already bought.',
+      reentryPolicy: 'once',
+      exitOnPurchase: true,
+      activate: false,
+      steps: [
+        { emailName: 'Welcome', delaySeconds: 0, emailType: 'marketing', name: 'Day 0 — welcome' },
+        {
+          emailName: 'Welcome — day 3',
+          delaySeconds: 259200,
+          emailType: 'marketing',
+          name: 'Day 3 — places to start',
+        },
+      ],
+    },
+  ],
 
   // ── Site (CAPTURED — the whole point) ────────────────────────────────────────
   // The live Template's frame + pages + theme + symbols, imported verbatim.

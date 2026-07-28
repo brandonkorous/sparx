@@ -25,6 +25,7 @@
     "@sparx/cms-editor": "workspace:*",
     "@sparx/commerce-schemas": "workspace:*",
     "@sparx/crm-schemas": "workspace:*",
+    "@sparx/email-sequences": "workspace:*",
     "@sparx/query": "workspace:*",
     "@sparx/silica-catalog": "workspace:*",
     "@sparx/social": "workspace:*",

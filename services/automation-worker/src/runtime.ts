@@ -41,6 +41,7 @@ import {
 } from '@sparx/automation';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { prisma } from '@sparx/db';
+import { drainDueEnrollments, type DrainResult } from '@sparx/email-sequences';
 import { createPublisher } from '@sparx/events';
 import type { Logger } from 'pino';
 import { env } from './env.js';
@@ -67,13 +68,17 @@ function makeDeps(logger: Logger): EngineDeps {
 export interface TickSummary {
   schedule: ScheduleTickResult;
   runs: TickResult;
+  sequences: DrainResult;
 }
 
 export async function runTick(logger: Logger): Promise<TickSummary> {
   const deps = makeDeps(logger);
   const schedule = await runScheduleTick(deps, prisma);
   const runs = await runAutomationTick(deps, prisma, env.TICK_BATCH);
-  return { schedule, runs };
+  // Advance due email-sequence enrollments (send the current step, schedule the
+  // next) — the same durable, resumable, cross-pod-singleton shape as the run tick.
+  const sequences = await drainDueEnrollments(prisma, env.TICK_BATCH);
+  return { schedule, runs, sequences };
 }
 
 /**

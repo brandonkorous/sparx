@@ -19,6 +19,7 @@
     "@sparx/automation-actions": "workspace:*",
     "@sparx/crm": "workspace:*",
     "@sparx/db": "workspace:*",
+    "@sparx/email-sequences": "workspace:*",
     "@sparx/events": "workspace:*",
     "pino": "^9.5.0",
     "zod": "^4.4.3"

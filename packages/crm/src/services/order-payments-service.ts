@@ -90,7 +90,7 @@ export async function recordPayment(ctx: ServiceContext, rawInput: unknown): Pro
   // When this capture completed the order's balance, announce it's fully paid —
   // the signal the high-value-order automation (and any paid-order consumer)
   // listens for. Fires once (the unpaid→paid edge); `order.paid` tees to the
-  // automation fan-in via the platform-bus ORDER_TEE_TOPICS allow-list.
+  // automation fan-in via the platform-bus PLATFORM_TEE_TOPICS allow-list.
   if (becamePaid) {
     await publishPlatformEvent({
       id: crypto.randomUUID(),

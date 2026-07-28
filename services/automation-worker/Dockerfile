@@ -21,13 +21,16 @@ COPY tsconfig.base.json ./
 # a LEAN producer (db only) — deliberately NOT @sparx/email-platform, which would
 # drag @sparx/email + @sparx/ui + React into this image (docs/84 Slice F1).
 # @sparx/builder-schemas is zod-only — it carries the {{token}} merge grammar the
-# internal-alert sends interpolate (docs/91 §3). pnpm needs every workspace source
-# dir in the dependency tree present to install.
+# internal-alert sends interpolate (docs/91 §3). @sparx/email-sequences is another
+# LEAN producer (db + email-sends only) — the sequence drain + enrol executors,
+# same no-render rationale as email-sends. pnpm needs every workspace source dir in
+# the dependency tree present to install.
 COPY packages/automation ./packages/automation
 COPY packages/automation-schemas ./packages/automation-schemas
 COPY packages/automation-actions ./packages/automation-actions
 COPY packages/builder-schemas ./packages/builder-schemas
 COPY packages/email-sends ./packages/email-sends
+COPY packages/email-sequences ./packages/email-sequences
 COPY packages/crm ./packages/crm
 COPY packages/crm-schemas ./packages/crm-schemas
 COPY packages/commerce-schemas ./packages/commerce-schemas

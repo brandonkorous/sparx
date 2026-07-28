@@ -1,8 +1,8 @@
 # Transactional email — coverage + build tracker
 
-Version: 1.6
+Version: 1.7
 Author: Brandon Korous
-Last Updated: 2026-07-27
+Last Updated: 2026-07-28
 
 > The **living** status + decision log for sparx's transactional & lifecycle email.
 > It answers three questions the design docs don't: what the platform actually
@@ -906,3 +906,105 @@ attribution is a separate build on top of generic form attribution.
 **Verified:** email 59 (+14 link-tracking) · builder 68 · builder-schemas 252 · email-platform 10 ·
 commerce 48 tests pass; email / builder-schemas / builder / email-platform / commerce / api-rest /
 workbench / site typecheck + lint + prettier clean.
+
+## 19. Marketing automation — completing the surface (2026-07-28, uncommitted)
+
+Prompted by "shouldn't there be marketing automation with emails, and shouldn't the CRM send
+automated emails?" — the honest answer, verified in the seed catalog, is **it already ships and
+runs on by default**: the automation engine (docs/81) installs **~45 system automations** per
+tenant as each module activates, including `Welcome new customers`
+(`CRM_WELCOME_NEW_CUSTOMER`, `crm.customer.created` → welcome email), `Abandoned cart nudge`
+(a real 15-min `cart` scan → recovery email ~2h later), `Win back inactive customers` (90-day
+lapse), post-purchase review, order/subscription/return lifecycle, and B2B + invoicing dunning.
+So both halves were already true. This session **completes the surface** around that engine —
+three pieces, all "implement, don't defer."
+
+### 19a. Authoring catalog now matches the engine + engagement triggers
+
+The workbench authoring catalog (`automations-catalog.ts`) had drifted BEHIND the engine: it
+offered fictional events (`commerce.order.refunded`, `crm.deal.won/lost` — the engine does "won"
+via `crm.deal.stage_changed` + a `deal.stageType == won` condition) and was missing many real,
+resolvable triggers and scan entities.
+
+- **`TRIGGER_EVENTS`** rewritten to the engine's real resolver inventory (builtins.ts +
+  automation-actions/resolvers.ts): added `order.paid/fulfilled/delivered/payment_failed`, all six
+  `subscription.*`, all three `return.*`, `inventory.low/depleted`, `crm.customer.subscribed`,
+  `crm.deal.created`, `crm.billing_document.stage_changed`, `crm.b2b_account.created`,
+  `b2b.order.approved/rejected`; fixed `order.refunded`; removed the two fictional deal events.
+- **`SCAN_ENTITIES`** gained the three registered scanners it was missing — `cart` (abandoned
+  carts), `quote` (awaiting a decision), `conversation` (chat) — so an owner can author a scan
+  over them, not just consume the seeds that already do.
+- **New resolvers** (`automation-actions/resolvers.ts`) so every offered trigger resolves fields:
+  `b2b.invoice.overdue` / `b2b.account.credit_hold` (hydrate the account + primary contact),
+  `crm.task.created`, and the **email-engagement** trio `email.opened/clicked/bounced` (hydrate
+  the customer by id/address + campaign).
+- **The engagement tee.** `email.opened/clicked/bounced` were published on the platform bus but
+  **not teed to the automation fan-in** (`pubsub-bridge.ts` teed only order.\*), so those triggers
+  were dormant. Added them to the (renamed) `PLATFORM_TEE_TOPICS` set — the same tee installed in
+  both api-rest (where the Mailgun webhook republishes them) and the worker — so "opened but didn't
+  click → follow up" / "clicked → start a sequence" now fire.
+
+### 19b. Recipe gallery (docs/81 §9)
+
+The 45 system automations only surfaced as rows in a list (filter "Set up by sparx"), reachable
+by nobody who thinks in goals. New **`automations.recipes`** workbench surface — a browse-by-goal
+gallery (`recipe-gallery.tsx` + a curated `recipes-catalog.ts` mapping each shipped automation
+NAME → a goal group + plain-English one-liner + icon). Goal-grouped cards ("Recover lost sales",
+"Keep customers coming back", "Get paid on time", …), each with a big ON/OFF toggle
+(`useSetAutomationStatus`), a state badge, and a "Customize" that opens the automation. This IS the
+one-click Templates Library §9 specifies — a presentation layer over data that already exists.
+
+### 19c. Email SEQUENCES — the one genuinely-missing capability
+
+The docs' "abandoned-cart **3-email sequence**" was, in reality, a single nudge — there was **no
+reusable multi-touch journey object** (the `email.sequence_add/remove` actions were enum entries
+with no executor). Built greenfield:
+
+- **Data** (`packages/db/prisma/schema/88-email-sequences.prisma`, migration
+  `20270124000000_email_sequences`): `EmailSequence` (name, **site-optional `propertyId`** —
+  null = tenant-wide, set = one site, exactly like an automation; `reentryPolicy` once|always;
+  `exitOnPurchase`; ordered JSON `steps` like `automations.actions`) + `EmailSequenceEnrollment`
+  (one person's progress: `recipientEmail` captured at enroll, `currentStep`, `nextRunAt`,
+  `status`, an `activeDedupe` partial-unique that guarantees at most one ACTIVE enrollment per
+  person per sequence, `sourceRefs` for the designed email's DataSources). Both FORCE-RLS +
+  `tenant_isolation`; a `find_due_sequence_enrollments` SECURITY DEFINER scan for cross-tenant
+  drain discovery (mirrors `find_due_automation_runs`).
+- **`@sparx/email-sequences`** — a new LEAN, backend-safe package (deps: `@sparx/db` +
+  `@sparx/email-sends` only, no render/React — same rationale as email-sends, so the worker stays
+  lean), with a client-safe `./schemas` subpath (zod only) the workbench editor imports. It owns
+  CRUD, `enroll`/`unenroll` (re-entry policy + a marketing do-not-contact opt-out honored at
+  enroll), `listEnrollments`, and **`drainDueEnrollments`** — the tick that advances each due
+  enrollment one step: sends the current step via the **same `enqueueSend`** a one-shot
+  `email.send_campaign` uses (suppression + per-recipient render + Mailgun stay where they live),
+  schedules the next, exits on the `exitOnPurchase` goal, completes at the end. Idempotent per step
+  (a `seq:<id>:<n>` dedupe key), self-guards with a new `EMAIL_SEQUENCE_DRAIN` advisory lock, and
+  runs in the automation-worker's cron next to the run tick.
+- **Executors** (`automation-actions/sequences.ts`): `email.sequence_add` / `email.sequence_remove`
+  (module `email`, gated) translate the triggering customer into an enroll/unenroll — flipped from
+  `available: false` to real, available actions in the authoring catalog with a `sequenceId` picker.
+- **REST** `/v1/email/sequences` (CRUD + `/enrollments` + manual `/enroll` `/unenroll`) and a
+  **workbench Sequences surface** (list + step editor with a friendly delay control + email-source
+  picker + a site picker defaulting to the working site + enrollments view).
+
+### 19d. Gold blueprint — a live welcome journey
+
+The sparx blueprint now ships a real **2-touch welcome series** (not a single email): a new
+`sequences` block in `BlueprintSchema` + the installer (resolves each step's `emailName` → the
+created Builder email id, an `activate` flag installs live vs draft, `exitOnPurchase` stops it on
+a purchase). The sparx blueprint adds a day-3 follow-up email (`welcome-email-2.json`) and a
+`Welcome series` sequence over both — installed as a **draft** to match the emails' D4
+review-before-send posture (a draining sequence must reference PUBLISHED emails). The tenant
+reviews + publishes the two emails, turns the series on, and pairs it with the on-by-default
+`Welcome new customers` automation (enrols on `crm.customer.created`) for a hands-off first week.
+Blueprint version bumped `1.0.0 → 1.1.0` (payload changed).
+
+### Hand-off (DB-adjacent — deliberately NOT run this session)
+
+Per the standing DB rule, the migration + new-model code are authored as files only. To bring it
+live, in order: **(1)** `pnpm install` (registers the new `@sparx/email-sequences` workspace
+package + the api-rest / automation-worker / automation-actions dep links); **(2)** apply
+migration `20270124000000_email_sequences` (docker locally, then the DB Migrate pipeline for prod);
+**(3)** `prisma generate` (creates the `EmailSequence` / `EmailSequenceEnrollment` client models).
+Until (2)+(3), the sequence service / executors / REST / installer typecheck-fail ONLY on the
+missing prisma models — expected; every other package (workbench catalog, resolvers, recipe
+gallery, pubsub tee) typechecks now.

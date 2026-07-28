@@ -104,6 +104,9 @@ export const ADVISORY_LOCKS = {
   /** services/api-rest — evergreen slot filler: schedules the least-recently-used
    *  evergreen post into the next empty auto-fill posting slot. */
   SOCIAL_SLOT_FILL: 4242_4260,
+  /** services/automation-worker — email-sequence enrollment drain: advances each
+   *  due enrollment (send the current step, schedule the next, exit on goal). */
+  EMAIL_SEQUENCE_DRAIN: 4242_4261,
 } as const;
 
 export type AdvisoryLockName = keyof typeof ADVISORY_LOCKS;

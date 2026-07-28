@@ -25,6 +25,7 @@ import {
   variantService,
 } from '@sparx/commerce';
 import { emailService, pageService, siteService } from '@sparx/builder';
+import { createSequence, updateSequence, deleteSequence } from '@sparx/email-sequences';
 import { publishService, savedThemeService } from '@sparx/sitebuilder';
 import {
   parseTypeSchema,
@@ -58,6 +59,7 @@ export interface InstallResult {
   theme: { id: string; name: string } | null;
   pages: { name: string; id: string; recordType: string | null; slug: string | null }[];
   emails: { name: string; id: string }[];
+  sequences: { name: string; id: string }[];
   content: { typeKey: string; slug: string | null; id: string }[];
   counts: Record<string, number>;
 }
@@ -393,6 +395,7 @@ export async function installBlueprint(
     theme: null,
     pages: [],
     emails: [],
+    sequences: [],
     content: [],
     counts: {},
   };
@@ -871,6 +874,43 @@ export async function installBlueprint(
       result.emails.push({ name: e.name, id: email.id });
     }
 
+    // 10a. Email sequences (docs/81 §9) — Email module only, AFTER emails so each
+    //      step can resolve its blueprint email (by name) to the just-created row id.
+    //      Scoped to the install's TARGET property (same one pages/emails install
+    //      under) so a sequence belongs to the site it shipped with. Created as draft
+    //      unless `activate`, mirroring email publish.
+    if (isOn('email') && (blueprint.sequences ?? []).length > 0) {
+      const emailIdByName = new Map(result.emails.map((e) => [e.name, e.id]));
+      for (const s of blueprint.sequences) {
+        const steps = s.steps.map((st, i) => {
+          const builderEmailId = emailIdByName.get(st.emailName);
+          if (!builderEmailId) {
+            throw new Error(
+              `Blueprint sequence "${s.name}" step ${String(i + 1)} references unknown email ` +
+                `"${st.emailName}" (no blueprint email with that name).`
+            );
+          }
+          return {
+            id: `step-${String(i)}`,
+            ...(st.name !== undefined ? { name: st.name } : {}),
+            delaySeconds: st.delaySeconds,
+            emailType: st.emailType,
+            source: { kind: 'builder' as const, builderEmailId },
+          };
+        });
+        const seq = await createSequence(ctx, {
+          name: s.name,
+          description: s.description,
+          propertyId,
+          reentryPolicy: s.reentryPolicy,
+          exitOnPurchase: s.exitOnPurchase,
+          steps,
+        });
+        if (s.activate) await updateSequence(ctx, seq.id, { status: 'active' });
+        result.sequences.push({ name: s.name, id: seq.id });
+      }
+    }
+
     result.counts = {
       assets: blueprint.assets.length,
       content: result.content.length,
@@ -879,6 +919,7 @@ export async function installBlueprint(
       products: result.products.length,
       pages: result.pages.length,
       emails: result.emails.length,
+      sequences: result.sequences.length,
     };
 
     // 10b. Baseline capture (docs/55 §4) — record the per-artifact merge ANCESTOR so
@@ -1065,6 +1106,10 @@ export async function deleteInstall(ctxIn: InstallContext, installId: string): P
 
   // Reverse dependency order, so each delete's "is placed" / "has descendants" /
   // FK guard is already satisfied by the time we reach the parent.
+  // Sequences before emails: a step references a blueprint email by id, so tear the
+  // journey down first. deleteSequence hard-deletes a never-enrolled draft, else
+  // archives (keeps the record that people were emailed) — best-effort like the rest.
+  for (const s of r.sequences ?? []) await deleteSequence(ctx, s.id).catch(warn('sequence', s.id));
   for (const e of r.emails ?? []) await emailService.remove(ctx, e.id).catch(warn('email', e.id));
   // The installed site's pages. `siteService` owns the silica columns, but the ROW
   // is still a BuilderPage, so removal goes through the page service exactly as

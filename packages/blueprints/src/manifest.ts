@@ -377,6 +377,34 @@ export const EmailDecl = z.object({
 });
 export type EmailDecl = z.infer<typeof EmailDecl>;
 
+// ── Email sequences (docs/81 §9) ────────────────────────────────────────────────
+/** One step of a blueprint sequence. References a blueprint EMAIL by its `name`
+ *  (the installer resolves it to the created Builder email's id). `delaySeconds`
+ *  is the wait before this step (0 on the first = send on enrol). */
+export const SequenceStepDecl = z.object({
+  emailName: z.string().min(1).max(255),
+  delaySeconds: z
+    .number()
+    .int()
+    .min(0)
+    .max(365 * 24 * 60 * 60),
+  emailType: z.enum(['transactional', 'marketing']).default('marketing'),
+  name: z.string().max(255).optional(),
+});
+export type SequenceStepDecl = z.infer<typeof SequenceStepDecl>;
+
+/** A reusable multi-touch journey. Steps reference blueprint emails by name.
+ *  `activate` installs it live (draining) vs draft — default false, like email publish. */
+export const SequenceDecl = z.object({
+  name: z.string().min(1).max(255),
+  description: z.string().max(1000).optional(),
+  reentryPolicy: z.enum(['once', 'always']).default('once'),
+  exitOnPurchase: z.boolean().default(false),
+  activate: z.boolean().default(false),
+  steps: z.array(SequenceStepDecl).min(1).max(25),
+});
+export type SequenceDecl = z.infer<typeof SequenceDecl>;
+
 // ── The Blueprint ──────────────────────────────────────────────────────────────
 
 export const BlueprintSchema = z.object({
@@ -404,6 +432,7 @@ export const BlueprintSchema = z.object({
    *  commerce/content-only blueprint (no hosted site) stays expressible. */
   site: SiteDecl.optional(),
   emails: z.array(EmailDecl).max(100).default([]),
+  sequences: z.array(SequenceDecl).max(20).default([]),
 });
 export type Blueprint = z.infer<typeof BlueprintSchema>;
 

@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx",
   "name": "sparx",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A complete, multi-module starter site — shop, journal, booking, and wholesale — in the sparx Ember look.",
   "description": "The reference sparx site: a universal, vertical-neutral starter that shows every module's formatting out of the box — a faceted shop, a journal, a booking page, a wholesale page, About and Contact — wearing the sparx Ember theme (light + dark). Install it, rebrand it to your business, and you have a polished, working site in minutes instead of a blank canvas.",
   "payload": "blueprint.ts",

@@ -13,6 +13,7 @@ function fakeResult(over: Partial<InstallResult> = {}): InstallResult {
     theme: null,
     pages: [],
     emails: [],
+    sequences: [],
     content: [],
     counts: {},
     ...over,

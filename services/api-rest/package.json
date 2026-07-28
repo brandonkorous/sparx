@@ -52,6 +52,7 @@
     "@sparx/dropship": "workspace:*",
     "@sparx/email": "workspace:*",
     "@sparx/email-platform": "workspace:*",
+    "@sparx/email-sequences": "workspace:*",
     "@sparx/events": "workspace:*",
     "@sparx/godaddy": "workspace:*",
     "@sparx/integration-framework": "workspace:*",

@@ -8,6 +8,7 @@ import emailSettingsRoutes from './settings.js';
 import emailDomainRoutes from './domains.js';
 import emailSuppressionRoutes from './suppressions.js';
 import emailBroadcastRoutes from './broadcasts.js';
+import emailSequenceRoutes from './sequences.js';
 import emailAnalyticsRoutes from './analytics.js';
 
 const emailRoutes: FastifyPluginAsync = async (app) => {
@@ -15,6 +16,7 @@ const emailRoutes: FastifyPluginAsync = async (app) => {
   await app.register(emailDomainRoutes);
   await app.register(emailSuppressionRoutes);
   await app.register(emailBroadcastRoutes);
+  await app.register(emailSequenceRoutes);
   await app.register(emailAnalyticsRoutes);
 };
 

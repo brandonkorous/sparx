@@ -11,6 +11,7 @@
 export { installCrmActions } from './crm.js';
 export { installB2bActions } from './b2b.js';
 export { installEmailActions } from './email.js';
+export { installSequenceActions } from './sequences.js';
 export { installFormActions } from './forms.js';
 export { installInventoryActions } from './inventory.js';
 export { installSocialActions } from './social.js';
@@ -25,6 +26,7 @@ export {
 import { installB2bActions } from './b2b.js';
 import { installCrmActions } from './crm.js';
 import { installEmailActions } from './email.js';
+import { installSequenceActions } from './sequences.js';
 import { installFormActions } from './forms.js';
 import { installInventoryActions } from './inventory.js';
 import { installSocialActions } from './social.js';
@@ -35,6 +37,7 @@ export function installModuleActions(): void {
   installCrmActions();
   installB2bActions();
   installEmailActions();
+  installSequenceActions();
   installFormActions();
   installInventoryActions();
   installSocialActions();

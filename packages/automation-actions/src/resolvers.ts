@@ -229,6 +229,90 @@ async function hydrateB2bAccount(ctx: TenantCtx, accountId: string): Promise<Res
   };
 }
 
+/** Extra numbers carried on a `b2b.invoice.overdue` / `b2b.account.credit_hold`
+ *  payload, surfaced alongside the hydrated account so a dunning template can read
+ *  the overdue age + invoice figure without a second query. */
+function b2bNotificationFields(p: Record<string, unknown>): ResolvedFields {
+  const fields: ResolvedFields = {};
+  if (typeof p.overdueDays === 'number') fields['b2bAccount.overdueDays'] = p.overdueDays;
+  if (typeof p.invoiceNumber === 'string') fields['invoice.number'] = p.invoiceNumber;
+  if (typeof p.amountCents === 'number') fields['invoice.amountCents'] = p.amountCents;
+  return fields;
+}
+
+// ─── task (event) ──────────────────────────────────────────────────────────────
+//
+// `crm.task.created` carries only { taskId, assignedToUserId, dueAt }; the linked
+// customer/deal live on the row, so we re-read it. Exposing `task.*` (+ the task's
+// customer as `customer.*`) lets a rule notify the assignee or follow up with the
+// customer the task is about.
+
+async function hydrateTask(ctx: TenantCtx, taskId: string): Promise<ResolvedFields> {
+  const t = await ctx.tx.task.findUnique({
+    where: { id: taskId },
+    select: {
+      id: true,
+      title: true,
+      dueAt: true,
+      priority: true,
+      status: true,
+      assignedToUserId: true,
+      customerId: true,
+    },
+  });
+  if (!t) return {};
+  return {
+    'task.id': t.id,
+    'task.title': t.title,
+    'task.dueAt': t.dueAt,
+    'task.priority': t.priority,
+    'task.status': t.status,
+    'task.assignedToUserId': t.assignedToUserId,
+    ...(await resolveContact(ctx, { customerId: t.customerId })),
+  };
+}
+
+// ─── email engagement (event) ─────────────────────────────────────────────────
+//
+// `email.opened` / `email.clicked` / `email.bounced` carry the Mailgun-attributed
+// engagement: { customerId?, email, messageId, campaignId? } (the api-rest webhook
+// route republishes the platform signal with exactly these keys — see
+// services/api-rest .../public/email-webhook.ts). We hydrate the customer — directly
+// by id, else by the recipient address — so a follow-up rule can address or tag
+// them, and surface the campaign/message refs as `email.*`. There is no link URL on
+// the payload, so no `email.linkUrl` field is fabricated.
+//
+// These platform-bus topics ARE teed to the automation fan-in: `email.opened` /
+// `email.clicked` / `email.bounced` sit in `PLATFORM_TEE_TOPICS`
+// (packages/crm/src/pubsub-bridge.ts), installed in both api-rest (where the
+// Mailgun webhook republishes them) and the worker — so an engagement-triggered
+// rule fires and this resolver hydrates it.
+
+async function hydrateEmailEngagement(
+  ctx: TenantCtx,
+  payload: Record<string, unknown>
+): Promise<ResolvedFields> {
+  const customerId = typeof payload.customerId === 'string' ? payload.customerId : null;
+  const email = typeof payload.email === 'string' ? payload.email : null;
+  let contact: ResolvedFields = {};
+  if (customerId) {
+    contact = await resolveContact(ctx, { customerId });
+  } else if (email) {
+    const c = await ctx.tx.customer.findFirst({
+      where: { email },
+      select: CUSTOMER_CONTACT_SELECT,
+    });
+    contact = contactFields(c);
+  }
+  const fields: ResolvedFields = { ...contact };
+  // Ensure the recipient address is present even for an anonymous (no-customer) event.
+  if (email && fields['customer.email'] == null) fields['customer.email'] = email;
+  fields['email.address'] = email;
+  if (typeof payload.messageId === 'string') fields['email.messageId'] = payload.messageId;
+  if (typeof payload.campaignId === 'string') fields['email.campaignId'] = payload.campaignId;
+  return fields;
+}
+
 // ─── chat conversation (event + scan) ─────────────────────────────────────────
 
 const CONVERSATION_SELECT = {
@@ -692,6 +776,16 @@ const BILLING_EVENTS = [
 // "approved" moment, so the `b2b-account-approved` welcome email triggers here.
 const B2B_ACCOUNT_EVENTS = ['crm.b2b_account.created'];
 
+// B2B AR notifications — the b2b.escalate_overdue executor publishes these on the
+// @sparx/events bus (both carry `accountId`), so they hydrate the account (+ its
+// primary contact as customer.*) exactly like a b2b_account event, plus the
+// overdue/invoice numbers off the payload.
+const B2B_NOTIFICATION_EVENTS = ['b2b.invoice.overdue', 'b2b.account.credit_hold'];
+
+// Email engagement (Mailgun webhook → platform bus → api-rest republish). Dormant
+// until email.* is teed to the automation fan-in — see hydrateEmailEngagement.
+const EMAIL_ENGAGEMENT_EVENTS = ['email.opened', 'email.clicked', 'email.bounced'];
+
 const INVENTORY_EVENTS = ['inventory.low', 'inventory.depleted'];
 
 // Site form submissions (docs/115). The public submit endpoint dual-publishes
@@ -714,12 +808,26 @@ export function installEntityResolvers(): void {
   for (const ev of B2B_ACCOUNT_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateB2bAccount(ctx, str(p.accountId ?? p.id)));
   }
+  for (const ev of B2B_NOTIFICATION_EVENTS) {
+    registerResolver(ev, async (ctx, p) => ({
+      ...(await hydrateB2bAccount(ctx, str(p.accountId ?? p.id))),
+      ...b2bNotificationFields(p),
+    }));
+  }
+  for (const ev of EMAIL_ENGAGEMENT_EVENTS) {
+    registerResolver(ev, (ctx, p) => hydrateEmailEngagement(ctx, p));
+  }
   for (const ev of INVENTORY_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateInventory(ctx, p));
   }
   for (const ev of FORM_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateFormSubmission(ctx, str(p.submissionId ?? p.id)));
   }
+
+  // Task created (docs/11) — crm.* tees to the automation fan-in via the CRM bus.
+  // The payload is thin ({ taskId, ... }); hydrateTask re-reads the row for the
+  // title/due date + the linked customer.
+  registerResolver('crm.task.created', (ctx, p) => hydrateTask(ctx, str(p.taskId ?? p.id)));
 
   // Announceable entities (docs/133 §9) — feed the social.post action's `announce.*`
   // namespace. A product going live / an article publishing → draft a social post.

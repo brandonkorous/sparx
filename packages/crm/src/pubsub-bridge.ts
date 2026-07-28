@@ -249,12 +249,19 @@ class PubSubTeePlatformBus implements PlatformEventBus {
   }
 }
 
-// Order topics teed off the platform bus. The indexer cares about most of these;
-// `order.paid` is teed for the AUTOMATION fan-in (the high-value-order seed) —
-// the per-topic publish is harmless (nothing subscribes the `order.paid` topic,
-// but the fan-in tee is the point). Other platform topics (email.*, etc.) stay
-// in-process only — teeing them would publish to topics nothing reads.
-const ORDER_TEE_TOPICS: ReadonlySet<string> = new Set([
+// Platform-bus topics teed to the AUTOMATION fan-in. The indexer cares about most
+// of the order.* ones; they are teed so an automation can trigger on them (the
+// high-value-order seed keys on `order.paid`). The per-topic publish is harmless
+// where nothing subscribes it — the fan-in tee is the point.
+//
+// email.opened/clicked/bounced join them so a tenant can build marketing
+// automations that react to ENGAGEMENT ("opened but didn't click in 3 days →
+// follow up", "clicked → add a tag / start a sequence"). These are published by
+// the Mailgun webhook (public/email-webhook.ts → publishPlatformEvent) which runs
+// in api-rest, where this same bridge is installed — so the tee fires there. The
+// engagement resolvers (automation-actions/resolvers.ts) hydrate the customer for
+// them. Everything else stays in-process (teeing it would publish to a dead topic).
+const PLATFORM_TEE_TOPICS: ReadonlySet<string> = new Set([
   'order.created',
   'order.paid',
   'order.cancelled',
@@ -262,6 +269,9 @@ const ORDER_TEE_TOPICS: ReadonlySet<string> = new Set([
   'order.fulfilled',
   'order.delivered',
   'order.refunded',
+  'email.opened',
+  'email.clicked',
+  'email.bounced',
 ]);
 
 let installed = false;
@@ -293,7 +303,7 @@ export function installCrmPubSubBridge({ projectId, logger }: InstallOptions): v
   setPublisher(new CrmPubSubPublisher(topics, logger, getPublisher()));
 
   // Platform bus: wrap the active bus so order.* tees to Pub/Sub.
-  setPlatformBus(new PubSubTeePlatformBus(getPlatformBus(), topics, logger, ORDER_TEE_TOPICS));
+  setPlatformBus(new PubSubTeePlatformBus(getPlatformBus(), topics, logger, PLATFORM_TEE_TOPICS));
 
   installed = true;
   logger.info({ projectId }, 'crm-pubsub: bridges installed (crm.* + order.*)');
