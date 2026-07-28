@@ -9,6 +9,7 @@
 // "404 on href".
 
 import type { Node as SilicaNode, SymbolDef, Theme } from '@wizeworks/silicaui-html';
+import type { SiteBudget } from './budget';
 
 /* ── What the engine is asked to check ──────────────────────────────────────── */
 
@@ -93,6 +94,12 @@ export interface SiteLintInput {
    *  guessing at a default palette; every other rule is unaffected. */
   theme?: Theme | null;
   targets?: LinkTargets;
+  /** What each picture on the site WEIGHS, keyed by the exact `src` it is referenced
+   *  by — the answer to `imageSourcesOf(input)`, which a caller with a media library
+   *  looks up and hands back. This engine has no network, so a source missing from
+   *  here is reported as unsized rather than assumed weightless. Omit it entirely and
+   *  every picture is unsized; the HTML weight and the styling count still stand. */
+  imageBytes?: Readonly<Record<string, number>>;
 }
 
 /* ── What comes back ────────────────────────────────────────────────────────── */
@@ -198,4 +205,9 @@ export interface SiteLintReport {
   /** How many pages were walked — so a surface can say "checked 7 pages" rather
    *  than showing a clean result that might just mean nothing was inspected. */
   pagesChecked: number;
+  /** What each page WEIGHS, alongside the findings and deliberately not among them.
+   *  A heavy page is a trade, not a defect — a photographer's portfolio is meant to
+   *  be full of large pictures — so nothing here carries a severity or moves
+   *  `status`. See `budget.ts` for what the number does and does not include. */
+  budget: SiteBudget;
 }

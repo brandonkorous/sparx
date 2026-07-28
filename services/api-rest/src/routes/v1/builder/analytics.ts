@@ -8,6 +8,10 @@
 //     → most-viewed paths with their unique-visitor count
 //   GET /v1/builder/analytics/sources?from=&to=&property=
 //     → visit mix by source class (search | direct | social | referral)
+//   GET /v1/builder/analytics/pages?from=&to=&property=
+//     → per PAGE: views, visitors, conversion, revenue attributed, search grade
+//       and real-user load time — the measurability loop (docs/builder-audit
+//       slice 22). Every page, including the ones nobody visited.
 //
 // LIVE first-party analytics over `site_analytics_events` (captured cookieless
 // by POST /v1/public/site/collect), scoped to ONE property — `?property=<id>`
@@ -23,6 +27,7 @@ import { requireRole } from '@sparx/api-core/auth';
 
 import { requireBuilderModule, toBuilderContextFor } from '../../../lib/builder-context.js';
 import * as reports from '../../../lib/site-analytics-reports.js';
+import { pagePerformance } from '../../../lib/page-performance.js';
 
 const RangeQuery = z.object({
   from: z.string().datetime().optional(),
@@ -87,6 +92,27 @@ const builderAnalyticsRoutes: FastifyPluginAsync = (app) => {
     return ok(
       await withTenant({ tenantId }, (tx) => reports.sources(tx, propertyId, from, toExclusive))
     );
+  });
+
+  /**
+   * How each page is DOING, not merely which are busiest.
+   *
+   * The join four modules could not answer separately: site analytics for traffic and
+   * real-user load time, commerce for the revenue attributed to landing there, the SEO
+   * module for the stored grade. `viewer` like the rest of this file — reading how your
+   * own site performs is not a change to it.
+   *
+   * Unpaginated on purpose. A site has tens of pages, not thousands, and the page with
+   * no traffic is the row worth reading — cutting the list at a limit would hide
+   * exactly it.
+   */
+  app.get('/v1/builder/analytics/pages', async (request) => {
+    requireRole(request, 'viewer');
+    await requireBuilderModule(request);
+    const q = RangeQuery.parse(request.query);
+    const ctx = await toBuilderContextFor(request, q.property);
+    const { from, toExclusive } = reports.resolveRange(q);
+    return ok(await pagePerformance(request, ctx, { from, toExclusive }));
   });
 
   // Real-user web vitals (avg load time / LCP / CLS) — the "Avg. load time" KPI.

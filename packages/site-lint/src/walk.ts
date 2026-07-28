@@ -115,7 +115,11 @@ export function isComponent(node: ContentNode): node is Extract<SilicaNode, { ki
  *  component, else the kind (`outlet`, `host`) which is its own type. */
 export function typeOf(node: ContentNode): string {
   if (isElement(node)) return node.tag;
-  return node.component;
+  // `?? ''` rather than trusting the type: a tree restored from an old release, or
+  // hand-written by an MCP client, can carry a node with neither a tag nor a
+  // component name. It renders as nothing, which is worth reporting — and a walk
+  // that throws on it reports nothing at all, on exactly the site that needed it.
+  return node.component ?? '';
 }
 
 /** An attribute as a trimmed string, or `''`. Element attrs are typed
@@ -195,6 +199,27 @@ export function visibleText(node: ContentNode, depth = 0): string {
     if (inner) parts.push(inner);
   }
   return parts.join(' ').trim();
+}
+
+/** silica atoms that render an image. `Avatar` is included because a missing avatar
+ *  description is the same problem wearing a different component name — and its file
+ *  is downloaded exactly the same way. */
+export const IMAGE_COMPONENTS = new Set(['image', 'avatar']);
+
+/** Does this node put a picture on the page? An `<img>` element or one of the atoms
+ *  above. Shared by the description check and the weight measurement so the two can
+ *  never disagree about what counts as an image. */
+export function isImageNode(node: ContentNode): boolean {
+  const type = typeOf(node).toLowerCase();
+  if (isElement(node)) return type === 'img';
+  return node.kind === 'component' && IMAGE_COMPONENTS.has(type);
+}
+
+/** The file an image node points at — the element's `src` attribute or the atom's
+ *  `src` prop. `''` when no picture has been chosen, and also when the source is
+ *  bound: a bound image's file is decided by a record this engine cannot see. */
+export function imageSrc(node: ContentNode): string {
+  return isElement(node) ? attr(node, 'src') : prop(node, 'src');
 }
 
 /** Does this subtree show something non-textual a visitor can perceive — an image

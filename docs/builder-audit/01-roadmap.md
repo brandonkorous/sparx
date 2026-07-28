@@ -1,28 +1,61 @@
 # Builder audit — roadmap to 10/10
 
-Version: 1.9.0
+Version: 2.2.0
 Author: Brandon Korous
 Last Updated: 2026-07-28
 
-> **`pnpm install` IS REQUIRED before the next push.** Slice 9 adds a new workspace
-> package (`packages/site-lint`), and the pre-push guard runs
-> `pnpm install --frozen-lockfile` — which fails on a lockfile with no `importers:`
-> entry for it. Two installs have been run and both landed. **One more is due:** slice
-> 11 added `@sparx/site-lint` to `services/api-rest`'s dependencies. Until it runs,
-> that one edge is a hand-made junction — good enough for `tsc` and `vitest`, and
-> nothing else.
-
-> **Status — WAVE 1 COMPLETE (slices 1–8), uncommitted in the working tree (2026-07-28).**
-> `20270123000000_builder_component_silica_tree` is APPLIED to local docker and the
-> Prisma client regenerated (the operator brought dev down and authorised it). Verified
-> in the DB: `silica_tree` present, `tree` now nullable, RLS still ENABLED + FORCED, and
-> all 6 pre-existing version rows untouched with their legacy trees — the additive,
-> no-backfill outcome the migration claimed. **Prod still needs the DB Migrate
-> workflow** on push to `main`; Cloud SQL is private-IP only.
-> Gate-green (typecheck + lint) across `@sparx/seo-audit`, `@sparx/builder`,
-> `@sparx/builder-schemas`, `@sparx/db`, `@sparx/silica-catalog`, `@sparx/api-rest`,
-> `@sparx/site` and `@sparx/workbench`; 502 unit tests pass.
-> Nothing is committed — the operator commits.
+> **Status — WAVES 1 AND 2 COMPLETE (2026-07-28).** Slices 1–11 are committed and pushed
+> as `d839df26` (_feat(builder): pre-publish site check, silica-native saved pieces,
+> shared authoring vocabulary_) plus `5f1e1d75` for the market-projection test fix; both
+> are on `origin/main`. **Slices 12 and 22 are UNCOMMITTED in the working tree:**
+>
+> - **12 — the publish-time budget:** `packages/site-lint` (`budget.ts` + its tests, plus
+>   the `walk.ts` / `content.ts` / `types.ts` / `lint.ts` / `index.ts` edges),
+>   `services/api-rest` (`lib/site-check.ts` + its test, the route's doc header),
+>   `apps/workbench` (`studio/site-check.tsx`, `studio/data.ts`).
+> - **22 — the measurability loop:** `packages/site-lint` (`routes.ts` + `routes.test.ts`
+>   gain the record type behind each parameterized route), `services/api-rest`
+>   (`lib/page-performance.ts` + its test, `pageMetrics` in `lib/site-analytics-reports.ts`,
+>   the new route in `routes/v1/builder/analytics.ts`), `apps/workbench`
+>   (`builder/page-results.tsx`, `builder/page-results-data.ts`, the catalog entry in
+>   `lib/surfaces/catalog/builder.ts`).
+>
+> **No new workspace package in either**, so **no `pnpm install` and no Dockerfile change
+> is needed**. **The file-ownership boundary
+> that used to live here is retired** — it listed which files were ours and which were the
+> parallel social agent's, and the eleven committed slices no longer need separating. The
+> social agent is still working in this checkout, so the standing rule survives it: stage
+> by path (the files named above), never `git add -A`, and re-check the branch before
+> committing. `apps/workbench/Dockerfile` and `apps/workbench/next.config.mjs` are dirty
+> in this tree and are NOT ours.
+>
+> **The next `pnpm install` is already done.** Three were needed as the slices added
+> workspace edges (`packages/site-lint`, then its `@sparx/site-themes` dependency, then
+> api-rest's dependency on site-lint); all three ran and the lockfile is committed.
+>
+> **Migration `20270123000000_builder_component_silica_tree`** is applied to local docker
+> and verified there (`silica_tree` present, `tree` nullable, RLS still ENABLED + FORCED,
+> all 6 pre-existing version rows untouched — the additive, no-backfill outcome it
+> claimed). On prod it rides the DB Migrate workflow. **UNVERIFIED at the time of
+> writing:** no db-migrate run appears for `d839df26` itself, and the run for `5f1e1d75`
+> was still in progress. `prisma migrate deploy` is cumulative, so that run should apply
+> it — but confirm with `gh run list --workflow=db-migrate.yml` before assuming prod has
+> the column.
+>
+> **Gates at the last full pass:** typecheck + lint clean across `@sparx/site-lint`,
+> `@sparx/site-themes`, `@sparx/silica-catalog`, `@sparx/builder`, `@sparx/builder-schemas`,
+> `@sparx/db`, `@sparx/seo-audit`, `@sparx/api-rest`, `@sparx/site`, `@sparx/workbench`.
+> Unit tests: **94 site-lint** (78 + 13 for the budget + 3 for the route table's record
+> types), 89 site-themes, 158 silica-catalog, and the api-rest suite — **275 across 54
+> files, all passing**, verified in full after slice 12; slice 22 adds 10 more for
+> `assemble`. `apps/workbench` has no test script by design (no automated UI specs).
+>
+> **Not settled by any of that — only a browser can:** preview-vs-draft (slice 1) · two-tab
+> undo, where `Ctrl+Z` must move only your own node (5) · a saved piece round-tripping and
+> a master edit reaching its instances (7) · the Check panel's **Show me** landing on the
+> right node for all three scopes, and **Open** landing on the right page from the weight
+> list (11, 12) · the Page results table against a site with real traffic, where the
+> collection-template row is the one to look at (22).
 >
 > **Decisions taken, so they are not re-litigated:**
 >
@@ -36,76 +69,11 @@ Last Updated: 2026-07-28
 >   capability silica symbols cannot provide (`Site.symbols` is per-site), so it is not
 >   retired into them. It is surfaced by MATERIALIZING each piece as a `tenant:<key>`
 >   symbol — not via `catalog().extend`, which the slice note explains.
->
-> **Files in flight for slices 1–8 — verified against `git status`, 2026-07-28.**
->
-> `apps/site/lib/silica.ts` · `apps/site/app/{page,layout}.tsx` ·
-> `apps/site/app/{products/[handle],blog/[slug],collections/[handle]}/page.tsx` ·
-> `apps/workbench/app/globals.css` ·
-> `apps/workbench/surfaces/builder/{saved-piece-detail.tsx,saved-pieces-data.ts}` ·
-> `apps/workbench/surfaces/builder/studio/{studio-surface,host,data,builder-live,version-history}.tsx`
->
-> - NEW `studio/{page-settings.tsx,undo-history.tsx,saved-pieces.ts}` ·
->   `packages/builder-schemas/src/{component,index}.ts` + NEW `silica-op-invert{,.test}.ts` ·
->   `packages/builder/src/mcp/silica-vocabulary.ts` ·
->   `packages/builder/src/services/{site-service,site-service.test,component-service,index}.ts` ·
->   `packages/db/prisma/schema/51-builder.prisma` + NEW
->   `packages/db/prisma/migrations/20270123000000_builder_component_silica_tree/` ·
->   `packages/seo-audit/src/{extract,extract.test,index}.ts` ·
->   `packages/silica-catalog/src/{builder-vocabulary.css,vocabulary-patterns,vocabulary-check,vocabulary-check.test,site,site-chrome,site-chrome.test,cms,commerce,host-nodes}.ts` ·
->   `services/api-rest/src/lib/seo-audit.ts` ·
->   `services/api-rest/src/routes/v1/{public/builder,builder/site,builder/components}.ts` ·
->   `docs/119-silicaui-builder-gap-questions.md` · NEW `docs/139-silicaui-builder-asks.md` ·
->   NEW `docs/builder-audit/`
->
-> **Slices 9–11 add:** NEW `packages/site-lint/` (whole package) ·
-> NEW `services/api-rest/src/lib/site-check{,.test}.ts` +
-> `services/api-rest/{Dockerfile,package.json,src/routes/v1/builder/site.ts}` ·
-> NEW `packages/site-themes/src/v2/brand-theme.ts` + `v2/index.ts` ·
-> NEW `apps/workbench/surfaces/builder/studio/site-check.tsx` +
-> `studio/{studio-surface.tsx,data.ts,brand-theme.ts}` ·
-> `packages/silica-catalog/src/attr-binding.ts` (exports `carrierBoundAttrs`) ·
-> `packages/site-themes/src/v2/color.ts` + `color.test.ts` + `package.json` (a `./color`
-> subpath export, and the OKLCH/OKLab math the hex-only module lacked) ·
-> `apps/site/app/robots.txt/route.ts` · `docs/139-silicaui-builder-asks.md` (§9) — plus
-> the three catalog defects the linter found, in `silica-catalog`'s `commerce.ts`,
-> `host-nodes.ts` and `site-chrome.ts` (all already ours from slice 6).
->
-> **Also ours, and unrelated to the builder:**
-> `services/api-rest/test/{helpers.ts,integration/market-merchant-handle.test.ts}` +
-> `packages/commerce/src/services/market/projection.ts` (a doc note only). The api-rest
-> suite had one failure that predated this work — `dropTestTenant` claimed the tenant
-> cascade "reaches every tenant-scoped table", but the two sparx.market GLOBAL
-> projections are FK-less by design, so every run of `market-merchant-handle.test.ts`
-> permanently orphaned a row holding the globally-unique handle `savory-donuts`. Every
-> subsequent full run then died on a unique violation inside the projection writer.
-> Fixed at both ends (explicit teardown + a per-run random handle), the two orphan rows
-> cleared from local docker, and the suite is green: 54 files, 268 tests.
->
-> **That list is exhaustive. Everything else dirty in the tree belongs to a DIFFERENT
-> agent building the social module in this same checkout**, and its footprint keeps
-> growing — re-derive it from `git status` rather than trusting a stale list.
->
-> As of this writing it also holds three things easily mistaken for ours:
->
-> - `services/api-rest/src/index.ts` — social background loops. NOT our api-rest work.
-> - `apps/workbench/surfaces/automations/` — the whole directory.
-> - The DELETION of `marketplace-templates/blueprint/` and
->   `docs/guides/building-a-template.md`.
->
-> Its wider footprint: `packages/social/`, `packages/db/prisma/schema/02-tenant.prisma`,
-> `08-property.prisma`, `87-social.prisma` and the `20270122_` migrations,
-> `packages/db/src/advisory-locks.ts`, `packages/email/`, `packages/events/`,
-> `services/social-worker/`, `services/email-worker/`, `services/api-rest/src/lib/social-*`
-> and `src/routes/v1/social/`, `apps/workbench/surfaces/social/` and
-> `surfaces/commerce/product-detail.tsx`, `apps/workbench/lib/surfaces/`,
-> `apps/workbench/components/module-panel.tsx`, `apps/workbench/package.json`,
-> `pnpm-lock.yaml`, `terraform/`, `marketplace-catalog/blueprints/`, and
-> `docs/social-audit/` + `docs/implementation/`.
->
-> **The workbench and `packages/db` are SHARED — the split there is per-file, not
-> per-app or per-package.** Stage by path, never `git add -A`, and re-check the branch
-> before committing: HEAD can move under a parallel session.
+> - **The pre-publish check is ADVISORY and stays that way.** `POST /publish` does not
+>   call it, does not read its status, and must not be made to.
+> - **Weight is a measurement, not a finding** (slice 12). A heavy page is a trade its
+>   owner may have made on purpose, so `budget` carries no severity and cannot move the
+>   check's `status`.
 
 > The execution half of [00-README.md](00-README.md). Scope is the **silicaui builder** — the
 > engine as hosted by the workbench, its host seam, its catalog, and the storefront that renders
@@ -230,7 +198,21 @@ nobody in the comparison set does it well — this is where the builder can lead
   >
   > `packages/site-lint` was added to api-rest's Dockerfile — a new workspace dependency without a `COPY` line typechecks fine and crashloops the image.
 
-- [ ] **12. Publish-time budget.** Rendered HTML weight, image count and bytes, unbacked classes — reported next to the check. — _in-our-control · S_
+- [x] **12. Publish-time budget.** Rendered HTML weight, image count and bytes, unbacked classes — reported next to the check. — _in-our-control · S_
+
+  > **NEXT to the findings, never among them.** Weight is not a defect. A photographer's portfolio is _supposed_ to be full of large pictures, and a tool that calls that "broken" is a tool its owner learns to ignore. So `budget` carries no severity, does not move `status`, and the publish confirm cannot see it — the same discipline as slice 11's advisory rule, applied one level down. It renders as its own section of the Check drawer, headed "How much each page weighs".
+  >
+  > **The number is a FLOOR and every surface has to say so.** Two things are countable from a pure engine: the bytes of the composed HTML (`renderSilicaBody` — the same projection the storefront publishes through, so the measurement and the live page cannot drift), and the bytes of the picture files a page points at. The stylesheet, webfonts, scripts, video and third-party embeds are all on top. A floor presented as a total is a number that lies in the reassuring direction, which is the one direction this must not fail in.
+  >
+  > **An unknown size is reported as unknown, not as zero.** The engine has no network, so it names the pictures (`imageSourcesOf`) and api-rest looks them up (`imageWeights` → `MediaVariant` first, then `MediaAsset` — a variant is what the page actually downloads, and the original it came from is usually several times larger). A source that matches nothing is counted in `imagesUnsized`; treating it as free would make a hot-linked 4 MB hero photo read as weightless. Inline `data:` pictures need no lookup — the file IS the attribute — so they are measured directly, which is the only way a 2 MB pasted SVG in the header ever becomes visible.
+  >
+  > **`storageKeysOf` is the fragile part, so it is the tested part.** The platform emits a media URL through four independently-evolving builders (api-rest's variant route, its local-mode file route, the CDN base, the raw GCS bucket base), and a hot-linked asset stores an absolute URL _as_ its key. Rather than guessing which one produced a given `src`, every plausible key is offered and the database decides. Seven cases pin it; without them the rot would surface as "every picture on my site says unknown size".
+  >
+  > **Dedupe follows what a browser downloads.** A named file counts once per page however often it appears — a logo in the header and again in the footer is one request — while a bound image counts per block, because each one is a different product photo at render time. `heavyImages` reports how many pages carry each one, which is what turns "the logo is 900 KB" into "one change makes all eleven pages lighter". Nothing is truncated: the 500 KB threshold IS the criterion.
+  >
+  > **The class count is by NAME; the findings are by BLOCK.** One typo repeated across three blocks is one thing to fix and three places to look, and both numbers come from the catalog's `checkClassString`, so they cannot disagree about what is broken — only about what they are counting.
+  >
+  > **What it does not see.** A collection template renders one card here and many on the live page, so its weight is a floor with a wider gap than a static page's. `typeOf` was hardened to `?? ''` along the way: a restored old release or a hand-written MCP tree can carry a node with neither tag nor component, and a walk that throws on it reports nothing at all — on exactly the site that needed checking.
 
 ## Wave 3 — the editing experience
 
@@ -251,8 +233,22 @@ Where "no better in the world" is actually won or lost.
 - [ ] **20. Image pipeline.** Three or four widths generated on upload, `srcset` / `sizes` on emit, focal point in the picker. — _cost-decision (storage vs transform service) · M_
 - [ ] **21. ISR the storefront.** Remove `force-dynamic` where the tag-purge pipeline already covers invalidation; delete the dead legacy render tiers beneath the always-true silica branch. — _cost-decision (staleness risk; likely reduces spend) · M_
   > **Blocked on a purge that does not exist yet, found during slice 8.** `cache-revalidation-worker` maps `builder.*` / `sitebuilder.*` events onto the `builder:<slug>` tag — but NOTHING emits one: neither `siteService.publish` nor `artifactService.restoreRelease` publishes an event, and there is no `builder.*` member in the `EventType` union. That is harmless only because all 19 storefront routes are `force-dynamic`, which is exactly what this slice removes. Turning on ISR without wiring both paths would mean a publish shows nothing and a ROLLBACK leaves the broken page live — the failure the rollback exists to fix, made permanent.
-- [ ] **22. Close the measurability loop.** A Pages list in the Builder module showing, per page: views · visitors · conversion · revenue attributed · SEO score · load time. Consumes the already-built `top-pages` and `sources` endpoints joined to the existing order attribution. — _in-our-control · M_
+- [x] **22. Close the measurability loop.** A Pages list in the Builder module showing, per page: views · visitors · conversion · revenue attributed · SEO score · load time. Consumes the already-built `top-pages` and `sources` endpoints joined to the existing order attribution. — _in-our-control · M_
+
   > This is the builder's equivalent of what email attribution did for email: the owner finds out whether the thing they built worked.
+  >
+  > **`GET /v1/builder/analytics/pages` first, panel second** (API-first), `viewer` like the rest of that file. The assembly is [api-rest/lib/page-performance.ts](../../services/api-rest/src/lib/page-performance.ts), beside `site-check.ts` and for the same reason: the answer is gathered across four modules — site analytics for traffic and real-user load time, commerce for attributed revenue, the SEO module for the stored grade — and a builder service reaching into all of them would be a builder service in name only. The workbench surface is **Site → Results → Page results**.
+  >
+  > **`topPages` answers "which are busiest"; this answers "how is each one DOING".** The difference is the join, and popular-but-never-buys is the single most useful thing a page can say. New: `pageMetrics` in `site-analytics-reports.ts` — three grouped reads (pageviews, `metric='load'` vitals, orders by `attribution_landing_path`) merged on the path.
+  >
+  > **Unpaginated, and the zero row is the point.** A report listing only pages with traffic answers the question the owner already knew the answer to; the page with 0 views means nothing links to it or search has never found it. So every page is returned, sorted busiest-first with the quiet tail stable by name underneath.
+  >
+  > **A collection template is not a location.** Its slug is a template address — visitors land on `/products/brake-kit`, never on the template — so matching it literally reported a site's busiest page as unvisited. Its row now aggregates every path under the route its record type is served at, and says so in the subtitle along with how many of its records anyone actually opened ("400 products, 6 ever seen" is itself the finding). That needed `recordType → route prefix`, which existed nowhere: it went onto `DYNAMIC_ROUTES` in site-lint — the table that already holds the storefront's parameterized routes — rather than into a second parallel five-row list, with a test asserting it matches the catalog's `ROUTED_RECORD_TYPES` exactly in both directions.
+  >
+  > **Revenue is credited to the page that BROUGHT the buyer**, not the one they checked out from, because `attribution_landing_path` is the first-touch path (docs/128 §3). A product page cannot take credit for a visitor the home page won. The window and `status <> 'cancelled'` match the revenue-by-source report exactly so the two can never disagree about what a sale is, and it is scoped by `property_id` — an owner with two businesses must not see one site's revenue against the other's home page.
+  >
+  > **Where the honesty is.** Conversion is `null`, not 0%, when nobody came — 0% reads as failure rather than as silence. An unmeasured load time is `neutral`, never green: painting "we have no idea" the same colour as "fast" is the one thing this must not do. Folded load times are re-weighted by sample count, so a path measured twice cannot outvote one measured two thousand times. Traffic on paths no page owns (products, posts, legal) is reported in `otherPaths` rather than dropped, so the totals reconcile with the traffic card instead of quietly disagreeing with it. With Commerce off the money columns are absent rather than permanently zero. One known limitation, stated in the code: a folded template's `visitors` is a SUM across its records, so one person who browsed four products counts four times — deduplicating would cost a `COUNT(DISTINCT)` per template, and the surface words it as visits.
+
 - [ ] **23. Collection pagination**, plus sort, filter and conditional visibility in the binder. Removes the silent 24-record cap. — _in-our-control + silicaui · L_
 - [ ] **24. Cursors and selection presence**, plus per-node soft locks. — _silicaui-ask · M_
 

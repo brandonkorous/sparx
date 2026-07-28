@@ -51,23 +51,61 @@ export type RosterKey =
   | 'serviceIds';
 
 export interface DynamicRoute {
-  /** Always with a trailing slash — `/products/`. */
+  /** Always with a trailing slash — `/products/`. The trailing slash is load-bearing:
+   *  consumers match with `startsWith`, and `/products` would also claim
+   *  `/products-archive`. */
   prefix: string;
   roster: RosterKey;
   /** What the parameter IS, in an owner's words, for the finding text. */
   noun: string;
+  /** The builder record type whose collection TEMPLATE renders this route — the same
+   *  keys as `@sparx/silica-catalog`'s `ROUTED_RECORD_TYPES`.
+   *
+   *  Here rather than in a second map because it is the missing half of the same fact.
+   *  A collection page's slug is a template address, not a location: visitors land on
+   *  `/products/brake-kit`, never on the template, so anything joining real traffic
+   *  back to the page that produced it needs `recordType → prefix`. Two parallel
+   *  five-row lists would drift; `routes.test.ts` asserts this one covers the
+   *  catalog's exactly. */
+  recordType: string;
 }
 
 /** The parameterized storefront routes, each paired with the roster that decides
  *  whether a given parameter resolves. `/blog/[slug]` reads posts; the rest read
  *  commerce records. */
 export const DYNAMIC_ROUTES: readonly DynamicRoute[] = [
-  { prefix: '/products/', roster: 'productHandles', noun: 'product' },
-  { prefix: '/collections/', roster: 'collectionHandles', noun: 'collection' },
-  { prefix: '/category/', roster: 'categoryHandles', noun: 'category' },
-  { prefix: '/blog/', roster: 'postSlugs', noun: 'blog post' },
-  { prefix: '/book/', roster: 'serviceIds', noun: 'bookable service' },
+  {
+    prefix: '/products/',
+    roster: 'productHandles',
+    noun: 'product',
+    recordType: 'commerce.product',
+  },
+  {
+    prefix: '/collections/',
+    roster: 'collectionHandles',
+    noun: 'collection',
+    recordType: 'commerce.collection',
+  },
+  {
+    prefix: '/category/',
+    roster: 'categoryHandles',
+    noun: 'category',
+    recordType: 'commerce.category',
+  },
+  { prefix: '/blog/', roster: 'postSlugs', noun: 'blog post', recordType: 'cms.blog_post' },
+  {
+    prefix: '/book/',
+    roster: 'serviceIds',
+    noun: 'bookable service',
+    recordType: 'scheduling.service',
+  },
 ];
+
+/** Where visitors to a collection template's records actually land, or null for a
+ *  record type the storefront has no route for. */
+export function routePrefixForRecordType(recordType: string): string | null {
+  return DYNAMIC_ROUTES.find((r) => r.recordType === recordType)?.prefix ?? null;
+}
 
 /** Is this path inside a subtree served wholesale? */
 export function inOpenSubtree(path: string): boolean {

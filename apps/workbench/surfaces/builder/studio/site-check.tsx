@@ -17,6 +17,10 @@
 // reads. Every finding that names a block opens the tree it lives in — the page, the
 // header and footer, or the saved piece — and selects it, so "this button does
 // nothing" is one click from the button.
+//
+// TWO SECTIONS, AND THEY ARE NOT THE SAME KIND OF THING. Above: findings — something
+// is wrong. Below: what each page WEIGHS — nothing is wrong, here is what a visitor
+// downloads. Keeping weight out of the findings is deliberate; see `PageWeights`.
 
 import { useCallback } from 'react';
 import {
@@ -33,12 +37,21 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useEditor } from '@wizeworks/silicaui-builder/react';
-import { CheckCircle2, CircleAlert, Lightbulb, ShieldCheck, TriangleAlert } from 'lucide-react';
+import {
+  CheckCircle2,
+  CircleAlert,
+  Gauge,
+  Lightbulb,
+  ShieldCheck,
+  TriangleAlert,
+} from 'lucide-react';
 import {
   builderErrorMessage,
   useSiteCheck,
+  type CheckBudget,
   type CheckFinding,
   type CheckSeverity,
+  type CheckWeightBand,
   type SiteCheckReport,
 } from './data';
 
@@ -75,6 +88,32 @@ const SEVERITY: Record<CheckSeverity, SeverityMeta> = {
 };
 
 const ORDER: CheckSeverity[] = ['error', 'warning', 'suggestion'];
+
+/* ── How weight reads ───────────────────────────────────────────────────────── */
+
+/**
+ * WEIGHT IS NOT A SEVERITY, and the wording has to keep saying so. A photographer's
+ * portfolio is meant to be full of large pictures; a page being heavy is a trade its
+ * owner may have made deliberately. So every label below describes what a VISITOR
+ * experiences — how long they wait — and never whether the page is right or wrong.
+ */
+const BAND: Record<CheckWeightBand, { label: string; color: 'success' | 'warning' | 'error' }> = {
+  light: { label: 'Opens fast', color: 'success' },
+  heavy: { label: 'Slower on a phone', color: 'warning' },
+  'very-heavy': { label: 'Slow on a phone', color: 'error' },
+};
+
+/** Bytes as a person reads them. Whole numbers below a megabyte — nobody needs
+ *  "0.24 MB" — and one decimal above it, where the difference is worth seeing. */
+function formatBytes(bytes: number): string {
+  if (bytes < 1000) return `${String(bytes)} bytes`;
+  if (bytes < 1_000_000) return `${String(Math.round(bytes / 1000))} KB`;
+  return `${(bytes / 1_000_000).toFixed(1)} MB`;
+}
+
+function plural(count: number, one: string, many: string): string {
+  return `${String(count)} ${count === 1 ? one : many}`;
+}
 
 /** Where a finding says the fix happens, as a phrase that goes after "in". */
 function placeOf(finding: CheckFinding): string {
@@ -148,6 +187,24 @@ export function SiteCheck({ open, onOpenChange, onRequestOpen }: Props) {
     [editor, onOpenChange, toast]
   );
 
+  /** Open a page from the weight list. Same `exitSymbol` precaution as `goTo`. */
+  const goToPage = useCallback(
+    (pageId: string) => {
+      try {
+        editor.exitSymbol();
+        editor.setActivePage(pageId);
+        onOpenChange(false);
+      } catch {
+        toast.add({
+          title: 'That page is not there any more',
+          description: 'Run the check again to see the current list.',
+          type: 'warning',
+        });
+      }
+    },
+    [editor, onOpenChange, toast]
+  );
+
   const report = check.data;
 
   return (
@@ -188,21 +245,26 @@ export function SiteCheck({ open, onOpenChange, onRequestOpen }: Props) {
                 </AlertDescription>
               </AlertContent>
             </Alert>
-          ) : !report ? null : report.findings.length === 0 ? (
-            <Alert color="success" variant="soft">
-              <AlertContent>
-                <AlertTitle>
-                  <CheckCircle2 className="size-4" aria-hidden /> Nothing to flag
-                </AlertTitle>
-                <AlertDescription>
-                  All {report.pagesChecked} page{report.pagesChecked === 1 ? '' : 's'} came back
-                  clean — every link goes somewhere, every image is described, and the words can be
-                  read against what is behind them.
-                </AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : (
-            <FindingGroups report={report} onGoTo={goTo} />
+          ) : !report ? null : (
+            <div className="flex flex-col gap-8">
+              {report.findings.length === 0 ? (
+                <Alert color="success" variant="soft">
+                  <AlertContent>
+                    <AlertTitle>
+                      <CheckCircle2 className="size-4" aria-hidden /> Nothing to flag
+                    </AlertTitle>
+                    <AlertDescription>
+                      All {report.pagesChecked} page{report.pagesChecked === 1 ? '' : 's'} came back
+                      clean — every link goes somewhere, every image is described, and the words can
+                      be read against what is behind them.
+                    </AlertDescription>
+                  </AlertContent>
+                </Alert>
+              ) : (
+                <FindingGroups report={report} onGoTo={goTo} />
+              )}
+              <PageWeights budget={report.budget} onGoToPage={goToPage} />
+            </div>
           )}
         </div>
       </DrawerContent>
@@ -252,6 +314,119 @@ function FindingGroups({
       })}
     </div>
   );
+}
+
+/**
+ * How much each page weighs — a measurement, sitting beside the findings and
+ * deliberately not among them.
+ *
+ * THE NUMBER IS A FLOOR AND THE PANEL SAYS SO. Only two things can be counted from
+ * here: the page's own markup, and the picture files it points at. The stylesheet,
+ * the fonts, anything embedded from another site, and any picture hosted somewhere
+ * we cannot look up are all on top of it. Showing this as "your page weighs X" would
+ * be a number that is wrong in the reassuring direction, which is the worst way for a
+ * number to be wrong.
+ */
+function PageWeights({
+  budget,
+  onGoToPage,
+}: {
+  budget: CheckBudget;
+  onGoToPage: (pageId: string) => void;
+}) {
+  if (budget.pages.length === 0) return null;
+
+  return (
+    <section className="flex flex-col gap-3">
+      <h3 className="text-base-content flex items-center gap-2 text-lg font-semibold">
+        <Gauge className="size-4" aria-hidden />
+        How much each page weighs
+      </h3>
+      <p className="text-base-content text-base">
+        Everything on a page has to be downloaded before a visitor sees it, and people on a phone
+        leave if that takes too long. Nothing here is a problem to fix — a page full of large
+        photographs may be exactly what you meant. It is at least this much: your styling, fonts and
+        anything embedded from elsewhere are on top.
+      </p>
+
+      <ul className="flex flex-col gap-2">
+        {budget.pages.map((page) => (
+          <li
+            key={page.pageId}
+            className="border-base-300 flex items-start justify-between gap-3 rounded-lg border p-3"
+          >
+            <div className="flex min-w-0 flex-col gap-1">
+              <span className="text-base-content text-base font-semibold">{page.pageName}</span>
+              <span className="text-base-content text-base">
+                {formatBytes(page.totalBytes)}
+                {page.imageCount > 0
+                  ? ` — ${formatBytes(page.imageBytes)} of that is ${plural(page.imageCount, 'picture', 'pictures')}`
+                  : ' — no pictures on it'}
+              </span>
+              {page.imagesUnsized > 0 ? (
+                <span className="text-base-content text-base">
+                  Plus {plural(page.imagesUnsized, 'picture', 'pictures')} we could not weigh —
+                  either stored somewhere other than your library, or filled in from your products
+                  when the page loads.
+                </span>
+              ) : null}
+            </div>
+            <div className="flex shrink-0 flex-col items-end gap-2">
+              <Badge color={BAND[page.band].color} variant="soft" size="sm">
+                {BAND[page.band].label}
+              </Badge>
+              <Button
+                color="neutral"
+                variant="outline"
+                size="sm"
+                onClick={() => onGoToPage(page.pageId)}
+              >
+                Open
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
+
+      {budget.heavyImages.length > 0 ? (
+        <div className="flex flex-col gap-2">
+          <h4 className="text-base-content text-base font-semibold">Pictures worth shrinking</h4>
+          <p className="text-base-content text-base">
+            Resizing one of these does more for how fast your site feels than anything else on this
+            panel. A photograph rarely needs to be wider than about 2000 pixels.
+          </p>
+          <ul className="flex flex-col gap-1">
+            {budget.heavyImages.map((image) => (
+              <li key={image.src} className="text-base-content text-base">
+                <span className="font-semibold">{formatBytes(image.bytes)}</span> —{' '}
+                <span className="break-all">{fileNameOf(image.src)}</span>
+                {image.pageCount > 1
+                  ? `, on ${plural(image.pageCount, 'page', 'pages')} — one change fixes all of them`
+                  : ''}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {budget.unbackedClasses.length > 0 ? (
+        <p className="text-base-content text-base">
+          {plural(budget.unbackedClasses.length, 'styling name', 'styling names')} on this site
+          produce nothing at all: {budget.unbackedClasses.join(', ')}. Each one is listed above with
+          the block it is on.
+        </p>
+      ) : null}
+    </section>
+  );
+}
+
+/** The part of a picture's address a person recognises. The full URL is a storage
+ *  path nobody chose and nobody can read; the file name is what they uploaded. */
+function fileNameOf(src: string): string {
+  if (src.startsWith('data:')) return 'a picture pasted into the page';
+  const path = src.split(/[?#]/)[0] ?? src;
+  const last = path.split('/').filter(Boolean).pop();
+  return last ? decodeURIComponent(last) : src;
 }
 
 function FindingRow({

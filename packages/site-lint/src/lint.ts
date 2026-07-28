@@ -13,6 +13,7 @@
 // step before publishing, the publish path recording what was known at the time, and
 // a test.
 
+import { measureSite } from './budget';
 import { checkClasses } from './classes';
 import { checkContrast, checkThemeContrast } from './contrast';
 import { checkContent } from './content';
@@ -90,5 +91,8 @@ export function lintSite(input: SiteLintInput): SiteLintReport {
     findings,
     counts,
     pagesChecked: input.pages.length,
+    // Measured from the same inventories, and deliberately NOT folded into `counts`
+    // or `status`: weight is a trade the owner makes, not a defect the tool found.
+    budget: measureSite(input, inventories),
   };
 }

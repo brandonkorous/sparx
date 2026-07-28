@@ -9,7 +9,7 @@ vi.mock('@sparx/auth', () => ({
     Promise.resolve(moduleStates.get(key) ?? false),
 }));
 
-const { linkTargets, silicaPagesOf } = await import('./site-check.js');
+const { linkTargets, silicaPagesOf, storageKeysOf } = await import('./site-check.js');
 
 const CTX: PropertyContext = {
   tenantId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
@@ -178,5 +178,47 @@ describe('silicaPagesOf', () => {
       { ...base, id: 'p1', slug: null, silicaDraftTree: { kind: 'element', tag: 'main' } },
     ]);
     expect(page?.slug).toBe('/');
+  });
+});
+
+describe('storageKeysOf', () => {
+  // Every URL shape the platform emits, and the key each one has to resolve back to.
+  // These four builders live in different packages and evolve independently, so this
+  // is the test that fails loudly instead of every picture quietly reporting
+  // "unknown size".
+  const KEY = 'ten-1/variants/asset-9/w800.webp';
+
+  it('recovers the key from the public variant route', () => {
+    expect(storageKeysOf(`https://api.sparx.works/v1/public/media/variants/${KEY}`)).toContain(KEY);
+  });
+
+  it('recovers the key from the local-mode file route, host or not', () => {
+    expect(storageKeysOf(`/v1/public/media/file/${KEY}`)).toContain(KEY);
+    expect(storageKeysOf(`http://localhost:4000/v1/public/media/file/${KEY}`)).toContain(KEY);
+  });
+
+  it('recovers the key from the CDN base', () => {
+    expect(storageKeysOf(`https://cdn.sparx.works/${KEY}`)).toContain(KEY);
+  });
+
+  it('recovers the key from the raw bucket URL, past the bucket segment', () => {
+    expect(storageKeysOf(`https://storage.googleapis.com/sparx-media-public/${KEY}`)).toContain(
+      KEY
+    );
+  });
+
+  it('offers the URL itself, because a hot-linked asset stores one AS its key', () => {
+    const url = 'https://images.example.com/hero.jpg';
+    expect(storageKeysOf(url)).toContain(url);
+  });
+
+  it('recovers a key whose characters were encoded into the URL', () => {
+    expect(storageKeysOf('/v1/public/media/file/ten-1/my%20photo.jpg')).toContain(
+      'ten-1/my photo.jpg'
+    );
+  });
+
+  it('never offers an empty key — it would match the wrong row', () => {
+    expect(storageKeysOf('/')).not.toContain('');
   });
 });

@@ -3,12 +3,15 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
+import { ROUTED_RECORD_TYPES } from '@sparx/silica-catalog';
+
 import {
   BUILTIN_PATHS,
   DYNAMIC_ROUTES,
   normalizePath,
   OPEN_SUBTREES,
   resolveRelative,
+  routePrefixForRecordType,
 } from './routes';
 
 const APP_DIR = join(dirname(fileURLToPath(import.meta.url)), '../../../apps/site/app');
@@ -85,6 +88,30 @@ describe('the storefront route table', () => {
     const handlers = new Set(['/robots.txt', '/sitemap.xml', '/llms.txt']);
     const orphans = BUILTIN_PATHS.filter((path) => !served.has(path) && !handlers.has(path));
     expect(orphans).toEqual([]);
+  });
+
+  it('names the record type behind every parameterized route, in the catalog spelling', () => {
+    // `recordType` is what lets a report join real traffic (`/products/brake-kit`) back
+    // to the collection template that produced it. The catalog owns the vocabulary, so
+    // the check is that this table agrees with it EXACTLY in both directions — a typo
+    // here silently attributes a template's whole traffic to nothing, and a route the
+    // catalog can render but this table omits does the same.
+    expect([...DYNAMIC_ROUTES].map((r) => r.recordType).sort()).toEqual(
+      [...ROUTED_RECORD_TYPES].sort()
+    );
+  });
+
+  it('resolves a record type to where its visitors actually land', () => {
+    expect(routePrefixForRecordType('commerce.product')).toBe('/products/');
+    expect(routePrefixForRecordType('cms.blog_post')).toBe('/blog/');
+    // A singleton page has no record type, and an unknown one must not throw.
+    expect(routePrefixForRecordType('commerce.nonsense')).toBeNull();
+  });
+
+  it('gives every prefix both slashes', () => {
+    // Consumers match with `startsWith`, so a missing trailing slash makes
+    // `/products` claim `/products-archive` as one of its records.
+    for (const route of DYNAMIC_ROUTES) expect(route.prefix).toMatch(/^\/[a-z-]+\/$/);
   });
 });
 

@@ -8,7 +8,7 @@
 // own email switcher — so listing those separately would duplicate a picker the
 // editor already ships.
 
-import { Component, Globe, Inbox, LayoutTemplate, Mail, Pencil } from 'lucide-react';
+import { BarChart3, Component, Globe, Inbox, LayoutTemplate, Mail, Pencil } from 'lucide-react';
 import type { SurfaceDefinition } from '../registry';
 import { StudioSurface } from '../../../surfaces/builder/studio/studio-surface';
 import { SiteIdentitySurface } from '../../../surfaces/builder/site-identity';
@@ -19,6 +19,7 @@ import { SavedPieceDetailSurface } from '../../../surfaces/builder/saved-piece-d
 import { EmailEditorSurface } from '../../../surfaces/builder/email/email-editor';
 import { FormSubmissionsListSurface } from '../../../surfaces/builder/form-submissions-list';
 import { SubmissionDetailSurface } from '../../../surfaces/builder/submission-detail';
+import { PageResultsSurface } from '../../../surfaces/builder/page-results';
 
 export const BUILDER_SURFACES: SurfaceDefinition[] = [
   // ── The two builders lead — the module's primary, unsectioned surfaces ──
@@ -108,6 +109,20 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
     icon: Component,
     component: SavedPieceDetailSurface,
     listed: false,
+  },
+
+  /* ── Results ───────────────────────────────────────────────────────────── */
+  {
+    key: 'builder.pages',
+    title: 'Page results',
+    module: 'builder',
+    icon: BarChart3,
+    section: 'Results',
+    order: 15,
+    keywords: ['analytics', 'traffic', 'views', 'visitors', 'performance', 'conversion', 'speed'],
+    // Did the page you built do anything? Traffic, sales credited to it, search
+    // grade and real-user load time, per page — the one place those four meet.
+    component: PageResultsSurface,
   },
 
   /* ── Forms ─────────────────────────────────────────────────────────────── */

@@ -26,9 +26,11 @@ import { isModuleEnabled } from '@sparx/auth';
 import type { TxClient } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
 import {
+  imageSourcesOf,
   lintSite,
   type LinkTargets,
   type LintablePage,
+  type SiteLintInput,
   type SiteLintReport,
 } from '@sparx/site-lint';
 import {
@@ -218,6 +220,111 @@ export async function linkTargets(tx: TxClient, ctx: PropertyContext): Promise<L
 }
 
 /**
+ * Every storage key a picture URL could have been built from.
+ *
+ * The platform emits a media URL through four different builders — api-rest's public
+ * variant route, its local-mode file route, the CDN base, and the raw GCS bucket base
+ * (`packages/media/src/storage.ts` and `packages/commerce/src/media-url.ts`) — and a
+ * tree stores whichever one was current when the picture was chosen. Rather than
+ * guessing which builder produced a given `src`, every plausible key is offered and
+ * the database decides: a key that no row has simply matches nothing.
+ *
+ * The raw `src` is a candidate in its own right because a HOT-LINKED asset stores an
+ * absolute URL AS its key (a blueprint install — see `mediaPublicUrl`), so for those
+ * the URL and the key are the same string.
+ *
+ * Exported for its test: this is prefix-matching against four independently-evolving
+ * URL shapes, which is exactly the kind of thing that rots silently and shows up as
+ * "every picture on my site says unknown size".
+ */
+export function storageKeysOf(src: string): string[] {
+  const keys = new Set<string>([src]);
+
+  let path: string;
+  try {
+    // A base is supplied so a root-relative `src` parses; the host is then ignored.
+    path = new URL(src, 'https://sparx.invalid').pathname;
+  } catch {
+    return [...keys];
+  }
+  // Keys are stored decoded (`${tenantId}/variants/…`); a URL carries them encoded.
+  let decoded = path;
+  try {
+    decoded = decodeURIComponent(path);
+  } catch {
+    // A stray `%` — the encoded form is still worth trying.
+  }
+
+  for (const candidate of new Set([path, decoded])) {
+    const trimmed = candidate.replace(/^\//, '');
+    // The CDN and bucket forms put the key straight after the host.
+    keys.add(trimmed);
+    // `https://storage.googleapis.com/<bucket>/<key>` — drop the bucket segment.
+    const slash = trimmed.indexOf('/');
+    if (slash > 0) keys.add(trimmed.slice(slash + 1));
+    for (const route of ['/v1/public/media/variants/', '/v1/public/media/file/']) {
+      const at = candidate.indexOf(route);
+      if (at >= 0) keys.add(candidate.slice(at + route.length));
+    }
+  }
+
+  keys.delete('');
+  return [...keys];
+}
+
+/**
+ * What each picture on the site weighs.
+ *
+ * The engine names the files (`imageSourcesOf`) and this looks them up, because the
+ * engine is pure and has no media library to ask. A source that matches nothing is
+ * left OUT of the map rather than entered as zero — the check reports it as unsized,
+ * which is the truth, instead of quietly making a hot-linked 4 MB hero photo look
+ * free.
+ *
+ * Variants are consulted first and win: a variant is what the page actually
+ * downloads, and the original it was derived from is usually several times larger.
+ */
+async function imageWeights(tx: TxClient, sources: string[]): Promise<Record<string, number>> {
+  if (sources.length === 0) return {};
+
+  const candidates = new Map<string, string[]>();
+  const allKeys = new Set<string>();
+  for (const src of sources) {
+    const keys = storageKeysOf(src);
+    candidates.set(src, keys);
+    for (const key of keys) allKeys.add(key);
+  }
+
+  const keyList = [...allKeys];
+  const [variants, assets] = await Promise.all([
+    tx.mediaVariant.findMany({
+      where: { key: { in: keyList } },
+      select: { key: true, byteSize: true },
+    }),
+    tx.mediaAsset.findMany({
+      where: { key: { in: keyList }, deletedAt: null },
+      select: { key: true, byteSize: true },
+    }),
+  ]);
+
+  const byKey = new Map<string, number>();
+  for (const row of assets) byKey.set(row.key, Number(row.byteSize));
+  for (const row of variants) byKey.set(row.key, Number(row.byteSize));
+
+  const weights: Record<string, number> = {};
+  for (const [src, keys] of candidates) {
+    for (const key of keys) {
+      const bytes = byKey.get(key);
+      if (bytes != null) {
+        weights[src] = bytes;
+        break;
+      }
+    }
+  }
+  return weights;
+}
+
+/**
  * Run the pre-publish check over the property's DRAFT site.
  *
  * Advisory. The report's `status` summarises severity and nothing more — no caller
@@ -254,7 +361,7 @@ export async function runSiteCheck(
 
     const symbols = (site?.silicaDraftSymbols ?? null) as Record<string, SymbolDef> | null;
 
-    return lintSite({
+    const input: SiteLintInput = {
       pages: silicaPagesOf(rows),
       frame:
         layout?.silicaDraftTree != null
@@ -263,6 +370,13 @@ export async function runSiteCheck(
       symbols,
       theme,
       targets,
-    });
+    };
+
+    // TWO STEPS, and they have to be in this order: the engine names the pictures the
+    // site references, this service sizes them, and the sized map goes back in. The
+    // weights cannot be gathered up front because nothing outside the trees knows
+    // which of the tenant's library a given site actually uses — and loading every
+    // asset the tenant owns to weigh six of them is the query this avoids.
+    return lintSite({ ...input, imageBytes: await imageWeights(tx, imageSourcesOf(input)) });
   });
 }

@@ -11,7 +11,9 @@
 //   GET    /v1/builder/site/check    → the pre-publish check over the DRAFT: broken
 //                                       links, missing image descriptions, heading
 //                                       gaps, dead buttons, styling that emits no CSS,
-//                                       unreadable colour pairings, SEO metadata.
+//                                       unreadable colour pairings, SEO metadata —
+//                                       plus what each page WEIGHS, which is a
+//                                       measurement rather than a finding.
 //                                       ADVISORY — publish never consults it
 //   POST   /v1/builder/site/publish  → snapshot every silica draft tree → published,
 //                                       and seal an immutable release (docs/126 §5.3)
@@ -166,6 +168,10 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
    * on the DRAFT: broken links, images with no description, headings that skip a
    * level, buttons nothing is wired to, styling that emits no CSS, colour pairings
    * that cannot be read, and missing or duplicated search metadata.
+   *
+   * It also reports `budget` — the bytes of each page's markup and pictures. That is
+   * a MEASUREMENT, not a finding: it carries no severity, does not move `status`, and
+   * a heavy page is a trade its owner may have made on purpose.
    *
    * ADVISORY, AND THE ROUTE BELOW PROVES IT: `POST /publish` does not call this, does
    * not read its `status`, and cannot be made to. The site belongs to the person who

@@ -20,8 +20,10 @@ import {
   bindsAttr,
   hasAttr,
   hasMedia,
+  imageSrc,
   isBound,
   isElement,
+  isImageNode,
   prop,
   typeOf,
   visibleText,
@@ -36,10 +38,6 @@ const HEADING_TAGS = new Map([
   ['h5', 5],
   ['h6', 6],
 ]);
-
-/** silica atoms that render an image. `Avatar` is included because a missing avatar
- *  description is the same problem wearing a different component name. */
-const IMAGE_COMPONENTS = new Set(['image', 'avatar']);
 
 /** silica atoms that render a control. */
 const CONTROL_COMPONENTS = new Set(['button', 'link', 'navlink', 'anchor']);
@@ -71,13 +69,11 @@ function checkImages(inventory: DocumentInventory): RawFinding[] {
 
   for (const visited of inventory.nodes) {
     const { node } = visited;
-    const type = typeOf(node).toLowerCase();
-    const isImgElement = isElement(node) && type === 'img';
-    const isImgAtom = node.kind === 'component' && IMAGE_COMPONENTS.has(type);
-    if (!isImgElement && !isImgAtom) continue;
+    if (!isImageNode(node)) continue;
+    const isImgElement = isElement(node);
 
     const bound = isBound(node);
-    const src = isImgElement ? attr(node, 'src') : prop(node, 'src');
+    const src = imageSrc(node);
     if (!src && !bound) {
       findings.push({
         ...locate(visited),

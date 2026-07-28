@@ -553,11 +553,51 @@ export interface CheckFinding {
   location: CheckLocation;
 }
 
+/** How a page reads at a glance. Three bands, not a score — and NOT a severity:
+ *  weight is a trade, so nothing here counts as a finding or changes `status`. */
+export type CheckWeightBand = 'light' | 'heavy' | 'very-heavy';
+
+export interface CheckPageWeight {
+  pageId: string;
+  pageName: string;
+  slug: string;
+  /** Bytes of the page's own markup; null if it could not be rendered. */
+  htmlBytes: number | null;
+  imageCount: number;
+  imageBytes: number;
+  /** Pictures whose weight is NOT in `imageBytes` — hosted elsewhere, or filled in
+   *  from a record. Real weight that is missing from the total, which is why the
+   *  panel has to say so rather than showing a tidier number. */
+  imagesUnsized: number;
+  /** `htmlBytes + imageBytes`. A FLOOR on what a first visit costs: styling, fonts,
+   *  scripts and embeds are on top of it. */
+  totalBytes: number;
+  band: CheckWeightBand;
+}
+
+export interface CheckHeavyImage {
+  src: string;
+  bytes: number;
+  pageCount: number;
+}
+
+export interface CheckBudget {
+  /** Heaviest first. */
+  pages: CheckPageWeight[];
+  heavyImages: CheckHeavyImage[];
+  /** Distinct class NAMES that emit no CSS. The findings above count BLOCKS, so a
+   *  smaller number here is one typo repeated, not a disagreement. */
+  unbackedClasses: string[];
+  heaviestPageBytes: number;
+  unsizedImages: number;
+}
+
 export interface SiteCheckReport {
   status: 'pass' | 'warn' | 'fail';
   findings: CheckFinding[];
   counts: Record<CheckSeverity, number>;
   pagesChecked: number;
+  budget: CheckBudget;
 }
 
 export const SITE_CHECK_KEY = ['builder', 'site', 'check'] as const;

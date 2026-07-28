@@ -267,6 +267,138 @@ export async function topPages(
   }));
 }
 
+// ── Per-path metrics (the Pages report, docs/builder-audit slice 22) ─
+//
+// `topPages` answers "which paths are busiest"; this answers "how is each path
+// DOING". The difference is the join: traffic alone tells an owner a page is
+// popular, and popular-but-never-buys is the single most useful thing a page can
+// tell you. So views/visitors, real-user load time, and the revenue attributed to
+// landing there all come back keyed on the same path.
+//
+// EVERY path is returned, unlimited — a caller pairs these with its own page roster
+// and needs the row for the quiet page as much as the busy one. There is no `limit`
+// to silently cut the tail off.
+//
+// The revenue half reads `orders.attribution_landing_path`, which is the FIRST path
+// the buyer saw that day (docs/128 §3) — the page that ACQUIRED them, not the one
+// they checked out from. That is the honest credit: a product page cannot take
+// credit for a visitor the home page brought in. An order with no matching same-day
+// traffic carries a null landing path and is simply absent here, which is the same
+// `unattributed` treatment the revenue-by-source report gives it.
+
+export interface PagePathMetrics {
+  path: string;
+  views: number;
+  visitors: number;
+  /** Orders whose buyer arrived on this path. */
+  orders: number;
+  revenueCents: number;
+  /** Average real-user load time in ms, or null when no visitor's browser reported
+   *  one for this path. Null is not zero, and a surface must not render it as fast. */
+  loadMs: number | null;
+  /** How many measurements that average is over — an average of two is a rumour. */
+  loadSamples: number;
+}
+
+interface RawPathTraffic {
+  path: string;
+  views: number;
+  visitors: number;
+}
+interface RawPathVital {
+  path: string;
+  avg: number;
+  samples: number;
+}
+interface RawPathRevenue {
+  path: string;
+  orders: number;
+  revenue: string | number;
+}
+
+export async function pageMetrics(
+  tx: TxClient,
+  propertyId: string,
+  from: Date,
+  toExclusive: Date
+): Promise<PagePathMetrics[]> {
+  const [traffic, vitals, revenue] = await Promise.all([
+    tx.$queryRaw<RawPathTraffic[]>`
+      SELECT
+        path,
+        COUNT(*)::int                      AS views,
+        COUNT(DISTINCT visitor_hash)::int  AS visitors
+      FROM site_analytics_events
+      WHERE property_id = ${propertyId}::uuid
+        AND type = 'pageview'
+        AND created_at >= ${from} AND created_at < ${toExclusive}
+      GROUP BY path
+    `,
+    tx.$queryRaw<RawPathVital[]>`
+      SELECT path, AVG(value)::float8 AS avg, COUNT(*)::int AS samples
+      FROM site_analytics_events
+      WHERE property_id = ${propertyId}::uuid
+        AND type = 'vital'
+        AND metric = 'load'
+        AND value IS NOT NULL
+        AND created_at >= ${from} AND created_at < ${toExclusive}
+      GROUP BY path
+    `,
+    // `status <> 'cancelled'` and the `placed_at` window match the revenue-by-source
+    // report exactly, so the two never disagree about what a sale is. Scoped to the
+    // SITE as well as the tenant: an owner with two businesses must not see one
+    // site's revenue credited to the other's home page.
+    tx.$queryRaw<RawPathRevenue[]>`
+      SELECT
+        attribution_landing_path           AS path,
+        COUNT(*)::int                      AS orders,
+        COALESCE(SUM(total), 0)            AS revenue
+      FROM orders
+      WHERE property_id = ${propertyId}::uuid
+        AND attribution_landing_path IS NOT NULL
+        AND status <> 'cancelled'
+        AND placed_at >= ${from} AND placed_at < ${toExclusive}
+      GROUP BY attribution_landing_path
+    `,
+  ]);
+
+  const rows = new Map<string, PagePathMetrics>();
+  const at = (path: string): PagePathMetrics => {
+    const existing = rows.get(path);
+    if (existing) return existing;
+    const fresh: PagePathMetrics = {
+      path,
+      views: 0,
+      visitors: 0,
+      orders: 0,
+      revenueCents: 0,
+      loadMs: null,
+      loadSamples: 0,
+    };
+    rows.set(path, fresh);
+    return fresh;
+  };
+
+  for (const r of traffic) {
+    const row = at(r.path);
+    row.views = Number(r.views);
+    row.visitors = Number(r.visitors);
+  }
+  for (const r of vitals) {
+    const row = at(r.path);
+    row.loadMs = Math.round(Number(r.avg));
+    row.loadSamples = Number(r.samples);
+  }
+  for (const r of revenue) {
+    const row = at(r.path);
+    row.orders = Number(r.orders);
+    // `total` is a Decimal(12,2) in currency units; the platform reports cents.
+    row.revenueCents = Math.round(Number(r.revenue) * 100);
+  }
+
+  return [...rows.values()];
+}
+
 // ── Sources ──────────────────────────────────────────────────────────
 export interface SourceRow {
   source: string;
