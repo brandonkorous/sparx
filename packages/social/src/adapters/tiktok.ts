@@ -9,10 +9,13 @@
 //
 // Targets: exactly one — the authorizing account (its `open_id`).
 //
-// Publish is two-step + async: INIT the post (`PULL_FROM_URL` so TikTok fetches the
-// media from our CDN — the source domain must be URL-ownership-verified in the app),
-// then POLL the publish status until `PUBLISH_COMPLETE`. Captions carry no clickable
-// link, so a canonical link is folded into the caption.
+// Publish is query → INIT → poll, all async: first QUERY the creator's currently-allowed
+// privacy options (TikTok forbids hardcoding the privacy level and an UNAUDITED / sandbox
+// app is restricted to SELF_ONLY — hardcoding PUBLIC_TO_EVERYONE makes every sandbox post
+// FAIL), then INIT the post (`PULL_FROM_URL` so TikTok fetches the media from our CDN —
+// the source domain must be URL-ownership-verified in the app), then POLL the publish
+// status until `PUBLISH_COMPLETE`. Captions carry no clickable link, so a canonical link
+// is folded into the caption.
 //
 // No SDKs — pure `fetch` via the shared `_http` helpers + the shared `waitForContainer`
 // poller. Pure I/O: the worker resolves + decrypts the token and passes SocialAuth.
@@ -77,6 +80,18 @@ export function classifyTikTokStatus(status: string | undefined): {
   return { ready: false, failed: false };
 }
 
+/** Choose the privacy level to publish at from the creator's currently-available options
+ *  (TikTok's `creator_info` query returns them). TikTok REQUIRES the level to be one the
+ *  creator allows and forbids hardcoding it — critically an UNAUDITED app (sandbox) is
+ *  restricted to `SELF_ONLY`, so hardcoding `PUBLIC_TO_EVERYONE` makes every sandbox post
+ *  FAIL. We publish to the widest audience the account permits (public), falling back to
+ *  the always-allowed `SELF_ONLY`. Pure — unit-tested without any network. */
+export function pickPrivacyLevel(options: readonly string[]): string {
+  if (options.includes('PUBLIC_TO_EVERYONE')) return 'PUBLIC_TO_EVERYONE';
+  if (options.includes('SELF_ONLY')) return 'SELF_ONLY';
+  return options[0] ?? 'SELF_ONLY';
+}
+
 interface TikTokTokenResponse {
   access_token: string;
   refresh_token?: string;
@@ -86,6 +101,10 @@ interface TikTokTokenResponse {
 }
 interface TikTokUserInfo {
   data?: { user?: { open_id?: string; display_name?: string; avatar_url?: string } };
+}
+interface TikTokCreatorInfoResponse {
+  data?: { privacy_level_options?: string[] };
+  error?: { code?: string; message?: string };
 }
 interface TikTokInitResponse {
   data?: { publish_id?: string };
@@ -179,7 +198,12 @@ export class TikTokAdapter implements SocialAdapter {
       throw new Error('TikTok requires a video or at least one image.');
     }
 
-    const publishId = await this.initPost(auth.accessToken, plan);
+    // TikTok forbids a hardcoded privacy level; query the creator's allowed options and
+    // pick the widest they permit. An unaudited/sandbox app only ever gets SELF_ONLY back,
+    // so this is what makes a sandbox post succeed (and it goes public automatically once
+    // the app is audited and PUBLIC_TO_EVERYONE appears in the options).
+    const privacyLevel = pickPrivacyLevel(await this.queryCreatorInfo(auth.accessToken));
+    const publishId = await this.initPost(auth.accessToken, plan, privacyLevel);
     const postId = await this.awaitPublish(auth.accessToken, publishId);
     // TikTok's status API returns the public post id once complete but no share URL;
     // the publish id is the stable external reference when no post id is surfaced yet.
@@ -188,14 +212,31 @@ export class TikTokAdapter implements SocialAdapter {
 
   // ── internals ──
 
+  /** Query the creator's currently-allowed publish options. Returns the privacy levels
+   *  TikTok will accept for this account right now; an empty list on any hiccup so the
+   *  caller falls back to the always-valid SELF_ONLY rather than hard-failing blind. */
+  private async queryCreatorInfo(accessToken: string): Promise<string[]> {
+    try {
+      const res = await this.postJson<TikTokCreatorInfoResponse>(
+        'post/publish/creator_info/query/',
+        accessToken,
+        {}
+      );
+      return res.data?.privacy_level_options ?? [];
+    } catch {
+      return [];
+    }
+  }
+
   private async initPost(
     accessToken: string,
-    plan: Exclude<TikTokPostPlan, { kind: 'none' }>
+    plan: Exclude<TikTokPostPlan, { kind: 'none' }>,
+    privacyLevel: string
   ): Promise<string> {
     const body: Record<string, unknown> =
       plan.kind === 'video'
         ? {
-            post_info: { title: plan.caption, privacy_level: 'PUBLIC_TO_EVERYONE' },
+            post_info: { title: plan.caption, privacy_level: privacyLevel },
             source_info: { source: 'PULL_FROM_URL', video_url: plan.videoUrl },
           }
         : {
@@ -204,7 +245,7 @@ export class TikTokAdapter implements SocialAdapter {
             post_info: {
               title: deriveTitle(plan.caption, PHOTO_TITLE_MAX),
               description: plan.caption,
-              privacy_level: 'PUBLIC_TO_EVERYONE',
+              privacy_level: privacyLevel,
             },
             source_info: {
               source: 'PULL_FROM_URL',

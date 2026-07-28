@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { TikTokAdapter, classifyTikTokStatus, planTikTokPost } from './tiktok.js';
+import { TikTokAdapter, classifyTikTokStatus, pickPrivacyLevel, planTikTokPost } from './tiktok.js';
 import type { RenderedPost } from '../types.js';
 
 // The TikTok adapter's pure decision logic (docs/134 Phase 3). The two-step init/status
@@ -54,6 +54,29 @@ describe('classifyTikTokStatus', () => {
   it('treats download/processing states as still working', () => {
     expect(classifyTikTokStatus('PROCESSING_DOWNLOAD')).toEqual({ ready: false, failed: false });
     expect(classifyTikTokStatus(undefined)).toEqual({ ready: false, failed: false });
+  });
+});
+
+describe('pickPrivacyLevel', () => {
+  it('publishes to the widest audience the account allows (public when offered)', () => {
+    expect(pickPrivacyLevel(['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY'])).toBe(
+      'PUBLIC_TO_EVERYONE'
+    );
+  });
+
+  it('falls back to SELF_ONLY when public is not offered — the sandbox/unaudited case', () => {
+    // An unaudited app only ever gets SELF_ONLY back; hardcoding public here is exactly
+    // what made every sandbox post fail.
+    expect(pickPrivacyLevel(['SELF_ONLY'])).toBe('SELF_ONLY');
+    expect(pickPrivacyLevel(['MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY'])).toBe('SELF_ONLY');
+  });
+
+  it('defaults to SELF_ONLY when the options are empty (a creator_info hiccup)', () => {
+    expect(pickPrivacyLevel([])).toBe('SELF_ONLY');
+  });
+
+  it('uses the first option when neither public nor SELF_ONLY is present', () => {
+    expect(pickPrivacyLevel(['MUTUAL_FOLLOW_FRIENDS'])).toBe('MUTUAL_FOLLOW_FRIENDS');
   });
 });
 
