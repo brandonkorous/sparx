@@ -9,12 +9,12 @@
 // point (the words, the destinations, the per-platform preview) fails the modal
 // test outright.
 //
-// One caveat shapes the two states: the destinations (and any per-destination
-// tweak) are chosen when the post is first created — that is the only call that
-// accepts them. So you pick destinations while writing a new post; once it is
-// saved, the destinations are shown as they stand, and editing is about the words
-// and pictures. This mirrors the server, which only lets a draft's body/link/
-// media change after creation.
+// Everything about a post stays editable until it actually sends: the words, the
+// pictures, WHERE it goes, the wording written for one account, that account's own
+// send time. An earlier version froze the destinations at creation — the only call
+// that accepted them was create — which turned an almost-right post into a rebuild,
+// and left an approver able to reject an automation's draft but never to correct it.
+// Now the same picker serves both states.
 //
 // The audience owns a business, not a social console. A "destination" is a page
 // or profile a post lands on; a platform's limit is "24 characters over — it will
@@ -36,6 +36,7 @@ import {
   FieldLabel,
   Heading,
   Input,
+  Switch,
   Text,
   Textarea,
   useToast,
@@ -43,9 +44,11 @@ import {
 import {
   CalendarClock,
   Check,
+  CopyPlus,
   ExternalLink,
   Image as ImageIcon,
   RefreshCw,
+  Repeat,
   Save,
   Send,
   ShieldCheck,
@@ -75,15 +78,19 @@ import {
   useApprovePost,
   useComposePost,
   useDeletePost,
+  useDuplicatePost,
   usePostMetrics,
   usePublishPost,
   useRefreshPostMetrics,
   useRejectPost,
+  useRetryPostTarget,
   useSchedulePost,
+  useSetPostEvergreen,
   useSocialOverview,
   useSocialPost,
   useSubmitPost,
   useUpdatePost,
+  useUpdatePostTargets,
   type CatalogEntry,
   type ComposeAction,
   type ComposeTarget,
@@ -91,6 +98,7 @@ import {
   type PostTarget,
   type SocialPlatform,
 } from './data';
+import { tagsToText, useComposeSeed, useHashtagSets, type HashtagSet } from './planning-data';
 
 /** A chooseable destination, flattened from the connected accounts. */
 interface Destination {
@@ -100,6 +108,195 @@ interface Destination {
   accountName: string;
   /** The page/profile picture, so a preview reads as that account at a glance. */
   avatarUrl: string | null;
+}
+
+/** Flatten the connected accounts into the destinations a post can go to — active
+ *  connections, enabled targets. Shared by both composer states so "where can this go"
+ *  is answered the same way whether the post exists yet or not. */
+function useDestinations(
+  overview: ReturnType<typeof useSocialOverview>,
+  catalogMap: Map<SocialPlatform, CatalogEntry>
+): Destination[] {
+  return useMemo<Destination[]>(() => {
+    const out: Destination[] = [];
+    for (const connection of overview.data?.connections ?? []) {
+      if (connection.status !== 'active') continue;
+      const accountName = connection.displayName ?? platformName(connection.platform, catalogMap);
+      for (const target of connection.targets) {
+        if (!target.enabled) continue;
+        out.push({
+          targetId: target.id,
+          name: target.name,
+          platform: connection.platform,
+          accountName,
+          avatarUrl: target.avatarUrl ?? connection.avatarUrl,
+        });
+      }
+    }
+    return out;
+  }, [overview.data, catalogMap]);
+}
+
+/* ── Picking where a post goes ────────────────────────────────────────────── */
+
+/**
+ * The destination picker — one card per connected page or profile, the whole identity
+ * row toggling it, with a live note on how the post reads there.
+ *
+ * Extracted so the SAME control serves a brand-new post and a saved one. It used to
+ * exist only in the new-post branch, which is precisely why destinations were frozen
+ * after creation: there was no second copy to edit them with.
+ */
+function DestinationPicker({
+  destinations,
+  selected,
+  catalogMap,
+  body,
+  overrides,
+  mediaCount,
+  disabledIds,
+  onToggle,
+}: {
+  destinations: Destination[];
+  selected: Set<string>;
+  catalogMap: Map<SocialPlatform, CatalogEntry>;
+  body: string;
+  overrides: Record<string, { textOverride: string; firstComment: string }>;
+  mediaCount: number;
+  /** Destinations that can no longer be turned off — one already posted to. */
+  disabledIds?: Set<string>;
+  onToggle: (targetId: string) => void;
+}) {
+  return (
+    <div className="grid grid-cols-1 gap-2 @xl:grid-cols-2">
+      {destinations.map((dest) => {
+        const on = selected.has(dest.targetId);
+        const locked = disabledIds?.has(dest.targetId) ?? false;
+        const constraints = catalogMap.get(dest.platform)?.constraints;
+        const text = effectiveText(overrides[dest.targetId]?.textOverride, body);
+        return (
+          <div
+            key={dest.targetId}
+            className={`flex flex-col gap-2 rounded-lg border p-3 transition-colors ${
+              on ? 'border-module bg-module bg-soft' : 'border-base-300 hover:border-module'
+            }`}
+          >
+            <button
+              type="button"
+              aria-pressed={on}
+              disabled={locked}
+              aria-label={
+                locked
+                  ? `${dest.name} has already been posted to`
+                  : on
+                    ? `Stop posting to ${dest.name}`
+                    : `Post to ${dest.name}`
+              }
+              onClick={() => {
+                onToggle(dest.targetId);
+              }}
+              className={`flex w-full items-center gap-3 text-left ${
+                locked ? 'cursor-default' : 'cursor-pointer'
+              }`}
+            >
+              <Avatar size="sm" src={dest.avatarUrl ?? undefined} alt={dest.accountName}>
+                {dest.name.replace(/^@/, '').charAt(0).toUpperCase()}
+              </Avatar>
+              <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <span className="truncate font-medium">{dest.name}</span>
+                <span className="text-sm">
+                  {locked ? 'Already posted here' : platformName(dest.platform, catalogMap)}
+                </span>
+              </span>
+              <span
+                className={`grid size-5 shrink-0 place-items-center rounded-full border ${
+                  on ? 'border-module bg-module text-module-content' : 'border-base-300'
+                }`}
+                aria-hidden
+              >
+                {on ? <Check className="size-3.5" /> : null}
+              </span>
+            </button>
+            {on && body.trim() !== '' ? (
+              <div className="pl-11">
+                <PreviewNotes constraints={constraints} text={text} mediaCount={mediaCount} />
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ── Per-destination tuning ───────────────────────────────────────────────── */
+
+/**
+ * The per-destination panel: different wording, a first comment (where the hashtags
+ * usually go), and this destination's own send time.
+ *
+ * The saved hashtag sets appear here rather than in the shared body, because that is
+ * where they belong on the platforms that matter — a block of tags in an Instagram
+ * caption reads as spam; in the first comment it reads as filing.
+ */
+function DestinationTuning({
+  dest,
+  override,
+  hashtagSets,
+  onChange,
+}: {
+  dest: { targetId: string; name: string };
+  override: { textOverride: string; firstComment: string; scheduledAt?: string };
+  hashtagSets: HashtagSet[];
+  onChange: (next: { textOverride: string; firstComment: string; scheduledAt?: string }) => void;
+}) {
+  return (
+    <div className="border-base-300 flex flex-col gap-2 border-b pb-4 last:border-b-0 last:pb-0">
+      <Text className="text-sm font-semibold">{dest.name}</Text>
+      <Textarea
+        color="module"
+        rows={2}
+        value={override.textOverride}
+        placeholder="Different wording just for this account…"
+        aria-label={`Different wording for ${dest.name}`}
+        onChange={(event) => {
+          onChange({ ...override, textOverride: event.target.value });
+        }}
+      />
+      <Input
+        color="module"
+        value={override.firstComment}
+        placeholder="First comment (e.g. your hashtags)…"
+        aria-label={`First comment for ${dest.name}`}
+        onChange={(event) => {
+          onChange({ ...override, firstComment: event.target.value });
+        }}
+      />
+      {hashtagSets.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Text className="text-sm">Add saved hashtags:</Text>
+          {hashtagSets.map((set) => (
+            <Button
+              key={set.id}
+              size="xs"
+              variant="outline"
+              color="module"
+              onClick={() => {
+                const addition = tagsToText(set.tags);
+                const current = override.firstComment.trim();
+                onChange({
+                  ...override,
+                  firstComment: current ? `${current} ${addition}` : addition,
+                });
+              }}
+            >
+              {set.name}
+            </Button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 /** "Instagram", "Instagram and TikTok", "Instagram, TikTok and Pinterest" — a plain
@@ -115,6 +312,16 @@ function fromLocalInput(local: string): string | null {
   const date = new Date(local);
   if (Number.isNaN(date.getTime())) return null;
   return date.toISOString();
+}
+
+/** An ISO instant → the `YYYY-MM-DDTHH:mm` a `datetime-local` input wants, in the
+ *  reader's own zone. The inverse of {@link fromLocalInput}. */
+function toLocalInput(iso: string | null): string {
+  if (!iso) return '';
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return '';
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${String(date.getFullYear())}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
 function formatWhen(iso: string): string {
@@ -207,12 +414,33 @@ function MediaThumbs({ ids }: { ids: string[] }) {
 
 /* ── Per-destination result (read-only, for a saved/sent post) ────────────── */
 
-function TargetResults({ targets }: { targets: PostTarget[] }) {
+/**
+ * How each destination did, with a retry on the ones that failed.
+ *
+ * The retry is the point. A post reaching three of four accounts is the most common real
+ * failure, and it used to be a dead end: `partially_published` sat outside the editable
+ * lifecycle, so the entire actions section was hidden and the only thing on offer was
+ * delete. Retrying one destination leaves its siblings — including the ones that already
+ * went out — completely alone.
+ */
+function TargetResults({
+  targets,
+  canRetry = false,
+  retrying = null,
+  onRetry,
+}: {
+  targets: PostTarget[];
+  canRetry?: boolean;
+  /** The post-target id currently being retried, for its button's spinner. */
+  retrying?: string | null;
+  onRetry?: (postTargetId: string, name: string) => void;
+}) {
   if (targets.length === 0) return null;
   return (
     <div className="flex flex-col gap-2">
       {targets.map((target) => {
         const meta = targetStatusMeta(target.status);
+        const retryable = canRetry && onRetry && target.status === 'failed';
         return (
           <div
             key={target.id}
@@ -233,6 +461,20 @@ function TargetResults({ targets }: { targets: PostTarget[] }) {
                 <ExternalLink className="size-3.5" aria-hidden />
               </a>
             ) : null}
+            {retryable ? (
+              <Button
+                size="xs"
+                variant="outline"
+                color="module"
+                loading={retrying === target.id}
+                onClick={() => {
+                  onRetry(target.id, target.targetName);
+                }}
+              >
+                <RefreshCw className="size-3.5" aria-hidden />
+                Try {target.targetName} again
+              </Button>
+            ) : null}
             {target.status === 'failed' && target.error ? (
               <Text className="text-error w-full text-sm">{target.error}</Text>
             ) : null}
@@ -243,17 +485,138 @@ function TargetResults({ targets }: { targets: PostTarget[] }) {
   );
 }
 
+/* ── Per-destination tuning on a SAVED post ───────────────────────────────── */
+
+/**
+ * The same three controls as the new-post version, but editing a row that already
+ * exists — so they save on blur rather than being staged into a create call.
+ *
+ * Local state with a blur-commit rather than a keystroke-commit: sending a PATCH per
+ * character would be absurd, and a Save button for one textarea would be worse.
+ */
+function SavedDestinationTuning({
+  target,
+  hashtagSets,
+  saving,
+  onSave,
+}: {
+  target: PostTarget;
+  hashtagSets: HashtagSet[];
+  saving: boolean;
+  onSave: (next: { textOverride: string; firstComment: string; scheduledAt?: string }) => void;
+}) {
+  const [textOverride, setTextOverride] = useState(target.textOverride ?? '');
+  const [firstComment, setFirstComment] = useState(target.firstComment ?? '');
+  const [ownTime, setOwnTime] = useState(toLocalInput(target.scheduledAt));
+
+  const commit = () => {
+    onSave({ textOverride, firstComment, scheduledAt: ownTime });
+  };
+
+  return (
+    <div className="border-base-300 flex flex-col gap-2 border-b pb-4 last:border-b-0 last:pb-0">
+      <Text className="text-sm font-semibold">{target.targetName}</Text>
+      <Textarea
+        color="module"
+        rows={2}
+        value={textOverride}
+        placeholder="Different wording just for this account…"
+        aria-label={`Different wording for ${target.targetName}`}
+        onChange={(event) => {
+          setTextOverride(event.target.value);
+        }}
+        onBlur={commit}
+      />
+      <Input
+        color="module"
+        value={firstComment}
+        placeholder="First comment (e.g. your hashtags)…"
+        aria-label={`First comment for ${target.targetName}`}
+        onChange={(event) => {
+          setFirstComment(event.target.value);
+        }}
+        onBlur={commit}
+      />
+      {hashtagSets.length > 0 ? (
+        <div className="flex flex-wrap items-center gap-1.5">
+          <Text className="text-sm">Add saved hashtags:</Text>
+          {hashtagSets.map((set) => (
+            <Button
+              key={set.id}
+              size="xs"
+              variant="outline"
+              color="module"
+              disabled={saving}
+              onClick={() => {
+                const addition = tagsToText(set.tags);
+                const next = firstComment.trim() ? `${firstComment.trim()} ${addition}` : addition;
+                setFirstComment(next);
+                onSave({ textOverride, firstComment: next, scheduledAt: ownTime });
+              }}
+            >
+              {set.name}
+            </Button>
+          ))}
+        </div>
+      ) : null}
+      <Field>
+        <FieldLabel>Send to this account at its own time (optional)</FieldLabel>
+        <FieldControl
+          render={
+            <Input
+              color="module"
+              type="datetime-local"
+              className="max-w-xs"
+              value={ownTime}
+              aria-label={`Own send time for ${target.targetName}`}
+              onChange={(event) => {
+                setOwnTime(event.target.value);
+              }}
+              onBlur={commit}
+            />
+          }
+        />
+        <FieldDescription>
+          Leave this blank and it goes when the rest of the post does. Set it when this audience is
+          awake at a different hour.
+        </FieldDescription>
+      </Field>
+    </div>
+  );
+}
+
 /* ── How it did: the live numbers for a sent post (read-only) ─────────────── */
 
-/** One labelled number in the metrics row — a dash where the platform reported
- *  nothing, never a fabricated zero. */
-function MetricNumber({ label, value }: { label: string; value: number | null }) {
+/**
+ * One labelled number in the metrics row — a dash where the platform reported nothing,
+ * never a fabricated zero.
+ *
+ * `since` is the same number at the FIRST reading, so the row can show which way it is
+ * moving. That is the difference between a report and a scoreboard: 340 likes means
+ * nothing on its own, "340, up 60 since we first looked" means the post is still
+ * working. Shown only when it actually moved — "+0" is noise.
+ */
+function MetricNumber({
+  label,
+  value,
+  since,
+}: {
+  label: string;
+  value: number | null;
+  since?: number | null;
+}) {
+  const delta = value !== null && since !== null && since !== undefined ? value - since : null;
   return (
     <div className="flex min-w-[3.5rem] flex-col items-end">
       <span className="text-lg font-semibold tabular-nums">
         {value === null ? '—' : value.toLocaleString()}
       </span>
-      <span className="text-sm">{label}</span>
+      <span className="text-sm">
+        {label}
+        {delta !== null && delta > 0 ? (
+          <span className="text-success"> +{delta.toLocaleString()}</span>
+        ) : null}
+      </span>
     </div>
   );
 }
@@ -323,6 +686,11 @@ function PostMetricsSection({
         <div className="flex flex-col gap-2">
           {targets.map((target) => {
             const s = target.latest;
+            // The OLDEST reading, so "up N" means "since we first looked", not "since
+            // the last refresh" (which would be near-zero and read as a dead post).
+            // Only meaningful once there is more than one — a single snapshot has
+            // nothing to compare against.
+            const first = target.history.length > 1 ? target.history[0] : undefined;
             return (
               <div
                 key={target.postTargetId}
@@ -340,11 +708,19 @@ function PostMetricsSection({
                   <span className="text-sm">{platformName(target.platform, catalogMap)}</span>
                 </div>
                 <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-                  <MetricNumber label="Likes" value={s?.likes ?? null} />
-                  <MetricNumber label="Comments" value={s?.comments ?? null} />
-                  <MetricNumber label="Shares" value={s?.shares ?? null} />
-                  <MetricNumber label="Views" value={s?.impressions ?? null} />
-                  <MetricNumber label="Reach" value={s?.reach ?? null} />
+                  <MetricNumber label="Likes" value={s?.likes ?? null} since={first?.likes} />
+                  <MetricNumber
+                    label="Comments"
+                    value={s?.comments ?? null}
+                    since={first?.comments}
+                  />
+                  <MetricNumber label="Shares" value={s?.shares ?? null} since={first?.shares} />
+                  <MetricNumber
+                    label="Views"
+                    value={s?.impressions ?? null}
+                    since={first?.impressions}
+                  />
+                  <MetricNumber label="Reach" value={s?.reach ?? null} since={first?.reach} />
                 </div>
                 <span className="w-full text-sm">
                   {s
@@ -397,24 +773,25 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
     [overview.data]
   );
 
-  const destinations = useMemo<Destination[]>(() => {
-    const out: Destination[] = [];
-    for (const connection of overview.data?.connections ?? []) {
-      if (connection.status !== 'active') continue;
-      const accountName = connection.displayName ?? platformName(connection.platform, catalogMap);
-      for (const target of connection.targets) {
-        if (!target.enabled) continue;
-        out.push({
-          targetId: target.id,
-          name: target.name,
-          platform: connection.platform,
-          accountName,
-          avatarUrl: target.avatarUrl ?? connection.avatarUrl,
-        });
-      }
-    }
-    return out;
-  }, [overview.data, catalogMap]);
+  const destinations = useDestinations(overview, catalogMap);
+  const hashtagSets = useHashtagSets();
+
+  // "Share this" from a product, collection or article — the composer opens pre-filled
+  // instead of blank, which is the whole point of clicking it there rather than here.
+  const seedType = typeof ctx.params.seedType === 'string' ? ctx.params.seedType : undefined;
+  const seedId = typeof ctx.params.seedId === 'string' ? ctx.params.seedId : undefined;
+  const seed = useComposeSeed(seedType, seedId);
+  const [seeded, setSeeded] = useState(false);
+
+  useEffect(() => {
+    // Once only: after this the fields are the person's, and re-applying the suggestion
+    // would overwrite their edits on any refetch.
+    if (seeded || !seed.data) return;
+    setSeeded(true);
+    setBody(seed.data.body);
+    setLink(seed.data.link ?? '');
+    setMediaIds(seed.data.mediaAssetIds);
+  }, [seed.data, seeded]);
 
   const dirty =
     body.trim() !== '' || link.trim() !== '' || mediaIds.length > 0 || selected.size > 0;
@@ -681,64 +1058,15 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                 title="Where it goes"
                 description="Pick the pages and profiles this post should land on. Each shows how it will read there."
               >
-                <div className="grid grid-cols-1 gap-2 @xl:grid-cols-2">
-                  {destinations.map((dest) => {
-                    const on = selected.has(dest.targetId);
-                    const constraints = catalogMap.get(dest.platform)?.constraints;
-                    const text = effectiveText(overrides[dest.targetId]?.textOverride, body);
-                    return (
-                      <div
-                        key={dest.targetId}
-                        className={`hover:border-module flex flex-col gap-2 rounded-lg border p-3 transition-colors ${
-                          on ? 'border-module bg-module bg-soft' : 'border-base-300'
-                        }`}
-                      >
-                        {/* The whole identity row toggles the destination — one target,
-                            selected as a piece, not via a fiddly checkbox. */}
-                        <button
-                          type="button"
-                          aria-pressed={on}
-                          aria-label={`Post to ${dest.name}`}
-                          onClick={() => {
-                            toggle(dest.targetId);
-                          }}
-                          className="flex w-full cursor-pointer items-center gap-3 text-left"
-                        >
-                          <Avatar
-                            size="sm"
-                            src={dest.avatarUrl ?? undefined}
-                            alt={dest.accountName}
-                          >
-                            {dest.name.replace(/^@/, '').charAt(0).toUpperCase()}
-                          </Avatar>
-                          <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                            <span className="truncate font-medium">{dest.name}</span>
-                            <span className="text-sm">
-                              {platformName(dest.platform, catalogMap)}
-                            </span>
-                          </span>
-                          <span
-                            className={`grid size-5 shrink-0 place-items-center rounded-full border ${
-                              on ? 'border-module bg-module text-module-content' : 'border-base-300'
-                            }`}
-                            aria-hidden
-                          >
-                            {on ? <Check className="size-3.5" /> : null}
-                          </span>
-                        </button>
-                        {on && body.trim() !== '' ? (
-                          <div className="pl-11">
-                            <PreviewNotes
-                              constraints={constraints}
-                              text={text}
-                              mediaCount={mediaIds.length}
-                            />
-                          </div>
-                        ) : null}
-                      </div>
-                    );
-                  })}
-                </div>
+                <DestinationPicker
+                  destinations={destinations}
+                  selected={selected}
+                  catalogMap={catalogMap}
+                  body={body}
+                  overrides={overrides}
+                  mediaCount={mediaIds.length}
+                  onToggle={toggle}
+                />
               </FormSection>
             ) : null}
 
@@ -748,39 +1076,17 @@ function ComposeNew({ ctx }: { ctx: SurfaceContext }) {
                 description="Leave these blank to use the same words everywhere. Set them only where one account needs something different."
               >
                 <div className="flex flex-col gap-4">
-                  {selectedDestinations.map((dest) => {
-                    const ov = overrides[dest.targetId] ?? { textOverride: '', firstComment: '' };
-                    return (
-                      <div key={dest.targetId} className="flex flex-col gap-2">
-                        <Text className="text-sm font-semibold">{dest.name}</Text>
-                        <Textarea
-                          color="module"
-                          rows={2}
-                          value={ov.textOverride}
-                          placeholder="Different wording just for this account…"
-                          aria-label={`Different wording for ${dest.name}`}
-                          onChange={(event) => {
-                            setOverrides((current) => ({
-                              ...current,
-                              [dest.targetId]: { ...ov, textOverride: event.target.value },
-                            }));
-                          }}
-                        />
-                        <Input
-                          color="module"
-                          value={ov.firstComment}
-                          placeholder="First comment (e.g. your hashtags)…"
-                          aria-label={`First comment for ${dest.name}`}
-                          onChange={(event) => {
-                            setOverrides((current) => ({
-                              ...current,
-                              [dest.targetId]: { ...ov, firstComment: event.target.value },
-                            }));
-                          }}
-                        />
-                      </div>
-                    );
-                  })}
+                  {selectedDestinations.map((dest) => (
+                    <DestinationTuning
+                      key={dest.targetId}
+                      dest={dest}
+                      override={overrides[dest.targetId] ?? { textOverride: '', firstComment: '' }}
+                      hashtagSets={hashtagSets.data ?? []}
+                      onChange={(next) => {
+                        setOverrides((current) => ({ ...current, [dest.targetId]: next }));
+                      }}
+                    />
+                  ))}
                 </div>
               </FormSection>
             ) : null}
@@ -944,6 +1250,12 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
   const publish = usePublishPost(id);
   const remove = useDeletePost(id);
 
+  const updateTargets = useUpdatePostTargets(id);
+  const retryTarget = useRetryPostTarget(id);
+  const duplicate = useDuplicatePost();
+  const setEvergreen = useSetPostEvergreen(id);
+  const hashtagSets = useHashtagSets();
+
   const [body, setBody] = useState(post.body);
   const [link, setLink] = useState(post.link ?? '');
   const [mediaIds, setMediaIds] = useState<string[]>(post.mediaAssetIds);
@@ -957,6 +1269,34 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
     () => catalogByPlatform(overview.data?.catalog ?? []),
     [overview.data]
   );
+  const destinations = useDestinations(overview, catalogMap);
+
+  // Which destinations this post currently has, and which of those can no longer be
+  // removed because they already went out — taking that row away would erase the
+  // permalink of something live on someone's page.
+  const selectedTargetIds = useMemo(
+    () => new Set(post.targets.map((t) => t.socialTargetId)),
+    [post.targets]
+  );
+  const lockedTargetIds = useMemo(
+    () =>
+      new Set(post.targets.filter((t) => t.status === 'published').map((t) => t.socialTargetId)),
+    [post.targets]
+  );
+  const postTargetBySocialId = useMemo(
+    () => new Map(post.targets.map((t) => [t.socialTargetId, t])),
+    [post.targets]
+  );
+  const overridesFromPost = useMemo(() => {
+    const out: Record<string, { textOverride: string; firstComment: string }> = {};
+    for (const target of post.targets) {
+      out[target.socialTargetId] = {
+        textOverride: target.textOverride ?? '',
+        firstComment: target.firstComment ?? '',
+      };
+    }
+    return out;
+  }, [post.targets]);
 
   // Resolve the picked media so this saved post shows the SAME visual preview the
   // composer does — cropped to each account's shape (docs/133). Polls while a fresh
@@ -1071,6 +1411,78 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
     });
   };
 
+  /** Turn a destination on or off on a saved post. Immediate, not a staged edit: the
+   *  destination list is a decision, not text being drafted, and a Save button for it
+   *  would make "did that take?" a question. */
+  const toggleDestination = (socialTargetId: string) => {
+    const existing = postTargetBySocialId.get(socialTargetId);
+    const input = existing ? { remove: [existing.id] } : { add: [{ targetId: socialTargetId }] };
+    updateTargets.mutate(input, {
+      onError: (error) => {
+        toast.add({
+          title: 'Could not change where this goes',
+          description: socialErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  const saveTuning = (
+    postTargetId: string,
+    next: { textOverride: string; firstComment: string; scheduledAt?: string }
+  ) => {
+    updateTargets.mutate({
+      update: [
+        {
+          id: postTargetId,
+          textOverride: next.textOverride.trim() || null,
+          firstComment: next.firstComment.trim() || null,
+          ...(next.scheduledAt !== undefined
+            ? { scheduledAt: next.scheduledAt ? fromLocalInput(next.scheduledAt) : null }
+            : {}),
+        },
+      ],
+    });
+  };
+
+  const doRetryTarget = (postTargetId: string, name: string) => {
+    retryTarget.mutate(postTargetId, {
+      onSuccess: () => {
+        toast.add({ title: `Sending to ${name} again`, type: 'success' });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not send that again',
+          description: socialErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
+  const doDuplicate = () => {
+    duplicate.mutate(post.id, {
+      onSuccess: (copy) => {
+        ctx.open('social.composer', { id: copy.id });
+        afterPaneChange(() => {
+          toast.add({
+            title: 'Copied to a new draft',
+            description: 'Same words, pictures and accounts — edit it however you like.',
+            type: 'success',
+          });
+        });
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not copy this post',
+          description: socialErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
   const doDelete = () => {
     void (async () => {
       const ok = await confirm({
@@ -1100,6 +1512,20 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
           {meta.label}
         </Badge>
         <div className="flex-1" />
+        {/* Post it again — the cheapest real leverage in the module. Available on
+            anything that has actually gone out. */}
+        {canWrite && (post.status === 'published' || post.status === 'partially_published') ? (
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            loading={duplicate.isPending}
+            onClick={doDuplicate}
+          >
+            <CopyPlus className="size-4" aria-hidden />
+            Post this again
+          </Button>
+        ) : null}
         {editable && canWrite ? (
           <Button
             color="module"
@@ -1132,6 +1558,17 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                 <AlertContent>
                   <AlertTitle>That did not go through</AlertTitle>
                   <AlertDescription>{actionError}</AlertDescription>
+                </AlertContent>
+              </Alert>
+            ) : null}
+
+            {/* Why it came back. Without this a rejection is a silent state change and
+                the author has to go and ask what was wrong with it. */}
+            {post.reviewNote && post.status === 'draft' ? (
+              <Alert color="warning" variant="soft">
+                <AlertContent>
+                  <AlertTitle>Sent back for a change</AlertTitle>
+                  <AlertDescription>{post.reviewNote}</AlertDescription>
                 </AlertContent>
               </Alert>
             ) : null}
@@ -1204,42 +1641,58 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
 
             <FormSection
               title="Where it goes"
-              description="The accounts this post was set up to reach, and how each is doing."
+              description={
+                editable && canWrite
+                  ? 'Turn accounts on or off — you can change this right up until it sends.'
+                  : 'The accounts this post was set up to reach, and how each is doing.'
+              }
             >
-              {post.targets.length === 0 ? (
+              {editable && canWrite && destinations.length > 0 ? (
+                <DestinationPicker
+                  destinations={destinations}
+                  selected={selectedTargetIds}
+                  catalogMap={catalogMap}
+                  body={body}
+                  overrides={overridesFromPost}
+                  mediaCount={mediaIds.length}
+                  disabledIds={lockedTargetIds}
+                  onToggle={toggleDestination}
+                />
+              ) : post.targets.length === 0 ? (
                 <Text className="text-sm">This post has no destinations.</Text>
-              ) : editable && canWrite ? (
-                <div className="flex flex-col gap-2">
-                  {post.targets.map((target) => {
-                    const constraints = catalogMap.get(target.platform)?.constraints;
-                    return (
-                      <div
-                        key={target.id}
-                        className="border-base-300 flex items-start gap-3 border-b py-2 last:border-b-0"
-                      >
-                        <Avatar
-                          size="sm"
-                          src={avatarByTargetId.get(target.socialTargetId) ?? undefined}
-                          alt={target.targetName}
-                        >
-                          {target.targetName.replace(/^@/, '').charAt(0).toUpperCase()}
-                        </Avatar>
-                        <div className="flex min-w-0 flex-1 flex-col gap-1">
-                          <span className="font-medium">{target.targetName}</span>
-                          <PreviewNotes
-                            constraints={constraints}
-                            text={body}
-                            mediaCount={mediaIds.length}
-                          />
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
               ) : (
-                <TargetResults targets={post.targets} />
+                <TargetResults
+                  targets={post.targets}
+                  canRetry={isAdmin}
+                  retrying={retryTarget.isPending ? (retryTarget.variables ?? null) : null}
+                  onRetry={doRetryTarget}
+                />
               )}
             </FormSection>
+
+            {/* Per-destination tuning, on a SAVED post — different wording, the first
+                comment where the hashtags live, and this destination's own send time.
+                Each field saves on blur, so nothing here needs its own Save button. */}
+            {editable && canWrite && post.targets.length > 0 ? (
+              <FormSection
+                title="Fine-tune per destination (optional)"
+                description="Leave these blank to use the same words everywhere, and the same time. Set them only where one account needs something different."
+              >
+                <div className="flex flex-col gap-4">
+                  {post.targets.map((target) => (
+                    <SavedDestinationTuning
+                      key={target.id}
+                      target={target}
+                      hashtagSets={hashtagSets.data ?? []}
+                      saving={updateTargets.isPending}
+                      onSave={(next) => {
+                        saveTuning(target.id, next);
+                      }}
+                    />
+                  ))}
+                </div>
+              </FormSection>
+            ) : null}
 
             {/* Lifecycle actions — only while the post can still move. */}
             {editable && canWrite ? (
@@ -1333,6 +1786,42 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                       </Button>
                     </div>
                   ) : null}
+                </div>
+              </FormSection>
+            ) : null}
+
+            {/* Run it again, later. A post worth running twice is worth marking once —
+                the posting cadence draws from this pool to fill the times a business
+                said it wanted to post but has nothing planned for. */}
+            {canWrite && (post.status === 'published' || post.status === 'partially_published') ? (
+              <FormSection title="Keep this one around">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex min-w-0 flex-1 items-start gap-2">
+                    <Repeat className="mt-0.5 size-5 shrink-0" aria-hidden />
+                    <Text className="text-sm">
+                      Add this to the posts you&rsquo;re happy to run again. When a posting time on
+                      your calendar has nothing planned, sparx can fill it from here — you still
+                      approve anything before it goes out.
+                    </Text>
+                  </div>
+                  <Switch
+                    color="module"
+                    checked={post.evergreen}
+                    disabled={setEvergreen.isPending}
+                    aria-label="Run this post again in future"
+                    onCheckedChange={(next: boolean) => {
+                      setEvergreen.mutate(next, {
+                        onSuccess: () => {
+                          toast.add({
+                            title: next
+                              ? 'Added to your run-again posts'
+                              : 'Removed from your run-again posts',
+                            type: 'success',
+                          });
+                        },
+                      });
+                    }}
+                  />
                 </div>
               </FormSection>
             ) : null}

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { HttpError, isRetryableError } from './_http.js';
+import { HttpError, isRetryableError, splitScopes } from './_http.js';
 
 // The publish drain retries TRANSIENT failures (5xx / 429 / network) up to MAX_ATTEMPTS
 // but must FAIL a permanent 4xx immediately — a bad image, caption, or revoked token
@@ -29,5 +29,37 @@ describe('isRetryableError', () => {
     expect(e.status).toBe(422);
     expect(e.name).toBe('HttpError');
     expect(e).toBeInstanceOf(Error);
+  });
+});
+
+describe('splitScopes', () => {
+  it('splits a comma-separated scope string (Meta, TikTok, Pinterest)', () => {
+    expect(splitScopes('pages_show_list,pages_manage_posts')).toEqual([
+      'pages_show_list',
+      'pages_manage_posts',
+    ]);
+  });
+
+  it('splits a space-separated scope string (LinkedIn, Google)', () => {
+    expect(splitScopes('openid profile w_organization_social')).toEqual([
+      'openid',
+      'profile',
+      'w_organization_social',
+    ]);
+  });
+
+  it('handles the mixed separators a platform sometimes echoes back', () => {
+    expect(splitScopes('a, b,c  d')).toEqual(['a', 'b', 'c', 'd']);
+  });
+
+  it('is empty for nothing at all, so an unreported scope set reads as unknown', () => {
+    expect(splitScopes(undefined)).toEqual([]);
+    expect(splitScopes(null)).toEqual([]);
+    expect(splitScopes('')).toEqual([]);
+    expect(splitScopes('   ')).toEqual([]);
+  });
+
+  it('drops duplicates — the only use is set comparison', () => {
+    expect(splitScopes('pins:read,pins:read,pins:write')).toEqual(['pins:read', 'pins:write']);
   });
 });

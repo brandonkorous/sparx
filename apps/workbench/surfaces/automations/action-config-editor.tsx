@@ -33,7 +33,9 @@ import {
   primitiveText,
   type ActionConfigField,
   type ActionDef,
+  type ConfigOptionSource,
 } from './automations-catalog';
+import { useSocialOverview } from '../social/data';
 
 type Config = Record<string, unknown>;
 
@@ -100,6 +102,84 @@ function setKey(config: Config, key: string, val: unknown): Config {
   return next;
 }
 
+/**
+ * Pick several from a list only the server knows — today, the tenant's own connected
+ * social accounts.
+ *
+ * Every other field type is answered by static config, which is why an automation could
+ * only ever post to EVERY connected account: there was no way to name one. The empty
+ * selection deliberately means "all", because that is both the previous behaviour and
+ * the right default for someone who has not thought about it — narrowing is the
+ * deliberate act, not broadening.
+ */
+function MultiSelectField({
+  field,
+  config,
+  onConfig,
+}: {
+  field: ActionConfigField;
+  config: Config;
+  onConfig: (next: Config) => void;
+}) {
+  const options = useConfigOptions(field.optionSource);
+  const raw = config[field.key];
+  const picked = new Set(Array.isArray(raw) ? raw.map(String) : []);
+
+  if (options.length === 0) {
+    return <Text className="text-sm">{field.emptyHint ?? 'Nothing to choose from yet.'}</Text>;
+  }
+
+  const toggle = (value: string) => {
+    const next = new Set(picked);
+    if (next.has(value)) next.delete(value);
+    else next.add(value);
+    // An empty selection is stored as "absent", so the action's own default ("every
+    // enabled destination") applies rather than an empty array meaning "nowhere".
+    onConfig(setKey(config, field.key, next.size > 0 ? [...next] : undefined));
+  };
+
+  return (
+    <div className="flex flex-wrap gap-2">
+      {options.map((option) => {
+        const on = picked.has(option.value);
+        return (
+          <button
+            key={option.value}
+            type="button"
+            aria-pressed={on}
+            onClick={() => {
+              toggle(option.value);
+            }}
+            className={`cursor-pointer rounded-full border px-3 py-1 text-sm ${
+              on ? 'border-module bg-module bg-soft' : 'border-base-300'
+            }`}
+          >
+            {option.label}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** The live choices behind a `multiselect`. One hook per source, so adding a second
+ *  source later is a case here rather than a new field type. */
+function useConfigOptions(source: ConfigOptionSource | undefined): {
+  value: string;
+  label: string;
+}[] {
+  const overview = useSocialOverview();
+  if (source !== 'social-targets') return [];
+  const out: { value: string; label: string }[] = [];
+  for (const connection of overview.data?.connections ?? []) {
+    if (connection.status !== 'active') continue;
+    for (const target of connection.targets) {
+      if (target.enabled) out.push({ value: target.id, label: target.name });
+    }
+  }
+  return out;
+}
+
 function FieldInput({
   field,
   config,
@@ -163,6 +243,8 @@ function FieldInput({
           }}
         />
       );
+    case 'multiselect':
+      return <MultiSelectField field={field} config={config} onConfig={onConfig} />;
     case 'select':
       return (
         <Select

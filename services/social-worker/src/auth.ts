@@ -5,6 +5,7 @@
 
 import { withTenant } from '@sparx/db';
 import type { Prisma } from '@sparx/db';
+import { paramsFromSocialMetadata } from '@sparx/social';
 import type { SocialAdapter, SocialAuth } from '@sparx/social';
 import { decryptSocialToken, encryptSocialToken } from '@sparx/social/crypto';
 
@@ -20,17 +21,9 @@ export interface SocialConnectionAuthRow {
   metadata: Prisma.JsonValue;
 }
 
-/** Read the platform-specific params back off the connection metadata. */
-function paramsFromMetadata(metadata: Prisma.JsonValue): Record<string, string> | undefined {
-  if (!metadata || typeof metadata !== 'object' || Array.isArray(metadata)) return undefined;
-  const raw = (metadata as Record<string, unknown>).socialParams;
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return undefined;
-  const out: Record<string, string> = {};
-  for (const [k, v] of Object.entries(raw as Record<string, unknown>)) {
-    if (typeof v === 'string') out[k] = v;
-  }
-  return Object.keys(out).length ? out : undefined;
-}
+/** Read the platform-specific params back off the connection metadata. Re-exported (not
+ *  redefined) so the health sweep and the readiness check share one definition. */
+export { paramsFromSocialMetadata as paramsFromMetadata };
 
 /** Resolve a usable SocialAuth, or null when the connection is revoked / has no stored
  *  token. Refreshes + persists a near-expiry grant when the adapter supports it. */
@@ -41,7 +34,7 @@ export async function resolveSocialAuth(
 ): Promise<SocialAuth | null> {
   if (connection.status === 'revoked' || !connection.accessTokenEnc) return null;
   let accessToken = decryptSocialToken(connection.accessTokenEnc);
-  const params = paramsFromMetadata(connection.metadata);
+  const params = paramsFromSocialMetadata(connection.metadata);
 
   const expiresAt = connection.tokenExpiresAt?.getTime();
   const nearExpiry = expiresAt != null && expiresAt - Date.now() <= REFRESH_SKEW_MS;

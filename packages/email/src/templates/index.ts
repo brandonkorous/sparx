@@ -87,3 +87,15 @@ export {
   billingTrialEndingSubject,
   type BillingTrialEndingEmailProps,
 } from './billing-trial-ending';
+
+export {
+  SocialPostFailedEmail,
+  socialPostFailedSubject,
+  type SocialPostFailedEmailProps,
+} from './social-post-failed';
+
+export {
+  SocialConnectionExpiredEmail,
+  socialConnectionExpiredSubject,
+  type SocialConnectionExpiredEmailProps,
+} from './social-connection-expired';

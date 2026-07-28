@@ -223,7 +223,25 @@ export const COMMON_CONDITION_FIELDS: readonly string[] = [
 
 // ─── actions ─────────────────────────────────────────────────────────────────
 
-export type ConfigFieldType = 'text' | 'textarea' | 'number' | 'tags' | 'email' | 'select' | 'json';
+export type ConfigFieldType =
+  | 'text'
+  | 'textarea'
+  | 'number'
+  | 'tags'
+  | 'email'
+  | 'select'
+  | 'json'
+  /**
+   * Pick several from a list the SERVER knows and this file cannot — a tenant's own
+   * connected social accounts, for instance. `options` is static config; this is the
+   * escape hatch for a choice whose values only exist at runtime, named by
+   * {@link ActionConfigField.optionSource}.
+   */
+  | 'multiselect';
+
+/** Where a `multiselect` gets its choices. One name per live-data list, so the form
+ *  stays declarative and the fetching stays in one place. */
+export type ConfigOptionSource = 'social-targets';
 
 export interface ActionConfigField {
   key: string;
@@ -233,6 +251,10 @@ export interface ActionConfigField {
   placeholder?: string;
   help?: string;
   options?: readonly { value: string; label: string }[];
+  /** For `multiselect` — which live list to offer. */
+  optionSource?: ConfigOptionSource;
+  /** Shown in place of the list when the source has nothing to offer yet. */
+  emptyHint?: string;
 }
 
 export interface ActionDef {
@@ -552,6 +574,15 @@ export const ACTION_DEFS: readonly ActionDef[] = [
         required: true,
         placeholder: 'New arrival — {{announce.title}}',
         help: 'The post text. Use {{announce.title}} for the product or article name; the link and image are attached for you.',
+      },
+      {
+        key: 'targetIds',
+        label: 'Which accounts',
+        type: 'multiselect',
+        optionSource: 'social-targets',
+        help: 'Leave everything unticked to post to all your connected accounts. Tick some to narrow this automation to just those.',
+        emptyHint:
+          'No connected accounts yet — connect one under Social → Connections and they will appear here.',
       },
       {
         key: 'autoApprove',

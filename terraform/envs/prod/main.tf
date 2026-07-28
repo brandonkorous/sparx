@@ -247,6 +247,16 @@ module "pubsub" {
     # consumes it and snapshots each published target's numbers.
     "social.metrics.collect" = []
 
+    # Grant health + the engagement inbox (docs/social-audit). Each is an api-rest
+    # tick that finds due work and hands the platform I/O to the social-worker via its
+    # own push subscription (serverless.tf) — the same split as social.post.due.
+    # `social.connection.expired` is topic-only: the notification fan-out rides the
+    # publish() tee, and it is the activity-feed hook.
+    "social.connection.check"   = []
+    "social.connection.expired" = []
+    "social.inbox.sync"         = []
+    "social.inbox.reply"        = []
+
     # Module lifecycle
     "module.activated"   = []
     "module.deactivated" = []

@@ -1,6 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { TikTokAdapter, classifyTikTokStatus, pickPrivacyLevel, planTikTokPost } from './tiktok.js';
+import {
+  TikTokAdapter,
+  classifyTikTokAudit,
+  classifyTikTokStatus,
+  pickPrivacyLevel,
+  planTikTokPost,
+  tiktokAllowsPublic,
+} from './tiktok.js';
 import type { RenderedPost } from '../types.js';
 
 // The TikTok adapter's pure decision logic (docs/134 Phase 3). The two-step init/status
@@ -57,6 +64,32 @@ describe('classifyTikTokStatus', () => {
   });
 });
 
+describe('tiktokAllowsPublic', () => {
+  afterEach(() => {
+    delete process.env.TIKTOK_AUDITED;
+  });
+
+  it('is false by default — an unaudited app is limited to SELF_ONLY (private)', () => {
+    expect(tiktokAllowsPublic()).toBe(false);
+  });
+
+  it('is true only when TIKTOK_AUDITED is explicitly set to true (audited app)', () => {
+    process.env.TIKTOK_AUDITED = 'true';
+    expect(tiktokAllowsPublic()).toBe(true);
+    process.env.TIKTOK_AUDITED = ' TRUE '; // tolerates whitespace/case from a secret
+    expect(tiktokAllowsPublic()).toBe(true);
+  });
+
+  it('stays false for any non-true value (a typo must not accidentally go public)', () => {
+    for (const v of ['false', '1', 'yes', '']) {
+      process.env.TIKTOK_AUDITED = v;
+      expect(tiktokAllowsPublic()).toBe(false);
+    }
+  });
+});
+
+// pickPrivacyLevel is used ONLY on the audited path (unaudited forces SELF_ONLY before it
+// is ever reached). Given the creator's allowed options, it publishes to the widest.
 describe('pickPrivacyLevel', () => {
   it('publishes to the widest audience the account allows (public when offered)', () => {
     expect(pickPrivacyLevel(['PUBLIC_TO_EVERYONE', 'MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY'])).toBe(
@@ -64,9 +97,7 @@ describe('pickPrivacyLevel', () => {
     );
   });
 
-  it('falls back to SELF_ONLY when public is not offered — the sandbox/unaudited case', () => {
-    // An unaudited app only ever gets SELF_ONLY back; hardcoding public here is exactly
-    // what made every sandbox post fail.
+  it('falls back to SELF_ONLY when public is not offered (e.g. a private account)', () => {
     expect(pickPrivacyLevel(['SELF_ONLY'])).toBe('SELF_ONLY');
     expect(pickPrivacyLevel(['MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY'])).toBe('SELF_ONLY');
   });
@@ -104,5 +135,31 @@ describe('TikTokAdapter connectUrl / isConfigured', () => {
   it('reports not-configured when the env is missing', () => {
     delete process.env.TIKTOK_CLIENT_KEY;
     expect(new TikTokAdapter().isConfigured()).toBe(false);
+  });
+});
+
+// TikTok exposes no "is my app approved" endpoint, so the audit verdict is read out of
+// the audiences it will accept. The asymmetry is the whole point: a public option can
+// only come from an approved app, but private-only has two possible causes.
+describe('classifyTikTokAudit', () => {
+  it('reads a public option as proof the audit passed', () => {
+    expect(classifyTikTokAudit(['PUBLIC_TO_EVERYONE', 'SELF_ONLY']).appReview).toBe('passed');
+    expect(classifyTikTokAudit(['MUTUAL_FOLLOW_FRIENDS', 'SELF_ONLY']).appReview).toBe('passed');
+  });
+
+  it('reads private-only as still pending, and names the other cause', () => {
+    const probe = classifyTikTokAudit(['SELF_ONLY']);
+    expect(probe.appReview).toBe('pending');
+    // Reporting "still under review" about an already-approved app sends someone to
+    // TikTok support for a problem that lives in their own account settings.
+    expect(probe.detail).toMatch(/set to private/i);
+  });
+
+  it('is unknown when TikTok said nothing, rather than guessing pending', () => {
+    expect(classifyTikTokAudit([]).appReview).toBe('unknown');
+  });
+
+  it('never claims to have read scopes — this probe is about the app, not the grant', () => {
+    expect(classifyTikTokAudit(['PUBLIC_TO_EVERYONE']).grantedScopes).toBeNull();
   });
 });

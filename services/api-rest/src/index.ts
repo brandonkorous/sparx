@@ -19,6 +19,8 @@ import {
 import { env } from './env.js';
 import { startScheduledPublishLoop } from './lib/scheduled-publish.js';
 import { startSocialScheduledLoop } from './lib/social-scheduled.js';
+import { startSocialSweepLoops } from './lib/social-sweeps.js';
+import { startSocialSlotFillLoop } from './lib/social-slot-fill.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
 import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
@@ -93,6 +95,16 @@ async function main(): Promise<void> {
   // across pods via its own advisory lock — see lib/social-scheduled.ts.
   const stopSocialScheduled = startSocialScheduledLoop(app.log);
 
+  // The rest of the social module's background work, on four separate clocks: grant
+  // health (so a dead account says "reconnect" before a post is lost), post-metrics
+  // refresh, the engagement-inbox poll, and the per-destination scheduled drain. Each is
+  // a singleton across pods via its own advisory lock — see lib/social-sweeps.ts.
+  const stopSocialSweeps = startSocialSweepLoops(app.log);
+
+  // Background tick that fills empty auto-fill posting slots from the evergreen pool,
+  // so a planned cadence doesn't go quiet — see lib/social-slot-fill.ts.
+  const stopSocialSlotFill = startSocialSlotFillLoop(app.log);
+
   // Background tick that publishes Site Builder drafts whose scheduled
   // publish time has passed. Singleton across pods via its own advisory
   // lock — see lib/sitebuilder-publish.ts.
@@ -153,6 +165,8 @@ async function main(): Promise<void> {
     app.log.info({ signal }, 'shutdown received');
     stopScheduledPublish();
     stopSocialScheduled();
+    stopSocialSweeps();
+    stopSocialSlotFill();
     stopSitebuilderPublish();
     stopWebhookDelivery();
     stopEmailDispatch();

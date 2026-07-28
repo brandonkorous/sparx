@@ -30,7 +30,7 @@ import {
   Timestamp,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { Link2Off, Plug, Share2, ShieldCheck, Users } from 'lucide-react';
+import { LineChart, Link2Off, Plug, Share2, ShieldCheck, Users } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
@@ -46,10 +46,13 @@ import {
   useCompleteConnect,
   useConnectUrl,
   useDisconnectPlatform,
-  useSetRequireApproval,
   useSocialOverview,
+  useSocialReadiness,
   useToggleTarget,
+  useUpdateSocialSettings,
   type CatalogEntry,
+  type ConnectionReadiness,
+  type ReadinessVerdict,
   type SocialConnection,
   type SocialTarget,
 } from './data';
@@ -276,6 +279,112 @@ function CatalogRow({
 
 /* ── The surface ──────────────────────────────────────────────────────────── */
 
+/** Status colour for a readiness verdict. `unverifiable` is `info`, not neutral: it is a
+ *  real finding ("nobody can tell you from here"), not an absence of one. */
+function readinessTone(verdict: ReadinessVerdict): 'success' | 'warning' | 'error' | 'info' {
+  switch (verdict) {
+    case 'ready':
+      return 'success';
+    case 'awaiting_review':
+      return 'warning';
+    case 'reconnect_required':
+    case 'permissions_missing':
+      return 'error';
+    case 'unverifiable':
+      return 'info';
+  }
+}
+
+function ReadinessRow({ result, name }: { result: ConnectionReadiness; name: string }) {
+  return (
+    <div className="border-base-300 flex flex-col gap-2 border-t pt-3 first:border-t-0 first:pt-0">
+      <div className="flex flex-wrap items-center gap-2">
+        <Text className="font-medium">{result.displayName ?? name}</Text>
+        <Text className="text-sm">{name}</Text>
+        <Badge color={readinessTone(result.verdict)} variant="soft" size="sm" className="ml-auto">
+          {result.headline}
+        </Badge>
+      </div>
+      <Text className="text-sm">{result.detail}</Text>
+      {result.missing.length > 0 ? (
+        <Text className="text-sm">Not granted: {result.missing.join(', ')}</Text>
+      ) : null}
+      {result.caveat ? (
+        <Alert color="warning" variant="soft">
+          <AlertContent>
+            <AlertTitle>This result cannot be trusted</AlertTitle>
+            <AlertDescription>{result.caveat}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+    </div>
+  );
+}
+
+/** The permission check. Collapsed until asked for, because running it calls out to every
+ *  platform in turn — this is the thing you open when a post failed for no visible reason
+ *  or when you are waiting on a platform to finish reviewing sparx, not something the
+ *  Connections list should pay for on every open. */
+function PermissionCheck({ catalogMap }: { catalogMap: Map<string, CatalogEntry> }) {
+  const [open, setOpen] = useState(false);
+  const readiness = useSocialReadiness(open);
+  const results = readiness.data?.connections ?? [];
+
+  return (
+    <FormSection
+      title="Permission check"
+      description="Each platform decides what sparx is allowed to do with your account. This compares what they granted against what posting, reading comments and reading your numbers actually need."
+    >
+      {!open ? (
+        <Button
+          size="sm"
+          color="module"
+          variant="outline"
+          onClick={() => {
+            setOpen(true);
+          }}
+        >
+          Check my accounts
+        </Button>
+      ) : readiness.isPending ? (
+        <Text className="text-sm" role="status">
+          Asking each platform…
+        </Text>
+      ) : readiness.isError ? (
+        <Alert color="error" variant="soft">
+          <AlertContent>
+            <AlertTitle>Could not run the check</AlertTitle>
+            <AlertDescription>
+              {socialErrorMessage(readiness.error, 'Your connected accounts are unaffected.')}
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : results.length === 0 ? (
+        <Text className="text-sm">There are no connected accounts to check yet.</Text>
+      ) : (
+        <div className="flex flex-col gap-3">
+          {results.map((result) => (
+            <ReadinessRow
+              key={result.connectionId}
+              result={result}
+              name={platformName(result.platform, catalogMap)}
+            />
+          ))}
+          <div className="flex items-center gap-2">
+            <RefreshButton
+              isFetching={readiness.isFetching}
+              updatedAt={readiness.dataUpdatedAt}
+              onRefresh={() => {
+                void readiness.refetch();
+              }}
+            />
+          </div>
+        </div>
+      )}
+    </FormSection>
+  );
+}
+
 export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
   const toast = useToast();
   const confirm = useConfirm();
@@ -285,7 +394,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
   const connectUrl = useConnectUrl();
   const completeConnect = useCompleteConnect();
   const disconnect = useDisconnectPlatform();
-  const setApproval = useSetRequireApproval();
+  const updateSettings = useUpdateSocialSettings();
 
   const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
   const [connectFailure, setConnectFailure] = useState<string | null>(null);
@@ -410,24 +519,51 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
   };
 
   const onApprovalChange = (next: boolean) => {
-    setApproval.mutate(next, {
-      onSuccess: () => {
-        toast.add({
-          title: next ? 'Approval is now required' : 'Approval is now off',
-          description: next
-            ? 'Posts wait for an admin before they go live.'
-            : 'Posts can be scheduled and published without a separate approval.',
-          type: 'success',
-        });
-      },
-      onError: (error) => {
-        toast.add({
-          title: 'Could not change that setting',
-          description: socialErrorMessage(error, 'Nothing was changed.'),
-          type: 'error',
-        });
-      },
-    });
+    updateSettings.mutate(
+      { requireApproval: next },
+      {
+        onSuccess: () => {
+          toast.add({
+            title: next ? 'Approval is now required' : 'Approval is now off',
+            description: next
+              ? 'Posts wait for an admin before they go live.'
+              : 'Posts can be scheduled and published without a separate approval.',
+            type: 'success',
+          });
+        },
+        onError: (error: unknown) => {
+          toast.add({
+            title: 'Could not change that setting',
+            description: socialErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
+  };
+
+  const onTrackLinksChange = (next: boolean) => {
+    updateSettings.mutate(
+      { trackLinks: next },
+      {
+        onSuccess: () => {
+          toast.add({
+            title: next ? 'Link tracking is on' : 'Link tracking is off',
+            description: next
+              ? 'Visits from your posts now show up in your traffic reports.'
+              : 'Links go out exactly as you write them.',
+            type: 'success',
+          });
+        },
+        onError: (error: unknown) => {
+          toast.add({
+            title: 'Could not change that setting',
+            description: socialErrorMessage(error, 'Nothing was changed.'),
+            type: 'error',
+          });
+        },
+      }
+    );
   };
 
   const connecting = connectUrl.isPending || completeConnect.isPending;
@@ -517,7 +653,7 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
                     <Switch
                       color="module"
                       checked={data.settings.requireApproval}
-                      disabled={setApproval.isPending}
+                      disabled={updateSettings.isPending}
                       aria-label="Require approval before posts go live"
                       onCheckedChange={onApprovalChange}
                     />
@@ -528,6 +664,37 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
                       size="sm"
                     >
                       {data.settings.requireApproval ? 'Required' : 'Off'}
+                    </Badge>
+                  )}
+                </div>
+
+                {/* Link tracking. On by default, because an untagged link makes social
+                    look like it drives nothing; off is a real choice, because the tag is
+                    visible in the address a customer sees. */}
+                <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-3">
+                  <div className="flex min-w-0 flex-1 items-start gap-2">
+                    <LineChart className="mt-0.5 size-5 shrink-0" aria-hidden />
+                    <Text className="text-sm">
+                      Add tracking to links in your posts, so the visits and sales they bring show
+                      up in your reports alongside every other way people find you. It adds a short
+                      tag to the end of the address.
+                    </Text>
+                  </div>
+                  {canManage ? (
+                    <Switch
+                      color="module"
+                      checked={data.settings.trackLinks}
+                      disabled={updateSettings.isPending}
+                      aria-label="Track links in posts"
+                      onCheckedChange={onTrackLinksChange}
+                    />
+                  ) : (
+                    <Badge
+                      color={data.settings.trackLinks ? 'success' : 'neutral'}
+                      variant="soft"
+                      size="sm"
+                    >
+                      {data.settings.trackLinks ? 'On' : 'Off'}
                     </Badge>
                   )}
                 </div>
@@ -560,6 +727,10 @@ export function SocialConnectionsSurface({ ctx }: { ctx: SurfaceContext }) {
                   </div>
                 )}
               </FormSection>
+
+              {canManage && connections.length > 0 ? (
+                <PermissionCheck catalogMap={catalogMap} />
+              ) : null}
 
               {available.length > 0 ? (
                 <FormSection

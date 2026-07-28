@@ -34,13 +34,28 @@ export interface SocialConnectionView {
   targets: SocialTargetView[];
 }
 
-/** The tenant's social connections + their targets, for the manage UI and the
- *  `list_social_connections` MCP tool. Read-only; ordered oldest connection first,
- *  targets by name. */
-export async function listSocialConnections(ctx: SocialContext): Promise<SocialConnectionView[]> {
+/**
+ * The site's social connections + their targets, for the manage UI and the
+ * `list_social_connections` MCP tool. Read-only; ordered oldest connection first,
+ * targets by name.
+ *
+ * `propertyId` is what keeps two businesses under one owner apart. A connected account
+ * speaks for ONE business — Bob's Parts' Instagram is not Savory Donuts' — so pooling
+ * every site's accounts into one unlabelled list was how a post ended up on the wrong
+ * brand. Passing a site returns that site's accounts plus any tenant-wide ones (a
+ * connection made before multi-site, `property_id IS NULL`, still belongs to everyone).
+ * Passing null returns everything, which is what a tenant-level agent or an export wants.
+ */
+export async function listSocialConnections(
+  ctx: SocialContext,
+  propertyId: string | null = null
+): Promise<SocialConnectionView[]> {
   const rows = await withTenant({ tenantId: ctx.tenantId }, (tx) =>
     tx.socialConnection.findMany({
-      where: { tenantId: ctx.tenantId },
+      where: {
+        tenantId: ctx.tenantId,
+        ...(propertyId ? { OR: [{ propertyId }, { propertyId: null }] } : {}),
+      },
       orderBy: { createdAt: 'asc' },
       include: { targets: { orderBy: { name: 'asc' } } },
     })

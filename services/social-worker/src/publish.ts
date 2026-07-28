@@ -13,23 +13,45 @@ import { withTenant } from '@sparx/db';
 import type { Prisma } from '@sparx/db';
 import {
   getSocialAdapter,
+  HttpError,
   isRetryableError,
   renderForTarget,
+  socialRateLimiter,
   type SocialPlatform,
   type SocialTargetRef,
   type TargetOverride,
 } from '@sparx/social';
 import { registerBuiltinSocialAdapters } from '@sparx/social/adapters';
 import { isSocialTokenCryptoConfigured } from '@sparx/social/crypto';
+import { getSocialSettings } from '@sparx/social/service';
 import { createPublisher, publishEvent } from '@sparx/events';
 import type { Logger } from 'pino';
 
 import { env } from './env.js';
 import { resolveSocialAuth } from './auth.js';
+import { markConnectionExpired } from './health.js';
+import { notifyPostFailure } from './notify.js';
 import { mediaRefsForPlatform, resolvePostAssets } from './media.js';
 import { tagSocialLink } from './utm.js';
 
 const MAX_ATTEMPTS = 5;
+
+/** The longest we'll hold a message open waiting for a rate-limit window. Beyond this,
+ *  the target stays `pending` and the next drain picks it up — a Pub/Sub push has an ack
+ *  deadline, and sleeping through a two-minute platform back-off would blow it. */
+const MAX_INLINE_WAIT_MS = 5_000;
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+/** Whether a platform error means "this sign-in is no longer valid" rather than "this
+ *  post is wrong". A 401/403 is the account's problem, not the post's, so it flips the
+ *  CONNECTION to `expired` — otherwise every future post fails one at a time while the
+ *  Connections screen keeps saying everything is fine (docs/social-audit GAP 1). */
+export function isAuthRejection(e: unknown): boolean {
+  return e instanceof HttpError && (e.status === 401 || e.status === 403);
+}
 
 export const CONNECTION_SELECT = {
   id: true,
@@ -83,7 +105,18 @@ export async function drainPost(
   const post = await withTenant({ tenantId }, (tx) =>
     tx.socialPost.findFirst({
       where: { id: postId },
-      include: { targets: { where: { status: { in: ['pending', 'publishing'] } } } },
+      include: {
+        targets: {
+          where: {
+            status: { in: ['pending', 'publishing'] },
+            // A destination with its OWN send time waits for it (docs/133 §8): the post
+            // may be `publishing` because its 9am Facebook slot came due while the 5pm
+            // LinkedIn one is still hours away. `null` means "go with the post", which
+            // is the common case, so it must pass this filter.
+            OR: [{ scheduledAt: null }, { scheduledAt: { lte: new Date() } }],
+          },
+        },
+      },
     })
   );
   if (!post) {
@@ -104,6 +137,11 @@ export async function drainPost(
   // One timestamp for the whole drain, so every target of this post shares the same
   // attribution campaign month (utm_campaign=social-<yyyy-mm>).
   const publishTime = new Date();
+
+  // Link tagging is on by default — an untagged link makes social look like it drives
+  // nothing — but a tenant can turn it off, because the tag is visible in the URL a
+  // customer sees.
+  const { trackLinks } = await getSocialSettings(tenantId);
 
   let published = 0;
   let failed = 0;
@@ -182,7 +220,17 @@ export async function drainPost(
       auth = await resolveSocialAuth(tenantId, target.connection, adapter);
     } catch (e) {
       // A permanent refresh failure (revoked grant → 400 invalid_grant) fails fast;
-      // a transient one (5xx / network) stays pending for a re-drain.
+      // a transient one (5xx / network) stays pending for a re-drain. Permanent also
+      // means the ACCOUNT is dead, not just this post — say so on the connection.
+      if (!isRetryableError(e)) {
+        await markConnectionExpired(
+          tenantId,
+          target.connection.id,
+          'refresh_failed',
+          `The connection could not be renewed: ${errMsg(e)}`,
+          logger
+        );
+      }
       await recordFailure(
         t.id,
         t.platform,
@@ -211,8 +259,11 @@ export async function drainPost(
         body: post.body,
         media: mediaRefsForPlatform(assets, platform),
         // Tag the outbound link for attribution, per platform (docs/80). A link the
-        // author already tagged, or a non-http one, passes through untouched.
-        link: tagSocialLink(post.link ?? undefined, platform, publishTime),
+        // author already tagged, or a non-http one, passes through untouched — as does
+        // every link when the tenant has turned tagging off.
+        link: trackLinks
+          ? tagSocialLink(post.link ?? undefined, platform, publishTime)
+          : (post.link ?? undefined),
       },
       platform,
       Object.keys(override).length ? override : undefined
@@ -234,6 +285,27 @@ export async function drainPost(
       name: target.name,
       params: paramsFromTargetMeta(target.metadata),
     };
+
+    // Pace the fan-out per GRANT. Several destinations under one connection share that
+    // account's quota, so they take turns rather than racing each other into a 429. A
+    // short wait is simply waited out; a long one (a platform-imposed back-off) leaves
+    // the target pending for the next drain instead of holding this message open.
+    const waitMs = socialRateLimiter.take(target.connection.id);
+    if (waitMs > 0) {
+      if (waitMs > MAX_INLINE_WAIT_MS) {
+        await recordFailure(
+          t.id,
+          t.platform,
+          t.attemptCount,
+          'pending',
+          `${t.platform} asked us to slow down — this will go out shortly.`
+        );
+        continue;
+      }
+      await sleep(waitMs);
+      socialRateLimiter.take(target.connection.id);
+    }
+
     try {
       const result = await adapter.publish(auth, ref, rendered.rendered, `${postId}:${t.id}`);
       await withTenant({ tenantId }, (tx) =>
@@ -251,6 +323,29 @@ export async function drainPost(
       );
       published += 1;
     } catch (e) {
+      // A 401/403 is the ACCOUNT failing, not the post. Flip the connection so the
+      // tenant is told to reconnect once, instead of watching post after post fail while
+      // Connections still reads "Connected" (docs/social-audit GAP 1).
+      if (isAuthRejection(e)) {
+        await markConnectionExpired(
+          tenantId,
+          target.connection.id,
+          'token_rejected',
+          `${t.platform} rejected the sign-in while publishing: ${errMsg(e)}`,
+          logger
+        );
+      }
+      // The platform said "slow down". Honour the number it gave us, and apply it to the
+      // whole GRANT — every destination under it shares the quota, so letting the next
+      // one straight through would just earn another rejection, and eventually a longer
+      // block.
+      if (e instanceof HttpError && e.status === 429) {
+        socialRateLimiter.backOff(target.connection.id, e.retryAfterSeconds ?? 60);
+        logger.warn(
+          { postId, targetId: t.id, retryAfter: e.retryAfterSeconds },
+          'platform rate-limited this connection — backing off'
+        );
+      }
       // Retry a TRANSIENT failure (5xx / 429 / network) for a re-drain, capped by
       // MAX_ATTEMPTS; fail a PERMANENT one (4xx — a bad image/caption/token) immediately
       // so a doomed post doesn't churn every attempt before giving up.
@@ -259,7 +354,9 @@ export async function drainPost(
         t.platform,
         t.attemptCount,
         isRetryableError(e) ? 'pending' : 'failed',
-        errMsg(e)
+        isAuthRejection(e)
+          ? `${t.platform} needs reconnecting — the sign-in was rejected.`
+          : errMsg(e)
       );
     }
   }
@@ -278,6 +375,13 @@ export async function drainPost(
       { postId, status },
       logger
     );
+  }
+
+  // Tell the business when a post did not reach somewhere it was meant to. Both terminal
+  // failure states qualify — `partially_published` especially, since it reads as a
+  // success in every list until someone opens it (docs/social-audit GAP 2).
+  if (status === 'failed' || status === 'partially_published') {
+    await notifyPostFailure(tenantId, postId, logger);
   }
 
   return { postId, status, published, failed, deferred, skipped };

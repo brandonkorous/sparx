@@ -24,8 +24,16 @@ import {
   type DragEndEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import { Button, EmptyState, Heading, Text } from '@wizeworks/silicaui-react';
-import { ChevronLeft, ChevronRight, Plus, ServerCrash } from 'lucide-react';
+import {
+  Button,
+  EmptyState,
+  Heading,
+  Text,
+  ToggleGroup,
+  ToggleGroupItem,
+} from '@wizeworks/silicaui-react';
+import { CalendarPlus, ChevronLeft, ChevronRight, Plus, ServerCrash } from 'lucide-react';
+import { slotOccurrences } from '@sparx/social';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -33,6 +41,7 @@ import type { MediaAsset } from '../cms/media';
 import { PostThumb, excerpt, formatTime, postDate } from './post-visuals';
 import { useSocialBoard } from './board';
 import { isEditablePost, postStatusMeta, socialErrorMessage, type Post } from './data';
+import { usePostingSlots, type PostingSlot } from './planning-data';
 
 interface OpenEvent {
   shiftKey: boolean;
@@ -42,9 +51,13 @@ interface OpenEvent {
 interface CalendarProps {
   posts: Post[];
   assetsById: Map<string, MediaAsset>;
+  /** The business's standing posting times, drawn as gaps where nothing is planned. */
+  slots: PostingSlot[];
   canWrite: boolean;
   onOpenPost: (post: Post, event: OpenEvent) => void;
   onNewOnDay: (day: Date) => void;
+  /** Start a post at an exact moment — clicking an empty posting time. */
+  onNewAt: (at: Date) => void;
   /** Drop a post onto a day → (re)schedule it there. Only fired for editable posts
    *  (a published one is pinned to when it went out). */
   onReschedule: (post: Post, day: Date) => void;
@@ -77,6 +90,28 @@ function parseDayKey(key: string): Date {
 function startOfMonth(date: Date): Date {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
+
+/** The Sunday on or before `date` — the week a day belongs to. */
+function startOfWeek(date: Date): Date {
+  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  start.setDate(start.getDate() - start.getDay());
+  return start;
+}
+
+/** The seven days of the week `cursor` starts. */
+function buildWeek(cursor: Date): Date[] {
+  const start = startOfWeek(cursor);
+  return Array.from({ length: 7 }, (_, i) => {
+    const day = new Date(start);
+    day.setDate(start.getDate() + i);
+    return day;
+  });
+}
+
+/** How close a post has to be to a posting time to count as filling it. Matches the
+ *  server-side filler exactly, so a slot the calendar draws as free is precisely one the
+ *  evergreen filler would claim. */
+const OCCUPIED_WINDOW_MS = 90 * 60_000;
 
 /** The 42 cells (6 stable weeks) of the month around `cursor`, Sunday-first. */
 function buildGrid(cursor: Date): Date[] {
@@ -137,24 +172,66 @@ function DayChip({
 
 /* ── The month grid ───────────────────────────────────────────────────────── */
 
+/**
+ * A posting time this day was meant to have, with nothing in it.
+ *
+ * This is what turns a cadence from a note in a settings screen into something you can
+ * see. "We post Tuesdays at 9" is only useful if an empty Tuesday LOOKS empty — otherwise
+ * a quiet month reads as blank space and nobody notices until engagement drops. Clicking
+ * one starts a post already dated to that exact slot.
+ */
+function EmptySlotChip({
+  at,
+  canWrite,
+  onFill,
+}: {
+  at: Date;
+  canWrite: boolean;
+  onFill: () => void;
+}) {
+  const label = `${formatTime(at.toISOString())} — nothing planned`;
+  return (
+    <button
+      type="button"
+      disabled={!canWrite}
+      title={canWrite ? `Write a post for ${formatTime(at.toISOString())}` : label}
+      aria-label={label}
+      onClick={onFill}
+      className={`border-module/50 text-module flex w-full min-w-0 items-center gap-1.5 rounded-md border border-dashed px-1 py-1 text-left ${
+        canWrite ? 'hover:bg-module hover:bg-soft cursor-pointer' : 'cursor-default'
+      }`}
+    >
+      <CalendarPlus className="size-3 shrink-0" aria-hidden />
+      <span className="min-w-0 flex-1 truncate text-xs">
+        <span className="font-semibold">{formatTime(at.toISOString())}</span> free
+      </span>
+    </button>
+  );
+}
+
 function DayCell({
   day,
   inMonth,
   isToday,
   dayPosts,
+  openSlots,
   assetsById,
   canWrite,
   onOpenPost,
   onNewOnDay,
+  onNewAt,
 }: {
   day: Date;
   inMonth: boolean;
   isToday: boolean;
   dayPosts: Post[];
+  /** Posting times on this day with nothing scheduled in them. */
+  openSlots: Date[];
   assetsById: Map<string, MediaAsset>;
   canWrite: boolean;
   onOpenPost: (post: Post, event: OpenEvent) => void;
   onNewOnDay: (day: Date) => void;
+  onNewAt: (at: Date) => void;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: dayKey(day) });
   const shown = dayPosts.slice(0, 3);
@@ -222,29 +299,60 @@ function DayCell({
             />
           </div>
         ))}
+        {/* Only when the day has room to show them — a busy day's real posts matter
+            more than the gaps between them. */}
+        {shown.length < 3
+          ? openSlots.slice(0, 3 - shown.length).map((at) => (
+              <div key={at.toISOString()} className="pointer-events-auto">
+                <EmptySlotChip
+                  at={at}
+                  canWrite={canWrite}
+                  onFill={() => {
+                    onNewAt(at);
+                  }}
+                />
+              </div>
+            ))
+          : null}
         {overflow > 0 ? <span className="px-1 text-xs font-medium">+{overflow} more</span> : null}
       </div>
     </div>
   );
 }
 
-function MonthGrid({
-  cursor,
+/**
+ * The grid, month or week.
+ *
+ * One component for both, because a week IS seven day cells — the same cell, the same
+ * drop target, the same chips. The only differences are which days are in the list and
+ * how tall a row gets to be, and a second component would mean every future change to a
+ * day cell having to be made twice.
+ */
+function CalendarGrid({
+  days,
+  month,
   postsByDay,
+  openSlotsByDay,
   assetsById,
   canWrite,
+  tall,
   onOpenPost,
   onNewOnDay,
+  onNewAt,
 }: {
-  cursor: Date;
+  days: Date[];
+  /** Which month counts as "this one", for dimming the spill-over days. */
+  month: number | null;
   postsByDay: Map<string, Post[]>;
+  openSlotsByDay: Map<string, Date[]>;
   assetsById: Map<string, MediaAsset>;
   canWrite: boolean;
+  /** A week has one row, so its cells can afford real height. */
+  tall?: boolean;
   onOpenPost: (post: Post, event: OpenEvent) => void;
   onNewOnDay: (day: Date) => void;
+  onNewAt: (at: Date) => void;
 }) {
-  const cells = useMemo(() => buildGrid(cursor), [cursor]);
-  const month = cursor.getMonth();
   const todayKey = dayKey(new Date());
 
   return (
@@ -256,20 +364,22 @@ function MonthGrid({
           </div>
         ))}
       </div>
-      <div className="grid grid-cols-7">
-        {cells.map((day) => {
+      <div className={`grid grid-cols-7 ${tall ? '[&>*]:min-h-64' : ''}`}>
+        {days.map((day) => {
           const key = dayKey(day);
           return (
             <DayCell
               key={key}
               day={day}
-              inMonth={day.getMonth() === month}
+              inMonth={month === null || day.getMonth() === month}
               isToday={key === todayKey}
               dayPosts={postsByDay.get(key) ?? []}
+              openSlots={openSlotsByDay.get(key) ?? []}
               assetsById={assetsById}
               canWrite={canWrite}
               onOpenPost={onOpenPost}
               onNewOnDay={onNewOnDay}
+              onNewAt={onNewAt}
             />
           );
         })}
@@ -360,13 +470,29 @@ function DraftsTray({
 export function PostsCalendar({
   posts,
   assetsById,
+  slots,
   canWrite,
   onOpenPost,
   onNewOnDay,
+  onNewAt,
   onReschedule,
 }: CalendarProps) {
+  const [view, setView] = useState<'month' | 'week'>('month');
   const [cursor, setCursor] = useState(() => startOfMonth(new Date()));
   const [activeId, setActiveId] = useState<string | null>(null);
+
+  // The cursor means "the month" or "the start of the week" depending on the view, so
+  // switching views has to re-anchor it — otherwise Week opens on the 1st of a month
+  // that may be four weeks from where the person was looking.
+  const changeView = (next: 'month' | 'week') => {
+    setCursor((c) => (next === 'week' ? startOfWeek(c) : startOfMonth(c)));
+    setView(next);
+  };
+
+  const step = (from: Date, direction: number): Date =>
+    view === 'month'
+      ? new Date(from.getFullYear(), from.getMonth() + direction, 1)
+      : new Date(from.getFullYear(), from.getMonth(), from.getDate() + direction * 7);
 
   // 6px before a drag begins, so a tap still opens the post (matches the workbench's
   // other drag surfaces). Pointer-only: the equivalent keyboard path is opening the
@@ -411,7 +537,56 @@ export function PostsCalendar({
     [posts]
   );
 
-  const monthLabel = cursor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+  const days = useMemo(
+    () => (view === 'month' ? buildGrid(cursor) : buildWeek(cursor)),
+    [view, cursor]
+  );
+
+  /**
+   * The posting times on screen that have nothing in them.
+   *
+   * A slot counts as filled by anything within an hour and a half of it — a rhythm, not
+   * a stopwatch, and the same window the server-side filler uses, so what the calendar
+   * shows as free is exactly what would be filled.
+   */
+  const openSlotsByDay = useMemo(() => {
+    const out = new Map<string, Date[]>();
+    if (days.length === 0 || slots.length === 0) return out;
+
+    const from = new Date(days[0]!.getTime() - 1);
+    const spanDays = days.length;
+    const scheduled = posts
+      .map((p) => postDate(p))
+      .filter((d): d is Date => d !== null)
+      .map((d) => d.getTime());
+
+    for (const slot of slots) {
+      if (!slot.enabled) continue;
+      for (const at of slotOccurrences(
+        { weekday: slot.weekday, minuteOfDay: slot.minuteOfDay, timezone: slot.timezone },
+        from,
+        spanDays
+      )) {
+        const taken = scheduled.some((t) => Math.abs(t - at.getTime()) <= OCCUPIED_WINDOW_MS);
+        if (taken) continue;
+        const key = dayKey(at);
+        const list = out.get(key);
+        if (list) list.push(at);
+        else out.set(key, [at]);
+      }
+    }
+    for (const list of out.values()) list.sort((a, b) => a.getTime() - b.getTime());
+    return out;
+  }, [days, slots, posts]);
+
+  const rangeLabel =
+    view === 'month'
+      ? cursor.toLocaleDateString(undefined, { month: 'long', year: 'numeric' })
+      : `${cursor.toLocaleDateString(undefined, { month: 'short', day: 'numeric' })} – ${new Date(
+          cursor.getFullYear(),
+          cursor.getMonth(),
+          cursor.getDate() + 6
+        ).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}`;
 
   return (
     <DndContext
@@ -426,17 +601,33 @@ export function PostsCalendar({
       onDragEnd={handleDragEnd}
     >
       <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Heading level={2} className="text-lg font-semibold">
-            {monthLabel}
+            {rangeLabel}
           </Heading>
           <div className="flex-1" />
+          {/* Month plans, week works. A social manager checks the shape of the month
+              and then lives in this week — the same grid, seven cells, room to see what
+              is actually in each day. */}
+          <ToggleGroup
+            color="module"
+            size="sm"
+            value={[view]}
+            aria-label="How much to show"
+            onValueChange={(value: string[]) => {
+              const next = value[value.length - 1];
+              if (next === 'month' || next === 'week') changeView(next);
+            }}
+          >
+            <ToggleGroupItem value="month">Month</ToggleGroupItem>
+            <ToggleGroupItem value="week">Week</ToggleGroupItem>
+          </ToggleGroup>
           <Button
             size="sm"
             variant="ghost"
-            aria-label="Previous month"
+            aria-label={view === 'month' ? 'Previous month' : 'Previous week'}
             onClick={() => {
-              setCursor((c) => new Date(c.getFullYear(), c.getMonth() - 1, 1));
+              setCursor((c) => step(c, -1));
             }}
           >
             <ChevronLeft className="size-4" aria-hidden />
@@ -445,7 +636,7 @@ export function PostsCalendar({
             size="sm"
             variant="ghost"
             onClick={() => {
-              setCursor(startOfMonth(new Date()));
+              setCursor(view === 'month' ? startOfMonth(new Date()) : startOfWeek(new Date()));
             }}
           >
             Today
@@ -453,9 +644,9 @@ export function PostsCalendar({
           <Button
             size="sm"
             variant="ghost"
-            aria-label="Next month"
+            aria-label={view === 'month' ? 'Next month' : 'Next week'}
             onClick={() => {
-              setCursor((c) => new Date(c.getFullYear(), c.getMonth() + 1, 1));
+              setCursor((c) => step(c, 1));
             }}
           >
             <ChevronRight className="size-4" aria-hidden />
@@ -470,17 +661,21 @@ export function PostsCalendar({
           </Text>
         ) : null}
 
-        {/* The month grid is always the view. On a pane too narrow for seven legible
-            columns it scrolls sideways rather than collapsing to a list. */}
+        {/* A grid is always the view — it never degrades into a list. On a pane too
+            narrow for seven legible columns it scrolls sideways instead. */}
         <div className="-mx-1 overflow-x-auto px-1">
           <div className="min-w-[44rem]">
-            <MonthGrid
-              cursor={cursor}
+            <CalendarGrid
+              days={days}
+              month={view === 'month' ? cursor.getMonth() : null}
               postsByDay={postsByDay}
+              openSlotsByDay={openSlotsByDay}
               assetsById={assetsById}
               canWrite={canWrite}
+              tall={view === 'week'}
               onOpenPost={onOpenPost}
               onNewOnDay={onNewOnDay}
+              onNewAt={onNewAt}
             />
           </div>
         </div>
@@ -516,6 +711,8 @@ export function PostsCalendar({
 export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
   const board = useSocialBoard(ctx);
   const { posts, canWrite, all } = board;
+  // The standing posting times, so an empty Tuesday LOOKS empty rather than blank.
+  const slots = usePostingSlots();
 
   if (posts.isError) {
     return (
@@ -585,9 +782,11 @@ export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
             <PostsCalendar
               posts={all}
               assetsById={board.assetsById}
+              slots={slots.data ?? []}
               canWrite={canWrite}
               onOpenPost={board.openPost}
               onNewOnDay={board.newOnDay}
+              onNewAt={board.newAt}
               onReschedule={board.onReschedule}
             />
           </div>

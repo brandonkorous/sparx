@@ -111,6 +111,35 @@ export interface SocialTokens {
   params?: Record<string, string>;
 }
 
+/** What a platform itself reports about a live grant — the only honest answer to
+ *  "has our App Review landed yet?", because none of these platforms expose review
+ *  status as an API. We infer it from what a real token can actually do.
+ *
+ *  Returned by the optional {@link SocialAdapter.probeAccess}; adapters whose token
+ *  response already carries the granted scope set can omit it entirely. */
+export interface SocialAccessProbe {
+  /** The scopes the platform says this grant holds RIGHT NOW. More truthful than the
+   *  set stored at connect time — a person can revoke one permission from their
+   *  account settings without disconnecting. Null when the platform offers no
+   *  introspection endpoint. */
+  grantedScopes: string[] | null;
+  /** Whether sparx's own app has cleared this platform's review.
+   *  - `passed` — the API did something only an approved app can do.
+   *  - `pending` — the API refused in the specific way an unapproved app is refused.
+   *  - `unknown` — the call succeeded but proves nothing either way (see `caveat`).
+   *
+   *  Deliberately three-valued: "I cannot tell" is a real answer here and reporting
+   *  it as `passed` is how a false green ends up in front of a tenant. */
+  appReview: 'passed' | 'pending' | 'unknown';
+  /** One plain sentence explaining the verdict, written for someone who has never
+   *  heard the phrase "Advanced Access". */
+  detail: string;
+  /** Set when something about THIS account makes the result unrepresentative — most
+   *  often that the connected account holds a role on sparx's own developer app, which
+   *  grants it permissions no ordinary tenant would get. */
+  caveat?: string;
+}
+
 export interface SocialConnectContext {
   tenantId: string;
   /** Signed state correlating the OAuth callback to this tenant/connection. */
@@ -151,6 +180,45 @@ export interface SocialPostMetrics {
   reach?: number;
 }
 
+// ── The inbound direction (the engagement inbox) ────────────────────────────────
+
+/** What kind of inbound thing a person sent. A Google Business review and a Facebook
+ *  comment are different enough to filter on and similar enough to answer in one place. */
+export type SocialInboxKind = 'comment' | 'mention' | 'review' | 'message';
+
+/** One inbound item as the PLATFORM describes it. The worker maps this onto a
+ *  `social_inbox_items` row; the adapter stays pure I/O and does no DB work. */
+export interface SocialInboxEntry {
+  /** The item's own id on the platform — the idempotency anchor for the sync. */
+  externalId: string;
+  kind: SocialInboxKind;
+  /** The conversation this belongs to (a post's comment thread, a DM thread). */
+  threadExternalId?: string;
+  /** The comment this replies to, when the platform threads replies. */
+  parentExternalId?: string;
+  /** The platform's id for the post it is a comment on, so the inbox can join an item
+   *  back to the sparx post that provoked it. */
+  postExternalId?: string;
+  authorName?: string;
+  authorHandle?: string;
+  authorAvatarUrl?: string;
+  text?: string;
+  /** 1–5 for a review; absent otherwise. */
+  rating?: number;
+  permalink?: string;
+  /** When the person sent it. */
+  receivedAt: Date;
+  /** True when WE sent it (a reply already on the platform — e.g. one made in the
+   *  platform's own app). Keeps a thread honest rather than showing only our half. */
+  outbound?: boolean;
+}
+
+/** What a reply produced on the platform. */
+export interface SocialReplyResult {
+  externalId: string;
+  permalink?: string;
+}
+
 // ── The adapter contract ────────────────────────────────────────────────────────
 
 export interface SocialAdapter {
@@ -167,6 +235,14 @@ export interface SocialAdapter {
    *  instant ops sets its env, with no code change (mirrors ChannelAdapter). */
   isConfigured(): boolean;
 
+  /** The OAuth scopes this adapter asks for RIGHT NOW, as individual scope strings.
+   *  Diffed against what a connection was actually granted to answer the two questions
+   *  a tenant cares about: "can this account do everything sparx needs?" and "did the
+   *  platform quietly withhold something?". Reflects the same env gates as
+   *  {@link connectUrl} — an adapter whose inbox flag is off must not claim to need
+   *  inbox scopes, or every healthy connection reads as broken. */
+  requiredScopes(): string[];
+
   // ── install / auth ──
   /** Build the OAuth authorize URL the dashboard redirects to. */
   connectUrl(ctx: SocialConnectContext): string;
@@ -175,6 +251,14 @@ export interface SocialAdapter {
   /** Refresh an access token nearing expiry. Optional — some platforms are
    *  long-lived or re-auth per call. */
   refresh?(refreshToken: string): Promise<SocialTokens>;
+
+  /** Optional: ask the platform what this grant can actually do. Implemented where the
+   *  platform offers token introspection (Meta) or reveals an app-level review gate
+   *  through a normal call (TikTok's allowed privacy levels). Adapters that return the
+   *  granted scope set in their token exchange need no probe — the stored set is
+   *  already the answer. Must never throw: an unreachable platform is `unknown`, not
+   *  a failure. */
+  probeAccess?(auth: SocialAuth): Promise<SocialAccessProbe>;
 
   /** After connect, list the concrete post targets the grant unlocks — a user may
    *  manage several Pages / IG accounts / org pages under one grant. */
@@ -199,4 +283,31 @@ export interface SocialAdapter {
     target: SocialTargetRef,
     externalId: string
   ): Promise<SocialPostMetrics>;
+
+  // ── the inbound direction (docs/social-audit — the "Engage" layer) ──
+  //
+  // Both are OPTIONAL and both are gated behind {@link supportsInbox}, because
+  // inbound needs a wider permission set than posting and lands platform by platform
+  // as each review clears. An adapter that cannot read a comment simply omits them,
+  // and the inbox says so plainly rather than showing an empty tab that looks broken.
+
+  /** Whether this adapter's app currently has the permissions to read + answer
+   *  inbound activity. Separate from {@link isConfigured} on purpose: the same OAuth
+   *  app can be cleared to POST long before it is cleared to READ COMMENTS. */
+  supportsInbox?(): boolean;
+
+  /** Pull inbound activity for one destination. `since` is the last successful sync,
+   *  so a poll asks only for what is new; on the first pass it is undefined and the
+   *  adapter returns a sensible recent window (its own choice — a Page with ten years
+   *  of comments must not backfill all of them). */
+  listInbox?(auth: SocialAuth, target: SocialTargetRef, since?: Date): Promise<SocialInboxEntry[]>;
+
+  /** Answer one inbound item. `parentExternalId` is the thing being replied to (a
+   *  comment id, a review id, a conversation id). */
+  replyToInbox?(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    parentExternalId: string,
+    text: string
+  ): Promise<SocialReplyResult>;
 }

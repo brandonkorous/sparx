@@ -20,6 +20,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Compass, Pin, PinOff, Plus } from 'lucide-react';
 import {
+  Badge,
   Button,
   SearchInput,
   Sidebar,
@@ -58,6 +59,29 @@ function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
   if (event.shiftKey) return 'beside';
   return 'tab';
+}
+
+/**
+ * The count of things waiting on a person in one surface, as a badge on its row.
+ *
+ * Its own component so the surface's `useBadgeCount` hook is called at a stable position
+ * — a hook called inside a `.map()` would change order as the filter changes the row set.
+ * Renders nothing at zero: a badge showing "0" trains people to stop looking at badges.
+ */
+function NavBadge({ surface }: { surface: SurfaceDefinition }) {
+  const useCount = surface.useBadgeCount;
+  if (!useCount) return null;
+  return <NavBadgeCount useCount={useCount} />;
+}
+
+function NavBadgeCount({ useCount }: { useCount: () => number | null | undefined }) {
+  const count = useCount();
+  if (!count || count <= 0) return null;
+  return (
+    <Badge color="warning" variant="soft" size="sm">
+      {count > 99 ? '99+' : count}
+    </Badge>
+  );
 }
 
 function matches(surface: SurfaceDefinition, filter: string): boolean {
@@ -235,6 +259,9 @@ export function ModulePanel({
                           data-nav-item
                           className="flex-1"
                           icon={<surface.icon className="size-4" aria-hidden />}
+                          // `trailing` is for badges and chevrons — non-interactive, so
+                          // the count can live inside the row's button.
+                          trailing={<NavBadge surface={surface} />}
                           onKeyDown={onItemKeyDown}
                           onClick={(event) => {
                             openSurface(surface.key, event);

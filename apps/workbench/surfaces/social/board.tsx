@@ -50,9 +50,12 @@ export function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTa
 
 /** A day at 9am, in the `datetime-local` shape the composer's schedule field reads —
  *  so tapping a calendar day opens a post already dated to it. */
-function seedScheduleValue(day: Date): string {
+function seedScheduleValue(day: Date, keepTime = false): string {
   const pad = (n: number) => String(n).padStart(2, '0');
-  return `${day.getFullYear()}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}T09:00`;
+  // Tapping a DAY carries no hour, so 9am is a sensible opening bid. Tapping a posting
+  // TIME carries a real one — throwing it away would ignore the thing that was clicked.
+  const time = keepTime ? `${pad(day.getHours())}:${pad(day.getMinutes())}` : '09:00';
+  return `${String(day.getFullYear())}-${pad(day.getMonth() + 1)}-${pad(day.getDate())}T${time}`;
 }
 
 /* ── The shared board ─────────────────────────────────────────────────────── */
@@ -97,6 +100,17 @@ export function useSocialBoard(ctx: SurfaceContext) {
     ctx.open(
       'social.composer',
       { id: 'new', schedule: seedScheduleValue(day) },
+      { target: 'beside' }
+    );
+  };
+
+  /** Start a post at an EXACT moment — clicking one of the standing posting times the
+   *  calendar draws as free. Same seam as `newOnDay`, just without discarding the hour
+   *  the person actually pointed at. */
+  const newAt = (at: Date) => {
+    ctx.open(
+      'social.composer',
+      { id: 'new', schedule: seedScheduleValue(at, true) },
       { target: 'beside' }
     );
   };
@@ -150,6 +164,7 @@ export function useSocialBoard(ctx: SurfaceContext) {
     openNew,
     openPost,
     newOnDay,
+    newAt,
     onReschedule,
   };
 }

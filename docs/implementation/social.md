@@ -1,8 +1,8 @@
 # Social module — implementation tracker
 
-Version: 0.3
+Version: 1.1
 Author: Brandon Korous
-Last Updated: 2026-07-25
+Last Updated: 2026-07-28
 
 > The **living** status + decision log for the `social` module. It answers three
 > questions the design docs don't: what are we building _toward_, where are we
@@ -32,11 +32,17 @@ built in capability order, each layer standing on its own:
 | Layer         | Capability                                                                                  | State                                                                        |
 | ------------- | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | **Publish**   | Connect accounts → write one post → fan out to N platforms, each in its own shape           | ✅                                                                           |
-| **Plan**      | A calendar as the daily workspace — see the month, drag to reschedule                       | ✅                                                                           |
+| **Plan**      | A calendar as the daily workspace — month + week, drag to reschedule, a standing cadence    | ✅                                                                           |
 | **Attribute** | Post links carry attribution, so social shows up in the same reports as every other channel | 🟡                                                                           |
-| **Measure**   | "How did it do?" — per-post + per-account performance                                       | 🟡                                                                           |
-| **Engage**    | An inbox — read and reply to comments, mentions, DMs                                        | 🔒                                                                           |
+| **Measure**   | "How did it do?" — per-post + per-account performance, on a self-refreshing cadence         | 🟡                                                                           |
+| **Engage**    | An inbox — read and reply to comments, mentions, reviews                                    | 🟡 built; Google Business live, Meta scope-gated                             |
 | **Advertise** | Paid campaigns + ROAS against real revenue                                                  | — (its own module, out of scope — [133 §14](../133-social-media-posting.md)) |
+
+**As of 2026-07-28 the whole arc is built.** The audit in
+[docs/social-audit/](../social-audit/00-README.md) scored the module 6.5/10 and its roadmap has been
+executed: 23 of 26 slices, everything that was ours to build. Terraform is applied (§5). What is
+left is a deploy, and the platform applications — forms with external clocks, not engineering. See
+[social-audit §9](../social-audit/00-README.md#9-what-shipped) for the full inventory.
 
 The arc: a tenant should be able to **publish**, **plan**, **attribute**,
 **measure**, and **engage** without leaving the module — in that order of priority.
@@ -87,6 +93,109 @@ touches the tenant's own site and so can't come from the traffic pipeline.
 ## 3. Decision log
 
 Newest first. Each entry: the decision, and the reason it beat the alternative.
+
+### 2026-07-28 — connection readiness: answering "has the review landed?" without an API
+
+None of these platforms publish approval status. Meta has no review-status endpoint (confirmed by
+probing `/{app-id}/permissions`, `/app_review_submissions` and an `app_review_status` field — the
+first returns an empty set, the other two do not exist); TikTok and Pinterest have nothing either.
+So the question is answered from the only evidence that exists: what a live grant can actually do.
+
+- **Compare granted against required, per connection.** `SocialAdapter.requiredScopes()` is now part
+  of the contract (all 8 adapters), diffed against what the platform reported. Live introspection
+  beats the stored set where a platform offers it — someone can strip one permission from their
+  account settings weeks after connecting and nothing in sparx would otherwise know.
+- **Detect the insider false-green.** This is the point of the Meta probe. Meta grants any holder of
+  a role on the developer app every permission the app has merely _configured_, reviewed or not. So
+  connecting the account that owns the app returns a flawless permission list that proves nothing —
+  and would read as "approved" for as long as nobody checked with an outside account. The probe
+  reads `/{app-id}/roles`, notices the overlap, and refuses to report a pass. Meta's `appReview` is
+  therefore never `passed`, only `unknown` with a caveat: an unprovable claim reported honestly.
+- **TikTok is the one platform testable with your own account**, because the audit caps the APP, not
+  the grantee — an unaudited app cannot post publicly for anybody. `creator_info`'s
+  `privacy_level_options` is the tell. Asymmetric on purpose: a public option proves approval, but
+  private-only is reported as "not confirmed" rather than "rejected", since a private creator
+  account looks identical and "still under review" would send someone to TikTok support for nothing.
+- **Stop recording assumed scopes as facts.** Pinterest, TikTok and YouTube fell back to `data.scope
+?? SCOPE` and Threads hardcoded `scope: SCOPE`, so the DB stored what we _asked_ for as though the
+  platform had confirmed it — which would have made every connection read green forever. They now
+  record only what the platform actually returned, and Threads (which reports none) surfaces as
+  `unverifiable`. A verdict of "nobody can tell you from here" is worth more than a false tick.
+
+### 2026-07-28 — the audit roadmap, executed
+
+Driven by [docs/social-audit/](../social-audit/00-README.md). The decisions worth keeping:
+
+- **Grant health is a SWEEP, not a publish-time check.** Refreshing 60 seconds before expiry, only
+  when a post happened to go out, had no margin and could not see a REVOKED grant at all (revocation
+  does not move the recorded expiry). So: renew a week early, and prove the token still works with
+  one cheap `listTargets` probe — the only way to catch a revoked grant. Either failure flips
+  `status='expired'` + `lastError`, which is what finally lights the reconnect alert the Connections
+  surface could always render but nothing ever triggered.
+- **Notifications publish `email.send`, they do not subscribe to `social.post.failed`.** A dedicated
+  subscriber would have meant a new service for two emails. The worker already knows the outcome, so
+  it publishes — same house rule as every other outbound email. Best-effort throughout: a
+  notification failure must never fail the drain that triggered it.
+- **Retry is per-DESTINATION.** Whole-post "publish again" already existed and was hidden by the
+  editable-status gate. Adding `partially_published` to that gate would have been the one-line fix;
+  a per-target retry is the honest one, because the failure being retried is one account's.
+- **The destination picker is ONE component.** Destinations were frozen after creation precisely
+  because the picker lived only in the new-post branch — there was no second copy to edit with. One
+  component, two states, so the next change to it cannot drift.
+- **Inbound is a separate capability flag from posting** (`supportsInbox()` vs `isConfigured()`),
+  and it also widens the OAuth SCOPE. The same Meta app is cleared to post long before it is cleared
+  to read comments, and a tenant who connects while inbound is off must not carry a token that
+  silently lacks the permissions.
+- **Google Business reviews need no review of their own.** `business.manage` — already held to post
+  — reads and answers reviews, so the engagement inbox is genuinely live on day one for the platform
+  a local business cares most about, with no external clock in front of it.
+- **A reply is two-phase.** api-rest writes an outbound row with `replied_at` null and emits
+  `social.inbox.reply`; the worker sends it. The ROW is the idempotency anchor, which is what makes
+  a Pub/Sub redelivery incapable of posting a second answer to a customer.
+- **A posting slot is a recurring LOCAL time, never a timestamp.** 9am has to stay 9am across a
+  daylight-saving boundary — the audience's morning does not move because the clocks did. Hence
+  `cadence.ts` (`weekday` + `minuteOfDay` + IANA zone, resolved with a two-pass offset), shared by
+  the slot filler and the calendar so the plan a person SEES is the plan that RUNS.
+- **The evergreen filler has three hard rules** — only slots explicitly marked `auto_fill`, never
+  over an existing post, and always through the approval gate. Anything looser is a robot posting to
+  a real brand's account on its own initiative.
+- **Best-time is computed from the tenant's OWN history, and says when it cannot say.** An industry
+  average tells a parts distributor the same thing it tells a bakery. A bucket needs three posts
+  before it is reported at all; below that the panel says so rather than showing a confident table.
+- **Rate limiting is per-CONNECTION and in memory.** Destinations under one grant share that
+  account's quota, so a `429` on one pauses its siblings. Shared cross-instance state would mean
+  Redis for a problem already bounded by one-post-per-drain; the real win is honouring the
+  `Retry-After` the platform actually sent.
+- **CSV import previews before it creates**, and a dated row still goes through the approval gate.
+  Discovering a broken import by finding thirty half-right drafts is the failure mode; so is an
+  import being the one path that reaches live accounts unreviewed.
+
+Two corrections to the audit, both recorded in
+[social-audit §9](../social-audit/00-README.md#9-what-shipped): media reliability was **already
+fixed** in-tree via `MEDIA_DIRECT_BASE_URL`, and per-automation `autoApprove` **already ships**
+with its config UI.
+
+### 2026-07-28 — a second pass on what the roadmap itself missed
+
+- **MCP has to keep up with the UI, or it is a keyhole.** Every capability added in the pass above
+  was reachable only from the operator app. An agent that can post but cannot fix a post that
+  half-failed is worse than one that cannot post. 11 tools → 28, covering retarget, per-destination
+  retry, duplicate, evergreen, the inbox (list / thread / reply / archive), posting slots, hashtag
+  sets, best-time, CSV import (with a `dryRun`) and seed-from-entity.
+- **A config form needs a way to offer RUNTIME choices.** `social.post` always accepted `targetIds`
+  and nothing could set them, because every automation field type was answered by static config.
+  Added `multiselect` + an `optionSource` seam rather than a one-off social field, so the next
+  runtime-valued choice (a CRM pipeline, a warehouse) is a case, not another field type.
+- **An empty multiselect means ALL, not NONE.** Storing `[]` would have turned "I haven't thought
+  about this" into "post nowhere". Absent = the action's own default.
+- **LinkedIn's inbox was written off without checking.** Its `socialActions` comments API is the
+  same one the adapter already posts a first comment through. Reading and answering comments on
+  company-page posts is now live behind `LINKEDIN_INBOX_ENABLED`, which also widens the connect
+  scope with `r_organization_social` — same discipline as the Meta flag.
+- **A number with no direction is a report, not a scoreboard.** `social_post_metrics` stored a
+  time series from day one and the UI showed only the newest row. The performance panel now shows
+  the change since the FIRST reading (not since the last refresh, which would be near-zero and read
+  as a dead post), and only when it actually moved.
 
 ### 2026-07-25 — MCP agent parity: added `list_social_connections`
 
@@ -284,54 +393,106 @@ in [brain: services](../brain/apps/services.md).
 
 ## 4. What's next (ordered)
 
-1. **Ship the two 🟡 verticals** — run the hand-offs in §5 so UTM + Analytics go live.
-2. **Analytics follow-ons** (the base is built): a **periodic collection sweep** so a
-   post's numbers keep updating without someone opening it (needs a cron + a due-scan —
-   deliberately deferred from v1, which collects on publish + on-demand refresh); and,
-   once the extra Meta review clears, **reach/impressions** light up with no code change.
-3. **Finish the plan/compose leftovers** (the [133 §12](../133-social-media-posting.md)
-   tail): hashtag helper, bulk CSV scheduling.
-4. **Engagement inbox — Meta-first, scope-gated.** Extend the adapter contract for
-   inbound (comments/DMs/mentions), a new inbox model + surface + reply composer.
-   **Start the App Review applications early** (external clock): `pages_manage_engagement`,
-   `pages_messaging`, `instagram_manage_comments/messages`. Google Business reviews/Q&A
-   fit the same inbox; LinkedIn and X are limited/paid — honest "not supported here"
-   for those.
+Items 2–4 of the previous list are **built** (metrics sweep, hashtag sets + bulk CSV, engagement
+inbox). What remains:
+
+1. **Run the hand-offs in §5** — `terraform apply` + deploy. Nothing built on 2026-07-28 does
+   anything in prod until both roll.
+2. **File the three platform applications** (Meta engagement, Meta insights, Pinterest/TikTok/
+   YouTube content APIs). Each is a form with a multi-week clock and no engineering in front of it.
+   Filing them last is how the inbox slips a quarter for no reason.
+3. **Verify live** — the three checks listed at the end of §5.
+4. **Then: ads** ([133 §14](../133-social-media-posting.md)), its own module. Organic is done;
+   closing the loop on paid spend against attributed revenue is the next real capability, not
+   another slice of this one.
 
 ---
 
 ## 5. Pending hand-offs
 
-- **`pnpm install`** to link `@sparx/attribution` into `social-worker` (the UTM dep) and
-  update `pnpm-lock.yaml` (needed before push — the pre-push guard runs
-  `--frozen-lockfile`).
-- **`prisma migrate dev` + `prisma generate`** for the new `SocialPostMetric` model
-  (migration `20270112000000_social_post_metrics`). Until the client is regenerated,
-  `social-worker` and `api-rest` show expected `socialPostMetric` type errors — that's
-  the normal new-model state, not a bug. Prod applies the same SQL via the DB-migrate
-  pipeline on push.
-- After both: `pnpm --filter @sparx/social-worker typecheck` + `test` and
-  `pnpm --filter @sparx/api-rest typecheck` go green.
-- **Terraform apply** — three things in `main.tf` + `serverless.tf`: (1) sets
-  **`MEDIA_PUBLIC_BASE_URL`** on the social-worker — **the operative fix for "Facebook
-  didn't post the image"** (without it, every post is text-only); (2) the
-  `social.metrics.collect` topic; (3) the social-worker's second push subscription.
-  Without (2)/(3), publishing that event 5-`NOT_FOUND`s (the recurring "event type with no
-  topic" drift). **The image fix is live only after this apply + a social-worker deploy.**
-- **Deploy** `social-worker` + `api-rest` so publish-time UTM tagging AND metrics
-  collection/reads take effect in prod.
+**Done 2026-07-28:** `pnpm install` (links `@sparx/attribution` into `social-worker` and
+`@sparx/social` into the workbench, lockfile updated); both migrations applied to the local docker
+Postgres and the Prisma client regenerated. Typecheck, lint, format and tests are green across
+`@sparx/social`, `social-worker`, `api-rest`, `@sparx/email` and `workbench`.
+
+**Terraform applied 2026-07-28** (targeted at `module.pubsub` + `module.social_worker_cloudrun`, so
+the Cloudflare resources stayed out of the graph — there was a CF auth issue at the time and the
+social work needs nothing from it). Verified live in `sparxworks`:
+
+- Topics `social.connection.check`, `social.connection.expired`, `social.inbox.sync`,
+  `social.inbox.reply` created; `social.metrics.collect` already existed.
+- The social-worker's push subscriptions for connection-check, inbox-sync and inbox-reply created
+  alongside the existing post.due + metrics.collect ones — each with the dead-letter topic, 5
+  delivery attempts and the OIDC invoker.
+- `WORKBENCH_BASE_URL=https://app.sparx.works` set on the worker.
+
+> **Correction:** `MEDIA_PUBLIC_BASE_URL` and `MEDIA_DIRECT_BASE_URL` were NOT in that plan — both
+> were already live. The "Facebook didn't post the image" fix has been in prod since an earlier
+> apply; this tracker was carrying a stale hand-off. Posts are not text-only.
+
+> **Unrelated drift, noted not fixed:** every Cloud Run worker (verified on `email-worker`,
+> `media-worker` and `social-worker`) shows a perpetual `scaling { min_instance_count = 0 → null }`
+> removal that never converges — the API returns the block, the shared `cloud-run-worker` module
+> doesn't declare it. Cosmetic (min-instances is 0 either way; no cost or behaviour change). The fix
+> is one line in that module, which governs all eight workers, so it is a fleet decision rather than
+> something to slip into a social change.
+
+**Platform credentials, probed 2026-07-28** (each platform's own token endpoint, called with the
+values in Secret Manager — read-only, no tokens logged):
+
+| Platform               | Result                                                                     |
+| ---------------------- | -------------------------------------------------------------------------- |
+| Meta                   | Valid — app `1674943623584234` ("sparx", Business). One admin role-holder. |
+| TikTok                 | Valid — `client_credentials` grant succeeds.                               |
+| Pinterest              | **Blocked** — `1201 Two-factor authentication required`.                   |
+| LinkedIn               | **No credentials** — secret exists, zero versions.                         |
+| Google (GBP + YouTube) | **No credentials** — secret exists, zero versions.                         |
+
+Two of those are actionable now and neither is a code problem. Pinterest requires 2FA on the
+**developer account that owns the app** before it serves the API at all, so no tenant can connect a
+board until that is switched on. `linkedin-client-id/secret` and `google-oauth-client-id/secret` were
+never populated, which silently disables LinkedIn, Google Business Profile _and_ YouTube (the last
+two share the Google vars) — they report `coming_soon` rather than erroring, so nothing in the UI
+reveals the gap.
+
+**Still outstanding:**
+
+- **Deploy** `api-rest` + `social-worker`. Everything from grant health to the engagement inbox is
+  inert until both roll — the topics and subscriptions exist, but nothing publishes to or consumes
+  them until the new code ships.
+- **Optional env, whenever a review lands:** `META_INBOX_ENABLED=true` turns on the Meta half of the
+  engagement inbox and `LINKEDIN_INBOX_ENABLED=true` the LinkedIn half — no code change either time.
+  Both also widen the OAuth scope requested at connect, so existing connections need reconnecting to
+  gain the permissions. Google Business needs neither: `business.manage` already covers reviews.
+- **Live verification.** Nothing built on 2026-07-28 has been exercised against a real platform
+  account. The first pass should be: revoke a grant → confirm "Reconnect needed" appears without a
+  post being attempted; fail one destination of a multi-destination post → confirm the email and
+  the per-destination retry; post an image to Instagram → confirm the direct-host fix.
 
 ---
 
 ## 6. Open questions
 
-- **UTM opt-out.** Tagging is automatic (author-tagged links excepted). A per-tenant
-  opt-out would be a `SocialSettings.trackLinks` column → a migration. Deferred pending
-  a decision that anyone wants to turn it off.
+- ~~**UTM opt-out.**~~ Settled 2026-07-28: `trackLinks` is a tenant setting (default ON) on the
+  `settings.modules.social` slot — no migration needed — with a switch on the Connections surface.
+  The worker skips tagging when it is off; an author-tagged link is still never touched.
 - **Analytics reach/impressions.** Blocked on a Meta review (`read_insights` /
-  `instagram_manage_insights`); application not yet filed.
-- **Inbox scope applications.** Not yet filed; they're the long pole for the Engage
-  layer.
+  `instagram_manage_insights`); **application still not filed.** No engineering in front of it —
+  the collectors already request these best-effort and store `null`.
+- **Meta engagement scopes.** `pages_read_user_content`, `pages_manage_engagement`,
+  `pages_messaging`, `instagram_manage_comments`. **Still not filed.** The inbox is built and live
+  for Google Business; Facebook and Instagram light up behind `META_INBOX_ENABLED` the day this
+  clears.
+- **Per-automation destination picker.** `social.post` supports `targetIds`, but the automations
+  config form has no dynamic multi-select field type, so an automation posts to every enabled
+  destination. Adding one is a cross-cutting automation-UI change, not a social one.
+- **Facebook/Instagram DMs.** The inbox models `kind: 'message'` and the schema supports it, but no
+  adapter reads conversations yet — comments, mentions and reviews first, since they are public and
+  the ones a business is judged on. Messenger's send API also carries a 24-hour reply window and its
+  own policy surface, which is a design decision rather than an implementation gap.
+- **Threads replies.** Threads' reply flow is its two-step create-then-publish with a `reply_to_id`,
+  which differs enough from its post flow to be worth writing against a real account rather than
+  blind. LinkedIn, Facebook, Instagram and Google Business cover the inbox for now.
 
 ---
 

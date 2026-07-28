@@ -38,36 +38,61 @@ export interface SocialSettings {
    *  account. The platform default is ON — nothing publishes to a real brand's
    *  account unreviewed unless a human deliberately turned it off (docs/133 §15.3). */
   requireApproval: boolean;
+  /**
+   * Whether outbound post links are tagged so the visits and sales they drive show up
+   * in the tenant's own traffic reports. Default ON, because a link that can't be
+   * measured makes social look like it does nothing.
+   *
+   * The opt-out exists because tagging is visible: it lengthens the URL a customer sees,
+   * and some brands (and some platforms' link previews) care. A link the author already
+   * tagged themselves is never touched either way.
+   */
+  trackLinks: boolean;
 }
 
-/** Read `settings.modules.social.requireApproval`, defaulting to ON. Bare
- *  `prisma.tenant` read, mirroring `isModuleEnabled` — not the withTenant path. */
+/** Read the tenant's social settings. Bare `prisma.tenant` read, mirroring
+ *  `isModuleEnabled` — not the withTenant path. */
 export async function getSocialSettings(tenantId: string): Promise<SocialSettings> {
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
     select: { settings: true },
   });
-  return { requireApproval: readRequireApproval(tenant?.settings) };
+  return {
+    requireApproval: readRequireApproval(tenant?.settings),
+    trackLinks: readTrackLinks(tenant?.settings),
+  };
+}
+
+/** Pure read of `settings.modules.social.trackLinks`, default-ON. */
+export function readTrackLinks(settings: unknown): boolean {
+  const slot = socialSlot(settings);
+  // Default-ON: only an explicit `false` turns tagging off.
+  return slot?.trackLinks !== false;
+}
+
+/** The `settings.modules.social` object, or undefined. */
+function socialSlot(settings: unknown): Record<string, unknown> | undefined {
+  if (!settings || typeof settings !== 'object') return undefined;
+  const modules = (settings as Record<string, unknown>).modules;
+  if (!modules || typeof modules !== 'object') return undefined;
+  const slot = (modules as Record<string, unknown>).social;
+  if (!slot || typeof slot !== 'object') return undefined;
+  return slot as Record<string, unknown>;
 }
 
 /** Pure read of `settings.modules.social.requireApproval`, default-ON. Exported for
  *  unit coverage of the default semantics. */
 export function readRequireApproval(settings: unknown): boolean {
-  if (!settings || typeof settings !== 'object') return true;
-  const modules = (settings as Record<string, unknown>).modules;
-  if (!modules || typeof modules !== 'object') return true;
-  const slot = (modules as Record<string, unknown>).social;
-  if (!slot || typeof slot !== 'object') return true;
   // Default-ON: only an explicit `false` turns the gate off.
-  return (slot as Record<string, unknown>).requireApproval !== false;
+  return socialSlot(settings)?.requireApproval !== false;
 }
 
-/** Set the tenant's require-approval default. Read-modify-write on the `social`
- *  module slot so the `enabled` flag (and every other module) is preserved — the
- *  same merge shape module-toggle uses. */
-export async function setSocialRequireApproval(
+/** Update the tenant's social settings. Read-modify-write on the `social` module slot so
+ *  the `enabled` flag (and every other module) is preserved — the same merge shape
+ *  module-toggle uses. Only the keys passed are touched. */
+export async function updateSocialSettings(
   tenantId: string,
-  requireApproval: boolean
+  patch: Partial<SocialSettings>
 ): Promise<SocialSettings> {
   const tenant = await prisma.tenant.findUnique({
     where: { id: tenantId },
@@ -76,15 +101,28 @@ export async function setSocialRequireApproval(
   const settings = (tenant?.settings as Record<string, unknown> | null) ?? {};
   const modules = (settings.modules as Record<string, unknown> | undefined) ?? {};
   const social = (modules.social as Record<string, unknown> | undefined) ?? {};
-  const next = {
-    ...settings,
-    modules: { ...modules, social: { ...social, requireApproval } },
+  const merged = {
+    ...social,
+    ...(patch.requireApproval !== undefined ? { requireApproval: patch.requireApproval } : {}),
+    ...(patch.trackLinks !== undefined ? { trackLinks: patch.trackLinks } : {}),
   };
   await prisma.tenant.update({
     where: { id: tenantId },
-    data: { settings: next },
+    data: { settings: { ...settings, modules: { ...modules, social: merged } } },
   });
-  return { requireApproval };
+  return {
+    requireApproval: merged.requireApproval !== false,
+    trackLinks: merged.trackLinks !== false,
+  };
+}
+
+/** Set just the require-approval default. Kept as its own name because it is the one
+ *  setting with a safety meaning, and callers read better for saying so. */
+export async function setSocialRequireApproval(
+  tenantId: string,
+  requireApproval: boolean
+): Promise<SocialSettings> {
+  return updateSocialSettings(tenantId, { requireApproval });
 }
 
 /** The effective gate for one post: an explicit per-post override
@@ -148,7 +186,9 @@ export async function submitForApproval(
     }
     const post = await tx.socialPost.update({
       where: { id },
-      data: { status: 'pending_approval' },
+      // Clear the reviewer's note: it belonged to the previous round, and leaving it on
+      // a resubmitted post would show the approver an objection that has been dealt with.
+      data: { status: 'pending_approval', reviewNote: null },
       include: POST_INCLUDE,
     });
     return toPostView(post);
@@ -243,10 +283,15 @@ export async function approveSocialPost(
 
 /** Reject a post awaiting review: pending_approval → draft, clearing any approval
  *  stamp so the editor can revise and resubmit. Keeps `scheduledAt` (the intended
- *  time survives the round-trip). */
+ *  time survives the round-trip).
+ *
+ *  `note` is why. Without it a rejection is a silent state change — the post reappears
+ *  as a draft and the author has to guess what the reviewer objected to, which in
+ *  practice means asking them in person or resubmitting the same thing. */
 export async function rejectSocialPost(
   ctx: SocialContext,
-  id: string
+  id: string,
+  note?: string
 ): Promise<SocialPostView | null> {
   return withTenant({ tenantId: ctx.tenantId }, async (tx) => {
     const existing = await tx.socialPost.findFirst({
@@ -261,7 +306,12 @@ export async function rejectSocialPost(
     }
     const post = await tx.socialPost.update({
       where: { id },
-      data: { status: 'draft', approvedById: null, approvedAt: null },
+      data: {
+        status: 'draft',
+        approvedById: null,
+        approvedAt: null,
+        reviewNote: note?.trim() ? note.trim().slice(0, 2000) : null,
+      },
       include: POST_INCLUDE,
     });
     return toPostView(post);

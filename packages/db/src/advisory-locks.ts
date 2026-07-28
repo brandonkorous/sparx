@@ -88,6 +88,22 @@ export const ADVISORY_LOCKS = {
   /** services/api-rest — social scheduled-post drain (docs/133 §7): flips due
    *  `scheduled` social posts to `publishing` + emits `social.post.due`. */
   SOCIAL_SCHEDULED_PUBLISH: 4242_4255,
+  /** services/api-rest — social connection health sweep: refreshes grants ahead of
+   *  expiry and flips a grant that can no longer refresh to `expired`, so a dead
+   *  account surfaces as "reconnect needed" before a post is lost. */
+  SOCIAL_CONNECTION_HEALTH: 4242_4256,
+  /** services/api-rest — per-destination scheduled drain: a fan-out row carrying its
+   *  OWN `scheduled_at` fires on its own clock, independent of its siblings. */
+  SOCIAL_TARGET_SCHEDULED_PUBLISH: 4242_4257,
+  /** services/api-rest — social post-metrics sweep: re-reads a published post's
+   *  numbers on a cadence that decays with its age. */
+  SOCIAL_METRICS_SWEEP: 4242_4258,
+  /** services/api-rest — engagement-inbox poll: pulls comments/mentions/reviews for
+   *  each enabled destination. */
+  SOCIAL_INBOX_SYNC: 4242_4259,
+  /** services/api-rest — evergreen slot filler: schedules the least-recently-used
+   *  evergreen post into the next empty auto-fill posting slot. */
+  SOCIAL_SLOT_FILL: 4242_4260,
 } as const;
 
 export type AdvisoryLockName = keyof typeof ADVISORY_LOCKS;

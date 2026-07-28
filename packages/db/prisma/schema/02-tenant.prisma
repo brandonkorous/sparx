@@ -118,6 +118,10 @@ model Tenant {
   socialTargets     SocialTarget[]
   socialPosts       SocialPost[]
   socialPostTargets SocialPostTarget[]
+  // …the saved hashtag blocks, the weekly posting cadence, and the engagement inbox.
+  socialHashtagSets  SocialHashtagSet[]
+  socialPostingSlots SocialPostingSlot[]
+  socialInboxItems   SocialInboxItem[]
 
   // sparx.market (docs/106 §4.7) — the first-party marketplace. The two GLOBAL
   // projections (MarketListing / MarketMerchant) are FK-less by design and do NOT

@@ -107,6 +107,20 @@ export interface SurfaceDefinition {
   readonly createSurface?: string;
   /** Tooltip for that `+`, e.g. 'New invoice'. Falls back to 'New'. */
   readonly createLabel?: string;
+  /**
+   * A live count of things WAITING on a person here — posts to approve, comments to
+   * answer — rendered as a badge on this surface's nav row.
+   *
+   * A React hook, not a number: the count has to stay current without anyone reloading,
+   * and the surface that owns the data is the only place that knows how to read it. It is
+   * called from a dedicated child component per row, so hook order stays stable.
+   *
+   * Return `0`/`null` for "nothing waiting" — a badge showing zero is worse than no badge,
+   * because it trains people to ignore the thing that is supposed to catch their eye. Use
+   * this ONLY where a number means someone has to act; a row count is not attention.
+   */
+  readonly useBadgeCount?: () => number | null | undefined;
+
   /** Extra command-palette search terms beyond the title. */
   readonly keywords?: readonly string[];
   /** Preferred initial width as a fraction of the window, when opened `beside`. */

@@ -27,14 +27,22 @@ import { publish } from '@sparx/api-core/pubsub';
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
-import { requireSocialModule, toSocialContext } from '../../../lib/social-context.js';
+import {
+  requireSocialModule,
+  resolveSocialProperty,
+  toSocialContext,
+} from '../../../lib/social-context.js';
 import {
   createSocialPost,
   deleteSocialPost,
+  duplicateSocialPost,
   getSocialPost,
   listSocialPosts,
   markPostPublishing,
+  retrySocialPostTarget,
+  setSocialPostEvergreen,
   updateSocialPost,
+  updateSocialPostTargets,
 } from '../../../lib/social-posts.js';
 import {
   approveSocialPost,
@@ -46,8 +54,37 @@ import {
 import { getPostMetrics } from '../../../lib/social-metrics.js';
 
 const PathId = z.object({ id: z.string().uuid() });
+const PathIdTarget = z.object({ id: z.string().uuid(), targetId: z.string().uuid() });
 const ListQuery = z.object({ status: z.string().max(24).optional() });
 const ScheduleBody = z.object({ scheduledAt: z.string().datetime() });
+const RejectBody = z.object({ note: z.string().max(2000).optional() });
+const EvergreenBody = z.object({ evergreen: z.boolean() });
+
+/** Changing where a post goes, after it was created. Every field optional — the composer
+ *  sends the whole selection and the service diffs it. */
+const TargetsBody = z.object({
+  add: z
+    .array(
+      z.object({
+        targetId: z.string().uuid(),
+        textOverride: z.string().max(63206).optional(),
+        firstComment: z.string().max(2000).optional(),
+      })
+    )
+    .optional(),
+  remove: z.array(z.string().uuid()).optional(),
+  update: z
+    .array(
+      z.object({
+        id: z.string().uuid(),
+        textOverride: z.string().max(63206).nullish(),
+        firstComment: z.string().max(2000).nullish(),
+        // A destination's OWN send time. `null` puts it back on the post's clock.
+        scheduledAt: z.string().datetime().nullish(),
+      })
+    )
+    .optional(),
+});
 
 const CreateBody = z.object({
   propertyId: z.string().uuid().nullish(),
@@ -101,7 +138,10 @@ const socialPostRoutes: FastifyPluginAsync = async (app) => {
     requireRole(request, 'editor');
     const body = CreateBody.parse(request.body);
     const post = await createSocialPost(toSocialContext(request), {
-      propertyId: body.propertyId ?? null,
+      // Stamp the site being worked in, so a post belongs to ONE business the way its
+      // destinations do. An explicit propertyId in the body still wins (an agent or an
+      // automation targeting a specific site).
+      propertyId: body.propertyId ?? (await resolveSocialProperty(request)),
       body: body.body,
       link: body.link ?? null,
       mediaAssetIds: body.mediaAssetIds,
@@ -116,7 +156,10 @@ const socialPostRoutes: FastifyPluginAsync = async (app) => {
     await requireSocialModule(request);
     requireRole(request, 'viewer');
     const { status } = ListQuery.parse(request.query);
-    const posts = await listSocialPosts(toSocialContext(request), { status });
+    const posts = await listSocialPosts(toSocialContext(request), {
+      status,
+      propertyId: await resolveSocialProperty(request),
+    });
     return reply.send(ok({ posts }));
   });
 
@@ -181,7 +224,72 @@ const socialPostRoutes: FastifyPluginAsync = async (app) => {
     await requireSocialModule(request);
     requireRole(request, 'admin');
     const { id } = PathId.parse(request.params);
-    const post = await rejectSocialPost(toSocialContext(request), id);
+    const { note } = RejectBody.parse(request.body ?? {});
+    const post = await rejectSocialPost(toSocialContext(request), id, note);
+    if (!post) throw notFound('post', id);
+    return reply.send(ok(post));
+  });
+
+  // ── where it goes ────────────────────────────────────────────────────────────
+
+  // Change the destinations, the per-destination wording, or a destination's own send
+  // time — after the post was created. Until this existed, all three were frozen at
+  // creation, which made an almost-right post a rebuild (docs/social-audit GAP 4).
+  app.patch('/v1/social/posts/:id/targets', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const body = TargetsBody.parse(request.body);
+    const post = await updateSocialPostTargets(toSocialContext(request), id, {
+      add: body.add,
+      remove: body.remove,
+      update: body.update?.map((u) => ({
+        id: u.id,
+        ...(u.textOverride !== undefined ? { textOverride: u.textOverride } : {}),
+        ...(u.firstComment !== undefined ? { firstComment: u.firstComment } : {}),
+        ...(u.scheduledAt !== undefined
+          ? { scheduledAt: u.scheduledAt ? new Date(u.scheduledAt) : null }
+          : {}),
+      })),
+    });
+    if (!post) throw notFound('post', id);
+    return reply.send(ok(post));
+  });
+
+  // Retry ONE destination that failed. The whole-post "publish again" re-arms everything
+  // that hasn't succeeded; this is the surgical version for the common case — three of
+  // four accounts went out and one didn't.
+  app.post('/v1/social/posts/:id/targets/:targetId/retry', async (request, reply) => {
+    await requireSocialModule(request);
+    const auth = requireRole(request, 'admin');
+    const { id, targetId } = PathIdTarget.parse(request.params);
+    const ctx = toSocialContext(request);
+    const result = await retrySocialPostTarget(ctx, id, targetId);
+    if (!result) throw notFound('post target', targetId);
+    await publish(request.log, 'social.post.due', ctx.tenantId, auth.actorId, { postId: id });
+    return reply.send(ok({ retrying: true, postId: id, postTargetId: targetId }));
+  });
+
+  // ── post again ───────────────────────────────────────────────────────────────
+
+  // Copy a post into a fresh draft — same words, pictures and destinations. The cheapest
+  // real leverage in the module: a seasonal offer or a good explainer stops being retyped.
+  app.post('/v1/social/posts/:id/duplicate', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const copy = await duplicateSocialPost(toSocialContext(request), id);
+    if (!copy) throw notFound('post', id);
+    return reply.status(201).send(ok(copy));
+  });
+
+  // Put a post in (or take it out of) the evergreen pool the slot filler draws from.
+  app.patch('/v1/social/posts/:id/evergreen', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'editor');
+    const { id } = PathId.parse(request.params);
+    const { evergreen } = EvergreenBody.parse(request.body);
+    const post = await setSocialPostEvergreen(toSocialContext(request), id, evergreen);
     if (!post) throw notFound('post', id);
     return reply.send(ok(post));
   });

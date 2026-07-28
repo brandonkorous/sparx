@@ -744,6 +744,10 @@ module "social_worker_cloudrun" {
     # byte-upload and keep MEDIA_PUBLIC_BASE_URL. See cloudflare.tf
     # `sparx_works_media_direct` + the Caddy `media-direct.sparx.works` vhost.
     MEDIA_DIRECT_BASE_URL = "https://media-direct.sparx.works"
+    # Where the two social notification emails ("your post didn't go out", "reconnect
+    # this account") point. Without a deep link back to the thing that needs fixing, a
+    # notice is just an alarm with no off switch.
+    WORKBENCH_BASE_URL = "https://app.sparx.works"
     # Added at go-live: the non-secret platform OAuth client IDs used for token
     # refresh (GOOGLE_OAUTH_CLIENT_ID; later META_APP_ID / LINKEDIN_CLIENT_ID).
   }
@@ -783,13 +787,30 @@ module "social_worker_cloudrun" {
   pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
   pubsub_max_delivery_attempts = 5
 
-  # Second subscription to the SAME service: metrics collection (docs/implementation/
-  # social.md "Measure"). The handler fans in on the event type, snapshotting each
-  # published target's numbers. Shares the invoker SA + DLQ + retry policy.
+  # Further subscriptions to the SAME service — the handler fans in on the event type.
+  # All share the invoker SA + DLQ + retry policy.
+  #   · metrics.collect    — snapshot each published target's numbers ("Measure")
+  #   · connection.check   — refresh a grant ahead of expiry, or flip it to `expired`
+  #                          so the tenant sees "reconnect needed" before a post is lost
+  #   · inbox.sync / reply — the engagement inbox's pull + push ("Engage")
+  # Every one of these is network I/O against a platform API, which is exactly why it
+  # rides the worker rather than the api-rest tick that finds the due work.
   additional_subscriptions = [
     {
       topic             = "social.metrics.collect"
       subscription_name = "social.metrics.collect.social-worker-cloudrun"
+    },
+    {
+      topic             = "social.connection.check"
+      subscription_name = "social.connection.check.social-worker-cloudrun"
+    },
+    {
+      topic             = "social.inbox.sync"
+      subscription_name = "social.inbox.sync.social-worker-cloudrun"
+    },
+    {
+      topic             = "social.inbox.reply"
+      subscription_name = "social.inbox.reply.social-worker-cloudrun"
     },
   ]
 

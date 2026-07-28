@@ -28,7 +28,9 @@ import type {
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialInboxEntry,
   SocialPublishResult,
+  SocialReplyResult,
   SocialTargetRef,
   SocialTokens,
 } from '../types.js';
@@ -40,6 +42,7 @@ import {
   formBody,
   readPlatformCreds,
   requireCreds,
+  splitScopes,
 } from './_http.js';
 
 const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -48,6 +51,20 @@ const ACCOUNTS_URL = 'https://mybusinessaccountmanagement.googleapis.com/v1/acco
 const BUSINESS_INFO_BASE = 'https://mybusinessbusinessinformation.googleapis.com/v1';
 const LOCAL_POSTS_BASE = 'https://mybusiness.googleapis.com/v4';
 const SCOPE = 'https://www.googleapis.com/auth/business.manage';
+
+/** Google reports a star rating as a word. */
+const STAR_VALUES: Record<string, number> = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
+
+interface GbpReviewsResponse {
+  reviews?: {
+    reviewId?: string;
+    reviewer?: { displayName?: string; profilePhotoUrl?: string };
+    starRating?: string;
+    comment?: string;
+    createTime?: string;
+    reviewReply?: { comment?: string; updateTime?: string };
+  }[];
+}
 
 // GBP reuses sparx's existing Google OAuth web client (also used by Shopping/Calendar).
 const ID_VAR = 'GOOGLE_OAUTH_CLIENT_ID';
@@ -99,6 +116,10 @@ export class GoogleBusinessAdapter implements SocialAdapter {
 
   isConfigured(): boolean {
     return this.creds() !== null;
+  }
+
+  requiredScopes(): string[] {
+    return splitScopes(SCOPE);
   }
 
   connectUrl(ctx: SocialConnectContext): string {
@@ -222,6 +243,90 @@ export class GoogleBusinessAdapter implements SocialAdapter {
       externalId: data.name ?? idempotencyKey,
       permalink: data.searchUrl,
     };
+  }
+
+  // ── the inbound direction: reviews on this listing ──
+
+  /**
+   * Google Business reviews need NO extra review of their own — `business.manage`, the
+   * scope this adapter already holds to post, also reads and answers reviews. So this is
+   * the one platform where the engagement inbox works on day one, with no external clock.
+   * It is also, for a local business, the one that matters most: a Google review is what
+   * the next customer reads.
+   */
+  supportsInbox(): boolean {
+    return this.isConfigured();
+  }
+
+  async listInbox(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    since?: Date
+  ): Promise<SocialInboxEntry[]> {
+    const res = await fetchT(`${LOCAL_POSTS_BASE}/${target.externalTargetId}/reviews?pageSize=50`, {
+      headers: this.authHeaders(auth.accessToken),
+    });
+    if (!res.ok) {
+      throw new Error(`Google Business reviews failed: ${await describeResponse(res)}`);
+    }
+    const data = (await res.json()) as GbpReviewsResponse;
+    const cutoff = since?.getTime() ?? 0;
+    const entries: SocialInboxEntry[] = [];
+
+    for (const review of data.reviews ?? []) {
+      if (!review.reviewId) continue;
+      const at = review.createTime ? new Date(review.createTime) : new Date();
+      if (at.getTime() <= cutoff) continue;
+
+      entries.push({
+        externalId: review.reviewId,
+        kind: 'review',
+        ...(review.reviewer?.displayName ? { authorName: review.reviewer.displayName } : {}),
+        ...(review.reviewer?.profilePhotoUrl
+          ? { authorAvatarUrl: review.reviewer.profilePhotoUrl }
+          : {}),
+        ...(review.comment ? { text: review.comment } : {}),
+        ...(review.starRating ? { rating: STAR_VALUES[review.starRating] ?? undefined } : {}),
+        receivedAt: at,
+      });
+
+      // A reply already made — in Google's own console, or by us before — rides along as
+      // an outbound item so the inbox shows the review as answered rather than open.
+      if (review.reviewReply?.comment) {
+        entries.push({
+          externalId: `${review.reviewId}:reply`,
+          kind: 'review',
+          parentExternalId: review.reviewId,
+          threadExternalId: review.reviewId,
+          text: review.reviewReply.comment,
+          receivedAt: review.reviewReply.updateTime ? new Date(review.reviewReply.updateTime) : at,
+          outbound: true,
+        });
+      }
+    }
+    return entries;
+  }
+
+  /** Answer a review. Google models this as an idempotent PUT of THE reply — a business
+   *  has exactly one, and answering twice edits it rather than adding a second. */
+  async replyToInbox(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    parentExternalId: string,
+    text: string
+  ): Promise<SocialReplyResult> {
+    const res = await fetchT(
+      `${LOCAL_POSTS_BASE}/${target.externalTargetId}/reviews/${parentExternalId}/reply`,
+      {
+        method: 'PUT',
+        headers: this.authHeaders(auth.accessToken),
+        body: JSON.stringify({ comment: text }),
+      }
+    );
+    if (!res.ok) {
+      throw new Error(`Google Business review reply failed: ${await describeResponse(res)}`);
+    }
+    return { externalId: `${parentExternalId}:reply` };
   }
 
   // ── internals ──

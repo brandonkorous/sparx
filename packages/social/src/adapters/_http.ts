@@ -13,11 +13,34 @@ const DEFAULT_TIMEOUT_MS = 20_000;
  *  stop retrying the former. Adapter HTTP helpers throw this instead of a bare Error. */
 export class HttpError extends Error {
   readonly status: number;
-  constructor(message: string, status: number) {
+  /** Seconds the platform asked us to wait, from its `Retry-After` header. Honouring
+   *  this is the difference between backing off politely and stampeding a platform that
+   *  already said "slow down" — which is how a rate limit becomes a longer ban. */
+  readonly retryAfterSeconds?: number;
+
+  constructor(message: string, status: number, retryAfterSeconds?: number) {
     super(message);
     this.name = 'HttpError';
     this.status = status;
+    if (retryAfterSeconds !== undefined) this.retryAfterSeconds = retryAfterSeconds;
   }
+}
+
+/**
+ * Read `Retry-After`, which platforms send either as a number of seconds or as an HTTP
+ * date. Returns undefined when absent or unparseable, and clamps to a day — a header
+ * asking us to wait a month is a bug on their side, not an instruction.
+ */
+export function parseRetryAfter(res: Response): number | undefined {
+  const raw = res.headers.get('retry-after');
+  if (!raw) return undefined;
+
+  const seconds = Number(raw);
+  if (Number.isFinite(seconds) && seconds >= 0) return Math.min(seconds, 86_400);
+
+  const date = Date.parse(raw);
+  if (Number.isNaN(date)) return undefined;
+  return Math.min(Math.max(0, Math.round((date - Date.now()) / 1000)), 86_400);
 }
 
 /** Whether a publish error is worth retrying. A `429` (rate-limited) or any `5xx` is
@@ -92,6 +115,15 @@ export async function describeResponse(res: Response): Promise<string> {
 export function expiresInSeconds(raw: unknown, fallbackSeconds: number): number {
   const n = typeof raw === 'number' ? raw : typeof raw === 'string' ? Number(raw) : NaN;
   return Number.isFinite(n) && n > 0 ? n : fallbackSeconds;
+}
+
+/** Split an OAuth scope string into individual scopes. The platforms disagree on the
+ *  separator — Meta, TikTok and Pinterest use commas, LinkedIn and Google use spaces —
+ *  so accept both rather than making every adapter remember which it is. Order is not
+ *  meaningful and duplicates are dropped, because the only use is set comparison. */
+export function splitScopes(raw: string | null | undefined): string[] {
+  if (!raw) return [];
+  return [...new Set(raw.split(/[\s,]+/).filter(Boolean))];
 }
 
 /** URL-encode a flat record into an `application/x-www-form-urlencoded` body. */

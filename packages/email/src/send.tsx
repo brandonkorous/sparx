@@ -37,6 +37,16 @@ import {
   type ChatNotificationEmailProps,
 } from './templates/chat-notification';
 import {
+  SocialPostFailedEmail,
+  socialPostFailedSubject,
+  type SocialPostFailedEmailProps,
+} from './templates/social-post-failed';
+import {
+  SocialConnectionExpiredEmail,
+  socialConnectionExpiredSubject,
+  type SocialConnectionExpiredEmailProps,
+} from './templates/social-connection-expired';
+import {
   MarketSettlementReportEmail,
   marketSettlementReportSubject,
   type MarketSettlementReportEmailProps,
@@ -126,7 +136,10 @@ export type TemplateId =
   | 'form-submission-confirmation'
   | 'billing-receipt'
   | 'billing-payment-failed'
-  | 'billing-trial-ending';
+  | 'billing-trial-ending'
+  // The social module's two "something needs you" emails (docs/social-audit GAPs 1+2).
+  | 'social-post-failed'
+  | 'social-connection-expired';
 
 export type TemplateSend =
   | {
@@ -252,6 +265,20 @@ export type TemplateSend =
       template: 'billing-trial-ending';
       to: string;
       props: BillingTrialEndingEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'social-post-failed';
+      to: string;
+      props: SocialPostFailedEmailProps;
+      from?: string;
+      replyTo?: string;
+    }
+  | {
+      template: 'social-connection-expired';
+      to: string;
+      props: SocialConnectionExpiredEmailProps;
       from?: string;
       replyTo?: string;
     };
@@ -567,6 +594,41 @@ export async function renderTemplate(
         html,
         text,
         templateId: 'billing-trial-ending',
+      };
+    }
+    case 'social-post-failed': {
+      const element = wrap(<SocialPostFailedEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: socialPostFailedSubject(
+          input.props.excerpt,
+          (input.props.succeeded?.length ?? 0) > 0
+        ),
+        html,
+        text,
+        templateId: 'social-post-failed',
+      };
+    }
+    case 'social-connection-expired': {
+      const element = wrap(<SocialConnectionExpiredEmail {...input.props} />);
+      const [html, text] = await Promise.all([
+        render(element),
+        render(element, { plainText: true }),
+      ]);
+      return {
+        from: input.from ?? defaultFrom(),
+        to: input.to,
+        replyTo: input.replyTo,
+        subject: socialConnectionExpiredSubject(input.props.platformName),
+        html,
+        text,
+        templateId: 'social-connection-expired',
       };
     }
   }

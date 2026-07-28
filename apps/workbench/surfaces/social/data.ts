@@ -109,6 +109,8 @@ export interface CatalogEntry {
 
 export interface SocialSettings {
   requireApproval: boolean;
+  /** Whether outbound links carry tracking so the visits they drive show up in reports. */
+  trackLinks: boolean;
 }
 
 /** The everything-view GET /v1/social returns. */
@@ -116,6 +118,31 @@ export interface SocialOverview {
   connections: SocialConnection[];
   catalog: CatalogEntry[];
   settings: SocialSettings;
+}
+
+/** What a platform will and won't let one connected account do. Mirrors
+ *  `SocialConnectionReadiness` in @sparx/social. */
+export type ReadinessVerdict =
+  | 'ready'
+  | 'permissions_missing'
+  | 'awaiting_review'
+  | 'reconnect_required'
+  | 'unverifiable';
+
+export interface ConnectionReadiness {
+  connectionId: string;
+  platform: string;
+  displayName: string | null;
+  status: string;
+  verdict: ReadinessVerdict;
+  headline: string;
+  detail: string;
+  caveat: string | null;
+  required: string[];
+  granted: string[];
+  missing: string[];
+  grantedSource: 'platform' | 'stored' | 'none';
+  checkedAt: string;
 }
 
 /* ── Posts ──────────────────────────────────────────────────────────────── */
@@ -143,6 +170,11 @@ export interface PostTarget {
   permalink: string | null;
   error: string | null;
   publishedAt: string | null;
+  /** The wording written just for this destination, editable after the post is saved. */
+  textOverride: string | null;
+  firstComment: string | null;
+  /** This destination's OWN send time; null = it goes when the post does. */
+  scheduledAt: string | null;
 }
 
 export interface Post {
@@ -157,6 +189,10 @@ export interface Post {
   scheduledAt: string | null;
   publishedAt: string | null;
   createdAt: string;
+  /** Why a reviewer sent it back, when they did. */
+  reviewNote: string | null;
+  /** In the pool the posting cadence recycles from. */
+  evergreen: boolean;
   targets: PostTarget[];
 }
 
@@ -261,6 +297,13 @@ export const socialKeys = {
   post: (id: string) => ['social', 'posts', 'detail', id] as const,
   insights: (windowDays: number) => ['social', 'insights', windowDays] as const,
   metrics: (postId: string) => ['social', 'posts', 'metrics', postId] as const,
+  hashtagSets: ['social', 'hashtag-sets'] as const,
+  slots: ['social', 'slots'] as const,
+  bestTime: (timezone: string) => ['social', 'best-time', timezone] as const,
+  inbox: (filter: string) => ['social', 'inbox', filter] as const,
+  inboxCount: ['social', 'inbox', 'count'] as const,
+  inboxThread: (id: string) => ['social', 'inbox', 'thread', id] as const,
+  readiness: ['social', 'readiness'] as const,
 };
 
 /* ── Reads ──────────────────────────────────────────────────────────────── */
@@ -276,6 +319,22 @@ export function useSocialOverview() {
   return useQuery({
     queryKey: socialKeys.overview,
     queryFn: () => api.get<SocialOverview>('/v1/social'),
+  });
+}
+
+/** Per-account permission check — what each platform granted vs what the module needs.
+ *  Deliberately NOT folded into {@link useSocialOverview}: it calls out to every platform
+ *  in turn, so pinning it to the Connections list would make opening the list wait on
+ *  eight other companies. Only fetched when the check is actually opened, and never
+ *  refetched on window focus — a person leaving and returning to the tab should not spend
+ *  another round of platform rate limit. */
+export function useSocialReadiness(enabled: boolean) {
+  return useQuery({
+    queryKey: socialKeys.readiness,
+    queryFn: () => api.get<{ connections: ConnectionReadiness[] }>('/v1/social/readiness'),
+    enabled,
+    refetchOnWindowFocus: false,
+    staleTime: 60_000,
   });
 }
 
@@ -310,6 +369,26 @@ export function useSocialPost(id: string) {
     // partially_published, failed) is settled, so the clock stops the moment it lands.
     refetchInterval: (q) => (q.state.data?.status === 'publishing' ? PUBLISHING_POLL_MS : false),
   });
+}
+
+/**
+ * How many posts are waiting for an admin — the number on the Approvals nav row.
+ *
+ * Polls slowly: an automation drafting a post is not something anyone watches
+ * second-by-second, and this runs whenever the Social panel is open. Fails quietly to
+ * `0`, because a badge is not worth an error state.
+ */
+export function useApprovalCount(): number {
+  const query = useQuery({
+    queryKey: socialKeys.posts('pending_approval'),
+    queryFn: () =>
+      api
+        .get<{ posts: Post[] }>('/v1/social/posts', { status: 'pending_approval' })
+        .then((r) => r.posts),
+    refetchInterval: 120_000,
+    retry: false,
+  });
+  return query.data?.length ?? 0;
 }
 
 /** The performance roll-up over the last `windowDays` — totals, per-account rows,
@@ -401,12 +480,13 @@ export function useDisconnectPlatform() {
   });
 }
 
-/** Set whether posts need an admin's approval before they go live. */
-export function useSetRequireApproval() {
+/** Change one of the module's two tenant-wide settings — whether posts need an admin's
+ *  approval, and whether outbound links carry tracking. */
+export function useUpdateSocialSettings() {
   const invalidate = useInvalidateOverview();
   return useMutation({
-    mutationFn: (requireApproval: boolean) =>
-      api.patch<{ settings: SocialSettings }>('/v1/social/settings', { requireApproval }),
+    mutationFn: (patch: Partial<SocialSettings>) =>
+      api.patch<{ settings: SocialSettings }>('/v1/social/settings', patch),
     onSuccess: () => {
       invalidate();
     },
@@ -545,10 +625,13 @@ export function useApprovePost(id: string) {
   });
 }
 
+/** Send a post back to its author. `note` is why — without it a rejection is a silent
+ *  state change and the author has to guess what to fix. */
 export function useRejectPost(id: string) {
   const invalidate = useInvalidatePosts();
   return useMutation({
-    mutationFn: () => api.post<Post>(`/v1/social/posts/${id}/reject`),
+    mutationFn: (note?: string) =>
+      api.post<Post>(`/v1/social/posts/${id}/reject`, note ? { note } : {}),
     onSuccess: () => {
       invalidate(id);
     },
@@ -562,6 +645,69 @@ export function usePublishPost(id: string) {
       api.post<{ publishing: boolean; postId: string; targetCount: number }>(
         `/v1/social/posts/${id}/publish`
       ),
+    onSuccess: () => {
+      invalidate(id);
+    },
+  });
+}
+
+/* ── Changing where a saved post goes ───────────────────────────────────── */
+
+/** Add a destination, drop one, retune its wording, or give it its own send time —
+ *  after the post was created. Until this existed all four were frozen at creation, so
+ *  an almost-right post had to be rebuilt. */
+export interface UpdateTargetsInput {
+  add?: ComposeTarget[];
+  remove?: string[];
+  update?: {
+    id: string;
+    textOverride?: string | null;
+    firstComment?: string | null;
+    scheduledAt?: string | null;
+  }[];
+}
+
+export function useUpdatePostTargets(id: string) {
+  const invalidate = useInvalidatePosts();
+  return useMutation({
+    mutationFn: (input: UpdateTargetsInput) =>
+      api.patch<Post>(`/v1/social/posts/${id}/targets`, input),
+    onSuccess: () => {
+      invalidate(id);
+    },
+  });
+}
+
+/** Send ONE destination again after it failed. The others — including the ones that
+ *  already went out — are untouched. */
+export function useRetryPostTarget(id: string) {
+  const invalidate = useInvalidatePosts();
+  return useMutation({
+    mutationFn: (postTargetId: string) =>
+      api.post<{ retrying: boolean }>(`/v1/social/posts/${id}/targets/${postTargetId}/retry`),
+    onSuccess: () => {
+      invalidate(id);
+    },
+  });
+}
+
+/** Copy a post into a fresh draft — same words, pictures and destinations. */
+export function useDuplicatePost() {
+  const invalidate = useInvalidatePosts();
+  return useMutation({
+    mutationFn: (id: string) => api.post<Post>(`/v1/social/posts/${id}/duplicate`),
+    onSuccess: (created) => {
+      invalidate(created.id);
+    },
+  });
+}
+
+/** Put a post in (or take it out of) the pool the posting cadence recycles from. */
+export function useSetPostEvergreen(id: string) {
+  const invalidate = useInvalidatePosts();
+  return useMutation({
+    mutationFn: (evergreen: boolean) =>
+      api.patch<Post>(`/v1/social/posts/${id}/evergreen`, { evergreen }),
     onSuccess: () => {
       invalidate(id);
     },

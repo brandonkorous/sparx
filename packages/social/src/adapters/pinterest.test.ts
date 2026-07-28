@@ -52,7 +52,7 @@ describe('PinterestAdapter connectUrl / isConfigured', () => {
     delete process.env.PINTEREST_APP_SECRET;
   });
 
-  it('is configured once its env is set and requests pins:write', () => {
+  it('is configured once its env is set and requests pins:write + boards:write', () => {
     const a = new PinterestAdapter();
     expect(a.isConfigured()).toBe(true);
     const url = new URL(
@@ -61,6 +61,9 @@ describe('PinterestAdapter connectUrl / isConfigured', () => {
     expect(url.origin + url.pathname).toBe('https://www.pinterest.com/oauth/');
     expect(url.searchParams.get('client_id')).toBe('pin-app');
     expect(url.searchParams.get('scope')).toContain('pins:write');
+    // boards:write is REQUIRED to create a pin on a board — without it Pinterest v5
+    // returns 401 "Missing: ['boards:write']". Regression guard for that exact gap.
+    expect(url.searchParams.get('scope')).toContain('boards:write');
   });
 
   it('reports not-configured when the env is missing', () => {

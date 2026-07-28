@@ -196,6 +196,30 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
       manageUrl: z.string().url(),
     }),
   }),
+  // The social module's two "something needs you" emails. A post that failed and an
+  // account that stopped working are the only two things in that module a person must
+  // be TOLD about rather than discover (docs/social-audit GAPs 1 + 2).
+  z.object({
+    template: z.literal('social-post-failed'),
+    ...TemplateMeta,
+    props: z.object({
+      excerpt: z.string().min(1),
+      failed: z.array(z.object({ name: z.string().min(1), reason: z.string().optional() })).min(1),
+      succeeded: z.array(z.string()).optional(),
+      postUrl: z.string().url(),
+      scheduledFor: z.string().optional(),
+    }),
+  }),
+  z.object({
+    template: z.literal('social-connection-expired'),
+    ...TemplateMeta,
+    props: z.object({
+      platformName: z.string().min(1),
+      accountName: z.string().optional(),
+      scheduledCount: z.number().int().nonnegative().optional(),
+      reconnectUrl: z.string().url(),
+    }),
+  }),
 ]);
 
 // Pre-rendered "raw" send — used by broadcasts (render once, send to many) and

@@ -120,7 +120,7 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
     // final backstop.
     if ('deferred' in outcome && outcome.deferred > 0) {
       logger.warn(
-        { messageId, postId: event.data.postId, deferred: outcome.deferred },
+        { messageId, type: event.type, deferred: outcome.deferred },
         'targets still pending — returning 500 so Pub/Sub redelivers the drain'
       );
       res.statusCode = 500;

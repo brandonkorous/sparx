@@ -23,7 +23,7 @@ import {
   ToggleGroup,
   ToggleGroupItem,
 } from '@wizeworks/silicaui-react';
-import { BarChart3, ExternalLink, ServerCrash } from 'lucide-react';
+import { BarChart3, Clock, ExternalLink, ServerCrash } from 'lucide-react';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
@@ -39,6 +39,7 @@ import {
   type SocialPlatform,
 } from './data';
 import { useAvatarByTargetId, formatWhen } from './post-visuals';
+import { formatMinuteOfDay, localTimezone, useBestTime, WEEKDAY_NAMES } from './planning-data';
 
 /* ── The windows a business thinks in ─────────────────────────────────────── */
 
@@ -158,6 +159,78 @@ function TopPostRow({
   );
 }
 
+/* ── When to post ─────────────────────────────────────────────────────────── */
+
+/**
+ * "Post around here" — drawn from THIS business's own posts and the numbers they got.
+ *
+ * Every competitor ships this as an industry average, which tells a parts distributor in
+ * Utah the same thing it tells a bakery in Lisbon. The only figure worth acting on is the
+ * one from your own audience — and when there isn't enough history yet, this says so
+ * plainly instead of showing a confident-looking table built on three posts.
+ */
+function BestTimePanel() {
+  const timezone = useMemo(() => localTimezone(), []);
+  const report = useBestTime(timezone);
+  const data = report.data;
+
+  if (report.isPending) {
+    return (
+      <section className="card bg-base-100 overflow-hidden">
+        <header className="border-base-300 flex items-center gap-2 border-b px-4 py-3">
+          <Heading level={2} className="text-base font-semibold">
+            When to post
+          </Heading>
+        </header>
+        <Text className="px-4 py-3 text-sm">Loading…</Text>
+      </section>
+    );
+  }
+  if (!data) return null;
+
+  return (
+    <section className="card bg-base-100 overflow-hidden">
+      <header className="border-base-300 flex flex-wrap items-center gap-2 border-b px-4 py-3">
+        <Clock className="size-4 shrink-0" aria-hidden />
+        <Heading level={2} className="text-base font-semibold">
+          When to post
+        </Heading>
+        <div className="flex-1" />
+        <Text className="text-sm">From your own posts</Text>
+      </header>
+
+      {!data.confident ? (
+        <Text className="px-4 py-3 text-sm">
+          Not enough history yet to say. Once you have a few posts at different times of the week,
+          the times your audience actually shows up will appear here — worked out from your own
+          results, not an industry average.
+        </Text>
+      ) : (
+        <>
+          <div>
+            {data.buckets.slice(0, 5).map((bucket) => (
+              <div
+                key={`${String(bucket.weekday)}-${String(bucket.hour)}`}
+                className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-1 border-b px-4 py-3 last:border-b-0"
+              >
+                <span className="min-w-0 flex-1 text-base font-medium">
+                  {WEEKDAY_NAMES[bucket.weekday]}s around {formatMinuteOfDay(bucket.hour * 60)}
+                </span>
+                <Stat label="Avg engagements" value={bucket.averageEngagements} />
+                <Stat label="Posts" value={bucket.posts} />
+              </div>
+            ))}
+          </div>
+          <Text className="px-4 py-3 text-sm">
+            Worked out from {data.sampleSize} posts over the last six months, in your local time (
+            {data.timezone}).
+          </Text>
+        </>
+      )}
+    </section>
+  );
+}
+
 /* ── The surface ──────────────────────────────────────────────────────────── */
 
 export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -265,6 +338,10 @@ export function SocialInsightsSurface({ ctx }: { ctx: SurfaceContext }) {
                 </Text>
               ) : null}
             </section>
+
+            {/* When to post — before the per-account breakdown, because it is the one
+                thing on this screen that changes what someone DOES next week. */}
+            <BestTimePanel />
 
             {/* Per-account performance. */}
             {data.accounts.length > 0 ? (

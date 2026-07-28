@@ -62,7 +62,8 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../../lib/confirm';
-import { ExternalLink } from 'lucide-react';
+import { ExternalLink, Share2 } from 'lucide-react';
+import { ModuleScope } from '../../components/module-scope';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
 import { afterPaneChange } from '../../lib/defer';
@@ -522,6 +523,32 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
             <span className="hidden @2xl:inline">View</span>
             <ExternalLink className="size-4" aria-hidden />
           </Button>
+        ) : null}
+
+        {/* Tell people about it. The moment someone is most likely to want a social
+            post is right after putting something on sale — and until this existed the
+            composer opened blank and they retyped the title by hand. Wears the SOCIAL
+            module's hue via a nested provider, because it surfaces that module's
+            functionality on a commerce page. */}
+        {onSale ? (
+          <ModuleScope module="social">
+            <Button
+              size="sm"
+              variant="outline"
+              color="module"
+              title="Write a social post about this product"
+              onClick={() => {
+                ctx.open(
+                  'social.composer',
+                  { id: 'new', seedType: 'product', seedId: product.id },
+                  { target: 'beside' }
+                );
+              }}
+            >
+              <Share2 className="size-4" aria-hidden />
+              <span className="hidden @2xl:inline">Share</span>
+            </Button>
+          </ModuleScope>
         ) : null}
 
         {retired ? null : (

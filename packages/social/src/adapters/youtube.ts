@@ -36,6 +36,7 @@ import {
   formBody,
   readPlatformCreds,
   requireCreds,
+  splitScopes,
 } from './_http.js';
 
 const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
@@ -103,6 +104,10 @@ export class YouTubeAdapter implements SocialAdapter {
     return this.creds() !== null;
   }
 
+  requiredScopes(): string[] {
+    return splitScopes(SCOPE);
+  }
+
   connectUrl(ctx: SocialConnectContext): string {
     const { clientId } = requireCreds(this.creds(), this.name);
     const params = new URLSearchParams({
@@ -140,7 +145,7 @@ export class YouTubeAdapter implements SocialAdapter {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       expiresInSeconds: expiresInSeconds(data.expires_in, 3600),
-      scope: data.scope ?? SCOPE,
+      scope: data.scope,
       externalId: channel?.id,
       displayName: channel?.snippet?.title ?? 'YouTube',
       avatarUrl: channel?.snippet?.thumbnails?.default?.url,
@@ -167,7 +172,7 @@ export class YouTubeAdapter implements SocialAdapter {
       accessToken: data.access_token,
       refreshToken: undefined, // refresh grants don't return a new refresh_token
       expiresInSeconds: expiresInSeconds(data.expires_in, 3600),
-      scope: data.scope ?? SCOPE,
+      scope: data.scope,
     };
   }
 

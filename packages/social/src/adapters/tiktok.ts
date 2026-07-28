@@ -23,6 +23,7 @@
 import type {
   PlatformConstraints,
   RenderedPost,
+  SocialAccessProbe,
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
@@ -40,6 +41,7 @@ import {
   formBody,
   readPlatformCreds,
   requireCreds,
+  splitScopes,
 } from './_http.js';
 
 const AUTH_URL = 'https://www.tiktok.com/v2/auth/authorize/';
@@ -80,16 +82,62 @@ export function classifyTikTokStatus(status: string | undefined): {
   return { ready: false, failed: false };
 }
 
+/** Whether sparx's TikTok app has passed TikTok's audit and may therefore publish to a
+ *  public audience. An UNAUDITED app is hard-limited by TikTok to `SELF_ONLY` (private) —
+ *  attempting anything wider returns `403 unaudited_client_can_only_post_to_private_accounts`,
+ *  and this is a limit on the APP, independent of what the creator's account allows. Defaults
+ *  to false (private, demo-safe): ops sets `TIKTOK_AUDITED=true` once TikTok approves the app
+ *  and every tenant's posts go public with no code change. */
+export function tiktokAllowsPublic(): boolean {
+  return process.env.TIKTOK_AUDITED?.trim().toLowerCase() === 'true';
+}
+
 /** Choose the privacy level to publish at from the creator's currently-available options
- *  (TikTok's `creator_info` query returns them). TikTok REQUIRES the level to be one the
- *  creator allows and forbids hardcoding it — critically an UNAUDITED app (sandbox) is
- *  restricted to `SELF_ONLY`, so hardcoding `PUBLIC_TO_EVERYONE` makes every sandbox post
- *  FAIL. We publish to the widest audience the account permits (public), falling back to
- *  the always-allowed `SELF_ONLY`. Pure — unit-tested without any network. */
+ *  (TikTok's `creator_info` query returns them). Used ONLY once the app is audited — TikTok
+ *  requires the level be one the creator allows and forbids hardcoding it, so we publish to
+ *  the widest audience the account permits (public), falling back to the always-allowed
+ *  `SELF_ONLY`. While UNAUDITED the caller bypasses this and forces `SELF_ONLY` — see
+ *  {@link tiktokAllowsPublic}. Pure — unit-tested without any network. */
 export function pickPrivacyLevel(options: readonly string[]): string {
   if (options.includes('PUBLIC_TO_EVERYONE')) return 'PUBLIC_TO_EVERYONE';
   if (options.includes('SELF_ONLY')) return 'SELF_ONLY';
   return options[0] ?? 'SELF_ONLY';
+}
+
+/** Read TikTok's audit verdict out of the privacy levels it offers a connected creator.
+ *  TikTok publishes no "has my app been approved yet" endpoint, so this is the closest
+ *  thing to one: an UNAUDITED app is hard-limited to `SELF_ONLY` no matter what the
+ *  creator's own account permits, so the appearance of ANY audience wider than private
+ *  proves the audit has passed.
+ *
+ *  The converse does not hold — a creator whose own TikTok account is private is limited
+ *  to `SELF_ONLY` by their own settings — so a private-only answer is reported as "cannot
+ *  tell yet", never as "rejected". Saying "still under review" about an approved app is
+ *  the one wrong answer that would send someone chasing TikTok support for nothing. Pure. */
+export function classifyTikTokAudit(options: readonly string[]): SocialAccessProbe {
+  const isPrivateOnly = options.length > 0 && options.every((o) => o === 'SELF_ONLY');
+  if (options.some((o) => o !== 'SELF_ONLY')) {
+    return {
+      grantedScopes: null,
+      appReview: 'passed',
+      detail:
+        'TikTok is letting this account post publicly, which only an approved app may do. The review has landed.',
+    };
+  }
+  if (isPrivateOnly) {
+    return {
+      grantedScopes: null,
+      appReview: 'pending',
+      detail:
+        'TikTok will only accept private posts from this account right now. That usually means the app review has not finished — though it also happens when the TikTok account itself is set to private, so check that before chasing TikTok.',
+    };
+  }
+  return {
+    grantedScopes: null,
+    appReview: 'unknown',
+    detail:
+      'TikTok did not say what audiences this account can post to, so there is nothing to read.',
+  };
 }
 
 interface TikTokTokenResponse {
@@ -128,6 +176,18 @@ export class TikTokAdapter implements SocialAdapter {
     return this.creds() !== null;
   }
 
+  requiredScopes(): string[] {
+    return splitScopes(SCOPE);
+  }
+
+  /** TikTok's audit state, read off the audiences it will accept for this creator. This
+   *  is the one platform where the answer is available WITHOUT an outside test account —
+   *  the limit is on sparx's app, not on who granted it — so connecting your own TikTok
+   *  is a valid test of whether the audit cleared. */
+  async probeAccess(auth: SocialAuth): Promise<SocialAccessProbe> {
+    return classifyTikTokAudit(await this.queryCreatorInfo(auth.accessToken));
+  }
+
   connectUrl(ctx: SocialConnectContext): string {
     const { clientId } = requireCreds(this.creds(), this.name);
     const params = new URLSearchParams({
@@ -154,7 +214,7 @@ export class TikTokAdapter implements SocialAdapter {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       expiresInSeconds: expiresInSeconds(data.expires_in, TOKEN_FALLBACK_SECONDS),
-      scope: data.scope ?? SCOPE,
+      scope: data.scope,
       externalId: user?.open_id ?? data.open_id,
       displayName: user?.display_name ?? 'TikTok',
       avatarUrl: user?.avatar_url,
@@ -173,7 +233,7 @@ export class TikTokAdapter implements SocialAdapter {
       accessToken: data.access_token,
       refreshToken: data.refresh_token ?? refreshToken,
       expiresInSeconds: expiresInSeconds(data.expires_in, TOKEN_FALLBACK_SECONDS),
-      scope: data.scope ?? SCOPE,
+      scope: data.scope,
     };
   }
 
@@ -198,11 +258,14 @@ export class TikTokAdapter implements SocialAdapter {
       throw new Error('TikTok requires a video or at least one image.');
     }
 
-    // TikTok forbids a hardcoded privacy level; query the creator's allowed options and
-    // pick the widest they permit. An unaudited/sandbox app only ever gets SELF_ONLY back,
-    // so this is what makes a sandbox post succeed (and it goes public automatically once
-    // the app is audited and PUBLIC_TO_EVERYONE appears in the options).
-    const privacyLevel = pickPrivacyLevel(await this.queryCreatorInfo(auth.accessToken));
+    // Privacy level: an UNAUDITED app is hard-limited by TikTok to SELF_ONLY (private) —
+    // a wider audience returns 403 unaudited_client_can_only_post_to_private_accounts,
+    // regardless of what the creator's account allows. So while unaudited, force SELF_ONLY;
+    // once audited (TIKTOK_AUDITED=true) query the creator's allowed options and publish to
+    // the widest they permit (TikTok forbids a hardcoded level for audited apps).
+    const privacyLevel = tiktokAllowsPublic()
+      ? pickPrivacyLevel(await this.queryCreatorInfo(auth.accessToken))
+      : 'SELF_ONLY';
     const publishId = await this.initPost(auth.accessToken, plan, privacyLevel);
     const postId = await this.awaitPublish(auth.accessToken, publishId);
     // TikTok's status API returns the public post id once complete but no share URL;

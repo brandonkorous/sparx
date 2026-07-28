@@ -12,13 +12,14 @@
 // No SDKs — pure `fetch` via the shared `_http` helpers. The worker resolves + decrypts
 // the token; these helpers never read a per-tenant secret, only sparx's Meta app creds.
 
-import type { SocialConnectContext } from '../types.js';
+import type { SocialAccessProbe, SocialConnectContext } from '../types.js';
 import {
   describeResponse,
   expiresInSeconds,
   fetchT,
   formBody,
   HttpError,
+  parseRetryAfter,
   readPlatformCreds,
 } from './_http.js';
 
@@ -31,6 +32,33 @@ const OAUTH_DIALOG = `https://www.facebook.com/${GRAPH_VERSION}/dialog/oauth`;
 // Facebook Pages + Instagram publishing share ONE app registration + verification.
 export const META_ID_VAR = 'META_APP_ID';
 export const META_SECRET_VAR = 'META_APP_SECRET';
+
+/**
+ * Whether the Meta app has been cleared to READ AND ANSWER inbound activity.
+ *
+ * Deliberately separate from `metaCreds()`: the same OAuth app is cleared to POST long
+ * before it is cleared to read comments and messages, because those are a different,
+ * heavier App Review (`pages_read_user_content`, `pages_manage_engagement`,
+ * `pages_messaging`, `instagram_manage_comments`). Ops flips this the day the review
+ * lands — no code change, exactly like `isConfigured()` for the platform itself.
+ *
+ * It also decides the SCOPE requested at connect time, so a tenant who connects while
+ * this is off doesn't carry a token that silently lacks the permissions.
+ */
+export function metaInboxEnabled(): boolean {
+  const raw = process.env.META_INBOX_ENABLED?.trim().toLowerCase();
+  return raw === '1' || raw === 'true' || raw === 'yes';
+}
+
+/** The extra scopes the inbound direction needs, appended to a platform's posting scope
+ *  only while the review is in force. */
+export const META_ENGAGEMENT_SCOPES = 'pages_read_user_content,pages_manage_engagement';
+export const IG_ENGAGEMENT_SCOPES = 'instagram_manage_comments';
+
+/** Append the engagement scopes to a base scope string when inbound is enabled. */
+export function withInboxScopes(base: string, extra: string): string {
+  return metaInboxEnabled() ? `${base},${extra}` : base;
+}
 
 // A long-lived Meta user token lasts ~60 days; Page tokens derived from it don't expire
 // while the user token is valid. We re-exchange (not refresh) before the 60 days lapse.
@@ -73,7 +101,8 @@ export async function graphGet<T>(
 ): Promise<T> {
   const qs = new URLSearchParams({ ...params, access_token: accessToken });
   const res = await fetchT(`${GRAPH_BASE}/${path}?${qs.toString()}`);
-  if (!res.ok) throw new HttpError(await describeGraph(res, label), res.status);
+  if (!res.ok)
+    throw new HttpError(await describeGraph(res, label), res.status, parseRetryAfter(res));
   return (await res.json()) as T;
 }
 
@@ -90,7 +119,8 @@ export async function graphPost<T>(
     headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
     body: formBody({ ...fields, access_token: accessToken }),
   });
-  if (!res.ok) throw new HttpError(await describeGraph(res, label), res.status);
+  if (!res.ok)
+    throw new HttpError(await describeGraph(res, label), res.status, parseRetryAfter(res));
   return (await res.json()) as T;
 }
 
@@ -112,7 +142,8 @@ export async function graphPostMultipart<T>(
   form.append('access_token', accessToken);
   form.append(file.field, new Blob([file.bytes], { type: file.contentType }), file.filename);
   const res = await fetchT(`${GRAPH_BASE}/${path}`, { method: 'POST', body: form }, 60_000);
-  if (!res.ok) throw new HttpError(await describeGraph(res, label), res.status);
+  if (!res.ok)
+    throw new HttpError(await describeGraph(res, label), res.status, parseRetryAfter(res));
   return (await res.json()) as T;
 }
 
@@ -198,6 +229,81 @@ export async function fetchMe(accessToken: string): Promise<MetaMe | null> {
   } catch {
     return null;
   }
+}
+
+interface DebugTokenResponse {
+  data?: { scopes?: string[]; is_valid?: boolean; app_id?: string };
+}
+interface AppRolesResponse {
+  data?: { user?: string; role?: string }[];
+}
+
+/** Ask Meta what a live grant actually holds, and whether the answer means anything.
+ *
+ *  Two calls, both with the APP token (`{id}|{secret}`), neither of which needs a scope:
+ *
+ *  1. `debug_token` — the authoritative list of permissions this token carries right now.
+ *     A person can strip one permission in their Facebook settings without disconnecting,
+ *     so this beats the set recorded at connect time.
+ *  2. `/{app-id}/roles` — who holds an admin/developer/tester role on sparx's own Meta
+ *     app. THIS IS THE POINT OF THE PROBE. Meta grants role-holders every permission the
+ *     app has merely CONFIGURED, reviewed or not (Standard Access). So connecting the
+ *     account that owns the developer app produces a perfect, complete, entirely
+ *     meaningless scope list — it says nothing about whether App Review has landed, and
+ *     the same connect from an ordinary tenant may silently drop half of it. Detecting
+ *     that overlap and saying so out loud is the difference between "we're approved" and
+ *     "we thought we were approved for six weeks".
+ *
+ *  Never throws — an unreachable Graph is `unknown`, not an error. */
+export async function probeMetaAccess(
+  creds: MetaCreds,
+  userId: string,
+  accessToken: string
+): Promise<SocialAccessProbe> {
+  const appToken = `${creds.clientId}|${creds.clientSecret}`;
+
+  let scopes: string[] | null = null;
+  try {
+    const debug = await graphGet<DebugTokenResponse>(
+      'debug_token',
+      appToken,
+      { input_token: accessToken },
+      'Meta token inspection'
+    );
+    scopes = debug.data?.scopes ?? null;
+  } catch {
+    scopes = null;
+  }
+
+  let insider = false;
+  try {
+    const roles = await graphGet<AppRolesResponse>(
+      `${creds.clientId}/roles`,
+      appToken,
+      {},
+      'Meta app roles'
+    );
+    insider = (roles.data ?? []).some((r) => r.user === userId);
+  } catch {
+    insider = false;
+  }
+
+  const caveat = insider
+    ? 'This account has a role on the sparx developer app, so Meta hands it every permission whether or not App Review approved them. Its permission list proves nothing — to test a review, connect an account with no role on the app.'
+    : undefined;
+
+  return {
+    grantedScopes: scopes,
+    // Meta exposes no review-status API, and a permission list alone cannot tell an
+    // approval apart from an insider grant. So: never `passed`. Either we know the
+    // reading is meaningless (insider) or we report what the token holds and let the
+    // scope diff speak.
+    appReview: 'unknown',
+    detail: scopes
+      ? `Meta reports ${scopes.length} permission${scopes.length === 1 ? '' : 's'} on this connection.`
+      : 'Meta would not describe this connection, so its permissions could not be read.',
+    ...(caveat ? { caveat } : {}),
+  };
 }
 
 export interface MetaPage {

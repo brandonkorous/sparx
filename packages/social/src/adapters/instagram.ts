@@ -23,11 +23,14 @@
 import type {
   PlatformConstraints,
   RenderedPost,
+  SocialAccessProbe,
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialInboxEntry,
   SocialPostMetrics,
   SocialPublishResult,
+  SocialReplyResult,
   SocialTargetRef,
   SocialTokens,
 } from '../types.js';
@@ -42,14 +45,24 @@ import {
   graphPost,
   listMetaPages,
   metaCreds,
+  metaInboxEnabled,
+  probeMetaAccess,
   waitForContainer,
+  withInboxScopes,
+  IG_ENGAGEMENT_SCOPES,
   type MetaCreds,
 } from './_meta.js';
 import { appendLink, imageUrls, isImageUrl } from './_media.js';
-import { requireCreds } from './_http.js';
+import { requireCreds, splitScopes } from './_http.js';
 
-const SCOPE =
+const POST_SCOPE =
   'public_profile,pages_show_list,pages_read_engagement,business_management,instagram_basic,instagram_content_publish';
+
+/** Widens to include reading + answering comments once that App Review lands, so a
+ *  tenant never carries a token that silently lacks what the inbox needs. */
+function SCOPE(): string {
+  return withInboxScopes(POST_SCOPE, IG_ENGAGEMENT_SCOPES);
+}
 
 export type InstagramPostPlan =
   | { kind: 'image'; imageUrl: string; caption: string }
@@ -91,6 +104,22 @@ interface IgCountsResponse {
 interface IgInsightsResponse {
   data?: { name?: string; values?: { value?: number }[] }[];
 }
+interface IgMediaCommentsResponse {
+  data?: {
+    id?: string;
+    permalink?: string;
+    timestamp?: string;
+    comments?: {
+      data?: {
+        id?: string;
+        from?: { id?: string; username?: string };
+        text?: string;
+        timestamp?: string;
+        parent_id?: string;
+      }[];
+    };
+  }[];
+}
 
 export class InstagramAdapter implements SocialAdapter {
   readonly id = 'instagram' as const;
@@ -105,8 +134,20 @@ export class InstagramAdapter implements SocialAdapter {
     return this.creds() !== null;
   }
 
+  requiredScopes(): string[] {
+    return splitScopes(SCOPE());
+  }
+
+  probeAccess(auth: SocialAuth): Promise<SocialAccessProbe> {
+    return probeMetaAccess(
+      requireCreds(this.creds(), this.name),
+      auth.externalId,
+      auth.accessToken
+    );
+  }
+
   connectUrl(ctx: SocialConnectContext): string {
-    return buildMetaConnectUrl(requireCreds(this.creds(), this.name), ctx, SCOPE);
+    return buildMetaConnectUrl(requireCreds(this.creds(), this.name), ctx, SCOPE());
   }
 
   async exchangeCode(code: string, ctx: SocialConnectContext): Promise<SocialTokens> {
@@ -118,7 +159,7 @@ export class InstagramAdapter implements SocialAdapter {
       accessToken: longLived.accessToken,
       refreshToken: longLived.accessToken, // re-exchanged by the refresh seam (§Meta)
       expiresInSeconds: longLived.expiresInSeconds,
-      scope: SCOPE,
+      scope: SCOPE(),
       externalId: me?.id,
       displayName: me?.name ?? 'Instagram',
       avatarUrl: me?.picture?.data?.url,
@@ -132,7 +173,7 @@ export class InstagramAdapter implements SocialAdapter {
       accessToken: longLived.accessToken,
       refreshToken: longLived.accessToken,
       expiresInSeconds: longLived.expiresInSeconds,
-      scope: SCOPE,
+      scope: SCOPE(),
     };
   }
 
@@ -203,6 +244,77 @@ export class InstagramAdapter implements SocialAdapter {
   /** Like + comment counts (instagram_basic — granted) plus reach/impressions
    *  (instagram_manage_insights — extra Meta review) best-effort. Instagram feed posts
    *  have no "shares", so that stays null. Reads with the linked Page's token. */
+  // ── the inbound direction: comments on this account's posts ──
+
+  supportsInbox(): boolean {
+    return metaInboxEnabled();
+  }
+
+  /**
+   * Pull recent comments across this account's own media.
+   *
+   * Like Facebook, Instagram has no account-wide comment feed, so this walks the
+   * account's recent MEDIA and takes the comments hanging off each — one request rather
+   * than one per post. `since` isn't a parameter the media edge accepts, so the window is
+   * enforced here by dropping anything older than the cursor.
+   */
+  async listInbox(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    since?: Date
+  ): Promise<SocialInboxEntry[]> {
+    const token = target.params?.pageAccessToken ?? auth.accessToken;
+    const cutoff = since?.getTime() ?? 0;
+
+    const media = await graphGet<IgMediaCommentsResponse>(
+      `${target.externalTargetId}/media`,
+      token,
+      {
+        fields: 'id,permalink,timestamp,comments{id,from,text,timestamp,parent_id}',
+        limit: '25',
+      },
+      'Instagram comments'
+    );
+
+    const entries: SocialInboxEntry[] = [];
+    for (const item of media.data ?? []) {
+      for (const comment of item.comments?.data ?? []) {
+        if (!comment.id) continue;
+        const at = comment.timestamp ? new Date(comment.timestamp) : new Date();
+        if (at.getTime() <= cutoff) continue;
+        entries.push({
+          externalId: comment.id,
+          kind: 'comment',
+          ...(item.id ? { threadExternalId: item.id, postExternalId: item.id } : {}),
+          ...(comment.parent_id ? { parentExternalId: comment.parent_id } : {}),
+          ...(comment.from?.username ? { authorHandle: `@${comment.from.username}` } : {}),
+          ...(comment.text ? { text: comment.text } : {}),
+          ...(item.permalink ? { permalink: item.permalink } : {}),
+          receivedAt: at,
+          outbound: comment.from?.id === target.externalTargetId,
+        });
+      }
+    }
+    return entries;
+  }
+
+  /** Answer a comment as the account. */
+  async replyToInbox(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    parentExternalId: string,
+    text: string
+  ): Promise<SocialReplyResult> {
+    const token = target.params?.pageAccessToken ?? auth.accessToken;
+    const res = await graphPost<IgPublishResponse>(
+      `${parentExternalId}/replies`,
+      token,
+      { message: text },
+      'Instagram comment reply'
+    );
+    return { externalId: res.id };
+  }
+
   async getMetrics(
     auth: SocialAuth,
     target: SocialTargetRef,

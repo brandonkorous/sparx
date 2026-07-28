@@ -35,7 +35,9 @@ import type {
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialInboxEntry,
   SocialPublishResult,
+  SocialReplyResult,
   SocialTargetRef,
   SocialTokens,
 } from '../types.js';
@@ -47,6 +49,7 @@ import {
   formBody,
   readPlatformCreds,
   requireCreds,
+  splitScopes,
 } from './_http.js';
 import { appendLink, firstImageUrl } from './_media.js';
 
@@ -62,7 +65,20 @@ const REST_BASE = 'https://api.linkedin.com/rest';
 // The dated REST API version the Posts + Images calls pin to (YYYYMM). LinkedIn
 // requires this header on every versioned call; bump it when adopting a newer schema.
 const LINKEDIN_VERSION = '202405';
-const SCOPE = 'openid profile w_organization_social rw_organization_admin';
+const POST_SCOPE = 'openid profile w_organization_social rw_organization_admin';
+
+/** Reading the comments under a company page's posts needs its own scope. Gated on env
+ *  like every other capability that depends on an approval we may not have yet, and it
+ *  widens the scope requested at CONNECT — so a tenant never carries a token that
+ *  silently lacks what the inbox needs. */
+function linkedinInboxEnabled(): boolean {
+  const raw = process.env.LINKEDIN_INBOX_ENABLED?.trim().toLowerCase();
+  return raw === '1' || raw === 'true' || raw === 'yes';
+}
+
+function scope(): string {
+  return linkedinInboxEnabled() ? `${POST_SCOPE} r_organization_social` : POST_SCOPE;
+}
 
 const ID_VAR = 'LINKEDIN_CLIENT_ID';
 const SECRET_VAR = 'LINKEDIN_CLIENT_SECRET';
@@ -90,6 +106,19 @@ interface OrgAclsResponse {
 
 interface ImageInitResponse {
   value?: { uploadUrl?: string; image?: string };
+}
+
+interface LinkedInPostsResponse {
+  elements?: { id?: string }[];
+}
+interface LinkedInCommentsResponse {
+  elements?: {
+    $URN?: string;
+    id?: string;
+    actor?: string;
+    message?: { text?: string };
+    created?: { time?: number };
+  }[];
 }
 
 /** The public permalink for a published post urn. */
@@ -156,13 +185,17 @@ export class LinkedInAdapter implements SocialAdapter {
     return this.creds() !== null;
   }
 
+  requiredScopes(): string[] {
+    return splitScopes(scope());
+  }
+
   connectUrl(ctx: SocialConnectContext): string {
     const { clientId } = requireCreds(this.creds(), this.name);
     const params = new URLSearchParams({
       response_type: 'code',
       client_id: clientId,
       redirect_uri: ctx.redirectUri,
-      scope: SCOPE,
+      scope: scope(),
       state: ctx.state,
     });
     return `${AUTH_URL}?${params.toString()}`;
@@ -357,6 +390,102 @@ export class LinkedInAdapter implements SocialAdapter {
       throw new Error(`LinkedIn image upload failed: ${await describeResponse(putRes)}`);
     }
     return imageUrn;
+  }
+
+  // ── the inbound direction: comments on this company page's posts ──
+
+  supportsInbox(): boolean {
+    return this.isConfigured() && linkedinInboxEnabled();
+  }
+
+  /**
+   * Pull recent comments under the organization's own posts.
+   *
+   * Same shape as the Meta adapters and for the same reason: LinkedIn has no
+   * page-wide comment feed, so this walks the org's recent POSTS and reads the
+   * `socialActions` comments on each. `since` bounds it by dropping anything older,
+   * because the posts finder has no since parameter.
+   */
+  async listInbox(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    since?: Date
+  ): Promise<SocialInboxEntry[]> {
+    const orgUrn = target.externalTargetId;
+    const cutoff = since?.getTime() ?? 0;
+
+    const postsRes = await fetchT(
+      `${REST_BASE}/posts?q=author&author=${encodeURIComponent(orgUrn)}&count=20&sortBy=LAST_MODIFIED`,
+      { headers: this.restHeaders(auth.accessToken) }
+    );
+    if (!postsRes.ok) {
+      throw new Error(`LinkedIn posts read failed: ${await describeResponse(postsRes)}`);
+    }
+    const posts = (await postsRes.json()) as LinkedInPostsResponse;
+
+    const entries: SocialInboxEntry[] = [];
+    for (const post of posts.elements ?? []) {
+      const urn = post.id;
+      if (!urn) continue;
+
+      // A post with comments disabled 404s here; one org post failing must not lose the
+      // comments on the other nineteen.
+      let comments: LinkedInCommentsResponse;
+      try {
+        const res = await fetchT(
+          `${REST_BASE}/socialActions/${encodeURIComponent(urn)}/comments?count=50`,
+          { headers: this.restHeaders(auth.accessToken) }
+        );
+        if (!res.ok) continue;
+        comments = (await res.json()) as LinkedInCommentsResponse;
+      } catch {
+        continue;
+      }
+
+      for (const comment of comments.elements ?? []) {
+        if (!comment.$URN && !comment.id) continue;
+        const at = comment.created?.time ? new Date(comment.created.time) : new Date();
+        if (at.getTime() <= cutoff) continue;
+        entries.push({
+          externalId: comment.$URN ?? comment.id ?? '',
+          kind: 'comment',
+          threadExternalId: urn,
+          postExternalId: urn,
+          ...(comment.message?.text ? { text: comment.message.text } : {}),
+          permalink: linkedInPermalink(urn),
+          receivedAt: at,
+          // A comment the PAGE itself left is our own half of the conversation.
+          outbound: comment.actor === orgUrn,
+        });
+      }
+    }
+    return entries;
+  }
+
+  /** Reply to a comment as the ORGANIZATION. LinkedIn threads a reply by posting a
+   *  comment on the parent comment's own socialActions. */
+  async replyToInbox(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    parentExternalId: string,
+    text: string
+  ): Promise<SocialReplyResult> {
+    const res = await fetchT(
+      `${REST_BASE}/socialActions/${encodeURIComponent(parentExternalId)}/comments`,
+      {
+        method: 'POST',
+        headers: this.restHeaders(auth.accessToken),
+        body: JSON.stringify({
+          actor: target.externalTargetId,
+          message: { text },
+        }),
+      }
+    );
+    if (!res.ok) {
+      throw new Error(`LinkedIn comment reply failed: ${await describeResponse(res)}`);
+    }
+    const id = res.headers.get('x-restli-id') ?? `${parentExternalId}:reply`;
+    return { externalId: id };
   }
 
   /** Post the first comment on a published post. Best-effort — swallows failures so a

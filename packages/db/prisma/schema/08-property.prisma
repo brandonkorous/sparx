@@ -221,6 +221,11 @@ model Property {
   // SocialTarget/SocialPostTarget inherit their site from the connection/post.
   socialConnections SocialConnection[]
   socialPosts       SocialPost[]
+  // Hashtag sets, posting slots and the engagement inbox are per-site too: they are
+  // this business's voice, its cadence, and its conversations.
+  socialHashtagSets  SocialHashtagSet[]
+  socialPostingSlots SocialPostingSlot[]
+  socialInboxItems   SocialInboxItem[]
 
   // Legacy CMS (docs/131 §4). Pages take a direct propertyId (a slug is a URL,
   // like redirects); ContentType is a nullable vocabulary like Taxonomy (its

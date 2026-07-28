@@ -8,7 +8,7 @@
 // draft) is a real state change on the server, not throwaway work. Rejecting is
 // behind a confirm that names the post.
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   AlertContent,
@@ -19,22 +19,33 @@ import {
   EmptyState,
   Heading,
   Text,
+  Textarea,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { CheckCheck, Inbox, ServerCrash, X } from 'lucide-react';
+import { CheckCheck, Inbox, PencilLine, ServerCrash, X } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { RefreshButton } from '../../components/refresh-button';
 import { useViewer } from '../../lib/api/shell-data';
 import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
+import type { MediaAsset } from '../cms/media';
 import {
   canApprove,
+  catalogByPlatform,
   socialErrorMessage,
   useApprovePost,
   useRejectPost,
+  useSocialOverview,
   useSocialPosts,
+  type CatalogEntry,
   type Post,
 } from './data';
+import {
+  DestinationAvatars,
+  PostThumb,
+  useAvatarByTargetId,
+  usePostThumbnails,
+} from './post-visuals';
 
 function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
   if (event.altKey) return 'window';
@@ -60,10 +71,16 @@ function formatWhen(iso: string): string {
 
 function ApprovalCard({
   post,
+  assetsById,
+  avatarByTargetId,
+  catalogMap,
   canDecide,
   onOpen,
 }: {
   post: Post;
+  assetsById: Map<string, MediaAsset>;
+  avatarByTargetId: Map<string, string | null>;
+  catalogMap: Map<string, CatalogEntry>;
   canDecide: boolean;
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
@@ -71,6 +88,8 @@ function ApprovalCard({
   const confirm = useConfirm();
   const approve = useApprovePost(post.id);
   const reject = useRejectPost(post.id);
+  const [note, setNote] = useState('');
+  const [sendingBack, setSendingBack] = useState(false);
 
   const goesLiveNow = !post.scheduledAt;
 
@@ -96,7 +115,10 @@ function ApprovalCard({
     });
   };
 
-  const onReject = () => {
+  /** Send it back WITH a reason. The note is the whole improvement here: a rejection
+   *  with no words is a state change the author has to interpret, which in practice
+   *  means walking over to ask or resubmitting the same thing. */
+  const onSendBack = () => {
     void (async () => {
       const ok = await confirm({
         title: 'Send this post back?',
@@ -106,8 +128,10 @@ function ApprovalCard({
         color: 'danger',
       });
       if (!ok) return;
-      reject.mutate(undefined, {
+      reject.mutate(note.trim() || undefined, {
         onSuccess: () => {
+          setNote('');
+          setSendingBack(false);
           toast.add({ title: 'Sent back to the author', type: 'success' });
         },
         onError: (error) => {
@@ -125,54 +149,110 @@ function ApprovalCard({
 
   return (
     <div className="border-base-300 flex flex-col gap-3 rounded-lg border p-3">
+      {/* Pictures-first, like every other list in the module. Approving a picture post
+          without being shown the picture was the one place this surface asked someone to
+          make a decision about something it had hidden from them. */}
       <button
         type="button"
-        className="hover:bg-base-200 -m-1 flex cursor-pointer flex-col gap-1 rounded p-1 text-left"
+        className="hover:bg-base-200 -m-1 flex cursor-pointer items-start gap-3 rounded p-1 text-left"
         onClick={onOpen}
       >
-        <Text className="text-base font-medium break-words">{excerpt(post.body)}</Text>
-        <Text className="text-sm">
-          {post.scheduledAt
-            ? `Scheduled for ${formatWhen(post.scheduledAt)}`
-            : 'No time set — approving posts it now'}{' '}
-          ·{' '}
-          {post.targets.length === 1
-            ? '1 destination'
-            : `${String(post.targets.length)} destinations`}
-        </Text>
+        <PostThumb post={post} assetsById={assetsById} size="md" />
+        <span className="flex min-w-0 flex-1 flex-col gap-1">
+          <Text className="text-base font-medium break-words">{excerpt(post.body)}</Text>
+          <Text className="text-sm">
+            {post.scheduledAt
+              ? `Scheduled for ${formatWhen(post.scheduledAt)}`
+              : 'No time set — approving posts it now'}
+            {post.source !== 'manual' ? ` · drafted automatically` : ''}
+          </Text>
+          <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
+            <Text className="text-sm">Goes to</Text>
+            <DestinationAvatars
+              targets={post.targets}
+              avatarByTargetId={avatarByTargetId}
+              catalogMap={catalogMap}
+            />
+            <Text className="text-sm">
+              {post.targets.map((t) => t.targetName).join(', ') || 'nowhere yet'}
+            </Text>
+          </span>
+        </span>
       </button>
 
-      <div className="flex flex-wrap items-center gap-2">
-        {post.targets.map((target) => (
-          <Badge key={target.id} color="neutral" variant="soft" size="sm">
-            {target.targetName}
-          </Badge>
-        ))}
-      </div>
+      {post.link ? <Text className="text-sm break-all">{post.link}</Text> : null}
 
       {canDecide ? (
-        <div className="border-base-300 flex flex-wrap items-center gap-2 border-t pt-3">
-          <Button
-            size="sm"
-            color="module"
-            loading={approve.isPending}
-            disabled={busy}
-            onClick={onApprove}
-          >
-            <CheckCheck className="size-4" aria-hidden />
-            {goesLiveNow ? 'Approve & post now' : 'Approve'}
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            color="danger"
-            loading={reject.isPending}
-            disabled={busy}
-            onClick={onReject}
-          >
-            <X className="size-4" aria-hidden />
-            Send back
-          </Button>
+        <div className="border-base-300 flex flex-col gap-2 border-t pt-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <Button
+              size="sm"
+              color="module"
+              loading={approve.isPending}
+              disabled={busy}
+              onClick={onApprove}
+            >
+              <CheckCheck className="size-4" aria-hidden />
+              {goesLiveNow ? 'Approve & post now' : 'Approve'}
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              color="danger"
+              disabled={busy}
+              onClick={() => {
+                setSendingBack((current) => !current);
+              }}
+            >
+              <X className="size-4" aria-hidden />
+              Send back
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
+              disabled={busy}
+              onClick={(event) => {
+                onOpen(event);
+              }}
+            >
+              <PencilLine className="size-4" aria-hidden />
+              Change it first
+            </Button>
+          </div>
+
+          {/* The reason. Optional, but asked for at the moment it is cheapest to give —
+              a note typed here saves the author a conversation. */}
+          {sendingBack ? (
+            <div className="flex flex-col gap-2">
+              <Textarea
+                color="module"
+                rows={2}
+                value={note}
+                placeholder="What needs changing? (optional, but it saves them guessing)"
+                aria-label="Why you are sending this post back"
+                onChange={(event) => {
+                  setNote(event.target.value);
+                }}
+              />
+              <div className="flex flex-wrap items-center gap-2">
+                <Button size="sm" color="danger" loading={reject.isPending} onClick={onSendBack}>
+                  Send it back
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  color="neutral"
+                  onClick={() => {
+                    setSendingBack(false);
+                    setNote('');
+                  }}
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          ) : null}
         </div>
       ) : null}
     </div>
@@ -184,9 +264,18 @@ function ApprovalCard({
 export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
   const viewer = useViewer();
   const posts = useSocialPosts('pending_approval');
+  const overview = useSocialOverview();
 
   const canDecide = canApprove(viewer.data?.role);
   const pending = useMemo(() => posts.data ?? [], [posts.data]);
+
+  // The lead pictures and account faces, resolved in one request for the whole inbox.
+  const assetsById = usePostThumbnails(pending);
+  const avatarByTargetId = useAvatarByTargetId(overview.data?.connections ?? []);
+  const catalogMap = useMemo(
+    () => catalogByPlatform(overview.data?.catalog ?? []),
+    [overview.data]
+  );
 
   useEffect(() => {
     ctx.setTitle('Approvals');
@@ -268,6 +357,9 @@ export function SocialApprovalsSurface({ ctx }: { ctx: SurfaceContext }) {
                   <ApprovalCard
                     key={post.id}
                     post={post}
+                    assetsById={assetsById}
+                    avatarByTargetId={avatarByTargetId}
+                    catalogMap={catalogMap}
                     canDecide={canDecide}
                     onOpen={(event) => {
                       openPost(post, event);

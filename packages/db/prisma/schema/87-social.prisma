@@ -69,6 +69,13 @@ model SocialConnection {
   lastError Json? @map("last_error")
   metadata  Json  @default("{}")
 
+  // When the health sweep last checked this grant (social-worker's connection
+  // health drain). A grant is only usable until its token expires, so the sweep
+  // refreshes AHEAD of expiry and flips `status` to `expired` the moment a refresh
+  // fails — the tenant sees "reconnect needed" BEFORE a post is lost, rather than
+  // discovering it from a failed publish (docs/133 §6.5). Null = never checked.
+  healthCheckedAt DateTime? @map("health_checked_at") @db.Timestamptz
+
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
 
@@ -111,6 +118,11 @@ model SocialTarget {
   // Page but pause posting to it without disconnecting the whole account).
   enabled  Boolean @default(true)
   metadata Json    @default("{}")
+
+  // When the engagement inbox last pulled comments/mentions/reviews for this
+  // destination (docs/133 "Engage"). The sweep's cursor — null = never synced, so a
+  // freshly attached destination backfills its recent activity on the first pass.
+  inboxSyncedAt DateTime? @map("inbox_synced_at") @db.Timestamptz
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
@@ -161,6 +173,18 @@ model SocialPost {
   approvedAt   DateTime? @map("approved_at") @db.Timestamptz
   createdById  String?   @map("created_by_id") @db.Uuid
 
+  // Why a reviewer sent this post back (docs/133 §7). Without it a rejection is a
+  // silent state change and the author has to guess what to fix. Cleared when the
+  // post is resubmitted.
+  reviewNote String? @map("review_note") @db.Text
+
+  // The evergreen pool (docs/133 §8 "post sources"). An evergreen post is one the
+  // tenant is happy to run again: once published it stays in the pool, and the slot
+  // filler re-schedules the least-recently-used one into the next empty posting slot.
+  // `lastRecycledAt` is that LRU cursor — null until it has been recycled once.
+  evergreen      Boolean   @default(false)
+  lastRecycledAt DateTime? @map("last_recycled_at") @db.Timestamptz
+
   metadata Json @default("{}")
 
   createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
@@ -204,6 +228,12 @@ model SocialPostTarget {
   // published and some failed.
   status String @default("pending") @db.VarChar(20)
 
+  // This destination's OWN send time, when it differs from the post's (docs/133 §8).
+  // The audience on a Facebook Page and on a LinkedIn company page are awake at
+  // different hours, so one composed post can land at the right local moment on each.
+  // NULL = inherit `SocialPost.scheduledAt`, which is the common case.
+  scheduledAt DateTime? @map("scheduled_at") @db.Timestamptz
+
   // The result the platform returns on success — the published post id + its public
   // URL. Kept as permanent history (see the FK-less note above).
   externalId String? @map("external_id") @db.VarChar(255)
@@ -227,6 +257,9 @@ model SocialPostTarget {
   @@unique([postId, socialTargetId], map: "social_post_targets_post_target_unique")
   @@index([tenantId, status])
   @@index([postId])
+  // Drives the per-destination drain (a target with its OWN scheduled_at fires on its
+  // own clock, independent of its siblings) — mirrors social_posts(status, scheduled_at).
+  @@index([status, scheduledAt])
   @@map("social_post_targets")
 }
 
@@ -264,4 +297,142 @@ model SocialPostMetric {
   @@index([tenantId, postId])
   @@index([postTargetId, collectedAt])
   @@map("social_post_metrics")
+}
+
+// A saved block of hashtags the composer can drop into a post (or its first comment)
+// in one click — the single most-repeated typing in social posting, and the thing a
+// business gets wrong when it retypes it from memory every time. Site-scoped like the
+// rest of the module; `platform` narrows a set to where it belongs (an Instagram tag
+// block is noise on LinkedIn), null = offer it everywhere.
+model SocialHashtagSet {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  propertyId String? @map("property_id") @db.Uuid
+
+  name String  @db.VarChar(120)
+  // Stored WITHOUT the leading '#': the service normalizes on write so a set is
+  // comparable and the UI decides how to render it.
+  tags     String[] @default([]) @db.VarChar(120)
+  platform String?  @db.VarChar(40)
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@unique([tenantId, propertyId, name], map: "social_hashtag_sets_tenant_property_name_unique")
+  @@index([tenantId, propertyId])
+  @@map("social_hashtag_sets")
+}
+
+// One recurring slot in the week's posting cadence ("Tuesdays at 9am"). Two jobs:
+//   1. It is the shape of a plan — the calendar draws empty slots so a gap in next
+//      week is visible as a gap, not as blank space.
+//   2. It is where the evergreen filler puts things. A tenant with a pool of
+//      evergreen posts and three slots a week never has a silent week.
+// `minuteOfDay` + `timezone` rather than a timestamp: a slot is a recurring local
+// time, and "9am" must stay 9am across a daylight-saving boundary.
+model SocialPostingSlot {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  propertyId String? @map("property_id") @db.Uuid
+
+  // 0 = Sunday … 6 = Saturday, matching JS `Date.getDay()`.
+  weekday     Int
+  minuteOfDay Int    @map("minute_of_day")
+  timezone    String @default("UTC") @db.VarChar(64)
+
+  // Which destinations an auto-filled post goes to. FK-less uuids (a destination can
+  // be disconnected away); the filler skips ids that no longer resolve.
+  targetIds String[] @default([]) @map("target_ids") @db.Uuid
+
+  // Off by default is wrong here — a slot exists because someone created it — but a
+  // tenant pauses a slot for a holiday without losing it.
+  enabled Boolean @default(true)
+  // Whether the evergreen filler may claim this slot. A slot can be plan-only (draw
+  // the gap, never auto-fill it), which is the honest default for a brand that wants
+  // a human in the loop.
+  autoFill Boolean @default(false) @map("auto_fill")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId, propertyId])
+  @@index([enabled, autoFill])
+  @@map("social_posting_slots")
+}
+
+// The engagement inbox (docs/implementation/social.md "Engage") — the inbound half of
+// the module. Publishing without replying is half a social tool: a comment on a post
+// is a customer talking to the business, and today it lands somewhere nobody at the
+// business is looking.
+//
+// ONE table holds both directions. An inbound comment and our reply to it are the same
+// shape (author, text, platform id, timestamp) and belong on one thread; splitting them
+// would mean two tables that must be interleaved on every read. `direction` tells them
+// apart; `parentExternalId` threads them.
+//
+// FK-less `socialTargetId` / `postTargetId` for the same reason SocialPostTarget is:
+// conversation history is permanent and must survive a disconnect that cascades the
+// destination away.
+model SocialInboxItem {
+  id         String  @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  tenantId   String  @map("tenant_id") @db.Uuid
+  propertyId String? @map("property_id") @db.Uuid
+
+  socialTargetId String  @map("social_target_id") @db.Uuid
+  targetName     String  @map("target_name") @db.VarChar(255)
+  platform       String  @db.VarChar(40)
+  // The post this is a comment ON, when we published it and can join them up. Null for
+  // a mention, a DM, or a comment on something posted outside sparx.
+  postTargetId   String? @map("post_target_id") @db.Uuid
+
+  // comment | mention | review | message (docs/133 "Engage"). A Google Business review
+  // and a Facebook comment are different enough to filter on and similar enough to
+  // answer in one place.
+  kind String @db.VarChar(20)
+  // inbound = they said it; outbound = we replied. One thread reads in order.
+  direction String @default("inbound") @db.VarChar(10)
+
+  // The item's own id on the platform + the thread it belongs to. The unique below
+  // makes the sync idempotent: re-polling never duplicates a comment.
+  externalId       String  @map("external_id") @db.VarChar(255)
+  threadExternalId String? @map("thread_external_id") @db.VarChar(255)
+  parentExternalId String? @map("parent_external_id") @db.VarChar(255)
+
+  authorName      String? @map("author_name") @db.VarChar(255)
+  authorHandle    String? @map("author_handle") @db.VarChar(255)
+  authorAvatarUrl String? @map("author_avatar_url") @db.Text
+
+  text String? @db.Text
+  // 1–5 for a review; null for everything else.
+  rating    Int?
+  permalink String? @db.Text
+
+  // open | replied | archived. `open` is the inbox; archiving is how a business says
+  // "seen, nothing to do" without deleting a customer's words.
+  status String @default("open") @db.VarChar(20)
+
+  receivedAt  DateTime  @map("received_at") @db.Timestamptz
+  repliedAt   DateTime? @map("replied_at") @db.Timestamptz
+  handledById String?   @map("handled_by_id") @db.Uuid
+
+  metadata Json @default("{}")
+
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz
+
+  tenant   Tenant    @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  property Property? @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+  // Idempotent sync: one row per platform item per destination.
+  @@unique([socialTargetId, externalId], map: "social_inbox_items_target_external_unique")
+  @@index([tenantId, status, receivedAt])
+  @@index([tenantId, propertyId])
+  @@index([threadExternalId])
+  @@map("social_inbox_items")
 }

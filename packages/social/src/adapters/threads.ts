@@ -41,6 +41,7 @@ import {
   formBody,
   readPlatformCreds,
   requireCreds,
+  splitScopes,
 } from './_http.js';
 
 const AUTH_URL = 'https://threads.net/oauth/authorize';
@@ -135,6 +136,10 @@ export class ThreadsAdapter implements SocialAdapter {
     return this.creds() !== null;
   }
 
+  requiredScopes(): string[] {
+    return splitScopes(SCOPE);
+  }
+
   connectUrl(ctx: SocialConnectContext): string {
     const { clientId } = requireCreds(this.creds(), this.name);
     const params = new URLSearchParams({
@@ -170,7 +175,10 @@ export class ThreadsAdapter implements SocialAdapter {
       accessToken: longLived.access_token,
       refreshToken: longLived.access_token, // extended by refresh() before it lapses
       expiresInSeconds: expiresInSeconds(longLived.expires_in, LONG_LIVED_FALLBACK_SECONDS),
-      scope: SCOPE,
+      // Threads' token exchange does not report the granted scope, and echoing back what
+      // we ASKED for would record a guess as a fact — which is how a readiness check ends
+      // up confidently green about permissions nobody ever confirmed. Left unset; the
+      // readiness view reports Threads as unverifiable, which is the honest answer.
       externalId: me?.id ?? short.user_id,
       displayName: me?.name ?? (me?.username ? `@${me.username}` : 'Threads'),
     };
@@ -190,7 +198,6 @@ export class ThreadsAdapter implements SocialAdapter {
       accessToken: data.access_token,
       refreshToken: data.access_token,
       expiresInSeconds: expiresInSeconds(data.expires_in, LONG_LIVED_FALLBACK_SECONDS),
-      scope: SCOPE,
     };
   }
 

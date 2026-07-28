@@ -24,11 +24,14 @@
 import type {
   PlatformConstraints,
   RenderedPost,
+  SocialAccessProbe,
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialInboxEntry,
   SocialPostMetrics,
   SocialPublishResult,
+  SocialReplyResult,
   SocialTargetRef,
   SocialTokens,
 } from '../types.js';
@@ -43,13 +46,24 @@ import {
   graphPostMultipart,
   listMetaPages,
   metaCreds,
+  metaInboxEnabled,
+  META_ENGAGEMENT_SCOPES,
+  probeMetaAccess,
+  withInboxScopes,
   type MetaCreds,
 } from './_meta.js';
 import { appendLink, fetchImageBinary, imageUrls } from './_media.js';
-import { requireCreds } from './_http.js';
+import { requireCreds, splitScopes } from './_http.js';
 
-const SCOPE =
+const POST_SCOPE =
   'public_profile,pages_show_list,pages_manage_posts,pages_read_engagement,business_management';
+
+/** The scope requested at connect time. Widens to include reading + answering comments
+ *  only once that App Review has landed, so a tenant never carries a token that silently
+ *  lacks the permissions the inbox needs. */
+function scope(): string {
+  return withInboxScopes(POST_SCOPE, META_ENGAGEMENT_SCOPES);
+}
 
 /** The public permalink for a Page post/story id (`{pageId}_{postId}` or a story id). */
 export function facebookPermalink(id: string): string {
@@ -101,6 +115,31 @@ interface FbEngagementResponse {
 interface FbInsightsResponse {
   data?: { name?: string; values?: { value?: number }[] }[];
 }
+interface FbFeedCommentsResponse {
+  data?: {
+    id?: string;
+    permalink_url?: string;
+    comments?: {
+      data?: {
+        id?: string;
+        from?: { id?: string; name?: string };
+        message?: string;
+        created_time?: string;
+        permalink_url?: string;
+        parent?: { id?: string };
+      }[];
+    };
+  }[];
+}
+interface FbRatingsResponse {
+  data?: {
+    open_graph_story?: { id?: string };
+    reviewer?: { name?: string };
+    rating?: number;
+    review_text?: string;
+    created_time?: string;
+  }[];
+}
 
 export class FacebookPageAdapter implements SocialAdapter {
   readonly id = 'facebook_page' as const;
@@ -115,8 +154,20 @@ export class FacebookPageAdapter implements SocialAdapter {
     return this.creds() !== null;
   }
 
+  requiredScopes(): string[] {
+    return splitScopes(scope());
+  }
+
+  probeAccess(auth: SocialAuth): Promise<SocialAccessProbe> {
+    return probeMetaAccess(
+      requireCreds(this.creds(), this.name),
+      auth.externalId,
+      auth.accessToken
+    );
+  }
+
   connectUrl(ctx: SocialConnectContext): string {
-    return buildMetaConnectUrl(requireCreds(this.creds(), this.name), ctx, SCOPE);
+    return buildMetaConnectUrl(requireCreds(this.creds(), this.name), ctx, scope());
   }
 
   async exchangeCode(code: string, ctx: SocialConnectContext): Promise<SocialTokens> {
@@ -130,7 +181,7 @@ export class FacebookPageAdapter implements SocialAdapter {
       // seam re-exchanges it (refresh() below) before the ~60-day window lapses.
       refreshToken: longLived.accessToken,
       expiresInSeconds: longLived.expiresInSeconds,
-      scope: SCOPE,
+      scope: scope(),
       externalId: me?.id,
       displayName: me?.name ?? 'Facebook',
       avatarUrl: me?.picture?.data?.url,
@@ -144,7 +195,7 @@ export class FacebookPageAdapter implements SocialAdapter {
       accessToken: longLived.accessToken,
       refreshToken: longLived.accessToken,
       expiresInSeconds: longLived.expiresInSeconds,
-      scope: SCOPE,
+      scope: scope(),
     };
   }
 
@@ -231,6 +282,111 @@ export class FacebookPageAdapter implements SocialAdapter {
       pageToken,
       fields,
       'Facebook post'
+    );
+    return { externalId: res.id, permalink: facebookPermalink(res.id) };
+  }
+
+  // ── the inbound direction: comments + reviews on this Page ──
+
+  supportsInbox(): boolean {
+    return metaInboxEnabled();
+  }
+
+  /**
+   * Pull recent comments on the Page's own posts, plus its reviews.
+   *
+   * Graph has no "every comment on my Page" endpoint, so this walks the Page's recent
+   * FEED and takes the comments hanging off each post — one request instead of one per
+   * post. `since` keeps that walk short: an established Page has years of posts and the
+   * inbox only wants what has happened since the last poll.
+   *
+   * A comment we posted ourselves comes back flagged `outbound` rather than dropped, so a
+   * thread reads as a conversation instead of only the customer's half.
+   */
+  async listInbox(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    since?: Date
+  ): Promise<SocialInboxEntry[]> {
+    const pageToken = target.params?.pageAccessToken ?? auth.accessToken;
+    const pageId = target.externalTargetId;
+    const entries: SocialInboxEntry[] = [];
+    const sinceParam: Record<string, string> = since
+      ? { since: String(Math.floor(since.getTime() / 1000)) }
+      : {};
+
+    const feed = await graphGet<FbFeedCommentsResponse>(
+      `${pageId}/feed`,
+      pageToken,
+      {
+        fields:
+          'id,permalink_url,comments.limit(50){id,from,message,created_time,permalink_url,parent}',
+        limit: '25',
+        ...sinceParam,
+      },
+      'Facebook Page comments'
+    );
+
+    for (const post of feed.data ?? []) {
+      for (const comment of post.comments?.data ?? []) {
+        if (!comment.id) continue;
+        entries.push({
+          externalId: comment.id,
+          kind: 'comment',
+          threadExternalId: post.id,
+          ...(comment.parent?.id ? { parentExternalId: comment.parent.id } : {}),
+          ...(post.id ? { postExternalId: post.id } : {}),
+          ...(comment.from?.name ? { authorName: comment.from.name } : {}),
+          ...(comment.message ? { text: comment.message } : {}),
+          ...(comment.permalink_url ? { permalink: comment.permalink_url } : {}),
+          receivedAt: comment.created_time ? new Date(comment.created_time) : new Date(),
+          // The Page answering itself is context, not something to answer.
+          outbound: comment.from?.id === pageId,
+        });
+      }
+    }
+
+    // Reviews are a separate edge and a separate permission; a Page without it simply
+    // contributes no reviews rather than failing the whole pull.
+    try {
+      const ratings = await graphGet<FbRatingsResponse>(
+        `${pageId}/ratings`,
+        pageToken,
+        { fields: 'open_graph_story,reviewer,rating,review_text,created_time', limit: '50' },
+        'Facebook Page reviews'
+      );
+      for (const review of ratings.data ?? []) {
+        const id = review.open_graph_story?.id;
+        if (!id) continue;
+        entries.push({
+          externalId: id,
+          kind: 'review',
+          ...(review.reviewer?.name ? { authorName: review.reviewer.name } : {}),
+          ...(review.review_text ? { text: review.review_text } : {}),
+          ...(typeof review.rating === 'number' ? { rating: review.rating } : {}),
+          receivedAt: review.created_time ? new Date(review.created_time) : new Date(),
+        });
+      }
+    } catch {
+      // No review permission on this Page — the comments stand on their own.
+    }
+
+    return entries;
+  }
+
+  /** Answer a comment as the Page. */
+  async replyToInbox(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    parentExternalId: string,
+    text: string
+  ): Promise<SocialReplyResult> {
+    const pageToken = target.params?.pageAccessToken ?? auth.accessToken;
+    const res = await graphPost<FbFeedResponse>(
+      `${parentExternalId}/comments`,
+      pageToken,
+      { message: text },
+      'Facebook comment reply'
     );
     return { externalId: res.id, permalink: facebookPermalink(res.id) };
   }

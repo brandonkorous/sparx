@@ -33,9 +33,15 @@ import { encryptSocialToken, isSocialTokenCryptoConfigured } from '@sparx/social
 import { ok } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { badRequest, conflict, notFound } from '@sparx/api-core/errors';
-import { requireSocialModule, toSocialContext } from '../../../lib/social-context.js';
+import {
+  requireSocialModule,
+  resolveSocialProperty,
+  toSocialContext,
+} from '../../../lib/social-context.js';
 import { resolvePropertyId } from '../../../lib/property.js';
 import {
+  checkSocialConnectionReadiness,
+  checkSocialReadiness,
   disconnectSocial,
   listSocialConnections,
   setTargetEnabled,
@@ -44,9 +50,11 @@ import {
   type SocialTargetView,
 } from '../../../lib/social-connections.js';
 import { signSocialOAuthState, verifySocialOAuthState } from '../../../lib/social-oauth.js';
-import { getSocialSettings, setSocialRequireApproval } from '../../../lib/social-lifecycle.js';
+import { getSocialSettings, updateSocialSettings } from '../../../lib/social-lifecycle.js';
 import { getSocialInsights } from '../../../lib/social-metrics.js';
 import socialPostRoutes from './posts.js';
+import socialPlanningRoutes from './planning.js';
+import socialInboxRoutes from './inbox.js';
 
 const SOCIAL_PLATFORMS = SOCIAL_CATALOG.map((d) => d.platform) as [
   SocialPlatform,
@@ -57,7 +65,10 @@ const ConnectQuery = z.object({ redirect_uri: z.string().url() });
 const CallbackBody = z.object({ code: z.string().min(1), state: z.string().min(1) });
 const TargetToggleBody = z.object({ enabled: z.boolean() });
 const PathId = z.object({ id: z.string().uuid() });
-const SettingsBody = z.object({ requireApproval: z.boolean() });
+const SettingsBody = z.object({
+  requireApproval: z.boolean().optional(),
+  trackLinks: z.boolean().optional(),
+});
 const InsightsQuery = z.object({
   windowDays: z.coerce.number().int().min(1).max(365).optional(),
 });
@@ -91,16 +102,46 @@ const socialRoutes: FastifyPluginAsync = async (app) => {
   // Post compose/publish lives in its own sub-plugin (a connection and a post are
   // different resources with different lifecycles) — mirrors channels/product-mappings.
   await app.register(socialPostRoutes);
+  // The things set up once and leaned on weekly (hashtag sets, the posting cadence,
+  // best-time), and the inbound conversation half. Each is a distinct resource with its
+  // own lifecycle — same reasoning that split posts out of connections.
+  await app.register(socialPlanningRoutes);
+  await app.register(socialInboxRoutes);
 
   app.get('/v1/social', async (request, reply) => {
     await requireSocialModule(request);
     requireRole(request, 'viewer');
     const ctx = toSocialContext(request);
+    // Scoped to the site being worked in: a connected account speaks for ONE business,
+    // so two brands under one owner must not see each other's accounts in one list.
+    const propertyId = await resolveSocialProperty(request);
     const [connections, settings] = await Promise.all([
-      listSocialConnections(ctx),
+      listSocialConnections(ctx, propertyId),
       getSocialSettings(ctx.tenantId),
     ]);
     return reply.send(ok({ connections, catalog: runtimeCatalog(), settings }));
+  });
+
+  // "Can these accounts actually do what we're about to ask?" — the granted-vs-required
+  // permission diff, plus whatever the platform will admit about its own approval of
+  // sparx's app. Separate from the connection list because it makes a live call PER
+  // account: the list must stay fast, and this is the thing a person opens when a post
+  // failed or when they're waiting on a platform review to land.
+  app.get('/v1/social/readiness', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'admin');
+    const propertyId = await resolveSocialProperty(request);
+    const connections = await checkSocialReadiness(toSocialContext(request), propertyId);
+    return reply.send(ok({ connections }));
+  });
+
+  app.get('/v1/social/readiness/:id', async (request, reply) => {
+    await requireSocialModule(request);
+    requireRole(request, 'admin');
+    const { id } = PathId.parse(request.params);
+    const readiness = await checkSocialConnectionReadiness(toSocialContext(request), id);
+    if (!readiness) throw notFound('connection', id);
+    return reply.send(ok(readiness));
   });
 
   // Performance rollup over a window — per-account totals + best posts (docs/
@@ -114,16 +155,14 @@ const socialRoutes: FastifyPluginAsync = async (app) => {
     return reply.send(ok(insights));
   });
 
-  // The require-approval default (docs/133 §15.3) — who-may-publish is itself a
-  // controlled setting; admin-only, since it governs the brand's live accounts.
+  // The module's two tenant-wide settings — the require-approval default (docs/133
+  // §15.3) and whether outbound links are tagged for attribution. Admin-only: one governs
+  // what reaches the brand's live accounts, the other what a customer sees in a URL.
   app.patch('/v1/social/settings', async (request, reply) => {
     await requireSocialModule(request);
     requireRole(request, 'admin');
-    const { requireApproval } = SettingsBody.parse(request.body);
-    const settings = await setSocialRequireApproval(
-      toSocialContext(request).tenantId,
-      requireApproval
-    );
+    const patch = SettingsBody.parse(request.body);
+    const settings = await updateSocialSettings(toSocialContext(request).tenantId, patch);
     return reply.send(ok({ settings }));
   });
 

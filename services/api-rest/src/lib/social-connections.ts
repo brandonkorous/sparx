@@ -12,13 +12,15 @@ import type { SocialPlatform, SocialTargetRef } from '@sparx/social';
 // connect surface's single import. The provisioning below (upsert / target-sync /
 // toggle / disconnect) is adapter- + crypto-bound and stays in api-rest.
 import {
+  checkSocialConnectionReadiness,
+  checkSocialReadiness,
   listSocialConnections,
   type SocialConnectionView,
   type SocialTargetView,
 } from '@sparx/social/service';
 import type { SocialContext } from './social-context.js';
 
-export { listSocialConnections };
+export { listSocialConnections, checkSocialReadiness, checkSocialConnectionReadiness };
 export type { SocialConnectionView, SocialTargetView };
 
 // ── connection upsert ─────────────────────────────────────────────────────────────

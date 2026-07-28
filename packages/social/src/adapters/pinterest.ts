@@ -5,8 +5,10 @@
 //
 // Auth: Pinterest OAuth 2.0. The token endpoint authenticates the app with HTTP Basic
 // (client id/secret); the grant returns a refresh token, so refresh() extends it.
-// Scopes: `boards:read` (list the boards to pin to), `pins:write` (create the Pin),
-// `user_accounts:read` (name the connection).
+// Scopes: `boards:read` (list the boards to pin to), `boards:write` (Pinterest v5
+// requires it to CREATE a pin on a board — pins:write alone yields a 401 "Missing:
+// ['boards:write']"), `pins:write` (create the Pin), `user_accounts:read` (name the
+// connection).
 //
 // Targets: a target is a BOARD. listTargets returns one per board; externalTargetId is
 // the board id, which the publish call pins to.
@@ -37,12 +39,13 @@ import {
   formBody,
   readPlatformCreds,
   requireCreds,
+  splitScopes,
 } from './_http.js';
 
 const AUTH_URL = 'https://www.pinterest.com/oauth/';
 const TOKEN_URL = 'https://api.pinterest.com/v5/oauth/token';
 const API_BASE = 'https://api.pinterest.com/v5';
-const SCOPE = 'boards:read,pins:read,pins:write,user_accounts:read';
+const SCOPE = 'boards:read,boards:write,pins:read,pins:write,user_accounts:read';
 const TITLE_MAX = 100;
 const TOKEN_FALLBACK_SECONDS = 2_592_000; // 30 days (Pinterest access tokens)
 
@@ -116,6 +119,10 @@ export class PinterestAdapter implements SocialAdapter {
     return this.creds() !== null;
   }
 
+  requiredScopes(): string[] {
+    return splitScopes(SCOPE);
+  }
+
   connectUrl(ctx: SocialConnectContext): string {
     const { clientId } = requireCreds(this.creds(), this.name);
     const params = new URLSearchParams({
@@ -150,7 +157,7 @@ export class PinterestAdapter implements SocialAdapter {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
       expiresInSeconds: expiresInSeconds(data.expires_in, TOKEN_FALLBACK_SECONDS),
-      scope: data.scope ?? SCOPE,
+      scope: data.scope,
       externalId: user?.username,
       displayName: user?.username ? `@${user.username}` : 'Pinterest',
       avatarUrl: user?.profile_image,
@@ -175,7 +182,7 @@ export class PinterestAdapter implements SocialAdapter {
       // Pinterest keeps the same refresh token unless it rotates one back.
       refreshToken: data.refresh_token ?? refreshToken,
       expiresInSeconds: expiresInSeconds(data.expires_in, TOKEN_FALLBACK_SECONDS),
-      scope: data.scope ?? SCOPE,
+      scope: data.scope,
     };
   }
 

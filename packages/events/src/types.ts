@@ -254,7 +254,23 @@ export type EventType =
   // reach/impressions where the scope allows) and snapshot them into
   // social_post_metrics. Consumed by social-worker; emitted after a publish and by the
   // Insights "Refresh" action (docs/implementation/social.md "Measure").
-  | 'social.metrics.collect';
+  | 'social.metrics.collect'
+  // Check one connection's grant: refresh it ahead of expiry, or flip it to `expired`
+  // when it can no longer be refreshed. Emitted by the api-rest health sweep tick,
+  // CONSUMED by social-worker (the platform call is network I/O and belongs off the
+  // tick). This is what turns a dead account into a visible "reconnect needed" BEFORE
+  // a post is lost, rather than after — docs/social-audit GAP 1.
+  | 'social.connection.check'
+  // A grant stopped working and the tenant has to re-authorize. Published by the
+  // social-worker when a refresh fails or a platform rejects the token. Consumed by
+  // the notification fan-out; also the hook for the activity feed.
+  | 'social.connection.expired'
+  // Pull new comments / mentions / reviews / messages for one destination into the
+  // engagement inbox. Emitted by the api-rest inbox sweep, consumed by social-worker.
+  | 'social.inbox.sync'
+  // Someone at the business replied to an inbox item; send that reply to the platform.
+  // Emitted by api-rest when a reply is composed, consumed by social-worker.
+  | 'social.inbox.reply';
 
 /** Payload for `domain.purchased`. Consumed by the domain-worker to poll DNS
  *  propagation and mark the domain active once resolved (docs/24 §4 step 5). */
