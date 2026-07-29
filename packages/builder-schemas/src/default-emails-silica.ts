@@ -31,9 +31,11 @@ import {
   copyBlock,
   detailPanel,
   emailDoc,
+  featureList,
   heading,
   itemsTable,
   para,
+  text,
   when,
   type DetailStatus,
 } from './silica-email-kit';
@@ -45,9 +47,26 @@ const welcomeCustomer = (): SectionNode[] => [
   copyBlock([
     heading('Welcome to {{site.name}}'),
     para(
-      'Hi {{customer.firstName ?? "there"}} — thanks for creating an account. You’re all set: browse the latest, track your orders, and check out faster every time.'
+      'Hi {{customer.firstName ?? "there"}}, thanks for creating an account — we’re glad you’re here. Here’s what you can do now:'
     ),
+  ]),
+  featureList([
+    {
+      title: 'Browse everything new',
+      body: 'See the latest across {{site.name}} the moment it lands.',
+    },
+    {
+      title: 'Track every order',
+      body: 'Follow each order from checkout to your doorstep, all in one place.',
+    },
+    {
+      title: 'Check out in seconds',
+      body: 'Your details are saved, so your next order is just a tap away.',
+    },
+  ]),
+  copyBlock([
     button('Start shopping', '{{site.url}}', 'center'),
+    text('We’re glad you’re here — welcome aboard.', { align: 'center' }),
   ]),
 ];
 

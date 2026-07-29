@@ -330,6 +330,25 @@ export function calloutCard(children: ContentNode[]): SectionNode {
   return { ...section(spaced(children), 18), ...CARD };
 }
 
+/** A vertical list of title→description pairs inside the inset card — the "here's
+ *  what you can do" / benefits block that gives a lifecycle email (welcome, win-back)
+ *  real substance instead of a lone prose line. Each item is a strong title over a
+ *  readable line of prose (real ink, never muted — it's meant to be read), with a
+ *  tight gap inside a pair and a wider one between pairs so the list scans. Same inset
+ *  card chrome as `detailPanel` / `calloutCard` (shared `CARD`). */
+export function featureList(items: { title: string; body: string }[]): SectionNode {
+  const children: LayoutChild[] = [];
+  items.forEach((it, i) => {
+    if (i > 0) children.push(spacer(18));
+    children.push(
+      text(it.title, { size: 17, weight: 'bold' }),
+      spacer(4),
+      text(it.body, { size: 15 })
+    );
+  });
+  return { ...section(children, 22), ...CARD };
+}
+
 // ── The document ─────────────────────────────────────────────────────────────
 
 /** Wrap authored sections in an email body. The brand wordmark header and the legal

@@ -13,7 +13,6 @@ import type {
   EmailDocument,
   EmailFrame,
   HtmlNode,
-  ImageNode,
   SectionNode,
   SpacerNode,
   TextNode,
@@ -84,14 +83,18 @@ function brandBarSection(brand: BrandTokens, id: () => string): SectionNode {
  *  `EmailLayout` chrome (docs/52 §1). */
 function wordmarkSection(brand: BrandTokens, id: () => string): SectionNode {
   const child: ContentNode = brand.logoUrl
-    ? ({
+    ? // A raw <img> capped by HEIGHT, not width: silica's ImageNode exposes only
+      // `width`, so a SQUARE brand mark (a spark, a monogram) at any header-reasonable
+      // width renders just as tall and dominates the email. Capping height keeps a
+      // square mark AND a horizontal wordmark to the same restrained header size, the
+      // aspect ratio preserved by `width:auto`.
+      ({
         id: id(),
-        kind: 'image',
-        src: brand.logoUrl,
-        alt: brand.siteName ?? '',
-        width: 160,
-        align: 'left',
-      } satisfies ImageNode)
+        kind: 'html',
+        html:
+          `<img src="${escapeHtml(brand.logoUrl)}" alt="${escapeHtml(brand.siteName ?? '')}" ` +
+          `height="40" style="height:40px;width:auto;max-height:40px;display:block;border:0;outline:none;text-decoration:none" />`,
+      } satisfies HtmlNode)
     : ({
         id: id(),
         kind: 'text',
