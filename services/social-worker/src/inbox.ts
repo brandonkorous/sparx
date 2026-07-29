@@ -80,6 +80,11 @@ async function resolveTargetContext(
 
   const adapter = getSocialAdapter(target.platform as SocialPlatform);
   if (!adapter) return null;
+  // OUR app credentials are missing on this process. Bail before resolveSocialAuth, whose
+  // refresh would throw requireCreds() out of this function entirely — past syncInbox's
+  // try/catch, into the handler, and back as a 500 for Pub/Sub to redeliver five times
+  // over something no retry can fix.
+  if (adapter.isConfigured() !== true) return null;
 
   const auth = await resolveSocialAuth(tenantId, target.connection, adapter);
   if (!auth) return null;
@@ -119,7 +124,15 @@ export async function syncInbox(
   }
 
   const ctx = await resolveTargetContext(tenantId, socialTargetId);
-  if (!ctx) return { socialTargetId, fetched: 0, created: 0, result: 'skipped' };
+  if (!ctx) {
+    // Stamp the cursor, for the same reason the `unsupported` path below does: a
+    // destination we cannot resolve right now (platform not configured, account
+    // disconnected, adapter gone) is otherwise re-picked by the sweep every two minutes
+    // forever, since the scan orders by `inbox_synced_at NULLS FIRST`. Stamping demotes
+    // it to the ordinary 15-minute cadence — it still gets re-checked, just not hammered.
+    await touchSynced(tenantId, socialTargetId);
+    return { socialTargetId, fetched: 0, created: 0, result: 'skipped' };
+  }
 
   // The adapter may publish fine and still have no permission to read comments.
   if (!ctx.adapter.listInbox || ctx.adapter.supportsInbox?.() !== true) {

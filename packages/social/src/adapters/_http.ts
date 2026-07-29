@@ -43,12 +43,40 @@ export function parseRetryAfter(res: Response): number | undefined {
   return Math.min(Math.max(0, Math.round((date - Date.now()) / 1000)), 86_400);
 }
 
+/**
+ * A platform is not configured on THIS process — sparx's own app id/secret is absent
+ * from the environment. Distinct from `HttpError` because the platform was never
+ * reached: there is no status, and no amount of retrying will conjure a secret into
+ * the env. Only an ops change clears it.
+ *
+ * It gets its own class purely so {@link isRetryableError} can tell it apart, because
+ * the default for a non-HttpError is "retry" — see the note there.
+ */
+export class PlatformNotConfiguredError extends Error {
+  readonly platform: string;
+
+  constructor(platform: string) {
+    super(`${platform} platform OAuth credentials are not configured (set the app id/secret env).`);
+    this.name = 'PlatformNotConfiguredError';
+    this.platform = platform;
+  }
+}
+
 /** Whether a publish error is worth retrying. A `429` (rate-limited) or any `5xx` is
  *  transient → retry; every other 4xx (400/401/403/404/422 …) is a permanent rejection
  *  the same request will never clear → fail fast, don't burn MAX_ATTEMPTS on it. A
  *  non-HttpError (network drop, timeout, bug) has no status → retry, since those are
- *  usually transient. */
+ *  usually transient.
+ *
+ *  A missing app credential is the one non-HttpError that is emphatically NOT transient,
+ *  and the default above got it exactly backwards. On 2026-07-28 the social-worker was
+ *  running without TIKTOK_CLIENT_KEY: every sweep that touched TikTok threw here, was
+ *  called retryable, returned 500, and was redelivered 5× into the DLQ — then dispatched
+ *  again on the sweep's own cadence, because a check that never reaches a verdict never
+ *  stamps its cursor. ~81 messages an hour, ~700 failures, indefinitely, none of which
+ *  could ever have succeeded. Retrying an unset environment variable is not resilience. */
 export function isRetryableError(e: unknown): boolean {
+  if (e instanceof PlatformNotConfiguredError) return false;
   if (e instanceof HttpError) return e.status === 429 || e.status >= 500;
   return true;
 }
@@ -75,16 +103,14 @@ export function readPlatformCreds(idVar: string, secretVar: string): PlatformOAu
   return { clientId, clientSecret };
 }
 
-/** Assert the platform creds are present (the connect/publish path requires them). */
+/** Assert the platform creds are present (the connect/publish path requires them).
+ *  Throws {@link PlatformNotConfiguredError} so the caller retries nothing — the message
+ *  is unchanged, only its retry classification. */
 export function requireCreds(
   creds: PlatformOAuthCreds | null,
   platformName: string
 ): PlatformOAuthCreds {
-  if (!creds) {
-    throw new Error(
-      `${platformName} platform OAuth credentials are not configured (set the app id/secret env).`
-    );
-  }
+  if (!creds) throw new PlatformNotConfiguredError(platformName);
   return creds;
 }
 

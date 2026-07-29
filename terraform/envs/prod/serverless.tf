@@ -807,10 +807,54 @@ module "social_worker_cloudrun" {
       name      = "PINTEREST_APP_SECRET"
       secret_id = "pinterest-app-secret"
     },
-    # The remaining per-platform token-REFRESH client secrets bind here at go-live (one
-    # block per platform, uncommented once its `gcloud secrets versions add` lands) — see
-    # the SECRET SEQUENCING checklist in this service's header comment. Left unbound now
-    # because a Cloud Run env-from-secret binding requires an existing secret version.
+    # TikTok, Meta and Threads bound 2026-07-28 after an active retry storm proved the
+    # worker needs them at RUNTIME, not just at connect time.
+    #
+    # The gap was invisible until the RLS scan fix (migration 20270126000000) switched the
+    # background sweeps on: with them dead, nothing here ever called a platform outside a
+    # publish. The moment health/metrics/inbox started dispatching, every TikTok-touching
+    # event threw "TikTok platform OAuth credentials are not configured" — ~81 distinct
+    # messages an hour, each redelivered 5× to the DLQ, and each re-dispatched forever by
+    # the sweep that raised it, because a failed check never stamps its cursor.
+    #
+    # Publish itself uses the per-tenant Bearer token; these are the APP half, needed by
+    # every adapter's refresh() (TikTok's access token lives ~24h, so its refresh is
+    # routine, not an edge case) and by the health sweep's re-exchange. Bound from Secret
+    # Manager rather than env_vars because the id and the secret are provisioned together.
+    {
+      name      = "TIKTOK_CLIENT_KEY"
+      secret_id = "tiktok-client-key"
+    },
+    {
+      name      = "TIKTOK_CLIENT_SECRET"
+      secret_id = "tiktok-client-secret"
+    },
+    # Without these the health sweep cannot re-exchange a Meta token, so a grant that is
+    # fine today flips to `expired` around day 58 and asks the tenant to reconnect for no
+    # reason. META_INBOX_ENABLED above is useless without them.
+    {
+      name      = "META_APP_ID"
+      secret_id = "meta-app-id"
+    },
+    {
+      name      = "META_APP_SECRET"
+      secret_id = "meta-app-secret"
+    },
+    # Threads uses its OWN app id + secret from the "Access the Threads API" use case —
+    # graph.threads.net rejects the Meta pair. Same distinction as k8s/scripts/sync-secrets.ps1.
+    {
+      name      = "THREADS_APP_ID"
+      secret_id = "threads-app-id"
+    },
+    {
+      name      = "THREADS_APP_SECRET"
+      secret_id = "threads-app-secret"
+    },
+    # LinkedIn + Google (GBP/YouTube) stay unbound: `linkedin-client-id/secret` and
+    # `google-oauth-client-id/secret` exist in Secret Manager but have NO enabled version,
+    # and a Cloud Run env-from-secret binding requires one — adding these blocks before
+    # `gcloud secrets versions add` lands would fail the apply. Bind each pair as its
+    # version arrives; see the SECRET SEQUENCING checklist in this service's header.
   ]
 
   pubsub_topic                 = "social.post.due"

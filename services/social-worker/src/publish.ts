@@ -215,6 +215,27 @@ export async function drainPost(
       continue;
     }
 
+    // OUR app credentials are missing on THIS process. Fail the destination — the post
+    // genuinely did not go out and the queue must say so — but do NOT touch the
+    // connection: the tenant's grant is fine, and the expiry branch below would tell them
+    // to reconnect an account that never broke. The message is written for the person
+    // reading the queue, not for the log; `isConfigured()` is checked here rather than
+    // letting requireCreds() throw precisely so that distinction survives.
+    if (adapter.isConfigured() !== true) {
+      logger.error(
+        { targetId: t.id, platform: t.platform },
+        'platform OAuth app credentials missing on the worker — cannot publish'
+      );
+      await recordFailure(
+        t.id,
+        t.platform,
+        t.attemptCount,
+        'failed',
+        `Posting to ${adapter.name} isn't switched on yet. Nothing is wrong with your account — we're finishing the setup on our side.`
+      );
+      continue;
+    }
+
     let auth;
     try {
       auth = await resolveSocialAuth(tenantId, target.connection, adapter);

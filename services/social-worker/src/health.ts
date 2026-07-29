@@ -160,6 +160,28 @@ export async function checkConnection(
     return { connectionId, result: 'skipped' };
   }
 
+  // OUR app credentials are missing on THIS process — the tenant's grant is fine.
+  //
+  // Checked here, before any platform call, because every path below would otherwise
+  // reach requireCreds() and throw. That throw is correctly non-retryable (nothing
+  // clears an unset env var), and non-retryable in the refresh/probe handlers below
+  // means `markConnectionExpired` — which would tell the tenant to reconnect an account
+  // that never broke, for a fault that reconnecting cannot fix. A false "your TikTok
+  // stopped working" is worse than no check at all.
+  //
+  // So: leave the connection ACTIVE, stamp the cursor so the sweep stops re-dispatching
+  // this every 15 minutes, and log at error — this is an ops problem, and the log is the
+  // only place it can surface. (2026-07-28: the worker ran without TIKTOK_CLIENT_KEY and
+  // this loop was re-armed ~81×/hour.)
+  if (adapter.isConfigured() !== true) {
+    await touchChecked(tenantId, connectionId);
+    logger.error(
+      { connectionId, platform: connection.platform },
+      'platform OAuth app credentials missing on the worker — cannot health-check; connection left active'
+    );
+    return { connectionId, result: 'skipped' };
+  }
+
   let accessToken = decryptSocialToken(connection.accessTokenEnc);
   let refreshed = false;
 

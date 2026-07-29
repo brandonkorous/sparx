@@ -75,7 +75,12 @@ export {
 // Error classification for the publish drain: a status-bearing error + the predicate the
 // worker uses to retry transient failures (5xx / 429 / network) but fail permanent ones
 // (4xx) fast, instead of burning every attempt on a request that will never succeed.
-export { HttpError, isRetryableError, parseRetryAfter } from './adapters/_http.js';
+export {
+  HttpError,
+  PlatformNotConfiguredError,
+  isRetryableError,
+  parseRetryAfter,
+} from './adapters/_http.js';
 
 // Per-connection pacing for the publish fan-out: a token bucket plus an explicit
 // back-off gate that honours a platform's `Retry-After`, so one destination hitting a

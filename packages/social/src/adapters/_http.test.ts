@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest';
 
-import { HttpError, isRetryableError, splitScopes } from './_http.js';
+import {
+  HttpError,
+  PlatformNotConfiguredError,
+  isRetryableError,
+  requireCreds,
+  splitScopes,
+} from './_http.js';
 
 // The publish drain retries TRANSIENT failures (5xx / 429 / network) up to MAX_ATTEMPTS
 // but must FAIL a permanent 4xx immediately — a bad image, caption, or revoked token
@@ -22,6 +28,26 @@ describe('isRetryableError', () => {
     expect(isRetryableError(new Error('fetch failed'))).toBe(true);
     expect(isRetryableError(new TypeError('network error'))).toBe(true);
     expect(isRetryableError('a bare string')).toBe(true);
+  });
+
+  // The one non-HttpError that must NOT inherit the retry-by-default above. An unset
+  // env var cannot be waited out: on 2026-07-28 the worker ran without
+  // TIKTOK_CLIENT_KEY and every sweep touching TikTok returned 500, was redelivered
+  // 5× into the DLQ, then re-dispatched on the sweep's own cadence — ~700 failures an
+  // hour that could never have succeeded.
+  it('does NOT retry a missing platform credential', () => {
+    expect(isRetryableError(new PlatformNotConfiguredError('TikTok'))).toBe(false);
+  });
+
+  it('requireCreds throws the non-retryable form, message unchanged', () => {
+    expect(() => requireCreds(null, 'TikTok')).toThrow(PlatformNotConfiguredError);
+    expect(() => requireCreds(null, 'TikTok')).toThrow(
+      /TikTok platform OAuth credentials are not configured/
+    );
+    expect(requireCreds({ clientId: 'a', clientSecret: 'b' }, 'TikTok')).toEqual({
+      clientId: 'a',
+      clientSecret: 'b',
+    });
   });
 
   it('carries the status on the error for logging', () => {
