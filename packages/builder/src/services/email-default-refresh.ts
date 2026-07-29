@@ -66,6 +66,10 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
   'welcome-customer': new Set([
     'f0bab7ccfdcd7821f8bbc8385faa7c08beb000889cc6ae4a01c92272e0342308',
     '5e068708036c840526d04d75509e26b2a02229543c5567f3ff4df06d36dbaba2',
+    // Outgoing (2026-07-29): the sparse "heading + para + button" welcome that was the
+    // last SHIPPED default, replaced now by the module-aware orientation body (a
+    // `featureList` + per-module `moduleFeature` cards). Append so pristine tenants refresh.
+    '9e617bb9b2a8265fb8ccb6240ac799188470f2956dfcab622c6a9de3683940c9',
   ]),
   'win-back': new Set([
     'ef8658cbd7ce2f8cb29c1d7065dab56b38ddd8528bf8949c9c9090c7fc01f183',
@@ -78,6 +82,9 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
   'post-purchase-review': new Set([
     '7dda0d718e85cc2c11313fb63f3fa3a5d87aa4438d24eea9008c1a8069413271',
     'e3b0908f24f3139e2a09088304fcdc98b8cd24bf98021b5c25d0d42fc9faa581',
+    // Outgoing (2026-07-29): pre-cross-sell body, replaced by the same + a commerce-gated
+    // "More to explore" cross-sell (marketing send, rides under the unsubscribe footer).
+    '820b636ac7f2d0b088f4d938734dda68ae55ce94186c36558d3e78d157608ec8',
   ]),
   'b2b-account-approved': new Set([
     '441bf1990f64208d59bebe4fd11e905bf8e1828766e4a9414b142992d456dd3c',
@@ -122,12 +129,21 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
   'order-confirmation': new Set([
     'acccea740153987a3686c2d8f20f0a716fe05c3070b2219e51c500251b1680f3',
     'bfc3f25b44336ed6a4a26c5a192aa2bb01d30c896f6632ef4b6cd04ac1ba8550',
+    // Outgoing (2026-07-29): pre-cross-sell body, replaced by the same + a single
+    // commerce-gated "While you wait" nudge under the transactional content (CAN-SPAM
+    // primary-purpose — the order is still the email's point).
+    'fb1c69280d78ec34450b36aaaa2006e010543075fb8b53b666cca306999b5782',
   ]),
   'shipping-confirmation': new Set([
     'c9d48b50aaf7363fc5f029b24d1ec49476259ba20c7a29a746a47707d4162fdc',
     '488c49bdbb7abef2929bfc28e41648889527534cb7dd1576c760c2bf2019f223',
   ]),
-  'order-delivered': new Set(['92833d0d5e436a08bf2fa8aea7036704d1e7892b8936e34a63865e1085a0ba23']),
+  'order-delivered': new Set([
+    '92833d0d5e436a08bf2fa8aea7036704d1e7892b8936e34a63865e1085a0ba23',
+    // Outgoing (2026-07-29): pre-cross-sell body, replaced by the same + a commerce-gated
+    // "Ready for your next find?" nudge (delivery is the natural re-purchase moment).
+    '79be08e9f7e15517cd5e32b4db8741f7f6ec2749b842a61aad79ee527bbf4ed2',
+  ]),
   'order-cancelled': new Set(['1e15199075b2e949414fb79039ab1b41aaf432acc81a0b56499d79a3d625d990']),
   'order-refunded': new Set(['ecb62f9de7b8a7f3a735c8db9b8e958d3375a069844b5c8dd17cfbd0c05a60b6']),
   'payment-failed': new Set(['58d0a758e8855642c53cf4816d0334d347d13364b73793297b8e1911803d83f9']),

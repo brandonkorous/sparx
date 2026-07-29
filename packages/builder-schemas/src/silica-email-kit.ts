@@ -27,7 +27,9 @@ import type {
   ContentNode,
   DividerNode,
   EmailDocument,
+  ImageNode,
   LayoutChild,
+  LinkNode,
   SectionNode,
   SpacerNode,
   TextNode,
@@ -347,6 +349,137 @@ export function featureList(items: { title: string; body: string }[]): SectionNo
     );
   });
   return { ...section(children, 22), ...CARD };
+}
+
+/** A single feature card shown only when a MODULE is active — the module-aware twin of
+ *  `featureList` for orientation copy ("here's what you can do") that must reflect what
+ *  the business actually offers: a `commerce` card for a seller, a `scheduling` card for
+ *  one that takes bookings, a `cms` card for a publisher. It's one `featureList` item
+ *  wearing the same inset CARD, with a `modules.<slug>` value-gate on the section — and
+ *  because a section fills no default field, that gate acts as pure show/hide via the
+ *  same `hideWhenEmpty` drop as `when()`, so the card vanishes for a tenant without the
+ *  module. `slug` is a `@sparx/modules` `ModuleSlug` (mirrored in the `modules` email
+ *  source, binding.ts); the resolver (`resolveModules`) fills '' for an inactive module,
+ *  which is what triggers the drop. Stacking several reads as one grouped list. */
+export function moduleFeature(slug: string, title: string, body: string): SectionNode {
+  return { ...featureList([{ title, body }]), data: { kind: 'value', ref: `modules.${slug}` } };
+}
+
+/** A module-gated cross-sell callout — the "keep going" nudge at the tail of an email:
+ *  a centered heading, a line of copy, and one button, inside the shared inset CARD, all
+ *  shown only when `slug`'s module is active (the same `modules.<slug>` value-gate as
+ *  `moduleFeature`). It carries NO product/entity data of its own — just `{{site.*}}`
+ *  tokens in the copy/href — so it drops cleanly into any email (transactional or
+ *  marketing) without adding a data dependency: for a non-commerce tenant the whole card
+ *  vanishes. Whether it belongs in a given email is a COMPLIANCE decision, not a
+ *  rendering one — in a marketing send (win-back / abandoned-cart / post-purchase-review)
+ *  it rides under the unsubscribe footer; in a transactional send it's only ever a single
+ *  incidental block under genuinely transactional content (CAN-SPAM primary-purpose). */
+export function crossSell(
+  slug: string,
+  title: string,
+  body: string,
+  ctaLabel: string,
+  href: string
+): SectionNode {
+  const card = calloutCard([
+    text(title, { size: 20, weight: 'bold', align: 'center' }),
+    text(body, { align: 'center' }),
+    button(ctaLabel, href, 'center'),
+  ]);
+  return { ...card, data: { kind: 'value', ref: `modules.${slug}` } };
+}
+
+/** A bound image — its `src` fills from `ref` (an image node's default bindable field),
+ *  so inside a `collection` repeat `image('imageUrl')` shows each item's own picture. An
+ *  empty value drops the node (`hideWhenEmpty`), so an item with no image leaves no broken
+ *  frame. `width` is pixels (the projector clamps to the body width). */
+export function image(
+  ref: string,
+  opts: { width?: number; align?: ImageNode['align'] } = {}
+): ImageNode {
+  return {
+    id: sid('image'),
+    kind: 'image',
+    src: '',
+    alt: '',
+    width: opts.width ?? 120,
+    align: opts.align ?? 'left',
+    data: { kind: 'value', ref },
+  };
+}
+
+/** A clickable GROUP (silicaui 0.38 `LinkNode`) — one destination shared by its children,
+ *  so a repeated product card can deep-link to its OWN record. `hrefRef` binds the target
+ *  per item (`link`'s default bindable field IS `href`, so a bare `value` bind fills it):
+ *  inside a `commerce.product` repeat, `link('url', […])` sends each card to that product's
+ *  page. The projector distributes the anchor onto each child (image → `<a><img>`, text →
+ *  wrapped `<a>`) rather than one block-level `<a>` — the only form Outlook honours. */
+export function link(hrefRef: string, children: ContentNode[]): LinkNode {
+  return {
+    id: sid('link'),
+    kind: 'link',
+    href: '',
+    children,
+    data: { kind: 'value', ref: hrefRef },
+  };
+}
+
+/**
+ * A product rail — a heading, a repeating grid of clickable product cards (image · title ·
+ * price, each linking to its own PDP), and a "shop all" button. The commerce twin of
+ * `itemsTable`: it binds the `commerce.product` collection the send resolves once
+ * (`resolveProducts`, display-ready title/priceLabel/imageUrl/url), and each card is a
+ * `link` bound to the item's `url` so every card goes to the right place.
+ *
+ * THREE sections, for the same reason `itemsTable` splits: a `collection` repeats its
+ * section's children per item, so the heading and the button live in their OWN
+ * (non-repeating) sections and only the middle card section repeats. The card is an
+ * image column beside a title/price column, both wrapped in the per-item `link`.
+ *
+ * Only ever placed in emails a selling tenant sends (order confirmation, delivered, review)
+ * — where an order guarantees the catalog is non-empty — so it needs no module gate and
+ * never renders the empty-collection placeholder.
+ */
+export function productRail(opts: {
+  heading: string;
+  ctaLabel: string;
+  ctaHref: string;
+  ref?: string;
+}): SectionNode[] {
+  const ref = opts.ref ?? 'commerce.product';
+  // Two columns summing to 96%, NOT 100% — the projector renders columns as
+  // inline-block and the whitespace between them adds a space's width, so a full 100%
+  // wraps the price column onto its own line (same slack `itemsTable` leaves). A compact
+  // thumbnail (a cart-line rhythm, not a full-bleed hero) keeps a rail of several
+  // products scannable rather than a screen-height stack.
+  const COL = { image: 16, text: 80 } as const;
+  const headingSection = section([text(opts.heading, { size: 20, weight: 'bold' })], 16);
+  // The row AND a trailing spacer are BOTH children of the collection section, so the
+  // repeat emits `[row, gap]` per product — giving each card breathing room. Without the
+  // spacer the square thumbnails stack edge-to-edge and read as one continuous strip.
+  const cardRow: SectionNode = {
+    ...section(
+      [
+        columns([
+          column(COL.image, [link('url', [image('imageUrl', { width: 64 })])]),
+          column(COL.text, [
+            link('url', [
+              text('', { ref: 'title', weight: 'semibold', size: 16 }),
+              spacer(4),
+              text('', { ref: 'priceLabel', size: 15, colorRole: 'primary' }),
+            ]),
+          ]),
+        ]),
+        spacer(18),
+      ],
+      10
+    ),
+    align: 'left',
+    data: { kind: 'collection', ref },
+  };
+  const cta = section([button(opts.ctaLabel, opts.ctaHref, 'center')], 8);
+  return [headingSection, cardRow, cta];
 }
 
 // ── The document ─────────────────────────────────────────────────────────────

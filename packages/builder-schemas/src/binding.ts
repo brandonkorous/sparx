@@ -50,6 +50,25 @@ export interface DataSource {
   /** The record type each item is, e.g. `post`, `product`, `list`. */
   recordType: string;
   fields: FieldSchema[];
+  /**
+   * HOW MANY records this array source actually yields — the cap the storefront
+   * fetches to, and therefore the number of cards the block will really render.
+   * Omitted on `object` sources (always one) and on the PAGINATED ones, whose
+   * length is a page size the route owns, not a property of the source.
+   *
+   * It exists because the CANVAS had no way to know. `buildPreviewRoot` built a
+   * flat three placeholder records for every array source, so a rail capped at 8
+   * previewed as 3 and a grid page of 24 previewed as 3 — the author laid out a
+   * block against a record count the live page never shows. The count is host
+   * knowledge (the fetch decides it), so it belongs on the source description
+   * that both sides already read, not duplicated as a constant in each.
+   *
+   * NOT an author knob. Which source a block binds is the author's choice; how
+   * many that source yields is ours. A per-instance override ("show 4 of these
+   * 12") needs an options field on silica's collection binding, which the engine
+   * does not have — see docs/139.
+   */
+  maxItems?: number;
 }
 
 // The full set of bindable sources (named to avoid clashing with node.ts's
@@ -735,6 +754,39 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('body', 'Body'),
       text('ctaLabel', 'CTA label'),
       text('ctaHref', 'CTA link'),
+    ],
+  },
+  {
+    // Which of the tenant's modules are ACTIVE, as a per-send truthy map: each field
+    // resolves to the slug string when that module is on and '' when it's off. It exists
+    // so a default (or an author) can gate a block on a capability the business actually
+    // has — `when('modules.commerce', […])` shows a "shop now" nudge only to a selling
+    // business, `when('modules.scheduling', …)` a "book again" nudge only to one that
+    // takes bookings. The '' → drop is the standard `hideWhenEmpty` mechanism every
+    // other `when()` already uses. Resolved in api-rest (`resolveModules` →
+    // `listEnabledModules`); the canonical slug list lives in `@sparx/modules`
+    // (`ModuleSlug`) — this mirrors it as a bindable vocabulary without taking a
+    // dependency edge on that package. A per-SEND source (no recipient needed), so it's
+    // never a personalization root.
+    key: 'modules',
+    label: 'Active modules',
+    module: 'site',
+    cardinality: 'object',
+    recordType: 'modules',
+    fields: [
+      text('builder', 'Site builder active'),
+      text('commerce', 'Commerce active'),
+      text('cms', 'Content active'),
+      text('crm', 'Customers active'),
+      text('email', 'Email active'),
+      text('b2b', 'Wholesale active'),
+      text('invoicing', 'Invoicing active'),
+      text('dropship', 'Dropship active'),
+      text('inventory', 'Inventory active'),
+      text('chat', 'Chat active'),
+      text('ai', 'AI active'),
+      text('scheduling', 'Scheduling active'),
+      text('social', 'Social active'),
     ],
   },
 ];

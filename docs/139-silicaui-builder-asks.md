@@ -1,8 +1,15 @@
-# 139 — silicaui-builder: the open asks (ANSWERED in 0.36.0)
+# 139 — silicaui-builder: the asks (ALL ANSWERED — 1–11 in 0.36.0/0.37.0, §12 in 0.38.0)
 
-**Version:** 2.2.0
+**Version:** 2.4.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-29
+
+> ## ⚑ §12 SHIPPED IN `0.38.0` — raised and answered the same day (2026-07-29)
+>
+> **[§12 — per-instance options on a collection binding](#12--per-instance-options-on-a-collection-binding)**
+> is the newest ask and is already installed: a repeat now carries an author-set `limit`, so "show 4
+> of these products" is a number in the inspector rather than a source the host had to pre-cap. The
+> eleven below it were answered in `0.36.0`/`0.37.0`. Nothing in this register is open.
 
 > ## ⚑ ALL ELEVEN WERE ANSWERED AND SHIPPED IN `0.36.0` (2026-07-28)
 >
@@ -57,9 +64,11 @@
 > get the same builder from. If an answer only fits sparx, it belongs in the host, not the engine.
 
 **Originally verified against** `0.35.0`, the version pinned when these were written. **Resolved in
-`0.36.0`, with §3 and §5 extended in `0.37.0`** — which is what `pnpm-workspace.yaml` now pins.
-Every resolution in the table above was confirmed by reading the shipped `.d.ts` and bundle, not
-the changelog: 0.37.0 was diffed against the installed 0.36.0 tree before the catalog was moved.
+`0.36.0`, with §3 and §5 extended in `0.37.0` and §12 in `0.38.0`** — which is what
+`pnpm-workspace.yaml` now pins. Every resolution in the table above was confirmed by reading the
+shipped `.d.ts` and bundle, not the changelog, and each bump was diffed against the installed tree
+before the catalog was moved — including the plugin CSS, since §9 is the standing proof that a
+patch release can repaint live tenant sites.
 
 ---
 
@@ -380,6 +389,95 @@ into tenant sites by default.
 
 Either drop the part from those two blocks upstream, or sparx hides them via `catalog().hide` and
 ships replacements. Worth settling upstream, since WizeWorks owns both sides.
+
+---
+
+## 12 — Per-instance options on a collection binding
+
+**Status: ANSWERED — shipped in `0.38.0` (2026-07-29), installed the same day.**
+
+Delivered exactly as asked: `limit?: number` on the collection binding, `applyCollectionLimit`
+in the resolve walk, a `data-sui-repeat-limit` attribute on render, and an inspector number field
+(`testId: "data-limit"`) beside the source picker. The `@wizeworks/silicaui` plugin source is
+**byte-identical** to `0.37.0`, so unlike §9 this bump repaints nothing on live tenant sites.
+
+One detail silicaui got right that the ask did not specify: the field holds the **raw string**, not
+a parsed number, so an empty box means "no limit" (placeholder "All") and survives a keystroke that
+leaves it momentarily blank — `0` and `NaN` both fail to express that.
+
+**Consequence for the host:** the engine trims per node at render, so `buildPreviewRoot` only has
+to put a source's NATURAL yield in the root (`DataSource.maxItems`) and the canvas count follows
+the author's limit for free. The remaining host work is the storefront's fetch — reading `limit`
+off the tree during the walk `collectSilicaSourceNeeds` already does, so a landing page capped at 4
+requests 4 instead of requesting 30 and discarding 26. The counted-sources fallback below is
+**not** being built.
+
+### The ask
+
+Let a collection binding carry author-set options, starting with one:
+
+```ts
+| { kind: "collection"; ref: string; omitWhenEmpty?: boolean; limit?: number }
+```
+
+…surfaced in the inspector as a number field beside the existing source picker, and honoured by
+`resolveTree` (a resolved collection longer than `limit` renders its first `limit` items).
+
+### Why the catalog cannot answer it
+
+A host's `DataSource` catalog says what a source **is**. `limit` says how much of it **this
+instance** wants. Those are different questions, and today they share one field — the ref — so
+only the first can be asked.
+
+The case is a landing page. A tenant with 30 products wants a strip of 4 above the fold, the
+`/shop` grid showing a full page, and a cross-sell rail of 12 on the product page. Same source,
+three counts, and no way to say so. Today the count is whatever the host decided when it fetched,
+which means it is uniform per source across the entire site.
+
+### Why the obvious workaround is a trap
+
+Encode it in the ref — `commerce.product|limit=4` — and let the host parse it. `resolveTree` never
+parses refs, so this looks free.
+
+It isn't, because `scopeAt` **does** read the ref: it narrows the bindable fields for every
+descendant by matching an ancestor's `data.ref` against a catalog `key`. A ref that is not exactly
+a catalog key matches nothing, so the scope comes back empty — the author can bind the repeat, and
+then cannot bind `title` or `price` on the card inside it. Nothing errors; the field list is just
+quietly empty. That failure lands on the author, in the inspector, with no way to understand it.
+
+Worth noting the constraint is real and probably right — tying scope to catalog identity is what
+makes per-node availability a pure derivation. It just means the ref is load-bearing and cannot
+double as an options bag.
+
+### Why we cannot prototype it host-side
+
+`DataBinding` is a Zod discriminated union, so an extra key on a `collection` node is **stripped**
+on parse — the same behaviour that bit us on our own `BuilderOpTarget` (a `z.object` silently
+dropped an `id`, filing every named-layout op against the default frame). So a host cannot carry
+its own option through the document and wait for upstream; the field has to exist in the schema or
+it does not survive a round-trip.
+
+### The alternative we are shipping instead, and why it is worse
+
+Enumerate counted sources in the catalog — "Featured products · 4", "· 8", "· 12" — as real keys,
+so `scopeAt` still matches. It works and it needs nothing upstream.
+
+It is worse on both axes we care about. The picker multiplies (four rail sources × three counts =
+twelve entries where there were four) for an audience of **non-technical business owners**, and
+"how many" becomes a fixed menu rather than a number, so the owner who wants 6 picks 4 or 8.
+
+### One thing the ask does NOT need to cover
+
+"Show 4 at a time but load 12" — a carousel — is not a second option. `limit` is how many records
+load; how many are _visible_ is layout (`basis-1/4` on a snap rail), which the class model already
+does. Keeping those two numbers separate is right, and only the first is a binding concern.
+
+### If it ships
+
+The counted sources collapse back to one source per rail, the storefront reads `limit` off the
+tree during the walk it already does (so it fetches 4 rather than fetching 30 and discarding 26),
+and the canvas previews the true count — which is the whole reason this came up: a block that will
+render 12 cards previewing as 3 is an author laying out against a page that does not exist.
 
 ---
 

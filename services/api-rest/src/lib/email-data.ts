@@ -21,6 +21,7 @@
 
 import { withTenant } from '@sparx/db';
 import { discountService, productService } from '@sparx/commerce';
+import { listEnabledModules, type ModuleSlug } from '@sparx/modules';
 import {
   collectSilicaEmailSourceKeys,
   type DataSources,
@@ -908,6 +909,34 @@ async function resolvePromotion(ctx: ServiceContext): Promise<Record<string, str
   };
 }
 
+/** The tenant's active modules as a flat truthy map — `{ commerce: 'commerce',
+ *  scheduling: '', … }` — the `modules` email source (binding.ts). A module that's on
+ *  maps to its own slug (a truthy string); one that's off maps to '' so a
+ *  `when('modules.<x>', …)` block self-drops via the standard `hideWhenEmpty` path.
+ *  Reads the same `listEnabledModules` the dashboard sidebar does (honours the
+ *  BUNDLED_FREE graph, so `invoicing`/`inventory` are on for B2B/Commerce tenants). */
+async function resolveModules(ctx: ServiceContext): Promise<Record<string, string>> {
+  const enabled = new Set<ModuleSlug>(await listEnabledModules(ctx.tenantId));
+  const ALL: ModuleSlug[] = [
+    'builder',
+    'commerce',
+    'cms',
+    'crm',
+    'email',
+    'b2b',
+    'invoicing',
+    'dropship',
+    'inventory',
+    'chat',
+    'ai',
+    'scheduling',
+    'social',
+  ];
+  const out: Record<string, string> = {};
+  for (const m of ALL) out[m] = enabled.has(m) ? m : '';
+  return out;
+}
+
 async function resolveCmsCollection(
   ctx: ServiceContext,
   slug: string,
@@ -1016,6 +1045,9 @@ async function loadEmailSources(
   }
   if (keys.has('promotion')) {
     tasks.push(resolvePromotion(ctx).then((v) => void (out.promotion = v)));
+  }
+  if (keys.has('modules')) {
+    tasks.push(resolveModules(ctx).then((v) => void (out.modules = v)));
   }
   for (const key of keys) {
     if (!key.startsWith('cms.')) continue;

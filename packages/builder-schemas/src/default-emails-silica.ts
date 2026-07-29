@@ -34,7 +34,9 @@ import {
   featureList,
   heading,
   itemsTable,
+  moduleFeature,
   para,
+  productRail,
   text,
   when,
   type DetailStatus,
@@ -43,29 +45,53 @@ import type { SilicaEmailDocument } from './email-silica';
 
 // ── Welcome / lifecycle ──────────────────────────────────────────────────────
 
+// The welcome is the ONE lifecycle "orientation" email (docs/impl transactional-email
+// cross-sell): it stays transactional-safe (no hard sell, one neutral CTA) but its body
+// reflects what the business actually DOES, gated on the active modules. A seller gets
+// the "shop" card, a booking business the "book" card, a publisher the "read" card, a
+// wholesale buyer the "account" card — each self-drops when its module is off. The
+// universal card is always shown, so a tenant with no customer-facing module (or a
+// brand-new one) is never left with a bare heading. Copy is capability guidance, not a
+// promotion, which is what keeps it out of CAN-SPAM's marketing bucket.
 const welcomeCustomer = (): SectionNode[] => [
   copyBlock([
     heading('Welcome to {{site.name}}'),
     para(
-      'Hi {{customer.firstName ?? "there"}}, thanks for creating an account — we’re glad you’re here. Here’s what you can do now:'
+      'Hi {{customer.firstName ?? "there"}}, thanks for creating an account — we’re glad you’re here. Here’s what your account can do:'
     ),
   ]),
+  moduleFeature(
+    'commerce',
+    'Shop the full collection',
+    'Browse everything at {{site.name}} and check out in seconds — your details are saved, so your next order is just a tap away.'
+  ),
+  moduleFeature(
+    'scheduling',
+    'Book online, anytime',
+    'Reserve a time that works for you and manage every booking from your account — no phone tag.'
+  ),
+  moduleFeature(
+    'b2b',
+    'Your wholesale account',
+    'See your account pricing, place orders, and keep track of quotes and invoices in one place.'
+  ),
+  moduleFeature(
+    'cms',
+    'Read the latest',
+    'Catch up on new stories and updates from {{site.name}} the moment they land.'
+  ),
   featureList([
     {
-      title: 'Browse everything new',
-      body: 'See the latest across {{site.name}} the moment it lands.',
+      title: 'Everything in one place',
+      body: 'Your details and history are always a click away — sign in any time to pick up where you left off.',
     },
     {
-      title: 'Track every order',
-      body: 'Follow each order from checkout to your doorstep, all in one place.',
-    },
-    {
-      title: 'Check out in seconds',
-      body: 'Your details are saved, so your next order is just a tap away.',
+      title: 'We’re here to help',
+      body: 'Reply to any email from us and you’ll reach a real person, not a bot.',
     },
   ]),
   copyBlock([
-    button('Start shopping', '{{site.url}}', 'center'),
+    button('Visit {{site.name}}', '{{site.url}}', 'center'),
     text('We’re glad you’re here — welcome aboard.', { align: 'center' }),
   ]),
 ];
@@ -104,6 +130,13 @@ const postPurchaseReview = (): SectionNode[] => [
   ]),
   ...itemsTable('order.items'),
   copyBlock([button('Leave a review', '{{order.reviewUrl}}', 'center')]),
+  // A marketing send (rides under the unsubscribe footer), so a product rail of what
+  // else they might like is welcome — each card deep-links to its own page.
+  ...productRail({
+    heading: 'More to explore',
+    ctaLabel: 'Shop the collection',
+    ctaHref: '{{site.url}}',
+  }),
 ];
 
 const chatSatisfaction = (): SectionNode[] => [
@@ -301,6 +334,14 @@ const orderConfirmation = (): SectionNode[] => [
   ),
   ...itemsTable('order.items'),
   copyBlock([button('View your order', '{{order.statusUrl}}', 'center')]),
+  // A single incidental product rail under fully transactional content (the order is the
+  // email's primary purpose — CAN-SPAM primary-purpose test). Positive moment, so a
+  // gentle "while you wait" rail fits.
+  ...productRail({
+    heading: 'While you wait',
+    ctaLabel: 'Keep shopping',
+    ctaHref: '{{site.url}}',
+  }),
 ];
 
 const shippingConfirmation = (): SectionNode[] => [
@@ -353,6 +394,12 @@ const orderDelivered = (): SectionNode[] => [
     button('Leave a review', '{{order.reviewUrl}}', 'center'),
     para('Something not right? Reply to this email and we’ll make it right.'),
   ]),
+  // Delivery is the natural re-purchase moment — a rail of fresh picks, each deep-linked.
+  ...productRail({
+    heading: 'Ready for your next find?',
+    ctaLabel: 'Shop the collection',
+    ctaHref: '{{site.url}}',
+  }),
 ];
 
 const orderCancelled = (): SectionNode[] => [

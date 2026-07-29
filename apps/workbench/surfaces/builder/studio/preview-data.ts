@@ -108,20 +108,48 @@ function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
   cursor[segs[segs.length - 1] ?? ''] = value;
 }
 
+/** How many placeholder records an array source with no declared cap gets, and the
+ *  ceiling on one that declares a large one.
+ *
+ *  A flat three used to be the answer for every array source, and it made the canvas
+ *  lie about the thing an author is actually laying out. The count now comes from the
+ *  source (`maxItems`), which is what the fetch will really return.
+ *
+ *  BOTH NUMBERS ARE MULTIPLES OF FOUR, and that is the whole point. The catalog grid is
+ *  `@2xl:grid-cols-3 @4xl:grid-cols-4`, so on a wide canvas it resolves to FOUR columns —
+ *  and three records into a four-column grid leaves a permanent hole in the last cell.
+ *  The author sees a ragged row, assumes the grid is mis-sized, and "fixes" a layout that
+ *  was never broken: with 24 real products that row is full. The preview has to fill
+ *  whole rows or it invents a defect the live page does not have.
+ *
+ *  The ceiling is for the UNBOUNDED sources — the paginated catalog grid genuinely shows
+ *  24, but 24 grey tiles is a canvas an author scrolls past to reach the next section,
+ *  and rows 3–6 tell them nothing rows 1–2 didn't. Two full rows reads as "a grid of
+ *  many". Only ever a CEILING: a source that yields fewer previews fewer, so this is
+ *  never the old lie in the other direction.
+ *
+ *  A per-instance `limit` (silicaui 0.38, docs/139 §12) is applied by the ENGINE at
+ *  render, below this — so an author who asks for 3 correctly sees 3, hole included.
+ *  That hole is real; the one this constant removes was not. */
+const DEFAULT_PREVIEW_ITEMS = 4;
+const MAX_PREVIEW_ITEMS = 8;
+
 /** Build placeholder data shaped to the catalog so every offered binding path
- *  resolves: an array source → 3 placeholder records; a record source → one. When
- *  the tenant's real chrome is supplied it OVERRIDES the synthetic `site.identity` +
- *  `site.social`, so the header (Logo/Wordmark) and footer (SocialLinks) preview the
- *  actual brand/links, matching the live site instead of placeholder text. */
+ *  resolves: an array source → as many records as it actually yields (see the caps
+ *  above); a record source → one. When the tenant's real chrome is supplied it
+ *  OVERRIDES the synthetic `site.identity` + `site.social`, so the header
+ *  (Logo/Wordmark) and footer (SocialLinks) preview the actual brand/links, matching
+ *  the live site instead of placeholder text. */
 export function buildPreviewRoot(
   sources: readonly DataSource[],
   site?: SitePreviewData | null
 ): DataSources {
   const root: DataSources = {};
   for (const s of sources) {
+    const count = Math.min(s.maxItems ?? DEFAULT_PREVIEW_ITEMS, MAX_PREVIEW_ITEMS);
     const value =
       s.cardinality === 'array'
-        ? [0, 1, 2].map((i) => buildRecord(s.fields, i))
+        ? Array.from({ length: Math.max(1, count) }, (_, i) => buildRecord(s.fields, i))
         : buildRecord(s.fields, 0);
     setAtPath(root, s.key, value);
   }
