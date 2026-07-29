@@ -8,6 +8,7 @@
 
 export * from './types';
 export * from './attr-binding';
+export * from './conditional';
 export * from './placeholder';
 export * from './commerce';
 export * from './scheduling';

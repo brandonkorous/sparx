@@ -285,10 +285,20 @@ export const SILICA_STYLE_GUIDE = {
       'page and the rest are reachable at `?page=2`. Alongside the array the host publishes ' +
       '`<source>Total` / `<source>Page` / `<source>Pages` / `<source>From` / `<source>To` / `<source>HasMore`, so a ' +
       'bind can say "Showing 25–48 of 137" without any extra fetch. To give visitors the LINKS, place the ' +
-      '`site.pagination` host core under the grid — do not hand-author Previous/Next anchors: there is no conditional ' +
-      'in a bound tree, so an authored pager renders a dead "Previous" on page one and offers a page 25 that is not ' +
-      'there. The core hides itself when everything fits on one page. Its `list` prop names which collection it ' +
-      'drives and is only needed on a page carrying more than one paged list.',
+      '`site.pagination` host core under the grid rather than hand-authoring Previous/Next anchors. The core hides ' +
+      'itself when everything fits on one page, and it owns what an authored pager cannot: building each URL while ' +
+      'preserving the other query parameters, and the `rel="prev"/"next"` + `aria-current` semantics. (Conditional ' +
+      'visibility itself is NO LONGER the obstacle — see `conditionalVisibility` — but a hand-rolled pager still has ' +
+      'to get all of that right on every site.) Its `list` prop names which collection it drives and is only needed ' +
+      'on a page carrying more than one paged list.',
+    conditionalVisibility:
+      'A node can be shown only when its data exists. Give it `data: { kind: "visible", ref }` and the engine drops ' +
+      'the node AND its subtree whenever `ref` resolves to nothing — null, undefined, false, "" or an empty array. ' +
+      'Note `0` counts as PRESENT, so a zero price or a zero count still renders. Add `negate: true` to invert it, ' +
+      'which is how "Sold out" or "No results yet" is authored. A node carries ONE binding, so a value that must ' +
+      'also be DISPLAYED goes on an inner node and the conditional wraps it — that is how the product page shows a ' +
+      'was-price strikethrough only on an actual sale. Do not make the page ROOT conditional: a root that resolves ' +
+      'to "drop" falls back to the unresolved tree, so nothing is hidden.',
     sortAndFilter:
       "A collection binding's `source` takes `sort` (newest | price-asc | price-desc | title-asc | title-desc) and " +
       '`tag` (show only products carrying that tag) alongside `from` / `id` / `limit`. Both are applied by the API, ' +

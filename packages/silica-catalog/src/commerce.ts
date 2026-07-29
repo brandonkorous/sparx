@@ -21,16 +21,17 @@
 //   · a bound image binds a SCALAR `image` ref (the product's primary-image URL);
 //     silica's `fillValue` sets `<img src>` / an `Image` atom's `src` prop from a
 //     string value (an array ref would fill text, not a src).
-//   · a bound ATTRIBUTE (a card's `href`) uses `bindAttr(el, 'href', 'url')` —
-//     silica's `resolveTree` stops resolving a node's children once it fills an
-//     attribute binding, so the value rides a hidden carrier input that
-//     `hoistAttrBindings` lifts + removes before `toHtml`. See `attr-binding.ts`.
-//     Binding an `<a>` with a plain `bind()` would replace its children with the
-//     URL string and destroy the card.
+//   · a bound ATTRIBUTE (a card's `href`) uses `bindAttr(el, 'href', 'url')`, which
+//     sets silica's native `{ kind:'value', ref, attr }`. Binding an `<a>` with a
+//     plain `bind()` would replace its children with the URL string and destroy the
+//     card. Until silicaui 0.36.0 this needed a hidden carrier input, because the
+//     engine stopped resolving children once it filled an attribute binding; it
+//     recurses now. See `attr-binding.ts`.
 
 import { action, atom, behave, bind, el, repeat, type Node } from '@wizeworks/silicaui-html';
 
 import { bindAttr } from './attr-binding';
+import { visibleWhen } from './conditional';
 import { HOST_KEYS, functionalShell, hostCore } from './host-nodes';
 import { PLACEHOLDER_IMAGE } from './placeholder';
 
@@ -251,8 +252,16 @@ export function buyBox(): Node {
                 el('div', 'flex items-baseline gap-3', {
                   children: [
                     bind(el('span', 'text-2xl font-bold text-primary', { text: '$0.00' }), 'price'),
-                    bind(
-                      el('span', 'text-lg text-base-content line-through', { text: '' }),
+                    // The was-price strikethrough, shown ONLY on an actual sale. It used
+                    // to be a bare value bind, which meant a product with no
+                    // `compareAtPrice` still rendered `<span class="line-through">` —
+                    // empty, but a real flex item, so every non-sale product page carried
+                    // a stray `gap-3` after the price. The wrapper is what carries the
+                    // condition (one `data` per node), so the inner span still fills.
+                    visibleWhen(
+                      el('span', 'text-lg text-base-content line-through', {
+                        children: [bind(el('span', '', { text: '' }), 'compareAtPrice')],
+                      }),
                       'compareAtPrice'
                     ),
                   ],
