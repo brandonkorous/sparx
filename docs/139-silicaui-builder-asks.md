@@ -1,8 +1,44 @@
-# 139 — silicaui-builder: the open asks (verified against 0.35.0)
+# 139 — silicaui-builder: the open asks (ANSWERED in 0.36.0)
 
-**Version:** 1.4.0
+**Version:** 2.1.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-28
+**Last Updated:** 2026-07-29
+
+> ## ⚑ ALL ELEVEN WERE ANSWERED AND SHIPPED IN `0.36.0` (2026-07-28)
+>
+> The catalog is bumped, installed, and every capability is adopted on the sparx side. What
+> follows is kept as the RECORD of the asks and their resolutions — read the status table first;
+> the sections below are the original argument, not a to-do list.
+>
+> | §   | Ask                        | Shipped as                                                                              |
+> | --- | -------------------------- | --------------------------------------------------------------------------------------- |
+> | 1   | Per-breakpoint authoring   | Container variants (`@md:`), NOT viewport; `useBreakpoint`, device toggle drives prefix |
+> | 2   | Canvas fidelity            | `rejectViewportVariants` as a liftable POLICY (not the security floor) + `lintTree`     |
+> | 3   | Multi-select               | Batch op API; set-selection deferred                                                    |
+> | 4   | Guides / nudge / keyboard  | Keyboard set only — guides declined as a category error (see below)                     |
+> | 5   | Per-page frame             | `Page.frameId` tri-state + `Site.frames` + `frameFor` / `frameDiagnostic`               |
+> | 6   | Richer image node          | `Image` forwards `srcset`/`sizes`; focal point as a quantized 9-grid, not inline style  |
+> | 7   | Q22 / Q26                  | `resolveNode`'s value branch recurses; editor mode is host-readable                     |
+> | 8   | Inverse ops                | `editor.inverseOf(ops, before)` + `node.setChildren`                                    |
+> | 9   | `autoContent` contrast     | Measured at build time for owned tokens; CSS fallback threshold 0.68 → **0.57**         |
+> | 10  | Conditional visibility     | `{ kind:'visible', ref, negate? }` — **and our premise here was wrong, see §10**        |
+> | 11  | Eyebrows / faded body copy | Both eyebrows dropped; 16 of 19 blocks' `text-base-content/NN` fixed                    |
+>
+> **Two of silicaui's counter-proposals were better than the ask and were taken:** §6's focal point
+> (we asked for something requiring an inline `style`, which our own RULE #1 bans — the quantized
+> 9-grid lowering to `object-*` utilities is class-only and safelistable), and §4's rejection of
+> alignment guides (guides, distribute and pixel nudge are absolute-position concepts; this is a
+> flow + class-only model with no x/y to nudge, and "align these two" is `items-center` on their
+> parent). §2's point that the viewport ban belongs in a liftable policy rather than the
+> security-load-bearing `class-policy.ts` was also correct.
+>
+> **One thing to carry forward: §9 REPAINTS ALREADY-PUBLISHED TENANT SITES.** Theme tokens are CSS
+> custom properties resolved per render, not stamped into published trees, so moving the
+> `-content` threshold changes live text colour wherever a brand colour's lightness sits between
+> 0.57 and 0.68. It is a correctness fix — those combinations were failing AA — but it is visible,
+> and the fallback's "every shipped preset passes at 0.57" has a worst row of 4.51 against a 4.5
+> threshold. That is a coincidence, not a safety margin: the measured build-time path is the
+> guarantee, the constant is best-effort.
 
 > **This supersedes [doc 119](119-silicaui-builder-gap-questions.md).** 119 was written 2026-07-11
 > against silicaui-builder **0.8.0**, and its framing question — _"should sparx adopt silica's
@@ -20,9 +56,9 @@
 > answer a _different_ host — a CMS, an email tool, a static-site generator — could implement and
 > get the same builder from. If an answer only fits sparx, it belongs in the host, not the engine.
 
-**Verified against** `@wizeworks/silicaui-builder@0.35.0` and `@wizeworks/silicaui-html@0.35.0`
-(the versions pinned in `pnpm-workspace.yaml`), by reading the shipped `.d.ts` and bundle. Items
-not re-verified at 0.35.0 say so explicitly.
+**Originally verified against** `0.35.0`, the version pinned when these were written. **Now
+resolved in `0.36.0`**, which is what `pnpm-workspace.yaml` pins — every resolution in the table
+above was confirmed by reading the shipped `.d.ts` and bundle, not the changelog.
 
 ---
 
@@ -126,6 +162,24 @@ comparison set — is currently unrepresentable.
 
 **The seam.** `Page.frameId` (with a null / none option), or a per-page frame-off flag honoured by
 `composeFrame` and `renderSite`.
+
+**Shipped, and one thing the ask did not anticipate.** The engine half landed in 0.36.0
+(`Page.frameId`, `Site.frames`, `frameFor` / `frameDiagnostic`) and sparx stores the choice in one
+tri-state column, `builder_pages.frame_id`.
+
+What the ask missed is that a per-page frame pointer belongs to the **publish lifecycle**, not just
+to storage. The first implementation read `frame_id` live on every storefront render, with no
+stage — which is invisible while nothing can write the column, and becomes a production defect the
+moment an editor can: pressing Save would change the chrome real visitors see, while the page BODY
+they see is still the last published one and the Publish button reports nothing to publish. Chrome
+is the most visible thing on a page, so its pointer gets the same draft/published pair the trees
+have (`published_frame_id`, migration `20270129000000`), written by both publish paths and read by
+stage. `publishState` compares it too, so a chrome-only change lights up Publish rather than going
+live in silence.
+
+The general shape, for anyone adding per-page metadata later: **if a field changes what a visitor
+SEES, it needs a staged counterpart.** A field that only changes what a crawler reads (the SEO
+columns beside this one) can defensibly go live on save; a field that moves the header cannot.
 
 ## 6 — A richer image node
 
@@ -231,6 +285,33 @@ is the thing that gets it wrong, and this one did before it was fixed.
 ---
 
 ## 10 — Conditional visibility: a node that renders only when a condition holds
+
+> ### ⚠ THE PREMISE BELOW WAS FALSE. Corrected 2026-07-28.
+>
+> This section claimed "a silica tree has no way to say show this node only if…" and, elsewhere,
+> that `resolveTree` never DROPS a node. **Both were wrong**, and silicaui was right to push back.
+> `resolve.ts:150-155` has always dropped a node and its whole subtree when the host returns
+> `visible: false`, documented at `resolve.ts:36-44` as "the one conditional-visibility primitive
+> the engine supports, with no expression language attached". It is scope-aware —
+> `resolveBinding(ref, scope)` receives `scope.item` — so the item-scoped Sale-badge argument in
+> the table below does not hold either. An `editing` walk ghosts rather than drops, so the author
+> can still select the node.
+>
+> **I asserted an engine limitation without reading the resolver.** The lesson is the cheap one:
+> the claim was checkable in one file.
+>
+> **What was genuinely missing is narrow** — you could not bind visibility WITHOUT consuming the
+> node's content slot, because a node carries one `data` binding and a bind fills it. That is what
+> `{ kind: 'visible', ref, negate? }` adds, and silicaui was also right to reject the `when` +
+> predicate set (`eq`/`neq`/`gt`/`lt`) I proposed: present/empty is the entire real demand, and a
+> predicate language buys a debugging surface made of invisible sections for cases nobody has yet.
+>
+> **Consequence for slice 23.** I justified making the pagination host core a host core partly on
+> "a bound tree has no conditional, so a hand-authored pager ships a dead Previous on page one".
+> That reason is void — the resolver could have returned `{ visible: false }`. The host core is
+> still right, for the reasons that survive: it builds each URL while preserving the other query
+> parameters, and it owns the `rel="prev"/"next"` + `aria-current` semantics. The MCP authoring
+> vocabulary said the same false thing to agents and has been corrected.
 
 **Priority: high, and it keeps costing us host cores.** A silica tree has no way to say "show this
 node only if…". Every time that need appears, the answer has been to move the whole region into a

@@ -41,6 +41,11 @@ export type { SilicaFrame, SilicaNode, SilicaPage, SilicaSite, SilicaSymbolDef, 
 export interface StoredSilicaSite {
   pages: SilicaPage[];
   frame?: SilicaFrame;
+  /** The NAMED layouts (silicaui 0.37 `Site.frames`) — every layout in the property's
+   *  catalog EXCEPT the live one, which is `frame` above. Keyed by `BuilderLayout.id`,
+   *  which is what `builder_pages.frame_id` stores, so a page's pointer means the same
+   *  thing to the engine and to the storefront without a translation table. */
+  frames?: Record<string, SilicaFrame>;
   symbols?: Record<string, SilicaSymbolDef>;
   theme?: SilicaTheme;
   /** The site's saved-theme LIBRARY (silica `Site.savedThemes`, silicaui 0.16) —
@@ -87,12 +92,18 @@ export const SilicaThemeInput = z.looseObject({
   tokens: z.record(z.string(), z.unknown()),
 }) as unknown as z.ZodType<SilicaTheme>;
 
-/** One tree an op addresses (silicaui `OpTarget`). `frame`/`site` carry no id; `page`/
- *  `symbol` do. The server reads this to key the op log by owner without understanding
- *  the op itself. */
+/** One tree an op addresses (silicaui `OpTarget`). `page`/`symbol` always carry an id;
+ *  `site` never does; `frame` carries one OPTIONALLY. The server reads this to key the
+ *  op log by owner without understanding the op itself.
+ *
+ *  The frame id arrived with silicaui 0.37's NAMED LAYOUTS: absent still means the site's
+ *  default shell, a string names one of `Site.frames`. Accepting it is not cosmetic —
+ *  `z.object` STRIPS unknown keys, so leaving it out would silently drop the id and file
+ *  every named-layout edit against the default frame. The history for two different
+ *  shells would then be one interleaved log that no undo could untangle. */
 export const BuilderOpTarget = z.union([
   z.object({ scope: z.literal('page'), id: z.string().min(1) }),
-  z.object({ scope: z.literal('frame') }),
+  z.object({ scope: z.literal('frame'), id: z.string().min(1).optional() }),
   z.object({ scope: z.literal('symbol'), id: z.string().min(1) }),
   z.object({ scope: z.literal('site') }),
 ]);
@@ -170,6 +181,39 @@ export const SiteSyncInput = z.object({
    */
   pageUpdatedAt: z.record(z.string(), z.string()).nullish(),
   frame: z.object({ root: SilicaTreeInput }).nullish(),
+  /**
+   * The NAMED layouts (silicaui 0.37's `Site.frames`) — alternative shells a page can
+   * be pointed at, keyed by layout id. The site's DEFAULT shell is `frame` above and is
+   * deliberately NOT a member of this map, mirroring the engine: one shell, one place.
+   *
+   * `name` rides along because a layout's label is author-facing state the engine owns
+   * (`frame.rename` is an op), and `editable` because `Frame.editable` is persisted
+   * site state.
+   *
+   * ABSENT means "this payload says nothing about layouts" and leaves every stored one
+   * alone — the same guard `symbols` carries, and for the same reason: a caller that
+   * never loaded them must not be able to erase them.
+   */
+  frames: z
+    .record(
+      z.string().min(1),
+      z.object({
+        root: SilicaTreeInput,
+        name: z.string().min(1).max(255).nullish(),
+        editable: z.boolean().nullish(),
+      })
+    )
+    .nullish(),
+  /**
+   * Layouts to REMOVE, named explicitly — never inferred from absence.
+   *
+   * Exactly the lesson `deletedPageIds` records (docs/126 §4.4): the engine hands back
+   * the whole `Site`, so a client holding a stale copy would otherwise delete a layout a
+   * concurrent writer had just added. Absence is silence; only this list deletes.
+   *
+   * Deleting the ACTIVE layout is refused — the site would have no default shell.
+   */
+  deletedFrameIds: z.array(z.string().min(1)).nullish(),
   symbols: z.record(z.string(), z.unknown()).nullish(),
   theme: SilicaThemeInput.nullish(),
   // The saved-theme library (silicaui 0.16). Structural per-theme validation via

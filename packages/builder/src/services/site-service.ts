@@ -101,15 +101,40 @@ function symbolsOf(value: unknown): Record<string, SilicaSymbolDef> {
  *  the tenant's brand-derived theme. */
 function rowsToStoredSite(
   pages: BuilderPage[],
-  layout: BuilderLayout | null,
+  layouts: BuilderLayout[],
   site: BuilderSite | null
 ): StoredSilicaSite {
   const symbols = symbolsOf(site?.silicaDraftSymbols);
   const theme = site?.silicaDraftTheme as SilicaTheme | null | undefined;
   const savedThemes = site?.silicaDraftSavedThemes as SilicaTheme[] | null | undefined;
+  const layout = layouts.find((l) => l.isActive) ?? null;
+  // The catalog splits the way silica's `Site` does: the LIVE layout is the default
+  // shell (`frame`), every other one is a named alternative (`frames[id]`). Keyed by
+  // the row id, which is exactly what `builder_pages.frame_id` stores — so a page's
+  // pointer needs no translation between the engine and the storefront.
+  //
+  // A layout with no silica tree yet (created through the legacy `.bx-*` catalog, or
+  // never opened) is SKIPPED rather than sent as an empty shell: the engine would show
+  // it in the switcher as a layout with no Outlet, which is not a thing an author can
+  // repair from inside the editor.
+  const named = layouts.filter((l) => !l.isActive && l.silicaDraftTree != null);
   return {
     ...(layout?.silicaDraftTree != null
       ? { frame: { root: layout.silicaDraftTree as unknown as SilicaNode, editable: true } }
+      : {}),
+    ...(named.length > 0
+      ? {
+          frames: Object.fromEntries(
+            named.map((l) => [
+              l.id,
+              {
+                root: l.silicaDraftTree as unknown as SilicaNode,
+                editable: true,
+                name: l.name,
+              },
+            ])
+          ),
+        }
       : {}),
     pages: pages.map((r) => ({
       id: r.id,
@@ -134,11 +159,14 @@ export function load(ctx: PropertyContext): Promise<StoredSilicaSite | null> {
     });
     const pages = allPages.filter(isSilica);
     if (pages.length === 0) return null;
-    const [layout, site] = await Promise.all([
-      tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
+    const [layouts, site] = await Promise.all([
+      tx.builderLayout.findMany({
+        where: { propertyId: ctx.propertyId },
+        orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+      }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
-    return rowsToStoredSite(pages, layout, site);
+    return rowsToStoredSite(pages, layouts, site);
   });
 }
 
@@ -179,6 +207,21 @@ export function hasStagedTree(r: StagedPageRow, stage: SiteStage): boolean {
 /** The tree column for `stage` — the ONLY place the stage→column mapping is written. */
 export function stagedTree(r: StagedPageRow, stage: SiteStage): unknown {
   return stage === 'draft' ? r.silicaDraftTree : r.silicaPublishedTree;
+}
+
+/** The frame-pointer column for `stage`, and the same invariant as {@link stagedTree}
+ *  applied to chrome: a PUBLISHED render must never consult the draft choice.
+ *
+ *  Exported for tests for a sharper reason than symmetry. The two columns hold the same
+ *  three values, so reading the wrong one is silent — no type error, no exception, just
+ *  a live site that quietly changed shape when somebody pressed Save in an editor. That
+ *  is the exact failure the staged pointer was added to prevent, so it gets a test
+ *  rather than trust in a ternary. */
+export function stagedFrameId(
+  r: { frameId: string | null; publishedFrameId: string | null },
+  stage: SiteStage
+): string | null {
+  return stage === 'draft' ? r.frameId : r.publishedFrameId;
 }
 
 /** Strip a leading slash so a stored silica slug (`/`, `/shop`) and the storefront's
@@ -301,10 +344,10 @@ export function getPublishedFrame(
   path?: string
 ): Promise<PublishedSilicaFrameDto> {
   return withTenant(ctx, async (tx) => {
-    const [layout, site, page] = await Promise.all([
+    const [layout, site, pageFrameId] = await Promise.all([
       tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
-      path == null ? null : findPageFrameId(tx, ctx.propertyId, path),
+      path == null ? undefined : findPageFrameId(tx, ctx.propertyId, path, stage),
     ]);
 
     const meta = { symbols: stagedSymbols(site, stage), theme: stagedTheme(site, stage) };
@@ -313,7 +356,7 @@ export function getPublishedFrame(
     const asFrame = (root: unknown): SilicaFrame | null =>
       root != null ? { root: root as SilicaNode, editable: true } : null;
 
-    const choice = resolvePageFrame(page?.frameId, EMPTY_IDS);
+    const choice = resolvePageFrame(pageFrameId, EMPTY_IDS);
     // `default` covers both "no path given" and "this page takes the site default".
     if (choice.kind === 'default') return { frame: asFrame(treeOf(layout)), ...meta };
     // Explicitly bare. `frameless` matters as much as the null: the storefront falls
@@ -334,6 +377,91 @@ export function getPublishedFrame(
   });
 }
 
+/**
+ * Which named layouts a sync may DELETE — the layout counterpart of `pagesToDelete`.
+ *
+ * Two rules, both of which cost a site real work if they are wrong:
+ *
+ * 1. **Absence never deletes.** Only ids the caller NAMES are removed. The engine hands
+ *    a client the whole `Site`, so a stale client's payload is missing every layout
+ *    created since it loaded — and inferring deletion from that is exactly the bug that
+ *    once let one autosave wipe every page an agent had just authored (docs/126 §4.4).
+ * 2. **The active layout is never deleted**, however loudly it is named. It is the site's
+ *    default shell; removing it leaves every page that takes the default with no chrome
+ *    at all. Silently ignoring the id is right here rather than throwing — the engine
+ *    already refuses to delete the default, so an id arriving in this list means a stale
+ *    client whose idea of "active" is out of date, not an author asking for this.
+ *
+ * Exported for tests: both rules are about data that is gone if they fail.
+ */
+export function framesToDelete(
+  deletedFrameIds: readonly string[] | null | undefined,
+  activeId: string
+): string[] {
+  return (deletedFrameIds ?? []).filter((id) => id !== activeId);
+}
+
+/**
+ * Upsert the property's NAMED layouts from a sync payload (silicaui 0.37 `Site.frames`).
+ *
+ * `activeId` is excluded on the way in AND on the way out. The engine keeps the default
+ * shell in `Site.frame`, never in `Site.frames`, so an id matching the live layout can
+ * only be a stale client — and writing it here would let one payload carry two different
+ * trees for the same row.
+ *
+ * A frame the property has never seen is CREATED with the engine's id as its primary
+ * key. That is the whole reason this needs no translation table: `Page.frameId` in the
+ * engine, `builder_pages.frame_id` in the database, and `builder_layouts.id` are one
+ * value, so the storefront resolves a page's chrome without ever consulting the editor's
+ * idea of it.
+ */
+async function syncNamedLayoutsTx(
+  tx: TxClient,
+  ctx: PropertyContext,
+  frames: NonNullable<SiteSyncInput['frames']>,
+  activeId: string
+): Promise<void> {
+  const existing = await tx.builderLayout.findMany({
+    where: { propertyId: ctx.propertyId },
+    select: { id: true, position: true },
+  });
+  const known = new Map(existing.map((l) => [l.id, l]));
+  let nextPosition = existing.reduce((max, l) => Math.max(max, l.position), -1) + 1;
+
+  for (const [frameId, frame] of Object.entries(frames)) {
+    if (frameId === activeId) continue;
+    const tree = asJson(frame.root);
+    if (known.has(frameId)) {
+      await tx.builderLayout.update({
+        where: { id: frameId },
+        // The label is only written when the payload carries one — `frame.rename` is an
+        // op the engine emits, and a body-only save must not reset a layout's name.
+        data: { silicaDraftTree: tree, ...(frame.name ? { name: frame.name } : {}) },
+      });
+    } else {
+      await tx.builderLayout.create({
+        data: {
+          id: frameId,
+          tenantId: ctx.tenantId,
+          propertyId: ctx.propertyId,
+          name: frame.name ?? 'Layout',
+          // `draftTree` is the LEGACY `.bx-*` column and is non-null in the schema. A
+          // silica-native layout has no legacy tree, so it takes the starter shell —
+          // the same thing `activeLayoutTx` does when it materializes the first one.
+          draftTree: asJson(STARTER_LAYOUT.tree as unknown as SilicaNode),
+          silicaDraftTree: tree,
+          // Never live on arrival. Activation is its own deliberate act (docs/45), and
+          // a layout the author just created has not been published, so making it live
+          // would swap the site's chrome for an unpublished shell.
+          isActive: false,
+          position: nextPosition++,
+        },
+      });
+    }
+    await reindexTreeTx(tx, ctx, { ownerKind: 'layout', ownerId: frameId, tree: frame.root });
+  }
+}
+
 /** `resolvePageFrame` takes the ids that exist only to tell `named` from `missing`, and
  *  this read looks the named one up directly instead — building the set would be the
  *  same round trip twice. An id resolving to no row lands on the same `frame: null` as
@@ -341,6 +469,13 @@ export function getPublishedFrame(
 const EMPTY_IDS: readonly string[] = [];
 
 /** Which chrome the page at `path` asks for, or undefined when no page owns that path.
+ *
+ *  Stage-aware for the same reason the tree columns are: `frameId` is what the author is
+ *  editing and `publishedFrameId` is what visitors are served, so a preview shows the
+ *  chrome they are about to publish and the live site does not change until they do.
+ *  Reading the draft column on a published render would mean pressing Save in the editor
+ *  silently restyled production.
+ *
  *  Slug matching mirrors `getPublishedPageBySlug` EXACTLY — including querying both the
  *  bare and `/`-prefixed forms, because slugs are stored either way depending on their
  *  vintage. A second, subtly different matcher here would resolve the page one way for
@@ -348,10 +483,11 @@ const EMPTY_IDS: readonly string[] = [];
 async function findPageFrameId(
   tx: TxClient,
   propertyId: string,
-  path: string
-): Promise<{ frameId: string | null } | null> {
+  path: string,
+  stage: SiteStage
+): Promise<string | null | undefined> {
   const target = normalizeSlug(path);
-  return tx.builderPage.findFirst({
+  const row = await tx.builderPage.findFirst({
     where: {
       propertyId,
       // Home is the slugless page — stored as NULL, '' or '/' depending on how it was
@@ -360,9 +496,13 @@ async function findPageFrameId(
         ? { OR: [{ slug: null }, { slug: { in: ['', '/'] } }] }
         : { slug: { in: [target, `/${target}`] } }),
     },
-    select: { frameId: true },
+    select: { frameId: true, publishedFrameId: true },
     orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
   });
+  // `undefined` (no page owns this path) and `null` (this page takes the site default)
+  // both land on `default`, which is what those routes have always rendered.
+  if (!row) return undefined;
+  return stagedFrameId(row, stage);
 }
 
 /** The published page body for a storefront slug (docs/49 per-site). Matches on the
@@ -744,6 +884,24 @@ export async function sync(
       });
     }
 
+    // Named layouts → the rest of the catalog (silicaui 0.37). The engine mints their
+    // ids with `crypto.randomUUID`, so an id it invents IS a valid `builder_layouts`
+    // primary key and a valid `builder_pages.frame_id` — no id mapping to keep honest.
+    if (input.frames) await syncNamedLayoutsTx(tx, ctx, input.frames, layout.id);
+    const droppedFrames = framesToDelete(input.deletedFrameIds, layout.id);
+    if (droppedFrames.length > 0) {
+      await tx.builderLayout.deleteMany({
+        where: { id: { in: droppedFrames }, propertyId: ctx.propertyId, isActive: false },
+      });
+      // Pages pointing at a deleted layout fall back to the site DEFAULT, not to
+      // `null`-as-bare: losing your header is a much louder change than the author
+      // asked for, and it is what the engine's own `deleteLayout` does.
+      await tx.builderPage.updateMany({
+        where: { propertyId: ctx.propertyId, frameId: { in: droppedFrames } },
+        data: { frameId: null },
+      });
+    }
+
     // Site-global theme + symbols + saved-theme library → the property's silica
     // site record (docs/118). `theme` and `savedThemes` are only written when the
     // payload carries them, so a tenant on the brand-derived theme never has a null
@@ -969,23 +1127,32 @@ const treeDiffers = (draft: unknown, published: unknown): boolean =>
 /** Compare every silica draft tree against its published counterpart. Read-only. */
 export function publishState(ctx: PropertyContext): Promise<SitePublishState> {
   return withTenant(ctx, async (tx) => {
-    const [allPages, layout] = await Promise.all([
+    const [allPages, layouts] = await Promise.all([
       tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } }),
-      tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
+      tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } }),
     ]);
     const pages = allPages.filter(isSilica);
-    const unpublishedPages = pages.filter((r) =>
-      treeDiffers(r.silicaDraftTree, r.silicaPublishedTree)
+    // A page counts as unpublished when its BODY or its CHROME CHOICE differs from what
+    // visitors are served. Counting only the tree would let "no header on this page" sit
+    // in the editor with Publish greyed out, which is the same silence the staged
+    // pointer exists to end.
+    const unpublishedPages = pages.filter(
+      (r) =>
+        treeDiffers(r.silicaDraftTree, r.silicaPublishedTree) || r.frameId !== r.publishedFrameId
     ).length;
-    const frameUnpublished =
-      layout?.silicaDraftTree != null &&
-      treeDiffers(layout.silicaDraftTree, layout.silicaPublishedTree);
+    // ANY layout, not just the live one — an edit to a named layout is unpublished work
+    // a visitor is not seeing, and a signal that only watched the default shell would
+    // tell the author there is nothing to publish while a page renders the old one.
+    const frameUnpublished = layouts.some(
+      (l) => l.silicaDraftTree != null && treeDiffers(l.silicaDraftTree, l.silicaPublishedTree)
+    );
 
     // The most recent publish across pages + frame — the timestamp the author reads
     // as "what visitors currently see".
-    const stamps = [...pages.map((r) => r.publishedAt), layout?.publishedAt ?? null].filter(
-      (d): d is Date => d != null
-    );
+    const stamps = [
+      ...pages.map((r) => r.publishedAt),
+      ...layouts.map((l) => l.publishedAt),
+    ].filter((d): d is Date => d != null);
     const last = stamps.length ? new Date(Math.max(...stamps.map((d) => d.getTime()))) : null;
 
     return {
@@ -1020,7 +1187,14 @@ export async function publish(ctx: PropertyContext): Promise<{ id: string; hash:
     for (const r of pages) {
       await tx.builderPage.update({
         where: { id: r.id },
-        data: { silicaPublishedTree: asJson(r.silicaDraftTree), publishedAt: now },
+        data: {
+          silicaPublishedTree: asJson(r.silicaDraftTree),
+          // The chrome POINTER publishes with the body, so a page and the shell around
+          // it always go live together. Without this the editor's frame picker would
+          // reach production on Save rather than on Publish.
+          publishedFrameId: r.frameId,
+          publishedAt: now,
+        },
       });
       const hash = await recordArtifactTx(tx, ctx, 'page', r.id, r.silicaDraftTree);
       manifest.push({ ownerKind: 'page', ownerId: r.id, hash });
@@ -1039,10 +1213,13 @@ export async function publish(ctx: PropertyContext): Promise<{ id: string; hash:
         tree: asNode(r.silicaDraftTree),
       });
     }
-    const layout = await tx.builderLayout.findFirst({
-      where: { propertyId: ctx.propertyId, isActive: true },
-    });
-    if (layout?.silicaDraftTree != null) {
+    // EVERY layout, not just the live one. A page pointed at a named layout renders
+    // through that layout's PUBLISHED tree, so publishing only the active shell would
+    // leave such a page serving whatever the alternative looked like when it was last
+    // published — or, for one created since, nothing at all.
+    const layouts = await tx.builderLayout.findMany({ where: { propertyId: ctx.propertyId } });
+    for (const layout of layouts) {
+      if (layout.silicaDraftTree == null) continue;
       await tx.builderLayout.update({
         where: { id: layout.id },
         data: { silicaPublishedTree: asJson(layout.silicaDraftTree), publishedAt: now },

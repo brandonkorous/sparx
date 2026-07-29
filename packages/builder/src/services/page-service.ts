@@ -45,6 +45,8 @@ const PAGE_SUMMARY_SELECT = {
   publishedAt: true,
   position: true,
   isDefault: true,
+  // A scalar pointer at the chrome catalog, not a tree — free on a summary read.
+  frameId: true,
   seoTitle: true,
   seoDescription: true,
   canonical: true,
@@ -69,6 +71,7 @@ function toSummaryDto(row: PageSummaryRow): BuilderPageSummaryDto {
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
     isDefault: row.isDefault,
+    frameId: row.frameId,
     seoTitle: row.seoTitle,
     seoDescription: row.seoDescription,
     canonical: row.canonical,
@@ -92,6 +95,7 @@ function toDto(row: BuilderPage): BuilderPageDto {
     publishedAt: row.publishedAt ? row.publishedAt.toISOString() : null,
     position: row.position,
     isDefault: row.isDefault,
+    frameId: row.frameId,
     seoTitle: row.seoTitle,
     seoDescription: row.seoDescription,
     canonical: row.canonical,
@@ -411,6 +415,10 @@ export async function publish(ctx: PropertyContext, id: string): Promise<Builder
       where: { id },
       data: {
         publishedTree: asJson(published),
+        // The chrome pointer goes live with the body it wraps, matching the silica
+        // site publish. Publishing one page's body while it kept the chrome of a
+        // choice the author has since changed would show a shell nobody asked for.
+        publishedFrameId: existing.frameId,
         publishedAt: new Date(),
       },
     });

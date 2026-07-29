@@ -20,8 +20,10 @@ import type { Prisma, TxClient } from '@sparx/db';
 
 import type { PropertyContext } from '../errors';
 
-/** `op.target` → the (owner_kind, owner_id) the log is keyed on. `frame`/`site` are
- *  singletons per property and carry no id. */
+/** `op.target` → the (owner_kind, owner_id) the log is keyed on. `site` is a singleton
+ *  per property and carries no id; a `frame` carries one once it is a NAMED layout
+ *  (silicaui 0.37) and null when it is the site's default shell — which is the same
+ *  distinction `builder_pages.frame_id` draws, so the two agree by construction. */
 function ownerOf(target: BuilderOpEnvelope['target']): {
   ownerKind: string;
   ownerId: string | null;
@@ -32,7 +34,7 @@ function ownerOf(target: BuilderOpEnvelope['target']): {
     case 'symbol':
       return { ownerKind: 'symbol', ownerId: target.id };
     case 'frame':
-      return { ownerKind: 'frame', ownerId: null };
+      return { ownerKind: 'frame', ownerId: target.id ?? null };
     case 'site':
       return { ownerKind: 'site', ownerId: null };
   }

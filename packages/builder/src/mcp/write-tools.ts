@@ -10,7 +10,7 @@
 // at publish; describe_builder_styling teaches the safe vocabulary up front.
 
 import { z } from 'zod';
-import { PageSeoShape, parsePageImport } from '@sparx/builder-schemas';
+import { PageFrameId, PageSeoShape, parsePageImport } from '@sparx/builder-schemas';
 
 import * as pageService from '../services/page-service';
 import { BuilderValidationError } from '../errors';
@@ -146,6 +146,37 @@ export const setPageSeo: McpToolDefinition = {
   },
 };
 
+export const setPageFrame: McpToolDefinition = {
+  name: 'set_page_frame',
+  description:
+    'Choose which header and footer wrap ONE page. Three values, and the two that look empty mean opposite things: ' +
+    'omit `frameId` (or pass null) to follow the SITE DEFAULT — the live layout, what almost every page should do; ' +
+    'pass "none" for a page with NO header or footer at all — the campaign or landing page built to hold someone’s ' +
+    'attention with nothing to click away to; or pass a layout id from list_builder_layouts to pin this page to that ' +
+    'specific design even if the site default changes later. Saves to DRAFT — call publish_silica_site (or ' +
+    'publish_builder_page) to take it live, exactly like the page body.',
+  scope: 'write:builder',
+  confirmation: false,
+  input: z.object({
+    pageId: z.string().uuid(),
+    frameId: PageFrameId.nullish(),
+    propertyId: propertyIdArg,
+  }),
+  run: async (ctx, input) => {
+    const { pageId, frameId, propertyId } = input as {
+      pageId: string;
+      frameId?: string | null;
+      propertyId?: string;
+    };
+    const pctx = await toPropertyContext(ctx, propertyId);
+    // `null` explicitly — an OMITTED field would trip UpdatePageInput's "at least one
+    // field" refine, and "back to the site default" has to be sayable. The service
+    // treats null (reset) and undefined (leave alone) as different, which is the whole
+    // tri-state; collapsing them here would make the default unreachable over MCP.
+    return withSite(pctx, await pageService.update(pctx, pageId, { frameId: frameId ?? null }));
+  },
+};
+
 export const publishBuilderPage: McpToolDefinition = {
   name: 'publish_builder_page',
   description:
@@ -220,6 +251,7 @@ export const writeTools = [
   createBuilderPage,
   updateBuilderPage,
   setPageSeo,
+  setPageFrame,
   setPageRecordType,
   setPageDefault,
   publishBuilderPage,

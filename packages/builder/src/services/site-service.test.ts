@@ -14,11 +14,13 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { SiteSyncInput } from '@sparx/builder-schemas';
+import { BuilderOpTarget, SiteSyncInput, resolvePageFrame } from '@sparx/builder-schemas';
 
 import {
+  framesToDelete,
   hasStagedTree,
   pagesToDelete,
+  stagedFrameId,
   stagedTree,
   symbolsUpdateFor,
   wouldClobberSite,
@@ -254,5 +256,115 @@ describe('stagedTree / hasStagedTree — the published↔draft boundary', () => 
     // rather than null on every real row. Both must read as "no tree".
     expect(hasStagedTree(row({ silicaPublishedTree: LIVE }), 'draft')).toBe(false);
     expect(hasStagedTree(row({ silicaDraftTree: DRAFT }), 'published')).toBe(false);
+  });
+});
+
+// ── The chrome pointer obeys the same boundary (doc 139 §5) ──────────────────
+//
+// `frame_id` shipped as ONE column read live by the storefront, which was invisible
+// while nothing could write it. Once the editor got a frame picker, saving "no header
+// on this page" would have changed the live site immediately — while the body visitors
+// saw was still the last published one and Publish reported nothing to publish.
+//
+// These tests pin the fix. They are cheap and they matter, because reading the wrong
+// column here is SILENT: both hold the same three values, so the only symptom is a
+// production page that changed shape without anyone publishing it.
+
+const LAYOUT_A = '11111111-1111-4111-8111-111111111111';
+const LAYOUT_B = '22222222-2222-4222-8222-222222222222';
+
+describe('stagedFrameId — chrome follows the publish lifecycle', () => {
+  it('published serves the published choice, draft (preview) serves the edited one', () => {
+    const edited = { frameId: 'none', publishedFrameId: LAYOUT_A };
+    expect(stagedFrameId(edited, 'published')).toBe(LAYOUT_A);
+    expect(stagedFrameId(edited, 'draft')).toBe('none');
+  });
+
+  it('an UNPUBLISHED "no header" choice leaves the live site alone', () => {
+    // The regression this column exists for: the author has chosen bare and saved, and
+    // has not published. Visitors keep the site default until they do.
+    const staged = { frameId: 'none', publishedFrameId: null };
+    expect(stagedFrameId(staged, 'published')).toBeNull();
+    expect(stagedFrameId(staged, 'draft')).toBe('none');
+  });
+
+  it('resolves each stage to the choice that stage means', () => {
+    // Null is not "unset" here — it IS the site default, and it has to survive the
+    // round trip through `resolvePageFrame` as `default` rather than as a dangling id.
+    const takesDefault = { frameId: null, publishedFrameId: null };
+    expect(resolvePageFrame(stagedFrameId(takesDefault, 'published'), []).kind).toBe('default');
+
+    const bare = { frameId: 'none', publishedFrameId: 'none' };
+    expect(resolvePageFrame(stagedFrameId(bare, 'published'), []).kind).toBe('none');
+
+    const named = { frameId: LAYOUT_B, publishedFrameId: LAYOUT_B };
+    expect(resolvePageFrame(stagedFrameId(named, 'published'), [LAYOUT_B])).toEqual({
+      kind: 'named',
+      frameId: LAYOUT_B,
+    });
+  });
+
+  it('reports a published pointer at a DELETED layout instead of restoring the default', () => {
+    // Publishing froze a layout id; the layout has since been deleted. The page renders
+    // bare and says so — putting the site header back is the wrong repair, because the
+    // author moved this page off the default on purpose.
+    const dangling = { frameId: LAYOUT_A, publishedFrameId: LAYOUT_A };
+    expect(resolvePageFrame(stagedFrameId(dangling, 'published'), [LAYOUT_B])).toEqual({
+      kind: 'missing',
+      frameId: LAYOUT_A,
+    });
+  });
+
+  it('a page reverted to the site default publishes that revert', () => {
+    // The direction that a naive `frameId ?? publishedFrameId` fallback would break:
+    // clearing the choice must actually reach visitors, not leave the old shell frozen.
+    const reverted = { frameId: null, publishedFrameId: LAYOUT_A };
+    expect(stagedFrameId(reverted, 'draft')).toBeNull();
+    expect(
+      stagedFrameId({ ...reverted, publishedFrameId: reverted.frameId }, 'published')
+    ).toBeNull();
+  });
+});
+
+// ── Named layouts (silicaui 0.37) ────────────────────────────────────────────
+//
+// `Site.frames` gave the engine a catalog of alternative shells, which maps onto the
+// `builder_layouts` rows sparx already had. Deleting one is the only irreversible thing
+// in that mapping, so it is the part with tests.
+
+describe('framesToDelete — a layout is only removed when it is named', () => {
+  it('deletes NOTHING when the payload names nothing, however many are absent', () => {
+    // The concurrent-authoring case, one namespace over from pages: this client loaded
+    // before an agent added a layout over MCP. Its payload cannot mention what it never
+    // saw, and that silence must not be read as "remove it".
+    expect(framesToDelete(undefined, LAYOUT_A)).toEqual([]);
+    expect(framesToDelete([], LAYOUT_A)).toEqual([]);
+  });
+
+  it('deletes exactly the ids named', () => {
+    expect(framesToDelete([LAYOUT_B], LAYOUT_A)).toEqual([LAYOUT_B]);
+  });
+
+  it('REFUSES to delete the active layout, even when explicitly named', () => {
+    // The site's default shell. Removing it leaves every page that takes the default
+    // with no chrome at all — so a stale client naming it is ignored, not obeyed.
+    expect(framesToDelete([LAYOUT_A], LAYOUT_A)).toEqual([]);
+    expect(framesToDelete([LAYOUT_A, LAYOUT_B], LAYOUT_A)).toEqual([LAYOUT_B]);
+  });
+});
+
+describe('BuilderOpTarget — a named layout keeps its id', () => {
+  it('carries the frame id through, rather than stripping it to the default shell', () => {
+    // `z.object` STRIPS unknown keys. Before the frame scope accepted an id, an op
+    // editing a named layout parsed down to `{scope:'frame'}` and was filed against the
+    // DEFAULT one — two shells sharing one history that no undo could untangle.
+    expect(BuilderOpTarget.parse({ scope: 'frame', id: LAYOUT_B })).toEqual({
+      scope: 'frame',
+      id: LAYOUT_B,
+    });
+  });
+
+  it('still accepts a bare frame target — that IS the site default', () => {
+    expect(BuilderOpTarget.parse({ scope: 'frame' })).toEqual({ scope: 'frame' });
   });
 });

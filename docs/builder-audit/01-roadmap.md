@@ -1,55 +1,61 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.8.0
+Version: 2.11.0
 Author: Brandon Korous
-Last Updated: 2026-07-28
+Last Updated: 2026-07-29
 
-> **Status — WAVES 1 AND 2 COMPLETE; WAVE 4 IS DONE BUT FOR THE BLUEPRINT SHELF; WAVE 3 IS SILICAUI-BLOCKED (2026-07-28).**
-> Slices
-> 1–11 are committed and pushed as `d839df26` (_feat(builder): pre-publish site check,
-> silica-native saved pieces, shared authoring vocabulary_) plus `5f1e1d75` for the
-> market-projection test fix; both are on `origin/main`. **Slices 12, 22, 23, 19 and 20 are
-> UNCOMMITTED in the working tree:**
+> **Status — EVERY SLICE IS DONE EXCEPT THE BLUEPRINT SHELF (18), which is another agent's
+> (2026-07-28).** Waves 1, 2 and 4 are complete, and **wave 3 is no longer silicaui-blocked**:
+> silicaui answered all eleven asks in `0.36.0` and the sparx side is fully adopted.
 >
-> - **12 — the publish-time budget:** `packages/site-lint` (`budget.ts` + its tests, plus
->   the `walk.ts` / `content.ts` / `types.ts` / `lint.ts` / `index.ts` edges),
->   `services/api-rest` (`lib/site-check.ts` + its test, the route's doc header),
->   `apps/workbench` (`studio/site-check.tsx`, `studio/data.ts`).
-> - **22 — the measurability loop:** `packages/site-lint` (`routes.ts` + `routes.test.ts`
->   gain the record type behind each parameterized route), `services/api-rest`
->   (`lib/page-performance.ts` + its test, `pageMetrics` in `lib/site-analytics-reports.ts`,
->   the new route in `routes/v1/builder/analytics.ts`), `apps/workbench`
->   (`builder/page-results.tsx`, `builder/page-results-data.ts`, the catalog entry in
->   `lib/surfaces/catalog/builder.ts`).
-> - **23 — collection pagination:** `apps/site` (`lib/silica-data.ts`, `lib/silica.ts`,
->   `lib/content.ts`, `lib/commerce.ts`, `lib/builder-commerce-data.ts`,
->   `components/pagination.tsx`, the new `components/list-pagination.tsx`,
->   `components/silica-host-cores.tsx`, and the five routes that build a host),
->   `packages/silica-catalog` (`host-nodes.ts`, `commerce.ts` + both tests),
->   `packages/builder-schemas` (`node.ts`, `runtime.ts`, `binding-spine.test.ts`),
->   `packages/builder` (the MCP authoring vocabulary), `services/api-rest`
->   (`public/content.ts`, `public/commerce.ts`), `apps/workbench` (`studio/host-cores.tsx`).
-> - **19 — the section library:** the new `packages/silica-catalog/src/sections/`
->   (ten files + `sections.test.ts`), plus `catalog.ts` / `index.ts` and the studio host's
->   `catalog()` merge.
-> - **20 — responsive images:** `services/api-rest` (`pickVariant` + the `w` parameter in
->   `routes/v1/public/media.ts`, its new `media.test.ts`), `packages/silica-catalog` (the new
->   `responsive-images.ts` + its test, one line in `render.ts`, the `index.ts` export),
->   `apps/site` (`lib/media.ts`, `lib/image-loader.ts` — comment corrections only),
->   `apps/market` (`lib/image-loader.ts` — same).
-> - **21 — ISR + the dead-tier deletion:** `apps/site` (twelve route directives, the two
->   `book` routes' justifications, dead-branch deletions in `app/page.tsx`,
->   `app/layout.tsx`, `app/blog/[slug]`, `app/products/[handle]`, the `BuilderSiteChrome`
->   removal in `components/builder-renderer.tsx`, `getNavigationMenu` in `lib/site.ts`,
->   and four DELETED components: `site-header`, `site-footer`, `header-scroll`,
->   `mobile-nav`), plus `docs/127-site-read-path-remediation.md` §6.
-> - **The ISR purge publisher** (slice 21's blocker, not the slice): `packages/events`
->   (`types.ts`), `services/api-rest` (the new `lib/builder-events.ts` + two calls in
->   `routes/v1/builder/site.ts`), `services/cache-revalidation-worker` (its test),
->   `docs/brain/api-events/event-catalog.md`.
+> **OPEN IN THE WORKING TREE (2026-07-29):** slice 17's **frame picker** + the
+> publish-lifecycle defect building it exposed, and slice 25's **named layouts** on
+> silicaui **0.37.0** (catalog bumped, `pnpm install` run). Typecheck is **96/96** and lint
+> **94/94** — the Prisma client already knows the new column, because `pnpm install`
+> regenerates it on postinstall.
 >
-> **No new workspace package in any of them**, so **no `pnpm install` and no Dockerfile
-> change is needed**. **The file-ownership boundary
+> **The one thing still outstanding is the DATABASE.** Migration
+> `20270129000000_builder_page_published_frame` is authored but NOT applied to local
+> docker, so the generated client knows `published_frame_id` and Postgres does not — any
+> read of a page's chrome will fail at runtime until `prisma migrate dev` runs. On prod it
+> rides the DB Migrate workflow as usual.
+>
+> **EVERYTHING ELSE IS COMMITTED AND PUSHED — `main` is in sync with `origin/main`.** The
+> per-slice file inventories that used to live here are retired: they existed to make staging
+> by path possible, and there is nothing left to stage. The slices map to commits as:
+>
+> | Slice(s)        | Commit                                                                            |
+> | --------------- | --------------------------------------------------------------------------------- |
+> | 1–11            | `d839df26` + `5f1e1d75`                                                           |
+> | 12, 22          | in the same series (pre-publish check + measurability)                            |
+> | 19              | `3d249558` a section library for businesses that aren't software                  |
+> | 20, 21, 23      | `7593477d` the storefront pages its lists, and stops shipping three chromes       |
+> | 21’s blocker    | `7da0ee94` publish and rollback finally emit their purge signal                   |
+> | 0.36.0 bump     | `0c0a508c` chore(deps): move the silicaui family to 0.36.0                        |
+> | §6, §7 adoption | `aec56864` retire the carrier + expand workarounds silicaui 0.36 made unnecessary |
+> | §10             | `44af0630` show a node only when the data behind it exists                        |
+> | §1, §2          | `e8f00d71` report responsive styling that never takes effect                      |
+> | §8              | `f180289f` let the engine invert an edit, so undo stops being unfaithful          |
+> | 17 (§5)         | `208382f6` let a page choose its own chrome, or none at all                       |
+>
+> The standing rule still applies to anything NEW: a social agent and a blueprint agent are
+> both working in this checkout, so stage by path, never `git add -A`, and re-check the
+> branch first. Dirty files that are NOT ours right now: `packages/social/*`,
+> `services/social-worker/*`, `terraform/envs/prod/serverless.tf`.
+>
+> **The migration `20270125000000_builder_page_frame` is applied BOTH places.** Locally it
+> was swept in by another agent's `migrate deploy` alongside their
+> `20270126000000_scan_owner_rls_backfill`, then verified here: column, CHECK, partial
+> index, and RLS still ENABLED **and FORCED**. `builder_pages` is empty on local docker, so
+> "additive, no backfill" is confirmed structurally rather than against real rows.
+>
+> **On PROD it has already shipped** — the DB Migrate workflow succeeded on run
+> `30424690697` (2026-07-29 05:18 UTC), and `208382f6` is an ancestor of that push, so the
+> cumulative `prisma migrate deploy` carried it. Nothing further is needed; an earlier note
+> in this file saying prod was untouched was written before that push landed.
+>
+> **`pnpm install` HAS been run** (the 0.36.0 catalog bump needed it), and `prisma generate`
+> with it. No new workspace package and no Dockerfile change. **The file-ownership boundary
 > that used to live here is retired** — it listed which files were ours and which were the
 > parallel social agent's, and the eleven committed slices no longer need separating. The
 > social agent is still working in this checkout, so the standing rule survives it: stage
@@ -57,9 +63,9 @@ Last Updated: 2026-07-28
 > committing. `apps/workbench/Dockerfile` and `apps/workbench/next.config.mjs` are dirty
 > in this tree and are NOT ours.
 >
-> **The next `pnpm install` is already done.** Three were needed as the slices added
-> workspace edges (`packages/site-lint`, then its `@sparx/site-themes` dependency, then
-> api-rest's dependency on site-lint); all three ran and the lockfile is committed.
+> Four `pnpm install`s were needed across these slices as they added workspace edges
+> (`packages/site-lint`, its `@sparx/site-themes` dependency, api-rest's dependency on
+> site-lint, then the 0.36.0 catalog bump); all four ran and the lockfile is current.
 >
 > **Migration `20270123000000_builder_component_silica_tree`** is applied to local docker
 > and verified there (`silica_tree` present, `tree` nullable, RLS still ENABLED + FORCED,
@@ -70,12 +76,13 @@ Last Updated: 2026-07-28
 > it — but confirm with `gh run list --workflow=db-migrate.yml` before assuming prod has
 > the column.
 >
-> **Gates at the last full pass:** typecheck + lint clean across `@sparx/site-lint`,
-> `@sparx/site-themes`, `@sparx/silica-catalog`, `@sparx/builder`, `@sparx/builder-schemas`,
-> `@sparx/db`, `@sparx/seo-audit`, `@sparx/api-rest`, `@sparx/site`, `@sparx/workbench`.
-> Unit tests: **94 site-lint** · 89 site-themes · **174 silica-catalog** (158 + 14 for the
-> section library and the seeded pager) · **273 builder-schemas** · 73 builder · and the
-> **full api-rest suite at 285 across 55 files, all passing**, re-run after slices 22 and 23. `apps/workbench` has no test script by design (no automated UI specs).
+> **Gates at the last full pass (on 0.37.0, after the frame picker + named layouts):**
+> workspace `pnpm typecheck` **96/96** and `pnpm lint` **94/94** — the only output is 6
+> pre-existing warnings in `@sparx/web`. Unit tests: **197 silica-catalog** · **263
+> builder-schemas** · **102 site-lint** · **83 builder** (73 before this pass: +5 for the
+> staged chrome pointer, +5 for named layouts, less the deleted inverter's) · 89
+> site-themes · and the **full api-rest suite at 291 across 56 files**. `apps/workbench`
+> has no test script by design (no automated UI specs).
 >
 > **Not settled by any of that — only a browser can:** preview-vs-draft (slice 1) · two-tab
 > undo, where `Ctrl+Z` must move only your own node (5) · a saved piece round-tripping and
@@ -83,9 +90,15 @@ Last Updated: 2026-07-28
 > right node for all three scopes, and **Open** landing on the right page from the weight
 > list (11, 12) · the Page results table against a site with real traffic, where the
 > collection-template row is the one to look at (22) · **`?page=2` actually rendering the
-> second page, and the pager hiding itself when everything fits** (23) · **how the 66 new
-> sections look on a real theme** — they pass every structural check there is, and "does
-> it look good" is not one a test can make (19).
+> second page, and the pager hiding itself when everything fits** (23) · **a page whose
+> frame is set to `none` actually rendering with no header/footer AND still fully themed**
+> (17 — the theme half is the bug `silicaActive` would have shipped) · **the frame picker
+> round-tripping**: choose "No header or footer", Save, confirm Publish lights up and the
+> live page is UNCHANGED until you press it (17) · **the engine's layout switcher creating
+> a second design that survives a reload**, and a page pointed at it publishing through it
+> (25) · **srcset serving a phone the 400/800 rung rather than the 2000** (20) · **how the
+> 66 new sections look on a real theme** — they pass every structural check there is, and
+> "does it look good" is not one a test can make (19).
 >
 > **Decisions taken, so they are not re-litigated:**
 >
@@ -93,8 +106,12 @@ Last Updated: 2026-07-28
 >   SUPERSEDED — written against silicaui-builder 0.8.0, and its framing question ("adopt
 >   the engine or keep ours?") is answered and executed. Only Q22/Q26 were still live and
 >   are carried into 139 §7.
-> - **Wave 3 is filed, not built.** The silicaui repo is present locally but is not being
->   edited from here this pass.
+> - **~~Wave 3 is filed, not built.~~ SHIPPED — silicaui answered all eleven asks in
+>   `0.36.0`** (2026-07-28) and the sparx side is adopted. See
+>   [doc 139](../139-silicaui-builder-asks.md) for the resolutions, including the two
+>   counter-proposals that were better than the ask and the one place OUR premise was
+>   wrong (§10: `visible:false` always existed; I asserted an engine limitation without
+>   reading the resolver).
 > - **Slice 7 resolution: keep `BuilderComponent` tenant-wide.** Cross-site reuse is the
 >   capability silica symbols cannot provide (`Site.symbols` is per-site), so it is not
 >   retired into them. It is surfaced by MATERIALIZING each piece as a `tenant:<key>`
@@ -249,7 +266,10 @@ nobody in the comparison set does it well — this is where the builder can lead
 Upstream. Filed in [doc 139](../139-silicaui-builder-asks.md); [02-silicaui-asks.md](02-silicaui-asks.md) is the bridge from the audit's evidence.
 
 - [ ] **13. Per-breakpoint authoring** + an honest device canvas (iframe, or container-queries-only enforced). — _silicaui-ask · L_
-- [ ] **14. Multi-select** and group operations. — _silicaui-ask · L_
+- [x] **14. Multi-select** and group operations. — _~~silicaui-ask~~ → shipped in silicaui 0.37.0 · L_
+
+  > `selectedIds` (ordered, last entry is the primary), `selectMany`, `toggleSelect`, and the batch op API 0.36.0 already carried. **No host work.** The studio touches selection in exactly one place — the Check panel's "Show me" calls `editor.select(nodeId)` to jump to a single finding — which is still the right call, and the canvas gestures are the engine's. `selection` stays the primary id so every existing reader is unchanged.
+
 - [ ] **15. Alignment guides, arrow-key nudge, select-parent, `Cmd+X` / `Cmd+A`.** — _silicaui-ask · M_
 - [ ] **16. Q22** (`resolveTree` stops resolving children once a node's binding is filled) and **Q26** (editor mode is private state, so a host cannot deep-link). Both already filed, both still open. — _silicaui-ask · S_
 - [x] **17. Per-page frame selection** — a chrome-off landing page is currently unrepresentable. — _~~silicaui-ask~~ → shipped in silicaui 0.36.0 + wired here · M_
@@ -264,7 +284,16 @@ Upstream. Filed in [doc 139](../139-silicaui-builder-asks.md); [02-silicaui-asks
   >
   > **Slice 21's "unreachable" bare-`<main>` branch is now the landing-page render path** — it stopped being dead the moment a page could ask for no chrome.
   >
-  > API-first: `PATCH /v1/builder/pages/:id` takes `frameId` (`null` resets to default, `'none'` goes bare), validated against the same sentinel-or-uuid rule as the CHECK constraint so a bad value is a 400 naming the field rather than a 500 naming a constraint. **The studio's frame PICKER is not built yet** — the capability is reachable by API and MCP, not yet by clicking.
+  > API-first: `PATCH /v1/builder/pages/:id` takes `frameId` (`null` resets to default, `'none'` goes bare), validated against the same sentinel-or-uuid rule as the CHECK constraint so a bad value is a 400 naming the field rather than a 500 naming a constraint.
+  >
+  > **The picker, and the defect it exposed (2026-07-29).** Page settings now carries a **Header and footer** field — Follow the site default · No header or footer · any layout by name — riding the same pending-edit → one-Save path as the SEO fields. Two things had to be fixed to make it honest, and one of them was a real defect:
+  >
+  > 1. **`frameId` was write-only.** `PATCH` accepted it and `PAGE_SUMMARY_SELECT` never read it back, so a settings form could set a page's chrome but could not show the author what it was currently set to. Added to `BuilderPageSummaryDto` and both DTO mappers.
+  > 2. **The choice bypassed the publish lifecycle.** `getPublishedFrame` read `frame_id` live, with no stage — so pressing Save in the editor would have changed the LIVE site's chrome while the body visitors saw was still the last published one, and Publish reported nothing to publish. This was invisible only because nothing could write the column: MCP had no frame argument and there was no picker, so every row held NULL. Adding the picker is what would have shipped it. Fixed by the pair the tree columns already use — `published_frame_id` (migration `20270129000000_builder_page_published_frame`), written by both publish paths, read by stage, and compared in `publishState` so a chrome-only change lights up Publish. Pinned by `stagedFrameId` + 5 tests, because reading the wrong column here is silent.
+  >
+  > MCP reached parity in the same pass with **`set_page_frame`** (the roadmap previously claimed MCP could already do this — it could not; `frameId` appeared nowhere under `mcp/`), so an agent can author a chrome-free landing page.
+  >
+  > **And then silicaui 0.37.0 closed the last gap, hours later.** The note here said the picker's third option would list designs an operator could not yet author, because the studio only edited the `isActive` shell. 0.37.0 makes named layouts an engine concept (`Site.frames`, `createLayout` / `renameLayout` / `deleteLayout` / `editLayout`, ops `frame.create` / `frame.rename` / `frame.delete`, and `{scope:'frame', id}` on node ops) **and ships its own layout switcher UI**, so the host needed persistence and nothing else — see slice 25.
 
 ## Wave 4 — payoff and content
 
@@ -371,6 +400,22 @@ Where "no better in the world" is actually won or lost.
   > **Conditional visibility is NOT built — it is filed.** `resolveTree` substitutes and expands; it never drops a node, and a host pre-pass cannot stand in because an item-scoped condition (`show the Sale badge only when there is a compare-at price`) can only be evaluated inside the expansion the engine owns. Doc 139 §10 asks for a `when` on `NodeBase` with a small closed predicate set.
 
 - [ ] **24. Cursors and selection presence**, plus per-node soft locks. — _silicaui-ask · M_
+
+- [x] **25. Named layouts — a second (and third) header/footer design.** — _~~silicaui-ask~~ → shipped in silicaui 0.37.0 + persisted here · M_
+
+  > **The engine took the half a host cannot own, including the UI.** 0.37.0 makes a layout catalog an engine concept — `Site.frames`, `createLayout` / `renameLayout` / `deleteLayout` / `editLayout`, `layouts`, `editingLayoutId`, the ops `frame.create` / `frame.rename` / `frame.delete`, and an `id` on the `frame` op scope — **and ships the switcher UI itself** (a Select plus add / rename / delete in Layout mode). So the host's job was persistence and nothing else. No sparx switcher was built, deliberately: a second one would be a second source of truth for which layout is open.
+  >
+  > **`builder_layouts` was already this table.** A per-property catalog with exactly one `is_active`, a draft/published pair per row, position ordering. The mapping is therefore one-to-one and needs no translation: the LIVE row is silica's default `Site.frame`, every other row is `Site.frames[id]`, and the key IS `builder_layouts.id` — which is what `builder_pages.frame_id` stores. The engine mints ids with `crypto.randomUUID`, so an id it invents is a valid primary key and satisfies the uuid CHECK on `frame_id` unchanged. (The `n_…` fallback in `defaultMakeId` fires only where `crypto.randomUUID` is missing — not any browser this admin app supports — and would fail as a 400, not as corruption.)
+  >
+  > **Three things this needed beyond the obvious plumbing**, each of which is a silent failure rather than a visible one:
+  >
+  > 1. **`BuilderOpTarget` had to accept a frame id.** `z.object` STRIPS unknown keys, so a node op inside a named layout parsed down to `{scope:'frame'}` and was filed against the DEFAULT shell — two layouts sharing one history, which no undo can untangle. It is `ownerId` on the op log now, null for the default.
+  > 2. **Publish had to cover every layout, not the active one.** A page pointed at a named layout renders through THAT layout's published tree, so publishing only the live shell left such a page serving whatever the alternative looked like last time — or, for one created since, nothing.
+  > 3. **`publishState` had to watch every layout too**, or editing an alternative shell reported "nothing to publish" while a page kept rendering the old one.
+  >
+  > **Deletion is explicit and the active layout is exempt** (`framesToDelete`), which is the page lesson from docs/126 §4.4 applied one namespace over: the engine hands a client the whole `Site`, so a stale client is missing every layout added since it loaded, and absence must never be read as removal. Pages pointing at a deleted layout fall back to the site DEFAULT rather than to bare — losing a header is a much louder change than the author asked for, and it is what the engine's own `deleteLayout` does.
+  >
+  > **This is what makes slice 17's picker complete.** Its third option — "use this other design for this page" — now lists designs an operator can actually author by clicking. The picker deliberately does NOT offer the live layout by id: silica's default shell is not a member of `Site.frames`, so such a page would dangle in the editor while resolving fine on the storefront — the same page previewing differently from how it publishes.
 
 ---
 

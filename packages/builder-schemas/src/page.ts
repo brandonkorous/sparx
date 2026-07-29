@@ -56,6 +56,10 @@ export interface BuilderPageSummaryDto {
    *  (docs/51 §6) — the per-type winner the storefront renders when a record has
    *  no per-record override. At most one per (tenant, recordType). */
   isDefault: boolean;
+  /** Which chrome wraps this page (doc 139 §5) — `null` for the site default, the
+   *  `'none'` sentinel for bare, or a layout id. Read as well as written: a settings
+   *  form cannot show the author their current choice from the write path alone. */
+  frameId: string | null;
   // SEO (singleton pages) — see PageSeoShape below.
   seoTitle: string | null;
   seoDescription: string | null;

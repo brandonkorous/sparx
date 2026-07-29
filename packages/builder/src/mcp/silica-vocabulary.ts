@@ -335,10 +335,12 @@ export const SILICA_STYLE_GUIDE = {
 
   metadata: {
     description:
-      'SEO and collection-template targeting live on the sparx BuilderPage row, not the silica tree — set them via ' +
-      'these EXISTING legacy-surface tools (they work identically on a silica-materialized page, since a silica page ' +
-      'id IS the row id): set_page_seo (pageId + seoTitle/seoDescription/canonical/ogImage/noindex — omit a field to ' +
-      'leave it, empty string clears it), set_page_record_type (pageId, recordType — makes a page a collection ' +
+      'SEO, chrome, and collection-template targeting live on the sparx BuilderPage row, not the silica tree — set ' +
+      'them via these EXISTING legacy-surface tools (they work identically on a silica-materialized page, since a ' +
+      'silica page id IS the row id): set_page_seo (pageId + seoTitle/seoDescription/canonical/ogImage/noindex — omit ' +
+      'a field to leave it, empty string clears it), set_page_frame (pageId + frameId — which header/footer wraps ' +
+      'THIS page: null follows the site default, "none" renders it bare for a landing page, a layout id pins it to ' +
+      'that design), set_page_record_type (pageId, recordType — makes a page a collection ' +
       'template, e.g. "commerce.product" or "cms.blog_post"), set_page_default (pageId — this template becomes the ' +
       "type's default when no per-record override exists). Never pass these through upsert_silica_page.",
   },
@@ -346,8 +348,10 @@ export const SILICA_STYLE_GUIDE = {
   lifecycle: {
     description:
       'Every write (upsert_silica_page, delete_silica_page, set_silica_frame, set_silica_theme, plus set_page_seo / ' +
-      'set_page_record_type / set_page_default) saves to DRAFT. Nothing is live until publish_silica_site ' +
-      '(confirmation-gated) snapshots every draft — pages, frame, theme, symbols — to its published counterpart in ' +
+      'set_page_frame / set_page_record_type / set_page_default) saves to DRAFT. Nothing is live until ' +
+      'publish_silica_site ' +
+      '(confirmation-gated) snapshots every draft — page bodies AND their chrome choice, frame, theme, symbols — to ' +
+      'its published counterpart in ' +
       'one call. reset_silica_site (confirmation-gated, DESTRUCTIVE) discards all silica-materialized pages/frame/' +
       'symbols and starts clean; the authored theme survives a reset.',
   },
@@ -357,7 +361,8 @@ export const SILICA_STYLE_GUIDE = {
     'get_silica_page / get_silica_frame / get_silica_theme to read current content. (3) On a fresh site: ' +
     'upsert_silica_page for the home page FIRST, then set_silica_frame + set_silica_theme, then the remaining pages. ' +
     '(4) For each page, browse list_silica_blocks and pull real content via get_silica_block rather than freehand ' +
-    'markup, then set_page_seo / set_page_record_type / set_page_default as needed. (5) publish_silica_site to take ' +
+    'markup, then set_page_seo / set_page_frame / set_page_record_type / set_page_default as needed. (5) ' +
+    'publish_silica_site to take ' +
     'the whole site live. (6) Verify by opening /builder/studio in the real editor — the MCP tools bypass its React ' +
     'engine entirely, so a persistence-layer success is not proof the editor itself renders it cleanly.',
 } as const;

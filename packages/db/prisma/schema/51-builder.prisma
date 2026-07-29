@@ -68,6 +68,12 @@ model BuilderPage {
   // back the header the author moved this page away from. A CHECK constraint in the
   // migration keeps the sentinel from drifting into a typo.
   frameId String? @map("frame_id")
+  // The DRAFT/PUBLISHED pair for that choice, exactly like the tree columns beside
+  // it. Chrome is the most visible thing on a page, so the pointer at it has to obey
+  // the same publish lifecycle as everything else the editor shows: without this,
+  // saving "no header on this page" changed the LIVE site immediately, while the
+  // Publish button reported nothing to publish.
+  publishedFrameId String? @map("published_frame_id")
 
   // SEO — applies to published SINGLETON pages (docs/50). The storefront's
   // catch-all titles/describes the page from these; null falls back to the page

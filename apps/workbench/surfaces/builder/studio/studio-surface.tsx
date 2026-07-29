@@ -57,7 +57,7 @@ import {
   usePreviewToken,
   usePublishSite,
   usePublishState,
-  useUpdatePageSeo,
+  useUpdatePageSettings,
   useSiteConfig,
   useSiteOrigin,
   useSitePreview,
@@ -83,7 +83,7 @@ import {
 } from './undo-history';
 import { SiteCheck } from './site-check';
 import { VersionHistory } from './version-history';
-import { PageSettings, draftToPatch, type PageSeoDraft } from './page-settings';
+import { PageSettings, draftToPatch, type PageSettingsDraft } from './page-settings';
 import { buildStudioHost } from './host';
 import {
   changedTenantMasters,
@@ -258,7 +258,7 @@ function StudioEditor({
   const toast = useToast();
   const sync = useSyncSite();
   const publish = usePublishSite();
-  const updatePageSeo = useUpdatePageSeo();
+  const updatePageSettings = useUpdatePageSettings();
   const previewToken = usePreviewToken();
   const siteOrigin = useSiteOrigin(propertyId);
 
@@ -337,6 +337,21 @@ function StudioEditor({
               },
             }
           : {}),
+        // Named layouts get the SAME healing as the default shell. They are ordinary
+        // chrome trees that happen not to be live, so a legacy one carries the same
+        // id-less nodes and the same pre-navbar markup — and skipping them would mean
+        // the Navigator collides two id-less nodes the moment the author switches to
+        // one in the layout switcher.
+        ...(storedSite.frames
+          ? {
+              frames: Object.fromEntries(
+                Object.entries(storedSite.frames).map(([id, frame]) => [
+                  id,
+                  { ...frame, root: ensureUniqueIds(upgradeFrameChrome(frame.root).root) },
+                ])
+              ),
+            }
+          : {}),
       },
       pieces
     );
@@ -372,16 +387,22 @@ function StudioEditor({
   // the current set after each successful save.
   const baselineIdsRef = useRef<Set<string>>(new Set((storedSite?.pages ?? []).map((p) => p.id)));
 
+  // The same baseline for NAMED layouts (silicaui 0.37). Kept separate rather than
+  // folded into the page set: the two are different namespaces on the server, and a
+  // single set would make "delete the layout with this id" and "delete the page with
+  // this id" indistinguishable.
+  const baselineFrameIdsRef = useRef<Set<string>>(new Set(Object.keys(storedSite?.frames ?? {})));
+
   // The page currently open, so Page settings knows which row it is editing. State (not
   // a ref) because the drawer must re-render when the operator switches page.
   const [activePage, setActivePage] = useState<{ id: string; name: string } | null>(null);
 
-  // Pending per-page settings edits, keyed by page id, flushed on Save. `seoDirty`
+  // Pending per-page settings edits, keyed by page id, flushed on Save. `settingsDirty`
   // mirrors "the map is non-empty" into render so the Save button lights up for a
   // settings-only change — silica never fires `onChange` for these, so without it an
   // operator could type a page description and find Save still greyed out.
-  const seoEditsRef = useRef<Map<string, PageSeoDraft>>(new Map());
-  const [seoDirty, setSeoDirty] = useState(false);
+  const settingsEditsRef = useRef<Map<string, PageSettingsDraft>>(new Map());
+  const [settingsDirty, setSettingsDirty] = useState(false);
 
   // The slug of the page currently open in the editor, so Preview opens THAT page.
   // silica owns which page is active and reports it through `onActivePageChange` (on
@@ -461,7 +482,7 @@ function StudioEditor({
   // a page-settings edit it knows nothing about. The dirty dot, the close-guard, the
   // status badge and the Save button all read this, so a settings-only change is as
   // protected as a canvas one.
-  const unsaved = dirty || seoDirty;
+  const unsaved = dirty || settingsDirty;
 
   useDirtySource(unsaved, 'Your site has unsaved changes. Close it anyway?');
 
@@ -563,10 +584,10 @@ function StudioEditor({
    *  immediately so the editor keeps ONE Save button — `doSync` flushes these right
    *  after the site reconcile. A null clears the entry, which is how the dirty flag
    *  goes back down when the operator undoes their own typing. */
-  const onPageSeoChange = useCallback((pageId: string, next: PageSeoDraft | null) => {
-    if (next) seoEditsRef.current.set(pageId, next);
-    else seoEditsRef.current.delete(pageId);
-    setSeoDirty(seoEditsRef.current.size > 0);
+  const onPageSettingsChange = useCallback((pageId: string, next: PageSettingsDraft | null) => {
+    if (next) settingsEditsRef.current.set(pageId, next);
+    else settingsEditsRef.current.delete(pageId);
+    setSettingsDirty(settingsEditsRef.current.size > 0);
   }, []);
 
   const doSync = useCallback(async () => {
@@ -576,6 +597,10 @@ function StudioEditor({
     // ONLY deletions this save may perform. Anything else absent from `currentIds`
     // (e.g. a page an agent just created over MCP) is not ours to delete.
     const deletedPageIds = [...baselineIdsRef.current].filter((id) => !currentIds.has(id));
+    const currentFrameIds = new Set(Object.keys(next.frames ?? {}));
+    const deletedFrameIds = [...baselineFrameIdsRef.current].filter(
+      (id) => !currentFrameIds.has(id)
+    );
     const ops = opsBufferRef.current;
     const batchId = ops.length > 0 ? batchIdRef.current : null;
     // Record our own batch so live-sync skips its echo when the relay comes back around.
@@ -602,7 +627,7 @@ function StudioEditor({
       });
     }
 
-    await sync.mutateAsync(toSyncInput(next, deletedPageIds, ops, batchId));
+    await sync.mutateAsync(toSyncInput(next, deletedPageIds, deletedFrameIds, ops, batchId));
     // Committed — drop the buffer (a failed save threw above, keeping ops + batch id for a
     // retry under the SAME id, so the op log never double-appends).
     opsBufferRef.current = [];
@@ -610,27 +635,29 @@ function StudioEditor({
     // The server now holds our current set (having deleted only what we named); advance
     // the baseline so the next removal is computed against the truth, not the load.
     baselineIdsRef.current = currentIds;
+    baselineFrameIdsRef.current = currentFrameIds;
     setDirty(false);
 
-    // Page settings (title/description/social picture/indexing) land AFTER the sync, and
-    // that order is load-bearing: a page created in this session has no row until the
+    // Page settings (chrome choice, title/description/social picture/indexing) land
+    // AFTER the sync, and that order is load-bearing: a page created in this session
+    // has no row until the
     // sync creates it, so patching first would 404 and lose the operator's words.
     // Deletions are honoured too — settings for a page removed in this same save have
     // nothing left to attach to.
-    const edits = [...seoEditsRef.current].filter(([id]) => currentIds.has(id));
+    const edits = [...settingsEditsRef.current].filter(([id]) => currentIds.has(id));
     if (edits.length > 0) {
       await Promise.all(
         edits.map(([pageId, draft]) =>
-          updatePageSeo.mutateAsync({ pageId, seo: draftToPatch(draft) })
+          updatePageSettings.mutateAsync({ pageId, settings: draftToPatch(draft) })
         )
       );
     }
     // Cleared only AFTER the patches resolve. Clearing first would mean a failed
     // request threw with the operator's words already discarded — they would reopen the
     // drawer to find their description gone and the error blaming the save.
-    for (const [id] of edits) seoEditsRef.current.delete(id);
-    setSeoDirty(seoEditsRef.current.size > 0);
-  }, [sync, updatePageSeo, savePiece]);
+    for (const [id] of edits) settingsEditsRef.current.delete(id);
+    setSettingsDirty(settingsEditsRef.current.size > 0);
+  }, [sync, updatePageSettings, savePiece]);
 
   const onSave = useCallback(async () => {
     try {
@@ -809,8 +836,8 @@ function StudioEditor({
               // in this session cannot (there is no row yet), so the form opens blank
               // and its first write rides the save that creates the row.
               saved={activePage ? baselineIdsRef.current.has(activePage.id) : false}
-              pending={activePage ? (seoEditsRef.current.get(activePage.id) ?? null) : null}
-              onChange={onPageSeoChange}
+              pending={activePage ? (settingsEditsRef.current.get(activePage.id) ?? null) : null}
+              onChange={onPageSettingsChange}
             />
             <SiteCheck
               open={checkOpen}
@@ -919,6 +946,7 @@ function ApplyInitialPiece({ pieceKey }: { pieceKey: string }) {
 function toSyncInput(
   site: Site,
   deletedPageIds: string[],
+  deletedFrameIds: string[],
   ops: readonly Op[] = [],
   batchId: string | null = null
 ): SiteSyncInput {
@@ -936,6 +964,21 @@ function toSyncInput(
       ? { ops: ops as unknown as SiteSyncInput['ops'], batchId, baseSeq: 0 }
       : {}),
     ...(site.frame ? { frame: { root: site.frame.root } } : {}),
+    // The NAMED layouts (silicaui 0.37) — the alternative shells the engine's own
+    // layout switcher creates. Sent whenever the engine reports any, and their removal
+    // is stated explicitly beside them for the same reason page deletions are: a
+    // layout an agent added over MCP while this editor was open must survive this save.
+    ...(site.frames && Object.keys(site.frames).length > 0
+      ? {
+          frames: Object.fromEntries(
+            Object.entries(site.frames).map(([id, frame]) => [
+              id,
+              { root: frame.root, name: frame.name, editable: frame.editable },
+            ])
+          ),
+        }
+      : {}),
+    ...(deletedFrameIds.length > 0 ? { deletedFrameIds } : {}),
     // Sent even when EMPTY, unlike the other optional halves: the sync treats an
     // absent `symbols` as "not speaking about symbols" and preserves what is stored
     // (site-service `symbolsUpdateFor`). A site whose only symbols were tenant ones

@@ -16,6 +16,7 @@ import { useMutation, useQuery, useQueryClient } from '@sparx/query';
 import { ApiError } from '@sparx/api-client';
 import type {
   BindingCatalog,
+  BuilderLayoutDto,
   SilicaPieceDto,
   SitePublishState,
   SiteSyncInput,
@@ -302,7 +303,7 @@ export function useRestoreDraftVersion() {
   });
 }
 
-// ── Page settings (how one page appears in search + when shared) ─────────────
+// ── Page settings (how one page appears in search, and what chrome wraps it) ──
 //
 // These columns live on the `BuilderPage` ROW, not in the silica tree: silica's `Page`
 // is deliberately flat (`{id,name,slug,root}`) and has no home for domain metadata. The
@@ -310,9 +311,16 @@ export function useRestoreDraftVersion() {
 // both. This is the gap that made the whole SEO chain dead weight — the storefront read
 // these fields on every render, the audit graded them, and nothing in the editor could
 // ever set them.
+//
+// `frameId` arrived the same way and had the same gap in reverse: the column, the
+// resolver and the storefront read all shipped, `PATCH` accepted it, and nothing in the
+// editor could point a page at a different shell or turn the chrome off.
 
-/** What one page says about itself to search engines and social cards. */
-export interface PageSeo {
+/** One page's row-level settings: how it describes itself to search engines and social
+ *  cards, and which chrome wraps it. */
+export interface PageSettingsDto {
+  /** `null` = the site default, `'none'` = bare, otherwise a layout id (doc 139 §5). */
+  frameId: string | null;
   seoTitle: string | null;
   seoDescription: string | null;
   canonical: string | null;
@@ -320,15 +328,15 @@ export interface PageSeo {
   noindex: boolean;
 }
 
-export const PAGE_SEO_KEY = (pageId: string) => ['builder', 'page-seo', pageId];
+export const PAGE_SETTINGS_KEY = (pageId: string) => ['builder', 'page-settings', pageId];
 
 /** The stored settings for ONE page. Fetched only while the drawer is open, and only
  *  for a page the server actually has — a page created in this session has no row until
  *  the next Save, so asking for it would 404. */
-export function usePageSeo(pageId: string | null, enabled: boolean) {
+export function usePageSettings(pageId: string | null, enabled: boolean) {
   return useQuery({
-    queryKey: PAGE_SEO_KEY(pageId ?? 'none'),
-    queryFn: () => api.get<PageSeo>(`/v1/builder/pages/${encodeURIComponent(pageId!)}`),
+    queryKey: PAGE_SETTINGS_KEY(pageId ?? 'none'),
+    queryFn: () => api.get<PageSettingsDto>(`/v1/builder/pages/${encodeURIComponent(pageId!)}`),
     enabled: enabled && Boolean(pageId),
     staleTime: 10_000,
   });
@@ -338,15 +346,46 @@ export function usePageSeo(pageId: string | null, enabled: boolean) {
  *  reconcile owns TREES, these are row columns, and folding them into that payload
  *  would widen a contract the op-log and the live relay both speak. The studio still
  *  presents ONE Save — it flushes these right after the sync. */
-export function useUpdatePageSeo() {
+export function useUpdatePageSettings() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: ({ pageId, seo }: { pageId: string; seo: Partial<PageSeo> }) =>
-      api.patch<unknown>(`/v1/builder/pages/${encodeURIComponent(pageId)}`, seo),
+    mutationFn: ({ pageId, settings }: { pageId: string; settings: Partial<PageSettingsDto> }) =>
+      api.patch<unknown>(`/v1/builder/pages/${encodeURIComponent(pageId)}`, settings),
     onSuccess: (_data, { pageId }) => {
-      void queryClient.invalidateQueries({ queryKey: PAGE_SEO_KEY(pageId) });
+      void queryClient.invalidateQueries({ queryKey: PAGE_SETTINGS_KEY(pageId) });
     },
   });
+}
+
+// ── The chrome catalog (what the per-page frame picker chooses from) ─────────
+
+export const LAYOUTS_KEY = ['builder', 'layouts'];
+
+/** The property's header/footer designs — id, name, and which one is live.
+ *
+ *  This reads the ordinary catalog endpoint, which returns each layout's full draft
+ *  tree, and uses only the names. That is deliberate rather than an oversight: a
+ *  tree-less projection exists for PAGES because that read ran on the busiest list in
+ *  the builder over every page in the property (docs/127 §3). This one runs when a
+ *  drawer opens, over a handful of header/footer trees, so a second list endpoint
+ *  would cost more in API surface than it saves on the wire. */
+export function useLayouts(enabled: boolean) {
+  return useQuery({
+    queryKey: LAYOUTS_KEY,
+    queryFn: async () => {
+      const { layouts } = await api.get<{ layouts: BuilderLayoutDto[] }>('/v1/builder/layouts');
+      return layouts.map(({ id, name, isActive }) => ({ id, name, isActive }));
+    },
+    enabled,
+    staleTime: 30_000,
+  });
+}
+
+/** One entry in the frame picker — the catalog stripped to what a chooser shows. */
+export interface LayoutChoice {
+  id: string;
+  name: string;
+  isActive: boolean;
 }
 
 /** Snapshot every silica draft tree → published, sealing a release. */
