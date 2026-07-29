@@ -291,6 +291,17 @@ module "pubsub" {
     "redirect.added"   = []
     "redirect.removed" = []
 
+    # Site publish (api-rest publishes on publish + rollback). The intended
+    # consumer is cache-revalidation-worker, which maps `builder.*` onto the
+    # `builder:<slug>` cache tag — but that worker is not deployed yet (no
+    # Cloud Run service, no k8s manifest), so these are topic-only. They exist
+    # NOW because every storefront route is still `force-dynamic`: nothing is
+    # cached, so a missing subscriber costs nothing, whereas a missing TOPIC
+    # would make the publisher fail silently and leave the switch to ISR
+    # looking fine right up until a rollback served a stale broken page.
+    "builder.published"   = []
+    "builder.rolled_back" = []
+
     # Dropship (docs/14). dropship-worker (Cloud Run) consumes
     # dropship.supplier.sync_started + dropship.order.route + order.placed via
     # its push subscriptions in serverless.tf — topic-only here (empty list =

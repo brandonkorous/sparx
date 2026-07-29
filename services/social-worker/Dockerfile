@@ -13,13 +13,24 @@ RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
 WORKDIR /app
 
 # Workspace context — minimum needed to install social-worker + its transitive
-# workspace deps (db, social, events, attribution; all dependency-free themselves).
+# workspace deps (db, social, events, attribution).
+#
+# @sparx/social is NOT dependency-free, despite what this comment used to say: it
+# declares @sparx/api-core, and `@sparx/social/service` — which publish.ts imports —
+# re-exports posts/lifecycle/hashtags/slots/inbox, every one of which pulls
+# `@sparx/api-core/errors` for `badRequest`. Without api-core present the filtered
+# install leaves a dangling symlink, the import throws ERR_MODULE_NOT_FOUND at boot,
+# and the container dies before it ever binds PORT — which Cloud Run reports only as
+# "failed to start and listen on the port", naming nothing. api-core brings
+# @sparx/cms-schemas with it (db + events are already here).
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
 COPY packages/social ./packages/social
 COPY packages/events ./packages/events
 COPY packages/attribution ./packages/attribution
+COPY packages/api-core ./packages/api-core
+COPY packages/cms-schemas ./packages/cms-schemas
 COPY services/social-worker ./services/social-worker
 
 # Filtered install pulls only @sparx/social-worker + transitive workspace deps;
