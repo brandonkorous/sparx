@@ -14,7 +14,7 @@
 // it. Here the collapse happens in `mergeFindings` on (tree, node, class), which keeps
 // that property for a class repeated across a page while still pointing at something.
 
-import { checkClassString, type VocabularyIssue } from '@sparx/silica-catalog';
+import { checkClassString, containerVariants, type VocabularyIssue } from '@sparx/silica-catalog';
 
 import type { DocumentInventory } from './walk';
 import type { RawFinding } from './finding';
@@ -80,6 +80,36 @@ export function checkClasses(inventory: DocumentInventory): RawFinding[] {
   for (const visited of inventory.nodes) {
     const classes = visited.node.class;
     if (!classes) continue;
+
+    // A container variant with no `@container` ancestor is the third way styling can
+    // compile and do nothing — and the only one a per-class check cannot see, because
+    // the answer is in the ANCESTORS. `@3xl:grid-cols-3` is valid Tailwind, emits real
+    // CSS, and never matches, so the two-column layout the author was trying to fix
+    // stays two columns at every width with nothing anywhere to explain it.
+    //
+    // Reported as a suggestion, matching the engine's own `warn` level: an orphaned
+    // container query is inert rather than dangerous, and a section pasted before its
+    // wrapper hits this legitimately for a moment.
+    if (!visited.inContainer) {
+      const orphaned = containerVariants(classes);
+      if (orphaned.length > 0) {
+        findings.push({
+          origin: visited.origin,
+          nodeId: visited.node.id ?? null,
+          nodePath: visited.nodePath,
+          rule: 'class-container-orphan',
+          severity: 'suggestion',
+          title: 'This responsive styling never takes effect',
+          detail:
+            'Styling that only applies at a certain width needs a wrapper marked as the thing ' +
+            'being measured. Nothing above this is marked, so the rule never matches and the ' +
+            'layout stays the same at every size. Add `@container` to a section or wrapper above ' +
+            'it — the seeded sections, the nav and the footer already have one.',
+          evidence: orphaned.join(' '),
+        });
+      }
+    }
+
     for (const issue of checkClassString(classes)) {
       const wording = wordingFor(issue.reason);
       findings.push({

@@ -138,6 +138,7 @@ export type LintRuleId =
   // Styling
   | 'class-no-css'
   | 'class-preview-blind'
+  | 'class-container-orphan'
   // Color
   | 'contrast-low'
   | 'contrast-unreadable'

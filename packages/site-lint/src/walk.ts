@@ -22,7 +22,7 @@
 // product card on every collection template.
 
 import { applyOverrides, type Node as SilicaNode, type SymbolDef } from '@wizeworks/silicaui-html';
-import { carrierBoundAttrs } from '@sparx/silica-catalog';
+import { boundAttrs, establishesContainer } from '@sparx/silica-catalog';
 
 import { paintOf, ROOT_PAINT, type PaintContext } from './paint';
 import type { LintablePage, LintScope } from './types';
@@ -77,6 +77,10 @@ export interface VisitedNode {
    *  contrast rule because inheritance needs the ancestor chain, and handing rules an
    *  ancestor chain is how a rule ends up reading the wrong parent. */
   paint: PaintContext;
+  /** An ancestor (or this node) establishes a CSS query container, so a container
+   *  variant here resolves. Threaded for the same reason as `paint`: the answer needs
+   *  the ancestor chain, and handing a rule the chain is how it reads the wrong one. */
+  inContainer: boolean;
 }
 
 /** Everything one page's composed document yields, gathered in a single pass. */
@@ -155,15 +159,16 @@ export function isBound(node: ContentNode): boolean {
  * Does something fill THIS attribute at render time? An `<a>` bound with
  * `attr: 'href'` has a destination even though its authored `href` is empty.
  *
- * Two mechanisms, and both have to be consulted. silica's own binding is on the node.
- * The sparx ATTRIBUTE CARRIER is not: `bindAttr` tucks a hidden bound `<input>` inside
- * the element and hoists its value onto the parent just before render, because the
- * engine cannot yet resolve children through an attribute binding. A product card is
- * the main user of it, and to anything reading only the node it looks like an anchor
- * with no href — which is exactly what the dead-control rule reports.
+ * A product card is the main user of it, and to anything reading only the node it looks
+ * like an anchor with no href — which is exactly what the dead-control rule reports.
+ * These were two genuinely different mechanisms until silicaui 0.36.0, when the sparx
+ * attribute CARRIER (a hidden bound `<input>`, hoisted onto the parent before render)
+ * retired into the engine's native binding. `boundAttrs` and the `node.data` check below
+ * now read the same thing from two angles; both are kept because the second also covers
+ * a binding authored directly in the builder rather than by a catalog factory.
  */
 export function bindsAttr(node: ContentNode, name: string): boolean {
-  if (carrierBoundAttrs(node).includes(name)) return true;
+  if (boundAttrs(node).includes(name)) return true;
   const data = node.data;
   if (!data) return false;
   if (data.kind === 'action') return name === 'href';
@@ -286,12 +291,12 @@ export function inventoryOf(
   };
 
   if (frame?.root) {
-    visit(state, frame.root, FRAME_ORIGIN, '', false, false, ROOT_PAINT);
+    visit(state, frame.root, FRAME_ORIGIN, '', false, false, ROOT_PAINT, false);
   } else {
     // No frame: the page body IS the document, and there is nothing to splice, so
     // `hasOutlet` is vacuously satisfied rather than reported as a missing outlet.
     state.hasOutlet = true;
-    visit(state, page.root, state.pageOrigin, '', false, false, ROOT_PAINT);
+    visit(state, page.root, state.pageOrigin, '', false, false, ROOT_PAINT, false);
   }
 
   return {
@@ -310,7 +315,8 @@ function visit(
   parentPath: string,
   inControl: boolean,
   inInteractive: boolean,
-  parentPaint: PaintContext
+  parentPaint: PaintContext,
+  parentInContainer: boolean
 ): void {
   // The outlet is where the page body goes. It contributes no node of its own —
   // it is a marker, not markup — so it is not recorded, only followed. The paint
@@ -324,7 +330,8 @@ function visit(
       parentPath,
       inControl,
       inInteractive,
-      parentPaint
+      parentPaint,
+      parentInContainer
     );
     return;
   }
@@ -332,6 +339,7 @@ function visit(
   const type = typeOf(node);
   const nodePath = parentPath ? `${parentPath} › ${type}` : type;
   const paint = paintOf(parentPaint, node.class);
+  const inContainer = parentInContainer || establishesContainer(node.class);
 
   state.nodes.push({
     node,
@@ -341,6 +349,7 @@ function visit(
     inControl,
     inInteractive,
     paint,
+    inContainer,
   });
 
   const domId = attr(node, 'id');
@@ -367,7 +376,8 @@ function visit(
       nodePath,
       inControl,
       inInteractive,
-      paint
+      paint,
+      inContainer
     );
     state.expanding.delete(instanceOf);
     return;
@@ -383,6 +393,6 @@ function visit(
   // page body in it, which reported every page on the site as empty.
   for (const child of node.children ?? []) {
     if (typeof child === 'string') continue;
-    visit(state, child, origin, nodePath, nextInControl, nextInInteractive, paint);
+    visit(state, child, origin, nodePath, nextInControl, nextInInteractive, paint, inContainer);
   }
 }

@@ -320,8 +320,10 @@ describe('controls', () => {
     expect(found?.title).toBe('This looks like a link but is not one');
   });
 
-  it('accepts an anchor whose destination arrives through an attribute carrier', () => {
-    // The product card: no authored href, a hidden bound carrier instead.
+  it('accepts an anchor whose destination arrives through an attribute BINDING', () => {
+    // The product card: no authored href, a bound one instead. (This used to arrive via
+    // a hidden carrier input; silicaui 0.36.0 made it a native binding, and the rule has
+    // to keep seeing it either way or every product card reports as a dead link.)
     const card = bindAttr(
       el('a', 'card', { children: [el('span', '', { text: 'Product' })] }),
       'href',

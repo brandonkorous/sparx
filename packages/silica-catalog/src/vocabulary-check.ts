@@ -160,6 +160,36 @@ export function viewportVariant(className: string): { container: string; rest: s
   return null;
 }
 
+/**
+ * The CONTAINER variants in a class string — `@2xl:grid-cols-3`, `@max-md:hidden`.
+ *
+ * The counterpart to `viewportVariant`: that one finds the classes that are wrong here,
+ * this one finds the classes that are right but INERT unless an ancestor establishes a
+ * container. A `@`-prefixed segment is unambiguous — Tailwind's viewport breakpoints
+ * carry no `@`, so the two vocabularies cannot collide.
+ */
+export function containerVariants(className: string | undefined): string[] {
+  if (!className) return [];
+  return className
+    .split(/\s+/)
+    .filter(Boolean)
+    .filter((token) => {
+      const parts = token.split(':');
+      if (parts.length < 2) return false;
+      return parts.slice(0, -1).some((p) => p.startsWith('@') && p !== '@container');
+    });
+}
+
+/** Does this class string make its element a query container? `@container` alone, or a
+ *  NAMED one (`@container/card`), which is what a nested card inside a section needs so
+ *  its own variants resolve against the card rather than the section. */
+export function establishesContainer(className: string | undefined): boolean {
+  if (!className) return false;
+  return className
+    .split(/\s+/)
+    .some((token) => token === '@container' || token.startsWith('@container/'));
+}
+
 /** Check ONE class token. Null when it is fine (or not our business). */
 export function checkClass(className: string): VocabularyIssue | null {
   if (!className) return null;
