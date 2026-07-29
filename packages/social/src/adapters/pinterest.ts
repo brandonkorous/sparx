@@ -26,6 +26,7 @@ import type {
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialPostMetrics,
   SocialPublishResult,
   SocialTargetRef,
   SocialTokens,
@@ -78,6 +79,28 @@ export function pinterestPermalink(id: string): string {
   return `https://www.pinterest.com/pin/${id}/`;
 }
 
+/** UTC calendar date as YYYY-MM-DD — the format Pinterest's analytics window expects. */
+function isoDate(d: Date): string {
+  return d.toISOString().slice(0, 10);
+}
+
+/** Map Pinterest's pin-analytics summary onto the platform-neutral metric shape. Pure,
+ *  so the mapping is unit-tested without any network. Pinterest reports engagement in
+ *  its own vocabulary; we translate the two with a clean home: IMPRESSION → impressions
+ *  (Views), and SAVE (a repin — how a Pin spreads) → shares. Click metrics (PIN_CLICK /
+ *  OUTBOUND_CLICK) have no field in the shared shape yet, so they're left out rather than
+ *  mislabelled. */
+export function mapPinterestMetrics(
+  summary: Record<string, number | undefined> | undefined
+): SocialPostMetrics {
+  const metrics: SocialPostMetrics = {};
+  const impression = summary?.IMPRESSION;
+  const save = summary?.SAVE;
+  if (typeof impression === 'number') metrics.impressions = impression;
+  if (typeof save === 'number') metrics.shares = save;
+  return metrics;
+}
+
 interface PinterestTokenResponse {
   access_token: string;
   refresh_token?: string;
@@ -98,6 +121,10 @@ interface PinterestBoardsResponse {
 }
 interface PinterestPinResponse {
   id: string;
+}
+/** Pin analytics as Pinterest returns it, keyed by the split field (default "all"). */
+interface PinterestPinAnalytics {
+  all?: { summary_metrics?: Record<string, number | undefined> };
 }
 
 export class PinterestAdapter implements SocialAdapter {
@@ -239,6 +266,34 @@ export class PinterestAdapter implements SocialAdapter {
     }
     const data = (await res.json()) as PinterestPinResponse;
     return { externalId: data.id, permalink: pinterestPermalink(data.id) };
+  }
+
+  /** Read a Pin's engagement for the "how did it do?" panel. Pinterest requires an
+   *  explicit date window (≤90 days, ending today), so we ask for a trailing 90-day span
+   *  — enough to cover a recently published Pin's full run so far. Uses the `pins:read`
+   *  scope we already request. Best-effort by contract: the collect worker skips a target
+   *  whose analytics call throws, so a Pin simply shows dashes until data lands. */
+  async getMetrics(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    externalId: string
+  ): Promise<SocialPostMetrics> {
+    void target; // metrics read against the user token; no per-board token needed
+    const end = new Date();
+    const start = new Date(end.getTime() - 89 * 24 * 60 * 60 * 1000);
+    const params = new URLSearchParams({
+      start_date: isoDate(start),
+      end_date: isoDate(end),
+      metric_types: 'IMPRESSION,SAVE',
+    });
+    const res = await fetchT(`${API_BASE}/pins/${externalId}/analytics?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${auth.accessToken}` },
+    });
+    if (!res.ok) {
+      throw new Error(`Pinterest pin analytics failed: ${await describeResponse(res)}`);
+    }
+    const data = (await res.json()) as PinterestPinAnalytics;
+    return mapPinterestMetrics(data.all?.summary_metrics);
   }
 
   // ── internals ──

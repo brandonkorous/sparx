@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { PinterestAdapter, pinterestPermalink, planPinterestPin } from './pinterest.js';
+import {
+  mapPinterestMetrics,
+  PinterestAdapter,
+  pinterestPermalink,
+  planPinterestPin,
+} from './pinterest.js';
 import type { RenderedPost } from '../types.js';
 
 // The Pinterest adapter's pure decision logic (docs/134 Phase 3). Network calls (token
@@ -11,6 +16,28 @@ const rendered = (over: Partial<RenderedPost>): RenderedPost => ({
   text: 'Hello',
   mediaUrls: [],
   ...over,
+});
+
+describe('mapPinterestMetrics', () => {
+  it('maps IMPRESSION → impressions and SAVE → shares', () => {
+    expect(mapPinterestMetrics({ IMPRESSION: 1200, SAVE: 34 })).toEqual({
+      impressions: 1200,
+      shares: 34,
+    });
+  });
+
+  it('omits metrics the platform did not report (dash, not a fake zero)', () => {
+    expect(mapPinterestMetrics({ IMPRESSION: 5 })).toEqual({ impressions: 5 });
+    expect(mapPinterestMetrics({})).toEqual({});
+    expect(mapPinterestMetrics(undefined)).toEqual({});
+  });
+
+  it('ignores click metrics that have no home in the shared shape', () => {
+    // PIN_CLICK / OUTBOUND_CLICK are deliberately dropped rather than mislabelled.
+    expect(mapPinterestMetrics({ IMPRESSION: 10, PIN_CLICK: 3, OUTBOUND_CLICK: 2 })).toEqual({
+      impressions: 10,
+    });
+  });
 });
 
 describe('planPinterestPin', () => {
