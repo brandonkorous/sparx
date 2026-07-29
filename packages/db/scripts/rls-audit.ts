@@ -18,6 +18,25 @@
 // corrected form, the check is last-definition-wins: a historical raw policy that
 // a later migration supersedes is fine.
 //
+// It ALSO asserts that every cross-tenant DISPATCH SCAN can actually read what
+// it scans. A `find_*` SECURITY DEFINER function is owned by `sparx_owner` and
+// runs with NO `app.tenant_id` set — that is the point of a cross-tenant scan.
+// But Decision F3 puts FORCE ROW LEVEL SECURITY on every tenant table precisely
+// so `sparx_owner` CANNOT bypass RLS, so such a scan matches
+// `tenant_id = current_tenant_id()` against NULL and returns ZERO ROWS. No
+// error, no log — the background feature simply never fires, and it passes
+// locally because docker's `sparx_owner` is a superuser. Each scanned FORCE-RLS
+// table therefore needs a PERMISSIVE `FOR SELECT TO sparx_owner` policy.
+//
+// This has now shipped broken TWICE. 20270117000000_dispatch_scan_owner_rls
+// fixed twelve tables after booking notifications were found piling up unsent;
+// within a week six more scans were added with no policy (the whole social
+// health/inbox/metrics sweep plus the email-sequence drain), and every one of
+// them returned zero rows in prod until 20270126000000_scan_owner_rls_backfill.
+// Nothing tied "add a scan" to "grant the owner read on what it scans" — so
+// that pairing is enforced here, statically, and fails pre-push instead of
+// silently doing nothing in production for a week.
+//
 // Junction tables (no `tenant_id` column, e.g. commerce_category_products)
 // are skipped — tenant scoping rides through their FK parents via
 // ON DELETE CASCADE.
@@ -117,6 +136,31 @@ interface PolicyForm {
   unsafe: boolean;
 }
 
+// A cross-tenant dispatch scan: `find_*` + SECURITY DEFINER. Captures the name,
+// the header (params → SET/STABLE, where SECURITY DEFINER lives) and the body.
+// The other SECURITY DEFINER functions in the schema (resolve_b2b_price,
+// sync_b2b_credit_used, ensure_crm_activities_partition, current_user_id) are
+// deliberately NOT matched: they are called from a request that already carries
+// tenant context, so the tenant_isolation policy is exactly what they want.
+const SCAN_FN_RE =
+  /CREATE\s+(?:OR\s+REPLACE\s+)?FUNCTION\s+(find_[a-z0-9_]*)\s*\(([\s\S]*?)AS\s+\$\$([\s\S]*?)\$\$/gi;
+
+// Relations a scan body reads. Over-matches by design (aliases, LATERAL, CTEs);
+// the result is intersected with the known-table set, which filters those out.
+const SCAN_TABLE_REF_RE = /\b(?:FROM|JOIN)\s+"?([a-z_][a-z0-9_]*)"?/gi;
+
+// A policy handing the definer role its read: `TO sparx_owner`, whether the
+// narrow FOR SELECT form or the FOR ALL one used by platform_components.
+const OWNER_GRANT_RE = /\bTO\s+sparx_owner\b/i;
+
+/** A scan function and the tables it reads. Last definition wins — several are
+ *  redefined by later migrations (find_due_calendar_connections,
+ *  find_active_scheduled_automations), and only the final body is live. */
+interface ScanFn {
+  migration: string;
+  tables: string[];
+}
+
 function main(): void {
   const migrations = fs
     .readdirSync(MIGRATIONS_DIR)
@@ -127,6 +171,10 @@ function main(): void {
   const rlsByTable = new Map<string, RlsState>();
   // Last-definition-wins: the form of the most recent CREATE POLICY per table.
   const policyForm = new Map<string, PolicyForm>();
+  // Tables carrying a policy that grants the definer role a read.
+  const ownerReadTables = new Set<string>();
+  // Cross-tenant dispatch scans, by function name (last definition wins).
+  const scanFns = new Map<string, ScanFn>();
 
   for (const m of migrations) {
     const sqlPath = path.join(MIGRATIONS_DIR, m, 'migration.sql');
@@ -177,6 +225,23 @@ function main(): void {
       // Last write wins: a later migration recreating the policy in the safe
       // form clears an earlier raw one.
       policyForm.set(t, { migration: m, unsafe: UNSAFE_GUC_RE.test(body) });
+      // Additive, NOT last-write-wins: the owner-read grant is a SEPARATE policy
+      // sitting alongside tenant_isolation on the same table, so a later
+      // tenant_isolation rewrite must not appear to revoke it.
+      if (OWNER_GRANT_RE.test(body)) ownerReadTables.add(t);
+    }
+
+    // Cross-tenant dispatch scans and the relations they read.
+    SCAN_FN_RE.lastIndex = 0;
+    let sm: RegExpExecArray | null;
+    while ((sm = SCAN_FN_RE.exec(sql)) !== null) {
+      const [, name, header = '', fnBody = ''] = sm;
+      if (!/SECURITY\s+DEFINER/i.test(header)) continue;
+      const refs = new Set<string>();
+      SCAN_TABLE_REF_RE.lastIndex = 0;
+      let rm: RegExpExecArray | null;
+      while ((rm = SCAN_TABLE_REF_RE.exec(fnBody)) !== null) refs.add(rm[1]!);
+      scanFns.set(name!, { migration: m, tables: [...refs] });
     }
   }
 
@@ -215,6 +280,20 @@ function main(): void {
     .filter(([, form]) => form.unsafe)
     .map(([table, form]) => ({ table, migration: form.migration }));
 
+  // Scan-reachability check: every FORCE-RLS table a cross-tenant scan reads
+  // must grant the definer role a read, or the scan returns zero rows in prod.
+  // Intersecting with the known-table set drops aliases/CTEs/LATERAL noise, and
+  // non-RLS relations (`tenants`, `domains`) need no policy by definition.
+  const unreadableScans = [...scanFns.entries()]
+    .map(([fn, def]) => ({
+      fn,
+      migration: def.migration,
+      blocked: def.tables.filter(
+        (t) => rlsByTable.get(t)?.hasForce === true && !ownerReadTables.has(t)
+      ),
+    }))
+    .filter((s) => s.blocked.length > 0);
+
   const totalTenantTables = [...tablesByName.values()].filter(
     (t) => t.hasTenantId && !SHARED_REFERENCE_TABLES.has(t.name)
   ).length;
@@ -222,10 +301,12 @@ function main(): void {
   console.log(`Audited ${tablesByName.size} tables (${totalTenantTables} tenant-scoped).`);
   console.log(`  ENABLE-only by design: ${ENABLE_ONLY_TABLES.size}`);
   console.log(`  Shared reference (no RLS): ${SHARED_REFERENCE_TABLES.size}`);
+  console.log(`  Cross-tenant dispatch scans: ${scanFns.size}`);
 
-  if (findings.length === 0 && unsafeGuc.length === 0) {
+  if (findings.length === 0 && unsafeGuc.length === 0 && unreadableScans.length === 0) {
     console.log(
-      '\nOK — every tenant-scoped table has the required RLS clauses, and every policy reads its GUC via current_tenant_id().'
+      '\nOK — every tenant-scoped table has the required RLS clauses, every policy reads its\n' +
+        'GUC via current_tenant_id(), and every cross-tenant scan can read what it scans.'
     );
     process.exit(0);
   }
@@ -253,6 +334,26 @@ function main(): void {
         'missing-safe helper — USING (tenant_id = current_tenant_id()) — which\n' +
         'returns NULL on an unset GUC instead of throwing 42704 under FORCE RLS.\n' +
         '(See 20260801000000_fix_b2b_import_rls_guc for the canonical pattern.)'
+    );
+  }
+
+  if (unreadableScans.length > 0) {
+    console.error(
+      `\nFAIL — ${unreadableScans.length} cross-tenant scan(s) read a FORCE-RLS table the\n` +
+        'definer role cannot see. Each returns ZERO ROWS in prod — silently, with no\n' +
+        'error — so whatever background feature it drives never fires:\n'
+    );
+    for (const s of unreadableScans) {
+      console.error(`  ${s.fn}()  (defined in ${s.migration})`);
+      for (const t of s.blocked) console.error(`    - no owner read on: ${t}`);
+    }
+    console.error(
+      '\nFix: add a migration granting the definer a read on each table listed —\n' +
+        '  CREATE POLICY <table>_owner_read ON "<table>"\n' +
+        '      AS PERMISSIVE FOR SELECT TO sparx_owner USING (true);\n' +
+        'This opens nothing for sparx_app and grants no cross-tenant WRITE: the scan\n' +
+        'only READS, and the per-row work still runs under withTenant({tenantId}).\n' +
+        '(See 20270126000000_scan_owner_rls_backfill for the canonical pattern.)'
     );
   }
 
