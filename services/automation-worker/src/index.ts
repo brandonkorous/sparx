@@ -2,6 +2,12 @@
 // the route contract) and listens; the server logic itself is side-effect-free
 // so the integration suite can drive it on an ephemeral port.
 
+// MUST be first: raises DATABASE_URL's connection_limit before `@sparx/db`'s client
+// is constructed (it reads the pool size at import). The tick pattern needs >= 2
+// connections or every tick deadlocks with P2024 — see boot-db-pool.ts. Imported
+// only here (the entrypoint), so the integration suite driving server.ts is unaffected.
+import './boot-db-pool.js';
+
 import { env } from './env.js';
 import { createWorkerServer, logger } from './server.js';
 

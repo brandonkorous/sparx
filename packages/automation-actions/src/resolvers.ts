@@ -33,9 +33,37 @@ function num(v: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-function str(v: unknown): string {
-  if (typeof v === 'string') return v;
-  throw new Error(`expected string id on trigger payload, got ${typeof v}`);
+/**
+ * Wrap an id-keyed resolver so a payload that carries NONE of the expected id keys
+ * resolves to NO fields — the event simply fails to match — instead of throwing.
+ *
+ * A throw inside a resolver 500s the Cloud Run push handler, and Pub/Sub then
+ * redelivers the poison message until it DLQs. Observed in prod:
+ * `crm.b2b_account.created` publishes `{ b2bAccountId }` while this resolver read
+ * only `accountId`/`id`, so EVERY B2B-account event crash-looped the subscription.
+ * Degrading to "no match" turns a key mismatch into a rule that quietly does not
+ * fire — visible in the warn log, fixable — rather than a wedged worker. A
+ * transient error INSIDE `hydrate` (a DB blip) still throws, which is correct: that
+ * is exactly the case the push handler's 500 → redeliver path exists for.
+ *
+ * `hydrate` may ignore the `p` argument; a two-arg `(ctx, id)` hydrator assigns
+ * cleanly (fewer params is always assignable).
+ */
+function byId(
+  keys: readonly string[],
+  hydrate: (ctx: TenantCtx, id: string, p: Record<string, unknown>) => Promise<ResolvedFields>
+): (ctx: TenantCtx, p: Record<string, unknown>) => Promise<ResolvedFields> {
+  return (ctx, p) => {
+    for (const k of keys) {
+      const v = p[k];
+      if (typeof v === 'string' && v.length > 0) return hydrate(ctx, v, p);
+    }
+    ctx.deps.logger.warn(
+      { keys, payloadKeys: Object.keys(p) },
+      'automation resolver: trigger payload carries no known entity id — skipping (no fields resolved)'
+    );
+    return Promise.resolve({});
+  };
 }
 
 // ─── customer contact (shared) ───────────────────────────────────────────────
@@ -801,18 +829,24 @@ export function installEntityResolvers(): void {
   installed = true;
 
   for (const ev of BILLING_EVENTS) {
-    registerResolver(ev, (ctx, p) =>
-      hydrateBillingDocument(ctx, str(p.documentId ?? p.billingDocumentId ?? p.quoteId ?? p.id))
+    registerResolver(
+      ev,
+      byId(['documentId', 'billingDocumentId', 'quoteId', 'id'], hydrateBillingDocument)
     );
   }
   for (const ev of B2B_ACCOUNT_EVENTS) {
-    registerResolver(ev, (ctx, p) => hydrateB2bAccount(ctx, str(p.accountId ?? p.id)));
+    // `crm.b2b_account.created` publishes `{ b2bAccountId, ... }` (packages/crm
+    // b2b-account-service) — listed first; the others are defensive fallbacks.
+    registerResolver(ev, byId(['b2bAccountId', 'accountId', 'id'], hydrateB2bAccount));
   }
   for (const ev of B2B_NOTIFICATION_EVENTS) {
-    registerResolver(ev, async (ctx, p) => ({
-      ...(await hydrateB2bAccount(ctx, str(p.accountId ?? p.id))),
-      ...b2bNotificationFields(p),
-    }));
+    registerResolver(
+      ev,
+      byId(['accountId', 'b2bAccountId', 'id'], async (ctx, id, p) => ({
+        ...(await hydrateB2bAccount(ctx, id)),
+        ...b2bNotificationFields(p),
+      }))
+    );
   }
   for (const ev of EMAIL_ENGAGEMENT_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateEmailEngagement(ctx, p));
@@ -821,20 +855,18 @@ export function installEntityResolvers(): void {
     registerResolver(ev, (ctx, p) => hydrateInventory(ctx, p));
   }
   for (const ev of FORM_EVENTS) {
-    registerResolver(ev, (ctx, p) => hydrateFormSubmission(ctx, str(p.submissionId ?? p.id)));
+    registerResolver(ev, byId(['submissionId', 'id'], hydrateFormSubmission));
   }
 
   // Task created (docs/11) — crm.* tees to the automation fan-in via the CRM bus.
   // The payload is thin ({ taskId, ... }); hydrateTask re-reads the row for the
   // title/due date + the linked customer.
-  registerResolver('crm.task.created', (ctx, p) => hydrateTask(ctx, str(p.taskId ?? p.id)));
+  registerResolver('crm.task.created', byId(['taskId', 'id'], hydrateTask));
 
   // Announceable entities (docs/133 §9) — feed the social.post action's `announce.*`
   // namespace. A product going live / an article publishing → draft a social post.
-  registerResolver('product.published', (ctx, p) => hydrateProduct(ctx, str(p.productId ?? p.id)));
-  registerResolver('content.entry.published', (ctx, p) =>
-    hydrateContentEntry(ctx, str(p.entryId ?? p.id))
-  );
+  registerResolver('product.published', byId(['productId', 'id'], hydrateProduct));
+  registerResolver('content.entry.published', byId(['entryId', 'id'], hydrateContentEntry));
 
   // ── scheduled scanners ──────────────────────────────────────────────────────
 

@@ -88,9 +88,17 @@ resource "google_cloud_run_v2_service" "automation_worker" {
   deletion_protection = false
 
   template {
-    service_account                  = google_service_account.automation_worker.email
-    timeout                          = "300s"
-    max_instance_request_concurrency = 8
+    service_account = google_service_account.automation_worker.email
+    timeout         = "300s"
+    # A tick worker, not a throughput service. The engine's `withAdvisoryTickLock`
+    # pattern parks one DB connection on the lock while the tick's work runs on
+    # SEPARATE pool connections, so each in-flight request can hold two connections.
+    # The pool floor is set to 2 * this value in the worker's boot-db-pool.ts
+    # (connection_limit = 5 covers concurrency = 2 with headroom). Cloud Run scales
+    # OUT past this ceiling (up to max_instance_count) rather than piling more
+    # requests onto one instance's pool, so the invariant holds at any load. If you
+    # raise this, raise the connection_limit floor in boot-db-pool.ts to match.
+    max_instance_request_concurrency = 2
 
     scaling {
       # Scale-to-zero: the scheduler wakes it each minute; pushes (Slice E) wake
