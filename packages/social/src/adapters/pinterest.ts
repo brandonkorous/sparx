@@ -44,8 +44,35 @@ import {
 } from './_http.js';
 
 const AUTH_URL = 'https://www.pinterest.com/oauth/';
-const TOKEN_URL = 'https://api.pinterest.com/v5/oauth/token';
-const API_BASE = 'https://api.pinterest.com/v5';
+
+// Production vs Sandbox endpoints. Trial-access apps CANNOT create Pins in production
+// (`api.pinterest.com` returns 403 code 29 — "use API Sandbox instead"). The sandbox is a
+// per-creator isolated environment where a Trial app CAN create Pins + boards — which is
+// how we exercise the write path to record the demo video the Standard-access upgrade
+// requires. The user-facing authorize screen (AUTH_URL) is identical for both; only the
+// token exchange + API calls move. Flip PINTEREST_SANDBOX back off once Standard is
+// granted. Pinterest-only — no other platform is affected.
+const PROD_API_BASE = 'https://api.pinterest.com/v5';
+const SANDBOX_API_BASE = 'https://api-sandbox.pinterest.com/v5';
+const PROD_TOKEN_URL = `${PROD_API_BASE}/oauth/token`;
+const SANDBOX_TOKEN_URL = `${SANDBOX_API_BASE}/oauth/token`;
+
+/** Endpoint pair for the given environment. Pure, so the switch is unit-tested. */
+export function pinterestBases(sandbox: boolean): { api: string; token: string } {
+  return sandbox
+    ? { api: SANDBOX_API_BASE, token: SANDBOX_TOKEN_URL }
+    : { api: PROD_API_BASE, token: PROD_TOKEN_URL };
+}
+
+/** True when PINTEREST_SANDBOX opts this deployment into Pinterest's sandbox (default
+ *  false = production). Tolerates whitespace/case from a secret. */
+export function pinterestSandbox(): boolean {
+  return process.env.PINTEREST_SANDBOX?.trim().toLowerCase() === 'true';
+}
+
+const apiBase = (): string => pinterestBases(pinterestSandbox()).api;
+const tokenEndpoint = (): string => pinterestBases(pinterestSandbox()).token;
+
 const SCOPE = 'boards:read,boards:write,pins:read,pins:write,user_accounts:read';
 const TITLE_MAX = 100;
 const TOKEN_FALLBACK_SECONDS = 2_592_000; // 30 days (Pinterest access tokens)
@@ -163,7 +190,7 @@ export class PinterestAdapter implements SocialAdapter {
   }
 
   async exchangeCode(code: string, ctx: SocialConnectContext): Promise<SocialTokens> {
-    const res = await fetchT(TOKEN_URL, {
+    const res = await fetchT(tokenEndpoint(), {
       method: 'POST',
       headers: {
         Authorization: this.basicAuth(),
@@ -192,7 +219,7 @@ export class PinterestAdapter implements SocialAdapter {
   }
 
   async refresh(refreshToken: string): Promise<SocialTokens> {
-    const res = await fetchT(TOKEN_URL, {
+    const res = await fetchT(tokenEndpoint(), {
       method: 'POST',
       headers: {
         Authorization: this.basicAuth(),
@@ -220,7 +247,7 @@ export class PinterestAdapter implements SocialAdapter {
     do {
       const params = new URLSearchParams({ page_size: '100' });
       if (bookmark) params.set('bookmark', bookmark);
-      const res = await fetchT(`${API_BASE}/boards?${params.toString()}`, {
+      const res = await fetchT(`${apiBase()}/boards?${params.toString()}`, {
         headers: { Authorization: `Bearer ${auth.accessToken}` },
       });
       if (!res.ok) {
@@ -253,7 +280,7 @@ export class PinterestAdapter implements SocialAdapter {
     };
     if (plan.link) body.link = plan.link;
 
-    const res = await fetchT(`${API_BASE}/pins`, {
+    const res = await fetchT(`${apiBase()}/pins`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${auth.accessToken}`,
@@ -286,7 +313,7 @@ export class PinterestAdapter implements SocialAdapter {
       end_date: isoDate(end),
       metric_types: 'IMPRESSION,SAVE',
     });
-    const res = await fetchT(`${API_BASE}/pins/${externalId}/analytics?${params.toString()}`, {
+    const res = await fetchT(`${apiBase()}/pins/${externalId}/analytics?${params.toString()}`, {
       headers: { Authorization: `Bearer ${auth.accessToken}` },
     });
     if (!res.ok) {
@@ -300,7 +327,7 @@ export class PinterestAdapter implements SocialAdapter {
 
   private async userAccount(accessToken: string): Promise<PinterestUser | null> {
     try {
-      const res = await fetchT(`${API_BASE}/user_account`, {
+      const res = await fetchT(`${apiBase()}/user_account`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       if (!res.ok) return null;

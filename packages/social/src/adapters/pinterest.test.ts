@@ -3,7 +3,9 @@ import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   mapPinterestMetrics,
   PinterestAdapter,
+  pinterestBases,
   pinterestPermalink,
+  pinterestSandbox,
   planPinterestPin,
 } from './pinterest.js';
 import type { RenderedPost } from '../types.js';
@@ -16,6 +18,44 @@ const rendered = (over: Partial<RenderedPost>): RenderedPost => ({
   text: 'Hello',
   mediaUrls: [],
   ...over,
+});
+
+describe('pinterestBases', () => {
+  it('uses production endpoints by default', () => {
+    expect(pinterestBases(false)).toEqual({
+      api: 'https://api.pinterest.com/v5',
+      token: 'https://api.pinterest.com/v5/oauth/token',
+    });
+  });
+
+  it('routes token exchange + API calls to the sandbox host when on', () => {
+    expect(pinterestBases(true)).toEqual({
+      api: 'https://api-sandbox.pinterest.com/v5',
+      token: 'https://api-sandbox.pinterest.com/v5/oauth/token',
+    });
+  });
+});
+
+describe('pinterestSandbox', () => {
+  afterEach(() => {
+    delete process.env.PINTEREST_SANDBOX;
+  });
+
+  it('is false by default — production Pinterest', () => {
+    expect(pinterestSandbox()).toBe(false);
+  });
+
+  it('is true only for an explicit true (whitespace + case tolerant)', () => {
+    process.env.PINTEREST_SANDBOX = ' TRUE ';
+    expect(pinterestSandbox()).toBe(true);
+  });
+
+  it('stays false for any non-true value (a typo must not silently switch envs)', () => {
+    for (const v of ['false', '1', 'yes', '']) {
+      process.env.PINTEREST_SANDBOX = v;
+      expect(pinterestSandbox()).toBe(false);
+    }
+  });
 });
 
 describe('mapPinterestMetrics', () => {

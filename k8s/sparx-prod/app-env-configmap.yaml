@@ -130,3 +130,11 @@ data:
   #                       and keep working regardless.
   META_INBOX_ENABLED: 'true'
   META_INSIGHTS_ENABLED: 'true'
+  # Pinterest Trial-access apps CANNOT create Pins in production (`api.pinterest.com`
+  # returns 403 "use API Sandbox instead"). PINTEREST_SANDBOX routes token exchange + all
+  # Pinterest API calls to api-sandbox.pinterest.com so a Trial app can create (sandbox)
+  # Pins — needed to record the demo video the Standard-access upgrade requires. NOT a
+  # secret (an on/off switch). MUST mirror the social-worker Terraform env_vars: THIS
+  # plane (api-rest) does the OAuth token exchange during reconnect; the worker does the
+  # publish. Flip to 'false' once Standard access is granted.
+  PINTEREST_SANDBOX: 'true'

@@ -454,9 +454,133 @@ Two scorecard rows were wrong when written:
      [instagram.test.ts](../../packages/social/src/adapters/instagram.test.ts) pin each flag to
      the exact scopes it adds, so a scope can never again go missing silently.
 
-     Sequence once deployed: reconnect Facebook + Instagram (the old tokens carry the narrow
-     scope), open a post's metrics to fire the insights read, let the inbox sync pull one comment,
-     answer it. Then wait up to 24h for the counters.
+     **The flags live in TWO planes, and both are required.** api-rest runs on GKE and decides
+     which scopes the OAuth grant asks for; the drains that actually call Meta run on **Cloud Run**
+     (`social-worker`), whose env comes from
+     [terraform/envs/prod/serverless.tf](../../terraform/envs/prod/serverless.tf), not from the k8s
+     ConfigMap. Set it in one plane only and the two disagree silently: the grant would carry
+     `pages_read_user_content`, and `syncInbox` would still mark every destination `unsupported`
+     and stamp the cursor, with no call and no error. Both planes are now set.
+
+     Deploying the ConfigMap is its own step — the image pipeline does not carry it. Run
+     `gh workflow run bootstrap.yml -f components=app-env`, which applies the ConfigMap **and**
+     force-rolls `tier=api|web`; `envFrom` only reads a ConfigMap at pod start, so an apply without
+     the roll strands running pods on the old env. `terraform apply` covers the Cloud Run side.
+
+     Sequence once both are deployed: reconnect Facebook + Instagram (the old tokens carry the
+     narrow scope), open a post's metrics to fire the insights read, let the inbox sync pull one
+     comment, answer it. Then wait up to 24h for the counters.
+
+     **Latent, not blocking:** `social-worker` has no `META_APP_ID`/`SECRET`, so the health sweep
+     cannot re-exchange a Meta token. It only refreshes within `REFRESH_AHEAD_MS` of expiry and a
+     fresh grant carries ~60 days, so it will not affect the review — but around day 58 the sweep
+     flips the connection to `expired` and asks the tenant to reconnect.
+
+     ***
+
+     #### Live verification, 2026-07-29 ~03:15 UTC — deployed, reconnected, still 0 calls
+
+     Both planes deployed and confirmed live (`printenv` inside `api-rest-84ccc798cc-6krjk`; Cloud
+     Run revision `social-worker-00037-z5g` serving). Facebook, Instagram and Threads all
+     disconnected + reconnected (callbacks at 03:03:40 / 03:04:02 / 03:04:34). A post was published
+     to FB + IG and a comment left on the FB post from a personal account. **All 7 permissions still
+     read `0 of 1`.** Metrics were refreshed afterwards with no change.
+
+     **How to query prod state** (the connections are NOT on the primary site — this cost an hour):
+     from a logged-in `app.sparx.works` tab, `GET /api/token` → `{token}`, then call
+     `https://api.sparx.works/...` with `Authorization: Bearer <token>` **and**
+     `x-sparx-property-id: c99e0e23-dae2-4814-b670-b73de5eec0f1` (the **"Template"** site — all 5
+     social connections live there). Without that header `resolveSocialProperty` falls back to the
+     primary site and every social endpoint truthfully returns zero.
+
+     **CONFIRMED — the scope fix works.** `/v1/social/readiness` (a live `debug_token` call) on the
+     reconnected Facebook connection returns `missing: []`, with `required` listing
+     `pages_read_user_content`, `pages_manage_engagement` and `read_insights`, and `granted`
+     containing all of them. Instagram matches. Both read `unverifiable` rather than `ready` — that
+     is the insider caveat firing correctly (the account holds an app role, so Meta grants
+     everything regardless), not a fault.
+
+     **CONFIRMED BROKEN — three separate things:**
+     1. **Threads did not get its scopes.** Readiness: `permissions_missing` —
+        `threads_basic`, `threads_content_publish` absent, despite the reconnect completing and the
+        connection reading `active`. Suspect the Threads Tester invite is not actually accepted.
+     2. **Insights was never exercised.** `GET /v1/social/posts/:id/metrics` only reads STORED
+        values — no platform call. The live call is `POST /v1/social/posts/:id/metrics/refresh`,
+        which publishes `social.metrics.collect`. **Unverified whether the user's "refresh" hit
+        that route** — check next.
+     3. **No sweep has ever processed a single row.** `inboxSyncedAt` is `null` on every target of
+        all five connections, including Pinterest's and TikTok's from hours earlier. `syncInbox`
+        stamps that field even on the `unsupported` path, so null everywhere = never ran, ever.
+
+     **Ruled out for #3:** both live pods started the loops at 02:45 and are still running (the
+     "loops stopped" lines are outgoing pods draining — do not misread them again); inbox ticks
+     every 2 min; the session-vs-pooled advisory-lock leak was already fixed with
+     `pg_try_advisory_xact_lock`; no tick has thrown (`social-sweep …: tick threw` never appears).
+
+     **Why it hid:** `runSweep` returns silently on BOTH `due.length === 0` and a missed lock. There
+     is no log distinguishing "nothing due" from "never looked", and a sweep scanning zero rows
+     forever is indistinguishable from a healthy idle one. The static guard below now catches this
+     particular cause before it ships; the runtime blind spot itself is still open, and would catch
+     a _different_ cause (see Hand-offs).
+
+     #### ROOT CAUSE — CONFIRMED 2026-07-28. The hypothesis was right, and wider than the inbox.
+
+     Every `find_due_*` scan is `SECURITY DEFINER` owned by `sparx_owner` and runs with **no**
+     `app.tenant_id` — that is what a cross-tenant scan _is_. But Decision F3 puts FORCE ROW LEVEL
+     SECURITY on every tenant table **specifically so `sparx_owner` cannot bypass RLS**. So the scan
+     matches `tenant_id = current_tenant_id()` against NULL and returns **zero rows. No error. No
+     log.** It passes locally only because docker's `sparx_owner` is a superuser with `BYPASSRLS`.
+
+     This is the _second_ time it shipped. [`20270117000000_dispatch_scan_owner_rls`](../../packages/db/prisma/migrations/20270117000000_dispatch_scan_owner_rls/migration.sql)
+     fixed twelve tables after booking notifications were found piling up unsent — but it could only
+     enumerate the scans that existed on 2027-01-17. Within a week **six more** were added with no
+     policy:
+
+     | Scan                             | Migration      | Tables with no owner read                       |
+     | -------------------------------- | -------------- | ----------------------------------------------- |
+     | `find_due_social_connections`    | 20270122000000 | `social_connections`                            |
+     | `find_due_social_inbox_targets`  | 20270122000000 | `social_targets`, `social_connections`          |
+     | `find_due_social_metric_targets` | 20270122000000 | `social_post_targets`, `social_post_metrics`    |
+     | `find_due_social_post_targets`   | 20270122000000 | `social_post_targets`                           |
+     | `find_social_autofill_slots`     | 20270122000000 | `social_posting_slots`                          |
+     | `find_due_sequence_enrollments`  | 20270124000000 | `email_sequence_enrollments`, `email_sequences` |
+
+     So the blast radius is **the entire social background plane plus the email-sequence drain** —
+     not just the inbox. `find_due_social_posts` reads `social_posts`, which the 2027-01-17 migration
+     _did_ cover, which is exactly why publishing works while everything around it is dead:
+     - the engagement inbox has never polled anything, ever (hence `inboxSyncedAt` null everywhere);
+     - published posts' metrics froze at publish time — the decaying re-read never ran once;
+     - `health_checked_at` never moves, so no grant is refreshed ahead of expiry (**GAP 1's own fix
+       has never executed** — tokens start dying ~day 58);
+     - nobody enrolled in an email sequence has ever received step 2.
+
+     And it is the direct cause of the seven Meta permissions stuck at "0 of 1 API call(s)": the
+     calls that would exercise them are made by the worker, and the worker is only ever woken by
+     these sweeps.
+
+     **Proven, not inferred.** Locally, `sparx_owner` is superuser so the bug is invisible. Modelled
+     it with a throwaway `NOSUPERUSER NOBYPASSRLS` role granted `sparx_owner` membership (policies
+     apply through membership) and ran the inbox scan's body against a real enabled target with no
+     GUC set: **1 row with the owner-read policies, 0 rows without** — same query, same role, no
+     error either way. Rolled back; the probe role is dropped. (Do **not** try this by flipping
+     `sparx_owner` to `NOSUPERUSER` — it is the only superuser on the local database and could not
+     grant itself back.)
+
+     **Fixed** by [`20270126000000_scan_owner_rls_backfill`](../../packages/db/prisma/migrations/20270126000000_scan_owner_rls_backfill/migration.sql)
+     — a PERMISSIVE `FOR SELECT TO sparx_owner` policy on each of the seven tables, the same
+     read-only shape as the 2027-01-17 fix. It grants `sparx_app` nothing and no cross-tenant write:
+     the scan only reads, and every per-row write still runs under `withTenant({tenantId})`.
+
+     **Made non-recurring.** Nothing tied "add a scan" to "grant the owner read on what it scans" —
+     which is why it happened twice. `pnpm --filter @sparx/db db:rls-audit` (already in
+     [pre-push](../../.githooks/pre-push)) now parses every `find_*` SECURITY DEFINER body, resolves
+     the relations it reads, and fails if any FORCE-RLS one lacks an owner-read policy. Verified both
+     ways: it flags all six scans with the migration removed, and passes with it. The next scan added
+     without its policy fails pre-push instead of silently doing nothing in prod for a week.
+
+     **Unrelated live bug found in the logs:** Pinterest publishes fail permanently with
+     `403 code 29 — "Apps with Trial access may not create Pins in production"`. Real scheduled
+     posts are not going out. Being addressed separately via `PINTEREST_SANDBOX`.
 
    - **The Data handling questionnaire** — legal declarations about the entity (data controller,
      country, subprocessors, public-authority requests). The controller answer is **WizeWorks LLC**,

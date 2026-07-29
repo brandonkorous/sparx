@@ -748,8 +748,40 @@ module "social_worker_cloudrun" {
     # this account") point. Without a deep link back to the thing that needs fixing, a
     # notice is just an alarm with no off switch.
     WORKBENCH_BASE_URL = "https://app.sparx.works"
+    # Meta review-gated features. These MUST mirror the k8s `sparx-app-env`
+    # ConfigMap: api-rest (on GKE) decides which scopes the OAuth grant asks for,
+    # but the drains that actually CALL Meta run here, on Cloud Run. Set in one
+    # plane only and the two disagree silently.
+    #
+    # META_INBOX_ENABLED is load-bearing. `syncInbox` checks
+    # `adapter.supportsInbox()`, which for Facebook/Instagram is exactly this
+    # flag; with it unset the sweep marks every destination `unsupported`,
+    # stamps the cursor so it is not retried, and returns — no API call, no
+    # error, nothing in the logs to chase. That is what kept
+    # pages_read_user_content / pages_manage_engagement /
+    # instagram_manage_comments at "0 of 1 API calls" in App Review.
+    #
+    # META_INSIGHTS_ENABLED is parity, not function: `getMetrics` already
+    # try/catches the insights read, so today this changes nothing here. It is
+    # set so the two planes cannot drift — the day that read is gated to skip a
+    # pointless 403 per sweep, an unset flag here would silently stop collecting
+    # reach + impressions.
+    META_INBOX_ENABLED    = "true"
+    META_INSIGHTS_ENABLED = "true"
+    # Pinterest Trial-access apps CANNOT create Pins in production (`api.pinterest.com`
+    # returns 403 "use API Sandbox instead"). PINTEREST_SANDBOX routes token exchange +
+    # all Pinterest API calls to api-sandbox.pinterest.com so a Trial app can create
+    # (sandbox) Pins — needed to record the demo video the Standard-access upgrade
+    # requires. MUST mirror the k8s `sparx-app-env` ConfigMap: api-rest (GKE) does the
+    # OAuth token exchange, this worker does the publish — set in one plane only and they
+    # disagree silently. Flip to "false" once Standard access is granted.
+    PINTEREST_SANDBOX = "true"
     # Added at go-live: the non-secret platform OAuth client IDs used for token
     # refresh (GOOGLE_OAUTH_CLIENT_ID; later META_APP_ID / LINKEDIN_CLIENT_ID).
+    # NOTE: without META_APP_ID/SECRET here the health sweep cannot re-exchange a
+    # Meta token. Not urgent — it only refreshes within REFRESH_AHEAD_MS of
+    # expiry and a fresh grant carries ~60 days — but on day ~58 the sweep will
+    # flip the connection to `expired` and ask the tenant to reconnect.
   }
 
   secrets = [
