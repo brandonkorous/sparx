@@ -1,6 +1,6 @@
 # 139 — silicaui-builder: the open asks (ANSWERED in 0.36.0)
 
-**Version:** 2.1.0
+**Version:** 2.2.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-29
 
@@ -14,11 +14,11 @@
 > | --- | -------------------------- | --------------------------------------------------------------------------------------- |
 > | 1   | Per-breakpoint authoring   | Container variants (`@md:`), NOT viewport; `useBreakpoint`, device toggle drives prefix |
 > | 2   | Canvas fidelity            | `rejectViewportVariants` as a liftable POLICY (not the security floor) + `lintTree`     |
-> | 3   | Multi-select               | Batch op API; set-selection deferred                                                    |
+> | 3   | Multi-select               | Batch op API (0.36) + `selectedIds` / `selectMany` / `toggleSelect` (**0.37**)          |
 > | 4   | Guides / nudge / keyboard  | Keyboard set only — guides declined as a category error (see below)                     |
-> | 5   | Per-page frame             | `Page.frameId` tri-state + `Site.frames` + `frameFor` / `frameDiagnostic`               |
+> | 5   | Per-page frame             | `Page.frameId` tri-state + `frameFor`; named layouts editable in **0.37** (see §5)      |
 > | 6   | Richer image node          | `Image` forwards `srcset`/`sizes`; focal point as a quantized 9-grid, not inline style  |
-> | 7   | Q22 / Q26                  | `resolveNode`'s value branch recurses; editor mode is host-readable                     |
+> | 7   | Q22 / Q26                  | Q22 was never real; Q26 → `initialMode` + `onModeChange` — initial, NOT controlled      |
 > | 8   | Inverse ops                | `editor.inverseOf(ops, before)` + `node.setChildren`                                    |
 > | 9   | `autoContent` contrast     | Measured at build time for owned tokens; CSS fallback threshold 0.68 → **0.57**         |
 > | 10  | Conditional visibility     | `{ kind:'visible', ref, negate? }` — **and our premise here was wrong, see §10**        |
@@ -56,9 +56,10 @@
 > answer a _different_ host — a CMS, an email tool, a static-site generator — could implement and
 > get the same builder from. If an answer only fits sparx, it belongs in the host, not the engine.
 
-**Originally verified against** `0.35.0`, the version pinned when these were written. **Now
-resolved in `0.36.0`**, which is what `pnpm-workspace.yaml` pins — every resolution in the table
-above was confirmed by reading the shipped `.d.ts` and bundle, not the changelog.
+**Originally verified against** `0.35.0`, the version pinned when these were written. **Resolved in
+`0.36.0`, with §3 and §5 extended in `0.37.0`** — which is what `pnpm-workspace.yaml` now pins.
+Every resolution in the table above was confirmed by reading the shipped `.d.ts` and bundle, not
+the changelog: 0.37.0 was diffed against the installed 0.36.0 tree before the catalog was moved.
 
 ---
 
@@ -202,6 +203,22 @@ canvas and the storefront diverge.
   `studioTheme` / `host` / `onChange` / `onActivePageChange` / `onPublish` / `persistKey` /
   `toolbarSlot` / `dataToggle` — no mode prop, controlled or initial. Documented upstream as
   roughly three lines.
+
+  **ANSWERED (`initialMode` + `onModeChange`), and adopted — but read the shape before
+  assuming more.** `initialMode` seeds the mode at mount and is **never re-read**; there is no
+  `editor.setMode`. So a host can LAND the author on a surface and OBSERVE them moving between
+  surfaces, and still cannot DRIVE the mode afterwards.
+
+  That is deliberate on silicaui's side and the reasoning is right — a controlled mode lets a
+  parent re-render yank someone out of the surface they are working in. It does bound what a host
+  can build: an in-editor affordance like "edit the header this page uses", offered from a panel
+  inside `toolbarSlot`, cannot switch to Layout mode itself. It has to be a deep link that opens
+  the editor, which is a heavier gesture than the one the operator asked for. **Not re-raised** —
+  the safety this buys is worth more than the affordance it costs, and it is recorded here so the
+  next person to want it knows it was weighed rather than missed.
+
+  Adopted in sparx as the `{mode}` surface param on `builder.studio`, with `onModeChange`
+  retitling the pane so several open editors are tellable apart.
 
 ## 8 — An inverse for the two ops a host cannot reverse
 

@@ -6,9 +6,11 @@ import { describe, expect, it } from 'vitest';
 
 import {
   FRAME_NONE,
+  frameIdToStored,
   frameMissingMessage,
   resolvePageFrame,
   storedFrameId,
+  storedToFrameId,
   type PageFrameChoice,
 } from './page-frame';
 
@@ -80,5 +82,45 @@ describe('frameMissingMessage', () => {
     expect(msg).toContain('header and footer');
     // No jargon that only means something to whoever wrote the schema.
     expect(msg).not.toMatch(/frame_id|dangling|null|uuid/i);
+  });
+});
+
+// ── The engine spelling ↔ the column spelling ────────────────────────────────
+//
+// silica says `undefined` / `null` / id; the column says `null` / `'none'` / id. The two
+// "empty" values are SWAPPED, so a mapping written from memory in either direction turns
+// "use the site default" into "render bare" — a page silently losing its header.
+
+describe('frameIdToStored / storedToFrameId', () => {
+  const LAYOUT = '11111111-1111-4111-8111-111111111111';
+
+  it('maps the site default: engine undefined ↔ column null', () => {
+    expect(frameIdToStored(undefined)).toBeNull();
+    expect(storedToFrameId(null)).toBeUndefined();
+  });
+
+  it('maps BARE: engine null ↔ column "none"', () => {
+    expect(frameIdToStored(null)).toBe(FRAME_NONE);
+    expect(storedToFrameId(FRAME_NONE)).toBeNull();
+  });
+
+  it('passes a named layout id through untouched, both ways', () => {
+    expect(frameIdToStored(LAYOUT)).toBe(LAYOUT);
+    expect(storedToFrameId(LAYOUT)).toBe(LAYOUT);
+  });
+
+  it('round-trips every state, which is the property that actually matters', () => {
+    for (const engine of [undefined, null, LAYOUT]) {
+      expect(storedToFrameId(frameIdToStored(engine))).toBe(engine);
+    }
+    for (const stored of [null, FRAME_NONE, LAYOUT]) {
+      expect(frameIdToStored(storedToFrameId(stored))).toBe(stored);
+    }
+  });
+
+  it('treats an ABSENT column the same as the default, not as bare', () => {
+    // A row read with a projection that skipped the column arrives as `undefined`.
+    // Reading that as `null`-the-engine-value would strip the header off the page.
+    expect(storedToFrameId(undefined)).toBeUndefined();
   });
 });

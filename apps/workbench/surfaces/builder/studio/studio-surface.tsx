@@ -20,6 +20,9 @@
 // saved piece and opens its master for editing — the library is materialized into
 // this document's symbol map (`saved-pieces.ts`), so the deep link is a plain
 // `enterSymbol` and the piece is edited with silica's own component machinery.
+// `{mode}` lands the author on `page` (the default), `layout`, `component` or
+// `theme` — how "design the header and footer" opens on the header and footer
+// rather than on a page body the operator then has to navigate away from.
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Builder, useEditor } from '@wizeworks/silicaui-builder/react';
@@ -29,6 +32,7 @@ import { ensureUniqueIds, starterSite, upgradeFrameChrome } from '@sparx/silica-
 import {
   COMMERCE_SOURCES,
   SITE_SOURCES,
+  frameIdToStored,
   toSilicaDataSources,
   type DataSource,
 } from '@sparx/builder-schemas';
@@ -95,6 +99,26 @@ import {
 import { makeRenderHostNode } from './host-cores';
 import { buildPreviewRoot, type SitePreviewData } from './preview-data';
 
+/** The editor's four surfaces (silicaui `BuilderProps['initialMode']`). Named here so a
+ *  deep link carrying a typo opens the editor normally instead of handing silica a mode
+ *  it does not have. */
+const EDITOR_MODES = ['page', 'layout', 'component', 'theme'] as const;
+type EditorMode = (typeof EDITOR_MODES)[number];
+
+function isEditorMode(value: unknown): value is EditorMode {
+  return typeof value === 'string' && (EDITOR_MODES as readonly string[]).includes(value);
+}
+
+/** What the tab says once the author moves between surfaces. With several editor panes
+ *  open — and the workbench lets you tear one off into its own window — "Editor" on all
+ *  of them tells the operator nothing about which is which. */
+const MODE_TITLE: Record<EditorMode, string> = {
+  page: 'Editor',
+  layout: 'Editor · Header & footer',
+  component: 'Editor · Saved design',
+  theme: 'Editor · Look & feel',
+};
+
 /** A blank brand — the fallback when `/v1/brand` hasn't resolved, so theming +
  *  font loading degrade to bare defaults rather than crashing. */
 const EMPTY_BRAND: BrandColumns = {
@@ -130,9 +154,13 @@ export function StudioSurface({ ctx }: { ctx: SurfaceContext }) {
   // previews correctly.
   const sitePreview = useSitePreview(tenant.data?.slug ?? null, property.data?.slug ?? null);
 
-  useEffect(() => {
-    ctx.setTitle('Editor');
-  }, [ctx]);
+  // NO `setTitle` here, deliberately. It used to set the literal 'Editor', which is the
+  // SAME string the surface definition already supplies as this pane's default label —
+  // so it bought nothing, and once `StudioEditor` began naming the open surface it
+  // actively fought it: React flushes CHILD effects before parent ones, and `ctx` is a
+  // fresh object each render, so the parent re-ran and overwrote the child's title on
+  // the very commit the editor mounted. A deep link into Layout mode opened correctly
+  // and then labelled itself "Editor". One owner: `StudioEditor` below.
 
   // Live "reload to see the agent's change" (docs/126 §4.5): refetch the site, then bump a
   // nonce so the editor remounts on the fresh load. Bumping AFTER the refetch settles means
@@ -263,10 +291,24 @@ function StudioEditor({
   const siteOrigin = useSiteOrigin(propertyId);
 
   const pageIdParam = typeof ctx.params.pageId === 'string' ? ctx.params.pageId : null;
+  // Which editing surface the author LANDS on (silicaui 0.36's `initialMode` — doc 139
+  // §7 Q26). Until this existed a host could only ever open the editor on Page, so the
+  // nav's own promise that "header / footer / menu land in the Editor" put the operator
+  // on a page BODY with no signpost to the chrome at all.
+  const modeParam = isEditorMode(ctx.params.mode) ? ctx.params.mode : undefined;
   // The Saved-pieces pane's "Edit design" hands us a library KEY. It resolves to the
   // symbol that key was materialized under, which `ApplyInitialPiece` then enters.
   const componentIdParam =
     typeof ctx.params.componentId === 'string' ? ctx.params.componentId : null;
+
+  // The surface the author is on. Seeded from the deep link and thereafter reported by
+  // silica — the mode is `initialMode`, not a controlled prop, precisely so a parent
+  // re-render cannot yank someone out of the surface they are working in, which means
+  // mirroring it here is a READ of silica's state and never an attempt to drive it.
+  const [mode, setMode] = useState<EditorMode>(modeParam ?? 'page');
+  useEffect(() => {
+    ctx.setTitle(MODE_TITLE[mode]);
+  }, [ctx, mode]);
 
   const savePiece = useSaveSilicaPiece();
   // The library AS LOADED — the baseline `changedTenantMasters` diffs against, so a
@@ -805,6 +847,8 @@ function StudioEditor({
         host={host}
         persistKey={null}
         dataToggle={false}
+        initialMode={modeParam}
+        onModeChange={setMode}
         onChange={onChange}
         onActivePageChange={onActivePageChange}
         onPublish={onPublish}
@@ -957,7 +1001,18 @@ function toSyncInput(
   // promise the Saved-pieces pane makes would quietly stop being true.
   const symbols = partitionSymbols(site.symbols).site;
   return {
-    pages: site.pages.map((p) => ({ id: p.id, name: p.name, slug: p.slug, root: p.root })),
+    pages: site.pages.map((p) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      root: p.root,
+      // The engine's own per-page layout picker writes `Page.frameId`, and this is what
+      // makes it stick — without it the author picks "No layout (bare page)", presses
+      // Save, and the page comes back wearing the header. Mapped rather than passed:
+      // JSON cannot carry `undefined`, so the engine's default case has to become an
+      // explicit value on the wire.
+      frameId: frameIdToStored(p.frameId),
+    })),
     pageIds: site.pages.map((p) => p.id),
     ...(deletedPageIds.length > 0 ? { deletedPageIds } : {}),
     ...(ops.length > 0 && batchId

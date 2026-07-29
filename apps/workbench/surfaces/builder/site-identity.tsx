@@ -39,12 +39,12 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { ImageIcon, ImagePlus, Plus, Save, Trash2, X } from 'lucide-react';
+import { ImageIcon, ImagePlus, Palette, PanelTop, Plus, Save, Trash2, X } from 'lucide-react';
 import { PANE_SHELL, PaneToolbar } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import { useActiveSiteId } from '../../lib/api/shell-data';
 import { useDirtySource } from '../../lib/workbench/dirty';
-import type { SurfaceContext } from '../../lib/surfaces/registry';
+import type { OpenTarget, SurfaceContext } from '../../lib/surfaces/registry';
 import { MediaPickerProvider, useMediaPicker } from '../cms/media-picker';
 import { useMediaAssets } from '../cms/media';
 import { useDomains } from '../domains/data';
@@ -63,6 +63,13 @@ import {
 /** The one column everything sits in — centred and capped, so a pane torn onto a
  *  second monitor is not a paragraph pinned to the left of 2000px of grey. */
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
+
+/** Same modifier contract as every other list in the app. */
+function targetFor(event: { shiftKey: boolean; altKey: boolean }): OpenTarget {
+  if (event.altKey) return 'window';
+  if (event.shiftKey) return 'beside';
+  return 'tab';
+}
 
 export function SiteIdentitySurface({ ctx }: { ctx: SurfaceContext }) {
   const { data: active } = useActiveSiteId();
@@ -359,6 +366,41 @@ function IdentityEditor({
           >
             <SocialLinksEditor socials={socials} setSocials={setSocials} />
           </FormSection>
+
+          {/* Where the rest of it lives. This surface owns the CONTENT of the header
+              and footer — the name, the logo, the links — and says so twice above, but
+              their arrangement and colours are the editor's. Until silicaui 0.36 a host
+              could only ever open that editor on a page BODY, so pointing here would
+              have landed the operator somewhere they still had to go hunting from.
+              `{mode}` lands them on the surface being named. */}
+          <div className="border-base-300 flex flex-wrap items-center gap-3 border-t pt-5">
+            <Text className="flex-1 text-base">
+              How your header and footer are arranged — and your colours, type, and shapes — are
+              designed in the editor.
+            </Text>
+            <Button
+              size="sm"
+              variant="outline"
+              color="module"
+              onClick={(event) => {
+                ctx.open('builder.studio', { mode: 'layout' }, { target: targetFor(event) });
+              }}
+            >
+              <PanelTop className="size-4" aria-hidden />
+              Design the header &amp; footer
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              color="module"
+              onClick={(event) => {
+                ctx.open('builder.studio', { mode: 'theme' }, { target: targetFor(event) });
+              }}
+            >
+              <Palette className="size-4" aria-hidden />
+              Colours &amp; type
+            </Button>
+          </div>
         </div>
       </div>
     </div>

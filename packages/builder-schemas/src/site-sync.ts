@@ -81,6 +81,29 @@ export const SiteSyncPageInput = z.object({
   name: z.string(),
   slug: z.string(),
   root: SilicaTreeInput,
+  /**
+   * Which chrome wraps this page (doc 139 §5), carried on the page it belongs to so the
+   * engine's OWN per-page layout picker persists.
+   *
+   * FOUR states, because "say nothing" and "say default" have to be different:
+   *
+   *   absent    → this payload does not speak about chrome; the stored choice STANDS.
+   *   `null`    → the site default. What the picker's "Default layout" means.
+   *   `'none'`  → bare, no header or footer. The picker's "No layout (bare page)".
+   *   a uuid    → that layout.
+   *
+   * The absent case is the guard `symbols` and `theme` already carry, and it matters
+   * here for the same reason: an MCP writer or the blueprint installer sends pages
+   * without a chrome opinion, and reading that silence as "default" would quietly reset
+   * every landing page on the site to wearing a header.
+   *
+   * The engine spells the first two as `undefined` / `null` on `Page.frameId`; the host
+   * maps them onto this on the way out, since JSON cannot carry `undefined`.
+   */
+  frameId: z
+    .union([z.literal('none'), z.string().uuid()])
+    .nullish()
+    .optional(),
 });
 export type SiteSyncPageInput = z.infer<typeof SiteSyncPageInput>;
 

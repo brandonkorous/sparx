@@ -1,21 +1,15 @@
 'use client';
 
-// Page settings — what wraps ONE page, and how it shows up in a search result or when
-// someone shares it.
+// Page settings — how ONE page shows up in a search result and when someone shares it.
 //
 // ── Why this exists ──────────────────────────────────────────────────────────
 //
-// These six columns (`frameId` + `seoTitle` / `seoDescription` / `ogImage` /
-// `canonical` / `noindex`) live on the `BuilderPage` row. The storefront has always
-// read them — `generateMetadata` titles and describes every page from them — and the
-// SEO scorecard has always graded them. Nothing in the editor could ever SET them. So
-// every page a tenant built shipped with the site name as its title, no description at
-// all, and a scorecard telling them to "add a title" with nowhere to add one.
-//
-// `frameId` shipped with the same shape of gap and is the reason this drawer is no
-// longer only about search: the column, its CHECK constraint, the tri-state resolver
-// and the storefront read all landed, `PATCH /v1/builder/pages/:id` accepted the field,
-// and a landing page with the header turned off was still unreachable by clicking.
+// These five columns (`seoTitle` / `seoDescription` / `ogImage` / `canonical` /
+// `noindex`) live on the `BuilderPage` row. The storefront has always read them —
+// `generateMetadata` titles and describes every page from them — and the SEO scorecard
+// has always graded them. Nothing in the editor could ever SET them. So every page a
+// tenant built shipped with the site name as its title, no description at all, and a
+// scorecard telling them to "add a title" with nowhere to add one.
 //
 // silica's `Page` is deliberately flat (`{id,name,slug,root}`) and has no home for
 // domain metadata, which is exactly why the engine hands hosts `onActivePageChange` —
@@ -30,16 +24,20 @@
 //
 // ── Scope ────────────────────────────────────────────────────────────────────
 //
-// NAME and SLUG are deliberately absent. silica's page switcher owns them and syncs
-// them with the tree; putting them here too would give one field two owners, which is
-// the "identity once" rule this codebase already learned the hard way.
+// NAME, SLUG and the page's CHROME are deliberately absent. silica owns all three —
+// the page switcher for the first two, and (since 0.37) a per-page layout picker right
+// beside it for the third. Putting any of them here too would give one field two
+// owners, which is the "identity once" rule this codebase already learned the hard way.
+//
+// The chrome one was briefly built here before that picker was found, and removing it
+// was the right call rather than the polite one: the engine's sits where an author is
+// already choosing pages, and the duplicate wrote the same column through a second
+// endpoint. What survives is the PERSISTENCE — `SiteSyncPageInput.frameId` carries the
+// engine's choice to `builder_pages.frame_id`, which is what makes its picker real.
 
 import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import {
-  Alert,
-  AlertContent,
-  AlertDescription,
   Badge,
   Button,
   Drawer,
@@ -51,29 +49,17 @@ import {
   FieldDescription,
   FieldLabel,
   Input,
-  Select,
   Switch,
   Text,
   Textarea,
 } from '@wizeworks/silicaui-react';
-import {
-  FRAME_NONE,
-  frameMissingMessage,
-  resolvePageFrame,
-  type PageFrameChoice,
-} from '@sparx/builder-schemas';
-import { AlertTriangle, ChevronDown, ImageOff, ImagePlus, Settings2, Trash2 } from 'lucide-react';
+import { ChevronDown, ImageOff, ImagePlus, Settings2, Trash2 } from 'lucide-react';
 import { useMediaPicker } from '../../cms/media-picker';
-import { useLayouts, usePageSettings, type LayoutChoice, type PageSettingsDto } from './data';
+import { usePageSettings, type PageSettingsDto } from './data';
 
 /** The editable shape. Everything is a string in the form (an empty string means
- *  "not set" and normalizes to null on the way out), except the indexing switch.
- *
- *  `frameId` follows the same convention on purpose — `''` is the site default, so the
- *  form has one rule for "empty" rather than a `null` that behaves differently from
- *  every field beside it. {@link draftToPatch} restores the tri-state on the way out. */
+ *  "not set" and normalizes to null on the way out), except the indexing switch. */
 export interface PageSettingsDraft {
-  frameId: string;
   seoTitle: string;
   seoDescription: string;
   canonical: string;
@@ -82,7 +68,6 @@ export interface PageSettingsDraft {
 }
 
 const BLANK: PageSettingsDraft = {
-  frameId: '',
   seoTitle: '',
   seoDescription: '',
   canonical: '',
@@ -93,7 +78,6 @@ const BLANK: PageSettingsDraft = {
 function toDraft(stored: PageSettingsDto | undefined): PageSettingsDraft {
   if (!stored) return BLANK;
   return {
-    frameId: stored.frameId ?? '',
     seoTitle: stored.seoTitle ?? '',
     seoDescription: stored.seoDescription ?? '',
     canonical: stored.canonical ?? '',
@@ -109,11 +93,9 @@ export function draftToPatch(draft: PageSettingsDraft): Partial<PageSettingsDto>
     const t = v.trim();
     return t === '' ? null : t;
   };
+  // No `frameId`: the site sync owns it (see the Scope note above), and an ABSENT field
+  // is how this patch says "leave the page's chrome alone" rather than resetting it.
   return {
-    // `null` RESETS this page to the site default; `'none'` and a layout id are stored
-    // verbatim. The service treats all three as distinct from an ABSENT field, so a
-    // patch that always carries `frameId` is what makes "back to the default" reachable.
-    frameId: nullIfBlank(draft.frameId),
     seoTitle: nullIfBlank(draft.seoTitle),
     seoDescription: nullIfBlank(draft.seoDescription),
     canonical: nullIfBlank(draft.canonical),
@@ -124,60 +106,12 @@ export function draftToPatch(draft: PageSettingsDraft): Partial<PageSettingsDto>
 
 function sameDraft(a: PageSettingsDraft, b: PageSettingsDraft): boolean {
   return (
-    a.frameId === b.frameId &&
     a.seoTitle === b.seoTitle &&
     a.seoDescription === b.seoDescription &&
     a.canonical === b.canonical &&
     a.ogImage === b.ogImage &&
     a.noindex === b.noindex
   );
-}
-
-// ── The chrome picker ────────────────────────────────────────────────────────
-
-/** The option list, in the order a person reasons about it: the site default first
- *  (what almost every page wants), then the deliberate exception, then the alternative
- *  designs.
- *
- *  The LIVE layout is named inside the default option rather than listed again beside
- *  it, and that is the engine's model rather than a presentation choice: silica's
- *  `Site.frame` is the default shell and is NOT a member of `Site.frames`, so a page
- *  pointing at the live layout's id would dangle in the editor while resolving fine on
- *  the storefront — the same page previewing differently from how it publishes. One
- *  meaning, one value. */
-function frameOptions(layouts: readonly LayoutChoice[], choice: PageFrameChoice) {
-  const active = layouts.find((l) => l.isActive);
-  const items: Record<string, string> = {
-    '': active ? `Follow the site default (${active.name})` : 'Follow the site default',
-    [FRAME_NONE]: 'No header or footer',
-  };
-  for (const layout of layouts) if (!layout.isActive) items[layout.id] = layout.name;
-  // A page pointing at a deleted design still has to render its own value, or the
-  // control comes up blank and the author cannot tell what it is set to.
-  if (choice.kind === 'missing') items[choice.frameId] = 'A design that no longer exists';
-  return items;
-}
-
-/** What this choice MEANS on the live site, in the second person. The picker names the
- *  designs; this says what a visitor will see, which is the part an owner is actually
- *  deciding. */
-function frameConsequence(choice: PageFrameChoice, layouts: readonly LayoutChoice[]): string {
-  switch (choice.kind) {
-    case 'default':
-      return 'This page shows the same header and footer as the rest of your site.';
-    case 'none':
-      return (
-        'This page shows no menu and no footer links at all. Make sure the page itself gives ' +
-        'people somewhere to go next — a button, a form, or a link back to your site.'
-      );
-    default: {
-      const named = layouts.find((l) => l.id === choice.frameId);
-      return named
-        ? `This page uses “${named.name}” instead of the header and footer the rest of your site ` +
-            'shows.'
-        : 'This page uses a design that has been deleted, so it currently shows no header or footer.';
-    }
-  }
 }
 
 /** Length guidance, phrased as an outcome rather than a rule. Search engines cut a
@@ -212,7 +146,6 @@ interface Props {
 export function PageSettings({ pageId, pageName, siteName, saved, onChange, pending }: Props) {
   const [open, setOpen] = useState(false);
   const stored = usePageSettings(saved ? pageId : null, open);
-  const layouts = useLayouts(open);
   const [draft, setDraft] = useState<PageSettingsDraft>(BLANK);
   const pick = useMediaPicker();
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -246,19 +179,6 @@ export function PageSettings({ pageId, pageName, siteName, saved, onChange, pend
   const previewTitle = draft.seoTitle.trim() || pageName || siteName;
   const previewDescription = draft.seoDescription.trim();
 
-  // Resolve the stored choice against the designs that actually exist, so a page
-  // pointing at a deleted one is REPORTED rather than quietly shown as the default —
-  // the whole point of the tri-state (doc 139 §5).
-  //
-  // Until the catalog has loaded, an id resolves against an EMPTY set and would read as
-  // `missing` — which would flash "a design that no longer exists" at an author whose
-  // design is fine. So the warning waits for the list, and the picker holds the id.
-  const layoutList = layouts.data ?? [];
-  const choice = resolvePageFrame(
-    draft.frameId === '' ? null : draft.frameId,
-    layouts.isSuccess ? layoutList.map((l) => l.id) : [draft.frameId]
-  );
-
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <Button
@@ -290,36 +210,6 @@ export function PageSettings({ pageId, pageName, siteName, saved, onChange, pend
             </Text>
           ) : null}
 
-          {/* Chrome comes first: it is the choice that changes what the page IS, and
-              the one an author making a landing page came here for. */}
-          <Field>
-            <FieldLabel>Header and footer</FieldLabel>
-            <FieldDescription>
-              Almost every page should keep the same header and footer as the rest of your site, so
-              visitors always know where they are and how to get around.
-            </FieldDescription>
-            <FieldControl>
-              <Select
-                color="module"
-                aria-label="Header and footer for this page"
-                value={draft.frameId}
-                items={frameOptions(layoutList, choice)}
-                onValueChange={(next) => {
-                  set('frameId', next as string);
-                }}
-              />
-            </FieldControl>
-            <Text className="text-base">{frameConsequence(choice, layoutList)}</Text>
-            {choice.kind === 'missing' ? (
-              <Alert color="warning" variant="soft">
-                <AlertTriangle className="size-5" aria-hidden />
-                <AlertContent>
-                  <AlertDescription>{frameMissingMessage(pageName)}</AlertDescription>
-                </AlertContent>
-              </Alert>
-            ) : null}
-          </Field>
-
           {/* The point of the whole panel, made concrete: what a person actually sees
               before they decide to click. Abstract field labels do not teach this. */}
           <div className="border-base-300 flex flex-col gap-1 rounded-lg border p-4">
@@ -336,15 +226,17 @@ export function PageSettings({ pageId, pageName, siteName, saved, onChange, pend
               The headline people see in search results and in the browser tab. Say what the page
               is, in their words.
             </FieldDescription>
-            <FieldControl>
-              <Input
-                value={draft.seoTitle}
-                placeholder={pageName || siteName}
-                onChange={(event) => {
-                  set('seoTitle', event.target.value);
-                }}
-              />
-            </FieldControl>
+            <FieldControl
+              render={
+                <Input
+                  value={draft.seoTitle}
+                  placeholder={pageName || siteName}
+                  onChange={(event) => {
+                    set('seoTitle', event.target.value);
+                  }}
+                />
+              }
+            />
             {titleHint ? (
               <Text className={titleHint.over ? 'text-warning text-base' : 'text-base'}>
                 {titleHint.text}
@@ -358,15 +250,17 @@ export function PageSettings({ pageId, pageName, siteName, saved, onChange, pend
               The couple of lines under the title. This is your pitch — it is often what decides
               whether someone clicks.
             </FieldDescription>
-            <FieldControl>
-              <Textarea
-                rows={3}
-                value={draft.seoDescription}
-                onChange={(event) => {
-                  set('seoDescription', event.target.value);
-                }}
-              />
-            </FieldControl>
+            <FieldControl
+              render={
+                <Textarea
+                  rows={3}
+                  value={draft.seoDescription}
+                  onChange={(event) => {
+                    set('seoDescription', event.target.value);
+                  }}
+                />
+              }
+            />
             {descHint ? (
               <Text className={descHint.over ? 'text-warning text-base' : 'text-base'}>
                 {descHint.text}
@@ -481,15 +375,17 @@ export function PageSettings({ pageId, pageName, siteName, saved, onChange, pend
                   search engines count them as one page instead of two. Leave it empty unless you
                   know you need it.
                 </FieldDescription>
-                <FieldControl>
-                  <Input
-                    value={draft.canonical}
-                    placeholder="https://example.com/the-original-page"
-                    onChange={(event) => {
-                      set('canonical', event.target.value);
-                    }}
-                  />
-                </FieldControl>
+                <FieldControl
+                  render={
+                    <Input
+                      value={draft.canonical}
+                      placeholder="https://example.com/the-original-page"
+                      onChange={(event) => {
+                        set('canonical', event.target.value);
+                      }}
+                    />
+                  }
+                />
               </Field>
             ) : null}
           </div>

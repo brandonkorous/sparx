@@ -58,6 +58,29 @@ export function resolvePageFrame(
   return has ? { kind: 'named', frameId } : { kind: 'missing', frameId };
 }
 
+/**
+ * The engine's `Page.frameId` → the value to STORE, and back.
+ *
+ * silica spells the tri-state `undefined` / `null` / id; the column spells it
+ * `null` / `'none'` / id. The shapes are the same idea and the two "empty" values are
+ * swapped, which is exactly the kind of mapping that gets written twice and disagrees —
+ * so it lives here once, beside the resolver both sides already share.
+ *
+ * `undefined` in, `null` out is the site default. `null` in, `'none'` out is bare.
+ */
+export function frameIdToStored(frameId: string | null | undefined): string | null {
+  if (frameId === undefined) return null;
+  if (frameId === null) return FRAME_NONE;
+  return frameId;
+}
+
+/** The inverse — a stored column value as the engine wants it on `Page.frameId`. */
+export function storedToFrameId(stored: string | null | undefined): string | null | undefined {
+  if (stored == null) return undefined;
+  if (stored === FRAME_NONE) return null;
+  return stored;
+}
+
 /** Jargon-free copy for a page pointing at a shell that no longer exists. Written for a
  *  non-technical owner: it says what they will SEE, not what dangled. */
 export function frameMissingMessage(pageName: string): string {

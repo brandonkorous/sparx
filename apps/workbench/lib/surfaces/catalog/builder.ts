@@ -43,7 +43,9 @@ export const BUILDER_SURFACES: SurfaceDefinition[] = [
       'menu',
     ],
     // The visual editor — silica `<Builder>`. Owns page selection AND site layout;
-    // opened blank (first page) or with `{ pageId }` / `{ componentId }`.
+    // opened blank (first page) or with `{ pageId }` / `{ componentId }` / `{ mode }`.
+    // `mode` is what makes the header/footer/menu keywords above honest: they land
+    // here, and `{ mode: 'layout' }` lands on the chrome rather than a page body.
     component: StudioSurface,
   },
   {

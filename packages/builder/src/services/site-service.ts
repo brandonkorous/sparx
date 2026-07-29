@@ -24,6 +24,7 @@ import {
   SiteSyncInput,
   blankPageTree,
   resolvePageFrame,
+  storedToFrameId,
   type BuilderOpEnvelope,
   type BuilderPageKind,
   type SitePublishState,
@@ -141,6 +142,11 @@ function rowsToStoredSite(
       name: r.name,
       slug: r.slug ?? '/',
       root: r.silicaDraftTree as unknown as SilicaNode,
+      // The stored chrome choice, in the engine's spelling — so its own per-page layout
+      // picker opens showing what this page actually does, rather than defaulting every
+      // page to "Default layout" and inviting the author to re-pick what they already
+      // picked. `undefined` is omitted by JSON, which IS the default case.
+      frameId: storedToFrameId(r.frameId),
     })),
     ...(Object.keys(symbols).length > 0 ? { symbols } : {}),
     ...(theme ? { theme } : {}),
@@ -825,6 +831,10 @@ export async function sync(
             name: p.name,
             ...(slugChanged ? { slug: p.slug } : {}),
             silicaDraftTree: asJson(p.root),
+            // Chrome only when the payload SPEAKS about it. `undefined` here is the
+            // scripted writer that has no opinion, and overwriting on its behalf would
+            // put a header back on every landing page it happened to touch.
+            ...(p.frameId !== undefined ? { frameId: p.frameId } : {}),
             position: i,
           },
         });
@@ -843,6 +853,7 @@ export async function sync(
             // published tree, so it falls through the legacy path until cutover).
             draftTree: asJson(blankPageTree()),
             silicaDraftTree: asJson(p.root),
+            ...(p.frameId !== undefined ? { frameId: p.frameId } : {}),
             position: i,
           },
         });

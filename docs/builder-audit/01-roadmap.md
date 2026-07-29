@@ -1,6 +1,6 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.11.0
+Version: 2.12.0
 Author: Brandon Korous
 Last Updated: 2026-07-29
 
@@ -271,7 +271,16 @@ Upstream. Filed in [doc 139](../139-silicaui-builder-asks.md); [02-silicaui-asks
   > `selectedIds` (ordered, last entry is the primary), `selectMany`, `toggleSelect`, and the batch op API 0.36.0 already carried. **No host work.** The studio touches selection in exactly one place — the Check panel's "Show me" calls `editor.select(nodeId)` to jump to a single finding — which is still the right call, and the canvas gestures are the engine's. `selection` stays the primary id so every existing reader is unchanged.
 
 - [ ] **15. Alignment guides, arrow-key nudge, select-parent, `Cmd+X` / `Cmd+A`.** — _silicaui-ask · M_
-- [ ] **16. Q22** (`resolveTree` stops resolving children once a node's binding is filled) and **Q26** (editor mode is private state, so a host cannot deep-link). Both already filed, both still open. — _silicaui-ask · S_
+- [x] **16. Q22** (`resolveTree` stops resolving children once a node's binding is filled) and **Q26** (editor mode is private state, so a host cannot deep-link). — _~~silicaui-ask~~ → both answered; the host half adopted · S_
+
+  > **Q22 was never real, and that is recorded rather than quietly dropped.** `resolveNode`'s value branch recurses — the same finding that made §10's premise wrong. The audit had carried it forward from 119 without re-reading the resolver at 0.35.0.
+  >
+  > **Q26 is answered by `initialMode` + `onModeChange`, and the studio now uses both.** `builder.studio` takes a `{mode}` param (`page` · `layout` · `component` · `theme`, validated — a typo opens the editor normally rather than handing silica a mode it has no case for), and `onModeChange` retitles the pane, because "Editor" on four torn-off windows tells an operator nothing.
+  >
+  > **The deep link this earns, and why it is not decoration.** The nav catalog has always claimed `header` / `footer` / `menu` land in the Editor — and they did, on a page BODY, with no signpost to the chrome. Site identity says twice that it owns the header's CONTENT and that the editor owns its arrangement, and offered no way there. It now carries two links: **Design the header & footer** (`mode: 'layout'`) and **Colours & type** (`mode: 'theme'`), on the same shift/alt target contract as every other list.
+  >
+  > **What is still not possible, deliberately:** `initialMode` seeds at mount and is never re-read, and there is no `editor.setMode`. So an affordance INSIDE the editor — "edit the header this page uses", from the frame picker in `toolbarSlot` — cannot switch surface itself. Not re-raised: a controlled mode would let a parent re-render pull an author out of the surface they are working in, which is the worse failure. Weighed, not missed.
+
 - [x] **17. Per-page frame selection** — a chrome-off landing page is currently unrepresentable. — _~~silicaui-ask~~ → shipped in silicaui 0.36.0 + wired here · M_
 
   > **The engine half arrived**: `Page.frameId` (`undefined` = site default, `null` = bare, a string = `Site.frames[id]`), `Site.frames`, and `frameFor`/`frameDiagnostic`. A dangling id resolves to NO frame rather than falling back — the author moved this page off the default deliberately, and restoring it is the worse repair.
