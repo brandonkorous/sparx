@@ -13,12 +13,25 @@
 //
 // So the host owns the history instead, which is what `setHistoryDelegate` is for.
 // An entry holds the action's ops (replay them to REDO — every op carries an absolute
-// value, so re-applying IS the original edit) and their INVERSE, computed by
-// `invertOps` at the moment the action happened, while the previous document was
-// still in hand. Undo applies the inverse through `applyRemoteOps`, which is targeted:
-// it names the one node the action touched and leaves everything else — including
-// work that arrived from someone else in between — alone. That is what lets the stack
-// stay alive across a co-editor's edit rather than being discarded.
+// value, so re-applying IS the original edit) and their INVERSE, computed at the moment
+// the action happened, while the previous document was still in hand. Undo applies the
+// inverse through `applyRemoteOps`, which is targeted: it names the one node the action
+// touched and leaves everything else — including work that arrived from someone else in
+// between — alone. That is what lets the stack stay alive across a co-editor's edit
+// rather than being discarded.
+//
+// THE INVERSE IS THE ENGINE'S NOW (silicaui 0.36.0, doc 139 §8). sparx used to compute
+// it in `@sparx/builder-schemas/silica-op-invert`, which could not be faithful for two
+// ops no host can invert from outside: `symbol.set` that CREATES (undoing it needs a
+// detach cascade of ids only the engine mints) and `node.setText` (which flattens
+// `children`, so the structure is not in the op — it now inverts into the new
+// `node.setChildren`). `editor.inverseOf(ops, before)` handles both, so that module is
+// deleted rather than extended.
+//
+// `inverseOf` lives on the EDITOR, which only exists inside `<Builder>` — and the
+// studio records history from `onChange`, which fires outside it. So this component
+// publishes the bound function upward through `invertRef`, the same way `stacksRef`
+// passes the stacks downward.
 //
 // Mounted INSIDE `<Builder>` (via `toolbarSlot`) so `useEditor()` resolves to the live
 // engine. Renders nothing.
@@ -46,11 +59,18 @@ export interface HistoryStacks {
  *  subtrees for inserts and removals. */
 export const HISTORY_LIMIT = 100;
 
+/** Compute the ops that undo `ops`, given the document as it stood before them.
+ *  `null` when the batch cannot be faithfully reversed. */
+export type InvertOps = (ops: readonly Op[], before: Site) => Op[] | null;
+
 interface Props {
   /** The stacks, owned by the studio (it records; this drives). A ref, not state:
    *  silica reads `canUndo()` synchronously during its own event dispatch, so the
    *  value has to be current the instant it is asked, not after a render. */
   stacksRef: MutableRefObject<HistoryStacks>;
+  /** Filled with `editor.inverseOf` on mount, so the studio — which records from
+   *  `onChange`, outside `<Builder>` — can reach an API that only exists inside it. */
+  invertRef: MutableRefObject<InvertOps | null>;
   /** Bumped by the studio each time it records or drops an action. */
   revision: number;
   /** The document moved: here is the result, and the ops that produced it — they
@@ -58,10 +78,22 @@ interface Props {
   onApplied: (site: Site, ops: Op[]) => void;
 }
 
-export function CollaborativeHistory({ stacksRef, revision, onApplied }: Props) {
+export function CollaborativeHistory({ stacksRef, invertRef, revision, onApplied }: Props) {
   const editor = useEditor();
   const onAppliedRef = useRef(onApplied);
   onAppliedRef.current = onApplied;
+
+  // Published in an effect rather than during render: a ref write in a render body is
+  // not safe under Strict Mode's double-invoke. The studio can only call this from a
+  // user edit, which is necessarily after mount — and if it somehow ran first, the
+  // studio treats a missing inverter exactly like an un-invertible batch, which is the
+  // conservative answer rather than a silently wrong undo.
+  useEffect(() => {
+    invertRef.current = (ops, before) => editor.inverseOf(ops, before);
+    return () => {
+      invertRef.current = null;
+    };
+  }, [editor, invertRef]);
 
   const delegate = useMemo<HistoryDelegate>(() => {
     // The stacks are mutated BEFORE the document moves: `applyRemoteOps` emits a

@@ -36,7 +36,6 @@ export * from './default-emails-silica';
 export * from './email-legacy-to-silica';
 export * from './silica-data-needs';
 export * from './silica-node-index';
-export * from './silica-op-invert';
 export * from './import-export';
 export * from './catalog';
 export * from './platform-catalog';

@@ -29,7 +29,6 @@ import { ensureUniqueIds, starterSite, upgradeFrameChrome } from '@sparx/silica-
 import {
   COMMERCE_SOURCES,
   SITE_SOURCES,
-  invertOps,
   toSilicaDataSources,
   type DataSource,
 } from '@sparx/builder-schemas';
@@ -76,7 +75,12 @@ import { themeFontFamilies } from '@sparx/site-themes';
 import { applyBrandOverride, tenantTheme, type BrandColumns } from './brand-theme';
 import { useCanvasBrandFonts } from './canvas-fonts';
 import { BuilderLiveSync } from './builder-live';
-import { CollaborativeHistory, HISTORY_LIMIT, type HistoryStacks } from './undo-history';
+import {
+  CollaborativeHistory,
+  HISTORY_LIMIT,
+  type HistoryStacks,
+  type InvertOps,
+} from './undo-history';
 import { SiteCheck } from './site-check';
 import { VersionHistory } from './version-history';
 import { PageSettings, draftToPatch, type PageSeoDraft } from './page-settings';
@@ -356,6 +360,9 @@ function StudioEditor({
   // silica re-reads whether Undo is available.
   const historyRef = useRef<HistoryStacks>({ undo: [], redo: [] });
   const [historyRev, setHistoryRev] = useState(0);
+  // Filled by `<CollaborativeHistory>` with the engine's `inverseOf`, which is only
+  // reachable from inside `<Builder>` — and this is outside it.
+  const invertRef = useRef<InvertOps | null>(null);
 
   // The page ids this client KNOWS the server holds — seeded from the load (the
   // starter is empty here: a fresh property has nothing persisted yet). A save may
@@ -463,7 +470,13 @@ function StudioEditor({
   const recordHistory = useCallback(
     (ops: readonly Op[]) => {
       const stacks = historyRef.current;
-      const inverse = invertOps(prevSiteRef.current, ops);
+      // The engine's own inverter (silicaui 0.36.0). It replaced sparx's
+      // `invertOps`, which could not faithfully reverse a symbol-creating
+      // `symbol.set` or a `node.setText` — see undo-history.tsx. `?? null` folds a
+      // not-yet-mounted inverter into the same conservative path as an
+      // un-invertible batch; the toast below is already suppressed on an empty
+      // stack, which is what that case is.
+      const inverse = invertRef.current?.(ops, prevSiteRef.current) ?? null;
       if (inverse) {
         stacks.undo.push({ ops: [...ops], inverse });
         // Bounded: each entry can carry whole subtrees, so a long session would
@@ -772,6 +785,7 @@ function StudioEditor({
           <div className="flex items-center gap-2">
             <CollaborativeHistory
               stacksRef={historyRef}
+              invertRef={invertRef}
               revision={historyRev}
               onApplied={onHistoryApplied}
             />
