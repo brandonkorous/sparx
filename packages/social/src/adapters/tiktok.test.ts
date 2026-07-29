@@ -4,6 +4,7 @@ import {
   TikTokAdapter,
   classifyTikTokAudit,
   classifyTikTokStatus,
+  mapTikTokMetrics,
   pickPrivacyLevel,
   planTikTokPost,
   tiktokAllowsPublic,
@@ -161,5 +162,52 @@ describe('classifyTikTokAudit', () => {
 
   it('never claims to have read scopes — this probe is about the app, not the grant', () => {
     expect(classifyTikTokAudit(['PUBLIC_TO_EVERYONE']).grantedScopes).toBeNull();
+  });
+});
+
+describe('tiktok insights scope gating', () => {
+  const OLD = process.env;
+  beforeEach(() => {
+    process.env = { ...OLD, TIKTOK_CLIENT_KEY: 'key', TIKTOK_CLIENT_SECRET: 'secret' };
+  });
+  afterEach(() => {
+    process.env = OLD;
+  });
+
+  // video.list is granted separately from video.publish, and the scope must widen at
+  // CONNECT — a token minted without it can never read metrics later.
+  it('leaves the posting scope alone while the review is pending', () => {
+    delete process.env.TIKTOK_INSIGHTS_ENABLED;
+    expect(new TikTokAdapter().requiredScopes()).not.toContain('video.list');
+  });
+
+  it('requests video.list once the flag is on', () => {
+    process.env.TIKTOK_INSIGHTS_ENABLED = 'true';
+    const scopes = new TikTokAdapter().requiredScopes();
+    expect(scopes).toContain('video.list');
+    expect(scopes).toContain('video.publish');
+  });
+});
+
+describe('mapTikTokMetrics', () => {
+  it('maps all four counters, views standing in for impressions', () => {
+    expect(
+      mapTikTokMetrics({
+        like_count: 120,
+        comment_count: 8,
+        share_count: 15,
+        view_count: 4300,
+      })
+    ).toEqual({ likes: 120, comments: 8, shares: 15, impressions: 4300 });
+  });
+
+  it('never invents reach, which TikTok does not report', () => {
+    expect(mapTikTokMetrics({ view_count: 4300 }).reach).toBeUndefined();
+  });
+
+  // A removed video comes back as an empty list — dashes, not zeros.
+  it('omits anything the platform did not report', () => {
+    expect(mapTikTokMetrics(undefined)).toEqual({});
+    expect(mapTikTokMetrics({})).toEqual({});
   });
 });

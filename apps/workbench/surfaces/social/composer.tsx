@@ -20,7 +20,7 @@
 // or profile a post lands on; a platform's limit is "24 characters over — it will
 // be cut short here", never a raw error.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Image from 'next/image';
 import {
   Alert,
@@ -651,22 +651,56 @@ function PostMetricsSection({
   catalogMap: Map<SocialPlatform, CatalogEntry>;
 }) {
   const toast = useToast();
-  const metrics = usePostMetrics(postId);
   const refresh = useRefreshPostMetrics();
 
-  const doRefresh = () => {
-    refresh.mutate(postId, {
-      onSuccess: () => {
-        toast.add({ title: 'Refreshing — numbers update shortly', type: 'info' });
-      },
-    });
-  };
+  // Asking for numbers only queues the platform round-trip, so the answer lands
+  // seconds later on a background worker — not in the button's own response. We
+  // keep re-reading until a newer snapshot shows up, and give up after a minute
+  // rather than polling a post whose platform is never going to answer.
+  const [collecting, setCollecting] = useState(false);
+  const metrics = usePostMetrics(postId, collecting);
 
-  const targets = metrics.data?.targets ?? [];
+  const targets = useMemo(() => metrics.data?.targets ?? [], [metrics.data]);
   const hasAny = targets.some((t) => t.latest !== null);
   const missingScope = targets.some(
     (t) => t.latest !== null && (t.latest.reach === null || t.latest.impressions === null)
   );
+
+  // The newest reading across every destination — the thing that has to MOVE for
+  // a collection to count as landed.
+  const newestReading = useMemo(
+    () =>
+      targets.reduce<string>(
+        (max, t) => (t.latest && t.latest.collectedAt > max ? t.latest.collectedAt : max),
+        ''
+      ),
+    [targets]
+  );
+  const readingAtRequest = useRef<string>('');
+
+  useEffect(() => {
+    if (!collecting) return;
+    if (newestReading !== readingAtRequest.current) {
+      setCollecting(false);
+      return;
+    }
+    const giveUp = setTimeout(() => {
+      setCollecting(false);
+    }, 60_000);
+    return () => {
+      clearTimeout(giveUp);
+    };
+  }, [collecting, newestReading]);
+
+  const doRefresh = () => {
+    readingAtRequest.current = newestReading;
+    refresh.mutate(postId, {
+      onSuccess: () => {
+        setCollecting(true);
+        toast.add({ title: 'Checking with your accounts', type: 'info' });
+      },
+    });
+  };
 
   return (
     <FormSection
@@ -677,7 +711,7 @@ function PostMetricsSection({
           size="sm"
           variant="outline"
           color="module"
-          loading={refresh.isPending}
+          loading={refresh.isPending || collecting}
           onClick={doRefresh}
         >
           <RefreshCw className="size-4" aria-hidden />
@@ -695,7 +729,11 @@ function PostMetricsSection({
           )}
         </Text>
       ) : !hasAny ? (
-        <Text className="text-sm">No numbers yet — hit Refresh numbers to pull the latest.</Text>
+        <Text className="text-sm">
+          {collecting
+            ? 'Checking with your accounts — this takes a few seconds.'
+            : 'No numbers yet. Accounts report back on their own schedule, usually within a few hours of a post going out, and sparx keeps re-checking on its own. Refresh numbers asks now.'}
+        </Text>
       ) : (
         <div className="flex flex-col gap-2">
           {targets.map((target) => {
@@ -1552,6 +1590,24 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
             Save changes
           </Button>
         ) : null}
+        {/* Delete is a lifecycle action on the whole post, so it rides the frame
+            header with the rest of them — icon-only, because a destructive verb
+            spelled out next to Save is the one pair worth keeping visually
+            unalike. The confirm names what is lost before anything happens. */}
+        {isAdmin && post.status !== 'publishing' ? (
+          <Button
+            size="sm"
+            variant="ghost"
+            color="danger"
+            shape="square"
+            aria-label="Delete this post"
+            title="Delete this post"
+            loading={remove.isPending}
+            onClick={doDelete}
+          >
+            <Trash2 className="size-4" aria-hidden />
+          </Button>
+        ) : null}
       </PaneToolbar>
 
       <div className="min-h-0 flex-1 overflow-y-auto">
@@ -1684,6 +1740,18 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                 />
               )}
             </FormSection>
+
+            {/* How it did — the live numbers, once the post is actually out. Sits with
+                the rest of the post's story in the left column (it is a section like
+                any other, not a full-width band under the studio), directly after the
+                destinations it reports on. */}
+            {post.status === 'published' || post.status === 'partially_published' ? (
+              <PostMetricsSection
+                postId={post.id}
+                avatarByTargetId={avatarByTargetId}
+                catalogMap={catalogMap}
+              />
+            ) : null}
 
             {/* Per-destination tuning, on a SAVED post — different wording, the first
                 comment where the hashtags live, and this destination's own send time.
@@ -1840,26 +1908,6 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
                 </div>
               </FormSection>
             ) : null}
-
-            {/* Delete — a rare, irreversible action, kept apart under a divider. */}
-            {isAdmin && post.status !== 'publishing' ? (
-              <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-4">
-                <Text className="text-sm">
-                  Remove this post and its schedule. Anything already posted stays live on your
-                  accounts.
-                </Text>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  color="danger"
-                  loading={remove.isPending}
-                  onClick={doDelete}
-                >
-                  <Trash2 className="size-4" aria-hidden />
-                  Delete post
-                </Button>
-              </div>
-            ) : null}
           </div>
 
           {/* The payoff, pinned: the real thing per account, so it stays in view
@@ -1898,18 +1946,6 @@ function ComposeManage({ ctx, post }: { ctx: SurfaceContext; post: Post }) {
             )}
           </aside>
         </div>
-
-        {/* How it did — the live numbers, once the post is actually out. A full-width
-            band below the studio so the report reads on its own, after the preview. */}
-        {post.status === 'published' || post.status === 'partially_published' ? (
-          <div className="mx-auto w-full max-w-6xl px-4 pb-4">
-            <PostMetricsSection
-              postId={post.id}
-              avatarByTargetId={avatarByTargetId}
-              catalogMap={catalogMap}
-            />
-          </div>
-        ) : null}
       </div>
     </div>
   );

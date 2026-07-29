@@ -27,6 +27,7 @@ import type {
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialPostMetrics,
   SocialPublishResult,
   SocialTargetRef,
   SocialTokens,
@@ -49,7 +50,21 @@ const TOKEN_URL = 'https://graph.threads.net/oauth/access_token';
 const LONG_LIVED_URL = 'https://graph.threads.net/access_token';
 const REFRESH_URL = 'https://graph.threads.net/refresh_access_token';
 const API_BASE = 'https://graph.threads.net/v1.0';
-const SCOPE = 'threads_basic,threads_content_publish';
+const POST_SCOPE = 'threads_basic,threads_content_publish';
+
+/** Cleared to read post-level insights. Gated on env like every other capability that
+ *  waits on a platform review, and it widens the scope requested at CONNECT — so a
+ *  tenant never carries a token that silently lacks what the Insights panel needs.
+ *  Threads is its own Meta app with its own review, hence its own flag rather than
+ *  riding `META_INSIGHTS_ENABLED`. */
+function threadsInsightsEnabled(): boolean {
+  const raw = process.env.THREADS_INSIGHTS_ENABLED?.trim().toLowerCase();
+  return raw === '1' || raw === 'true' || raw === 'yes';
+}
+
+function scope(): string {
+  return threadsInsightsEnabled() ? `${POST_SCOPE},threads_manage_insights` : POST_SCOPE;
+}
 const LONG_LIVED_FALLBACK_SECONDS = 5_184_000; // ~60 days
 
 const ID_VAR = 'THREADS_APP_ID';
@@ -123,6 +138,62 @@ interface ThreadsPermalinkResponse {
   permalink?: string;
 }
 
+/** One row of `/{thread}/insights`. Threads reports a lifetime metric as either a
+ *  `total_value` object or the older `values[]` array depending on the metric, so both
+ *  are read rather than betting on one shape. */
+export interface ThreadsInsightRow {
+  name?: string;
+  total_value?: { value?: number };
+  values?: { value?: number }[];
+}
+interface ThreadsInsightsResponse {
+  data?: ThreadsInsightRow[];
+}
+
+/** Fold Threads' insight rows into the platform-neutral shape. Pure, so the vocabulary
+ *  translation is unit-tested without any network.
+ *
+ *  Threads speaks its own dialect: `views` is the impression count, `replies` are what a
+ *  person calls comments, and a post spreads two ways — a plain `reposts` and a `quotes`
+ *  (a repost with commentary). Both are a share, so they SUM into `shares` rather than
+ *  picking one and under-reporting how far the post travelled. Threads reports no unique
+ *  viewer count, so `reach` stays null — the UI shows "—" instead of echoing impressions
+ *  and implying a precision the platform never gave us. */
+export function mapThreadsMetrics(rows: ThreadsInsightRow[] | undefined): SocialPostMetrics {
+  const value = (row: ThreadsInsightRow): number | undefined =>
+    row.total_value?.value ?? row.values?.[0]?.value;
+
+  const metrics: SocialPostMetrics = {};
+  let reposts: number | undefined;
+  let quotes: number | undefined;
+
+  for (const row of rows ?? []) {
+    const n = value(row);
+    if (typeof n !== 'number') continue;
+    switch (row.name) {
+      case 'views':
+        metrics.impressions = n;
+        break;
+      case 'likes':
+        metrics.likes = n;
+        break;
+      case 'replies':
+        metrics.comments = n;
+        break;
+      case 'reposts':
+        reposts = n;
+        break;
+      case 'quotes':
+        quotes = n;
+        break;
+    }
+  }
+  if (reposts !== undefined || quotes !== undefined) {
+    metrics.shares = (reposts ?? 0) + (quotes ?? 0);
+  }
+  return metrics;
+}
+
 export class ThreadsAdapter implements SocialAdapter {
   readonly id = 'threads' as const;
   readonly name = 'Threads';
@@ -137,7 +208,7 @@ export class ThreadsAdapter implements SocialAdapter {
   }
 
   requiredScopes(): string[] {
-    return splitScopes(SCOPE);
+    return splitScopes(scope());
   }
 
   connectUrl(ctx: SocialConnectContext): string {
@@ -146,7 +217,7 @@ export class ThreadsAdapter implements SocialAdapter {
       client_id: clientId,
       redirect_uri: ctx.redirectUri,
       response_type: 'code',
-      scope: SCOPE,
+      scope: scope(),
       state: ctx.state,
     });
     return `${AUTH_URL}?${params.toString()}`;
@@ -298,6 +369,35 @@ export class ThreadsAdapter implements SocialAdapter {
         children: childIds.join(','),
       })
     ).id;
+  }
+
+  /**
+   * Read a published thread's engagement for the Insights panel.
+   *
+   * Unlike Facebook/Instagram there is no counts-vs-insights split here: Threads serves
+   * every per-post number from the one `insights` edge, which needs
+   * `threads_manage_insights`. So when the review flag is off the honest answer is "no
+   * numbers", returned as an empty metric set — the collect worker writes a row of nulls
+   * and the panel shows dashes, rather than throwing a permission error every sweep.
+   */
+  async getMetrics(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    externalId: string
+  ): Promise<SocialPostMetrics> {
+    void target; // one profile per connection — the user token is the only token
+    if (!threadsInsightsEnabled()) return {};
+
+    const params = new URLSearchParams({
+      metric: 'views,likes,replies,reposts,quotes',
+      access_token: auth.accessToken,
+    });
+    const res = await fetchT(`${API_BASE}/${externalId}/insights?${params.toString()}`);
+    if (!res.ok) {
+      throw new Error(`Threads insights failed: ${await describeResponse(res)}`);
+    }
+    const data = (await res.json()) as ThreadsInsightsResponse;
+    return mapThreadsMetrics(data.data);
   }
 
   private async awaitContainer(token: string, containerId: string): Promise<void> {

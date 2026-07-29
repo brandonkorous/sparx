@@ -130,6 +130,20 @@ data:
   #                       and keep working regardless.
   META_INBOX_ENABLED: 'true'
   META_INSIGHTS_ENABLED: 'true'
+  # The same review-gated shape for the two platforms whose analytics scope is granted
+  # SEPARATELY from their posting scope. Both widen the scope requested at CONNECT, so a
+  # token minted while the flag is off can never read metrics later — flip the flag, then
+  # have the tenant reconnect. Left OFF until each review clears, because requesting an
+  # ungranted scope fails the whole authorize call and would break posting too.
+  #
+  # THREADS_INSIGHTS_ENABLED → threads_manage_insights. Threads is its own Meta app with
+  #                       its own review, so it does NOT ride META_INSIGHTS_ENABLED.
+  #                       Unlike Facebook/Instagram there is no counts-vs-insights split:
+  #                       every per-post number comes from this one scope.
+  # TIKTOK_INSIGHTS_ENABLED → video.list. Separate from video.publish in TikTok's app
+  #                       review; without it a published video reports no numbers at all.
+  THREADS_INSIGHTS_ENABLED: 'false'
+  TIKTOK_INSIGHTS_ENABLED: 'false'
   # Pinterest Trial-access apps CANNOT create Pins in production (`api.pinterest.com`
   # returns 403 "use API Sandbox instead"). PINTEREST_SANDBOX routes token exchange + all
   # Pinterest API calls to api-sandbox.pinterest.com so a Trial app can create (sandbox)

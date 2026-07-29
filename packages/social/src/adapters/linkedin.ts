@@ -36,6 +36,7 @@ import type {
   SocialAuth,
   SocialConnectContext,
   SocialInboxEntry,
+  SocialPostMetrics,
   SocialPublishResult,
   SocialReplyResult,
   SocialTargetRef,
@@ -111,6 +112,28 @@ interface ImageInitResponse {
 interface LinkedInPostsResponse {
   elements?: { id?: string }[];
 }
+
+/** `/rest/socialActions/{urn}` — the engagement counters that ride the SAME scope the
+ *  adapter already uses to post its first comment. */
+export interface LinkedInSocialActions {
+  likesSummary?: { totalLikes?: number };
+  commentsSummary?: { aggregatedTotalComments?: number; totalFirstLevelComments?: number };
+}
+
+/** One element of `organizationalEntityShareStatistics` — the richer, admin-scoped read
+ *  that adds reach/impressions on top of the counts. */
+export interface LinkedInShareStatistics {
+  totalShareStatistics?: {
+    impressionCount?: number;
+    uniqueImpressionsCount?: number;
+    shareCount?: number;
+    likeCount?: number;
+    commentCount?: number;
+  };
+}
+interface LinkedInShareStatsResponse {
+  elements?: LinkedInShareStatistics[];
+}
 interface LinkedInCommentsResponse {
   elements?: {
     $URN?: string;
@@ -152,6 +175,45 @@ export function planLinkedInPost(post: RenderedPost): LinkedInPostPlan {
     return { commentary: post.text, imageUrl: null, articleUrl: post.link };
   }
   return { commentary: post.text, imageUrl: null, articleUrl: null };
+}
+
+/**
+ * Fold LinkedIn's two engagement reads into the platform-neutral shape. Pure, so the
+ * precedence rules are unit-tested without any network.
+ *
+ * Counts-first, exactly like the Meta adapters (docs/implementation/social.md §"Null,
+ * never zero"): `socialActions` carries likes + comments on the scope we already hold,
+ * while reach/impressions come only from the admin-scoped statistics finder. So a
+ * statistics call that 403s or returns nothing still leaves the counts intact — the
+ * caller passes `undefined` for `stats` and the post shows real numbers with dashes for
+ * reach, never a misleading 0.
+ *
+ * Where both sources report a number, `socialActions` wins: it is the live counter on the
+ * post itself, whereas the statistics finder aggregates on a reporting lag.
+ */
+export function mapLinkedInMetrics(
+  social: LinkedInSocialActions | undefined,
+  stats: LinkedInShareStatistics | undefined
+): SocialPostMetrics {
+  const total = stats?.totalShareStatistics;
+  const metrics: SocialPostMetrics = {};
+
+  const likes = social?.likesSummary?.totalLikes ?? total?.likeCount;
+  // `aggregatedTotalComments` counts replies too, which is what a person means by "how
+  // many comments did this get"; `totalFirstLevelComments` is the shallower fallback.
+  const comments =
+    social?.commentsSummary?.aggregatedTotalComments ??
+    social?.commentsSummary?.totalFirstLevelComments ??
+    total?.commentCount;
+
+  if (typeof likes === 'number') metrics.likes = likes;
+  if (typeof comments === 'number') metrics.comments = comments;
+  if (typeof total?.shareCount === 'number') metrics.shares = total.shareCount;
+  if (typeof total?.impressionCount === 'number') metrics.impressions = total.impressionCount;
+  if (typeof total?.uniqueImpressionsCount === 'number') {
+    metrics.reach = total.uniqueImpressionsCount;
+  }
+  return metrics;
 }
 
 export class LinkedInAdapter implements SocialAdapter {
@@ -340,7 +402,67 @@ export class LinkedInAdapter implements SocialAdapter {
     return { externalId: urn, permalink: linkedInPermalink(urn) };
   }
 
+  /**
+   * Read a published company-page post's engagement for the Insights panel.
+   *
+   * Two calls, deliberately: `socialActions` returns likes + comments and is the same
+   * endpoint the adapter already posts its first comment through, so the counts come back
+   * on scopes we hold today. `organizationalEntityShareStatistics` adds impressions +
+   * unique impressions (reach) + shares, but it is admin-scoped and subject to the extra
+   * platform review — so it is BEST-EFFORT: any failure there degrades to counts-only
+   * rather than losing the whole read. Same discipline as Facebook's `read_insights`.
+   *
+   * Throwing is reserved for the counts call, because a post with no engagement read at
+   * all is a genuine failure the collect worker should skip and retry.
+   */
+  async getMetrics(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    externalId: string
+  ): Promise<SocialPostMetrics> {
+    const res = await fetchT(`${REST_BASE}/socialActions/${encodeURIComponent(externalId)}`, {
+      headers: this.restHeaders(auth.accessToken),
+    });
+    if (!res.ok) {
+      throw new Error(`LinkedIn engagement read failed: ${await describeResponse(res)}`);
+    }
+    const social = (await res.json()) as LinkedInSocialActions;
+    const stats = await this.tryShareStatistics(
+      auth.accessToken,
+      target.externalTargetId,
+      externalId
+    );
+    return mapLinkedInMetrics(social, stats);
+  }
+
   // ── internals ──
+
+  /** Impressions/reach/shares for one share, as the owning ORGANIZATION. Best-effort:
+   *  returns undefined when the admin scope isn't granted (or the finder hiccups), which
+   *  leaves those columns null so the UI shows "—" instead of a fabricated zero. */
+  private async tryShareStatistics(
+    accessToken: string,
+    orgUrn: string,
+    shareUrn: string
+  ): Promise<LinkedInShareStatistics | undefined> {
+    try {
+      const params = new URLSearchParams({
+        q: 'organizationalEntity',
+        organizationalEntity: orgUrn,
+        'shares[0]': shareUrn,
+      });
+      const res = await fetchT(
+        `${REST_BASE}/organizationalEntityShareStatistics?${params.toString()}`,
+        { headers: this.restHeaders(accessToken) }
+      );
+      if (!res.ok) return undefined;
+      const data = (await res.json()) as LinkedInShareStatsResponse;
+      return data.elements?.[0];
+    } catch {
+      // best-effort — the counts already came back
+      return undefined;
+    }
+  }
 
   private async memberInfo(accessToken: string): Promise<LinkedInUserinfo | null> {
     try {

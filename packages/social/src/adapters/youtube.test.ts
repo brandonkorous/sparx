@@ -1,6 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { YouTubeAdapter, planYouTubeShort, youtubeShortsPermalink } from './youtube.js';
+import {
+  YouTubeAdapter,
+  mapYouTubeMetrics,
+  planYouTubeShort,
+  youtubeShortsPermalink,
+} from './youtube.js';
 import type { RenderedPost } from '../types.js';
 
 // The YouTube adapter's pure decision logic (docs/134 Phase 3). The resumable upload is
@@ -73,5 +78,32 @@ describe('YouTubeAdapter connectUrl / isConfigured', () => {
   it('reports not-configured when the env is missing', () => {
     delete process.env.GOOGLE_OAUTH_CLIENT_SECRET;
     expect(new YouTubeAdapter().isConfigured()).toBe(false);
+  });
+});
+
+describe('mapYouTubeMetrics', () => {
+  // YouTube sends every counter as a string; a naive read would store "4300" or NaN.
+  it('parses the string counters into numbers', () => {
+    expect(mapYouTubeMetrics({ viewCount: '4300', likeCount: '120', commentCount: '8' })).toEqual({
+      impressions: 4300,
+      likes: 120,
+      comments: 8,
+    });
+  });
+
+  // A creator who hides the like count gets the field omitted, not zeroed.
+  it('omits a counter the owner has hidden', () => {
+    expect(mapYouTubeMetrics({ viewCount: '10' })).toEqual({ impressions: 10 });
+  });
+
+  it('never invents shares or reach, which this edge does not report', () => {
+    const metrics = mapYouTubeMetrics({ viewCount: '10' });
+    expect(metrics.shares).toBeUndefined();
+    expect(metrics.reach).toBeUndefined();
+  });
+
+  it('drops unparseable values rather than storing NaN', () => {
+    expect(mapYouTubeMetrics({ viewCount: 'lots', likeCount: '' })).toEqual({});
+    expect(mapYouTubeMetrics(undefined)).toEqual({});
   });
 });

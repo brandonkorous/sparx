@@ -5,6 +5,7 @@ import {
   appendLink,
   firstImageUrl,
   linkedInPermalink,
+  mapLinkedInMetrics,
   planLinkedInPost,
 } from './linkedin.js';
 import type { RenderedPost } from '../types.js';
@@ -118,5 +119,56 @@ describe('LinkedInAdapter connectUrl / isConfigured', () => {
   it('reports not-configured when the env is missing', () => {
     delete process.env.LINKEDIN_CLIENT_ID;
     expect(new LinkedInAdapter().isConfigured()).toBe(false);
+  });
+});
+
+describe('mapLinkedInMetrics', () => {
+  it('folds both reads together when the admin-scoped statistics come back', () => {
+    expect(
+      mapLinkedInMetrics(
+        {
+          likesSummary: { totalLikes: 12 },
+          commentsSummary: { aggregatedTotalComments: 5, totalFirstLevelComments: 3 },
+        },
+        {
+          totalShareStatistics: {
+            impressionCount: 1000,
+            uniqueImpressionsCount: 820,
+            shareCount: 4,
+          },
+        }
+      )
+    ).toEqual({ likes: 12, comments: 5, shares: 4, impressions: 1000, reach: 820 });
+  });
+
+  // The whole point of the best-effort split: no statistics must never cost us the counts.
+  it('keeps the counts when the statistics call was skipped', () => {
+    expect(
+      mapLinkedInMetrics(
+        { likesSummary: { totalLikes: 7 }, commentsSummary: { aggregatedTotalComments: 2 } },
+        undefined
+      )
+    ).toEqual({ likes: 7, comments: 2 });
+  });
+
+  it('counts replies as comments, falling back to first-level when that is all there is', () => {
+    expect(
+      mapLinkedInMetrics({ commentsSummary: { totalFirstLevelComments: 3 } }, undefined)
+    ).toEqual({ comments: 3 });
+  });
+
+  it('prefers the live socialActions counters over the lagging statistics aggregate', () => {
+    expect(
+      mapLinkedInMetrics(
+        { likesSummary: { totalLikes: 12 } },
+        { totalShareStatistics: { likeCount: 9, commentCount: 4 } }
+      )
+    ).toMatchObject({ likes: 12, comments: 4 });
+  });
+
+  // Null, never zero — an absent metric must stay absent so the UI shows "—".
+  it('omits every metric the platform did not report', () => {
+    expect(mapLinkedInMetrics(undefined, undefined)).toEqual({});
+    expect(mapLinkedInMetrics({}, { totalShareStatistics: {} })).toEqual({});
   });
 });

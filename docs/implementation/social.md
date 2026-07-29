@@ -1,8 +1,8 @@
 # Social module — implementation tracker
 
-Version: 1.1
+Version: 1.2
 Author: Brandon Korous
-Last Updated: 2026-07-28
+Last Updated: 2026-07-29
 
 > The **living** status + decision log for the `social` module. It answers three
 > questions the design docs don't: what are we building _toward_, where are we
@@ -35,10 +35,12 @@ built in capability order, each layer standing on its own:
 | **Plan**      | A calendar as the daily workspace — month + week, drag to reschedule, a standing cadence    | ✅                                                                           |
 | **Attribute** | Post links carry attribution, so social shows up in the same reports as every other channel | 🟡                                                                           |
 | **Measure**   | "How did it do?" — per-post + per-account performance, on a self-refreshing cadence         | 🟡                                                                           |
-| **Engage**    | An inbox — read and reply to comments, mentions, reviews                                    | 🟡 built; Google Business live, Meta scope-gated                             |
+| **Engage**    | An inbox — read and reply to comments, mentions, reviews                                    | 🟡 built in code; no platform provisioned (§2)                               |
 | **Advertise** | Paid campaigns + ROAS against real revenue                                                  | — (its own module, out of scope — [133 §14](../133-social-media-posting.md)) |
 
-**As of 2026-07-28 the whole arc is built.** The audit in
+**The whole arc is built in CODE — no platform is connectable yet.** Every one is waiting on
+its own developer app + approval; see the **Platform provisioning** table in §2, which is the
+only place in this doc that answers "can a tenant actually use this?". The audit in
 [docs/social-audit/](../social-audit/00-README.md) scored the module 6.5/10 and its roadmap has been
 executed: 23 of 26 slices, everything that was ours to build. Terraform is applied (§5). What is
 left is a deploy, and the platform applications — forms with external clocks, not engineering. See
@@ -63,23 +65,23 @@ touches the tenant's own site and so can't come from the traffic pipeline.
 
 ### Shipped ✅
 
-| Surface / capability          | Notes                                                                                                                                                                                                                                                                                             |
-| ----------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Connections**               | OAuth connect / reconnect / disconnect; per-target enable. Meta app configured in prod — Facebook Page + Instagram + Threads are `available`; LinkedIn + Google Business Profile live.                                                                                                            |
-| **Composer**                  | One post → N platforms; per-destination text/first-comment overrides; save draft / schedule / submit for approval / publish now. Split-studio layout (form left, live preview pinned right); avatar destination cards; the saved/draft view shows the **same** "How it will look" as compose-new. |
-| **Live per-platform preview** | Real image cropped to each platform's shape (focal-point aware), caption cut at the platform's limit (struck-through overflow), per-platform link treatment.                                                                                                                                      |
-| **Calendar** (module landing) | Its own top-level panel and the module's default landing. Month grid (agenda fallback on a narrow pane); **drag-to-reschedule**; tap a day to write a post already dated to it; unscheduled-drafts tray.                                                                                          |
-| **Posts** (list)              | Search + triage. Pipeline strip (glance + filter); image-led rows with destination avatars; grouped by lifecycle.                                                                                                                                                                                 |
-| **Approvals**                 | The `pending_approval` inbox (surfaces automation-drafted posts).                                                                                                                                                                                                                                 |
-| **Publish pipeline**          | `social-worker` drain: resolve/refresh grant → render per platform → adapter publish (idempotent) → per-target result; partial-publish state machine.                                                                                                                                             |
-| **Media preview**             | Variant-URL contract fixed (`variantUrlPath` single source of truth) — see [brain: services](../brain/apps/services.md). Deployed.                                                                                                                                                                |
+| Surface / capability          | Notes                                                                                                                                                                                                                                                                                                                                                                                         |
+| ----------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Connections**               | OAuth connect / reconnect / disconnect; per-target enable. **This row describes the CODE only.** As of 2026-07-29 NO platform is operational end-to-end: every one is waiting on its own developer-app + approval. An adapter being "shipped" says nothing about whether a tenant can connect it — read the **Platform provisioning** table below, never this one, for what is actually live. |
+| **Composer**                  | One post → N platforms; per-destination text/first-comment overrides; save draft / schedule / submit for approval / publish now. Split-studio layout (form left, live preview pinned right); avatar destination cards; the saved/draft view shows the **same** "How it will look" as compose-new.                                                                                             |
+| **Live per-platform preview** | Real image cropped to each platform's shape (focal-point aware), caption cut at the platform's limit (struck-through overflow), per-platform link treatment.                                                                                                                                                                                                                                  |
+| **Calendar** (module landing) | Its own top-level panel and the module's default landing. Month grid (agenda fallback on a narrow pane); **drag-to-reschedule**; tap a day to write a post already dated to it; unscheduled-drafts tray.                                                                                                                                                                                      |
+| **Posts** (list)              | Search + triage. Pipeline strip (glance + filter); image-led rows with destination avatars; grouped by lifecycle.                                                                                                                                                                                                                                                                             |
+| **Approvals**                 | The `pending_approval` inbox (surfaces automation-drafted posts).                                                                                                                                                                                                                                                                                                                             |
+| **Publish pipeline**          | `social-worker` drain: resolve/refresh grant → render per platform → adapter publish (idempotent) → per-target result; partial-publish state machine.                                                                                                                                                                                                                                         |
+| **Media preview**             | Variant-URL contract fixed (`variantUrlPath` single source of truth) — see [brain: services](../brain/apps/services.md). Deployed.                                                                                                                                                                                                                                                            |
 
 ### Code-complete, pending install/deploy 🟡
 
-| Item                                       | What remains                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| ------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| **UTM attribution tie-in**                 | Code merged into the working tree (worker + taxonomy + test). Needs `pnpm install` to link the new `@sparx/attribution` dep into `social-worker`, then a deploy. See §3 (decision) + §5 (hand-off).                                                                                                                                                                                                                                                                            |
-| **Analytics — post performance (Measure)** | Full vertical merged: `social_post_metrics` model + RLS migration; `getMetrics` on the Meta adapters (FB + IG, counts on granted scopes, reach/impressions best-effort) + tests; `social.metrics.collect` event + worker collector; api-rest `GET /posts/:id/metrics`, `GET /insights`, `POST /posts/:id/metrics/refresh`; workbench **Insights** surface. Needs the DB regen + Terraform apply + deploy (§5). Reach/impressions stay null until the extra Meta review clears. |
+| Item                                       | What remains                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **UTM attribution tie-in**                 | Code merged into the working tree (worker + taxonomy + test). Needs `pnpm install` to link the new `@sparx/attribution` dep into `social-worker`, then a deploy. See §3 (decision) + §5 (hand-off).                                                                                                                                                                                                                                                                                                                                                                                |
+| **Analytics — post performance (Measure)** | Full vertical merged: `social_post_metrics` model + RLS migration; `getMetrics` on the Meta adapters (FB + IG, counts on granted scopes, reach/impressions best-effort) + tests; `social.metrics.collect` event + worker collector; api-rest `GET /posts/:id/metrics`, `GET /insights`, `POST /posts/:id/metrics/refresh`; workbench **Insights** surface. Needs the DB regen + Terraform apply + deploy (§5). Reach/impressions stay null until the extra Meta review clears. **2026-07-29: `getMetrics` now covers ALL 8 adapters** (was 3 of 8 — see the decision entry below). |
 
 ### Not started ⬜ / blocked 🔒
 
@@ -87,6 +89,32 @@ touches the tenant's own site and so can't come from the traffic pipeline.
 | ---------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | **Engagement inbox**                     | 🔒 Entirely new inbound direction; the adapter contract is publish-only today. Replying is gated on Meta App Review (`pages_manage_engagement`, `pages_messaging`, `instagram_manage_comments/messages`). |
 | **Hashtag helper / bulk CSV scheduling** | ⬜ Standalone conveniences; not built.                                                                                                                                                                    |
+
+### Platform provisioning — the REAL "is it live?" table
+
+**An adapter is code; a connection needs a developer app AND an approval.** Those are two
+different clocks and this doc previously conflated them, which read as "Google Business and
+LinkedIn are live" when neither had ever been set up. Adapter coverage is 8/8 with
+`getMetrics` on all of them. **Operational platforms: none, as of 2026-07-29.** Track the
+provisioning half here.
+
+| Platform            | Adapter | Developer app                                      | Gate before a tenant can connect                                                                                                                                                                                                                              |
+| ------------------- | ------- | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **LinkedIn**        | ✅      | ✅ `sparx` (client `86oksrabanjmb`), page-verified | 🔒 Community Management API Development Tier **submitted 2026-07-29**, in review. Analytics use case to be added at Standard Tier.                                                                                                                            |
+| **Google Business** | ✅      | ⬜ not set up                                      | 🔒 Needs a GBP listing **verified + active 60+ days** and a website on the profile, THEN the GBP API contact form w/ Project Number. Approval reads as quota: 0 QPM = no, 300 QPM = yes. The 60-day clock starts at listing verification, not at application. |
+| **Facebook Page**   | ✅      | ⬜ not set up                                      | 🔒 Meta app + Business Verification + App Review (Advanced Access) — screencast per permission.                                                                                                                                                               |
+| **Instagram**       | ✅      | ⬜ not set up                                      | 🔒 Same Meta app + review as Facebook.                                                                                                                                                                                                                        |
+| **Threads**         | ✅      | ⬜ not set up                                      | 🔒 Same Meta verification, but its own app credentials + host. `threads_manage_insights` is its own review.                                                                                                                                                   |
+| **Pinterest**       | ✅      | ⬜ not set up                                      | 🔒 Trial access cannot create Pins in production — needs the Standard-access upgrade (demo video), hence `PINTEREST_SANDBOX`.                                                                                                                                 |
+| **TikTok**          | ✅      | ⬜ not set up                                      | 🔒 Content Posting API audit to post publicly + URL-ownership verification of the media CDN domain. `video.list` is a separate ask.                                                                                                                           |
+| **YouTube**         | ✅      | ⬜ not set up                                      | 🟡 Lightest gate: reuses the Google OAuth client; needs the YouTube Data API enabled + the `youtube.upload` scope through OAuth verification.                                                                                                                 |
+
+**Ordering note.** Every gate above is an external clock, so they should be started in
+parallel rather than one at a time — and the 60-day GBP prerequisite means Google Business
+is the LONGEST lead time despite looking like the simplest platform. A ninth adapter adds
+nothing a tenant can use; the bottleneck is applications, not engineering. The one
+exception is a platform with no gatekeeper at all (e.g. Bluesky), which is why that is the
+only adapter worth adding before these clear.
 
 ---
 
@@ -304,6 +332,38 @@ Two bugs in the worker's media path, both fixed:
   3-segment contract. Also: **prefer a jpeg base** (platforms reliably accept jpeg but can
   reject an avif/webp base; the aspect crops were already jpeg) and added `.avif` to the
   image-extension filter.
+
+### 2026-07-29 — `getMetrics` on every adapter: Measure is only real if it covers all 8
+
+- **The gap was silent, which is why it survived.** The Measure vertical shipped complete
+  (model, event, collector, endpoints, Insights surface) with `getMetrics` on only THREE
+  adapters — Facebook, Instagram, Pinterest. `collect.ts` skips a target whose adapter has
+  no `getMetrics` (`if (!adapter?.getMetrics) continue`), so LinkedIn, Threads, TikTok,
+  YouTube, and Google Business reported nothing and nothing ever errored. A capability
+  that degrades quietly reads as "built" on every status table while five of eight
+  platforms show dashes forever. Now implemented on all eight.
+- **Centralizing posting without read-back isn't the product.** A business routes five
+  networks through sparx to see, in one place, what worked. So analytics is core scope,
+  and every platform-access application must request the analytics/insights use case
+  ALONGSIDE posting — not narrowed to posting because the adapter doesn't call analytics
+  yet. That reasoning is backwards and it cost us the LinkedIn Community Management
+  Development-Tier form (one-shot, unamendable — filed Page management only).
+- **Each platform reports a different subset, and the map says so honestly.** LinkedIn is
+  the only counts-vs-statistics split (socialActions for likes/comments on scopes we hold,
+  `organizationalEntityShareStatistics` best-effort for impressions/reach). TikTok is the
+  only one giving all four on a single edge. Threads sums `reposts + quotes` into shares
+  because both are how a post travels. YouTube counts arrive as STRINGS and a hidden
+  counter is omitted, not zeroed. Google Business is a LISTING — no likes/comments/shares
+  exist there at all, only `LOCAL_POST_VIEWS_SEARCH` → impressions. Nobody synthesises
+  `reach` from impressions: absent stays absent so the panel shows "—", never a
+  fabricated number. Same "null, never zero" rule as 2026-07-24.
+- **Analytics scope is gated at CONNECT, not at collection.** `THREADS_INSIGHTS_ENABLED`
+  (`threads_manage_insights`) and `TIKTOK_INSIGHTS_ENABLED` (`video.list`) join the
+  existing `META_INSIGHTS_ENABLED` / `LINKEDIN_INBOX_ENABLED` pattern — a token minted
+  while the flag was off can NEVER read metrics later, so flipping one requires the tenant
+  to reconnect. Both default off; requesting an ungranted scope fails the whole authorize
+  call and would take posting down with it. Google Business and YouTube need no flag —
+  their metrics ride `business.manage` / `youtube.readonly`, already requested at connect.
 
 ### 2026-07-24 — Post-performance analytics: snapshots pulled by event, counts-first
 

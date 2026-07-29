@@ -27,6 +27,7 @@ import type {
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialPostMetrics,
   SocialPublishResult,
   SocialTargetRef,
   SocialTokens,
@@ -47,7 +48,20 @@ import {
 const AUTH_URL = 'https://www.tiktok.com/v2/auth/authorize/';
 const TOKEN_URL = 'https://open.tiktokapis.com/v2/oauth/token/';
 const API_BASE = 'https://open.tiktokapis.com/v2';
-const SCOPE = 'user.info.basic,video.publish';
+const POST_SCOPE = 'user.info.basic,video.publish';
+
+/** Cleared to read back a published video's numbers. `video.list` is a SEPARATE scope
+ *  from `video.publish` and is granted per-app by TikTok, so it is gated on env like
+ *  every other review-dependent capability — and it widens the scope requested at
+ *  CONNECT, so a tenant never carries a token that silently lacks what Insights needs. */
+function tiktokInsightsEnabled(): boolean {
+  const raw = process.env.TIKTOK_INSIGHTS_ENABLED?.trim().toLowerCase();
+  return raw === '1' || raw === 'true' || raw === 'yes';
+}
+
+function scope(): string {
+  return tiktokInsightsEnabled() ? `${POST_SCOPE},video.list` : POST_SCOPE;
+}
 const TOKEN_FALLBACK_SECONDS = 86_400; // TikTok access tokens last ~24h; refresh renews.
 const PHOTO_TITLE_MAX = 90;
 
@@ -163,6 +177,32 @@ interface TikTokStatusResponse {
   error?: { code?: string; message?: string };
 }
 
+/** One video row from `/video/query/`. */
+export interface TikTokVideoStats {
+  like_count?: number;
+  comment_count?: number;
+  share_count?: number;
+  view_count?: number;
+}
+interface TikTokVideoQueryResponse {
+  data?: { videos?: TikTokVideoStats[] };
+}
+
+/** Fold a TikTok video's counters into the platform-neutral shape. Pure, so the mapping
+ *  is unit-tested without any network.
+ *
+ *  TikTok is the one platform that reports all four engagement numbers on a single edge.
+ *  `view_count` maps to impressions; TikTok gives no unique-viewer figure, so `reach`
+ *  stays null rather than echoing views and implying a precision we don't have. */
+export function mapTikTokMetrics(video: TikTokVideoStats | undefined): SocialPostMetrics {
+  const metrics: SocialPostMetrics = {};
+  if (typeof video?.like_count === 'number') metrics.likes = video.like_count;
+  if (typeof video?.comment_count === 'number') metrics.comments = video.comment_count;
+  if (typeof video?.share_count === 'number') metrics.shares = video.share_count;
+  if (typeof video?.view_count === 'number') metrics.impressions = video.view_count;
+  return metrics;
+}
+
 export class TikTokAdapter implements SocialAdapter {
   readonly id = 'tiktok' as const;
   readonly name = 'TikTok';
@@ -177,7 +217,7 @@ export class TikTokAdapter implements SocialAdapter {
   }
 
   requiredScopes(): string[] {
-    return splitScopes(SCOPE);
+    return splitScopes(scope());
   }
 
   /** TikTok's audit state, read off the audiences it will accept for this creator. This
@@ -194,7 +234,7 @@ export class TikTokAdapter implements SocialAdapter {
       client_key: clientId,
       redirect_uri: ctx.redirectUri,
       response_type: 'code',
-      scope: SCOPE,
+      scope: scope(),
       state: ctx.state,
     });
     return `${AUTH_URL}?${params.toString()}`;
@@ -372,6 +412,33 @@ export class TikTokAdapter implements SocialAdapter {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Read a published video's engagement for the Insights panel.
+   *
+   * TikTok filters by video id through a POST body (not a query string), and serves all
+   * four counters from the one `/video/query/` edge behind `video.list`. With the review
+   * flag off the token never carried that scope, so the honest answer is an empty metric
+   * set — the panel shows dashes instead of the sweep throwing a permission error on
+   * every pass.
+   */
+  async getMetrics(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    externalId: string
+  ): Promise<SocialPostMetrics> {
+    void target; // one creator account per connection — the user token is the only token
+    if (!tiktokInsightsEnabled()) return {};
+
+    const data = await this.postJson<TikTokVideoQueryResponse>(
+      'video/query/?fields=like_count,comment_count,share_count,view_count',
+      auth.accessToken,
+      { filters: { video_ids: [externalId] } }
+    );
+    // A video removed on TikTok's side comes back as an empty list with a 200 — an empty
+    // metric set is truthful there, not an error the worker should retry forever.
+    return mapTikTokMetrics(data.data?.videos?.[0]);
   }
 
   private async postJson<T>(

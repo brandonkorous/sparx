@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
-import { ThreadsAdapter, planThreadsPost, threadsPermalink } from './threads.js';
+import { ThreadsAdapter, mapThreadsMetrics, planThreadsPost, threadsPermalink } from './threads.js';
 import type { RenderedPost } from '../types.js';
 
 // The Threads adapter's pure decision logic (docs/134 Phase 2). The two-step publish +
@@ -81,5 +81,67 @@ describe('ThreadsAdapter connectUrl / isConfigured', () => {
   it('reports not-configured when the env is missing', () => {
     delete process.env.THREADS_APP_ID;
     expect(new ThreadsAdapter().isConfigured()).toBe(false);
+  });
+});
+
+describe('threads insights scope gating', () => {
+  const OLD = process.env;
+  beforeEach(() => {
+    process.env = { ...OLD, THREADS_APP_ID: 'id', THREADS_APP_SECRET: 'secret' };
+  });
+  afterEach(() => {
+    process.env = OLD;
+  });
+
+  // The scope has to widen at CONNECT — a token minted without it can never read
+  // insights later, no matter what the flag says at collection time.
+  it('leaves the posting scope alone while the review is pending', () => {
+    delete process.env.THREADS_INSIGHTS_ENABLED;
+    expect(new ThreadsAdapter().requiredScopes()).not.toContain('threads_manage_insights');
+  });
+
+  it('requests threads_manage_insights once the flag is on', () => {
+    process.env.THREADS_INSIGHTS_ENABLED = 'true';
+    const scopes = new ThreadsAdapter().requiredScopes();
+    expect(scopes).toContain('threads_manage_insights');
+    expect(scopes).toContain('threads_content_publish');
+  });
+});
+
+describe('mapThreadsMetrics', () => {
+  it('translates the Threads vocabulary onto the shared shape', () => {
+    expect(
+      mapThreadsMetrics([
+        { name: 'views', values: [{ value: 900 }] },
+        { name: 'likes', values: [{ value: 40 }] },
+        { name: 'replies', values: [{ value: 6 }] },
+      ])
+    ).toEqual({ impressions: 900, likes: 40, comments: 6 });
+  });
+
+  it('reads the total_value shape as well as the values array', () => {
+    expect(mapThreadsMetrics([{ name: 'likes', total_value: { value: 11 } }])).toEqual({
+      likes: 11,
+    });
+  });
+
+  // Both are a share; picking one would under-report how far the post travelled.
+  it('sums reposts and quotes into shares', () => {
+    expect(
+      mapThreadsMetrics([
+        { name: 'reposts', values: [{ value: 3 }] },
+        { name: 'quotes', values: [{ value: 2 }] },
+      ])
+    ).toEqual({ shares: 5 });
+    expect(mapThreadsMetrics([{ name: 'reposts', values: [{ value: 3 }] }])).toEqual({ shares: 3 });
+  });
+
+  it('never invents reach, which Threads does not report', () => {
+    expect(mapThreadsMetrics([{ name: 'views', values: [{ value: 900 }] }]).reach).toBeUndefined();
+  });
+
+  it('omits anything the platform did not report', () => {
+    expect(mapThreadsMetrics(undefined)).toEqual({});
+    expect(mapThreadsMetrics([{ name: 'likes' }])).toEqual({});
   });
 });

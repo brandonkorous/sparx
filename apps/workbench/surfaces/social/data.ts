@@ -400,12 +400,22 @@ export function useSocialInsights(windowDays: number) {
   });
 }
 
-/** One post's per-destination numbers — the latest reading and its history. */
-export function usePostMetrics(postId: string) {
+/**
+ * One post's per-destination numbers — the latest reading and its history.
+ *
+ * `collecting` turns on a short poll. Asking for fresh numbers only ENQUEUES the
+ * platform round-trip (the endpoint 202s immediately), so a single refetch on the
+ * mutation's success lands before the worker has written anything and reads back
+ * the same empty result — the button appears to do nothing. While a collection is
+ * in flight we re-read every few seconds instead, and the caller turns this off as
+ * soon as a newer snapshot arrives or it has waited long enough.
+ */
+export function usePostMetrics(postId: string, collecting = false) {
   return useQuery({
     queryKey: socialKeys.metrics(postId),
     queryFn: () => api.get<PostMetrics>(`/v1/social/posts/${postId}/metrics`),
     enabled: postId !== 'new',
+    refetchInterval: collecting ? 4000 : false,
   });
 }
 

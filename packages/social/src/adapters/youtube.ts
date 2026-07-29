@@ -23,6 +23,7 @@ import type {
   SocialAdapter,
   SocialAuth,
   SocialConnectContext,
+  SocialPostMetrics,
   SocialPublishResult,
   SocialTargetRef,
   SocialTokens,
@@ -43,6 +44,7 @@ const AUTH_URL = 'https://accounts.google.com/o/oauth2/v2/auth';
 const TOKEN_URL = 'https://oauth2.googleapis.com/token';
 const CHANNELS_URL = 'https://www.googleapis.com/youtube/v3/channels';
 const UPLOAD_URL = 'https://www.googleapis.com/upload/youtube/v3/videos';
+const VIDEOS_URL = 'https://www.googleapis.com/youtube/v3/videos';
 const SCOPE =
   'https://www.googleapis.com/auth/youtube.upload https://www.googleapis.com/auth/youtube.readonly';
 const TITLE_MAX = 90; // leaves room for the " #Shorts" suffix within YouTube's 100-char cap
@@ -89,6 +91,41 @@ interface YouTubeChannelsResponse {
 }
 interface YouTubeVideoResponse {
   id?: string;
+}
+
+/** `videos.list?part=statistics` — YouTube returns every counter as a STRING. */
+export interface YouTubeVideoStatistics {
+  viewCount?: string;
+  likeCount?: string;
+  commentCount?: string;
+}
+interface YouTubeVideosListResponse {
+  items?: { statistics?: YouTubeVideoStatistics }[];
+}
+
+/** Fold a video's statistics into the platform-neutral shape. Pure, so the string→number
+ *  parsing is unit-tested without any network.
+ *
+ *  YouTube counts are strings (they outgrow 32-bit ints), and a counter the owner has
+ *  hidden is OMITTED from the payload rather than sent as "0" — so anything unparseable
+ *  stays undefined and reads as "—", never a fabricated zero. `viewCount` maps to
+ *  impressions; YouTube exposes no share or unique-viewer count on this edge, so shares
+ *  and reach stay null rather than being invented from views. */
+export function mapYouTubeMetrics(stats: YouTubeVideoStatistics | undefined): SocialPostMetrics {
+  const count = (raw: string | undefined): number | undefined => {
+    if (typeof raw !== 'string' || raw.trim() === '') return undefined;
+    const n = Number(raw);
+    return Number.isFinite(n) ? n : undefined;
+  };
+
+  const metrics: SocialPostMetrics = {};
+  const views = count(stats?.viewCount);
+  const likes = count(stats?.likeCount);
+  const comments = count(stats?.commentCount);
+  if (views !== undefined) metrics.impressions = views;
+  if (likes !== undefined) metrics.likes = likes;
+  if (comments !== undefined) metrics.comments = comments;
+  return metrics;
 }
 
 export class YouTubeAdapter implements SocialAdapter {
@@ -205,6 +242,32 @@ export class YouTubeAdapter implements SocialAdapter {
   // ── internals ──
 
   /** Start a resumable upload session and return the one-time upload URL. */
+  /**
+   * Read a published Short's engagement for the Insights panel.
+   *
+   * Rides `youtube.readonly`, which the connect flow ALREADY requests for channel
+   * lookup — so unlike every other platform here, YouTube analytics needs no extra
+   * review and no new scope; it works the moment a channel is connected.
+   */
+  async getMetrics(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    externalId: string
+  ): Promise<SocialPostMetrics> {
+    void target; // statistics are read with the channel-owner token, not a per-target one
+    const params = new URLSearchParams({ part: 'statistics', id: externalId });
+    const res = await fetchT(`${VIDEOS_URL}?${params.toString()}`, {
+      headers: { Authorization: `Bearer ${auth.accessToken}` },
+    });
+    if (!res.ok) {
+      throw new Error(`YouTube video statistics failed: ${await describeResponse(res)}`);
+    }
+    const data = (await res.json()) as YouTubeVideosListResponse;
+    // A deleted video comes back as an empty items[] with a 200 — an empty metric set is
+    // the truthful answer there, not an error the worker would retry forever.
+    return mapYouTubeMetrics(data.items?.[0]?.statistics);
+  }
+
   private async initUpload(accessToken: string, plan: YouTubeShortPlan): Promise<string> {
     const res = await fetchT(`${UPLOAD_URL}?uploadType=resumable&part=snippet,status`, {
       method: 'POST',

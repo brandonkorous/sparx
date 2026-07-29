@@ -29,6 +29,7 @@ import type {
   SocialAuth,
   SocialConnectContext,
   SocialInboxEntry,
+  SocialPostMetrics,
   SocialPublishResult,
   SocialReplyResult,
   SocialTargetRef,
@@ -51,6 +52,38 @@ const ACCOUNTS_URL = 'https://mybusinessaccountmanagement.googleapis.com/v1/acco
 const BUSINESS_INFO_BASE = 'https://mybusinessbusinessinformation.googleapis.com/v1';
 const LOCAL_POSTS_BASE = 'https://mybusiness.googleapis.com/v4';
 const SCOPE = 'https://www.googleapis.com/auth/business.manage';
+
+/** One metric row from `localPosts:reportInsights`. Google returns the count as a STRING
+ *  (int64 over the wire) and omits the field entirely when the count is zero. */
+export interface GbpLocalPostMetricValue {
+  metric?: string;
+  totalValue?: { value?: string };
+}
+interface GbpLocalPostInsightsResponse {
+  localPostMetrics?: { metricValues?: GbpLocalPostMetricValue[] }[];
+}
+
+/** Fold a local post's insights into the platform-neutral shape. Pure, so the mapping is
+ *  unit-tested without any network.
+ *
+ *  Google Business Profile is a LISTING, not a feed: a local post has no likes, comments,
+ *  or shares to report, and Google exposes no unique-viewer count. It reports how often
+ *  the post was SEEN (`LOCAL_POST_VIEWS_SEARCH`), which is the honest analogue of
+ *  impressions. Everything else stays null so the panel shows "—" rather than a row of
+ *  zeros that would read as "nobody engaged" when the platform simply has no such idea. */
+export function mapGoogleBusinessMetrics(
+  values: GbpLocalPostMetricValue[] | undefined
+): SocialPostMetrics {
+  const metrics: SocialPostMetrics = {};
+  for (const row of values ?? []) {
+    if (row.metric !== 'LOCAL_POST_VIEWS_SEARCH') continue;
+    const raw = row.totalValue?.value;
+    if (typeof raw !== 'string' || raw.trim() === '') continue;
+    const n = Number(raw);
+    if (Number.isFinite(n)) metrics.impressions = n;
+  }
+  return metrics;
+}
 
 /** Google reports a star rating as a word. */
 const STAR_VALUES: Record<string, number> = { ONE: 1, TWO: 2, THREE: 3, FOUR: 4, FIVE: 5 };
@@ -243,6 +276,45 @@ export class GoogleBusinessAdapter implements SocialAdapter {
       externalId: data.name ?? idempotencyKey,
       permalink: data.searchUrl,
     };
+  }
+
+  /**
+   * Read a published local post's view count for the Insights panel.
+   *
+   * Rides `business.manage`, which the connect flow already requests — so like YouTube,
+   * this needs no extra review or scope. `reportInsights` is addressed at the LOCATION
+   * (the same parent the post was created under) and filtered to the one post by its
+   * full resource name, which is exactly what `publish` returned as `externalId`.
+   */
+  async getMetrics(
+    auth: SocialAuth,
+    target: SocialTargetRef,
+    externalId: string
+  ): Promise<SocialPostMetrics> {
+    const res = await fetchT(
+      `${LOCAL_POSTS_BASE}/${target.externalTargetId}/localPosts:reportInsights`,
+      {
+        method: 'POST',
+        headers: this.authHeaders(auth.accessToken),
+        body: JSON.stringify({
+          localPostNames: [externalId],
+          basicRequest: {
+            metricRequests: [{ metric: 'LOCAL_POST_VIEWS_SEARCH' }],
+            // Local-post insights are lifetime-to-date; GBP still requires the window to
+            // be stated, so we ask from well before any post could exist through now.
+            timeRange: {
+              startTime: '2020-01-01T00:00:00Z',
+              endTime: new Date().toISOString(),
+            },
+          },
+        }),
+      }
+    );
+    if (!res.ok) {
+      throw new Error(`Google Business post insights failed: ${await describeResponse(res)}`);
+    }
+    const data = (await res.json()) as GbpLocalPostInsightsResponse;
+    return mapGoogleBusinessMetrics(data.localPostMetrics?.[0]?.metricValues);
   }
 
   // ── the inbound direction: reviews on this listing ──
