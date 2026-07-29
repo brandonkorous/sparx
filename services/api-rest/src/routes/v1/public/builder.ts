@@ -54,6 +54,13 @@ const TenantQuery = z.object({
   property: z.string().min(1).max(63).optional(),
 });
 
+/** The frame read also takes the route's PATH, so it can answer with the chrome that
+ *  page asks for rather than the site default (doc 139 §5). Optional — a caller that
+ *  omits it gets exactly what it got before per-page frames existed. */
+const FrameQuery = TenantQuery.extend({
+  path: z.string().max(2048).optional(),
+});
+
 // Cached in lib/tenant-slug.ts (docs/127 §5) — this ran uncached on every storefront
 // read, ~6 per page render, while resolvePublicPropertyId beside it was already cached.
 const resolveTenantBySlug = requireTenantIdBySlug;
@@ -142,12 +149,15 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
   // property has published no silica page owning that slug (storefront falls back).
 
   app.get('/v1/public/builder/silica/frame', async (request) => {
-    const q = TenantQuery.parse(request.query);
+    const q = FrameQuery.parse(request.query);
     const tenantId = await resolveTenantBySlug(q.tenant);
     const propertyId = await resolvePublicPropertyId(tenantId, q.property);
     const stage = previewStage(app, request, tenantId);
     const [frame, commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
-      siteService.getPublishedFrame({ tenantId, propertyId }, stage),
+      // `path` asks for the chrome THIS route wears rather than the site default
+      // (doc 139 §5) — a landing page can have none. Omitted by any caller that just
+      // wants the default, which is every caller that predates per-page frames.
+      siteService.getPublishedFrame({ tenantId, propertyId }, stage, q.path),
       // Drives the storefront's code-authored starter fallback (silica.ts) — a
       // tenant with no Commerce module never gets Shop/Cart/Orders chrome. Not a
       // gate on this route itself: the frame is always readable publicly.

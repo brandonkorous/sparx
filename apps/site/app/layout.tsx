@@ -253,7 +253,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     site ? getPublishedBuilderStyles(site.slug) : '',
   ]);
 
-  const silicaActive = Boolean(silicaFrame.frame);
+  // "This property renders on silica" — NOT "this route has chrome". The two were the
+  // same thing until per-page frames (doc 139 §5), and conflating them is a real bug:
+  // `silicaActive` gates the silica THEME stylesheet, the web fonts and the accent
+  // colour, all of which are site-level. A landing page whose chrome is set to "none"
+  // has a null `frame`, so reading that alone would ship it with no theme and no fonts —
+  // the one page an author most wants to look designed.
+  const silicaActive = Boolean(silicaFrame.frame) || silicaFrame.frameless === true;
   // Depends on silicaFrame, so it stays sequential behind it.
   const silicaHost =
     site && silicaFrame.frame
@@ -492,10 +498,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         {children}
                       </SilicaChrome>
                     ) : (
-                      // Unreachable by construction (see above), kept as a bare landmark
-                      // rather than a throw: the root layout wraps EVERY route, so
-                      // failing here would take the whole storefront down instead of one
-                      // page. A site with no chrome is degraded; a site that 500s is off.
+                      // THE LANDING PAGE. This was unreachable while every page wore the
+                      // site's one frame; per-page frames (doc 139 §5) made it the real
+                      // rendering path for a page whose chrome is set to "none" — a
+                      // campaign page with no header and no footer, which the platform
+                      // could not express at all before.
+                      //
+                      // Still a bare landmark rather than a throw, for the case that IS
+                      // unreachable (no frame and no `frameless`): the root layout wraps
+                      // every route, so failing here would take the whole storefront down
+                      // instead of one page.
                       <main
                         className="flex-[1_0_auto] focus:outline-none"
                         id="st-main"

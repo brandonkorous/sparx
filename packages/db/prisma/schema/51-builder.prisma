@@ -54,6 +54,21 @@ model BuilderPage {
   // meaningful on a `kind='collection'` page that has a recordType.
   isDefault Boolean @default(false) @map("is_default")
 
+  // WHICH chrome wraps this page (doc 139 §5). Three states in one column, and the
+  // difference between the two empty-looking ones is the whole point:
+  //   null   → the site default (the `is_active` BuilderLayout). What every page
+  //            does unless told otherwise.
+  //   'none' → NO frame; the page renders bare. The campaign/landing page, which
+  //            was unrepresentable while every page took the active layout.
+  //   a uuid → that BuilderLayout.
+  // Deliberately NOT a uuid + a `frameless` boolean: "which frame" and "whether a
+  // frame" are one decision, and two columns make a meaningless third state
+  // representable. Deliberately NOT a foreign key either — a dangling id resolves
+  // to NO frame and is REPORTED, because silently restoring the default would put
+  // back the header the author moved this page away from. A CHECK constraint in the
+  // migration keeps the sentinel from drifting into a typo.
+  frameId String? @map("frame_id")
+
   // SEO — applies to published SINGLETON pages (docs/50). The storefront's
   // catch-all titles/describes the page from these; null falls back to the page
   // `name`. Collection templates render per-record and inherit SEO from the

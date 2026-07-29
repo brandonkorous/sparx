@@ -10,6 +10,7 @@
 // exactly the additive "builder owns it, else fall through" rule (docs/44 §2.5).
 
 import { cache } from 'react';
+import { headers } from 'next/headers';
 import type {
   PublishedSilicaFrameDto,
   PublishedSilicaPageDto,
@@ -101,6 +102,27 @@ async function propertyParam(): Promise<string> {
   return slug ? `&property=${encodeURIComponent(slug)}` : '';
 }
 
+/**
+ * `&path=<route>` — which page's chrome to answer with (doc 139 §5).
+ *
+ * Per-page frames exist so a campaign or landing page can render with no header and
+ * footer. The obstacle is structural: the root layout renders the chrome, and an App
+ * Router layout is handed its children but never their route, so it cannot ask "which
+ * page am I wrapping". `proxy.ts` mirrors the pathname onto `x-sparx-path` and this
+ * reads it back.
+ *
+ * The alternative was moving `<SilicaChrome>` out of the layout and into all twelve
+ * routes that render a silica body — twelve copies of the chrome, and a thirteenth
+ * route added later that silently has none.
+ *
+ * Absent header → no param → the site default, which is what every path that names no
+ * page (a product, a blog post) resolves to anyway.
+ */
+async function pathParam(): Promise<string> {
+  const path = (await headers()).get('x-sparx-path');
+  return path ? `&path=${encodeURIComponent(path)}` : '';
+}
+
 interface SuccessEnvelope<T> {
   success: true;
   data: T;
@@ -141,7 +163,7 @@ const fetchFrameEnvelope = cache(
   async (tenantSlug: string, previewToken?: string): Promise<PublishedSilicaFrameDto | null> => {
     try {
       const res = await fetch(
-        `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}`,
+        `${BASE_URL}/v1/public/builder/silica/frame?tenant=${encodeURIComponent(tenantSlug)}${await propertyParam()}${await pathParam()}`,
         silicaFetchInit(tenantSlug, previewToken)
       );
       const json = (await res.json()) as SuccessEnvelope<PublishedSilicaFrameDto> | ErrorEnvelope;
@@ -201,6 +223,11 @@ export async function getPublishedSilicaFrame(
   // published version while the body previewed — the two halves of one page disagreeing
   // about what "preview" meant.
   const data = await fetchFrameEnvelope(tenantSlug, opts.previewToken);
+  // `frameless` is the page saying "I have no chrome ON PURPOSE" (doc 139 §5) — a
+  // landing page. The starter fallback below exists for the opposite case, a property
+  // that has published no chrome at all, and applying it here would put a header back
+  // on the one page built without one. Two opposite instructions, one `null`.
+  if (data?.frameless) return data;
   if (!data?.frame) {
     return starterFrameDto(await resolveModuleFlags(tenantSlug, opts.previewToken));
   }

@@ -1,6 +1,6 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.7.0
+Version: 2.8.0
 Author: Brandon Korous
 Last Updated: 2026-07-28
 
@@ -252,7 +252,19 @@ Upstream. Filed in [doc 139](../139-silicaui-builder-asks.md); [02-silicaui-asks
 - [ ] **14. Multi-select** and group operations. — _silicaui-ask · L_
 - [ ] **15. Alignment guides, arrow-key nudge, select-parent, `Cmd+X` / `Cmd+A`.** — _silicaui-ask · M_
 - [ ] **16. Q22** (`resolveTree` stops resolving children once a node's binding is filled) and **Q26** (editor mode is private state, so a host cannot deep-link). Both already filed, both still open. — _silicaui-ask · S_
-- [ ] **17. Per-page frame selection** — a chrome-off landing page is currently unrepresentable. — _silicaui-ask · M_
+- [x] **17. Per-page frame selection** — a chrome-off landing page is currently unrepresentable. — _~~silicaui-ask~~ → shipped in silicaui 0.36.0 + wired here · M_
+
+  > **The engine half arrived**: `Page.frameId` (`undefined` = site default, `null` = bare, a string = `Site.frames[id]`), `Site.frames`, and `frameFor`/`frameDiagnostic`. A dangling id resolves to NO frame rather than falling back — the author moved this page off the default deliberately, and restoring it is the worse repair.
+  >
+  > **Storage was already most of the way there.** `builder_layouts` has ALWAYS been a per-property CATALOG with exactly one `is_active`; the shells existed, only the per-page pointer was missing. So this is one column — `builder_pages.frame_id`, three states in ONE column (`NULL` = default, `'none'` = bare, a uuid = that layout) with a CHECK keeping the sentinel from drifting into a typo. Deliberately not a uuid + a `frameless` boolean: "which frame" and "whether a frame" are one decision, and two columns make a meaningless third state representable.
+  >
+  > **The real obstacle was the App Router, not the engine.** `layout.tsx` renders the chrome and is handed its children but never their route, so it cannot ask "which page am I wrapping" — per-page frames are impossible while the layout asks for _the_ frame. Rather than move `<SilicaChrome>` into all twelve routes that render a silica body (twelve copies, and a thirteenth route later that silently has none), `proxy.ts` mirrors the pathname onto `x-sparx-path` and the frame read takes `&path=`, answering with the chrome THAT page asks for. Chrome stays in one place.
+  >
+  > **Two bugs this would have shipped with, caught on the way.** (1) `getPublishedSilicaFrame` falls back to the code starter frame whenever `frame` is null — which would have put a header straight back onto the landing page built to avoid one. Hence `frameless` on the DTO: two opposite instructions were wearing the same `null`. (2) `silicaActive` was `Boolean(silicaFrame.frame)`, and it gates the silica THEME stylesheet, the web fonts and the accent colour — all site-level. A bare page has a null frame, so reading that alone shipped the one page an author most wants to look designed with no theme and no fonts.
+  >
+  > **Slice 21's "unreachable" bare-`<main>` branch is now the landing-page render path** — it stopped being dead the moment a page could ask for no chrome.
+  >
+  > API-first: `PATCH /v1/builder/pages/:id` takes `frameId` (`null` resets to default, `'none'` goes bare), validated against the same sentinel-or-uuid rule as the CHECK constraint so a bad value is a 400 naming the field rather than a 500 naming a constraint. **The studio's frame PICKER is not built yet** — the capability is reachable by API and MCP, not yet by clicking.
 
 ## Wave 4 — payoff and content
 

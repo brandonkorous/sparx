@@ -73,6 +73,13 @@ export function proxy(req: NextRequest) {
   const previewToken = req.nextUrl.searchParams.get('sparxSitePreview');
   if (previewToken) requestHeaders.set('x-sparx-site-preview', previewToken);
 
+  // The route's PATH, for the root layout (doc 139 §5). Per-page frames — a landing
+  // page with no header or footer — need the layout to know WHICH page it is wrapping,
+  // and the App Router gives a layout its children but never their route. Next does not
+  // expose the pathname to a server component either, so it is mirrored here. Query and
+  // hash are deliberately excluded: chrome is chosen per page, not per filter.
+  requestHeaders.set('x-sparx-path', req.nextUrl.pathname);
+
   // ── Local dev: honor the `?tenant=`/`?property=` site override ──────────────
   if (isLocalDevHost(publicHost(req))) {
     const fromQuery = req.nextUrl.searchParams.get('tenant');

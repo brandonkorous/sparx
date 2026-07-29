@@ -321,6 +321,19 @@ export interface TypeCensusRowDto {
  *  their own chrome: posts rendered at `/blog/<slug>` with no index and no link. */
 export interface PublishedSilicaFrameDto {
   frame: SilicaFrame | null;
+  /**
+   * `frame` is null because this PAGE asked for no chrome — not because the property
+   * has published none (doc 139 §5).
+   *
+   * The two are opposite instructions wearing the same `null`, and the storefront acts
+   * on that difference: nothing published falls back to the code starter frame, so a
+   * fresh tenant is live rather than blank, while a deliberately bare landing page must
+   * render with no header and footer and get NO fallback. Without this flag the
+   * fallback silently puts the chrome back on exactly the page built to avoid it.
+   *
+   * Only meaningful when `frame` is null; the server never sets it alongside a frame.
+   */
+  frameless?: boolean;
   symbols: Record<string, SilicaSymbolDef>;
   theme: SilicaTheme | null;
   commerceEnabled?: boolean;

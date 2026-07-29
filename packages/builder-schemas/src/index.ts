@@ -28,6 +28,7 @@ export * from './binding-ref';
 export * from './silica-resolve';
 export * from './silica-data-sources';
 export * from './silica-class-policy';
+export * from './page-frame';
 export * from './site-sync';
 export * from './email-silica';
 export * from './silica-email-kit';

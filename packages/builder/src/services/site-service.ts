@@ -23,6 +23,7 @@ import {
   STARTER_LAYOUT,
   SiteSyncInput,
   blankPageTree,
+  resolvePageFrame,
   type BuilderOpEnvelope,
   type BuilderPageKind,
   type SitePublishState,
@@ -222,6 +223,9 @@ const PAGE_META_SELECT = {
   kind: true,
   recordType: true,
   isDefault: true,
+  // Which chrome wraps this page (doc 139 §5). A scalar, so it costs nothing on the
+  // read that already refuses to drag trees it will discard.
+  frameId: true,
   seoTitle: true,
   seoDescription: true,
   canonical: true,
@@ -280,20 +284,84 @@ function toPublishedPage(
  *  read for everything the storefront layout needs. It renders the frame once,
  *  dropping the routed page at its Outlet. `frame` is null when the active layout
  *  has published no silica chrome (the storefront keeps legacy chrome); `theme` is
- *  null when no authored theme is published (brand-derived theme wins). */
+ *  null when no authored theme is published (brand-derived theme wins).
+ *
+ *  `path` asks for the chrome THIS ROUTE should wear, rather than the site's default
+ *  (doc 139 §5). It exists because of an App Router constraint: `layout.tsx` wraps
+ *  `page.tsx` and cannot see what the page resolved, so per-page frames are impossible
+ *  while the layout asks for "the frame". Resolving by path here keeps the chrome in
+ *  ONE place instead of duplicating `<SilicaChrome>` into a dozen routes.
+ *
+ *  A path matching no page (a product detail, a blog post — anything rendered by a
+ *  collection template rather than a slug) falls back to the default, which is what
+ *  those routes have always had. */
 export function getPublishedFrame(
   ctx: PropertyContext,
-  stage: SiteStage = 'published'
+  stage: SiteStage = 'published',
+  path?: string
 ): Promise<PublishedSilicaFrameDto> {
   return withTenant(ctx, async (tx) => {
-    const [layout, site] = await Promise.all([
+    const [layout, site, page] = await Promise.all([
       tx.builderLayout.findFirst({ where: { propertyId: ctx.propertyId, isActive: true } }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
+      path == null ? null : findPageFrameId(tx, ctx.propertyId, path),
     ]);
-    const root = stage === 'draft' ? layout?.silicaDraftTree : layout?.silicaPublishedTree;
-    const frame: SilicaFrame | null =
-      root != null ? { root: root as unknown as SilicaNode, editable: true } : null;
-    return { frame, symbols: stagedSymbols(site, stage), theme: stagedTheme(site, stage) };
+
+    const meta = { symbols: stagedSymbols(site, stage), theme: stagedTheme(site, stage) };
+    const treeOf = (l: { silicaDraftTree: unknown; silicaPublishedTree: unknown } | null) =>
+      stage === 'draft' ? l?.silicaDraftTree : l?.silicaPublishedTree;
+    const asFrame = (root: unknown): SilicaFrame | null =>
+      root != null ? { root: root as SilicaNode, editable: true } : null;
+
+    const choice = resolvePageFrame(page?.frameId, EMPTY_IDS);
+    // `default` covers both "no path given" and "this page takes the site default".
+    if (choice.kind === 'default') return { frame: asFrame(treeOf(layout)), ...meta };
+    // Explicitly bare. `frameless` matters as much as the null: the storefront falls
+    // back to the code starter frame when a property has published no chrome, and
+    // without the flag that fallback would put a header straight back onto the landing
+    // page built to avoid one.
+    if (choice.kind === 'none') return { frame: null, frameless: true, ...meta };
+
+    const named = await tx.builderLayout.findFirst({
+      where: { id: choice.frameId, propertyId: ctx.propertyId },
+      select: { silicaDraftTree: true, silicaPublishedTree: true },
+    });
+    const frame = asFrame(treeOf(named));
+    // A named layout that is GONE (deleted, or never published its silica chrome) also
+    // renders bare, and is equally deliberate: the author moved this page off the
+    // default, so quietly restoring the default is the wrong repair.
+    return frame ? { frame, ...meta } : { frame: null, frameless: true, ...meta };
+  });
+}
+
+/** `resolvePageFrame` takes the ids that exist only to tell `named` from `missing`, and
+ *  this read looks the named one up directly instead — building the set would be the
+ *  same round trip twice. An id resolving to no row lands on the same `frame: null` as
+ *  `none`, which is the behaviour `missing` prescribes anyway. */
+const EMPTY_IDS: readonly string[] = [];
+
+/** Which chrome the page at `path` asks for, or undefined when no page owns that path.
+ *  Slug matching mirrors `getPublishedPageBySlug` EXACTLY — including querying both the
+ *  bare and `/`-prefixed forms, because slugs are stored either way depending on their
+ *  vintage. A second, subtly different matcher here would resolve the page one way for
+ *  its body and another for its chrome, which is a page rendering in the wrong shell. */
+async function findPageFrameId(
+  tx: TxClient,
+  propertyId: string,
+  path: string
+): Promise<{ frameId: string | null } | null> {
+  const target = normalizeSlug(path);
+  return tx.builderPage.findFirst({
+    where: {
+      propertyId,
+      // Home is the slugless page — stored as NULL, '' or '/' depending on how it was
+      // seeded; every other page is stored bare or `/`-prefixed by vintage.
+      ...(target === ''
+        ? { OR: [{ slug: null }, { slug: { in: ['', '/'] } }] }
+        : { slug: { in: [target, `/${target}`] } }),
+    },
+    select: { frameId: true },
+    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
   });
 }
 

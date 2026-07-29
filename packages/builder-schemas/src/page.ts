@@ -10,6 +10,7 @@
 
 import { z } from 'zod';
 import { BuilderNodeSchema, type BuilderNode } from './node';
+import { FRAME_NONE } from './page-frame';
 
 export const BuilderPageKind = z.enum(['singleton', 'collection']);
 export type BuilderPageKind = z.infer<typeof BuilderPageKind>;
@@ -21,6 +22,11 @@ export const PageSlug = z
   .min(1)
   .max(160)
   .regex(/^[a-z0-9]+(?:[-/][a-z0-9]+)*$/, 'Use lowercase letters, numbers, and hyphens.');
+
+/** A page's chrome choice: the `'none'` sentinel or a layout id. Mirrors the CHECK
+ *  constraint on `builder_pages.frame_id` so a bad value is rejected at the API rather
+ *  than by Postgres — a 400 naming the field beats a 500 naming a constraint. */
+export const PageFrameId = z.union([z.literal(FRAME_NONE), z.string().uuid()]);
 
 /** The shape the API returns. `tree` is always the DRAFT tree (what the editor
  *  edits); `published`/`publishedAt` describe the last snapshot. `slug` is the
@@ -116,6 +122,18 @@ export const UpdatePageInput = z
     tree: BuilderNodeSchema.optional(),
     recordType: z.string().max(63).nullish(),
     slug: PageSlug.nullish(),
+    /**
+     * Which chrome wraps this page (doc 139 §5). Three values, and the two that look
+     * empty mean opposite things:
+     *   `null`     → the site default (whichever layout is active)
+     *   `'none'`   → NO header or footer; the campaign/landing page
+     *   a layout id → that specific shell
+     *
+     * `nullish` rather than `optional`, deliberately: omitting the field leaves the
+     * page's current choice alone, while sending `null` RESETS it to the default. A
+     * settings form has to be able to say both.
+     */
+    frameId: PageFrameId.nullish(),
     ...PageSeoShape,
   })
   .refine((v) => Object.values(v).some((field) => field !== undefined), {
