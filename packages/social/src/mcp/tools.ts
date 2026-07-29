@@ -20,6 +20,8 @@
 import { z } from 'zod';
 import { publish } from '@sparx/api-core/pubsub';
 
+import { SOCIAL_POST_SOURCES } from '../types.js';
+
 import {
   approveSocialPost,
   buildComposeSeed,
@@ -129,7 +131,7 @@ const CreatePostSchema = z.object({
   propertyId: uuid().nullable().optional(),
   link: z.string().url().max(2048).nullable().optional(),
   mediaAssetIds: z.array(uuid()).max(20).optional(),
-  source: z.string().max(63).optional(),
+  source: z.enum(SOCIAL_POST_SOURCES).optional(),
   sourceRef: z.string().max(255).nullable().optional(),
   scheduledAt: z.string().datetime().nullable().optional(),
   targets: z

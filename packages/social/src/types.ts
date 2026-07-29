@@ -180,6 +180,24 @@ export interface SocialPostMetrics {
   reach?: number;
 }
 
+/** What composed a post — the hand, or the thing it was generated from.
+ *
+ *  Lives here rather than inline at a route because it is written to a
+ *  `varchar(20)` column, and there is more than one way in (the REST route and the
+ *  MCP tool). It was declared inline in the REST route only, and the MCP copy drifted
+ *  to a free `z.string().max(63)` — which let a caller send a 21-to-63-character
+ *  value straight past validation into a Postgres length error surfaced raw as
+ *  "The provided value for the column is too long". One list, both callers. */
+export const SOCIAL_POST_SOURCES = [
+  'manual',
+  'product',
+  'content',
+  'campaign',
+  'automation',
+] as const;
+
+export type SocialPostSource = (typeof SOCIAL_POST_SOURCES)[number];
+
 // ── The inbound direction (the engagement inbox) ────────────────────────────────
 
 /** What kind of inbound thing a person sent. A Google Business review and a Facebook

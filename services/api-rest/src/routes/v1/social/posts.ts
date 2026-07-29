@@ -52,6 +52,7 @@ import {
   type LifecycleResult,
 } from '../../../lib/social-lifecycle.js';
 import { getPostMetrics } from '../../../lib/social-metrics.js';
+import { SOCIAL_POST_SOURCES } from '@sparx/social';
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathIdTarget = z.object({ id: z.string().uuid(), targetId: z.string().uuid() });
@@ -91,7 +92,7 @@ const CreateBody = z.object({
   body: z.string().min(1).max(63206),
   link: z.string().url().nullish(),
   mediaAssetIds: z.array(z.string().uuid()).max(20).optional(),
-  source: z.enum(['manual', 'product', 'content', 'campaign', 'automation']).optional(),
+  source: z.enum(SOCIAL_POST_SOURCES).optional(),
   sourceRef: z.string().max(255).nullish(),
   targets: z
     .array(

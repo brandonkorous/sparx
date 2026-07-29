@@ -28,7 +28,10 @@ export type {
   SocialReplyResult,
   SocialAccessProbe,
   SocialAdapter,
+  SocialPostSource,
 } from './types.js';
+
+export { SOCIAL_POST_SOURCES } from './types.js';
 
 export { paramsFromSocialMetadata } from './metadata.js';
 
