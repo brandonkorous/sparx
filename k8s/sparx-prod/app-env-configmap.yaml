@@ -112,3 +112,21 @@ data:
   # The slug the apps/web /early waitlist writes into
   # (POST /v1/public/newsletter?tenant=…) — the final brand slug after the rename.
   SPARX_PLATFORM_TENANT_SLUG: wizeworks
+  # Meta review-gated social features (packages/social/src/adapters/_meta.ts).
+  # Each flag turns its feature ON *and* adds its scopes to the connect-time OAuth
+  # request. NOT secrets — they are on/off switches, not credentials.
+  #
+  # These must be 'true' BEFORE the Meta App Review submission, not after it: Meta
+  # will not approve a permission until the app has made one successful call with
+  # it, and that call is impossible while the scope goes unrequested. With the app
+  # unpublished this is safe — Standard Access grants an app admin the app's
+  # configured permissions on their own Pages/IG accounts, which is exactly what
+  # produces the required test call.
+  #
+  # META_INBOX_ENABLED  → pages_read_user_content, pages_manage_engagement,
+  #                       instagram_manage_comments (the engagement inbox).
+  # META_INSIGHTS_ENABLED → read_insights, instagram_manage_insights (post reach +
+  #                       impressions). Like/comment counts ride pages_read_engagement
+  #                       and keep working regardless.
+  META_INBOX_ENABLED: 'true'
+  META_INSIGHTS_ENABLED: 'true'

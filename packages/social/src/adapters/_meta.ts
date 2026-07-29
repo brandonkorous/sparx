@@ -34,30 +34,59 @@ export const META_ID_VAR = 'META_APP_ID';
 export const META_SECRET_VAR = 'META_APP_SECRET';
 
 /**
- * Whether the Meta app has been cleared to READ AND ANSWER inbound activity.
+ * The review-gated capability flags.
  *
- * Deliberately separate from `metaCreds()`: the same OAuth app is cleared to POST long
- * before it is cleared to read comments and messages, because those are a different,
- * heavier App Review (`pages_read_user_content`, `pages_manage_engagement`,
- * `pages_messaging`, `instagram_manage_comments`). Ops flips this the day the review
- * lands — no code change, exactly like `isConfigured()` for the platform itself.
+ * The same OAuth app is cleared to POST long before it is cleared to read comments or
+ * read reach/impressions — those are separate, heavier App Reviews. Each flag decides
+ * BOTH whether the feature runs and, crucially, whether its scopes are requested at
+ * connect time, so a tenant never carries a token that silently lacks what a feature
+ * needs. Ops flips them per-feature, because Meta approves per-permission: the inbox
+ * can land weeks before insights.
  *
- * It also decides the SCOPE requested at connect time, so a tenant who connects while
- * this is off doesn't carry a token that silently lacks the permissions.
+ * ORDER OF OPERATIONS — this is the part that is easy to get backwards, and did
+ * deadlock this app's own submission. App Review will not approve a permission until
+ * the app has made **at least one successful API call** with it ("0 of 1 API call(s)
+ * required" on the Allowed usage step). That call is impossible while the scope is
+ * unrequested. So these flags must be turned ON *before* submitting, not the day
+ * approval lands:
+ *
+ *   flag on → app admin reconnects (Standard Access grants an app admin the app's
+ *   configured permissions on their OWN assets) → exercise the feature once →
+ *   the call registers within ~24h → submit.
+ *
+ * Turning a flag on early is safe while the app is unpublished. Once it IS published,
+ * a non-admin tenant consenting to a not-yet-approved scope simply won't be granted
+ * it — which is exactly what the runtime already tolerates (the insights reads are
+ * best-effort and the inbox drain no-ops).
  */
-export function metaInboxEnabled(): boolean {
-  const raw = process.env.META_INBOX_ENABLED?.trim().toLowerCase();
+function reviewFlagEnabled(name: string): boolean {
+  const raw = process.env[name]?.trim().toLowerCase();
   return raw === '1' || raw === 'true' || raw === 'yes';
 }
 
-/** The extra scopes the inbound direction needs, appended to a platform's posting scope
- *  only while the review is in force. */
+/** Cleared to READ AND ANSWER inbound activity (comments, mentions, reviews). */
+export function metaInboxEnabled(): boolean {
+  return reviewFlagEnabled('META_INBOX_ENABLED');
+}
+
+/** Cleared to read post-level reach + impressions. Separate from the inbox: a post's
+ *  like/comment counts ride `pages_read_engagement` (already granted) and keep working
+ *  with this off — only reach/impressions go null. */
+export function metaInsightsEnabled(): boolean {
+  return reviewFlagEnabled('META_INSIGHTS_ENABLED');
+}
+
+/** The extra scopes each gated block needs, appended to a platform's posting scope
+ *  only while its flag is on. */
 export const META_ENGAGEMENT_SCOPES = 'pages_read_user_content,pages_manage_engagement';
 export const IG_ENGAGEMENT_SCOPES = 'instagram_manage_comments';
+export const META_INSIGHTS_SCOPE = 'read_insights';
+export const IG_INSIGHTS_SCOPE = 'instagram_manage_insights';
 
-/** Append the engagement scopes to a base scope string when inbound is enabled. */
-export function withInboxScopes(base: string, extra: string): string {
-  return metaInboxEnabled() ? `${base},${extra}` : base;
+/** Join a posting base with whichever gated scope blocks are live. Falsy parts drop
+ *  out, so a call site reads as the list of blocks and the condition for each. */
+export function joinScopes(...parts: (string | false | null | undefined)[]): string {
+  return parts.filter((p): p is string => Boolean(p)).join(',');
 }
 
 // A long-lived Meta user token lasts ~60 days; Page tokens derived from it don't expire

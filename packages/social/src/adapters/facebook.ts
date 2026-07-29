@@ -47,9 +47,11 @@ import {
   listMetaPages,
   metaCreds,
   metaInboxEnabled,
+  metaInsightsEnabled,
   META_ENGAGEMENT_SCOPES,
+  META_INSIGHTS_SCOPE,
+  joinScopes,
   probeMetaAccess,
-  withInboxScopes,
   type MetaCreds,
 } from './_meta.js';
 import { appendLink, fetchImageBinary, imageUrls } from './_media.js';
@@ -58,11 +60,16 @@ import { requireCreds, splitScopes } from './_http.js';
 const POST_SCOPE =
   'public_profile,pages_show_list,pages_manage_posts,pages_read_engagement,business_management';
 
-/** The scope requested at connect time. Widens to include reading + answering comments
- *  only once that App Review has landed, so a tenant never carries a token that silently
- *  lacks the permissions the inbox needs. */
+/** The scope requested at connect time: the posting base every grant carries, plus each
+ *  review-gated block whose ops flag is on. A tenant therefore never carries a token that
+ *  silently lacks what an enabled feature needs. See `_meta.ts` for why the flags go on
+ *  BEFORE App Review rather than after it. */
 function scope(): string {
-  return withInboxScopes(POST_SCOPE, META_ENGAGEMENT_SCOPES);
+  return joinScopes(
+    POST_SCOPE,
+    metaInboxEnabled() && META_ENGAGEMENT_SCOPES,
+    metaInsightsEnabled() && META_INSIGHTS_SCOPE
+  );
 }
 
 /** The public permalink for a Page post/story id (`{pageId}_{postId}` or a story id). */

@@ -46,10 +46,12 @@ import {
   listMetaPages,
   metaCreds,
   metaInboxEnabled,
+  metaInsightsEnabled,
   probeMetaAccess,
   waitForContainer,
-  withInboxScopes,
+  joinScopes,
   IG_ENGAGEMENT_SCOPES,
+  IG_INSIGHTS_SCOPE,
   type MetaCreds,
 } from './_meta.js';
 import { appendLink, imageUrls, isImageUrl } from './_media.js';
@@ -58,10 +60,15 @@ import { requireCreds, splitScopes } from './_http.js';
 const POST_SCOPE =
   'public_profile,pages_show_list,pages_read_engagement,business_management,instagram_basic,instagram_content_publish';
 
-/** Widens to include reading + answering comments once that App Review lands, so a
- *  tenant never carries a token that silently lacks what the inbox needs. */
+/** The scope requested at connect time: the posting base plus each review-gated block
+ *  whose ops flag is on, so a tenant never carries a token that silently lacks what an
+ *  enabled feature needs. See `_meta.ts` for why the flags go on BEFORE App Review. */
 function SCOPE(): string {
-  return withInboxScopes(POST_SCOPE, IG_ENGAGEMENT_SCOPES);
+  return joinScopes(
+    POST_SCOPE,
+    metaInboxEnabled() && IG_ENGAGEMENT_SCOPES,
+    metaInsightsEnabled() && IG_INSIGHTS_SCOPE
+  );
 }
 
 export type InstagramPostPlan =

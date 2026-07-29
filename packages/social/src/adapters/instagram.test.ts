@@ -77,6 +77,45 @@ describe('InstagramAdapter connectUrl / isConfigured', () => {
     delete process.env.META_APP_ID;
     expect(new InstagramAdapter().isConfigured()).toBe(false);
   });
+
+  // See the matching block in facebook.test.ts — an unrequested scope can never
+  // produce the one successful API call Meta requires before it will approve the
+  // permission, so these flags gate the submission itself, not just the feature.
+  const scopeOf = (): string =>
+    new URL(
+      new InstagramAdapter().connectUrl({
+        tenantId: 't1',
+        state: 's',
+        redirectUri: 'https://app/cb',
+        scopes: [],
+      })
+    ).searchParams.get('scope') ?? '';
+
+  afterEach(() => {
+    delete process.env.META_INBOX_ENABLED;
+    delete process.env.META_INSIGHTS_ENABLED;
+  });
+
+  it('omits the review-gated scopes when both flags are off', () => {
+    const scope = scopeOf();
+    expect(scope).not.toContain('instagram_manage_comments');
+    expect(scope).not.toContain('instagram_manage_insights');
+    expect(scope).toContain('instagram_content_publish');
+  });
+
+  it('adds instagram_manage_comments only for the inbox flag', () => {
+    process.env.META_INBOX_ENABLED = 'true';
+    const scope = scopeOf();
+    expect(scope).toContain('instagram_manage_comments');
+    expect(scope).not.toContain('instagram_manage_insights');
+  });
+
+  it('adds instagram_manage_insights only for the insights flag', () => {
+    process.env.META_INSIGHTS_ENABLED = 'true';
+    const scope = scopeOf();
+    expect(scope).toContain('instagram_manage_insights');
+    expect(scope).not.toContain('instagram_manage_comments');
+  });
 });
 
 describe('InstagramAdapter getMetrics', () => {

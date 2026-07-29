@@ -433,9 +433,31 @@ Two scorecard rows were wrong when written:
    - **At least one successful API call per permission**, which takes up to 24h to register. Seven
      read `0 of 1`: `read_insights`, `pages_read_user_content`, `pages_manage_engagement`,
      `instagram_manage_insights`, `instagram_manage_comments`, `threads_basic`,
-     `threads_content_publish`. The rest already read `Completed`. The unblock is to exercise them
-     once under Standard Access — set `META_INBOX_ENABLED=true`, reconnect, let the inbox sync and
-     metrics sweep run — which is the same work that would fix Threads' zero calls.
+     `threads_content_publish`. The rest already read `Completed`.
+
+     **Diagnosed 2026-07-28 — three distinct causes, not one.** The earlier one-line theory
+     ("set `META_INBOX_ENABLED=true` and reconnect") was right for three of the seven and wrong
+     for the other four.
+
+     | Permissions                                                                       | Why 0 calls                                                                                                                                                                                                              | Fix                                                                                                                                             |
+     | --------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+     | `pages_read_user_content`, `pages_manage_engagement`, `instagram_manage_comments` | Requested only when `META_INBOX_ENABLED` is on, and that key was **absent from the live ConfigMap** (verified against the cluster, not the file).                                                                        | `META_INBOX_ENABLED: 'true'` — added to [app-env-configmap.yaml](../../k8s/sparx-prod/app-env-configmap.yaml).                                  |
+     | `read_insights`, `instagram_manage_insights`                                      | **Never in any scope string at all.** Not in either `POST_SCOPE`, not in the engagement blocks. The insights reads are wrapped in `try/catch`, so the missing grant failed silently forever.                             | New `META_INSIGHTS_ENABLED` flag + scopes, and the flag set in the ConfigMap.                                                                   |
+     | `threads_basic`, `threads_content_publish`                                        | Creds are fine — `THREADS_APP_ID`/`SECRET` are live, distinct from the Meta pair, and the redirect URI matches. The **Threads Testers list is empty**, so no Threads account can authorize while the app is unpublished. | Owner: add the Threads account under the use case's "Add or Remove Threads Testers", accept the invite in Threads, then connect + publish once. |
+
+     **The order-of-operations trap, recorded because it is the whole reason this stalled:** the
+     flags' original comment said ops flips them "the day the review lands". That is backwards.
+     Meta will not approve a permission until one successful call has been made with it, and no
+     call is possible while the scope goes unrequested — so the flags must be ON _before_
+     submitting. `_meta.ts` now says so, and
+     [facebook.test.ts](../../packages/social/src/adapters/facebook.test.ts) /
+     [instagram.test.ts](../../packages/social/src/adapters/instagram.test.ts) pin each flag to
+     the exact scopes it adds, so a scope can never again go missing silently.
+
+     Sequence once deployed: reconnect Facebook + Instagram (the old tokens carry the narrow
+     scope), open a post's metrics to fire the insights read, let the inbox sync pull one comment,
+     answer it. Then wait up to 24h for the counters.
+
    - **The Data handling questionnaire** — legal declarations about the entity (data controller,
      country, subprocessors, public-authority requests). The controller answer is **WizeWorks LLC**,
      not a natural person, matching the DPA. The public-authority answers are now backed by

@@ -101,6 +101,72 @@ describe('FacebookPageAdapter connectUrl / isConfigured', () => {
     delete process.env.META_APP_SECRET;
     expect(new FacebookPageAdapter().isConfigured()).toBe(false);
   });
+
+  // The review-gated scopes are the whole ballgame for App Review: Meta will not
+  // approve a permission until one successful call has been made with it, and no
+  // call is possible unless the scope was REQUESTED at connect. read_insights was
+  // absent from every scope string for exactly this reason and sat at "0 of 1 API
+  // calls" indefinitely, with nothing failing loudly enough to notice. These lock
+  // each flag to the scopes it is supposed to add.
+  const scopeOf = (): string => {
+    const url = new URL(
+      new FacebookPageAdapter().connectUrl({
+        tenantId: 't1',
+        state: 's',
+        redirectUri: 'https://app.example.com/cb',
+        scopes: [],
+      })
+    );
+    return url.searchParams.get('scope') ?? '';
+  };
+
+  afterEach(() => {
+    delete process.env.META_INBOX_ENABLED;
+    delete process.env.META_INSIGHTS_ENABLED;
+  });
+
+  it('omits the review-gated scopes when both flags are off', () => {
+    const scope = scopeOf();
+    expect(scope).not.toContain('pages_read_user_content');
+    expect(scope).not.toContain('pages_manage_engagement');
+    expect(scope).not.toContain('read_insights');
+    // The posting base is never gated.
+    expect(scope).toContain('pages_manage_posts');
+  });
+
+  it('adds the inbox scopes when META_INBOX_ENABLED is on, and only those', () => {
+    process.env.META_INBOX_ENABLED = 'true';
+    const scope = scopeOf();
+    expect(scope).toContain('pages_read_user_content');
+    expect(scope).toContain('pages_manage_engagement');
+    expect(scope).not.toContain('read_insights');
+  });
+
+  it('adds read_insights when META_INSIGHTS_ENABLED is on, independently of the inbox', () => {
+    process.env.META_INSIGHTS_ENABLED = 'true';
+    const scope = scopeOf();
+    expect(scope).toContain('read_insights');
+    expect(scope).not.toContain('pages_read_user_content');
+  });
+
+  it('adds every gated scope when both flags are on, with no empty segments', () => {
+    process.env.META_INBOX_ENABLED = 'true';
+    process.env.META_INSIGHTS_ENABLED = 'true';
+    const scope = scopeOf();
+    for (const s of [
+      'public_profile',
+      'pages_show_list',
+      'pages_manage_posts',
+      'pages_read_engagement',
+      'business_management',
+      'pages_read_user_content',
+      'pages_manage_engagement',
+      'read_insights',
+    ]) {
+      expect(scope.split(',')).toContain(s);
+    }
+    expect(scope.split(',').filter((s) => s === '')).toHaveLength(0);
+  });
 });
 
 describe('FacebookPageAdapter getMetrics', () => {
