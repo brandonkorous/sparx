@@ -24,7 +24,7 @@ import {
   PostalParameterError,
   renderTemplate,
 } from '@sparx/email';
-import { brandService } from '@sparx/email-platform';
+import { analyticsService, brandService } from '@sparx/email-platform';
 
 const Variables = z.record(z.string(), z.string()).optional();
 
@@ -166,6 +166,38 @@ const TemplateSendSchema = z.discriminatedUnion('template', [
     props: z.object({
       applicantName: z.string().optional(),
       roleTitle: z.string().min(1),
+    }),
+  }),
+  // Site-form emails (docs/115) — the owner notification + the submitter autoresponder.
+  // Enqueued by the `form.notify` / `form.autoreply` automation actions
+  // (`@sparx/automation-actions`) via `enqueueSend`, so they arrive on the async
+  // email.send path and MUST be in this union or they'd be acked-and-dropped. The
+  // producer builds props from resolved form fields, several of which are legitimately
+  // absent — a form whose settings panel was never opened has a null `formName`, and
+  // `siteName` is null only if the property vanished — so those are nullable here and the
+  // templates render a fallback rather than crash.
+  z.object({
+    template: z.literal('form-submission-notification'),
+    ...TemplateMeta,
+    props: z.object({
+      siteName: z.string().nullable().optional(),
+      formName: z.string().nullable().optional(),
+      email: z.string().nullable().optional(),
+      name: z.string().nullable().optional(),
+      answers: z.array(z.object({ label: z.string(), value: z.string() })).optional(),
+      attachmentNames: z.array(z.string()).optional(),
+      pageSlug: z.string().nullable().optional(),
+      submittedAt: z.string().nullable().optional(),
+    }),
+  }),
+  z.object({
+    template: z.literal('form-submission-confirmation'),
+    ...TemplateMeta,
+    props: z.object({
+      siteName: z.string().nullable().optional(),
+      name: z.string().nullable().optional(),
+      subject: z.string().nullable().optional(),
+      message: z.string().nullable().optional(),
     }),
   }),
   z.object({
@@ -316,6 +348,25 @@ export async function handle(event: EmailSendEvent, logger: Logger): Promise<Han
         ...(propertyId ? { property_id: propertyId } : {}),
       },
     });
+
+    // Record the provider ACCEPTANCE synchronously — the /messages call returned an id,
+    // which is exactly what Mailgun's `accepted` webhook reports, but known now and
+    // independent of whether that webhook ever reaches us. This is what makes send stats
+    // (`get_email_stats`) reliable; the webhook still supplies delivered/opened/clicked.
+    // BEST-EFFORT: a bookkeeping failure must never fail (and re-deliver) a sent email.
+    const vars = data.variables ?? {};
+    await analyticsService
+      .recordAccepted({
+        tenantId: event.tenantId,
+        recipient: data.to,
+        messageId: result.id,
+        propertyId,
+        broadcastId: vars.broadcast_id ?? null,
+        automationKey: vars.automation_key ?? null,
+        customerId: vars.customer_id ?? null,
+      })
+      .catch((err: unknown) => childLog.warn({ err }, 'recordAccepted failed — stat row skipped'));
+
     return {
       status: 'sent',
       messageId: result.id,

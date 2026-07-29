@@ -292,6 +292,12 @@ jobs:
             godaddy-api-secret-prod
             postal-api-key
             cloudflare-api-token
+            # Mailgun HTTP webhook signing key → MAILGUN_WEBHOOK_SIGNING_KEY, read by
+            # api-rest's /v1/public/email/mailgun-webhook receiver to verify Mailgun's
+            # delivery/engagement webhook HMAC. WARNED-not-failed when absent (the route
+            # falls back to accepting unverified in that case), so listing it before the
+            # value is provisioned is safe.
+            mailgun-webhook-signing-key
           )
           literals=()
           for key in "${KEYS[@]}"; do

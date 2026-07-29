@@ -5,7 +5,7 @@
 //   POST /v1/public/email/mailgun-webhook
 //
 // Mailgun posts { signature: {timestamp, token, signature}, "event-data": {...} }.
-// We verify the signature against SPARX_MAILGUN_WEBHOOK_SIGNING_KEY, then hand
+// We verify the signature against MAILGUN_WEBHOOK_SIGNING_KEY, then hand
 // the event-data to webhookService.ingest (which attributes it to a tenant via
 // the `tenant_id` user variable and writes EmailEvent / EmailSuppression).
 //
@@ -34,7 +34,7 @@ const emailWebhookRoutes: FastifyPluginAsync = (app) => {
   app.post('/v1/public/email/mailgun-webhook', async (request) => {
     const body = WebhookBody.parse(request.body);
 
-    const signingKey = process.env.SPARX_MAILGUN_WEBHOOK_SIGNING_KEY;
+    const signingKey = process.env.MAILGUN_WEBHOOK_SIGNING_KEY;
     if (signingKey) {
       const valid = webhookService.verifyMailgunSignature(body.signature, signingKey);
       if (!valid) {
@@ -44,7 +44,7 @@ const emailWebhookRoutes: FastifyPluginAsync = (app) => {
       }
     } else {
       request.log.warn(
-        'SPARX_MAILGUN_WEBHOOK_SIGNING_KEY unset — accepting webhook without verification (dev only)'
+        'MAILGUN_WEBHOOK_SIGNING_KEY unset — accepting webhook without verification (dev only)'
       );
     }
 

@@ -572,6 +572,13 @@ module "secrets" {
     # Mailgun HTTP API key — the email-worker Cloud Run service binds it
     # (serverless.tf). Declared here so the TF that references it also owns it.
     "mailgun-api-key",
+    # Mailgun HTTP webhook signing key → MAILGUN_WEBHOOK_SIGNING_KEY (bootstrap KEYS
+    # uppercases the id). Read by api-rest's /v1/public/email/mailgun-webhook receiver
+    # to verify the HMAC on Mailgun's delivery/engagement webhooks — WITHOUT it the
+    # route accepts unverified (dev fallback), so populate before relying on the stats.
+    # Value = Mailgun → Send → Webhooks → "HTTP webhook signing key"; add out-of-band:
+    #   gcloud secrets versions add mailgun-webhook-signing-key --data-file=-
+    "mailgun-webhook-signing-key",
     # Internal service-to-service shared secrets (docs/16 §2.5). api-rest and the
     # CronJob pods read these from sparx-app-secrets; values are machine-to-machine,
     # added out-of-band via `gcloud secrets versions add`.

@@ -9,10 +9,13 @@ import { EmailCallout, EmailHeading, EmailLink, EmailMuted, EmailParagraph } fro
 // recognized contact (api-rest sets reply-to = the submitter). Also stored in the
 // dashboard "Form submissions" inbox.
 export interface FormSubmissionNotificationEmailProps {
-  /** The customer-facing site name (Property.name). */
-  siteName: string;
-  /** The form's author label (e.g. "Contact form"). */
-  formName: string;
+  /** The customer-facing site name (Property.name). Nullable defensively — it's only
+   *  ever absent if the property row vanished between submit and send; falls back to a
+   *  neutral phrase rather than crash. */
+  siteName?: string | null;
+  /** The form's author label (e.g. "Contact form"). Null when the form's settings panel
+   *  was never opened (the commonest form flow) — falls back to a generic label. */
+  formName?: string | null;
   /** The recognized contact email, for the reply summary (if the form has one). */
   email?: string | null;
   /** Best-effort submitter name for the intro line. */
@@ -24,7 +27,7 @@ export interface FormSubmissionNotificationEmailProps {
   attachmentNames?: string[];
   /** The page the form was on (null = home). */
   pageSlug?: string | null;
-  submittedAt?: string;
+  submittedAt?: string | null;
 }
 
 export function FormSubmissionNotificationEmail({
@@ -37,14 +40,16 @@ export function FormSubmissionNotificationEmail({
   pageSlug,
 }: FormSubmissionNotificationEmailProps) {
   const who = name ?? email ?? 'Someone';
+  const site = siteName ?? 'your site';
+  const label = (formName ?? 'form').toLowerCase();
   const rows = (answers ?? []).filter((a) => a.value.trim() !== '');
   const files = (attachmentNames ?? []).filter((n) => n.trim() !== '');
   return (
-    <EmailLayout preview={`${who} sent a message via ${siteName}`}>
+    <EmailLayout preview={`${who} sent a message via ${site}`}>
       <Section>
-        <EmailHeading>New {formName.toLowerCase()} submission</EmailHeading>
+        <EmailHeading>New {label} submission</EmailHeading>
         <EmailParagraph>
-          {who} just reached out through {siteName}.
+          {who} just reached out through {site}.
           {email ? (
             <>
               {' '}
@@ -78,7 +83,7 @@ export function FormSubmissionNotificationEmail({
         ) : null}
 
         <EmailMuted>
-          Submitted on {siteName}
+          Submitted on {site}
           {pageSlug ? ` · /${pageSlug}` : ''}. This is saved in your form submissions.
         </EmailMuted>
       </Section>
@@ -86,6 +91,6 @@ export function FormSubmissionNotificationEmail({
   );
 }
 
-export function formSubmissionNotificationSubject(formName: string): string {
-  return `New ${formName.toLowerCase()} submission`;
+export function formSubmissionNotificationSubject(formName?: string | null): string {
+  return `New ${(formName ?? 'form').toLowerCase()} submission`;
 }

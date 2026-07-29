@@ -138,6 +138,14 @@ export async function ingest(eventData: MailgunEventData): Promise<IngestResult>
   const tenantId = typeof vars.tenant_id === 'string' ? vars.tenant_id : undefined;
   if (!tenantId) return { handled: false, reason: 'no_tenant', type };
 
+  // `accepted` is now recorded SYNCHRONOUSLY by email-worker at send time
+  // (`analyticsService.recordAccepted`), because a working delivery webhook can't be
+  // assumed. Writing it here too would double-count every send, so we drop Mailgun's
+  // redundant `accepted` event — the worker's row is the source of truth. Every OTHER
+  // event (delivered / opened / clicked / bounced / complained / unsubscribed / failed)
+  // is only knowable from the webhook and still flows through below.
+  if (type === 'accepted') return { handled: true, tenantId, type };
+
   const recipient = eventData.recipient ?? '';
   const broadcastId = typeof vars.broadcast_id === 'string' ? vars.broadcast_id : null;
   const automationKey = typeof vars.automation_key === 'string' ? vars.automation_key : null;

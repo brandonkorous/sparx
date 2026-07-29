@@ -56,6 +56,51 @@ function applyGroups(
   return counts;
 }
 
+/** The attribution for a send-accepted event — the same fields the Mailgun webhook
+ *  reads back off the echoed user-variables, but known synchronously at send time. */
+export interface AcceptedEventInput {
+  tenantId: string;
+  recipient: string;
+  messageId?: string | null;
+  propertyId?: string | null;
+  broadcastId?: string | null;
+  automationKey?: string | null;
+  customerId?: string | null;
+  occurredAt?: Date;
+}
+
+/**
+ * Record that the email provider ACCEPTED a send — the /messages call returned a
+ * message id — as an `accepted` EmailEvent. This is the SYNCHRONOUS, webhook-independent
+ * source of the "accepted" metric: `email-worker` calls it on every successful send, so
+ * send stats are reliable even when Mailgun's engagement webhooks aren't reaching us.
+ *
+ * Because the worker now owns `accepted`, the Mailgun `accepted` webhook no longer writes
+ * its own row (`webhook-service.ingest`) — otherwise every send would count twice. The
+ * remaining engagement events (delivered / opened / clicked / bounced / …) still come from
+ * the webhook, since only Mailgun knows them.
+ *
+ * RLS-scoped to the tenant via `withTenant`, exactly like the webhook's write. Best-effort
+ * at the call site: a failure here must never fail the actual send.
+ */
+export async function recordAccepted(input: AcceptedEventInput): Promise<void> {
+  await withTenant({ tenantId: input.tenantId }, (tx) =>
+    tx.emailEvent.create({
+      data: {
+        tenantId: input.tenantId,
+        propertyId: input.propertyId ?? null,
+        type: 'accepted',
+        recipient: input.recipient,
+        messageId: input.messageId ?? null,
+        broadcastId: input.broadcastId ?? null,
+        automationKey: input.automationKey ?? null,
+        customerId: input.customerId ?? null,
+        occurredAt: input.occurredAt ?? new Date(),
+      },
+    })
+  );
+}
+
 export async function overview(ctx: ServiceContext, days = 30): Promise<OverviewResult> {
   const since = new Date(Date.now() - days * 86400 * 1000);
   return withTenant(ctx, async (tx) => {

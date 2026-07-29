@@ -7,13 +7,15 @@ import { EmailHeading, EmailParagraph } from '../components';
 // gets after submitting a contact form, when the site owner enables it. The body
 // is the owner-authored `message`; the subject is the owner-authored `subject`.
 export interface FormSubmissionConfirmationEmailProps {
-  /** The customer-facing site name (Property.name). */
-  siteName: string;
+  /** The customer-facing site name (Property.name). Nullable defensively (see the
+   *  notification template) — falls back to a neutral sign-off. */
+  siteName?: string | null;
   name?: string | null;
-  /** Owner-authored subject line (passed through to the send subject). */
-  subject: string;
-  /** Owner-authored confirmation body. */
-  message: string;
+  /** Owner-authored subject line (passed through to the send subject). Nullable — if the
+   *  autoresponder was enabled without a custom subject, a default is used. */
+  subject?: string | null;
+  /** Owner-authored confirmation body. Nullable — falls back to a neutral acknowledgement. */
+  message?: string | null;
 }
 
 export function FormSubmissionConfirmationEmail({
@@ -21,17 +23,21 @@ export function FormSubmissionConfirmationEmail({
   name,
   message,
 }: FormSubmissionConfirmationEmailProps) {
+  const site = siteName ?? '';
+  const body =
+    message ??
+    'Thanks for getting in touch — we’ve received your message and will be in touch soon.';
   return (
-    <EmailLayout preview={`Thanks for contacting ${siteName}`}>
+    <EmailLayout preview={site ? `Thanks for contacting ${site}` : 'Thanks for getting in touch'}>
       <Section>
         <EmailHeading>Thanks{name ? `, ${name}` : ''}</EmailHeading>
-        <EmailParagraph>{message}</EmailParagraph>
-        <EmailParagraph>— The {siteName} team</EmailParagraph>
+        <EmailParagraph>{body}</EmailParagraph>
+        <EmailParagraph>{site ? `— The ${site} team` : '— Thanks again'}</EmailParagraph>
       </Section>
     </EmailLayout>
   );
 }
 
-export function formSubmissionConfirmationSubject(subject: string): string {
-  return subject;
+export function formSubmissionConfirmationSubject(subject?: string | null): string {
+  return subject ?? 'Thanks for reaching out';
 }
