@@ -75,6 +75,8 @@ const tokenEndpoint = (): string => pinterestBases(pinterestSandbox()).token;
 
 const SCOPE = 'boards:read,boards:write,pins:read,pins:write,user_accounts:read';
 const TITLE_MAX = 100;
+/** The default board provisioned into an empty sandbox account (see listTargets). */
+const SANDBOX_BOARD_NAME = 'sparx';
 const TOKEN_FALLBACK_SECONDS = 2_592_000; // 30 days (Pinterest access tokens)
 
 const ID_VAR = 'PINTEREST_APP_ID';
@@ -104,6 +106,16 @@ export function planPinterestPin(post: RenderedPost): PinterestPinPlan | null {
 /** The public permalink for a created Pin id. */
 export function pinterestPermalink(id: string): string {
   return `https://www.pinterest.com/pin/${id}/`;
+}
+
+/** Whether to auto-provision a default board. Pinterest's API sandbox is an isolated data
+ *  space that starts with ZERO boards, so a freshly-connected sandbox account has nothing
+ *  to pin to and listTargets returns empty — leaving the connection unusable. When that
+ *  happens under sandbox mode we create one board so the write path (and the demo it exists
+ *  to record) has a destination. Gated on sandbox so we NEVER create boards on a real
+ *  production account. Pure, so the decision is unit-tested without any network. */
+export function shouldProvisionSandboxBoard(boardCount: number, sandbox: boolean): boolean {
+  return sandbox && boardCount === 0;
 }
 
 /** UTC calendar date as YYYY-MM-DD — the format Pinterest's analytics window expects. */
@@ -240,25 +252,15 @@ export class PinterestAdapter implements SocialAdapter {
     };
   }
 
-  /** One target per board the account owns. externalTargetId is the board id. */
+  /** One target per board the account owns. externalTargetId is the board id. In sandbox
+   *  mode, an account with no boards gets one provisioned (see shouldProvisionSandboxBoard)
+   *  so there is always a destination to pin to. */
   async listTargets(auth: SocialAuth): Promise<SocialTargetRef[]> {
-    const targets: SocialTargetRef[] = [];
-    let bookmark: string | undefined;
-    do {
-      const params = new URLSearchParams({ page_size: '100' });
-      if (bookmark) params.set('bookmark', bookmark);
-      const res = await fetchT(`${apiBase()}/boards?${params.toString()}`, {
-        headers: { Authorization: `Bearer ${auth.accessToken}` },
-      });
-      if (!res.ok) {
-        throw new Error(`Pinterest board lookup failed: ${await describeResponse(res)}`);
-      }
-      const data = (await res.json()) as PinterestBoardsResponse;
-      for (const board of data.items ?? []) {
-        targets.push({ externalTargetId: board.id, name: board.name ?? board.id });
-      }
-      bookmark = data.bookmark ?? undefined;
-    } while (bookmark);
+    const targets = await this.fetchBoards(auth);
+    if (shouldProvisionSandboxBoard(targets.length, pinterestSandbox())) {
+      await this.createBoard(auth, SANDBOX_BOARD_NAME);
+      return this.fetchBoards(auth);
+    }
     return targets;
   }
 
@@ -324,6 +326,44 @@ export class PinterestAdapter implements SocialAdapter {
   }
 
   // ── internals ──
+
+  /** All boards the account owns, following Pinterest's bookmark pagination. */
+  private async fetchBoards(auth: SocialAuth): Promise<SocialTargetRef[]> {
+    const targets: SocialTargetRef[] = [];
+    let bookmark: string | undefined;
+    do {
+      const params = new URLSearchParams({ page_size: '100' });
+      if (bookmark) params.set('bookmark', bookmark);
+      const res = await fetchT(`${apiBase()}/boards?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${auth.accessToken}` },
+      });
+      if (!res.ok) {
+        throw new Error(`Pinterest board lookup failed: ${await describeResponse(res)}`);
+      }
+      const data = (await res.json()) as PinterestBoardsResponse;
+      for (const board of data.items ?? []) {
+        targets.push({ externalTargetId: board.id, name: board.name ?? board.id });
+      }
+      bookmark = data.bookmark ?? undefined;
+    } while (bookmark);
+    return targets;
+  }
+
+  /** Create a board (POST /v5/boards). Used only to seed an empty sandbox account —
+   *  guarded by shouldProvisionSandboxBoard so it never runs against production. */
+  private async createBoard(auth: SocialAuth, name: string): Promise<void> {
+    const res = await fetchT(`${apiBase()}/boards`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${auth.accessToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, privacy: 'PUBLIC' }),
+    });
+    if (!res.ok) {
+      throw new Error(`Pinterest board create failed: ${await describeResponse(res)}`);
+    }
+  }
 
   private async userAccount(accessToken: string): Promise<PinterestUser | null> {
     try {

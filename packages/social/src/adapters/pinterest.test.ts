@@ -7,6 +7,7 @@ import {
   pinterestPermalink,
   pinterestSandbox,
   planPinterestPin,
+  shouldProvisionSandboxBoard,
 } from './pinterest.js';
 import type { RenderedPost } from '../types.js';
 
@@ -55,6 +56,24 @@ describe('pinterestSandbox', () => {
       process.env.PINTEREST_SANDBOX = v;
       expect(pinterestSandbox()).toBe(false);
     }
+  });
+});
+
+describe('shouldProvisionSandboxBoard', () => {
+  it('provisions a board only when sandbox mode has zero boards', () => {
+    // Pinterest's sandbox starts empty, so a fresh sandbox connection has no destination
+    // until we seed one — this is the guard for that.
+    expect(shouldProvisionSandboxBoard(0, true)).toBe(true);
+  });
+
+  it('never provisions when the account already has a board', () => {
+    expect(shouldProvisionSandboxBoard(1, true)).toBe(false);
+    expect(shouldProvisionSandboxBoard(3, true)).toBe(false);
+  });
+
+  it('never provisions in production — we do not create boards on a real account', () => {
+    expect(shouldProvisionSandboxBoard(0, false)).toBe(false);
+    expect(shouldProvisionSandboxBoard(2, false)).toBe(false);
   });
 });
 
