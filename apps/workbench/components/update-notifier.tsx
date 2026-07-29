@@ -51,8 +51,9 @@ export function UpdateNotifier(): null {
   const { controller, role } = useWorkbench();
   const toast = useToast();
   const confirm = useConfirm();
-  // The toast is raised from an effect that must not re-run when these identities
-  // change — a fresh toast on every render would stack duplicates behind the id.
+  // The toast is raised from an effect that must not re-run when `controller` or
+  // `confirm` change identity, so the action is reached through a ref instead of
+  // being closed over as a dependency.
   const actionRef = useRef<() => void>(() => undefined);
 
   // In local dev both sides read 'dev', so there's nothing to detect — don't
@@ -75,6 +76,24 @@ export function UpdateNotifier(): null {
   });
 
   const updateAvailable = Boolean(deployedVersion) && deployedVersion !== CURRENT_VERSION;
+
+  // Raised at most ONCE per tab, and that is load-bearing, not tidiness.
+  //
+  // Two facts about the toast manager combine into an infinite render loop:
+  // `useToast()` returns a fresh object whenever the toast LIST changes (Base
+  // UI memoizes it on `toasts`), and `add()` does NOT dedupe on `id` — it
+  // prepends another toast carrying the same id. So an effect that lists
+  // `toast` as a dependency and calls `add()` feeds itself: add → new toasts
+  // array → new manager identity → effect re-runs → add → … React stops that
+  // at 50 nested updates by throwing "Maximum update depth exceeded", from
+  // inside ToastProvider — which sits ABOVE app/error.tsx in the root layout,
+  // so the whole window fell through to global-error.tsx's bare crash screen.
+  //
+  // It could only ever fire when a version divergence was actually detected,
+  // which is exactly why it read as "the workbench crashes after every
+  // release" and never reproduced in dev (both sides read 'dev', so `enabled`
+  // is false and the poll never runs).
+  const raisedRef = useRef(false);
 
   actionRef.current = () => {
     // Read dirty state at CLICK time, not when the toast was raised. The toast is
@@ -100,12 +119,21 @@ export function UpdateNotifier(): null {
     });
   };
 
+  // `toast.add` rather than `toast`: the manager object churns on every toast
+  // anything in the app raises, the `add` function underneath it never does
+  // (Base UI stabilises it). Depending on the whole manager is what let an
+  // unrelated toast re-enter this effect at all.
+  const addToast = toast.add;
+
   useEffect(() => {
-    if (!updateAvailable) return;
-    // `id` dedupes: the same sticky toast is reused no matter how many polls
-    // observe the new version. `timeout: 0` keeps it up — an update the operator
-    // scrolled past is an update they never learn about.
-    toast.add({
+    if (!updateAvailable || raisedRef.current) return;
+    // Set BEFORE the add, so the write lands even if a re-render beats the
+    // effect's own return — the guard has to hold on the first pass or it isn't
+    // a guard.
+    raisedRef.current = true;
+    // `timeout: 0` keeps it up — an update the operator scrolled past is an
+    // update they never learn about.
+    addToast({
       id: TOAST_ID,
       title: 'A new version of sparx is available',
       description: 'Reload when you are at a good stopping point.',
@@ -117,7 +145,7 @@ export function UpdateNotifier(): null {
         },
       },
     });
-  }, [updateAvailable, toast]);
+  }, [updateAvailable, addToast]);
 
   return null;
 }
