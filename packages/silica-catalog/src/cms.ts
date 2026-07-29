@@ -167,8 +167,8 @@ function backToIndex(): Node {
  *  with the rest of the grid empty and every href stuck on the placeholder. Nothing
  *  errors. See `blogIndex()` below and the same contract in `commerce.ts`.
  *
- *  The card's `href` rides `bindAttr`'s hidden carrier: binding the anchor itself
- *  would replace its children with the URL string and destroy the card. */
+ *  The card's `href` is a native attribute binding (`bindAttr`): binding the anchor
+ *  itself would replace its children with the URL string and destroy the card. */
 function postCard(): Node {
   return bindAttr(
     el(

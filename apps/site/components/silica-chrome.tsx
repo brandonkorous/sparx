@@ -32,7 +32,7 @@ import {
   type ResolveHost,
   type SymbolDef,
 } from '@wizeworks/silicaui-html';
-import { hoistAttrBindings, renderSilicaBody } from '@sparx/silica-catalog';
+import { dropEmptyUrlAttrs, renderSilicaBody } from '@sparx/silica-catalog';
 
 /** Mounts the real interactive component for a pinned functional core (docs/122) —
  *  keyed by the host node's `component`. The route supplies this (closing over its own
@@ -217,7 +217,7 @@ export function SilicaChrome({
   // Mirror `renderSilicaBody`'s pipeline: the frame can bind attributes too (a
   // bound logo link), and an unhoisted carrier would render a stray hidden input
   // into the chrome. Always run — it also strips carriers that never resolved.
-  return walk(hoistAttrBindings(resolved), 'frame', {
+  return walk(dropEmptyUrlAttrs(resolved), 'frame', {
     outlet: children,
     ...(renderHost ? { renderHost } : {}),
   });
@@ -248,5 +248,5 @@ export function SilicaFunctionalBody({
 }): React.ReactNode {
   const flat = flattenSymbols(root, symbols ?? {});
   const resolved = host ? resolveTree(flat, host, scope) : flat;
-  return walk(hoistAttrBindings(resolved), 'body', { renderHost });
+  return walk(dropEmptyUrlAttrs(resolved), 'body', { renderHost });
 }

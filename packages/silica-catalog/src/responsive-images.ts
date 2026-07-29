@@ -20,15 +20,16 @@
 // a degradation rather than a break: an extra width here resolves down to the real
 // widest, and a missing one is simply an offer we failed to make.
 //
-// WHY IT RUNS AFTER LOWERING. A product card's image is an `Image` ATOM, not an
-// `<img>` element, and silica's `Image.expand` builds a fixed attribute set —
-// `src`, `alt`, `loading`. A `srcset` prop on the atom is silently dropped. So a
-// component whose expansion is an image is expanded HERE, through silica's own
-// `expandComponent`, and the expansion is what gets patched. Re-implementing that
-// lowering locally would fork the `ratio` → aspect-class mapping and drift from it.
-// A component that expands to anything else is left completely untouched.
+// TWO NODE SHAPES, ONE LADDER. A hand-authored picture is an `<img>` ELEMENT and takes
+// the ladder as attributes; a product card's image is an `Image` ATOM and takes it as
+// props, which silica's own `expand` lowers. Both are handled here.
+//
+// The atom half used to call `expandComponent` and patch the resulting element, because
+// `Image.expand` built a fixed attribute set and dropped a `srcset` prop silently.
+// silicaui 0.36.0 forwards `srcset`/`sizes` (doc 139 §6), so that workaround is gone
+// along with its one real hazard: lowering a node early changed its kind mid-tree.
 
-import { expandComponent, type Child, type ElementNode, type Node } from '@wizeworks/silicaui-html';
+import { type Child, type ElementNode, type Node } from '@wizeworks/silicaui-html';
 
 /**
  * The width ladder offered to the browser. Mirrors `VARIANT_WIDTHS` in
@@ -107,16 +108,32 @@ function withSrcset(node: ElementNode): ElementNode {
   };
 }
 
-/** silica's lowering, guarded. A render path must never throw over an image: an
- *  unknown component name in a tree restored from an older release would otherwise
- *  take down the whole page instead of one picture. */
-function tryExpand(node: Node): Node | null {
-  if (node.kind !== 'component') return null;
-  try {
-    return expandComponent(node);
-  } catch {
-    return null;
-  }
+/** The same ladder on a COMPONENT node — an `Image` atom, which is what a product card
+ *  actually uses. Sets props and lets silica's own `expand` lower them.
+ *
+ *  This used to call `expandComponent` here and patch the resulting element, because
+ *  `Image.expand` built a fixed attribute set (`src`/`alt`/`loading`) and dropped a
+ *  `srcset` prop without a word. silicaui 0.36.0 forwards both (doc 139 §6), so the
+ *  walk no longer has to lower a node early to reach its attributes — which also means
+ *  it no longer changes any node's KIND mid-tree.
+ *
+ *  A component that carries `src` but lowers to something else (`Video`) builds its own
+ *  attrs and simply ignores these props, so there is nothing to detect and no
+ *  component-name allowlist to keep in step with the engine. */
+function withSrcsetProps(node: Extract<Node, { kind: 'component' }>): Node {
+  const props = node.props;
+  const src = typeof props?.src === 'string' ? props.src : '';
+  if (!src || props?.srcset != null) return node;
+  if (/[?&]w=/.test(src)) return node;
+  if (!RESOLVER_URL.test(src)) return node;
+  return {
+    ...node,
+    props: {
+      ...props,
+      srcset: srcsetFor(src),
+      sizes: typeof props?.sizes === 'string' ? props.sizes : sizesFor(node.class),
+    },
+  };
 }
 
 function rewrite(child: Child): Child {
@@ -126,15 +143,9 @@ function rewrite(child: Child): Child {
     const patched = withSrcset(child);
     if (patched !== child) return patched;
   } else if (child.kind === 'component') {
-    const expanded = tryExpand(child);
-    if (expanded?.kind === 'element' && expanded.tag === 'img') {
-      const patched = withSrcset(expanded);
-      // Substitute the expansion ONLY when it gained something. An image we can't
-      // improve (external URL, no source yet) stays a component node, so this walk
-      // changes nothing about how the rest of the render behaves.
-      if (patched !== expanded) return patched;
-      return child;
-    }
+    const patched = withSrcsetProps(child);
+    // An image atom is a leaf — no children to walk — so returning here is complete.
+    if (patched !== child) return patched;
   }
 
   const children = child.children;

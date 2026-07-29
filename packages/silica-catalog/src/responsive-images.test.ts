@@ -36,20 +36,40 @@ describe('responsiveImages', () => {
   });
 
   it('rewrites an Image ATOM, which is what a product card actually uses', () => {
-    // The regression this guards: silica's `Image.expand` builds a FIXED attribute set
-    // (src/alt/loading), so a `srcset` prop on the atom is dropped without a word. If
-    // this walk stopped at `<img>` elements, the single most common image on any
-    // storefront — the product grid tile — would keep shipping at full width.
+    // The single most common image on any storefront is the product grid tile, and it
+    // is an `Image` atom rather than an `<img>`. The walk sets PROPS and leaves the
+    // node a component — silica's own `expand` lowers them (0.36.0 forwards
+    // srcset/sizes; before that it dropped them, and this walk had to pre-expand).
     const card = el('div', 'grid', {
       children: [atom('Image', 'aspect-square w-full object-cover', { src: RESOLVER, alt: 'P' })],
     });
     const out = responsiveImages(card);
-    const attrs = imgAttrs(out);
-    expect(String(attrs.srcset)).toContain('w=400 400w');
-    expect(String(attrs.srcset)).toContain('w=2000 2000w');
-    // Lowering is silica's, not ours: the ratio/class handling must survive intact.
-    expect(find(out)?.class).toBe('aspect-square w-full object-cover');
-    expect(attrs.loading).toBe('lazy');
+    const img = out.kind === 'outlet' ? undefined : out.children?.[0];
+    if (typeof img === 'string' || img?.kind !== 'component') throw new Error('not a component');
+    expect(img.component).toBe('Image');
+    expect(String(img.props?.srcset)).toContain('w=400 400w');
+    expect(String(img.props?.srcset)).toContain('w=2000 2000w');
+    expect(img.props?.sizes).toBe('100vw');
+    // The node's KIND is unchanged — the old pre-expansion swapped a component for an
+    // element mid-tree, which is exactly the hazard this rewrite removed.
+    expect(img.class).toBe('aspect-square w-full object-cover');
+  });
+
+  it('lowers an atom ladder all the way to HTML', () => {
+    // The half a props assertion cannot make: silica has to FORWARD srcset/sizes out of
+    // `Image.expand`. If a future release stops, the props above still pass and every
+    // product tile silently ships at full width again — so assert the rendered markup.
+    const html = renderSilicaBody(
+      el('main', '', {
+        children: [atom('Image', 'aspect-square w-full', { src: RESOLVER, alt: 'P' })],
+      })
+    );
+    expect(html).toContain('<img');
+    expect(html).toContain('w=2000 2000w');
+    expect(html).toContain('sizes="100vw"');
+    // Lowering stays silica's: the class and its lazy-loading default survive.
+    expect(html).toContain('aspect-square w-full');
+    expect(html).toContain('loading="lazy"');
   });
 
   it('sizes a fixed-size image in pixels instead of 100vw', () => {

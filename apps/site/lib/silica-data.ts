@@ -157,8 +157,9 @@ function toSilicaProduct(p: PublicProductListItem, tenantSlug: string): Record<s
     // the hidden input renders `value=""`, the field is `required`, and the
     // browser blocks the submit before silica's form behavior dispatches.
     variantId: p.defaultVariantId ?? '',
-    // The card's destination. `bindAttr` lifts this into the `<a href>`; an empty
-    // value renders an un-clickable card rather than a link to nowhere.
+    // The card's destination, bound into the `<a href>`. An empty value renders an
+    // un-clickable card rather than a link to nowhere — `dropEmptyUrlAttrs` removes
+    // the `href=""` that the engine's `fillValue` would otherwise leave behind.
     url: p.handle ? `/products/${p.handle}` : '',
   };
 }
@@ -222,8 +223,8 @@ export function collectionToSilicaRecord(
 
 // The route a CMS collection card links to. Only `blog_post` has a per-record
 // detail route (`apps/site/app/blog/[slug]`); other content types render inline and
-// carry no destination, so their card `url` resolves to `''` and `bindAttr` leaves
-// the anchor un-clickable rather than pointing it at a 404.
+// carry no destination, so their card `url` resolves to `''` and `dropEmptyUrlAttrs`
+// leaves the anchor un-clickable rather than pointing it at a 404.
 function entryUrl(type: string, slug: string | null | undefined): string {
   if (!slug) return '';
   return type === 'blog_post' ? `/blog/${slug}` : '';

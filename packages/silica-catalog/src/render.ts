@@ -13,10 +13,9 @@
 //      expand `data:collection` nodes one-clone-per-item, via the host's
 //      SYNCHRONOUS resolver (sparx's `createSilicaResolver` over pre-loaded data).
 //      Absent a host → the tree passes through unchanged (a static page).
-//   4. hoistAttrBindings — lift each resolved attribute carrier onto its parent
-//      (a product card's bound `href`) and strip the carrier. The host-side
-//      bridge for the attribute binding silica cannot yet resolve on a container;
-//      see `attr-binding.ts`. A no-op on a tree that binds no attributes.
+//   4. dropEmptyUrlAttrs — remove `href=""` / `src=""` left by a binding that
+//      resolved to nothing. A product with no URL must degrade to a plain card,
+//      not to an anchor that silently reloads the page; see `attr-binding.ts`.
 //   5. responsiveImages — offer the browser the width ladder for every sparx-hosted
 //      image. Must run LAST, after resolution: a product card's image source comes
 //      from the record, so before step 3 there is no URL to build a `srcset` from.
@@ -26,7 +25,7 @@
 // Pure + framework-free (silicaui-html only), so it runs on the server (RSC /
 // publish) with no React dependency and stays the single source of render truth.
 
-import { hoistAttrBindings } from './attr-binding';
+import { dropEmptyUrlAttrs } from './attr-binding';
 import { responsiveImages } from './responsive-images';
 import {
   composeFrame,
@@ -65,9 +64,7 @@ function renderComposedTree(
   const body = flattenSymbols(pageRoot, symbols);
   const composed = frameRoot ? composeFrame(flattenSymbols(frameRoot, symbols), body) : body;
   const resolved = opts.host ? resolveTree(composed, opts.host, opts.scope) : composed;
-  // Always hoist: an UNRESOLVED carrier (static render, no host) must still be
-  // stripped, or a hidden `<input>` leaks into the page's markup.
-  return toHtml(responsiveImages(hoistAttrBindings(resolved)), opts.html);
+  return toHtml(responsiveImages(dropEmptyUrlAttrs(resolved)), opts.html);
 }
 
 /** Render ONE page of a site to the full production HTML a visitor to its route
