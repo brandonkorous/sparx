@@ -11,6 +11,7 @@ import {
   buyBox,
   collectionDetailPage,
   collectionHeader,
+  featuredCarousel,
   featuredProducts,
   productCard,
   productDetailPage,
@@ -304,6 +305,7 @@ describe('COMMERCE_CATALOG — the palette group', () => {
     expect(group.key).toBe('commerce');
     expect(group.items.map((i) => i.key)).toEqual([
       'products',
+      'product_carousel',
       'product_card',
       'buy_box',
       'collection_header',
@@ -314,5 +316,67 @@ describe('COMMERCE_CATALOG — the palette group', () => {
     const b = first.make();
     expect(a).not.toBe(b);
     expect(a.kind).toBe('element');
+  });
+});
+
+describe('featured_carousel — a rail with real controls', () => {
+  it('carries silica\u2019s carousel behavior on the section, so the runtime wires it', () => {
+    const html = toHtml(resolveTree(featuredCarousel(), host));
+    expect(html).toContain('data-sui-behavior="carousel"');
+  });
+
+  it('marks the track and every slide, which is what the behavior scrolls', () => {
+    const html = toHtml(resolveTree(featuredCarousel(), host));
+    expect(html).toContain('data-sui-part="track"');
+    // The plugin's real class, not a hand-rolled flex+snap+overflow imitation of it —
+    // it is also the only thing that hides the scrollbar under the prev/next controls.
+    expect(html).toContain('class="carousel gap-6"');
+    // One per product — the marker is on the repeat TEMPLATE, so it must survive
+    // being stamped per item or the behavior sees a track with nothing in it.
+    expect((html.match(/data-sui-part="slide"/g) ?? []).length).toBe(2);
+  });
+
+  it('ships Previous/Next as labelled controls, not bare arrows', () => {
+    const html = toHtml(resolveTree(featuredCarousel(), host));
+    expect(html).toContain('data-sui-part="prev"');
+    expect(html).toContain('data-sui-part="next"');
+    expect(html).toContain('aria-label="Previous products"');
+    expect(html).toContain('aria-label="Next products"');
+  });
+
+  it('sizes slides by CONTAINER width so a phone gets one card, not a clipped four', () => {
+    const html = toHtml(resolveTree(featuredCarousel(), host));
+    expect(html).toContain('carousel-item');
+    expect(html).toContain('basis-full');
+    expect(html).toContain('@2xl:basis-1/3');
+    expect(html).toContain('@4xl:basis-1/4');
+  });
+
+  it('stays bound to the BOUNDED source and still links each card to its product', () => {
+    expect(collectionRef(featuredCarousel())).toBe('commerce.featured');
+    const html = renderSilicaBody(featuredCarousel(), { host });
+    expect(html).toContain('href="/products/aurora-lamp"');
+    expect(html).toContain('href="/products/dune-chair"');
+  });
+
+  it('carries no pager — a carousel already has its own way forward', () => {
+    const html = toHtml(resolveTree(featuredCarousel(), host));
+    expect(html).not.toContain('site.pagination');
+  });
+});
+
+describe('carousel controls — the empty-button trap', () => {
+  // `atom('Button', …)` silently drops `aria-label` (a ComponentNode carries only
+  // declared props, and Button declares none), which renders two empty circles: nothing
+  // visible, nothing announced. Pinned because it type-checks, lints and looks fine in
+  // review — it only fails for the person trying to use the site.
+  it('every control has a visible glyph AND an announceable name', () => {
+    const html = toHtml(resolveTree(featuredCarousel(), host));
+    const buttons = html.match(/<button[^>]*>.*?<\/button>/g) ?? [];
+    expect(buttons).toHaveLength(2);
+    for (const b of buttons) {
+      expect(b).toMatch(/aria-label="[^"]+"/);
+      expect(b).toContain('<svg');
+    }
   });
 });

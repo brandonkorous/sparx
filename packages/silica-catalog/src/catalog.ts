@@ -32,6 +32,18 @@ export const COMMERCE_CATALOG: CatalogGroup[] = [
         make: () => productsBlock(),
       },
       {
+        // A SEPARATE entry, not a third value on the layout control, because grid ↔ rail
+        // is a class swap and a carousel is not: it needs the behavior marker on the
+        // section plus `track`/`slide`/`prev`/`next` parts, which no amount of restyling
+        // the Products block can produce. Offering it as a layout would mean picking
+        // "carousel" gave you a rail with no controls and no explanation.
+        key: 'product_carousel',
+        label: 'Product carousel',
+        icon: 'gallery',
+        hint: 'Products a few at a time, with Previous and Next. Set how many to load on the repeat.',
+        make: () => productsBlock({ source: 'commerce.featured', layout: 'carousel' }),
+      },
+      {
         key: 'product_card',
         label: 'Product card',
         icon: 'image',

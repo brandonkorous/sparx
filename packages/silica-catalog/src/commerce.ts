@@ -28,7 +28,17 @@
 //     engine stopped resolving children once it filled an attribute binding; it
 //     recurses now. See `attr-binding.ts`.
 
-import { action, atom, behave, bind, el, repeat, type Node } from '@wizeworks/silicaui-html';
+import {
+  action,
+  atom,
+  behave,
+  bind,
+  el,
+  part,
+  repeat,
+  type ElementNode,
+  type Node,
+} from '@wizeworks/silicaui-html';
 
 import { bindAttr } from './attr-binding';
 import { visibleWhen } from './conditional';
@@ -48,7 +58,11 @@ import { PLACEHOLDER_IMAGE } from './placeholder';
  *  through `bindAttr` (silica cannot bind an attribute natively — see
  *  `attr-binding.ts`). The whole tile is the hit target, which is what a shopper
  *  expects, and a product with no url degrades to a plain, un-clickable card. */
-function productCardNode(extraClass = ''): Node {
+// Returns the concrete `ElementNode`, not the `Node` union: the card is an `<a>` and
+// always will be, and `part()` (like every marker helper) needs a node that can CARRY a
+// marker — the union includes `OutletNode`, which cannot. Widening here would force a
+// cast at every marker call site for no gain.
+function productCardNode(extraClass = ''): ElementNode {
   const base =
     'card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary';
   return bindAttr(
@@ -98,9 +112,11 @@ export type ProductsSource =
   | `commerce.category.${string}`;
 
 /** grid = a responsive multi-column grid (a shop/catalog page); rail = a horizontal
- *  snap-scrolling strip (a featured/cross-sell rail). Switchable in the editor via the
- *  normal layout controls too — the difference is only the repeat container's classes. */
-export type ProductsLayout = 'grid' | 'rail';
+ *  snap-scrolling strip (a featured/cross-sell rail); carousel = that same strip with
+ *  real Previous/Next controls and a per-view card width. grid and rail differ only in
+ *  the repeat container's classes; carousel additionally carries silica's `carousel`
+ *  behavior, so it is the one layout that is not purely a class swap. */
+export type ProductsLayout = 'grid' | 'rail' | 'carousel';
 
 export interface ProductsBlockOptions {
   source?: ProductsSource;
@@ -123,6 +139,78 @@ function railContainer() {
   });
 }
 
+/**
+ * The carousel's TRACK — the repeat container, marked as silica's `track` part so the
+ * `carousel` behavior knows what to scroll, with each card marked `slide`.
+ *
+ * HOW MANY ARE VISIBLE IS THIS, and nothing else. `limit` on the binding decides how
+ * many records LOAD; the card's basis decides how many you can see at once, and the two
+ * are deliberately different numbers — "4 at a time out of 12" is one repeat with
+ * `limit: 12` and a quarter-width slide. silicaui's own schema note says the same thing,
+ * which is reassuring given we asked for the field.
+ *
+ * The basis is a CONTAINER variant ladder — one card on a phone, three at `@2xl`, four
+ * at `@4xl` — because a fixed `w-64` rail (the plain `rail` layout) shows the same card
+ * size at every width and simply runs off the screen on a phone. Container, not viewport:
+ * the block measures the column it was dropped into, so it works in a narrow sidebar as
+ * well as full-bleed. That is also the only kind that reflows correctly on the canvas.
+ *
+ * With `gap-6` between quarter-width cards the fourth is clipped by the gaps rather than
+ * landing flush. That is left alone on purpose: the sliver of a fifth card is the
+ * affordance that says "there is more, scroll" — a carousel whose contents end exactly at
+ * the edge looks like a grid that happens not to fit.
+ */
+function carouselTrack() {
+  return part(
+    // `carousel` / `carousel-item` are the PLUGIN'S OWN component classes, not utilities.
+    // This started as `flex snap-x snap-mandatory overflow-x-auto scroll-smooth`, which is
+    // `.carousel` re-implemented by hand — the exact thing RULE #1 exists to stop. The real
+    // class also hides the scrollbar chrome (`scrollbar-width: none` + the webkit
+    // pseudo-element), which no combination of sanctioned utilities can express, and which
+    // a carousel needs: a raw scrollbar under a strip that already has Previous and Next is
+    // two competing controls for one job. Touch and trackpad swipe still work — only the
+    // chrome goes.
+    //
+    // `carousel-item` carries `flex-shrink: 0` + `scroll-snap-align: start`, so the slide
+    // only needs its per-view WIDTH. `pb-4` is gone with the scrollbar it was reserving
+    // room for.
+    el('div', 'carousel gap-6', {
+      children: [
+        part(productCardNode('carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4'), 'slide'),
+      ],
+    }),
+    'track'
+  );
+}
+
+/**
+ * One carousel control — a raw `<button>` wearing the plugin's real `btn` classes, with
+ * an `Icon` atom inside it.
+ *
+ * NOT `atom('Button', …)`, and the reason is worth stating because it looks like a
+ * RULE #1 violation and isn't. A `ComponentNode` has no `attrs`: it carries only the
+ * props its component declares, and `Button` declares no `aria-label`. Built that way
+ * these render as `<button class="btn btn-circle"></button>` — two empty circles with
+ * nothing inside and nothing for a screen reader to announce. A test below pins that,
+ * because it is invisible in review and obvious to anyone using the site.
+ *
+ * The button is still a silica button: `btn btn-circle btn-sm btn-neutral btn-outline`
+ * are the plugin's own emitted classes, so it wears the theme and responds to it. The
+ * icon carries `aria-hidden` itself, so the label is the only thing announced.
+ *
+ * `type="button"` because a carousel can legitimately sit inside a form (a filtered
+ * PLP), where the HTML default of `submit` would navigate away on the first Next click.
+ */
+function carouselControl(role: 'prev' | 'next', label: string, icon: 'arrow-left' | 'arrow-right') {
+  return part(
+    el('button', 'btn btn-circle btn-sm btn-neutral btn-outline', {
+      attrs: { type: 'button', 'aria-label': label },
+      children: [atom('Icon', 'size-4', { name: icon })],
+    }),
+    role
+  );
+}
+
 /** THE configurable product listing — one block, prop-driven. It repeats the reusable
  *  product card over the chosen `source`, laid out as a `grid` or a `rail`. The editor
  *  surfaces `source` through the data-source picker (every option is registered in
@@ -131,6 +219,37 @@ function railContainer() {
  *  so existing pages and the starter/blueprints resolve unchanged. */
 export function productsBlock(opts: ProductsBlockOptions = {}): Node {
   const { source = 'commerce.product', layout = 'grid', heading = 'Products' } = opts;
+
+  // A carousel is a different SHAPE, not a different container class: the heading shares
+  // a row with the controls, and the whole section carries the behavior. Handled first so
+  // the grid/rail path below stays the simple thing it was.
+  if (layout === 'carousel') {
+    return behave(
+      el('section', 'bg-base-100 @container px-6 py-12', {
+        children: [
+          // Controls sit BESIDE the heading rather than floating over the cards. Overlaying
+          // them would need absolute positioning and a scrim to stay legible against
+          // whatever product photo happens to be underneath — a shadow by another name, and
+          // a control whose contrast depends on the tenant's imagery is one that will be
+          // unreadable on someone's site. In the header row it is legible by construction.
+          el('div', 'mb-8 flex items-center justify-between gap-6', {
+            children: [
+              el('h2', 'text-2xl font-semibold text-base-content', { text: heading }),
+              el('div', 'flex gap-2', {
+                children: [
+                  carouselControl('prev', 'Previous products', 'arrow-left'),
+                  carouselControl('next', 'Next products', 'arrow-right'),
+                ],
+              }),
+            ],
+          }),
+          repeat(carouselTrack(), source),
+        ],
+      }),
+      { type: 'carousel' }
+    );
+  }
+
   const children: Node[] = [
     el('h2', 'mb-8 text-2xl font-semibold text-base-content', { text: heading }),
     repeat(layout === 'rail' ? railContainer() : gridContainer(), source),
@@ -168,6 +287,16 @@ export function productGrid(): Node {
  *  curated few, never the entire catalog. */
 export function featuredProducts(): Node {
   return productsBlock({ source: 'commerce.featured', layout: 'rail', heading: 'Featured' });
+}
+
+/** A CAROUSEL of featured products — the same bounded source as `featuredProducts`, shown
+ *  a few at a time with Previous/Next controls instead of a bare scroll strip. The
+ *  separate preset exists because a rail and a carousel are different promises to a
+ *  shopper: a rail says "swipe if you like", a carousel says "there is more, here is how
+ *  to reach it". An author who wants a different count sets `limit` on the repeat in the
+ *  editor — the block deliberately hard-codes neither. */
+export function featuredCarousel(): Node {
+  return productsBlock({ source: 'commerce.featured', layout: 'carousel', heading: 'Featured' });
 }
 
 /** The Add-to-cart FORM — the buy box's interactive half.
