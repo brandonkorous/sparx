@@ -1,0 +1,70 @@
+# Marketplace theme PURGE Job — applied by
+# .github/workflows/marketplace-purge-themes.yml after the api-rest image (with the
+# purge script baked in) is built + pushed. The workflow substitutes ${IMAGE} and
+# ${RUN_ID} via `envsubst` before apply.
+#
+# Mirrors marketplace-purge-blueprints-job.yaml: it runs the same api-rest image as the
+# `sparx-app` workload SA and hydrates from the same sparx-app-env + sparx-app-secrets
+# the live api-rest pods use — so it gets DATABASE_URL (in-cluster PgBouncer) AND
+# GCS_MEDIA_BUCKET / MEDIA_PUBLIC_URL, deleting the Sparx-core theme rows AND the theme
+# artifacts/card-images from the SAME object storage the runtime reads from. The script
+# clears tenant context (withSystem) to delete the Sparx-core rows.
+#
+# Destructive: removes the entire first-party marketplace theme catalog (all versions).
+# Gated behind a typed confirmation in the workflow. The Job name includes ${RUN_ID} so
+# each run is a fresh (immutable) Job; a 1h TTL cleans up completed Jobs.
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: marketplace-purge-themes-${RUN_ID}
+  namespace: sparx-prod
+  labels:
+    app.kubernetes.io/name: marketplace-purge-themes
+    app.kubernetes.io/part-of: sparx
+    app.kubernetes.io/component: purge
+spec:
+  ttlSecondsAfterFinished: 3600
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: marketplace-purge-themes
+    spec:
+      serviceAccountName: sparx-app
+      restartPolicy: Never
+      containers:
+        - name: purge
+          image: ${IMAGE}
+          imagePullPolicy: IfNotPresent
+          # Override the server ENTRYPOINT (node … src/index.ts). WORKDIR in the
+          # image is /app/services/api-rest, so this relative path resolves.
+          command: ['node', '--import', 'tsx', 'src/scripts/marketplace-purge-themes.ts']
+          envFrom:
+            - configMapRef:
+                name: sparx-app-env
+            - secretRef:
+                name: sparx-app-secrets
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: marketplace-purge-themes
+            - name: LOG_LEVEL
+              value: info
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: '200m'
+              memory: '512Mi'
+            limits:
+              cpu: '1000m'
+              memory: '1Gi'

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-boutique",
+  "name": "sparx — Boutique",
+  "version": "1.0.0",
+  "tagline": "A complete multi-module starter in the Boutique look — for small fashion retail.",
+  "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Boutique look, tuned for small fashion retail. Install it, make it yours, and launch a polished working site in minutes.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "industry": "Boutique"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Boutique icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Boutique — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#1a0e0f",
+  "sortWeight": 90
+}

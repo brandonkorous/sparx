@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-signal",
+  "name": "sparx — Signal",
+  "version": "1.0.0",
+  "tagline": "A complete multi-module starter in the Signal look — for software, apps, and subscriptions.",
+  "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Signal look, tuned for software, apps, and subscriptions. Install it, make it yours, and launch a polished working site in minutes.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Signal"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Signal icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Signal — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#3f40c4",
+  "sortWeight": 71
+}

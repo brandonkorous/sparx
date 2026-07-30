@@ -1,0 +1,90 @@
+{
+  "version": "1",
+  "subject": "Welcome to {{site.name}}",
+  "preheader": "Thanks for joining — here’s where to start.",
+  "root": {
+    "id": "def-s-body-1019",
+    "kind": "body",
+    "width": 600,
+    "bg": "#f4f4f5",
+    "bgAuto": true,
+    "contentBg": "#ffffff",
+    "contentBgAuto": true,
+    "fontFamily": "Arial, Helvetica, sans-serif",
+    "colorScheme": "light dark",
+    "children": [
+      {
+        "id": "def-s-section-1018",
+        "kind": "section",
+        "bg": "#ffffff",
+        "bgAuto": true,
+        "paddingX": 24,
+        "paddingY": 24,
+        "children": [
+          {
+            "id": "def-s-text-1011",
+            "kind": "text",
+            "html": "Welcome, {{customer.firstName}}",
+            "align": "left",
+            "color": "#18181b",
+            "colorAuto": true,
+            "fontSize": 28,
+            "fontWeight": "bold",
+            "lineHeight": 36
+          },
+          {
+            "id": "def-s-spacer-1012",
+            "kind": "spacer",
+            "height": 10
+          },
+          {
+            "id": "def-s-text-1013",
+            "kind": "text",
+            "html": "Thanks for joining {{site.name}} — we’re glad you’re here.",
+            "align": "left",
+            "color": "#18181b",
+            "colorAuto": true,
+            "fontSize": 16,
+            "fontWeight": "normal",
+            "lineHeight": 26
+          },
+          {
+            "id": "def-s-spacer-1014",
+            "kind": "spacer",
+            "height": 14
+          },
+          {
+            "id": "def-s-text-1015",
+            "kind": "text",
+            "html": "Browse the shop, read the journal, or book a time with us whenever you’re ready.",
+            "align": "left",
+            "color": "#18181b",
+            "colorAuto": true,
+            "fontSize": 16,
+            "fontWeight": "normal",
+            "lineHeight": 26
+          },
+          {
+            "id": "def-s-spacer-1016",
+            "kind": "spacer",
+            "height": 22
+          },
+          {
+            "id": "def-s-button-1017",
+            "kind": "button",
+            "label": "Start exploring",
+            "href": "{{site.url}}",
+            "bg": "#111827",
+            "bgAuto": true,
+            "color": "#ffffff",
+            "colorAuto": true,
+            "radius": 6,
+            "align": "left",
+            "paddingX": 24,
+            "paddingY": 12
+          }
+        ]
+      }
+    ]
+  }
+}

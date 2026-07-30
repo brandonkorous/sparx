@@ -1,0 +1,90 @@
+{
+  "version": "1",
+  "subject": "A few places to start at {{site.name}}",
+  "preheader": "Three easy first steps, whenever you’re ready.",
+  "root": {
+    "id": "def-s2-body-2019",
+    "kind": "body",
+    "width": 600,
+    "bg": "#f4f4f5",
+    "bgAuto": true,
+    "contentBg": "#ffffff",
+    "contentBgAuto": true,
+    "fontFamily": "Arial, Helvetica, sans-serif",
+    "colorScheme": "light dark",
+    "children": [
+      {
+        "id": "def-s2-section-2018",
+        "kind": "section",
+        "bg": "#ffffff",
+        "bgAuto": true,
+        "paddingX": 24,
+        "paddingY": 24,
+        "children": [
+          {
+            "id": "def-s2-text-2011",
+            "kind": "text",
+            "html": "Settling in, {{customer.firstName}}?",
+            "align": "left",
+            "color": "#18181b",
+            "colorAuto": true,
+            "fontSize": 28,
+            "fontWeight": "bold",
+            "lineHeight": 36
+          },
+          {
+            "id": "def-s2-spacer-2012",
+            "kind": "spacer",
+            "height": 10
+          },
+          {
+            "id": "def-s2-text-2013",
+            "kind": "text",
+            "html": "A few days in, here are three easy places to start at {{site.name}}.",
+            "align": "left",
+            "color": "#18181b",
+            "colorAuto": true,
+            "fontSize": 16,
+            "fontWeight": "normal",
+            "lineHeight": 26
+          },
+          {
+            "id": "def-s2-spacer-2014",
+            "kind": "spacer",
+            "height": 14
+          },
+          {
+            "id": "def-s2-text-2015",
+            "kind": "text",
+            "html": "Find a favorite in the shop, read a piece from the journal, or book a time with us — no rush, whenever suits you.",
+            "align": "left",
+            "color": "#18181b",
+            "colorAuto": true,
+            "fontSize": 16,
+            "fontWeight": "normal",
+            "lineHeight": 26
+          },
+          {
+            "id": "def-s2-spacer-2016",
+            "kind": "spacer",
+            "height": 22
+          },
+          {
+            "id": "def-s2-button-2017",
+            "kind": "button",
+            "label": "Visit the shop",
+            "href": "{{site.url}}",
+            "bg": "#111827",
+            "bgAuto": true,
+            "color": "#ffffff",
+            "colorAuto": true,
+            "radius": 6,
+            "align": "left",
+            "paddingX": 24,
+            "paddingY": 12
+          }
+        ]
+      }
+    ]
+  }
+}

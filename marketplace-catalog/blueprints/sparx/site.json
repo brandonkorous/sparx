@@ -402,7 +402,7 @@
             "ord": "a0",
             "tag": "section",
             "kind": "element",
-            "class": "bg-base-100 @container",
+            "class": "bg-primary text-primary-content @container",
             "children": [
               {
                 "id": "f180b4dc-b6eb-4504-878b-ebb6080e2095",
@@ -423,7 +423,7 @@
                         "ord": "a0",
                         "tag": "h1",
                         "kind": "element",
-                        "class": "text-4xl @3xl:text-5xl font-semibold text-base-content leading-tight sui-animate-slide-up",
+                        "class": "text-4xl @3xl:text-5xl font-semibold text-primary-content leading-tight sui-animate-slide-up",
                         "children": ["Build it. Sell it. Grow it. All in one place."]
                       },
                       {
@@ -431,7 +431,7 @@
                         "ord": "a1",
                         "tag": "p",
                         "kind": "element",
-                        "class": "text-lg text-base-content sui-animate-slide-up sui-delay-1",
+                        "class": "text-lg text-primary-content sui-animate-slide-up sui-delay-1",
                         "children": [
                           "sparx brings your site, your store, your content, and your customers together — so you can run the whole business from one place. This is a starter you can make entirely your own."
                         ]
@@ -451,7 +451,7 @@
                             "attrs": {
                               "href": "/shop"
                             },
-                            "class": "btn btn-primary btn-lg",
+                            "class": "btn btn-neutral btn-lg",
                             "children": ["Browse the shop"]
                           },
                           {
@@ -460,10 +460,10 @@
                             "tag": "a",
                             "kind": "element",
                             "attrs": {
-                              "href": "/book"
+                              "href": "/blog"
                             },
                             "class": "btn btn-ghost btn-lg",
-                            "children": ["Book a call"]
+                            "children": ["Read the journal"]
                           }
                         ]
                       }
@@ -482,8 +482,8 @@
                         "tag": "img",
                         "kind": "element",
                         "attrs": {
-                          "alt": "A bright independent shop ready for customers",
-                          "src": "https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1200&q=80",
+                          "alt": "A laptop and notebook on a desk, planning a launch",
+                          "src": "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=80",
                           "loading": "lazy"
                         },
                         "class": "w-full h-full object-cover"
@@ -541,7 +541,8 @@
                     "tag": "div",
                     "data": {
                       "ref": "commerce.featured",
-                      "kind": "collection"
+                      "kind": "collection",
+                      "limit": 4
                     },
                     "kind": "element",
                     "class": "grid grid-cols-2 gap-6 @2xl:grid-cols-3 @4xl:grid-cols-4",
@@ -644,8 +645,158 @@
             ]
           },
           {
-            "id": "948ab467-7320-41a0-8d04-faa66af2e898",
+            "id": "96a9ef06-50f9-4b0a-870a-2daafaba58b9",
             "ord": "a2",
+            "tag": "section",
+            "kind": "element",
+            "class": "bg-base-200 @container",
+            "children": [
+              {
+                "id": "99ff0709-bc10-475a-acc7-3dfd362cc621",
+                "ord": "a0",
+                "tag": "div",
+                "kind": "element",
+                "class": "max-w-6xl mx-auto px-6 py-16",
+                "children": [
+                  {
+                    "id": "a85a0344-0317-4c02-b239-e043a95e383c",
+                    "ord": "a0",
+                    "tag": "div",
+                    "kind": "element",
+                    "class": "flex flex-col gap-2 mb-8",
+                    "children": [
+                      {
+                        "id": "005635a5-1ba2-4e6f-8721-0b53cdc578fc",
+                        "ord": "a0",
+                        "tag": "h2",
+                        "kind": "element",
+                        "class": "text-3xl @2xl:text-4xl font-semibold text-base-content",
+                        "children": ["From the journal"]
+                      },
+                      {
+                        "id": "f197eb77-e20a-45eb-aed1-703037cd0389",
+                        "ord": "a1",
+                        "tag": "p",
+                        "kind": "element",
+                        "class": "text-base-content",
+                        "children": ["Notes on building, selling, and growing online."]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "8fc06f5a-9e3c-409f-af20-d1878700130f",
+                    "ord": "a1",
+                    "tag": "div",
+                    "data": {
+                      "ref": "cms.blog_post",
+                      "kind": "collection"
+                    },
+                    "kind": "element",
+                    "class": "grid grid-cols-1 gap-6 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "id": "51080b15-2819-45d1-87a1-9ef2ea1fe975",
+                        "ord": "a0",
+                        "tag": "a",
+                        "kind": "element",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary",
+                        "children": [
+                          {
+                            "id": "bbba2d3e-20d2-4292-be37-7a7e521af587",
+                            "ord": "a0",
+                            "tag": "input",
+                            "data": {
+                              "ref": "url",
+                              "kind": "value"
+                            },
+                            "kind": "element",
+                            "attrs": {
+                              "name": "__sui-attr:href",
+                              "type": "hidden"
+                            }
+                          },
+                          {
+                            "id": "dab65a11-7edb-40ed-9e17-0532d4942b84",
+                            "ord": "a1",
+                            "data": {
+                              "ref": "featuredImage",
+                              "kind": "value"
+                            },
+                            "kind": "component",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "alt": "",
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='225'><rect width='400' height='225' fill='%23eef2f7'/></svg>"
+                            },
+                            "component": "Image"
+                          },
+                          {
+                            "id": "fe3dd0ac-0dab-42f0-8f64-1390066f9ec7",
+                            "ord": "a2",
+                            "tag": "span",
+                            "data": {
+                              "ref": "date",
+                              "kind": "value"
+                            },
+                            "kind": "element",
+                            "class": "text-sm font-semibold text-primary",
+                            "children": ["Published date"]
+                          },
+                          {
+                            "id": "12f2bb76-9be9-4d70-b3fd-5d9ab5831c4c",
+                            "ord": "a3",
+                            "tag": "h3",
+                            "data": {
+                              "ref": "title",
+                              "kind": "value"
+                            },
+                            "kind": "element",
+                            "class": "text-xl font-bold leading-snug text-base-content",
+                            "children": ["Post title"]
+                          },
+                          {
+                            "id": "6ef00175-9702-4d8b-ab15-cdbca81452a8",
+                            "ord": "a4",
+                            "tag": "p",
+                            "data": {
+                              "ref": "excerpt",
+                              "kind": "value"
+                            },
+                            "kind": "element",
+                            "class": "text-base text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."]
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "id": "00898838-895c-43de-a724-9cb086ee3f3c",
+                    "ord": "a2",
+                    "tag": "div",
+                    "kind": "element",
+                    "class": "mt-8",
+                    "children": [
+                      {
+                        "id": "7d66cb92-b79f-41cb-9859-cd810be5b6c9",
+                        "ord": "a0",
+                        "tag": "a",
+                        "kind": "element",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "class": "btn btn-ghost",
+                        "children": ["Read the journal"]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": "948ab467-7320-41a0-8d04-faa66af2e898",
+            "ord": "a3",
             "tag": "section",
             "kind": "element",
             "class": "@container bg-base-100",
@@ -837,156 +988,6 @@
                           "loading": "lazy"
                         },
                         "class": "w-full h-full object-cover"
-                      }
-                    ]
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "id": "96a9ef06-50f9-4b0a-870a-2daafaba58b9",
-            "ord": "a3",
-            "tag": "section",
-            "kind": "element",
-            "class": "bg-base-200 @container",
-            "children": [
-              {
-                "id": "99ff0709-bc10-475a-acc7-3dfd362cc621",
-                "ord": "a0",
-                "tag": "div",
-                "kind": "element",
-                "class": "max-w-5xl mx-auto px-6 py-16",
-                "children": [
-                  {
-                    "id": "a85a0344-0317-4c02-b239-e043a95e383c",
-                    "ord": "a0",
-                    "tag": "div",
-                    "kind": "element",
-                    "class": "flex flex-col gap-2 mb-8",
-                    "children": [
-                      {
-                        "id": "005635a5-1ba2-4e6f-8721-0b53cdc578fc",
-                        "ord": "a0",
-                        "tag": "h2",
-                        "kind": "element",
-                        "class": "text-3xl @2xl:text-4xl font-semibold text-base-content",
-                        "children": ["From the journal"]
-                      },
-                      {
-                        "id": "f197eb77-e20a-45eb-aed1-703037cd0389",
-                        "ord": "a1",
-                        "tag": "p",
-                        "kind": "element",
-                        "class": "text-base-content",
-                        "children": ["Notes on building, selling, and growing online."]
-                      }
-                    ]
-                  },
-                  {
-                    "id": "8fc06f5a-9e3c-409f-af20-d1878700130f",
-                    "ord": "a1",
-                    "tag": "div",
-                    "data": {
-                      "ref": "cms.blog_post",
-                      "kind": "collection"
-                    },
-                    "kind": "element",
-                    "class": "grid grid-cols-1 gap-6 @2xl:grid-cols-3",
-                    "children": [
-                      {
-                        "id": "51080b15-2819-45d1-87a1-9ef2ea1fe975",
-                        "ord": "a0",
-                        "tag": "a",
-                        "kind": "element",
-                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary",
-                        "children": [
-                          {
-                            "id": "bbba2d3e-20d2-4292-be37-7a7e521af587",
-                            "ord": "a0",
-                            "tag": "input",
-                            "data": {
-                              "ref": "url",
-                              "kind": "value"
-                            },
-                            "kind": "element",
-                            "attrs": {
-                              "name": "__sui-attr:href",
-                              "type": "hidden"
-                            }
-                          },
-                          {
-                            "id": "dab65a11-7edb-40ed-9e17-0532d4942b84",
-                            "ord": "a1",
-                            "data": {
-                              "ref": "featuredImage",
-                              "kind": "value"
-                            },
-                            "kind": "component",
-                            "class": "aspect-video w-full rounded-box object-cover",
-                            "props": {
-                              "alt": "",
-                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='225'><rect width='400' height='225' fill='%23eef2f7'/></svg>"
-                            },
-                            "component": "Image"
-                          },
-                          {
-                            "id": "fe3dd0ac-0dab-42f0-8f64-1390066f9ec7",
-                            "ord": "a2",
-                            "tag": "span",
-                            "data": {
-                              "ref": "date",
-                              "kind": "value"
-                            },
-                            "kind": "element",
-                            "class": "text-sm font-semibold text-primary",
-                            "children": ["Published date"]
-                          },
-                          {
-                            "id": "12f2bb76-9be9-4d70-b3fd-5d9ab5831c4c",
-                            "ord": "a3",
-                            "tag": "h3",
-                            "data": {
-                              "ref": "title",
-                              "kind": "value"
-                            },
-                            "kind": "element",
-                            "class": "text-xl font-bold leading-snug text-base-content",
-                            "children": ["Post title"]
-                          },
-                          {
-                            "id": "6ef00175-9702-4d8b-ab15-cdbca81452a8",
-                            "ord": "a4",
-                            "tag": "p",
-                            "data": {
-                              "ref": "excerpt",
-                              "kind": "value"
-                            },
-                            "kind": "element",
-                            "class": "text-base text-base-content",
-                            "children": ["The short summary of this post, written in the CMS."]
-                          }
-                        ]
-                      }
-                    ]
-                  },
-                  {
-                    "id": "00898838-895c-43de-a724-9cb086ee3f3c",
-                    "ord": "a2",
-                    "tag": "div",
-                    "kind": "element",
-                    "class": "mt-8",
-                    "children": [
-                      {
-                        "id": "7d66cb92-b79f-41cb-9859-cd810be5b6c9",
-                        "ord": "a0",
-                        "tag": "a",
-                        "kind": "element",
-                        "attrs": {
-                          "href": "/blog"
-                        },
-                        "class": "btn btn-ghost",
-                        "children": ["Read the journal"]
                       }
                     ]
                   }

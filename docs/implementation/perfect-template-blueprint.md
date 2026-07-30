@@ -9,16 +9,30 @@ Last Updated: 2026-07-28
 
 > ## ▶ RESUME HERE
 >
-> **STATUS (2026-07-28, session 7): BRANDON SIGNED OFF → THE BUNDLE IS BUILT + INGESTS.**
-> `marketplace-catalog/blueprints/sparx/` is authored + captured from the live Template, passes
-> `safeParseBlueprint`, AND ingests clean locally (`marketplace:ingest` → `wrote blueprints/sparx@1.0.0`):
-> 7 pages · frame · Ember theme · 6 products + `goods` category + `bestsellers` collection · 9 image
-> assets · 3 journal posts · 1 welcome email · `icon.png` (sparx spark 512) · `preview.png` (1600×1000
-> live-home shot). `preview.png` was captured with `npx playwright screenshot --channel=chrome` (drives
-> the system Chrome — sidesteps the un-exposed Playwright MCP + the un-cached playwright browser). See
-> the session-7 Log entry for the full mechanics. **REMAINING (optional, live-verify):** install on a
-> tenant (`POST /v1/blueprints/sparx/install` → `.../go-live`) + eyeball; commit the bundle; prod ingest
-> runs via `marketplace-ingest.yml`.
+> **STATUS (2026-07-29, session 9): THEMING SPINE + 20 THEMED CLONES BUILT (uncommitted).**
+> `site.theme` is now the single source of the look for storefront AND email, the golden `sparx`
+> template is the default new site, and the marketplace ships **21 blueprints** = golden `sparx`
+> (Ember) + **20 themed clones** `sparx-<name>` (one per `SPARX_THEMES` silica preset). The old 10
+> `DataThemePreset` marketplace themes are RETIRED. All built + gate-clean + locally ingested;
+> UNCOMMITTED in the working tree (see the session-9 Log entry). **Remaining (gated on Brandon's
+> stack smoke-test of storefront/email/onboarding): the staged legacy `--st-*` sweep + the brand→silica
+> backfill migration + themed `preview.png` per clone + the prod purge/ingest triggers.** Full detail:
+> [[active_theming_spine_golden_default]] memory + the session-9 Log entry below.
+>
+> **STATUS (2026-07-29, session 8): BUNDLE IS COMMITTED + LIVE IN PROD MARKETPLACE.**
+> `marketplace-catalog/blueprints/sparx/` is committed to main (commit `d839df26`) and now
+> **published to the prod catalog**: ran **Marketplace Purge Blueprints** (dropped the 5 orphan
+> first-party blueprints `farm-fresh`/`farm-fresh-bowls`/`mosaic`/`forge`/`tempo`) then **Marketplace
+> Ingest** (`wrote blueprints/sparx@1.1.0`; `done: 1 written, 21 total` — the 10 components + 10 themes
+> `skip`-ped as pre-existing; both `workflow_dispatch` Jobs completed successfully 2026-07-29). Prod
+> **blueprints** catalog = just `sparx@1.1.0`. It appears in `/marketplace` + `/v1/blueprints`
+> immediately (runtime is DB-first). NOTE: prod shipped **v1.1.0** (sparx.json was bumped from the
+> session-7 v1.0.0). The bundle = 7 pages · frame · Ember theme · 6 products + `goods` category +
+> `bestsellers` collection · 9 image assets · 3 journal posts · 1 welcome email · `icon.png` (sparx
+> spark 512) · `preview.png` (1600×1000 live-home shot).
+>
+> **REMAINING (optional, live-verify):** install on a tenant (`POST /v1/blueprints/sparx/install` →
+> `.../go-live`) + eyeball a fresh install end-to-end.
 >
 > Earlier (session 6b): storefront fully on silica; CART-IMG + hero animation live; the missing-`to`
 > transactional-email bug FIXED + VERIFIED; the non-primary-site email-logo bug FIXED (still needs an
@@ -499,6 +513,45 @@ self-indexes).
 
 ## Log
 
+- **2026-07-29 (session 9 — theming spine + 20 themed clones)** — Made `site.theme` the
+  SINGLE source of the look for storefront **and** transactional email (OKLCH→hex per send is a
+  format conversion of one source, not a second source), the golden `sparx` template the default
+  new site, and `brand` identity-only. **Foundation:** `colorToHex()` in
+  `packages/site-themes/src/v2/color.ts`; `resolveSparxTheme()` + `BASE_SILICA_THEME` in
+  `packages/silica-catalog/src/` (turn a raw silica `Theme` into the flat 34-light/25-dark
+  ship-ready bag). **Phase 1 (storefront):** `apps/site/app/layout.tsx` always resolves a concrete
+  silica theme (base-theme fallback for the previously-unthemed case); non-regressing. **Phase 2
+  (email):** `packages/email-platform/src/services/brand-service.ts` reads the send property's
+  `builder_site.silicaPublishedTheme` → BrandTokens via `colorToHex`, identity still from brand.
+  **Phase 3 (onboarding):** nothing default-on; the blueprint gallery no longer module-filters
+  (template ⊥ modules); the default blueprint choice is golden. **Phase 4 (20 clones):** new
+  generator `marketplace-catalog/_gen/gen-sparx-themed.ts` reads `SPARX_THEMES` + the golden bundle
+  and emits `blueprints/sparx-<name>/` for all 20 themes (same content/commerce/emails; only
+  `site.theme` + `brand` + `theme` differ). All 20 pass `safeParseBlueprint`; local ingest wrote
+  **21 blueprints** (golden `sparx@1.1.0` + 20 clones@1.0.0), catalog verified. **Phase 5a/5b (old
+  themes retired):** deleted `marketplace-catalog/themes/` (10 dirs) + `_src/themes.ts` +
+  `_gen/gen-theme-bundles.ts` (zero code consumers — only the deleted generator + docs referenced
+  them); added the themes-purge trio (`marketplace-purge-themes.ts` + `marketplace:purge-themes`
+  script + `.github/workflows/marketplace-purge-themes.yml` + `k8s/sparx-prod/marketplace-purge-themes-job.yaml`),
+  ran it locally (16 orphan rows cleared → **0 themes, 21 blueprints** locally). api-rest
+  typechecks, changed files lint clean. **Uncommitted** — Brandon commits. **Gated on Brandon's
+  stack smoke-test** (storefront themed light/dark, a themed transactional email, onboarding
+  modules-all-off + golden pre-selected): the staged legacy `--st-*` / brand-derived-look sweep,
+  the brand→silica backfill migration (option A), themed `preview.png` per clone (each currently
+  ships golden's placeholder), and the prod **Marketplace Purge Themes** + **Marketplace Ingest**
+  triggers.
+- **2026-07-30 (cont. — landing-page content↔commerce parity)** — Brandon flagged the golden home
+  read as a commerce-only "product landing page" (the above-the-fold / preview.png is hero + retail
+  photo + "From the shop"; the bound "From the journal" CMS strip was buried below the features
+  section). Rebalanced golden `site.json` home + regenerated all 20 clones: hero image →
+  neutral workspace + hero secondary CTA → "Read the journal" (`/blog`) so the hero surfaces shop AND
+  journal; reordered "From the journal" up to section #2 (order: hero→shop→journal→features→more-ways→cta).
+  Kept the real bound grids (`commerce.featured`, `cms.blog_post`). A single big "featured story" card
+  isn't cleanly supported on a non-collection home (the binding yields an array, no clean latest-one
+  object), so parity is via placement + hero, not a featured-single card. Golden bumped 1.1.0→**1.2.0**
+  (so the prod re-ingest picks up the new payload); all 21 pass `safeParseBlueprint`; local re-ingested.
+  NOT pushed to the live Template yet (publishing a public site needs Brandon's OK); clone `preview.png`s
+  are stale (→ Phase 6).
 - **2026-07-24** — Scoped the effort; user confirmed all-modules + ship-theme; chose
   sparx-branded vertical-neutral identity. Unpublished 3 off-brand SaaS posts. Set the
   sparx Ember theme (draft). Wrote this doc.
@@ -730,6 +783,14 @@ processed` (no schema-drop), confirming the `to` fix end-to-end. Brandon flagged
   `gen-farm-fresh`/`marketplace-templates/blueprint` refs remain. **⬜ PROD (Brandon triggers):**
   those 5 orphans are likely in the prod catalog too — run the gated `marketplace-purge-blueprints.yml`
   workflow (typed confirmation), then the ingest workflow re-runs on merge → prod = just `sparx`.
+- **2026-07-29 (session 8 — PUBLISHED TO PROD).** Brandon: "i don't see it in prod." Root cause:
+  the bundle was committed to main (`d839df26`) but `marketplace-ingest.yml` is `workflow_dispatch`
+  only and had not run since 2026-07-03 (bundle landed 2026-07-28), so prod storage + catalog were
+  never populated. No bootstrap needed — both ingest + purge are self-contained Jobs (build their own
+  api-rest image with `marketplace-catalog/` baked in; don't touch secrets/pods). Per Brandon's choice
+  ("purge orphans, then ingest"): ran **Marketplace Purge Blueprints** (`confirm=purge-blueprints`,
+  success — dropped the 5 orphan first-party blueprints) then **Marketplace Ingest** (success —
+  `wrote blueprints/sparx@1.1.0`, `1 written, 21 total`). Prod blueprints catalog = just `sparx@1.1.0`.
 - **NEXT SESSION STARTS HERE:** (1) After the next api-rest deploy, **re-book on the Template →
   confirm the confirmation email now shows the TEMPLATE logo** (the `to` fix is already verified).
   (2) Optional: build the `patch_silica_node` MCP tool (granular node patch vs full-page replace).

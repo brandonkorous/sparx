@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-academy",
+  "name": "sparx — Academy",
+  "version": "1.0.0",
+  "tagline": "A complete multi-module starter in the Academy look — for schools, tutoring, and training providers.",
+  "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Academy look, tuned for schools, tutoring, and training providers. Install it, make it yours, and launch a polished working site in minutes.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "services",
+    "industry": "Academy"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Academy icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Academy — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#751e26",
+  "sortWeight": 76
+}
