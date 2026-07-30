@@ -151,14 +151,21 @@ Tenants that existed before this shipped — plus anything published while the s
 exist yet, since a Pub/Sub subscription only receives what is published after it is created — get
 onto the board through the `platform-crm-backfill` Cloud Run **job**:
 
-```bash
-# Dry run: reports what it would touch, writes nothing.
-gcloud run jobs execute platform-crm-backfill --region us-central1 --wait
+Run it through the **Platform CRM Backfill** workflow — `workflow_dispatch` only, with a `mode`
+input that defaults to `dry-run`:
 
-# For real (execution-time override; the safe default stays in Terraform state).
-gcloud run jobs execute platform-crm-backfill --region us-central1 --wait \
-  --args=--import,tsx,scripts/backfill-tenants.ts,--apply
+```bash
+gh workflow run platform-crm-backfill.yml -f mode=dry-run   # reports; writes nothing
+gh workflow run platform-crm-backfill.yml -f mode=apply     # performs the backfill
 ```
+
+Not a laptop command, for the same reason migrations aren't: the workflow authenticates via
+Workload Identity Federation (no personal credentials), leaves a run record, and streams the
+execution's logs into it. `apply` overrides the job's container args for that execution only, so
+the dry-run-by-default stays in Terraform state and choosing `apply` never causes drift.
+
+The job runs the `:latest` worker image — **ship the worker before backfilling**, or you are
+backfilling with stale code.
 
 **Why a job and not a `packages/db` backfill.** Cloud SQL is private-IP, so a backfill has to run
 inside the VPC — which is exactly why the db-migrate Job exists and why `RUN_BACKFILL=true` lives
@@ -182,6 +189,7 @@ deal rather than duplicating them.
 | `DATABASE_URL`               | Secret Manager (`database-url-cloudrun`)         | Required — every message reads and writes     |
 | Subscriptions                | `terraform/envs/prod/serverless.tf`              | One primary + four `additional_subscriptions` |
 | Backfill job                 | `google_cloud_run_v2_job.platform_crm_backfill`  | Dry-run by default; `--apply` to write        |
+| Backfill trigger             | `.github/workflows/platform-crm-backfill.yml`    | `workflow_dispatch`, `mode=dry-run \| apply`  |
 
 ## 9. Decisions
 
