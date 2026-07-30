@@ -1,18 +1,21 @@
-# 139 — silicaui-builder: the asks (1–13 ANSWERED; §14–§15 OPEN)
+# 139 — silicaui-builder: the asks (ALL 15 ANSWERED)
 
-**Version:** 2.6.0
+**Version:** 3.0.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-29
+**Last Updated:** 2026-07-30
 
-> ## ⚑ §14 AND §15 ARE OPEN (raised 2026-07-29 against `0.40.0`)
+> ## ⚑ NOTHING IS OPEN. All fifteen asks are answered and adopted.
 >
-> - **[§14 — a STATUS BAR slot](#14--a-status-bar-slot-for-the-state-that-isnt-toolbar-chrome)** — the
->   footer is where state belongs, and §13's header slot made that obvious rather than settling it.
-> - **[§15 — `setActiveTree('frame')` doesn't move the mode toggle](#15--setactivetreeframe-moves-the-spine-but-not-the-mode-toggle)** —
->   a small correctness bug; the symbol case already self-corrects and the frame case doesn't.
+> | §    | Raised     | Shipped in    | As                                                              |
+> | ---- | ---------- | ------------- | --------------------------------------------------------------- |
+> | 1–11 | 2026-07-28 | `0.36`/`0.37` | see the table below                                             |
+> | 12   | 2026-07-29 | `0.38.0`      | `limit` on a collection binding + `applyCollectionLimit`        |
+> | 13   | 2026-07-29 | `0.40.0`      | `toolbarStatusSlot`                                             |
+> | 14   | 2026-07-29 | `0.41.0`      | `statusBarSlot` — and it SUPERSEDES §13 for sparx's use         |
+> | 15   | 2026-07-29 | `0.41.0`      | mode follows `activeTree`; `select()` returns whether it landed |
 >
-> **§13 shipped in `0.40.0`** as `toolbarStatusSlot`, adopted the same day. §12 shipped in
-> `0.38.0`, also the day it was raised; 1–11 in `0.36.0`/`0.37.0`.
+> Turnaround on the last four was same-day or next-morning. This file is now the RECORD of the
+> asks and their resolutions, not a to-do list.
 
 > ## ⚑ ALL ELEVEN WERE ANSWERED AND SHIPPED IN `0.36.0` (2026-07-28)
 >
@@ -66,12 +69,15 @@
 > answer a _different_ host — a CMS, an email tool, a static-site generator — could implement and
 > get the same builder from. If an answer only fits sparx, it belongs in the host, not the engine.
 
-**Originally verified against** `0.35.0`, the version pinned when these were written. **Resolved in
-`0.36.0`, with §3 and §5 extended in `0.37.0` and §12 in `0.38.0`** — which is what
-`pnpm-workspace.yaml` now pins. Every resolution in the table above was confirmed by reading the
-shipped `.d.ts` and bundle, not the changelog, and each bump was diffed against the installed tree
-before the catalog was moved — including the plugin CSS, since §9 is the standing proof that a
-patch release can repaint live tenant sites.
+**Originally verified against** `0.35.0`, the version pinned when these were written. **Resolved
+across `0.36.0` → `0.41.0`**; `pnpm-workspace.yaml` pins **`^0.41.0`** across all eleven family
+packages.
+
+Every resolution in both tables was confirmed by reading the shipped `.d.ts` and bundle, **not the
+changelog**, and each bump was diffed against the installed tree before the catalog was moved —
+including the plugin CSS `src`, since §9 is the standing proof that a patch release can repaint
+live tenant sites. `0.38 → 0.40 → 0.41` were each byte-identical there, and `silicaui-html` was
+unchanged in full from `0.40` to `0.41`. **Keep doing this on every bump.**
 
 ---
 
@@ -553,7 +559,14 @@ status. None of it names a domain concept.
 
 ## 14 — A STATUS BAR slot, for the state that isn't toolbar chrome
 
-**Status: OPEN, raised 2026-07-29 against `0.40.0`.**
+**Status: ANSWERED — shipped in `0.41.0` as `statusBarSlot`, next morning.** Adopted in
+`studio-surface.tsx`, and it **replaced** §13's slot rather than joining it: sparx passes no
+`toolbarStatusSlot` at all now. Splitting the presence pill from the saved/unsaved badge across
+two floors would have put the session's state in two places with neither of them complete.
+
+silicaui's own doc for the slot makes the same argument this section does, and states the
+non-interactive rule more strictly than the header's — "the strip is 28px tall, and the engine's
+own children are plain text" — so the live-sync Reload BUTTON stays in `toolbarSlot`.
 
 ### The ask
 
@@ -615,8 +628,23 @@ that has any state at all currently has nowhere honest to put it.
 
 ## 15 — `setActiveTree('frame')` moves the spine but not the mode toggle
 
-**Status: OPEN, raised 2026-07-29 against `0.40.0`. Small, and a correctness bug rather than a
-capability ask.**
+**Status: ANSWERED — shipped in `0.41.0`, next morning. Both halves, including the aside.**
+
+The mode now follows the tree, as one effect mirroring the symbol case:
+
+```js
+if (activeTree === 'frame' && mode !== 'layout') setMode('layout');
+```
+
+That fixes all three symptoms at once — the chip, the Pages-vs-Layouts rail, and the
+`` `${mode}:${activeId}` `` Navigator key that was stranding the selected node inside a collapsed
+ancestor.
+
+The closing aside was taken too: **`select(id)` now returns a boolean** and REFUSES an id that
+isn't in the active tree rather than storing a phantom selection. sparx uses it — the check panel
+closes only on a selection that landed, and a genuinely stale id (deleted between the check and
+the click, by the author or a co-editor) now raises "That block is not there any more" from a real
+answer instead of from a `catch` that never fired.
 
 ### What happens
 

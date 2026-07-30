@@ -956,16 +956,24 @@ function StudioEditor({
         onChange={onChange}
         onActivePageChange={onActivePageChange}
         onPublish={onPublish}
-        // STATUS, not actions (silicaui 0.40 / docs/139 §13). This slot renders at the head
-        // of the right-hand cluster, BEFORE the shortcut hint and the light/dark toggle, so
-        // the session's state reads as state instead of sitting wedged between the engine's
-        // buttons and ours — which is what it did while `toolbarSlot` was the only seam.
+        // STATE GOES IN THE STATUS BAR (silicaui 0.41 `statusBarSlot` / docs/139 §14).
         //
-        // Everything here is non-interactive, deliberately. A focusable control in this slot
-        // would become a tab stop ahead of controls that visually precede it (WCAG 2.4.3),
-        // which is exactly the break the slot exists to avoid — so the live-sync Reload
-        // BUTTON is rendered below with the other actions, from the hints reported here.
-        toolbarStatusSlot={
+        // It rode in the header first — `toolbarSlot`, then §13's `toolbarStatusSlot` — and
+        // the header was the wrong FLOOR, not just the wrong slot. The footer already carries
+        // exactly this kind of fact and nothing else: which surface you are on, which device
+        // width you are looking at. Two indicators of the same kind up in the toolbar meant a
+        // person read the session's state in a bar packed with buttons, next to controls it
+        // has nothing to do with. Down here it sits beside `mode` and reads left to right as
+        // one sentence about the session: Page · 3 editing · Unsaved changes … Desktop.
+        //
+        // Non-interactive only, and the engine is stricter about it here than in the header —
+        // a 28px strip is no place for a control, and its own two children are plain text. So
+        // the live-sync Reload BUTTON stays in the action slot below, driven by the hints this
+        // reports up. That split is why there are two components rather than one.
+        //
+        // No `toolbarStatusSlot` at all now. Splitting the two badges across two floors would
+        // be the worst of both: state in two places, and neither of them complete.
+        statusBarSlot={
           <div className="flex items-center gap-2">
             {propertyId ? (
               <BuilderLiveSync

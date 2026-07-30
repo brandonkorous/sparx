@@ -2,7 +2,7 @@
 
 // Live co-editing for the studio (docs/126 §4.5).
 //
-// Rendered INSIDE `<Builder>` (via `toolbarStatusSlot`), so `useEditor()` resolves to the
+// Rendered INSIDE `<Builder>` (via `statusBarSlot`), so `useEditor()` resolves to the
 // live engine handle. It connects the site's `/ws/builder` room and folds every other
 // author's change into this canvas as it lands — a human co-editor's ops (Slice 4) AND an
 // agent's MCP write, which api-mcp relays as the identical `ops:relay` (docs/126 §4.5).
@@ -11,10 +11,10 @@
 //
 // WHAT IT RENDERS IS INDICATORS ONLY — who else is in the site, and an "an assistant is
 // editing" pulse while an agent is active. Both are non-interactive, which is what lets
-// this live in silicaui's `toolbarStatusSlot` (0.40): that slot sits ahead of the theme
-// toggle, so anything FOCUSABLE placed in it becomes a tab stop before controls that
-// visually precede it — the reading-order-vs-focus-order break (WCAG 2.4.3) the slot was
-// asked for in order to avoid (docs/139 §13).
+// this live in silicaui's `statusBarSlot` (0.41, docs/139 §14): the editor's footer, beside
+// the surface and device labels, where the engine keeps its own state. That slot is
+// non-interactive by contract and more strictly than the header one — it is a 28px strip
+// and the engine's own children there are plain text.
 //
 // So the Reload affordance — the one change with no live-appliable op, where an agent
 // REPLACED a page body or the frame and force-applying it would destroy the operator's

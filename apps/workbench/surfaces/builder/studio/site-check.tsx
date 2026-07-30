@@ -19,19 +19,24 @@
 // nothing" is one click from the button.
 //
 // AND "OPENS THE TREE IT LIVES IN" MEANS `setActiveTree`, NOT JUST A PAGE SWITCH.
-// silica's selection is TREE-SCOPED — "an id in one tree means nothing in the other" —
-// and `editor.select(id)` neither validates the id nor moves the spine. So handing it a
-// header node while the editor is on a page body sets a selection that matches nothing:
-// the canvas draws no ring, the Navigator highlights no row, the Inspector describes
-// nothing. Not an error, not a toast — literally nothing happens, which is the worst
-// possible outcome for the one button whose entire job is "take me to it".
+// silica's selection is TREE-SCOPED — an id in one tree means nothing in the other — so
+// handing `select` a header node while the editor is on a page body selects nothing at
+// all: no canvas ring, no Navigator row, no Inspector. This file used to reason that "the
+// frame is part of every page's canvas, so a frame node needs no navigation at all",
+// which is true of what you SEE and false of what you can select — and the header/footer
+// is where a young site's findings mostly are (an unfinished nav link, a logo with no
+// description), so the button did nothing on the most common finding there is.
 //
-// This file used to reason that "the frame is part of every page's canvas, so a frame
-// node needs no navigation at all". That is true of what you SEE and false of what you
-// can select, and the header/footer is where a starter site's findings mostly are — an
-// unfinished nav link, a logo with no description. So `goTo` now points the spine at the
-// tree the finding names, in BOTH directions: a page finding clicked while the author is
-// in Layout needs the same correction as a frame finding clicked from a page.
+// `goTo` now points the spine at the tree the finding names, in BOTH directions: a page
+// finding clicked while the author is in Layout needs the same correction as a frame
+// finding clicked from a page. silicaui 0.41 syncs its own mode toggle off `activeTree`
+// (docs/139 §15), so the whole editor — canvas, rail, Navigator, chip — follows.
+//
+// AND THE OUTCOME IS CHECKED, because it can still legitimately fail. `select` returns
+// whether it LANDED as of 0.41 (also §15): a stale id — the block was deleted between the
+// check running and this click, by the author or by a co-editor — is refused rather than
+// stored. That boolean is the only way to tell "gone" apart from "wrong tree", so the
+// toast below is now raised on a real answer instead of on a `catch` that never fired.
 //
 // TWO SECTIONS, AND THEY ARE NOT THE SAME KIND OF THING. Above: findings — something
 // is wrong. Below: what each page WEIGHS — nothing is wrong, here is what a visitor
@@ -180,12 +185,23 @@ export function SiteCheck({ open, onOpenChange, onRequestOpen }: Props) {
    * cannot see. Leaving first is a no-op when they are not in one.
    *
    * Then the SPINE moves before the selection does — see the note at the top of the
-   * file. `enterSymbol` carries its own tree (and silica syncs its mode toggle off it);
-   * `page` and `frame` need saying out loud.
+   * file. `enterSymbol` carries its own tree; `page` and `frame` need saying out loud.
+   *
+   * The panel closes only on a selection that LANDED. Closing regardless would drop the
+   * author on a canvas with nothing selected and no list to go back to, which is how the
+   * original bug read even once the cause was elsewhere.
    */
   const goTo = useCallback(
     (finding: CheckFinding) => {
       const { scope, ownerId, nodeId } = finding.location;
+      /** Say the block has gone, rather than leaving the click looking broken. */
+      const missing = (): void => {
+        toast.add({
+          title: 'That block is not there any more',
+          description: 'Run the check again to see the current list.',
+          type: 'warning',
+        });
+      };
       try {
         editor.exitSymbol();
         if (scope === 'symbol' && ownerId) editor.enterSymbol(ownerId);
@@ -199,16 +215,16 @@ export function SiteCheck({ open, onOpenChange, onRequestOpen }: Props) {
           editor.setActiveTree('page');
           if (scope === 'page' && ownerId) editor.setActivePage(ownerId);
         }
-        if (nodeId) editor.select(nodeId);
-        onOpenChange(false);
+        // No node to select — a whole-page finding. The navigation above IS the answer.
+        if (!nodeId) {
+          onOpenChange(false);
+          return;
+        }
+        if (editor.select(nodeId)) onOpenChange(false);
+        else missing();
       } catch {
-        // A stale id (the block was deleted between the check and the click) — say so
-        // rather than leaving the click looking broken.
-        toast.add({
-          title: 'That block is not there any more',
-          description: 'Run the check again to see the current list.',
-          type: 'warning',
-        });
+        // A bad page/symbol id throws before the selection is even attempted; same news.
+        missing();
       }
     },
     [editor, onOpenChange, toast]
