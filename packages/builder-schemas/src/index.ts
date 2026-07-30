@@ -36,6 +36,7 @@ export * from './email-content-blocks';
 export * from './default-emails-silica';
 export * from './email-legacy-to-silica';
 export * from './silica-data-needs';
+export * from './list-paging';
 export * from './silica-node-index';
 export * from './import-export';
 export * from './catalog';

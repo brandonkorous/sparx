@@ -19,7 +19,12 @@ import {
   createSilicaResolver,
   defaultSilicaFormat,
   entityPinKey,
+  pageFrom,
+  pagingParamFor,
+  shownRange,
+  totalPagesFor,
   type DataSources,
+  type ListPaging,
   type NodeBinding,
   type SilicaNode,
   type SilicaResolver,
@@ -60,37 +65,13 @@ const FEATURED_LIMIT = RAIL_MAX_ITEMS;
  */
 const COLLECTION_PAGE_SIZE = COLLECTION_PAGE_ITEMS;
 
-/**
- * What a bound collection on this page is showing, and how to move it.
- *
- * The storefront hands this to the `site.pagination` host core, which is where the
- * links are actually rendered — a bound tree cannot express "no Previous link on page
- * one", so the platform renders that part in React (the same reasoning that made the
- * brand mark a host core; see `host-nodes.ts`).
- */
-export interface ListPaging {
-  /** The root key this describes — `commerce.product`, `cms.blog_post`. */
-  source: string;
-  /**
-   * The URL query parameter that moves this list.
-   *
-   * `page` when it is the only paginated list on the page, which is nearly always —
-   * a plain `?page=2` is what a reader bookmarks and a search engine crawls. A page
-   * carrying TWO bound collections (a product grid and a journal index) cannot share
-   * one parameter without moving both at once, so each takes a suffixed one instead.
-   */
-  param: string;
-  page: number;
-  perPage: number;
-  /** How many records exist. `null` where the source cannot tell us — the CMS entries
-   *  endpoint counts only when asked by page number, so a cursor-walked list has no
-   *  total and the pager says "Next" rather than "of 9". */
-  total: number | null;
-  totalPages: number | null;
-  /** True when there is at least one more page. Always knowable, even where `total`
-   *  is not — which is why the pager is built on this and not on the total. */
-  hasMore: boolean;
-}
+/** `ListPaging` and the arithmetic that fills it now live in `@sparx/builder-schemas`
+ *  (`list-paging.ts`) and are re-exported here for the routes and the pager that already
+ *  import them from this module. They moved because three things have to agree on "what
+ *  page am I on" — this fetch, the `site.pagination` host core's links, and the bound
+ *  `…From`/`…To` refs a template puts in a "Showing 25–48 of 137" line — and each derived
+ *  it separately while the definitions lived in an app that has no tests. */
+export type { ListPaging };
 
 /** The resolver plus what it paginated. Two values because the render walk and the
  *  pagination core need different halves of the same fetch, and re-deriving either
@@ -100,41 +81,19 @@ export interface SilicaHost {
   paging: ListPaging[];
 }
 
-/** The URL-safe short name for a source key: `commerce.product` → `product`,
- *  `cms.blog_post` → `blog-post`. Only used when a page has more than one paginated
- *  list and they need to move independently. */
-function pagingParamFor(source: string, alone: boolean): string {
-  if (alone) return 'page';
-  const last = source.split('.').pop() ?? source;
-  return `page-${last.replace(/_/g, '-')}`;
-}
-
-/** Read a page number out of the route's search params. Anything that is not a
- *  positive integer is page one — a hand-edited `?page=banana` should show the first
- *  page, never an error. */
-function pageFrom(
-  params: Record<string, string | string[] | undefined> | undefined,
-  param: string
-): number {
-  const raw = params?.[param];
-  const value = Array.isArray(raw) ? raw[0] : raw;
-  const n = Number.parseInt(value ?? '', 10);
-  return Number.isFinite(n) && n >= 1 ? n : 1;
-}
-
 /** Publish the paging facts alongside the list itself, so a template can bind
  *  `commerce.productTotal` / `commerce.productHasMore` / `commerce.productFrom`
  *  ("Showing 25–48 of 137") without the pagination core, and the core can render real
  *  links with them. Every key is set even when there is one page — an absent ref
  *  resolves as "not found" and leaves authored placeholder text on the page. */
 function setListMeta(root: DataSources, key: string, shown: number, paging: ListPaging): void {
-  const from = shown === 0 ? 0 : (paging.page - 1) * paging.perPage + 1;
+  const { from, to } = shownRange(paging.page, paging.perPage, shown);
   setAtPath(root, `${key}Total`, paging.total);
   setAtPath(root, `${key}HasMore`, paging.hasMore);
   setAtPath(root, `${key}Page`, paging.page);
   setAtPath(root, `${key}Pages`, paging.totalPages);
   setAtPath(root, `${key}From`, from);
-  setAtPath(root, `${key}To`, shown === 0 ? 0 : from + shown - 1);
+  setAtPath(root, `${key}To`, to);
 }
 
 /** A product in the shape the silica commerce composites bind (scope-relative
@@ -476,7 +435,7 @@ export async function buildSilicaHost(
   /** Record what a catalog fetch actually returned, so the pager can move it. */
   const recordCatalogPaging = (shown: number, total: number): void => {
     if (!catalogPage) return;
-    const totalPages = Math.max(1, Math.ceil(total / COLLECTION_PAGE_SIZE));
+    const totalPages = totalPagesFor(total, COLLECTION_PAGE_SIZE) ?? 1;
     const entry: ListPaging = {
       source: 'commerce.product',
       param: catalogPage.param,
@@ -616,7 +575,7 @@ export async function buildSilicaHost(
             shown.map((e) => toSilicaEntry(e, tenantSlug, type))
           );
           if (!requested) return;
-          const totalPages = Math.max(1, Math.ceil(total / COLLECTION_PAGE_SIZE));
+          const totalPages = totalPagesFor(total, COLLECTION_PAGE_SIZE) ?? 1;
           const entry: ListPaging = {
             source: key,
             param: requested.param,
