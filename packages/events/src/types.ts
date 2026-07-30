@@ -13,6 +13,16 @@
 export type EventType =
   // Platform / tenant lifecycle
   | 'tenant.created'
+  // A tenant's own profile changed (name / contact email). Consumed by the
+  // platform-crm-worker so sparx's own CRM board keeps calling a business by
+  // the name it actually uses — the workspace name starts as a placeholder
+  // ("Sam's workspace") and becomes the real one during onboarding.
+  | 'tenant.updated'
+  // A tenant's PLATFORM subscription moved (trial → paying, payment failed,
+  // cancelled). Published by the Stripe billing webhook after reconciliation,
+  // so consumers get the post-Stripe truth. Distinct from `subscription.*`,
+  // which are a tenant's OWN customers' commerce subscriptions.
+  | 'tenant.subscription.changed'
   // Module lifecycle (docs/82 §4 [ADD]). Published by api-rest when a tenant
   // toggles a module flag; consumed to seed module defaults (CRM pipeline +
   // segments, email default automations, automation system seeds) and to flip
@@ -318,6 +328,27 @@ export interface SearchEntityChangedPayload {
 export interface TenantCreatedPayload {
   slug: string;
   name: string;
+}
+
+/** Payload for `tenant.updated`. Consumed by the platform-crm-worker, which
+ *  re-reads the tenant row rather than trusting the payload — the fields here
+ *  are for logging and for consumers that only need to know WHAT changed. */
+export interface TenantUpdatedPayload {
+  slug: string;
+  name: string;
+  /** Field names that changed on this write (e.g. ['name']). */
+  changed: string[];
+}
+
+/** Payload for `tenant.subscription.changed`. `status` is the tenant's platform
+ *  subscription status after reconciliation (Stripe's vocabulary: trialing /
+ *  active / past_due / unpaid / paused / canceled / …). `mrrCents` is the
+ *  normalized MONTHLY recurring total across the subscription's items, so an
+ *  annual plan reports its monthly equivalent. */
+export interface TenantSubscriptionChangedPayload {
+  status: string;
+  mrrCents: number | null;
+  currency: string | null;
 }
 
 export interface SparxEvent<T = unknown> {

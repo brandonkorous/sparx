@@ -149,6 +149,22 @@ resource "google_project_iam_member" "legal_seed_worker_roles" {
   member  = "serviceAccount:${google_service_account.legal_seed_worker.email}"
 }
 
+resource "google_service_account" "platform_crm_worker" {
+  account_id   = "sparx-platform-crm-worker"
+  display_name = "Sparx platform-crm-worker (Cloud Run)"
+  description  = "Runtime SA for the platform-crm-worker Cloud Run service. Reads the DB URL from Secret Manager and mirrors tenant lifecycle (signup, rename, module toggles, subscription changes) into the PLATFORM tenant's own CRM."
+}
+
+resource "google_project_iam_member" "platform_crm_worker_roles" {
+  for_each = toset([
+    "roles/cloudsql.client",
+    "roles/secretmanager.secretAccessor",
+  ])
+  project = var.project_id
+  role    = each.value
+  member  = "serviceAccount:${google_service_account.platform_crm_worker.email}"
+}
+
 resource "google_service_account" "media_worker" {
   account_id   = "sparx-media-worker"
   display_name = "Sparx media-worker (Cloud Run)"
@@ -947,6 +963,88 @@ module "legal_seed_worker_cloudrun" {
   depends_on = [
     module.pubsub,
     google_project_iam_member.legal_seed_worker_roles,
+    google_service_account_iam_member.pubsub_invoker_token_creator,
+  ]
+}
+
+# ─── platform-crm-worker ──────────────────────────────────────────────────
+#
+# sparx's own customer base, kept in sparx (docs/140). Mirrors tenant lifecycle
+# into the PLATFORM tenant's CRM: tenant.created puts a contact + a deal on the
+# "Tenant Signups" pipeline; tenant.updated keeps the name honest; module.* and
+# tenant.subscription.changed move that deal through trial → activated → paying
+# / churned.
+#
+# Its OWN subscription on tenant.created, separate from the legal-seed-worker's:
+# a CRM failure must not re-run legal seeding (and vice versa), and each keeps
+# its own retry + DLQ. Light DB-only work; scale-to-zero.
+
+module "platform_crm_worker_cloudrun" {
+  source = "../../modules/cloud-run-worker"
+
+  name                  = "platform-crm-worker"
+  project_id            = var.project_id
+  region                = var.region
+  image                 = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/platform-crm-worker:latest"
+  service_account_email = google_service_account.platform_crm_worker.email
+  vpc_connector_id      = google_vpc_access_connector.workers.id
+
+  # A handful of Prisma reads + writes per message. Signups and module toggles
+  # are infrequent, so cold starts are acceptable.
+  min_instance_count    = 0
+  max_instance_count    = 4
+  container_concurrency = 8
+  cpu                   = "1"
+  memory                = "512Mi"
+  timeout_seconds       = 120
+
+  env_vars = {
+    NODE_ENV                 = "production"
+    SERVICE_NAME             = "platform-crm-worker"
+    LOG_LEVEL                = "info"
+    PUBSUB_INVOKER_SA        = google_service_account.pubsub_invoker.email
+    SPARX_PLATFORM_TENANT_ID = var.platform_tenant_id
+  }
+
+  secrets = [
+    {
+      name = "DATABASE_URL"
+      # Cloud-Run-reachable DB URL (PgBouncer internal-LB IP, not the kube-DNS
+      # name). See the `database-url-cloudrun` note in main.tf.
+      secret_id = "database-url-cloudrun"
+    },
+  ]
+
+  pubsub_topic                 = "tenant.created"
+  pubsub_subscription_name     = "tenant.created.platform-crm-worker-cloudrun"
+  pubsub_invoker_sa_email      = google_service_account.pubsub_invoker.email
+  pubsub_dead_letter_topic_id  = module.pubsub.dead_letter_topic == null ? null : "projects/${var.project_id}/topics/${module.pubsub.dead_letter_topic}"
+  pubsub_max_delivery_attempts = 5
+
+  # The lifecycle after signup. Same service because it is the same board — the
+  # router in src/handler.ts fans these in.
+  additional_subscriptions = [
+    {
+      topic             = "tenant.updated"
+      subscription_name = "tenant.updated.platform-crm-worker-cloudrun"
+    },
+    {
+      topic             = "tenant.subscription.changed"
+      subscription_name = "tenant.subscription.changed.platform-crm-worker-cloudrun"
+    },
+    {
+      topic             = "module.activated"
+      subscription_name = "module.activated.platform-crm-worker-cloudrun"
+    },
+    {
+      topic             = "module.deactivated"
+      subscription_name = "module.deactivated.platform-crm-worker-cloudrun"
+    },
+  ]
+
+  depends_on = [
+    module.pubsub,
+    google_project_iam_member.platform_crm_worker_roles,
     google_service_account_iam_member.pubsub_invoker_token_creator,
   ]
 }

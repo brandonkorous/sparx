@@ -155,7 +155,7 @@ jobs:
           names=()
           for svc in email-worker media-worker commerce-indexer legal-seed-worker automation-worker \
                      push-worker markup-recompute-worker channel-sync-worker domain-worker dropship-worker \
-                     social-worker; do
+                     social-worker platform-crm-worker; do
             if gcloud run services describe "$svc" --region="$REGION" --project="${{ env.PROJECT_ID }}" >/dev/null 2>&1; then
               echo "::notice::Rolling out $svc (Cloud Run)"
               gcloud run services update "$svc" \

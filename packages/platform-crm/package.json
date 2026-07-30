@@ -1,0 +1,33 @@
+{
+  "name": "@sparx/platform-crm",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Mirror sparx tenant lifecycle into the PLATFORM tenant's own CRM (docs/140). A tenant signing up becomes a contact + a deal on the wizeworks 'Tenant Signups' pipeline; later lifecycle (rename, module activation, subscription change) moves that deal. Shared so BOTH the platform-crm-worker (prod, Pub/Sub) and the signup flow (dev/in-process) mirror identically.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "test:watch": "vitest",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "dependencies": {
+    "@sparx/crm": "workspace:*",
+    "@sparx/db": "workspace:*",
+    "@sparx/modules": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}

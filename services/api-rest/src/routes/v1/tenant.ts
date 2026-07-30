@@ -24,6 +24,7 @@ import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, type Prisma } from '@sparx/db';
 import { withRequestTenant } from '@sparx/api-core/db';
+import { publish } from '@sparx/api-core/pubsub';
 import { ok } from '@sparx/api-core/envelope';
 import { requireAuth, requireRole } from '@sparx/api-core/auth';
 import { requireVerifiedEmail } from '../../lib/verified-email-guard.js';
@@ -453,6 +454,17 @@ const tenantRoutes: FastifyPluginAsync = async (app) => {
       data: input,
       select: { id: true, name: true, email: true, slug: true, plan: true, socials: true },
     });
+
+    // A tenant renaming itself is how a placeholder workspace name ("Sam's
+    // workspace") becomes the real business name — the platform-crm-worker
+    // consumes this so sparx's own CRM board calls them what they call
+    // themselves (docs/140 §5).
+    await publish(request.log, 'tenant.updated', row.id, auth.actorId, {
+      slug: row.slug,
+      name: row.name,
+      changed: Object.keys(input),
+    });
+
     return ok({ ...row, socials: readSocials(row.socials) });
   });
 

@@ -63,6 +63,7 @@ jobs:
           - automation-worker
           - commerce-indexer
           - legal-seed-worker
+          - platform-crm-worker # @sparx/platform-crm-worker — mirrors tenant lifecycle into sparx's own CRM (docs/140)
           - domain-worker
           - dropship-worker
           - billing-worker

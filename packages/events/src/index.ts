@@ -6,6 +6,8 @@ export type {
   RawEmailSendPayload,
   SearchEntityChangedPayload,
   TenantCreatedPayload,
+  TenantUpdatedPayload,
+  TenantSubscriptionChangedPayload,
   FeedbackSubmittedPayload,
   FeedbackRespondedPayload,
   FormSubmittedPayload,

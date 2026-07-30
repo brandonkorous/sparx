@@ -70,10 +70,19 @@ module "pubsub" {
   # cost optimisation, since idle subscriptions still cost retention.
   topics = {
     # Platform / tenant lifecycle — signUpMerchant publishes tenant.created;
-    # the legal-seed-worker consumes it via its Cloud Run PUSH subscription in
-    # serverless.tf (tenant.created.legal-seed-worker-cloudrun). Topic-only
-    # here (empty list = no idle pull subscription).
+    # the legal-seed-worker AND the platform-crm-worker each consume it via
+    # their own Cloud Run PUSH subscriptions in serverless.tf. Topic-only here
+    # (empty list = no idle pull subscription).
     "tenant.created" = []
+    # A tenant renamed itself / changed its contact email (PATCH /v1/tenant), and
+    # its PLATFORM subscription moved (the Stripe billing webhook, after
+    # reconciliation). Both feed sparx's own CRM board via the
+    # platform-crm-worker's push subscriptions in serverless.tf (docs/140).
+    # `tenant.subscription.changed` is the PLATFORM bill — distinct from the
+    # `subscription.*` topics, which are a tenant's own customers' commerce
+    # subscriptions.
+    "tenant.updated"              = []
+    "tenant.subscription.changed" = []
 
     # Commerce — catalog + inventory fan-in to commerce-indexer
     "product.created" = ["commerce-indexer"]
@@ -257,7 +266,9 @@ module "pubsub" {
     "social.inbox.sync"         = []
     "social.inbox.reply"        = []
 
-    # Module lifecycle
+    # Module lifecycle. Topic-only here: the platform-crm-worker consumes both
+    # via Cloud Run PUSH subscriptions (serverless.tf) — the first activation is
+    # what moves a tenant out of Trial on sparx's own signup board (docs/140).
     "module.activated"   = []
     "module.deactivated" = []
 

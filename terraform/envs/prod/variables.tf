@@ -84,3 +84,14 @@ variable "operator_access_emails" {
   default     = ["brandon@wize.works"]
   description = "Emails allowed through the Cloudflare Access policy on admin.wize.works."
 }
+
+# sparx running as a tenant of itself (docs/80 §2) — the WizeWorks tenant-of-record
+# that owns platform marketing contacts, the careers pipeline, and (docs/140) the
+# CRM board every tenant signup lands on. The IMMUTABLE tenant UUID, not the slug,
+# so a rename can't silently repoint it. Mirrors SPARX_PLATFORM_TENANT_ID in
+# k8s/sparx-prod/app-env-configmap.yaml — change both together.
+variable "platform_tenant_id" {
+  type        = string
+  default     = "1bfef66a-a489-4e0f-99fd-f041adc7ffaa"
+  description = "Tenant UUID of the platform's own tenant (wizeworks). Consumed by the platform-crm-worker."
+}

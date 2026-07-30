@@ -140,9 +140,15 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
     case 'customer.subscription.paused':
     case 'customer.subscription.resumed':
     case 'customer.subscription.deleted': {
-      const tenantId = await reconcileFromSubscription(event.data.object);
+      const sub = event.data.object;
+      const tenantId = await reconcileFromSubscription(sub);
+      if (tenantId) {
+        await publishSubscriptionChanged(log, tenantId, sub.status, monthlyRecurringCents(sub), {
+          currency: sub.currency,
+        });
+      }
       log.info(
-        { eventType: event.type, tenantId, status: event.data.object.status },
+        { eventType: event.type, tenantId, status: sub.status },
         'stripe billing webhook: subscription reconciled'
       );
       break;
@@ -171,11 +177,9 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
     case 'invoice.payment_succeeded': {
       const invoice = event.data.object;
       const customerId = asString(invoice.customer);
+      const status = event.type === 'invoice.payment_failed' ? 'past_due' : 'active';
       if (customerId) {
-        await setSubscriptionStatus(
-          customerId,
-          event.type === 'invoice.payment_failed' ? 'past_due' : 'active'
-        );
+        await setSubscriptionStatus(customerId, status);
       }
       // Notify the tenant about their own sparx bill. The hosted invoice page is
       // Stripe's — always present on a real invoice; fall back to the dashboard
@@ -184,6 +188,11 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
       if (recipient) {
         const currency = invoice.currency ?? 'usd';
         const invoiceUrl = invoice.hosted_invoice_url ?? billingSettingsUrl();
+        // A failed or recovered payment is a fact about the customer, not just a
+        // status column — the platform CRM records it on their timeline and tags
+        // the deal (docs/140 §5). Published here because this is the branch that
+        // knows the invoice AND resolved the tenant.
+        await publishSubscriptionChanged(log, recipient.tenantId, status, null, { currency });
         if (event.type === 'invoice.payment_succeeded') {
           await publish(log, 'email.send', recipient.tenantId, null, {
             template: 'billing-receipt',
@@ -219,4 +228,66 @@ async function dispatch(log: FastifyBaseLogger, event: Stripe.Event): Promise<vo
     default:
       log.debug({ type: event.type }, 'stripe billing webhook: unhandled event type — ignored');
   }
+}
+
+// ── Platform subscription lifecycle (docs/140) ────────────────────────────────
+// Stripe is the source of truth for whether a tenant is trialing, paying, or
+// gone — so this webhook is where that transition becomes an event other parts
+// of sparx can react to. The platform-crm-worker consumes it to move the
+// tenant's deal on our own signup board.
+//
+// Deliberately NOT one of the `subscription.*` topics: those are a tenant's own
+// customers' commerce subscriptions. Same word, different customer.
+
+/** Publish `tenant.subscription.changed`. Best-effort — `publish` swallows its
+ *  own failures, and Stripe must still get its 200 either way. */
+async function publishSubscriptionChanged(
+  log: FastifyBaseLogger,
+  tenantId: string,
+  status: string,
+  mrrCents: number | null,
+  opts: { currency?: string | null }
+): Promise<void> {
+  await publish(log, 'tenant.subscription.changed', tenantId, null, {
+    status,
+    mrrCents,
+    currency: opts.currency ? opts.currency.toUpperCase() : null,
+  });
+}
+
+/**
+ * The subscription's total recurring revenue normalized to ONE MONTH, in cents.
+ *
+ * Normalizing here (rather than in the consumer) means every reader gets a
+ * comparable number: an annual plan reports its monthly equivalent, so a CRM
+ * board summing deal values isn't mixing yearly and monthly figures. Metered
+ * items carry no unit_amount and are skipped — usage isn't recurring revenue
+ * until it's billed. Returns null when nothing was computable.
+ */
+function monthlyRecurringCents(sub: Stripe.Subscription): number | null {
+  let total = 0;
+  let counted = 0;
+
+  for (const item of sub.items.data) {
+    const amount = item.price.unit_amount;
+    if (amount === null || amount === undefined) continue;
+    const recurring = item.price.recurring;
+    if (!recurring) continue;
+
+    const every = recurring.interval_count > 0 ? recurring.interval_count : 1;
+    const perMonth =
+      recurring.interval === 'month'
+        ? 1 / every
+        : recurring.interval === 'year'
+          ? 1 / (12 * every)
+          : recurring.interval === 'week'
+            ? 52 / 12 / every
+            : // daily
+              365 / 12 / every;
+
+    total += amount * (item.quantity ?? 1) * perMonth;
+    counted++;
+  }
+
+  return counted === 0 ? null : Math.round(total);
 }

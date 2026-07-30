@@ -33,6 +33,12 @@ export async function publishTenantCreated(input: PublishTenantCreatedInput): Pr
   // placements in-process instead, sharing the worker's exact idempotent seeder
   // (docs/104 §4.3). Prod keeps the async worker path untouched. Swallowed: legal
   // seeding must never fail an otherwise-successful sign-up (same ethos as below).
+  //
+  // The platform-CRM mirror (docs/140) deliberately does NOT get an in-process
+  // twin here: it reaches the real worker in dev through SPARX_DEV_WORKER_ROUTES
+  // (the publisher's local-dispatch path), which exercises the same HTTP entry
+  // Pub/Sub pushes to. Importing it here would drag the whole CRM service layer
+  // into every app that can sign a tenant up.
   if (!projectId) {
     try {
       await seedLegalPages(input.tenantId, logger);

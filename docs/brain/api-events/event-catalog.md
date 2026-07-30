@@ -17,7 +17,9 @@ The **single source of truth** for events is the `EventType` union in `packages/
 - **Generic entity change** (reprojection / search): `search.entity.changed` — there is no `customer.updated`.
 - **Domain verify:** `email.domain.verified`; **domain purchase:** `domain.purchased`.
 
-Real families (abbrev.): `tenant.created`, `module.{activated,deactivated}`, `content.entry.*`, `media.*`, `email.send`, `builder.{published,rolled_back}`, `product`/`variant.*`, `price.recomputed`, `inventory.*`, `cart`/`checkout.*`, `order.*`, `payment.*`, `subscription.*`, `return.*`, `review.*`, `b2b.*`, `booking.*`, `dropship.*`, `partner.*`, `bootcamp.*`, `chat.message.received`, `push.send`, `import.job.created`, `feedback.*`. Shared payload contracts live in `types.ts`.
+**`subscription.*` is a TENANT'S OWN customers' commerce subscriptions.** The tenant's own sparx bill is `tenant.subscription.changed` (published by the Stripe **billing** webhook after reconciliation, consumed by `platform-crm-worker`, docs/140). Same word, different customer — reaching for `subscription.cancelled` to mean "a tenant churned" wires the wrong stream.
+
+Real families (abbrev.): `tenant.{created,updated,subscription.changed}`, `module.{activated,deactivated}`, `content.entry.*`, `media.*`, `email.send`, `builder.{published,rolled_back}`, `product`/`variant.*`, `price.recomputed`, `inventory.*`, `cart`/`checkout.*`, `order.*`, `payment.*`, `subscription.*`, `return.*`, `review.*`, `b2b.*`, `booking.*`, `dropship.*`, `partner.*`, `bootcamp.*`, `chat.message.received`, `push.send`, `import.job.created`, `feedback.*`. Shared payload contracts live in `types.ts`.
 
 ## A consumer can exist with no publisher, and it is silent
 
