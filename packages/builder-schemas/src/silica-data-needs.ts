@@ -40,6 +40,28 @@ export interface SilicaSourceNeeds {
   cmsTypes: string[];
   productPins: string[];
   cmsPins: string[];
+  /**
+   * How many records each bound source must actually LOAD, keyed by source root.
+   *
+   *   a number → no consumer on this page needs more than this many;
+   *   `null`   → at least one consumer is UNBOUNDED, so fetch the normal amount.
+   *
+   * This is what makes an author's `limit` (silicaui 0.38) worth setting. The engine
+   * already trims the repeat at render, so without this a landing page showing 4
+   * products still fetched 24 and threw 20 away — correct on screen, wasteful in the
+   * query, and exactly the thing the tenant asked not to happen.
+   *
+   * The MAXIMUM wins when several repeats share a source, because one fetch feeds them
+   * all: a page with a 4-up strip and a 12-up carousel over `commerce.featured` must
+   * load 12, and the engine then trims each repeat to its own number. Taking the
+   * minimum would silently starve the larger block.
+   *
+   * `null` is deliberately sticky — once anything unbounded binds a source, no later
+   * limit can re-bound it. A value ref that reads the array whole (`commerce.product`
+   * bound to a count, say) has no limit to declare and so reads as unbounded, which is
+   * the safe direction: over-fetching renders correctly, under-fetching loses records.
+   */
+  limits: Record<string, number | null>;
 }
 
 /** A silica node's data marker, if any — `{ kind, ref }` set by `bind`/`repeat`/
@@ -47,6 +69,9 @@ export interface SilicaSourceNeeds {
 interface DataMarker {
   kind?: string;
   ref?: string;
+  /** silicaui 0.38: how many items this repeat renders. Only meaningful on a
+   *  `collection` marker; the engine applies it, we use it to fetch no more. */
+  limit?: number;
 }
 
 function markerOf(node: SilicaNode): DataMarker | undefined {
@@ -64,7 +89,26 @@ function childrenOf(node: SilicaNode): SilicaNode[] {
 /** Classify one decoded ref into the accumulating need set. A scope-relative value
  *  ref (`title`, `price`) names no source and is ignored; only refs that name a
  *  platform source or pin a record contribute. */
-function recordNeed(ref: string, needs: SilicaSourceNeeds): void {
+/**
+ * Fold one repeat's `limit` into the running per-source maximum.
+ *
+ * A non-integer, a zero or a negative is treated as NO limit, matching what the engine
+ * itself does with the field (`applyCollectionLimit` ignores anything that isn't a
+ * positive integer). Agreeing with the engine matters more than validating here: if the
+ * two disagreed we would fetch to a number the renderer refuses to honour, and the block
+ * would come up short with nothing in the tree to explain why.
+ */
+function noteLimit(needs: SilicaSourceNeeds, key: string, limit: number | undefined): void {
+  const prev = needs.limits[key];
+  if (prev === null) return; // already unbounded — sticky, nothing can re-bound it
+  if (limit == null || !Number.isInteger(limit) || limit < 1) {
+    needs.limits[key] = null;
+    return;
+  }
+  needs.limits[key] = prev === undefined ? limit : Math.max(prev, limit);
+}
+
+function recordNeed(ref: string, needs: SilicaSourceNeeds, limit?: number): void {
   const binding = decodeBindingRef(ref);
 
   // Entity pin (docs/98 Pillar 7) — a specific record hydrated under __pins.
@@ -86,23 +130,33 @@ function recordNeed(ref: string, needs: SilicaSourceNeeds): void {
   if (root === 'commerce.product' || root.startsWith('commerce.product.')) {
     needs.commerce = true;
     needs.products.catalog = true;
+    noteLimit(needs, 'commerce.product', limit);
   } else if (root === 'commerce.featured') {
     needs.commerce = true;
     needs.products.featured = true;
+    noteLimit(needs, root, limit);
   } else if (root === 'commerce.new') {
     needs.commerce = true;
     needs.products.fresh = true;
+    noteLimit(needs, root, limit);
   } else if (root === 'commerce.related') {
     needs.commerce = true;
     needs.products.related = true;
+    noteLimit(needs, root, limit);
   } else if (root === 'commerce.category' || root.startsWith('commerce.category.')) {
     // `commerce.category.<collectionId>` — the id names WHICH collection's products.
     needs.commerce = true;
     const id = root.slice('commerce.category.'.length);
-    if (id) needs.products.categories.push(id);
+    if (id) {
+      needs.products.categories.push(id);
+      noteLimit(needs, root, limit);
+    }
   } else if (root.startsWith('cms.')) {
     const type = root.slice('cms.'.length).split('.')[0];
-    if (type) needs.cmsTypes.push(type);
+    if (type) {
+      needs.cmsTypes.push(type);
+      noteLimit(needs, `cms.${type}`, limit);
+    }
   }
 }
 
@@ -116,6 +170,7 @@ export function collectSilicaSourceNeeds(tree: SilicaNode): SilicaSourceNeeds {
     cmsTypes: [],
     productPins: [],
     cmsPins: [],
+    limits: {},
   };
   const seenCms = new Set<string>();
   const seenProductPins = new Set<string>();
@@ -124,7 +179,10 @@ export function collectSilicaSourceNeeds(tree: SilicaNode): SilicaSourceNeeds {
   const visit = (node: SilicaNode): void => {
     const marker = markerOf(node);
     if (marker && (marker.kind === 'value' || marker.kind === 'collection') && marker.ref) {
-      recordNeed(marker.ref, needs);
+      // Only a `collection` marker can carry a limit. A `value` ref passes `undefined`,
+      // which `noteLimit` reads as unbounded — right, because a value bind against a
+      // source reads it whole and no repeat is trimming anything on its behalf.
+      recordNeed(marker.ref, needs, marker.kind === 'collection' ? marker.limit : undefined);
     }
     for (const child of childrenOf(node)) visit(child);
   };

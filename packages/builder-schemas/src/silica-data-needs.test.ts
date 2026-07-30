@@ -79,6 +79,7 @@ describe('collectSilicaSourceNeeds', () => {
       cmsTypes: [],
       productPins: [],
       cmsPins: [],
+      limits: {},
     });
   });
 
@@ -104,5 +105,81 @@ describe('collectSilicaSourceNeeds', () => {
       related: true,
       categories: ['studio-goods'],
     });
+  });
+});
+
+describe('collectSilicaSourceNeeds — per-source limits', () => {
+  /** A repeat carrying silicaui 0.38's `limit`. `repeat()` does not take one, so the
+   *  marker is extended directly — which is also what the engine's inspector writes. */
+  const limited = (ref: string, limit?: number) => {
+    const node = repeat(el('div', '', { children: [bind(el('h3'), 'title')] }), ref);
+    if (limit !== undefined) (node as { data: { limit?: number } }).data.limit = limit;
+    return node;
+  };
+
+  it('records the limit an author set on a rail', () => {
+    const needs = collectSilicaSourceNeeds(
+      el('div', '', { children: [limited('commerce.featured', 4)] })
+    );
+    expect(needs.limits['commerce.featured']).toBe(4);
+  });
+
+  it('reads an unlimited repeat as unbounded, not as absent', () => {
+    const needs = collectSilicaSourceNeeds(
+      el('div', '', { children: [limited('commerce.featured')] })
+    );
+    expect(needs.limits['commerce.featured']).toBeNull();
+  });
+
+  it('takes the MAX when two repeats share a source, so the larger block is not starved', () => {
+    const needs = collectSilicaSourceNeeds(
+      el('div', '', {
+        children: [limited('commerce.featured', 4), limited('commerce.featured', 12)],
+      })
+    );
+    expect(needs.limits['commerce.featured']).toBe(12);
+  });
+
+  it('lets one unbounded consumer un-limit a source, in either order', () => {
+    const after = collectSilicaSourceNeeds(
+      el('div', '', { children: [limited('commerce.new', 4), limited('commerce.new')] })
+    );
+    const before = collectSilicaSourceNeeds(
+      el('div', '', { children: [limited('commerce.new'), limited('commerce.new', 4)] })
+    );
+    expect(after.limits['commerce.new']).toBeNull();
+    expect(before.limits['commerce.new']).toBeNull();
+  });
+
+  it('ignores a limit the ENGINE would ignore, rather than fetching to a number it refuses', () => {
+    for (const bad of [0, -3, 2.5]) {
+      const needs = collectSilicaSourceNeeds(
+        el('div', '', { children: [limited('commerce.related', bad)] })
+      );
+      expect(needs.limits['commerce.related']).toBeNull();
+    }
+  });
+
+  it('keeps limits per source, and covers cms + category keys', () => {
+    const needs = collectSilicaSourceNeeds(
+      el('div', '', {
+        children: [
+          limited('commerce.product', 4),
+          limited('cms.blog_post', 3),
+          limited('commerce.category.studio-goods', 6),
+        ],
+      })
+    );
+    expect(needs.limits).toEqual({
+      'commerce.product': 4,
+      'cms.blog_post': 3,
+      'commerce.category.studio-goods': 6,
+    });
+  });
+
+  it('treats a VALUE bind against a source as unbounded — nothing is trimming it', () => {
+    const node = bind(el('p'), 'commerce.product');
+    const needs = collectSilicaSourceNeeds(el('div', '', { children: [node] }));
+    expect(needs.limits['commerce.product']).toBeNull();
   });
 });

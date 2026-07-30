@@ -12,7 +12,9 @@
 // formatting is host territory, never baked into the tree.
 
 import {
+  COLLECTION_PAGE_ITEMS,
   PINS_ROOT,
+  RAIL_MAX_ITEMS,
   collectSilicaSourceNeeds,
   createSilicaResolver,
   defaultSilicaFormat,
@@ -34,9 +36,14 @@ import {
 import { getEntriesByIds, publicGetPaged, type ApiEntry } from './content';
 import { mediaUrl } from './media';
 
-/** How many products the `commerce.featured` rail shows at most — a curated
- *  handful, never the whole catalog (the whole-catalog grid binds `commerce.product`). */
-const FEATURED_LIMIT = 8;
+/** How many products a bounded rail shows at most — a curated handful, never the whole
+ *  catalog (the whole-catalog grid binds `commerce.product`).
+ *
+ *  Re-exported from `@sparx/builder-schemas` rather than declared here: the EDITOR needs
+ *  the same number to draw the right count of placeholder cards, and while it lived in
+ *  this file the editor could only guess — it guessed three, so every rail previewed
+ *  short. It is `DataSource.maxItems` on the rail sources now, and this is that. */
+const FEATURED_LIMIT = RAIL_MAX_ITEMS;
 
 /**
  * How many records a bound COLLECTION grid renders PER PAGE (docs/127 §8).
@@ -47,8 +54,11 @@ const FEATURED_LIMIT = 8;
  * not to the author, not to a log. It is a real page size now (slice 23): the rest of
  * the catalog is reachable at `?page=2`, and the `site.pagination` core renders the
  * links that get you there.
+ *
+ * Shared with the editor for the same reason as `FEATURED_LIMIT` above — a grid that
+ * shows 24 previewed as 3.
  */
-const COLLECTION_PAGE_SIZE = 24;
+const COLLECTION_PAGE_SIZE = COLLECTION_PAGE_ITEMS;
 
 /**
  * What a bound collection on this page is showing, and how to move it.
@@ -391,9 +401,33 @@ export async function buildSilicaHost(
   // related) and the category grids are deliberately capped curations: a "Featured"
   // strip with a Next button underneath it is not a feature, it is a curation that
   // forgot it was one.
+  /**
+   * How many records a source must LOAD — the author's `limit` when every repeat over it
+   * declared one, otherwise the normal amount. `needs.limits` holds `null` for "something
+   * unbounded binds this", which reads exactly like "no limit" here.
+   *
+   * Capped at the normal size so a limit can only ever shrink a request. An author typing
+   * 500 into a four-item strip is asking for a slow page, not a big one — and the number
+   * is a display choice, never a licence to widen a query the platform paginates.
+   */
+  const loadCount = (source: string, normal: number): number => {
+    const limit = needs.limits[source];
+    return typeof limit === 'number' ? Math.min(limit, normal) : normal;
+  };
+
+  /**
+   * A list is PAGED only when it is unbounded. Giving a block an explicit count turns it
+   * from "the catalog, in pages" into "these N products" — a curation — and a Next link
+   * under a curation is the same mistake the rails were kept clear of. The block also
+   * ships a pager core unconditionally on a catalog grid (see `productsBlock`), which
+   * renders nothing when no paging is recorded, so limiting a grid quietly retires its
+   * pager instead of leaving a broken one.
+   */
+  const isLimited = (source: string): boolean => typeof needs.limits[source] === 'number';
+
   const pagedSources = [
-    ...(p.catalog ? ['commerce.product'] : []),
-    ...needs.cmsTypes.map((t) => `cms.${t}`),
+    ...(p.catalog && !isLimited('commerce.product') ? ['commerce.product'] : []),
+    ...needs.cmsTypes.map((t) => `cms.${t}`).filter((key) => !isLimited(key)),
   ];
   const alone = pagedSources.length === 1;
   const paging: ListPaging[] = [];
@@ -404,18 +438,40 @@ export async function buildSilicaHost(
   const currentProductId =
     record?.key === 'product' ? (record.value as { id?: string } | undefined)?.id : undefined;
   const notCurrent = (i: PublicProductListItem) => i.id !== currentProductId;
-  /** Exclude the current product, cap to a handful, shape as cards — the bounded rail. */
-  const bounded = (items: PublicProductListItem[]) =>
+  /** Exclude the current product, cap to the rail's size, shape as cards. `cap` is the
+   *  author's limit for THIS rail when they set one, so two rails over different sources
+   *  can legitimately show different counts. */
+  const bounded = (items: PublicProductListItem[], source: string) =>
     items
       .filter(notCurrent)
-      .slice(0, FEATURED_LIMIT)
+      .slice(0, loadCount(source, FEATURED_LIMIT))
       .map((i) => toSilicaProduct(i, tenantSlug));
+
+  // A LIMITED catalog grid is not a paged list — it is "these N products" — so it never
+  // asks for a page number and never records paging, which is what leaves its pager core
+  // rendering nothing.
+  const catalogLimited = p.catalog && isLimited('commerce.product');
 
   // Which page the catalog grid is on, and therefore whether the base fetch below can
   // still serve it. On page one — nearly always — it can, and this stays the single
-  // request it has always been.
-  const catalogPage = p.catalog ? requestedPage('commerce.product') : null;
-  const catalogOnBase = catalogPage?.page === 1;
+  // request it has always been. A limited grid is always served by the base fetch.
+  const catalogPage = p.catalog && !catalogLimited ? requestedPage('commerce.product') : null;
+  const catalogOnBase = catalogLimited || catalogPage?.page === 1;
+
+  /**
+   * How many products the base fetch asks for.
+   *
+   * It shrinks to the author's limit ONLY when the catalog grid is the sole consumer.
+   * "Featured" is computed by filtering this same list for a `featured` tag, and pins are
+   * indexed out of it, so both need a real pool to draw from — narrowing the request to a
+   * four-item strip would leave the rail picking from four products and looking broken in
+   * a way no page on the site explains. The saving that matters (a landing page asking for
+   * 4 instead of 24) is exactly the case where nothing else is reading the pool.
+   */
+  const basePoolShared = p.featured || needs.productPins.length > 0;
+  const basePerPage = basePoolShared
+    ? COLLECTION_PAGE_SIZE
+    : loadCount('commerce.product', COLLECTION_PAGE_SIZE);
 
   /** Record what a catalog fetch actually returned, so the pager can move it. */
   const recordCatalogPaging = (shown: number, total: number): void => {
@@ -441,11 +497,18 @@ export async function buildSilicaHost(
   // which is not a curation at all.
   if (catalogOnBase || p.featured || needs.productPins.length > 0) {
     tasks.push(
-      listProducts(tenantSlug, { perPage: COLLECTION_PAGE_SIZE })
+      listProducts(tenantSlug, { perPage: basePerPage })
         .then(({ items, total }) => {
           const products = items.map((i) => toSilicaProduct(i, tenantSlug));
           if (catalogOnBase) {
-            setAtPath(root, 'commerce.product', products);
+            // A limited grid takes only what it renders. The base fetch may legitimately
+            // hold more (the pool `basePerPage` kept for Featured), so trim here rather
+            // than relying on the request size.
+            setAtPath(
+              root,
+              'commerce.product',
+              products.slice(0, loadCount('commerce.product', products.length))
+            );
             recordCatalogPaging(products.length, total);
           }
           if (p.featured) {
@@ -455,7 +518,11 @@ export async function buildSilicaHost(
             const flagged = items.filter((i) =>
               i.tags?.some((t) => t.toLowerCase() === 'featured')
             );
-            setAtPath(root, 'commerce.featured', bounded(flagged.length > 0 ? flagged : items));
+            setAtPath(
+              root,
+              'commerce.featured',
+              bounded(flagged.length > 0 ? flagged : items, 'commerce.featured')
+            );
           }
           if (needs.productPins.length > 0) {
             // Product pins (docs/98 Pillar 7) → __pins['commerce:<id>'], indexed from
@@ -493,11 +560,18 @@ export async function buildSilicaHost(
   // Newest — the "New" rail. Also the fallback source for the "Related" rail until the
   // public product API exposes a product's collection membership (see index-active-work).
   if (p.fresh || p.related) {
+    // `+ 1` so excluding the in-scope PDP product still leaves a full rail. The pool is
+    // the LARGER of the two rails' needs, since one fetch serves both.
+    const freshPool =
+      Math.max(
+        p.fresh ? loadCount('commerce.new', FEATURED_LIMIT) : 0,
+        p.related ? loadCount('commerce.related', FEATURED_LIMIT) : 0
+      ) + 1;
     tasks.push(
-      listProducts(tenantSlug, { sort: 'newest', perPage: FEATURED_LIMIT + 1 })
+      listProducts(tenantSlug, { sort: 'newest', perPage: freshPool })
         .then(({ items }) => {
-          if (p.fresh) setAtPath(root, 'commerce.new', bounded(items));
-          if (p.related) setAtPath(root, 'commerce.related', bounded(items));
+          if (p.fresh) setAtPath(root, 'commerce.new', bounded(items, 'commerce.new'));
+          if (p.related) setAtPath(root, 'commerce.related', bounded(items, 'commerce.related'));
         })
         .catch(() => {
           if (p.fresh) setAtPath(root, 'commerce.new', []);
@@ -509,13 +583,17 @@ export async function buildSilicaHost(
   // Category rails — one fetch per bound collection handle (`commerce.category.<handle>`).
   // A category grid shows the collection's full page (not the rail cap), current excluded.
   for (const handle of p.categories) {
+    const key = `commerce.category.${handle}`;
     tasks.push(
       listCollectionProducts(tenantSlug, handle)
         .then(({ items }) =>
           setAtPath(
             root,
-            `commerce.category.${handle}`,
-            items.filter(notCurrent).map((i) => toSilicaProduct(i, tenantSlug))
+            key,
+            items
+              .filter(notCurrent)
+              .slice(0, loadCount(key, COLLECTION_PAGE_SIZE))
+              .map((i) => toSilicaProduct(i, tenantSlug))
           )
         )
         .catch(() => setAtPath(root, `commerce.category.${handle}`, []))
@@ -524,15 +602,20 @@ export async function buildSilicaHost(
 
   for (const type of needs.cmsTypes) {
     const key = `cms.${type}`;
-    const requested = requestedPage(key);
+    // A limited content list is a curation ("our three latest posts"), so like a limited
+    // product grid it reads page one and records no paging.
+    const limited = isLimited(key);
+    const requested = limited ? null : requestedPage(key);
     tasks.push(
-      listEntries(tenantSlug, type, requested.page)
+      listEntries(tenantSlug, type, requested?.page ?? 1)
         .then(({ items, total }) => {
+          const shown = items.slice(0, loadCount(key, items.length));
           setAtPath(
             root,
             key,
-            items.map((e) => toSilicaEntry(e, tenantSlug, type))
+            shown.map((e) => toSilicaEntry(e, tenantSlug, type))
           );
+          if (!requested) return;
           const totalPages = Math.max(1, Math.ceil(total / COLLECTION_PAGE_SIZE));
           const entry: ListPaging = {
             source: key,
@@ -544,9 +627,9 @@ export async function buildSilicaHost(
             hasMore: requested.page < totalPages,
           };
           paging.push(entry);
-          setListMeta(root, key, items.length, entry);
+          setListMeta(root, key, shown.length, entry);
         })
-        .catch(() => setAtPath(root, `cms.${type}`, []))
+        .catch(() => setAtPath(root, key, []))
     );
   }
 

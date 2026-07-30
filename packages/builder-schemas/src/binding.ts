@@ -168,6 +168,8 @@ export function mapCmsContentType(ct: CmsContentTypeLike): DataSource[] {
     cardinality: 'array',
     recordType: ct.key,
     fields,
+    // Paginated like the catalog grid — one page here, the rest behind the pager.
+    maxItems: COLLECTION_PAGE_ITEMS,
   };
   return [collection, record];
 }
@@ -249,6 +251,24 @@ const SERVICE_FIELDS: FieldSchema[] = [
   { key: 'url', label: 'Booking URL', kind: 'text', cardinality: 'scalar' },
 ];
 
+/**
+ * How many records a BOUNDED rail yields — featured / new / related, and a category
+ * grid. A curated handful, never the catalog.
+ *
+ * Lives here rather than in the storefront because three places have to agree on it:
+ * the storefront's fetch, the canvas's placeholder count, and `DataSource.maxItems`
+ * below. It was a private constant in `apps/site/lib/silica-data.ts`, which meant the
+ * editor could only guess — and it guessed three.
+ */
+export const RAIL_MAX_ITEMS = 8;
+
+/**
+ * One page of an UNBOUNDED list — the whole-catalog grid and every CMS collection.
+ * Not a cap on the source (there are more records; the pager reaches them), which is
+ * why it is a separate constant from `RAIL_MAX_ITEMS` even when the numbers move.
+ */
+export const COLLECTION_PAGE_ITEMS = 24;
+
 export const COMMERCE_SOURCES: DataSource[] = [
   {
     key: 'commerce.product',
@@ -257,6 +277,8 @@ export const COMMERCE_SOURCES: DataSource[] = [
     cardinality: 'array',
     recordType: 'product',
     fields: PRODUCT_FIELDS,
+    // A PAGE of the catalog, not the whole thing — the pager reaches the rest.
+    maxItems: COLLECTION_PAGE_ITEMS,
   },
   // The bounded rails the configurable Products block picks between (docs/118). Same
   // product SHAPE as `commerce.product`; the storefront caps each to a handful and
@@ -269,6 +291,7 @@ export const COMMERCE_SOURCES: DataSource[] = [
     cardinality: 'array',
     recordType: 'product',
     fields: PRODUCT_FIELDS,
+    maxItems: RAIL_MAX_ITEMS,
   },
   {
     key: 'commerce.new',
@@ -277,6 +300,7 @@ export const COMMERCE_SOURCES: DataSource[] = [
     cardinality: 'array',
     recordType: 'product',
     fields: PRODUCT_FIELDS,
+    maxItems: RAIL_MAX_ITEMS,
   },
   {
     key: 'commerce.related',
@@ -285,6 +309,7 @@ export const COMMERCE_SOURCES: DataSource[] = [
     cardinality: 'array',
     recordType: 'product',
     fields: PRODUCT_FIELDS,
+    maxItems: RAIL_MAX_ITEMS,
   },
   {
     key: 'product',
@@ -348,6 +373,10 @@ export function commerceCategorySource(handle: string, name: string): DataSource
     cardinality: 'array',
     recordType: 'product',
     fields: PRODUCT_FIELDS,
+    // A category grid shows one page of the collection, like the catalog grid — it is a
+    // browse surface, not a curated strip, so it takes the page size rather than the
+    // rail cap.
+    maxItems: COLLECTION_PAGE_ITEMS,
   };
 }
 

@@ -35,12 +35,8 @@ import { StorefrontBuilderRuntime } from '@/components/storefront-builder-runtim
 import type { PublishedSilicaFrameDto } from '@sparx/builder-schemas';
 import { getPublishedSilicaFrame } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
-import {
-  buildSilicaThemeCss,
-  buildSilicaThemeCssFromTheme,
-  brandFontHref,
-  themeFontFamilies,
-} from '@sparx/site-themes';
+import { buildSilicaThemeCssFromTheme, brandFontHref, themeFontFamilies } from '@sparx/site-themes';
+import { BASE_SILICA_THEME } from '@sparx/silica-catalog';
 import { getLegalFooterLinks, type LegalLink } from '@/lib/legal';
 import { getPublishedBuilderStyles } from '@/lib/builder';
 import { ConsentManager } from '@/components/consent/consent-manager';
@@ -296,13 +292,24 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   //     touched the theme still renders in its brand.
   // Both emit identical selectors, so switching between them is invisible. Coexists
   // with `themeCss` during the parallel run; `--st-*` retires at the flip.
+  //
+  // site.theme is the SINGLE source of the look (docs/impl theming-spine plan): a
+  // silica-active site ALWAYS resolves to a concrete theme. The authored theme leads;
+  // a site that has published no theme falls back to BASE_SILICA_THEME (the sparx Ember
+  // base) rather than rendering unthemed. The legacy brand-derived tier
+  // (`buildSilicaThemeCss(compiledV2)`) is GONE: brand is identity-only now, so an
+  // un-themed site wears the base theme, not a brand-column compile.
   const silicaThemeCss = !silicaActive
     ? ''
     : silicaFrame.theme
       ? buildSilicaThemeCssFromTheme(silicaFrame.theme)
-      : snapshot?.compiledV2
-        ? buildSilicaThemeCss(snapshot.compiledV2)
-        : '';
+      : buildSilicaThemeCssFromTheme(BASE_SILICA_THEME);
+
+  // The theme driving the chrome OUTSIDE the frame (chat accent, OG, web fonts).
+  // Authored theme wins; a silica-active site with no authored theme uses BASE so the
+  // chrome never diverges from what `silicaThemeCss` painted. Null only when silica is
+  // inactive (a legacy non-silica site).
+  const effectiveSilicaTheme = silicaFrame.theme ?? (silicaActive ? BASE_SILICA_THEME : null);
 
   // The floating chrome that lives OUTSIDE the silica frame — the chat launcher, the
   // OG accent — historically read `site.theme.colorPrimary`, the LEGACY brand-compiled
@@ -311,7 +318,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // theme, so a tenant whose silica theme is (say) Ember still got an indigo chat
   // bubble. Prefer the silica theme's own `--color-primary` when silica is active.
   const silicaThemePrimary = silicaActive
-    ? silicaFrame.theme?.tokens?.['--color-primary']
+    ? effectiveSilicaTheme?.tokens?.['--color-primary']
     : undefined;
 
   // The fonts to load, or the storefront renders every theme in the Geist fallback.
@@ -321,7 +328,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Compiled snapshot + brand columns follow as the backstop for a brand-derived
   // theme; `brandFontHref` de-dupes the overlap.
   const fontHref = brandFontHref([
-    ...(silicaActive && silicaFrame.theme ? themeFontFamilies(silicaFrame.theme) : []),
+    ...(silicaActive && effectiveSilicaTheme ? themeFontFamilies(effectiveSilicaTheme) : []),
     snapshot?.compiledV2?.shared.fontHeading,
     snapshot?.compiledV2?.shared.fontBody,
     site?.theme?.fontHeading,
