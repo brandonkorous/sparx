@@ -1049,6 +1049,86 @@ module "platform_crm_worker_cloudrun" {
   ]
 }
 
+# platform-crm-backfill — the one-off that puts tenants who signed up BEFORE the
+# worker existed onto the signup board (docs/140 §7).
+#
+# A Cloud Run JOB on the worker's OWN image rather than a packages/db backfill:
+# the mirror writes through the CRM service layer under RLS, so it has to run as
+# the same identity and in the same runtime the worker uses in production. The
+# db-migrate path runs as the migration owner doing raw data rewrites — a
+# different privilege context than this code is built for, and it would drag the
+# whole CRM service layer into the migration image.
+#
+# DRY-RUN BY DEFAULT. The declared args omit `--apply`, so a bare
+# `gcloud run jobs execute` only reports. To actually write:
+#   gcloud run jobs execute platform-crm-backfill --region us-central1 --wait \
+#     --args=--import,tsx,scripts/backfill-tenants.ts,--apply
+# (an execution-time override — the safe default stays in state, no drift).
+#
+# Costs nothing at rest: a Job bills only while an execution runs.
+
+resource "google_cloud_run_v2_job" "platform_crm_backfill" {
+  name     = "platform-crm-backfill"
+  project  = var.project_id
+  location = var.region
+
+  template {
+    template {
+      service_account = google_service_account.platform_crm_worker.email
+      timeout         = "1800s"
+      max_retries     = 1
+
+      vpc_access {
+        connector = google_vpc_access_connector.workers.id
+        egress    = "PRIVATE_RANGES_ONLY"
+      }
+
+      containers {
+        image   = "${var.region}-docker.pkg.dev/${var.project_id}/sparx/platform-crm-worker:latest"
+        command = ["node"]
+        args    = ["--import", "tsx", "scripts/backfill-tenants.ts"]
+
+        env {
+          name  = "NODE_ENV"
+          value = "production"
+        }
+        env {
+          name  = "LOG_LEVEL"
+          value = "info"
+        }
+        env {
+          name  = "SPARX_PLATFORM_TENANT_ID"
+          value = var.platform_tenant_id
+        }
+        env {
+          name = "DATABASE_URL"
+          value_source {
+            secret_key_ref {
+              secret  = "database-url-cloudrun"
+              version = "latest"
+            }
+          }
+        }
+
+        resources {
+          limits = {
+            cpu    = "1"
+            memory = "512Mi"
+          }
+        }
+      }
+    }
+  }
+
+  lifecycle {
+    # CI bumps the image tag on the worker; the job follows `:latest` and should
+    # not fight a pinned value in state.
+    ignore_changes = [template[0].template[0].containers[0].image]
+  }
+
+  depends_on = [google_project_iam_member.platform_crm_worker_roles]
+}
+
 # domain-worker — finalizes PURCHASED domains (docs/24 §4-5). Consumes
 # domain.purchased: retries the GoDaddy DNS config if the synchronous call at
 # purchase failed, polls CNAME propagation, then flips the domain pending_ssl →

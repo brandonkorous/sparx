@@ -8,9 +8,18 @@
 // instead of replaying a signup that happened months ago. Idempotent: re-running
 // updates the same contact + deal.
 //
-//   DATABASE_URL=... SPARX_PLATFORM_TENANT_ID=... node --import tsx scripts/backfill-tenants.ts
+// Cloud SQL is private-IP, so this runs as a Cloud Run JOB on the worker's own
+// image (terraform/envs/prod/serverless.tf) — same VPC connector, same DB
+// secret, same service account. That matters: the mirror writes THROUGH the CRM
+// service layer under RLS, so it must run as the same role the worker does, not
+// as the migration owner.
 //
-// Add DRY_RUN=1 to list what it would touch without writing.
+//   gcloud run jobs execute platform-crm-backfill --region us-central1 --wait
+//   gcloud run jobs execute platform-crm-backfill --region us-central1 --wait \
+//     --args=--import,tsx,scripts/backfill-tenants.ts,--apply
+//
+// DRY-RUN BY DEFAULT (matching packages/db/scripts/backfill-*.ts): it lists what
+// it would touch and writes nothing until `--apply` is passed.
 
 import { prisma } from '@sparx/db';
 import { mirrorTenant, recordSubscriptionChange, type MirrorLogger } from '@sparx/platform-crm';
@@ -24,7 +33,8 @@ const logger: MirrorLogger = {
 };
 
 async function main(): Promise<void> {
-  const dryRun = process.env.DRY_RUN === '1';
+  // Same flag convention as the packages/db backfills: no `--apply`, no writes.
+  const dryRun = !process.argv.includes('--apply');
   const tenants = await prisma.tenant.findMany({
     where: { status: 'active', id: { not: SENTINEL_TENANT } },
     select: { id: true, slug: true, subscriptionStatus: true },
