@@ -18,6 +18,21 @@
 // header and footer, or the saved piece — and selects it, so "this button does
 // nothing" is one click from the button.
 //
+// AND "OPENS THE TREE IT LIVES IN" MEANS `setActiveTree`, NOT JUST A PAGE SWITCH.
+// silica's selection is TREE-SCOPED — "an id in one tree means nothing in the other" —
+// and `editor.select(id)` neither validates the id nor moves the spine. So handing it a
+// header node while the editor is on a page body sets a selection that matches nothing:
+// the canvas draws no ring, the Navigator highlights no row, the Inspector describes
+// nothing. Not an error, not a toast — literally nothing happens, which is the worst
+// possible outcome for the one button whose entire job is "take me to it".
+//
+// This file used to reason that "the frame is part of every page's canvas, so a frame
+// node needs no navigation at all". That is true of what you SEE and false of what you
+// can select, and the header/footer is where a starter site's findings mostly are — an
+// unfinished nav link, a logo with no description. So `goTo` now points the spine at the
+// tree the finding names, in BOTH directions: a page finding clicked while the author is
+// in Layout needs the same correction as a frame finding clicked from a page.
+//
 // TWO SECTIONS, AND THEY ARE NOT THE SAME KIND OF THING. Above: findings — something
 // is wrong. Below: what each page WEIGHS — nothing is wrong, here is what a visitor
 // downloads. Keeping weight out of the findings is deliberate; see `PageWeights`.
@@ -45,6 +60,7 @@ import {
   ShieldCheck,
   TriangleAlert,
 } from 'lucide-react';
+import { PaneScope } from '../../../lib/dock/window-boundary';
 import {
   builderErrorMessage,
   useSiteCheck,
@@ -162,6 +178,10 @@ export function SiteCheck({ open, onOpenChange, onRequestOpen }: Props) {
    * piece, and `setActivePage` while inside one leaves the canvas showing the master
    * with the page switched underneath it — the selection lands somewhere the author
    * cannot see. Leaving first is a no-op when they are not in one.
+   *
+   * Then the SPINE moves before the selection does — see the note at the top of the
+   * file. `enterSymbol` carries its own tree (and silica syncs its mode toggle off it);
+   * `page` and `frame` need saying out loud.
    */
   const goTo = useCallback(
     (finding: CheckFinding) => {
@@ -169,9 +189,16 @@ export function SiteCheck({ open, onOpenChange, onRequestOpen }: Props) {
       try {
         editor.exitSymbol();
         if (scope === 'symbol' && ownerId) editor.enterSymbol(ownerId);
-        else if (scope === 'page' && ownerId) editor.setActivePage(ownerId);
-        // The frame is part of every page's canvas, so a frame node needs no
-        // navigation at all — selecting it is enough.
+        else if (scope === 'frame') editor.setActiveTree('frame');
+        else {
+          // Stated rather than inherited. `exitSymbol` happens to land on the page body
+          // already, so this is a no-op today — but "which tree does a page finding
+          // open?" should be answered here, not two lines up in a call whose job is
+          // leaving a symbol. A `site`-scoped finding (the theme's colours) has no tree
+          // of its own and the page body is where an author acts on it.
+          editor.setActiveTree('page');
+          if (scope === 'page' && ownerId) editor.setActivePage(ownerId);
+        }
         if (nodeId) editor.select(nodeId);
         onOpenChange(false);
       } catch {
@@ -187,11 +214,15 @@ export function SiteCheck({ open, onOpenChange, onRequestOpen }: Props) {
     [editor, onOpenChange, toast]
   );
 
-  /** Open a page from the weight list. Same `exitSymbol` precaution as `goTo`. */
+  /** Open a page from the weight list. Same `exitSymbol` precaution as `goTo`, and the
+   *  same reason for naming the tree: switching pages while the spine is on the frame
+   *  changes which body the Outlet previews and nothing the author is editing, so the
+   *  click would appear to do nothing here too. */
   const goToPage = useCallback(
     (pageId: string) => {
       try {
         editor.exitSymbol();
+        editor.setActiveTree('page');
         editor.setActivePage(pageId);
         onOpenChange(false);
       } catch {
@@ -208,67 +239,72 @@ export function SiteCheck({ open, onOpenChange, onRequestOpen }: Props) {
   const report = check.data;
 
   return (
-    <Drawer open={open} onOpenChange={onOpenChange}>
-      <Button
-        size="sm"
-        variant="ghost"
-        color="neutral"
-        onClick={onRequestOpen}
-        title="Check for broken links, unreadable text and missing descriptions"
-      >
-        <ShieldCheck className="size-4" aria-hidden />
-        Check
-      </Button>
-      <DrawerContent side="right" className="flex w-[34rem] max-w-full flex-col">
-        <DrawerHeader>
-          <DrawerTitle>Check before you publish</DrawerTitle>
-          <p className="text-base-content text-base">
-            Everything below is a note, not a rule. You can publish whenever you like — this is here
-            so nothing reaches your visitors that you did not mean to send.
-          </p>
-        </DrawerHeader>
-
-        <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
-          {check.isPending ? (
-            <p className="text-base-content p-4 text-base" role="status">
-              Checking every page…
+    // Scoped to the pane, like every other overlay this app owns (window-boundary.tsx):
+    // portalled to `document.body` it dimmed the whole workbench for a panel belonging to
+    // one editor, and in a torn-off window it would have opened on the wrong monitor.
+    <PaneScope>
+      <Drawer open={open} onOpenChange={onOpenChange}>
+        <Button
+          size="sm"
+          variant="ghost"
+          color="neutral"
+          onClick={onRequestOpen}
+          title="Check for broken links, unreadable text and missing descriptions"
+        >
+          <ShieldCheck className="size-4" aria-hidden />
+          Check
+        </Button>
+        <DrawerContent side="right" className="flex w-[34rem] max-w-full flex-col">
+          <DrawerHeader>
+            <DrawerTitle>Check before you publish</DrawerTitle>
+            <p className="text-base-content text-base">
+              Everything below is a note, not a rule. You can publish whenever you like — this is
+              here so nothing reaches your visitors that you did not mean to send.
             </p>
-          ) : check.isError ? (
-            <Alert color="error" variant="soft">
-              <AlertContent>
-                <AlertTitle>Could not run the check</AlertTitle>
-                <AlertDescription>
-                  {builderErrorMessage(
-                    check.error,
-                    'Your work is saved. Try the Check button again in a moment.'
-                  )}
-                </AlertDescription>
-              </AlertContent>
-            </Alert>
-          ) : !report ? null : (
-            <div className="flex flex-col gap-8">
-              {report.findings.length === 0 ? (
-                <Alert color="success" variant="soft">
-                  <AlertContent>
-                    <AlertTitle>
-                      <CheckCircle2 className="size-4" aria-hidden /> Nothing to flag
-                    </AlertTitle>
-                    <AlertDescription>
-                      All {report.pagesChecked} page{report.pagesChecked === 1 ? '' : 's'} came back
-                      clean — every link goes somewhere, every image is described, and the words can
-                      be read against what is behind them.
-                    </AlertDescription>
-                  </AlertContent>
-                </Alert>
-              ) : (
-                <FindingGroups report={report} onGoTo={goTo} />
-              )}
-              <PageWeights budget={report.budget} onGoToPage={goToPage} />
-            </div>
-          )}
-        </div>
-      </DrawerContent>
-    </Drawer>
+          </DrawerHeader>
+
+          <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-4">
+            {check.isPending ? (
+              <p className="text-base-content p-4 text-base" role="status">
+                Checking every page…
+              </p>
+            ) : check.isError ? (
+              <Alert color="error" variant="soft">
+                <AlertContent>
+                  <AlertTitle>Could not run the check</AlertTitle>
+                  <AlertDescription>
+                    {builderErrorMessage(
+                      check.error,
+                      'Your work is saved. Try the Check button again in a moment.'
+                    )}
+                  </AlertDescription>
+                </AlertContent>
+              </Alert>
+            ) : !report ? null : (
+              <div className="flex flex-col gap-8">
+                {report.findings.length === 0 ? (
+                  <Alert color="success" variant="soft">
+                    <AlertContent>
+                      <AlertTitle>
+                        <CheckCircle2 className="size-4" aria-hidden /> Nothing to flag
+                      </AlertTitle>
+                      <AlertDescription>
+                        All {report.pagesChecked} page{report.pagesChecked === 1 ? '' : 's'} came
+                        back clean — every link goes somewhere, every image is described, and the
+                        words can be read against what is behind them.
+                      </AlertDescription>
+                    </AlertContent>
+                  </Alert>
+                ) : (
+                  <FindingGroups report={report} onGoTo={goTo} />
+                )}
+                <PageWeights budget={report.budget} onGoToPage={goToPage} />
+              </div>
+            )}
+          </div>
+        </DrawerContent>
+      </Drawer>
+    </PaneScope>
   );
 }
 

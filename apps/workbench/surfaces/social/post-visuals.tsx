@@ -173,6 +173,81 @@ export function PostThumb({
   );
 }
 
+/* ── The lead picture, as a card cover ────────────────────────────────────── */
+
+/**
+ * A post's lead visual filling the top of a card — the wide sibling of {@link PostThumb}.
+ *
+ * The ratio lives HERE, not at the call site, and that is the point: every cover is the
+ * same shape whatever the source picture is, so a wall of cards reads as a grid rather
+ * than a ragged column. A portrait photo, a wide banner and a text-only post all occupy
+ * exactly the same block; `object-cover` plus the asset's focal point decides what
+ * survives the crop, so the subject stays in frame instead of the middle of the file
+ * being assumed to be the subject.
+ *
+ * 16:10 rather than 16:9 or square: tall enough that a portrait crop keeps a face, short
+ * enough that four or five cards across still leave room for the words under them.
+ *
+ * Never an empty grey box — a text-only post gets a module-tinted panel that says so at a
+ * glance, matching PostThumb so the same post reads the same in a list and in a card.
+ */
+export function PostCover({
+  post,
+  assetsById,
+}: {
+  post: Post;
+  assetsById: Map<string, MediaAsset>;
+}) {
+  const box = 'bg-base-200 relative aspect-16/10 w-full shrink-0 overflow-hidden';
+  const leadId = post.mediaAssetIds[0];
+
+  if (!leadId) {
+    return (
+      <div className={`${box} bg-module bg-soft text-module flex items-center justify-center`}>
+        <MessageSquareText className="size-8" aria-hidden />
+      </div>
+    );
+  }
+
+  const asset = assetsById.get(leadId);
+  const extra = post.mediaAssetIds.length - 1;
+
+  if (asset && isVideoAsset(asset)) {
+    return (
+      <div className={`${box} text-base-content flex items-center justify-center`}>
+        <Video className="size-8" aria-hidden />
+      </div>
+    );
+  }
+
+  return (
+    <div className={box}>
+      {asset?.url ? (
+        <Image
+          src={asset.url}
+          alt={asset.filename}
+          fill
+          // Cards run one-up on a narrow pane and five-up on a wide one, so the rendered
+          // width really does span that range.
+          sizes="(max-width: 40rem) 100vw, 20rem"
+          className={`object-cover ${focalClassFor(asset.focalX, asset.focalY)}`}
+          unoptimized={!asset.canOptimize}
+        />
+      ) : (
+        // The asset row exists but its file has not finished processing.
+        <div className="flex h-full items-center justify-center">
+          <MessageSquareText className="size-8 opacity-40" aria-hidden />
+        </div>
+      )}
+      {extra > 0 ? (
+        <span className="bg-base-100/90 absolute right-1.5 bottom-1.5 rounded px-1.5 py-0.5 text-xs font-semibold">
+          +{extra}
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
 /* ── Where it goes: the account avatars ───────────────────────────────────── */
 
 /**

@@ -39,7 +39,7 @@ import type {
 } from '../../../lib/onboarding/types';
 import { StoryExtras, storyPlanItems, storyTotals } from '../story/story-summary';
 import { StepModules } from './step-modules';
-import { StepBlueprint, SCRATCH } from './step-blueprint';
+import { StepBlueprint, SCRATCH, GOLDEN_BLUEPRINT_KEY } from './step-blueprint';
 import { StepWorkspace, type SlugCheck } from './step-workspace';
 import { StepDomain } from './step-domain';
 import { StepPayments } from './step-payments';
@@ -208,9 +208,11 @@ function WizardInner({
   const [step, setStep] = useState<OnboardingStepKey>(initial.step);
 
   // choice = the SELECTED starting point (a key, the SCRATCH sentinel, or null);
-  // installedKey + installId are what is actually provisioned.
+  // installedKey + installId are what is actually provisioned. A fresh tenant defaults
+  // to the golden template — a new site IS the golden template unless the user picks
+  // another blueprint or starts blank. Anyone resuming keeps their prior choice.
   const [choice, setChoice] = useState<string | null>(
-    initial.blueprintKey ?? (initial.templateDone ? SCRATCH : null)
+    initial.blueprintKey ?? (initial.templateDone ? SCRATCH : GOLDEN_BLUEPRINT_KEY)
   );
   const [installedKey, setInstalledKey] = useState<string | null>(initial.blueprintKey);
   const [installId, setInstallId] = useState<string | null>(initial.installId);
@@ -385,7 +387,6 @@ function WizardInner({
       body = (
         <StepBlueprint
           blueprints={blueprints}
-          modules={modules}
           selectedKey={choice}
           onSelect={setChoice}
           loading={blueprintsLoading}

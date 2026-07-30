@@ -145,7 +145,23 @@ export function buildPreviewRoot(
   site?: SitePreviewData | null
 ): DataSources {
   const root: DataSources = {};
-  for (const s of sources) {
+  // SHALLOWEST KEY FIRST, and this ordering is load-bearing rather than tidy.
+  //
+  // Some source keys are PREFIXES of others: `commerce.category` is the array of browse
+  // categories, and `commerce.category.<handle>` is one category's products — one per
+  // tenant collection. Writing the deep key first builds `commerce.category = { handle:
+  // [...] }`, and the shallow write then REPLACES that whole object with the category
+  // array, silently discarding every per-collection source. The repeat bound to it then
+  // resolves to nothing, and an unresolved collection keeps its authored children — which
+  // is exactly one card, with nothing on screen to say why.
+  //
+  // Writing shallow-first makes the deep key a property ON the array, which is where the
+  // dotted path resolver looks for it, so both survive. Catalog order is otherwise
+  // whatever the API happened to serialise, which is why this was intermittent.
+  const ordered = [...sources].sort(
+    (a, b) => a.key.split('.').length - b.key.split('.').length || a.key.localeCompare(b.key)
+  );
+  for (const s of ordered) {
     const count = Math.min(s.maxItems ?? DEFAULT_PREVIEW_ITEMS, MAX_PREVIEW_ITEMS);
     const value =
       s.cardinality === 'array'

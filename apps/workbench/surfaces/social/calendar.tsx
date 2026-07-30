@@ -356,15 +356,37 @@ function CalendarGrid({
   const todayKey = dayKey(new Date());
 
   return (
-    <div className="border-base-300 overflow-hidden rounded-xl border">
-      <div className="border-base-300 grid grid-cols-7 border-b">
+    // `flex-1`, NOT `h-full`. This card is a flex ITEM of a column flex parent, and
+    // `height: 100%` there resolves against a containing block that flex sizing does
+    // not make definite — so it silently falls back to CONTENT height and the card
+    // stops partway down the pane however much room it is given. Measured: with the
+    // parent at 1402px the `h-full` card stayed 706px; as `flex-1` it takes all 1402.
+    // Growing into a flex parent is always `flex-1`; a percentage is the bug.
+    <div className="border-base-300 flex flex-1 flex-col overflow-hidden rounded-xl border">
+      <div className="border-base-300 grid shrink-0 grid-cols-7 border-b">
         {WEEKDAYS.map((label) => (
           <div key={label} className="px-2 py-2 text-center text-xs font-semibold">
             {label}
           </div>
         ))}
       </div>
-      <div className={`grid grid-cols-7 ${tall ? '[&>*]:min-h-64' : ''}`}>
+      {/* `minmax(<floor>, 1fr)` per row, not `grid-rows-6`/`auto`.
+          `auto` was why the card stopped partway down the pane: rows took only the
+          height their chips needed and the rest of the pane went to waste.
+          Tailwind's `grid-rows-6` is `repeat(6, minmax(0, 1fr))`, which fixes that but
+          swaps in a worse bug — a 0 floor lets a short pane squeeze rows below the
+          cell's own `min-h-28`, and the cells then spill over each other.
+          Spelling the floor into the track keeps both properties: share the surplus
+          when there is room, refuse to go below a legible row when there is not, and
+          let the pane scroll at that point. The floors match DayCell's min-h-28 and
+          the week view's taller cell. */}
+      <div
+        className={`grid flex-1 grid-cols-7 ${
+          tall
+            ? '[grid-template-rows:minmax(16rem,1fr)]'
+            : '[grid-template-rows:repeat(6,minmax(7rem,1fr))]'
+        }`}
+      >
         {days.map((day) => {
           const key = dayKey(day);
           return (
@@ -441,7 +463,7 @@ function DraftsTray({
 }) {
   if (drafts.length === 0) return null;
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex shrink-0 flex-col gap-2">
       <div className="flex items-center gap-2">
         <Heading level={3} className="text-sm font-semibold">
           Unscheduled drafts
@@ -600,8 +622,13 @@ export function PostsCalendar({
       }}
       onDragEnd={handleDragEnd}
     >
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
-        <div className="flex flex-wrap items-center gap-2">
+      {/* Full width, not a centred reading column. A calendar is a GRID, and a capped
+          column spent the pane's width on empty gutters while squeezing seven day cells
+          into 72rem — the wider the pane, the more each day gets, which is the whole
+          reason someone docks this one wide. `flex-1` + `min-h-0` so the grid inside can
+          claim the leftover height rather than sitting in a short card. */}
+      <div className="flex min-h-0 w-full flex-1 flex-col gap-4">
+        <div className="flex shrink-0 flex-wrap items-center gap-2">
           <Heading level={2} className="text-lg font-semibold">
             {rangeLabel}
           </Heading>
@@ -654,7 +681,7 @@ export function PostsCalendar({
         </div>
 
         {canWrite ? (
-          <Text className="text-sm">
+          <Text className="shrink-0 text-sm">
             {posts.length === 0
               ? 'No posts yet — click any day to write your first one.'
               : 'Click any day to write a post dated to it. Drag a post to another day to reschedule it — or drag a draft up from below onto a day to schedule it.'}
@@ -663,8 +690,8 @@ export function PostsCalendar({
 
         {/* A grid is always the view — it never degrades into a list. On a pane too
             narrow for seven legible columns it scrolls sideways instead. */}
-        <div className="-mx-1 overflow-x-auto px-1">
-          <div className="min-w-[44rem]">
+        <div className="-mx-1 flex min-h-0 flex-1 flex-col overflow-x-auto px-1">
+          <div className="flex min-w-[44rem] flex-1 flex-col">
             <CalendarGrid
               days={days}
               month={view === 'month' ? cursor.getMonth() : null}
@@ -778,7 +805,12 @@ export function SocialCalendarSurface({ ctx }: { ctx: SurfaceContext }) {
           // The calendar is ALWAYS the view — an empty month is still a calendar you
           // click into to write your first post. The zero-posts guidance rides inside
           // it as a hint, not a screen that replaces the grid.
-          <div className="p-4">
+          //
+          // `min-h-full` rather than `h-full`: the grid takes every pixel the pane has
+          // when there is room, and grows past it (letting this container scroll) when
+          // the pane is too short for six legible rows. `h-full` would cap it and crush
+          // the rows instead.
+          <div className="flex min-h-full flex-col p-4">
             <PostsCalendar
               posts={all}
               assetsById={board.assetsById}

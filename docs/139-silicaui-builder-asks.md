@@ -1,15 +1,18 @@
-# 139 — silicaui-builder: the asks (ALL ANSWERED — 1–11 in 0.36.0/0.37.0, §12 in 0.38.0)
+# 139 — silicaui-builder: the asks (1–13 ANSWERED; §14–§15 OPEN)
 
-**Version:** 2.4.0
+**Version:** 2.6.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-29
 
-> ## ⚑ §12 SHIPPED IN `0.38.0` — raised and answered the same day (2026-07-29)
+> ## ⚑ §14 AND §15 ARE OPEN (raised 2026-07-29 against `0.40.0`)
 >
-> **[§12 — per-instance options on a collection binding](#12--per-instance-options-on-a-collection-binding)**
-> is the newest ask and is already installed: a repeat now carries an author-set `limit`, so "show 4
-> of these products" is a number in the inspector rather than a source the host had to pre-cap. The
-> eleven below it were answered in `0.36.0`/`0.37.0`. Nothing in this register is open.
+> - **[§14 — a STATUS BAR slot](#14--a-status-bar-slot-for-the-state-that-isnt-toolbar-chrome)** — the
+>   footer is where state belongs, and §13's header slot made that obvious rather than settling it.
+> - **[§15 — `setActiveTree('frame')` doesn't move the mode toggle](#15--setactivetreeframe-moves-the-spine-but-not-the-mode-toggle)** —
+>   a small correctness bug; the symbol case already self-corrects and the frame case doesn't.
+>
+> **§13 shipped in `0.40.0`** as `toolbarStatusSlot`, adopted the same day. §12 shipped in
+> `0.38.0`, also the day it was raised; 1–11 in `0.36.0`/`0.37.0`.
 
 > ## ⚑ ALL ELEVEN WERE ANSWERED AND SHIPPED IN `0.36.0` (2026-07-28)
 >
@@ -478,6 +481,185 @@ The counted sources collapse back to one source per rail, the storefront reads `
 tree during the walk it already does (so it fetches 4 rather than fetching 30 and discarding 26),
 and the canvas previews the true count — which is the whole reason this came up: a block that will
 render 12 cards previewing as 3 is an author laying out against a page that does not exist.
+
+---
+
+## 13 — A STATUS slot in the toolbar, distinct from the action slot
+
+**Status: ANSWERED — shipped in `0.40.0` as `toolbarStatusSlot`, raised the same day against
+`0.38.0`.** Adopted in `studio-surface.tsx`; the live-sync indicators moved into it and the
+Reload affordance stayed in `toolbarSlot`, because silicaui documented the new slot as
+non-interactive for precisely the focus-order reason argued below. §14 is the follow-on: the
+right slot in the header turned out to be the wrong FLOOR.
+
+### The ask
+
+A second header slot for non-interactive status, rendered before the theme toggle:
+
+```tsx
+toolbarStatusSlot?: React.ReactNode   // status — who else is editing, saved/unsaved
+toolbarSlot?: React.ReactNode         // actions — unchanged
+```
+
+### Why one slot cannot carry both
+
+`toolbarSlot` renders at ONE fixed position — after the `light`/`dark` toggle group, before
+`Publish`. A host with both kinds of chrome therefore gets them interleaved with the engine's
+own controls:
+
+```
+[Theme|Layout|Page|Component] [undo] [redo] [Desktop|Tablet|Mobile] ⟨spacer⟩
+    ⌘/  [Light|Dark]  «hostSlot»  [Publish]
+```
+
+Everything a host has — a presence pill, a saved/unsaved badge, page settings, a pre-publish
+check, history, preview, save — lands inside `«hostSlot»`. So the status badges end up wedged
+between the engine's buttons on their left and the host's buttons on their right, reading as a
+gap in a run of controls rather than as state. Ordering within the slot cannot help: the
+badges are already first in it.
+
+**CSS `order` cannot reach the position either**, and this is the part worth stating, because
+it looks like the obvious host-side fix. The header is a single flex container, so `order: -1`
+places the group before EVERY child — left of the mode switcher at the far edge of the toolbar
+— and `order: 1` places it after `Publish`. There is no value that lands between the spacer and
+the theme toggle, because the target position is mid-container and `order` only sorts against
+the whole set.
+
+The remaining host-side option is a portal into the engine's own header DOM at a computed
+index. That works and is what we would otherwise do, but it means one package reaching into
+another's markup and breaking silently the first time the header's child order changes — which
+is worse than asking.
+
+### Why the split is the right shape, not just a second slot
+
+Status and actions are different kinds of thing and want different placement rules: status is
+non-interactive and belongs near the surface it describes, actions belong grouped with other
+actions and in a stable order a user can build muscle memory for. Keeping them in one slot
+forces every host to choose which one reads wrong.
+
+It also keeps FOCUS ORDER honest for free. A host that solves this with `order` moves a
+control visually without moving it in the DOM, so a keyboard user meets the theme toggle
+before a button that appears ahead of it (WCAG 2.4.3). A real slot puts the status where it
+belongs in both orders at once — and because the content is non-interactive, it adds no tab
+stop at all.
+
+### Generic?
+
+Yes. "Some header chrome is state and some is action" is true of any host: a CMS showing a
+lock holder, an email tool showing a send window, a static-site generator showing a build
+status. None of it names a domain concept.
+
+---
+
+## 14 — A STATUS BAR slot, for the state that isn't toolbar chrome
+
+**Status: OPEN, raised 2026-07-29 against `0.40.0`.**
+
+### The ask
+
+A host slot in the editor's footer, mirroring §13's slot in the header:
+
+```tsx
+statusBarSlot?: React.ReactNode; // rendered in the footer, after the mode label
+```
+
+### Why, when §13 just shipped
+
+§13 was right and `toolbarStatusSlot` was adopted the day it landed. But putting sparx's two
+live indicators — "3 editing", "Saved · not live yet" — at the head of the header's right-hand
+cluster only made a second question obvious: **the editor already has a status bar, and that is
+where status belongs.**
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│ Theme Layout Page Component  ↶ ↷  Desktop Tablet Mobile   ⌘/  Light Dark │  ← actions
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+├─────────────────────────────────────────────────────────────────────────┤
+│ Page                                              Desktop     silicaui  │  ← state
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+The footer already carries exactly this kind of fact — which surface you are on, which device
+width you are looking at — and nothing else. Two indicators of the same kind sitting in the
+header means a person reads state in two places, and the one they read it in is the one packed
+with buttons.
+
+The engine's own footer children make the argument: `mode` and `device` are state, not controls,
+and they are down there rather than beside the toggles that set them.
+
+### Why a host cannot do this
+
+`<footer>` is engine-owned and takes no children. The alternatives are worse than asking:
+
+- Render our own strip below `<Builder>` → two status bars, one per package, stacked.
+- Portal into the engine's footer at a computed index → the §13 objection verbatim: one package
+  reaching into another's markup, breaking silently the first time the footer's children change.
+
+### Shape
+
+Same contract as `toolbarStatusSlot`, one floor down — **non-interactive content only**, for the
+same reason and with a stronger case: a 28px-tall strip is not somewhere to put a control, and
+the engine's own two children are plain `<span>`s. Placement after `mode` (before the `flex-1`
+spacer) puts a host's state next to the engine's, reading left to right as one sentence about
+the session.
+
+### Generic?
+
+Yes, and arguably more so than §13. "The editor has a status bar and the host has status" is
+true of every embedding: a CMS with a lock holder, a build tool with a last-built time, a
+collaborative editor with a presence count. None of it names a domain concept, and every host
+that has any state at all currently has nowhere honest to put it.
+
+---
+
+## 15 — `setActiveTree('frame')` moves the spine but not the mode toggle
+
+**Status: OPEN, raised 2026-07-29 against `0.40.0`. Small, and a correctness bug rather than a
+capability ask.**
+
+### What happens
+
+`Editor.setActiveTree('frame')` retargets the whole spine — canvas, Navigator, Inspector — onto
+the frame, correctly. The shell's mode `ToggleGroup` keeps saying **Page**, and the left rail
+keeps showing the Pages panel. So the author is editing the header and footer while the editor
+insists they are on a page body.
+
+### Why it looks like an oversight rather than a decision
+
+The symbol case is already handled, one screen up in the same component:
+
+```js
+// silicaui-builder — shell
+React.useEffect(() => {
+  if (editingSymbol && mode !== 'component' && mode !== 'theme') setMode('component');
+}, [editingSymbol, mode]);
+```
+
+`enterSymbol` from a host therefore lands the shell in Component mode on its own. There is no
+equivalent effect watching `activeTree`, so the frame — the one other tree a host can point the
+spine at — is the case that doesn't self-correct. The fix looks like one more effect of the same
+shape (`activeTree === 'frame' && mode === 'page' → setMode('layout')`).
+
+### Why sparx hit it
+
+The pre-publish check's "Show me" jumps to the block a finding names. Most findings on a young
+site are in the header and footer — an unfinished nav link, a logo with no description — and
+selection is tree-scoped, so `select(frameNodeId)` while the spine is on a page body selects
+nothing at all: no ring, no Navigator row, no Inspector. sparx now calls
+`setActiveTree('frame')` first, which fixes the jump completely — canvas ring, Inspector and all
+— and the stale mode chip is what is left over.
+
+Two knock-on effects come from the same root, which is why it reads as one bug rather than a
+cosmetic nit: the left rail keeps showing **Pages** instead of **Layouts**, and `<Navigator>` is
+keyed `` `${mode}:${activeId}` `` — so it is not remounted and keeps the page tree's `expanded`
+set, meaning the newly-selected frame node can sit inside a collapsed ancestor and have no
+visible row. All three go away if the mode follows the tree.
+
+Worth noting that the underlying sharp edge is `select(id)` accepting an id from another tree
+silently. A no-op is the safe behaviour, but it means "wrong tree" and "deleted node" are
+indistinguishable to a host — an `editor.select()` that returned whether it landed would let a
+host say "that block is not there any more" honestly instead of guessing.
 
 ---
 

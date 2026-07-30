@@ -15,6 +15,7 @@ import { useConfirm } from '../../../lib/confirm';
 import { useStoryModel } from '../../../lib/onboarding/use-story-model';
 import type { WizardBlueprint } from '../../../lib/onboarding/types';
 import { SummaryCard } from '../../../lib/onboarding/summary-card';
+import { GOLDEN_BLUEPRINT_KEY } from '../wizard/step-blueprint';
 import { OnboardingLayout, type StepMark } from '../onboarding-layout';
 import { StoryComposeStage } from './story-compose-stage';
 import { StoryHelp } from './story-help';
@@ -177,7 +178,9 @@ export function StoryComposer({
       .commitStory({
         modules: on,
         industry: story.industry,
-        blueprintKey: blueprint?.key ?? null,
+        // Default to the golden template when the story matches no more-specific
+        // blueprint — a new site IS the golden template unless something else fits.
+        blueprintKey: blueprint?.key ?? GOLDEN_BLUEPRINT_KEY,
         selling,
         story: toPersistPayload(story),
       })

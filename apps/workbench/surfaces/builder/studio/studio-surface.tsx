@@ -26,9 +26,20 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Builder, useEditor } from '@wizeworks/silicaui-builder/react';
-import type { Op, OpMeta, PageMeta, PublishPayload } from '@wizeworks/silicaui-builder/react';
-import { THEME_PRESETS, type Site, type Theme } from '@wizeworks/silicaui-html';
-import { ensureUniqueIds, starterSite, upgradeFrameChrome } from '@sparx/silica-catalog';
+import type {
+  InspectorPanel,
+  Op,
+  OpMeta,
+  PageMeta,
+  PublishPayload,
+} from '@wizeworks/silicaui-builder/react';
+import { THEME_PRESETS, type Node, type Site, type Theme } from '@wizeworks/silicaui-html';
+import {
+  ensureUniqueIds,
+  starterSite,
+  upgradeFrameChrome,
+  upgradePageBody,
+} from '@sparx/silica-catalog';
 import {
   COMMERCE_SOURCES,
   SITE_SOURCES,
@@ -78,7 +89,7 @@ import {
 import { themeFontFamilies } from '@sparx/site-themes';
 import { applyBrandOverride, tenantTheme, type BrandColumns } from './brand-theme';
 import { useCanvasBrandFonts } from './canvas-fonts';
-import { BuilderLiveSync } from './builder-live';
+import { BuilderLiveSync, BuilderReloadNotice } from './builder-live';
 import {
   CollaborativeHistory,
   HISTORY_LIMIT,
@@ -87,7 +98,7 @@ import {
 } from './undo-history';
 import { SiteCheck } from './site-check';
 import { VersionHistory } from './version-history';
-import { PageSettings, draftToPatch, type PageSettingsDraft } from './page-settings';
+import { PageSettingsPanel, draftToPatch, type PageSettingsDraft } from './page-settings';
 import { buildStudioHost } from './host';
 import {
   changedTenantMasters,
@@ -172,7 +183,21 @@ export function StudioSurface({ ctx }: { ctx: SurfaceContext }) {
 
   // A failed SITE read replaces the editor — never a blank canvas over a starter
   // seed that Save would then persist on top of the real site.
-  if (site.isError) {
+  //
+  // `data === undefined` is doing real work here and is NOT `!site.data`. The danger this
+  // guard exists for is having NOTHING to draw, falling back to the starter seed, and
+  // Saving that over a tenant's real site. That is the `undefined` case only. `null` is a
+  // legitimate, successful answer meaning "no site materialized yet" — the starter-seed
+  // path, deliberately — so `!site.data` would show a scary error on the exact flow the
+  // editor is designed around.
+  //
+  // Once the site IS loaded, a later failure is a BACKGROUND REFETCH failing, and react-query
+  // reports that as `isError` while still holding the last good `data`. Tearing the editor
+  // down for it destroys unsaved work over a blip the author never caused and cannot see —
+  // and it takes silica's whole canvas with it, which is the multi-second stall that reads as
+  // a hang. The editor already owns the authoritative in-memory document; a refetch it did not
+  // ask for must never be able to close it.
+  if (site.isError && site.data === undefined) {
     return (
       <div className="flex h-full items-center justify-center p-8">
         <Alert color="error" variant="soft" className="max-w-md">
@@ -369,13 +394,22 @@ function StudioEditor({
         ...storedSite,
         theme,
         // Heal legacy trees that predate id-stamping before the engine edits them,
-        // so the Navigator never collides two id-less nodes on one React key.
-        pages: storedSite.pages.map((p) => ({ ...p, root: ensureUniqueIds(p.root) })),
+        // so the Navigator never collides two id-less nodes on one React key — and
+        // repair the classes the PLATFORM stamped dead, which the frame has had for a
+        // while and page bodies never did. A page stamped before a catalog factory was
+        // fixed carries that bug forever otherwise: the factory fix reaches the next
+        // tenant and no existing one. Draft-only, like every heal here.
+        pages: storedSite.pages.map((p) => ({
+          ...p,
+          root: ensureUniqueIds(upgradePageBody(p.root).root),
+        })),
         ...(storedSite.frame
           ? {
               frame: {
                 ...storedSite.frame,
-                root: ensureUniqueIds(upgradeFrameChrome(storedSite.frame.root).root),
+                root: ensureUniqueIds(
+                  upgradePageBody(upgradeFrameChrome(storedSite.frame.root).root).root
+                ),
               },
             }
           : {}),
@@ -389,7 +423,12 @@ function StudioEditor({
               frames: Object.fromEntries(
                 Object.entries(storedSite.frames).map(([id, frame]) => [
                   id,
-                  { ...frame, root: ensureUniqueIds(upgradeFrameChrome(frame.root).root) },
+                  {
+                    ...frame,
+                    root: ensureUniqueIds(
+                      upgradePageBody(upgradeFrameChrome(frame.root).root).root
+                    ),
+                  },
                 ])
               ),
             }
@@ -434,10 +473,6 @@ function StudioEditor({
   // single set would make "delete the layout with this id" and "delete the page with
   // this id" indistinguishable.
   const baselineFrameIdsRef = useRef<Set<string>>(new Set(Object.keys(storedSite?.frames ?? {})));
-
-  // The page currently open, so Page settings knows which row it is editing. State (not
-  // a ref) because the drawer must re-render when the operator switches page.
-  const [activePage, setActivePage] = useState<{ id: string; name: string } | null>(null);
 
   // Pending per-page settings edits, keyed by page id, flushed on Save. `settingsDirty`
   // mirrors "the map is non-empty" into render so the Save button lights up for a
@@ -490,6 +525,69 @@ function StudioEditor({
   const pickAssetRef = useRef(pickAsset);
   pickAssetRef.current = pickAsset;
 
+  /** Record (or clear) a page's pending settings edit. Held here rather than written
+   *  immediately so the editor keeps ONE Save button — `doSync` flushes these right
+   *  after the site reconcile. A null clears the entry, which is how the dirty flag
+   *  goes back down when the operator undoes their own typing. */
+  const onPageSettingsChange = useCallback((pageId: string, next: PageSettingsDraft | null) => {
+    if (next) settingsEditsRef.current.set(pageId, next);
+    else settingsEditsRef.current.delete(pageId);
+    setSettingsDirty(settingsEditsRef.current.size > 0);
+  }, []);
+
+  /** silica's `inspectorPanels` seam: the extra Settings-tab sections sparx contributes.
+   *
+   *  ONE panel today — a page's search-and-sharing metadata, which lives on the
+   *  `builder_pages` row and is therefore invisible to an engine whose `Page` is
+   *  `{id,name,slug,root}`. It shows when the selected node IS some page's root, which is
+   *  both the correct anchor (these are properties of the page element) and the whole
+   *  reason this stopped being a toolbar drawer.
+   *
+   *  The GATE has to live out here, not inside the panel's `render`: the engine wraps
+   *  whatever a panel returns in a titled section, so a panel that renders null still
+   *  draws an empty heading — on every element, for every author, forever.
+   *
+   *  Matched against every page rather than the ACTIVE one on purpose. Selection and
+   *  "which page is open" are separate facts in this engine, and a root node the author
+   *  managed to select is a page they mean, whichever one the switcher shows.
+   *
+   *  Held in a ref for the same reason `pickAsset` is: the host is built ONCE at mount,
+   *  and this closure has to read the current site, the current save baseline and the
+   *  current pending-edit map. Reassigned on every render, so it never goes stale. */
+  const inspectorPanelsRef = useRef<(node: Node) => InspectorPanel[]>(() => []);
+  inspectorPanelsRef.current = (node) => {
+    // `OutletNode` carries no id at all, and an un-stamped node cannot be a page root.
+    const nodeId = node.kind === 'outlet' ? undefined : node.id;
+    if (!nodeId) return [];
+    const page = siteRef.current.pages.find(
+      (p) => p.root.kind !== 'outlet' && p.root.id === nodeId
+    );
+    if (!page) return [];
+    return [
+      {
+        id: 'sparx.page-search',
+        title: 'Search & sharing',
+        // After every built-in section. These are the page's own properties, not this
+        // element's, so they read as a footnote to Element/Data/Accessibility rather
+        // than as the first thing the author must scroll past.
+        order: 100,
+        render: () => (
+          <PageSettingsPanel
+            pageId={page.id}
+            pageName={page.name}
+            siteName={sitePreview?.identity.name ?? ''}
+            // A page the server already holds can load its stored settings; one added
+            // in this session cannot (there is no row yet), so the form opens blank
+            // and its first write rides the save that creates the row.
+            saved={baselineIdsRef.current.has(page.id)}
+            pending={settingsEditsRef.current.get(page.id) ?? null}
+            onChange={onPageSettingsChange}
+          />
+        ),
+      },
+    ];
+  };
+
   // The host: the resolver over the canvas data root (placeholder records with the
   // tenant's REAL site.identity/site.social overlaid, so a bound Wordmark/logo/name
   // resolves to the actual brand) + the tenant's data sources + the commerce/site
@@ -507,6 +605,7 @@ function StudioEditor({
       renderHostNode: makeRenderHostNode(root),
       // Through the ref, so the once-built host always reaches the live picker.
       pickAsset: (kind) => pickAssetRef.current(kind),
+      inspectorPanels: (node) => inspectorPanelsRef.current(node),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -616,20 +715,14 @@ function StudioEditor({
   );
 
   // A view signal, not persistence — silica fires it on mount and on every page
-  // switch/rename/slug edit. Preview reads the slug; Page settings keys off the id.
+  // switch/rename/slug edit. Preview reads the slug.
+  //
+  // It does NOT drive the page-settings section any more: that is an Inspector panel now,
+  // keyed off which node is SELECTED, so the page it describes is the one whose root the
+  // author clicked rather than whichever page happens to be open. A ref, not state — this
+  // must not re-render the editor on a page switch.
   const onActivePageChange = useCallback((page: PageMeta) => {
     activeSlugRef.current = page.slug;
-    setActivePage({ id: page.id, name: page.name });
-  }, []);
-
-  /** Record (or clear) a page's pending settings edit. Held here rather than written
-   *  immediately so the editor keeps ONE Save button — `doSync` flushes these right
-   *  after the site reconcile. A null clears the entry, which is how the dirty flag
-   *  goes back down when the operator undoes their own typing. */
-  const onPageSettingsChange = useCallback((pageId: string, next: PageSettingsDraft | null) => {
-    if (next) settingsEditsRef.current.set(pageId, next);
-    else settingsEditsRef.current.delete(pageId);
-    setSettingsDirty(settingsEditsRef.current.size > 0);
   }, []);
 
   const doSync = useCallback(async () => {
@@ -833,6 +926,17 @@ function StudioEditor({
   const status = liveStatus(publishState, unsaved);
   const validPageIds = useMemo(() => new Set(site.pages.map((p) => p.id)), [site]);
 
+  // Which un-appliable remote changes are outstanding (docs/126 §4.5). Owned HERE rather
+  // than inside `BuilderLiveSync` because the affordance it drives is a BUTTON, and the
+  // live-sync indicators now render in silica's status slot, which must stay free of tab
+  // stops (docs/139 §13). Accumulated as a SET: two agent writes landing before the
+  // operator reacts is one reload, and repeating "the update" twice would suggest
+  // otherwise.
+  const [reloadHints, setReloadHints] = useState<string[]>([]);
+  const onReloadHints = useCallback((hints: string[]) => {
+    setReloadHints((prev) => Array.from(new Set([...prev, ...hints])));
+  }, []);
+
   // ONE toolbar. The status badge + Preview + Save are HOST concerns (silica owns
   // only local edits, not whether our onChange persistence succeeded), so they ride
   // in `toolbarSlot` — silica renders it in the editor header, right before its own
@@ -852,6 +956,31 @@ function StudioEditor({
         onChange={onChange}
         onActivePageChange={onActivePageChange}
         onPublish={onPublish}
+        // STATUS, not actions (silicaui 0.40 / docs/139 §13). This slot renders at the head
+        // of the right-hand cluster, BEFORE the shortcut hint and the light/dark toggle, so
+        // the session's state reads as state instead of sitting wedged between the engine's
+        // buttons and ours — which is what it did while `toolbarSlot` was the only seam.
+        //
+        // Everything here is non-interactive, deliberately. A focusable control in this slot
+        // would become a tab stop ahead of controls that visually precede it (WCAG 2.4.3),
+        // which is exactly the break the slot exists to avoid — so the live-sync Reload
+        // BUTTON is rendered below with the other actions, from the hints reported here.
+        toolbarStatusSlot={
+          <div className="flex items-center gap-2">
+            {propertyId ? (
+              <BuilderLiveSync
+                propertyId={propertyId}
+                baselineIdsRef={baselineIdsRef}
+                ownBatchesRef={ownBatchesRef}
+                onRemoteApplied={onRemoteApplied}
+                onReloadHints={onReloadHints}
+              />
+            ) : null}
+            <Badge color={status.tone} variant="soft" size="sm">
+              {status.label}
+            </Badge>
+          </div>
+        }
         toolbarSlot={
           <div className="flex items-center gap-2">
             <CollaborativeHistory
@@ -860,28 +989,12 @@ function StudioEditor({
               revision={historyRev}
               onApplied={onHistoryApplied}
             />
-            {propertyId ? (
-              <BuilderLiveSync
-                propertyId={propertyId}
-                baselineIdsRef={baselineIdsRef}
-                ownBatchesRef={ownBatchesRef}
-                onRemoteApplied={onRemoteApplied}
-                onReload={onReload}
-              />
-            ) : null}
-            <Badge color={status.tone} variant="soft" size="sm">
-              {status.label}
-            </Badge>
-            <PageSettings
-              pageId={activePage?.id ?? null}
-              pageName={activePage?.name ?? ''}
-              siteName={sitePreview?.identity.name ?? ''}
-              // A page the server already holds can load its stored settings; one added
-              // in this session cannot (there is no row yet), so the form opens blank
-              // and its first write rides the save that creates the row.
-              saved={activePage ? baselineIdsRef.current.has(activePage.id) : false}
-              pending={activePage ? (settingsEditsRef.current.get(activePage.id) ?? null) : null}
-              onChange={onPageSettingsChange}
+            <BuilderReloadNotice
+              hints={reloadHints}
+              onReload={() => {
+                setReloadHints([]);
+                onReload();
+              }}
             />
             <SiteCheck
               open={checkOpen}

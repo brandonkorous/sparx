@@ -11,13 +11,36 @@
 // tenant built shipped with the site name as its title, no description at all, and a
 // scorecard telling them to "add a title" with nowhere to add one.
 //
+// ── Where it lives, and why it moved ─────────────────────────────────────────
+//
+// It is a SECTION OF THE INSPECTOR, on the page's root node, in the Settings tab —
+// beside Element, Data binding and Accessibility. It used to be a toolbar button that
+// opened a right-hand drawer, and that was wrong twice over:
+//
+//   · These are properties OF THE PAGE ELEMENT. The editor already has one place where
+//     you select a thing and read its properties; a second, parallel place reachable
+//     only from the toolbar meant the page was the one element in the document whose
+//     settings weren't where every other element's settings are.
+//   · A drawer covered the editor to edit a field belonging to the thing behind it.
+//
 // silica's `Page` is deliberately flat (`{id,name,slug,root}`) and has no home for
-// domain metadata, which is exactly why the engine hands hosts `onActivePageChange` —
-// "how a host keys its own page-scoped side panel". This is that panel.
+// domain metadata, which is exactly why the engine offers `BuilderHost.inspectorPanels`
+// — "host-contributed inspector panels for specific node types (SEO, product-pin, a
+// per-module editor)". This is that panel, and the studio decides when it applies (the
+// selected node is some page's root — `studio-surface.tsx`).
+//
+// TYPE SIZE IS DELIBERATELY 14px HERE, not the platform's 16px body floor. This renders
+// INSIDE silica's inspector column — a resizable rail that is ~350px at its default
+// width, whose own rows are 12px. 16px paragraphs would fit about thirty characters to a
+// line and read as a different application bolted into the panel; 12px would match the
+// chrome and be too small to read comfortably, which is the complaint that produced the
+// floor in the first place. 14px is the honest answer for a dense rail: legible, and in
+// proportion with the controls beside it. Same reasoning the status bar already
+// documents for keeping silica's own button sizing.
 //
 // ── The save model ───────────────────────────────────────────────────────────
 //
-// ONE Save button in the editor, per the platform rule. This drawer never writes on its
+// ONE Save button in the editor, per the platform rule. This panel never writes on its
 // own: it reports edits up, the studio marks itself dirty, and `doSync` flushes them
 // right after the site reconcile. That ordering is load-bearing — a page created in
 // this session has no row until the sync lands, so patching it first would 404.
@@ -35,25 +58,10 @@
 // endpoint. What survives is the PERSISTENCE — `SiteSyncPageInput.frameId` carries the
 // engine's choice to `builder_pages.frame_id`, which is what makes its picker real.
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import Image from 'next/image';
-import {
-  Badge,
-  Button,
-  Drawer,
-  DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  Field,
-  FieldControl,
-  FieldDescription,
-  FieldLabel,
-  Input,
-  Switch,
-  Text,
-  Textarea,
-} from '@wizeworks/silicaui-react';
-import { ChevronDown, ImageOff, ImagePlus, Settings2, Trash2 } from 'lucide-react';
+import { Badge, Button, Input, Switch, Textarea } from '@wizeworks/silicaui-react';
+import { ChevronDown, ImageOff, ImagePlus, Trash2 } from 'lucide-react';
 import { useMediaPicker } from '../../cms/media-picker';
 import { usePageSettings, type PageSettingsDto } from './data';
 
@@ -126,9 +134,30 @@ function lengthHint(value: string, ideal: number): { text: string; over: boolean
   return { text: `${n} characters`, over: false };
 }
 
+/** One labelled field in the rail: label, one line of plain-language help, control.
+ *  Deliberately NOT silica's `<Field>` — that composition sizes itself for a full-width
+ *  form, and this column is 350px (see the type-size note in the header). */
+function PanelField({
+  label,
+  help,
+  children,
+}: {
+  label: string;
+  help: string;
+  children: ReactNode;
+}) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <span className="text-base-content text-sm font-medium">{label}</span>
+      <p className="text-base-content text-sm leading-snug">{help}</p>
+      {children}
+    </div>
+  );
+}
+
 interface Props {
-  /** The page the editor currently has open — silica owns this and reports it. */
-  pageId: string | null;
+  /** The page this panel is describing — the page whose ROOT node is selected. */
+  pageId: string;
   pageName: string;
   /** The site's own name, shown in the preview where a title is not set yet. */
   siteName: string;
@@ -139,13 +168,12 @@ interface Props {
   /** Report an edit up. The studio holds the pending change and flushes it on Save. */
   onChange: (pageId: string, draft: PageSettingsDraft | null) => void;
   /** The pending (unsaved) draft for this page, if the operator already edited it and
-   *  reopened the drawer. */
+   *  then selected something else and come back. */
   pending: PageSettingsDraft | null;
 }
 
-export function PageSettings({ pageId, pageName, siteName, saved, onChange, pending }: Props) {
-  const [open, setOpen] = useState(false);
-  const stored = usePageSettings(saved ? pageId : null, open);
+export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange, pending }: Props) {
+  const stored = usePageSettings(saved ? pageId : null, true);
   const [draft, setDraft] = useState<PageSettingsDraft>(BLANK);
   const pick = useMediaPicker();
   const [showAdvanced, setShowAdvanced] = useState(false);
@@ -153,7 +181,7 @@ export function PageSettings({ pageId, pageName, siteName, saved, onChange, pend
   const baseline = useMemo(() => toDraft(stored.data), [stored.data]);
 
   // Seed the form from whichever is authoritative: a pending edit the operator has not
-  // saved yet wins over what the server holds, so reopening the drawer never silently
+  // saved yet wins over what the server holds, so re-selecting the page never silently
   // discards their typing.
   useEffect(() => {
     setDraft(pending ?? baseline);
@@ -162,7 +190,6 @@ export function PageSettings({ pageId, pageName, siteName, saved, onChange, pend
   const set = <K extends keyof PageSettingsDraft>(key: K, value: PageSettingsDraft[K]): void => {
     const next = { ...draft, [key]: value };
     setDraft(next);
-    if (!pageId) return;
     // Report null when the operator has typed their way back to the stored values —
     // otherwise the editor would stay dirty forever over a no-op change.
     onChange(pageId, sameDraft(next, baseline) ? null : next);
@@ -180,217 +207,166 @@ export function PageSettings({ pageId, pageName, siteName, saved, onChange, pend
   const previewDescription = draft.seoDescription.trim();
 
   return (
-    <Drawer open={open} onOpenChange={setOpen}>
-      <Button
-        size="sm"
-        variant="ghost"
-        color="neutral"
-        disabled={!pageId}
-        onClick={() => {
-          setOpen(true);
-        }}
+    <div className="flex flex-col gap-4">
+      {!saved ? (
+        <p className="text-base-content text-sm leading-snug">
+          This page is new. Fill these in now — they save along with the page itself.
+        </p>
+      ) : null}
+
+      {/* The point of the whole section, made concrete: what a person actually sees
+          before they decide to click. Abstract field labels do not teach this. */}
+      <div className="border-base-300 flex flex-col gap-1 rounded-lg border p-3">
+        <span className="text-base-content text-sm font-medium">In a search result</span>
+        <p className="text-primary mt-1 leading-snug">{previewTitle}</p>
+        <p className="text-base-content text-sm leading-snug">
+          {previewDescription || 'Add a description below and it will show up here.'}
+        </p>
+      </div>
+
+      <PanelField
+        label="Page title"
+        help="The headline in search results and the browser tab. Say what the page is, in your customers’ words."
       >
-        <Settings2 className="size-4" aria-hidden />
-        Page settings
-      </Button>
-
-      <DrawerContent side="right" className="flex w-[30rem] max-w-full flex-col">
-        <DrawerHeader>
-          <DrawerTitle>Page settings</DrawerTitle>
-          <p className="text-base-content text-base">
-            What wraps <strong>{pageName || 'this page'}</strong>, and how it appears in Google and
-            when someone shares it. Saved with the rest of your changes when you press Save.
+        <Input
+          size="sm"
+          value={draft.seoTitle}
+          placeholder={pageName || siteName}
+          onChange={(event) => {
+            set('seoTitle', event.target.value);
+          }}
+        />
+        {titleHint ? (
+          <p className={`text-sm ${titleHint.over ? 'text-warning' : 'text-base-content'}`}>
+            {titleHint.text}
           </p>
-        </DrawerHeader>
+        ) : null}
+      </PanelField>
 
-        <div className="flex flex-1 flex-col gap-5 overflow-y-auto px-4 pb-6">
-          {!saved ? (
-            <Text className="text-base">
-              This page is new. Fill these in now — they save along with the page itself.
-            </Text>
-          ) : null}
+      <PanelField
+        label="Description"
+        help="The couple of lines under the title. This is your pitch — it is often what decides whether someone clicks."
+      >
+        <Textarea
+          size="sm"
+          rows={3}
+          value={draft.seoDescription}
+          onChange={(event) => {
+            set('seoDescription', event.target.value);
+          }}
+        />
+        {descHint ? (
+          <p className={`text-sm ${descHint.over ? 'text-warning' : 'text-base-content'}`}>
+            {descHint.text}
+          </p>
+        ) : null}
+      </PanelField>
 
-          {/* The point of the whole panel, made concrete: what a person actually sees
-              before they decide to click. Abstract field labels do not teach this. */}
-          <div className="border-base-300 flex flex-col gap-1 rounded-lg border p-4">
-            <Text className="text-base-content text-base font-medium">In a search result</Text>
-            <p className="text-primary mt-2 text-lg leading-snug">{previewTitle}</p>
-            <p className="text-base-content text-base leading-snug">
-              {previewDescription || 'Add a description below and it will show up here.'}
-            </p>
-          </div>
-
-          <Field>
-            <FieldLabel>Page title</FieldLabel>
-            <FieldDescription>
-              The headline people see in search results and in the browser tab. Say what the page
-              is, in their words.
-            </FieldDescription>
-            <FieldControl
-              render={
-                <Input
-                  value={draft.seoTitle}
-                  placeholder={pageName || siteName}
-                  onChange={(event) => {
-                    set('seoTitle', event.target.value);
-                  }}
-                />
-              }
+      <PanelField
+        label="Sharing picture"
+        help="Shown when this page is posted to social media or sent in a message. Without one, a plain link is all anyone sees."
+      >
+        <div className="bg-base-200 relative h-24 w-full overflow-hidden rounded-md">
+          {draft.ogImage ? (
+            <Image
+              src={draft.ogImage}
+              alt=""
+              fill
+              sizes="360px"
+              className="object-cover"
+              // Cross-origin tenant media — the optimizer's host allow-list is
+              // environment-fragile, same call the media browser makes.
+              unoptimized
             />
-            {titleHint ? (
-              <Text className={titleHint.over ? 'text-warning text-base' : 'text-base'}>
-                {titleHint.text}
-              </Text>
-            ) : null}
-          </Field>
-
-          <Field>
-            <FieldLabel>Description</FieldLabel>
-            <FieldDescription>
-              The couple of lines under the title. This is your pitch — it is often what decides
-              whether someone clicks.
-            </FieldDescription>
-            <FieldControl
-              render={
-                <Textarea
-                  rows={3}
-                  value={draft.seoDescription}
-                  onChange={(event) => {
-                    set('seoDescription', event.target.value);
-                  }}
-                />
-              }
-            />
-            {descHint ? (
-              <Text className={descHint.over ? 'text-warning text-base' : 'text-base'}>
-                {descHint.text}
-              </Text>
-            ) : null}
-          </Field>
-
-          <Field>
-            <FieldLabel>Sharing picture</FieldLabel>
-            <FieldDescription>
-              Shown when this page is posted to social media or sent in a message. Without one, a
-              plain link is all anyone sees.
-            </FieldDescription>
-            <div className="flex flex-col gap-2">
-              <div className="bg-base-200 relative h-32 w-full overflow-hidden rounded-md">
-                {draft.ogImage ? (
-                  <Image
-                    src={draft.ogImage}
-                    alt=""
-                    fill
-                    sizes="440px"
-                    className="object-cover"
-                    // Cross-origin tenant media — the optimizer's host allow-list is
-                    // environment-fragile, same call the media browser makes.
-                    unoptimized
-                  />
-                ) : (
-                  <span className="flex h-full items-center justify-center">
-                    <ImageOff className="size-5" aria-hidden />
-                  </span>
-                )}
-              </div>
-              <div className="flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant="outline"
-                  color="module"
-                  onClick={() => {
-                    void chooseImage();
-                  }}
-                >
-                  <ImagePlus className="size-4" aria-hidden />
-                  {draft.ogImage ? 'Change picture' : 'Choose a picture'}
-                </Button>
-                {draft.ogImage ? (
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    color="neutral"
-                    onClick={() => {
-                      set('ogImage', '');
-                    }}
-                  >
-                    <Trash2 className="size-4" aria-hidden />
-                    Remove
-                  </Button>
-                ) : null}
-              </div>
-            </div>
-          </Field>
-
-          <Field>
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex min-w-0 flex-col">
-                <FieldLabel>Show this page in search engines</FieldLabel>
-                <FieldDescription>
-                  Turn this off for a page you only want people to reach by link — a thank-you page,
-                  or something not ready yet.
-                </FieldDescription>
-              </div>
-              <div className="flex flex-none items-center gap-2 pt-1">
-                {draft.noindex ? (
-                  <Badge color="warning" variant="soft" size="sm">
-                    Hidden
-                  </Badge>
-                ) : null}
-                <Switch
-                  color="module"
-                  checked={!draft.noindex}
-                  aria-label="Show this page in search engines"
-                  onCheckedChange={(next: boolean) => {
-                    set('noindex', !next);
-                  }}
-                />
-              </div>
-            </div>
-          </Field>
-
-          {/* Canonical is a genuinely technical concept and almost nobody needs it, so it
-              sits behind a disclosure rather than in the main flow — present for the
-              person who needs it, invisible to the person who does not. */}
-          <div className="border-base-300 flex flex-col gap-3 border-t pt-4">
-            <button
-              type="button"
-              className="text-base-content flex items-center gap-1 text-base font-medium"
-              aria-expanded={showAdvanced}
+          ) : (
+            <span className="flex h-full items-center justify-center">
+              <ImageOff className="size-5" aria-hidden />
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            color="module"
+            onClick={() => {
+              void chooseImage();
+            }}
+          >
+            <ImagePlus className="size-4" aria-hidden />
+            {draft.ogImage ? 'Change' : 'Choose a picture'}
+          </Button>
+          {draft.ogImage ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              color="neutral"
               onClick={() => {
-                setShowAdvanced((v) => !v);
+                set('ogImage', '');
               }}
             >
-              <ChevronDown
-                className={`size-4 transition-transform ${showAdvanced ? '' : '-rotate-90'}`}
-                aria-hidden
-              />
-              Advanced
-            </button>
-            {showAdvanced ? (
-              <Field>
-                <FieldLabel>Preferred web address</FieldLabel>
-                <FieldDescription>
-                  If this same content also lives at another address, put that address here so
-                  search engines count them as one page instead of two. Leave it empty unless you
-                  know you need it.
-                </FieldDescription>
-                <FieldControl
-                  render={
-                    <Input
-                      value={draft.canonical}
-                      placeholder="https://example.com/the-original-page"
-                      onChange={(event) => {
-                        set('canonical', event.target.value);
-                      }}
-                    />
-                  }
-                />
-              </Field>
-            ) : null}
-          </div>
+              <Trash2 className="size-4" aria-hidden />
+              Remove
+            </Button>
+          ) : null}
         </div>
-      </DrawerContent>
-    </Drawer>
+      </PanelField>
+
+      <PanelField
+        label="Show this page in search engines"
+        help="Turn this off for a page you only want people to reach by link — a thank-you page, or something not ready yet."
+      >
+        <div className="flex items-center gap-2">
+          <Switch
+            color="module"
+            checked={!draft.noindex}
+            aria-label="Show this page in search engines"
+            onCheckedChange={(next: boolean) => {
+              set('noindex', !next);
+            }}
+          />
+          {draft.noindex ? (
+            <Badge color="warning" variant="soft" size="sm">
+              Hidden
+            </Badge>
+          ) : null}
+        </div>
+      </PanelField>
+
+      {/* Canonical is a genuinely technical concept and almost nobody needs it, so it
+          sits behind a disclosure rather than in the main flow — present for the
+          person who needs it, invisible to the person who does not. */}
+      <div className="border-base-300 flex flex-col gap-3 border-t pt-3">
+        <button
+          type="button"
+          className="text-base-content flex items-center gap-1 text-sm font-medium"
+          aria-expanded={showAdvanced}
+          onClick={() => {
+            setShowAdvanced((v) => !v);
+          }}
+        >
+          <ChevronDown
+            className={`size-4 transition-transform ${showAdvanced ? '' : '-rotate-90'}`}
+            aria-hidden
+          />
+          Advanced
+        </button>
+        {showAdvanced ? (
+          <PanelField
+            label="Preferred web address"
+            help="If this same content also lives at another address, put that address here so search engines count them as one page instead of two. Leave it empty unless you know you need it."
+          >
+            <Input
+              size="sm"
+              value={draft.canonical}
+              placeholder="https://example.com/the-original-page"
+              onChange={(event) => {
+                set('canonical', event.target.value);
+              }}
+            />
+          </PanelField>
+        ) : null}
+      </div>
+    </div>
   );
 }

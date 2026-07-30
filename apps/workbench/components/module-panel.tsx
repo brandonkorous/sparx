@@ -178,6 +178,18 @@ export function ModulePanel({
             <span className="min-w-0 truncate text-sm font-medium" title={label}>
               {label}
             </span>
+            {/* State on a thing — the module's own standing, sitting beside its name
+                in the header. Not an eyebrow: it introduces nothing and sits above
+                no heading. The word alone is only half the message ("beta" reads as
+                "might be buggy"); the module owes the specific version on its landing
+                surface, which is why BETA_MODULES is a short, justified list. */}
+            {entry?.beta ? (
+              <Tooltip content={`${label} is still being reviewed by the platforms it connects to`}>
+                <Badge color="info" variant="soft" size="sm">
+                  Beta
+                </Badge>
+              </Tooltip>
+            ) : null}
           </SidebarHeaderBrand>
           {/* The deep-tour replay, only where a tour exists. Its outcome is
               per-user (docs/132 §7), so this is always available — the first-open

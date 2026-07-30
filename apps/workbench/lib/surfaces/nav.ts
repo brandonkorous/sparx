@@ -48,6 +48,8 @@ export interface NavModule {
   sections: NavSection[];
   /** Total surfaces, so the rail can hide modules with nothing in them. */
   count: number;
+  /** Marked beta in the module's panel header. See {@link BETA_MODULES}. */
+  beta: boolean;
 }
 
 /** Human label for a module key. Deliberately plain — the audience is business owners. */
@@ -79,6 +81,28 @@ const MODULE_LABELS: Partial<Record<WorkbenchModule, string>> = {
 
 export function moduleLabel(module: WorkbenchModule): string {
   return MODULE_LABELS[module] ?? module;
+}
+
+/**
+ * Modules that carry a `Beta` mark in their nav panel header.
+ *
+ * A very short list on purpose. The mark is worth something only while it is rare —
+ * put it on four modules and it reads as "this whole product is unfinished", which
+ * is both untrue and the opposite of what it is for.
+ *
+ * The word alone only sets an expectation, so a module listed here pairs it with a
+ * plain sentence on its landing surface saying what to expect — for Social, that the
+ * networks are still reviewing sparx's access and parts of the module will behave
+ * inconsistently until they finish (surfaces/social/beta.tsx).
+ *
+ * Take a module off this list the day the reason stops being true. That, plus its
+ * notice component, is the whole footprint — deliberately, so ending a beta is two
+ * deletions rather than a hunt through every surface.
+ */
+const BETA_MODULES = new Set<WorkbenchModule>(['social']);
+
+export function isBetaModule(module: WorkbenchModule): boolean {
+  return BETA_MODULES.has(module);
 }
 
 /**
@@ -239,6 +263,7 @@ export function buildNav(): NavModule[] {
       // which means someone added a module and skipped MODULE_ICONS.
       icon: MODULE_ICONS[module] ?? first.icon,
       count: sorted.length,
+      beta: isBetaModule(module),
       sections: sectionOrder.map((title) => ({
         title,
         surfaces: grouped.get(title) ?? [],

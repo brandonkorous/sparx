@@ -19,6 +19,7 @@ import { AlertTriangle } from 'lucide-react';
 import { Button } from '@wizeworks/silicaui-react';
 import { useConfirm } from '../lib/confirm';
 import { isChunkLoadError, reloadOnceForStaleBuild } from '@sparx/app-kit';
+import { PaneModuleProvider } from './module-beta-notice';
 import { ModuleScope } from './module-scope';
 import { PaneWaiting } from './pane-waiting';
 import { getSurface } from '../lib/surfaces/registry';
@@ -169,11 +170,16 @@ export function SurfaceMount({
     // without being handed the pane id. See lib/workbench/dirty.tsx.
     <DirtyScope paneId={paneId}>
       <PaneConfirmBridge paneId={paneId} />
-      <PaneErrorBoundary onReset={onReset}>
-        <Suspense fallback={<PaneWaiting />}>
-          <SurfaceBody paneId={paneId} />
-        </Suspense>
-      </PaneErrorBoundary>
+      {/* Which module this pane belongs to, for chrome rendered deep inside the
+          surface that would otherwise have to be handed it by every surface in
+          turn (the beta notice under PaneToolbar). Renders no DOM. */}
+      <PaneModuleProvider module={definition.module}>
+        <PaneErrorBoundary onReset={onReset}>
+          <Suspense fallback={<PaneWaiting />}>
+            <SurfaceBody paneId={paneId} />
+          </Suspense>
+        </PaneErrorBoundary>
+      </PaneModuleProvider>
     </DirtyScope>
   );
 

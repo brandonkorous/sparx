@@ -18,6 +18,7 @@
 // separate stops between you and the content.
 
 import { Toolbar } from '@wizeworks/silicaui-react';
+import { PaneBetaNotice } from './module-beta-notice';
 
 /**
  * The pane root every list and editor sits in.
@@ -54,23 +55,32 @@ interface PaneToolbarProps {
 
 export function PaneToolbar({ label, wrap, className, children }: PaneToolbarProps) {
   return (
-    <Toolbar
-      aria-label={label}
-      size="sm"
-      // w-full so an `ml-auto` on the right-hand group has room to push against —
-      // a Toolbar is content-width by default, which silently collapses the gap
-      // and leaves the primary action clumped against the filters.
-      //
-      // The min-height is the whole point of pinning this here. A bar's height
-      // is otherwise driven by its TALLEST CHILD, so a toolbar holding buttons
-      // (32px controls) came out at 50px while one holding only badges and text
-      // (20px) came out at 38 — and switching tabs made the chrome jump. The
-      // floor is spelled out as its parts rather than as `50px` so it survives
-      // silica retuning its control sizes: one `sm` control, the bar's padding,
-      // and its hairline borders.
-      className={`bg-base-100 min-h-[calc(2rem+1rem+2px)] w-full shrink-0 gap-2 p-2 ${wrap ? 'flex-wrap' : ''} ${className ?? ''}`}
-    >
-      {children}
-    </Toolbar>
+    <>
+      <Toolbar
+        aria-label={label}
+        size="sm"
+        // w-full so an `ml-auto` on the right-hand group has room to push against —
+        // a Toolbar is content-width by default, which silently collapses the gap
+        // and leaves the primary action clumped against the filters.
+        //
+        // The min-height is the whole point of pinning this here. A bar's height
+        // is otherwise driven by its TALLEST CHILD, so a toolbar holding buttons
+        // (32px controls) came out at 50px while one holding only badges and text
+        // (20px) came out at 38 — and switching tabs made the chrome jump. The
+        // floor is spelled out as its parts rather than as `50px` so it survives
+        // silica retuning its control sizes: one `sm` control, the bar's padding,
+        // and its hairline borders.
+        className={`bg-base-100 min-h-[calc(2rem+1rem+2px)] w-full shrink-0 gap-2 p-2 ${wrap ? 'flex-wrap' : ''} ${className ?? ''}`}
+      >
+        {children}
+      </Toolbar>
+      {/* A beta module's standing heads-up, as the bar's SIBLING in PANE_SHELL — it
+          inherits the shell's gap and card rhythm, and the bar above it never moves.
+          Rendered from here rather than from each surface because a dock has no landing
+          screen every route passes through; this way one seam covers every surface of a
+          beta module, including ones registered later. Null for every module that is not
+          in beta, which is nearly all of them. See module-beta-notice.tsx. */}
+      <PaneBetaNotice />
+    </>
   );
 }

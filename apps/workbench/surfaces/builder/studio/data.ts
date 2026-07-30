@@ -42,6 +42,16 @@ export const CATALOG_KEY = ['builder', 'binding-catalog'];
  * "empty, seed the starter", so swallowing a failure would seed a starter over the
  * tenant's real site and Save would then persist it. `retry: false` keeps a genuine
  * failure fast to the error state rather than retrying into a spinner.
+ *
+ * NOT REFETCHED ONCE LOADED, and that is deliberate. With no `staleTime` this was stale
+ * the instant it landed, so react-query re-read the WHOLE site tree on every window
+ * focus — every alt-tab, every devtools click — for a document the editor is already
+ * the authority on. `<Builder>` reads `document` once at mount, so a successful refetch
+ * changes nothing; all a refetch could do was FAIL and, with `retry: false`, flip an
+ * open editor to the error state and take the author's unsaved work with it. A read
+ * whose success is a no-op and whose failure is destructive should not be on a hair
+ * trigger. The live-agent path (docs/126 §4.5) refetches EXPLICITLY via `reload()`,
+ * which is the one time fresh server state is actually wanted.
  */
 export function useBuilderSite() {
   return useQuery({
@@ -49,6 +59,9 @@ export function useBuilderSite() {
     queryFn: () =>
       api.get<{ site: StoredSilicaSite | null }>('/v1/builder/site').then((r) => r.site),
     retry: false,
+    staleTime: Infinity,
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
   });
 }
 

@@ -2,17 +2,25 @@
 
 // Live co-editing for the studio (docs/126 §4.5).
 //
-// Rendered INSIDE `<Builder>` (via `toolbarSlot`), so `useEditor()` resolves to the live
-// engine handle. It connects the site's `/ws/builder` room and folds every other author's
-// change into this canvas as it lands — a human co-editor's ops (Slice 4) AND an agent's
-// MCP write, which api-mcp relays as the identical `ops:relay` (docs/126 §4.5). There is
-// no agent-specific path here: a relayed `page.create` is applied by `applyRemoteOps` the
-// same way whoever authored it.
+// Rendered INSIDE `<Builder>` (via `toolbarStatusSlot`), so `useEditor()` resolves to the
+// live engine handle. It connects the site's `/ws/builder` room and folds every other
+// author's change into this canvas as it lands — a human co-editor's ops (Slice 4) AND an
+// agent's MCP write, which api-mcp relays as the identical `ops:relay` (docs/126 §4.5).
+// There is no agent-specific path here: a relayed `page.create` is applied by
+// `applyRemoteOps` the same way whoever authored it.
 //
-// What it shows the operator: who else is in the site, an "an assistant is editing"
-// pulse while an agent is active, and — for the one change with no live-appliable op (an
-// agent REPLACING an existing page body or the frame) — a Reload affordance, because
-// force-applying that would overwrite the operator's own in-progress edits.
+// WHAT IT RENDERS IS INDICATORS ONLY — who else is in the site, and an "an assistant is
+// editing" pulse while an agent is active. Both are non-interactive, which is what lets
+// this live in silicaui's `toolbarStatusSlot` (0.40): that slot sits ahead of the theme
+// toggle, so anything FOCUSABLE placed in it becomes a tab stop before controls that
+// visually precede it — the reading-order-vs-focus-order break (WCAG 2.4.3) the slot was
+// asked for in order to avoid (docs/139 §13).
+//
+// So the Reload affordance — the one change with no live-appliable op, where an agent
+// REPLACED a page body or the frame and force-applying it would destroy the operator's
+// in-progress edits — is a BUTTON, and therefore does not belong here. Its hints are
+// reported through `onReloadHints` and the studio renders the button in the ACTION slot
+// with the other controls. That split is the whole point of there being two slots.
 //
 // The wire contract is DUPLICATED from api-rest (services never import each other, like
 // the chat client). Keep in sync with services/api-rest/src/websocket/builder-protocol.ts.
@@ -62,9 +70,12 @@ interface Props {
    *  a relayed page.delete leaves it. Without this, an operator deleting an agent's
    *  folded-in page would fail to persist that deletion. */
   baselineIdsRef: MutableRefObject<Set<string>>;
-  /** Reload the editor (refetch + remount) — the faithful response to a body/frame REPLACE,
-   *  which has no live-appliable op. The operator chooses when (it discards local edits). */
-  onReload: () => void;
+  /** A change landed that CANNOT be applied live (an agent replaced a page body or the
+   *  frame), so the operator has to be offered a reload. Reported rather than rendered:
+   *  the affordance is a button, and a button cannot live in the status slot without
+   *  breaking focus order (see the header). Called with the hint kinds as they arrive —
+   *  the studio accumulates them, renders the control, and clears its own state. */
+  onReloadHints: (hints: string[]) => void;
   /** Batch ids THIS client authored (Slice 4), so it skips the echo of its own ops. */
   ownBatchesRef: MutableRefObject<Set<string>>;
   /** Another author's edit landed on this canvas. It deliberately never reaches
@@ -77,14 +88,17 @@ interface Props {
 export function BuilderLiveSync({
   propertyId,
   baselineIdsRef,
-  onReload,
+  onReloadHints,
   ownBatchesRef,
   onRemoteApplied,
 }: Props) {
   const editor = useEditor();
   const [presence, setPresence] = useState<BuilderPresence[]>([]);
-  const [reloadHints, setReloadHints] = useState<string[]>([]);
   const [agentAt, setAgentAt] = useState(0);
+  // Through a ref, like `onRemoteApplied`: the socket handlers bind once on connect, so a
+  // callback captured in that closure would go stale on the first parent re-render.
+  const onReloadHintsRef = useRef(onReloadHints);
+  onReloadHintsRef.current = onReloadHints;
   const [, forceTick] = useState(0);
   const lastSeqRef = useRef(0);
   const socketRef = useRef<BuilderSocket | null>(null);
@@ -151,7 +165,7 @@ export function BuilderLiveSync({
       socket.on('presence:list', setPresence);
       socket.on('builder:agentActivity', ({ reloadHints: hints }) => {
         setAgentAt(Date.now());
-        if (hints.length) setReloadHints((prev) => Array.from(new Set([...prev, ...hints])));
+        if (hints.length) onReloadHintsRef.current(hints);
       });
       socket.on('error', () => {
         // The write persisted regardless; the next load/catch-up reconciles.
@@ -174,7 +188,6 @@ export function BuilderLiveSync({
   const agentActive = agentAt > 0 && Date.now() - agentAt < AGENT_FADE_MS;
 
   const others = presence.filter((p) => p.socketId !== socketRef.current?.id);
-  const frameOnly = reloadHints.length === 1 && reloadHints[0] === 'frame';
 
   return (
     <div className="flex items-center gap-2">
@@ -190,20 +203,32 @@ export function BuilderLiveSync({
           <Sparkles className="size-3.5" aria-hidden /> An assistant is editing
         </Badge>
       ) : null}
-      {reloadHints.length > 0 ? (
-        <Button
-          size="sm"
-          variant="soft"
-          color="warning"
-          onClick={() => {
-            setReloadHints([]);
-            onReload();
-          }}
-        >
-          <RefreshCw className="size-4" aria-hidden />
-          Reload to see {frameOnly ? 'the header/footer' : 'the update'}
-        </Button>
-      ) : null}
     </div>
+  );
+}
+
+/**
+ * The Reload affordance — rendered by the studio in the ACTION slot, from the hints
+ * `BuilderLiveSync` reports.
+ *
+ * It lives here rather than in `studio-surface.tsx` so the whole live-co-editing surface
+ * stays in one file: the wording ("the header/footer" vs "the update") is a detail of the
+ * hint vocabulary this file owns, and splitting the copy from the protocol is how the two
+ * drift. Only the STATE moved out, because only the placement had to.
+ */
+export function BuilderReloadNotice({
+  hints,
+  onReload,
+}: {
+  hints: string[];
+  onReload: () => void;
+}) {
+  if (hints.length === 0) return null;
+  const frameOnly = hints.length === 1 && hints[0] === 'frame';
+  return (
+    <Button size="sm" variant="soft" color="warning" onClick={onReload}>
+      <RefreshCw className="size-4" aria-hidden />
+      Reload to see {frameOnly ? 'the header/footer' : 'the update'}
+    </Button>
   );
 }

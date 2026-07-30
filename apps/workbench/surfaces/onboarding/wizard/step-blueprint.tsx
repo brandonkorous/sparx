@@ -6,13 +6,17 @@
 // the card's "Use this blueprint" installs it. "Start from scratch" is the blank
 // path. The install itself is the orchestrator's commit — this body only chooses.
 
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Badge, Button, SearchInput, Text } from '@wizeworks/silicaui-react';
 import { Check, PencilRuler } from 'lucide-react';
 import type { BlueprintVertical, WizardBlueprint } from '../../../lib/onboarding/types';
 
 /** The sentinel the orchestrator reads as "blank canvas, no blueprint". */
 export const SCRATCH = 'scratch';
+
+/** The platform's default starting point — the golden sparx template. A fresh site
+ *  IS this unless the user picks another blueprint or starts blank. */
+export const GOLDEN_BLUEPRINT_KEY = 'sparx';
 
 const VERTICAL_LABEL: Record<BlueprintVertical, string> = {
   retail: 'Shop',
@@ -33,13 +37,11 @@ function contentsLine(bp: WizardBlueprint): string {
 
 export function StepBlueprint({
   blueprints,
-  modules,
   selectedKey,
   onSelect,
   loading,
 }: {
   blueprints: WizardBlueprint[];
-  modules: Record<string, boolean>;
   /** The selected blueprint key, the SCRATCH sentinel, or null. */
   selectedKey: string | null;
   onSelect: (key: string) => void;
@@ -47,11 +49,9 @@ export function StepBlueprint({
 }) {
   const [search, setSearch] = useState('');
 
-  const fits = useMemo(
-    () => (bp: WizardBlueprint) => bp.requiresModules.every((m) => modules[m]),
-    [modules]
-  );
-
+  // Blueprints are NOT filtered by the tenant's active modules: a template's content
+  // is independent of which modules are on (a module that's off simply hides its
+  // surface, it doesn't make the starting point unusable). Only the text search filters.
   const q = search.trim().toLowerCase();
   const matchesQ = (bp: WizardBlueprint) =>
     !q ||
@@ -59,9 +59,7 @@ export function StepBlueprint({
     bp.summary.toLowerCase().includes(q) ||
     VERTICAL_LABEL[bp.vertical].toLowerCase().includes(q);
 
-  const queryMatched = blueprints.filter(matchesQ);
-  const shown = queryMatched.filter(fits);
-  const hiddenByModules = queryMatched.length - shown.length;
+  const shown = blueprints.filter(matchesQ);
 
   return (
     <div className="flex max-w-3xl flex-col gap-4">
@@ -75,7 +73,7 @@ export function StepBlueprint({
           />
         </div>
         <Text className="text-base-content text-sm">
-          {shown.length} of {blueprints.length} fit your modules
+          {shown.length} of {blueprints.length} starting points
         </Text>
       </div>
 
@@ -93,8 +91,8 @@ export function StepBlueprint({
           <Text className="font-medium">No starting points match</Text>
           <Text className="text-base-content max-w-md text-sm">
             {q
-              ? `Nothing matches “${search}”. Clear the search to see every starting point that fits your modules.`
-              : 'None of our starting points fit the modules you turned on. Start from a blank canvas below, or switch on more modules.'}
+              ? `Nothing matches “${search}”. Clear the search to see every starting point.`
+              : 'No starting points are available yet. Start from a blank canvas below.'}
           </Text>
         </div>
       ) : (
@@ -109,13 +107,6 @@ export function StepBlueprint({
           ))}
         </div>
       )}
-
-      {hiddenByModules > 0 ? (
-        <Text className="text-base-content text-sm">
-          {hiddenByModules} more {hiddenByModules === 1 ? 'starting point unlocks' : 'unlock'} when
-          you switch on the modules they need — go back to the Modules step to add them.
-        </Text>
-      ) : null}
 
       {/* Start from scratch — the blank path. */}
       <div

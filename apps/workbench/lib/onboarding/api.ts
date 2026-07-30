@@ -473,8 +473,10 @@ function titleCase(slug: string): string {
     .join(' ');
 }
 
-/** The default module selection a fresh tenant starts from, given their saved flags:
- *  a blank slate gets Builder + Commerce + CMS; anyone with flags keeps theirs. */
+/** The module selection a fresh tenant starts from: NOTHING pre-enabled. The tenant
+ *  turns on — and pays for — exactly the modules they want; that is the platform's
+ *  premise, so onboarding never defaults a module ON. A blank slate simply surfaces
+ *  every switchboard module as OFF; anyone with saved flags keeps theirs. */
 export function initialModuleSelection(
   saved: { slug: string; enabled: boolean }[],
   modulesStepDone: boolean
@@ -484,7 +486,6 @@ export function initialModuleSelection(
   if (!modulesStepDone && !anyOn) {
     const withDefaults = { ...stored };
     for (const m of SWITCHBOARD_MODULES) withDefaults[m.key] ??= false;
-    for (const k of ['builder', 'commerce', 'cms']) withDefaults[k] = true;
     return withDefaults;
   }
   return stored;

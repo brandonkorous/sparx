@@ -11,7 +11,7 @@
 // `createSilicaClassValidator` from @sparx/builder-schemas, the composites +
 // cores from @sparx/silica-catalog) — one catalog, one resolver, no drift.
 
-import type { BuilderHost, PaletteGroup } from '@wizeworks/silicaui-builder/react';
+import type { BuilderHost, PaletteGroup, ThemeGroup } from '@wizeworks/silicaui-builder/react';
 import type { ClassValidator, DataSource as SilicaDataSource } from '@wizeworks/silicaui-html';
 import {
   createSilicaClassValidator,
@@ -23,6 +23,7 @@ import {
   HOST_COMPONENTS,
   SITE_CATALOG,
   SPARX_CATALOG,
+  SPARX_THEME_GROUPS,
   validateResponsiveVocabulary,
 } from '@sparx/silica-catalog';
 
@@ -50,6 +51,17 @@ export interface StudioHostOptions {
    *  reaching the same bar. Passed in like `renderHostNode` so this module stays
    *  framework-free. */
   pickAsset?: BuilderHost['pickAsset'];
+  /** Extra sections for the Inspector's Settings tab, for the node types sparx knows
+   *  something about that silica cannot.
+   *
+   *  Today that is a PAGE's root node: `seoTitle` / `seoDescription` / `ogImage` /
+   *  `canonical` / `noindex` are columns on `builder_pages`, invisible to an engine
+   *  whose `Page` is `{id,name,slug,root}`. They belong on the page element, in the
+   *  same panel every other element's properties live in — which is what this seam is
+   *  for ("SEO, product-pin, a per-module editor", per the engine's own docs).
+   *
+   *  Passed in like `renderHostNode` for the same reason: it returns React. */
+  inspectorPanels?: BuilderHost['inspectorPanels'];
 }
 
 /** The host cores the Insert palette offers (docs/122) — `HOST_COMPONENTS` mapped
@@ -109,9 +121,22 @@ export function buildStudioHost(opts: StudioHostOptions): BuilderHost {
     catalog: () => ({
       extend: [...SPARX_CATALOG, ...SITE_CATALOG] as unknown as PaletteGroup[],
     }),
+    // sparx's platform theme library, shelved by kind of business. `extend` only —
+    // no `hide`, so silica's twenty presets stay on offer BELOW these. The two
+    // libraries answer different questions ("what do I do" vs "what look do I
+    // want") and an author benefits from both; hiding the shipped shelf would be a
+    // white-label decision, which this isn't.
+    //
+    // No cast, unlike `catalog()` below: `SparxThemeGroup` is declared in the
+    // React-free catalog package but every field is structurally silica's own
+    // (`Theme` comes from silicaui-html, which both packages share), so the types
+    // meet without help. The palette needs its cast only because `PaletteGroup.icon`
+    // is a silica `IconName` that the React-free side has to type as `string`.
+    themes: () => ({ extend: SPARX_THEME_GROUPS satisfies ThemeGroup[] }),
     hostComponents: hostComponentDefs,
     ...(validateClass ? { validateClass } : {}),
     ...(opts.renderHostNode ? { renderHostNode: opts.renderHostNode } : {}),
     ...(opts.pickAsset ? { pickAsset: opts.pickAsset } : {}),
+    ...(opts.inspectorPanels ? { inspectorPanels: opts.inspectorPanels } : {}),
   };
 }
