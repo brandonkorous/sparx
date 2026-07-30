@@ -25,7 +25,13 @@ import * as schemas from './index';
 const REQUIRES_A_FIELD = new Set(['UpdateFulfillmentInput']);
 
 function patchSchemas(): [string, z.ZodType][] {
-  return Object.entries(schemas)
+  // Widened to `unknown` before filtering: the barrel exports helpers as well as
+  // schemas, so `Object.entries` types each value as a union that includes a plain
+  // function — and a type predicate is only legal when its type is assignable to
+  // the parameter's. `unknown` is what the `instanceof` check below actually
+  // assumes, so saying so is honest rather than a cast around a real mismatch.
+  const entries = Object.entries(schemas) as [string, unknown][];
+  return entries
     .filter(
       (entry): entry is [string, z.ZodType] =>
         /^Update[A-Za-z0-9]*Input$/.test(entry[0]) && entry[1] instanceof z.ZodType
