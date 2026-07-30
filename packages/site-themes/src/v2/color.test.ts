@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  colorToHex,
   contrastOf,
   contrastRatio,
   cssLightness,
@@ -9,6 +10,7 @@ import {
   oklchToRgb,
   parseColor,
   relativeLuminance,
+  rgbToHex,
 } from './color';
 
 describe('normalizeHex', () => {
@@ -23,6 +25,33 @@ describe('normalizeHex', () => {
     expect(normalizeHex('')).toBeNull();
     expect(normalizeHex(null)).toBeNull();
     expect(normalizeHex('#12')).toBeNull();
+  });
+});
+
+describe('colorToHex', () => {
+  it('passes hex through, normalized to #rrggbb', () => {
+    expect(colorToHex('#4F46E5')).toBe('#4f46e5');
+    expect(colorToHex('#abc')).toBe('#aabbcc');
+  });
+
+  it('flattens oklch() to hex (round-trips against oklchToRgb)', () => {
+    // Pure white / black anchors — exact regardless of gamut.
+    expect(colorToHex('oklch(100% 0 0)')).toBe('#ffffff');
+    expect(colorToHex('oklch(0% 0 0)')).toBe('#000000');
+    // An arbitrary in-gamut brand color agrees with the underlying converter.
+    expect(colorToHex('oklch(50% 0.17 45)')).toBe(rgbToHex(oklchToRgb(0.5, 0.17, 45)));
+  });
+
+  it('converts rgb() too', () => {
+    expect(colorToHex('rgb(255, 0, 0)')).toBe('#ff0000');
+  });
+
+  it('returns null for unparseable input (color-mix, named, var, empty)', () => {
+    expect(colorToHex('color-mix(in oklab, red 50%, blue)')).toBeNull();
+    expect(colorToHex('rebeccapurple')).toBeNull();
+    expect(colorToHex('var(--x)')).toBeNull();
+    expect(colorToHex('')).toBeNull();
+    expect(colorToHex(null)).toBeNull();
   });
 });
 

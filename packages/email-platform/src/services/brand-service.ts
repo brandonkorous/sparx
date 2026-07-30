@@ -21,6 +21,7 @@
 import { withTenant } from '@sparx/db';
 import {
   brandIdentityOverlay,
+  colorToHex,
   compileTokens,
   DEFAULT_THEME_KEY,
   type ThemeTokens,
@@ -28,6 +29,71 @@ import {
 import type { BrandTokens } from '@sparx/email';
 
 import type { ServiceContext } from '../errors';
+
+// The site's PUBLISHED silica theme (builder_site.silicaPublishedTheme) — the single
+// source of the look (docs/impl theming-spine plan). A flat `--*` token bag: light in
+// `tokens`, the dark color delta in `dark`. Read loosely (it's a JSON column); email
+// only needs the handful of role/surface/font tokens below.
+interface SilicaThemeRow {
+  tokens?: Record<string, string> | null;
+  dark?: Record<string, string> | null;
+}
+
+function parseSilicaTheme(value: unknown): SilicaThemeRow | null {
+  if (!value || typeof value !== 'object') return null;
+  const t = value as SilicaThemeRow;
+  return t.tokens && typeof t.tokens === 'object' ? t : null;
+}
+
+// A silica font token is a full stack (`'Inter', system-ui, …`); email wants the
+// family name so `fontStack` can rebuild an email-safe stack (Arial/Helvetica).
+function firstFamily(stack: string | undefined): string | undefined {
+  if (!stack) return undefined;
+  // The family is the first entry, unquoted. An empty result is harmless — the
+  // caller feeds it to `fontStack`, which falls back to the email-safe stack.
+  return stack
+    .split(',')[0]
+    ?.trim()
+    .replace(/^['"]|['"]$/g, '');
+}
+
+// A resolved silica theme → email `BrandTokens`, every color flattened to hex
+// (Gmail/Outlook can't parse `oklch()`, and React Email inlines concrete values —
+// so this is a format conversion of the ONE source, not a second source of truth).
+// Identity (logo/name/socials) is threaded in from `brand`/property, unchanged.
+export function siteThemeToBrand(
+  theme: SilicaThemeRow,
+  extras: { logoUrl?: string; siteName?: string; socials?: { platform: string; url: string }[] }
+): BrandTokens {
+  const light = theme.tokens ?? {};
+  const dark = { ...light, ...(theme.dark ?? {}) };
+  const hex = (bag: Record<string, string>, key: string, fallback: string): string =>
+    colorToHex(bag[key]) ?? fallback;
+  const headStack = light['--font-heading'] ?? light['--font-head'];
+  return {
+    primary: hex(light, '--color-primary', '#111111'),
+    primaryForeground: hex(light, '--color-primary-content', '#ffffff'),
+    accent: hex(light, '--color-accent', hex(light, '--color-primary', '#111111')),
+    background: hex(light, '--color-base-100', '#ffffff'),
+    foreground: hex(light, '--color-base-content', '#111111'),
+    muted: hex(light, '--color-base-200', '#f4f4f5'),
+    border: hex(light, '--color-border', '#e4e4e7'),
+    fontHeading: fontStack(firstFamily(headStack) ?? ''),
+    fontBody: fontStack(firstFamily(light['--font-sans']) ?? ''),
+    ...(extras.logoUrl ? { logoUrl: extras.logoUrl } : {}),
+    ...(extras.siteName ? { siteName: extras.siteName } : {}),
+    ...(extras.socials?.length ? { socials: extras.socials } : {}),
+    dark: {
+      background: hex(dark, '--color-base-100', '#0b0b0c'),
+      foreground: hex(dark, '--color-base-content', '#e4e4e7'),
+      muted: hex(dark, '--color-base-200', '#18181b'),
+      border: hex(dark, '--color-border', '#27272a'),
+      primary: hex(dark, '--color-primary', '#ffffff'),
+      primaryForeground: hex(dark, '--color-primary-content', '#0b0b0c'),
+      accent: hex(dark, '--color-accent', hex(dark, '--color-primary', '#ffffff')),
+    },
+  };
+}
 
 // Public origin of api-rest — where GET /v1/public/media/:id lives. NOT a
 // generic "the API" url: media bytes are a REST concern; GraphQL
@@ -141,19 +207,19 @@ export async function resolveEmailBrand(
         ? Promise.resolve(null)
         : tx.property.findFirst({
             where: { isPrimary: true },
-            select: { name: true, settings: true },
+            select: { id: true, name: true, settings: true },
           }),
     ]);
 
     const override = parseBrandOverride(propertyRow?.brandOverride);
-
-    // A tenant with no brand record AND no per-site override → sparx defaults
-    // (null signals "use @sparx/email's defaultBrand").
-    if (brandRow === null && !override) return null;
+    const slug = tenant?.slug ?? '';
 
     // Merge the per-site override OVER the tenant brand, field-by-field — an
     // absent/null override field inherits the tenant value. logoMediaId overrides
-    // the tenant's light logo. Identity-only (email never overrides shape/feel).
+    // the tenant's light logo. IDENTITY ONLY now (name + logo): the LOOK
+    // (colours/fonts) comes from the site's silica theme below. Computed up front —
+    // before any early return — because a site can carry a published silica theme
+    // WITHOUT a TenantBrand, and that email should still render themed.
     const brand = {
       businessName: override?.businessName ?? brandRow?.businessName ?? null,
       colorPrimary: override?.colorPrimary ?? brandRow?.colorPrimary ?? null,
@@ -168,18 +234,40 @@ export async function resolveEmailBrand(
         override?.logoLightMediaId ?? override?.logoMediaId ?? brandRow?.logoLightMediaId ?? null,
     };
 
-    const slug = tenant?.slug ?? '';
     // The wordmark/footer name is the customer-facing SITE name (Property.name —
-    // the active site, else the tenant's primary), NEVER the tenant's legal/org
-    // name (docs/49). brand.businessName is no longer a name source; it stays only
-    // as one signal that this tenant has a brand identity worth rendering (below).
+    // the active site, else the tenant's primary), NEVER the tenant's legal/org name.
     // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing -- `||` is intended: an empty trimmed name must collapse to undefined, which `??` would not do.
     const siteName = (propertyRow?.name ?? primaryProperty?.name)?.trim() || undefined;
+    // The active site's socials (else the primary's) — for the footer's social row.
+    const socials = extractSocials(propertyRow?.settings ?? primaryProperty?.settings);
+    const logoUrl = logoUrlFor(brand.logoLightMediaId, slug);
 
-    // A merged brand with no identity tokens at all → defaults. `businessName`
-    // still counts: a tenant who set a brand name (but no colours/logo) keeps a
-    // branded email — its wordmark just shows the SITE name now, not the name they
-    // typed into brand settings.
+    // ── SINGLE SOURCE OF THE LOOK (docs/impl theming-spine plan) ──────────────────
+    // The site's PUBLISHED silica theme drives the email's palette + fonts, flattened
+    // to hex, so the email matches the storefront for that exact site. Identity
+    // (logo/name/socials) threads in from `brand`. Read the theme of the send's
+    // property (else the tenant's primary).
+    const effectivePropertyId = propertyId ?? primaryProperty?.id ?? null;
+    const themeRow = effectivePropertyId
+      ? await tx.builderSite.findUnique({
+          where: { propertyId: effectivePropertyId },
+          select: { silicaPublishedTheme: true },
+        })
+      : null;
+    const silicaTheme = parseSilicaTheme(themeRow?.silicaPublishedTheme);
+    if (silicaTheme) {
+      return siteThemeToBrand(silicaTheme, { logoUrl, siteName, socials });
+    }
+
+    // ── Fallback: brand-derived look ─────────────────────────────────────────────
+    // For a site that has published no silica theme yet (an existing brand-only
+    // tenant). Retires once every site's effective theme is persisted as its
+    // silica theme (the Phase-5 backfill migration).
+    //
+    // A tenant with no brand record AND no per-site override → sparx defaults.
+    if (brandRow === null && !override) return null;
+    // A merged brand with no identity tokens at all → defaults. `businessName` still
+    // counts: a tenant who set a brand name (but no colours/logo) keeps a branded email.
     const hasIdentity = [
       brand.businessName,
       brand.colorPrimary,
@@ -192,20 +280,12 @@ export async function resolveEmailBrand(
     if (!hasIdentity) return null;
 
     // Overlay the (merged) brand's identity palette/typography over the default
-    // preset; unset tokens inherit the preset. The identity applies to BOTH modes (a
-    // brand's primary/accent/fonts are the same in light and dark), so we compile both
-    // and carry the dark NEUTRALS onto the brand — the send emits an
-    // `@media (prefers-color-scheme: dark)` block from them, aligning the email's dark
-    // mode to the SITE's dark theme (docs/impl transactional-email §10).
+    // preset; unset tokens inherit the preset. Compile both modes so the send can emit
+    // a dark-mode block (docs/impl transactional-email §10).
     const overlay = brandIdentityOverlay(brand);
     const compiled = compileTokens(DEFAULT_THEME_KEY, { light: overlay, dark: overlay });
-    // The active site's socials (else the primary's) — for the footer's social row.
-    const socials = extractSocials(propertyRow?.settings ?? primaryProperty?.settings);
     return {
-      ...tokensToBrand(compiled.light, {
-        logoUrl: logoUrlFor(brand.logoLightMediaId, slug),
-        siteName,
-      }),
+      ...tokensToBrand(compiled.light, { logoUrl, siteName }),
       ...(socials.length ? { socials } : {}),
       dark: {
         background: compiled.dark.colorBackground,

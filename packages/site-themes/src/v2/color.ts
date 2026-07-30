@@ -119,6 +119,30 @@ export function parseColor(input: string | null | undefined): Rgb | null {
   return null;
 }
 
+function toHex2(n: number): string {
+  return clamp255(n).toString(16).padStart(2, '0');
+}
+
+/** An RGB triple → lowercase `#rrggbb`. */
+export function rgbToHex({ r, g, b }: Rgb): string {
+  return `#${toHex2(r)}${toHex2(g)}${toHex2(b)}`;
+}
+
+/**
+ * Any CSS color this platform stores (`#hex`, `oklch(…)`, `rgb(…)`) → `#rrggbb`,
+ * or null when unparseable (a `color-mix(…)`, a named color, a `var()`).
+ *
+ * The one place a THEME's OKLCH tokens must become hex is TRANSACTIONAL EMAIL:
+ * Gmail/Outlook don't parse `oklch()` and React Email inlines concrete values, so
+ * the site's silica theme (the single source of the look) is flattened to hex per
+ * send. Reuses `parseColor` → `oklchToRgb`, so email and the storefront resolve the
+ * SAME color — this is a format conversion of one source, not a second source.
+ */
+export function colorToHex(input: string | null | undefined): string | null {
+  const rgb = parseColor(input);
+  return rgb ? rgbToHex(rgb) : null;
+}
+
 // sRGB channel (0–1) → linear-light value, per WCAG.
 function linearize(channel: number): number {
   const c = channel / 255;
