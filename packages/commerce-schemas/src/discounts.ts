@@ -66,7 +66,21 @@ export const CreateDiscountInput = z.object({
 });
 export type CreateDiscountInput = z.infer<typeof CreateDiscountInput>;
 
-export const UpdateDiscountInput = CreateDiscountInput.partial();
+// `.partial()` makes every field optional but does NOT strip its `.default()`
+// (the trap already documented on UpdateProductInput / UpdateCategoryInput), and
+// discountService.update writes every key that isn't undefined. Renaming a
+// discount therefore WIPED its conditions array — the rules that decide who the
+// discount applies to — and reset scope to 'order', stacking to 'none', the
+// per-customer limit to 1, and priority to 0. Re-declare each defaulted field as
+// plain-optional so "omitted = untouched" holds. Keep in sync with every
+// `.default()` in CreateDiscountInput.
+export const UpdateDiscountInput = CreateDiscountInput.partial().extend({
+  scope: DiscountScope.optional(),
+  conditions: z.array(DiscountCondition).max(20).optional(),
+  perCustomerLimit: z.number().int().positive().optional(),
+  stacking: DiscountStacking.optional(),
+  priority: z.number().int().nonnegative().optional(),
+});
 export type UpdateDiscountInput = z.infer<typeof UpdateDiscountInput>;
 
 export const RedeemDiscountInput = z.object({

@@ -16,6 +16,9 @@ import {
   DenyReturnInput,
   IssueReturnRefundInput,
   RecordReturnInspectionInput,
+  UpdateShippingProfileInput,
+  UpdateShippingZoneInput,
+  UpdateTaxZoneInput,
 } from '@sparx/commerce-schemas';
 
 import { returnService, shippingService, taxService } from '../services';
@@ -41,7 +44,7 @@ const updateShippingZone: McpToolDefinition = {
     'Edit a shipping zone — name, priority, or geographic targeting. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
-  input: CreateShippingZoneInput.partial().extend({ zoneId: uuid() }),
+  input: UpdateShippingZoneInput.extend({ zoneId: uuid() }),
   run: (ctx, input) => {
     const { zoneId, ...patch } = input as { zoneId: string } & Record<string, unknown>;
     return shippingService.updateZone(ctx, zoneId, patch);
@@ -73,7 +76,7 @@ const updateShippingProfile: McpToolDefinition = {
     'Edit a shipping profile — name, description, or allowed carrier services. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
-  input: CreateShippingProfileInput.partial().extend({ profileId: uuid() }),
+  input: UpdateShippingProfileInput.extend({ profileId: uuid() }),
   run: (ctx, input) => {
     const { profileId, ...patch } = input as { profileId: string } & Record<string, unknown>;
     return shippingService.updateProfile(ctx, profileId, patch);
@@ -136,7 +139,7 @@ const updateTaxZone: McpToolDefinition = {
     'Edit a tax zone — country, region, nexus type, or registration number. Send only the fields to change.',
   scope: 'write:commerce',
   confirmation: true,
-  input: CreateTaxZoneInput.partial().extend({ zoneId: uuid() }),
+  input: UpdateTaxZoneInput.extend({ zoneId: uuid() }),
   run: (ctx, input) => {
     const { zoneId, ...patch } = input as { zoneId: string } & Record<string, unknown>;
     return taxService.updateZone(ctx, zoneId, patch);

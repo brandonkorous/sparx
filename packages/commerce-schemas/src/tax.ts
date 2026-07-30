@@ -30,6 +30,16 @@ export const CreateTaxZoneInput = z.object({
 });
 export type CreateTaxZoneInput = z.infer<typeof CreateTaxZoneInput>;
 
+// A `.default()` survives `.partial()`, and taxZoneService.update writes every
+// key that isn't undefined — so editing a zone's registration number through a
+// bare `CreateTaxZoneInput.partial()` REACTIVATED a zone the merchant had
+// switched off, resuming tax collection somewhere they had stopped collecting.
+// Update paths must use this schema.
+export const UpdateTaxZoneInput = CreateTaxZoneInput.extend({
+  isActive: z.boolean(),
+}).partial();
+export type UpdateTaxZoneInput = z.infer<typeof UpdateTaxZoneInput>;
+
 // Merchant-defined fallback rate, used only when no TaxProvider is
 // installed. Real tax calculation always prefers the provider.
 export const CreateTaxRateInput = z.object({

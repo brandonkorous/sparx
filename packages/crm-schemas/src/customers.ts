@@ -14,6 +14,7 @@ import {
   LifecycleStage,
   PreferredContactMethod,
   TagList,
+  TagListPatch,
   Uuid,
 } from './common';
 
@@ -57,7 +58,20 @@ export const CreateCustomerInput = z.object({
 });
 export type CreateCustomerInput = z.infer<typeof CreateCustomerInput>;
 
-export const UpdateCustomerInput = CreateCustomerInput.partial();
+// Same defaults-survive-`.partial()` trap as UpdateB2BAccountInput, and the one
+// with a consent consequence: customerService.update writes every field that is
+// `!== undefined`, so editing a phone number alone DEMOTED the customer's
+// lifecycle stage back to 'lead', reset their relationship type to 'retail', and
+// — worst — cleared `doNotContact`, re-opening someone who had asked not to be
+// contacted. Re-declared without defaults so an omitted field stays untouched.
+export const UpdateCustomerInput = CreateCustomerInput.extend({
+  type: CustomerType,
+  lifecycleStage: LifecycleStage,
+  doNotContact: z.boolean(),
+  // TagList carries `.default([])`, which survives `.partial()` — so without
+  // this every customer edit deleted the customer's tags. See TagListPatch.
+  tags: TagListPatch,
+}).partial();
 export type UpdateCustomerInput = z.infer<typeof UpdateCustomerInput>;
 
 // Newsletter / email-capture subscribe — the marketing opt-in path shared by the
@@ -147,9 +161,15 @@ export const CreateCustomerAddressInput = z.object({
 });
 export type CreateCustomerAddressInput = z.infer<typeof CreateCustomerAddressInput>;
 
+// `isDefault` is re-declared without its create-default for the reason spelled
+// out on UpdateCustomerInput: the default survives `.partial()`, so editing a
+// street line on the DEFAULT address silently demoted it (isDefault → false),
+// leaving the customer with no default address at all.
 export const UpdateCustomerAddressInput = CreateCustomerAddressInput.omit({
   customerId: true,
-}).partial();
+})
+  .extend({ isDefault: z.boolean() })
+  .partial();
 export type UpdateCustomerAddressInput = z.infer<typeof UpdateCustomerAddressInput>;
 
 // Customer document — a file (already uploaded to the media pipeline) attached to

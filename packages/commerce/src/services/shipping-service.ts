@@ -10,6 +10,8 @@ import {
   CreateShippingZoneInput,
   type RateOption,
   type ShipmentRequest,
+  UpdateShippingProfileInput,
+  UpdateShippingZoneInput,
   ZoneTargeting,
 } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
@@ -138,7 +140,7 @@ export async function updateZone(
   id: string,
   rawInput: unknown
 ): Promise<void> {
-  const input = CreateShippingZoneInput.partial().parse(rawInput);
+  const input = UpdateShippingZoneInput.parse(rawInput);
   await withTenant(ctx, async (tx) => {
     const before = await tx.shippingZone.findFirst({ where: { id } });
     if (!before) throw new CommerceNotFoundError('ShippingZone', id);
@@ -257,7 +259,7 @@ export async function updateProfile(
   id: string,
   rawInput: unknown
 ): Promise<void> {
-  const input = CreateShippingProfileInput.partial().parse(rawInput);
+  const input = UpdateShippingProfileInput.parse(rawInput);
   await withTenant(ctx, async (tx) => {
     const before = await tx.shippingProfile.findFirst({ where: { id } });
     if (!before) throw new CommerceNotFoundError('ShippingProfile', id);

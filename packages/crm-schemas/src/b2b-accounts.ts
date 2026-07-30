@@ -6,7 +6,7 @@
 
 import { z } from 'zod';
 
-import { B2BAccountStatus, PaymentTerms, TagList, Uuid } from './common';
+import { B2BAccountStatus, PaymentTerms, TagList, TagListPatch, Uuid } from './common';
 
 // Engine profile shape stored in b2b_accounts.engine_profiles JSONB. Used
 // by the fitment-aware catalog when Commerce lands. Each profile is one
@@ -38,7 +38,21 @@ export const CreateB2BAccountInput = z.object({
 });
 export type CreateB2BAccountInput = z.infer<typeof CreateB2BAccountInput>;
 
-export const UpdateB2BAccountInput = CreateB2BAccountInput.partial();
+// The four re-declarations are load-bearing, for the same reason as
+// UpdateDocumentWorkflowInput: `.partial()` makes a field optional but leaves its
+// `.default(...)` intact, so Zod fabricates a value for every defaulted field the
+// caller omitted, and b2bAccountService.update writes each field that is
+// `!== undefined`. This is the sharpest instance in the CRM — editing an
+// account's NOTES alone zeroed its credit limit and its negotiated discount,
+// wiped its engine profiles, and flipped a suspended account back to 'active'.
+export const UpdateB2BAccountInput = CreateB2BAccountInput.extend({
+  creditLimit: z.number().min(0).max(99_999_999.99),
+  discountPercent: z.number().min(0).max(100),
+  status: B2BAccountStatus,
+  engineProfiles: z.array(EngineProfile).max(100),
+  // TagList's own `.default([])` survives too, so any edit cleared the tags.
+  tags: TagListPatch,
+}).partial();
 export type UpdateB2BAccountInput = z.infer<typeof UpdateB2BAccountInput>;
 
 // B2B account contacts — links a Customer to a B2BAccount with a role

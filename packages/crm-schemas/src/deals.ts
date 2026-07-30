@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 
-import { TagList, Uuid } from './common';
+import { TagList, TagListPatch, Uuid } from './common';
 
 export const CreateDealInput = z.object({
   pipelineId: Uuid,
@@ -30,7 +30,23 @@ export const CreateDealInput = z.object({
 });
 export type CreateDealInput = z.infer<typeof CreateDealInput>;
 
-export const UpdateDealInput = CreateDealInput.partial();
+// `.partial()` alone is WRONG here, and silently destructive: zod keeps each
+// field's `.default()` behind the new optional wrapper, so parsing `{ title }`
+// yields `{ title, value: 0, currency: 'USD', probability: 0 }` — and
+// dealService.update writes every key that isn't undefined. Renaming a deal
+// would zero its value and probability. The three defaulted fields are
+// re-declared without defaults so an omitted key stays omitted.
+export const UpdateDealInput = CreateDealInput.partial().extend({
+  value: z.number().min(0).max(999_999_999_999.99).optional(),
+  currency: z
+    .string()
+    .length(3)
+    .regex(/^[A-Z]{3}$/, 'Currency must be ISO 4217 (e.g. "USD")')
+    .optional(),
+  probability: z.number().min(0).max(100).optional(),
+  // TagList's own `.default([])` survives too, so a rename also cleared tags.
+  tags: TagListPatch.optional(),
+});
 export type UpdateDealInput = z.infer<typeof UpdateDealInput>;
 
 // Stage moves are a separate write path because they emit deal.stage_changed

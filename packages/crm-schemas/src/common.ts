@@ -13,7 +13,7 @@ export const OptionalUuid = z.string().uuid().optional().nullable();
 // Tags are stored as text[] in Postgres with VARCHAR(63) per slot; mirror
 // the constraint at validation time so we never accept a tag that won't
 // fit in the column.
-export const TagList = z
+const TagArray = z
   .array(
     z
       .string()
@@ -21,8 +21,21 @@ export const TagList = z
       .max(63)
       .regex(/^[a-zA-Z0-9_-]+$/, 'Tags must be alphanumeric (plus _ and -)')
   )
-  .max(50)
-  .default([]);
+  .max(50);
+
+/** Tags on a CREATE — absent means "no tags", so it defaults to `[]`. */
+export const TagList = TagArray.default([]);
+
+/**
+ * Tags on a PATCH — the SAME validation with the default removed.
+ *
+ * `TagList.optional()` does not do what it looks like: a `.default()` survives
+ * both `.optional()` and `.partial()`, so Zod fabricates `tags: []` for a body
+ * that never mentioned tags, and every update service writes the fields that are
+ * `!== undefined`. A patch of one unrelated field therefore DELETED every tag on
+ * the record. Update schemas must use this, never `TagList`.
+ */
+export const TagListPatch = TagArray;
 
 // Customer classification is THREE orthogonal axes, not one enum (docs/137,
 // modelled on HubSpot). A contact carries one value on each at once.

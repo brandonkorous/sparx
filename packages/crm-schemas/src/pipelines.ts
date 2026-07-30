@@ -26,7 +26,13 @@ export const CreatePipelineInput = z.object({
 });
 export type CreatePipelineInput = z.infer<typeof CreatePipelineInput>;
 
-export const UpdatePipelineInput = CreatePipelineInput.partial();
+// Defaults survive `.partial()` and the service writes every non-undefined key,
+// so renaming a pipeline DEMOTED it from being the tenant's default and reset
+// its position in the list. Re-declared without the defaults.
+export const UpdatePipelineInput = CreatePipelineInput.extend({
+  isDefault: z.boolean(),
+  sortOrder: z.number().int().min(0),
+}).partial();
 export type UpdatePipelineInput = z.infer<typeof UpdatePipelineInput>;
 
 export const CreatePipelineStageInput = z.object({
@@ -42,7 +48,13 @@ export const CreatePipelineStageInput = z.object({
 });
 export type CreatePipelineStageInput = z.infer<typeof CreatePipelineStageInput>;
 
-export const UpdatePipelineStageInput = CreatePipelineStageInput.partial();
+// Same trap: renaming a stage reset its win probability to 0 and its type back
+// to 'open' — which turns a "Closed Won" column into an open one and silently
+// changes what every forecast counts.
+export const UpdatePipelineStageInput = CreatePipelineStageInput.extend({
+  probability: z.number().min(0).max(100),
+  stageType: StageType,
+}).partial();
 export type UpdatePipelineStageInput = z.infer<typeof UpdatePipelineStageInput>;
 
 // Reorder takes the desired final ordering — service layer rewrites

@@ -788,8 +788,16 @@ export interface CaptureLeadInput {
   /** Full name — split best-effort into first/last. */
   name?: string | null;
   phone?: string | null;
+  /** Organization the lead represents. Filled only when the row has none. */
+  company?: string | null;
   /** Origin tag stored in metadata (e.g. 'form'). */
   source?: string;
+  /** Extra metadata merged under the captured `source` — the caller's own keys
+   *  (e.g. the sparx tenant a platform signup came from). Merged into an existing
+   *  row's metadata on re-capture; the caller's keys win, everything else is kept. */
+  metadata?: Record<string, unknown>;
+  /** Tags unioned onto the row — never removes tags a human added. */
+  tags?: string[];
 }
 
 /** Upsert a PROSPECT from an inbound lead (a contact-form submission) WITHOUT
@@ -812,7 +820,21 @@ export async function captureLead(
       if (!existing.firstName && firstName) data.firstName = firstName;
       if (!existing.lastName && lastName) data.lastName = lastName;
       if (!existing.phone && input.phone) data.phone = input.phone;
+      if (!existing.company && input.company) data.company = input.company;
       if (existing.deletedAt) data.deletedAt = null;
+      // Caller metadata is merged (its keys win) rather than replacing the object,
+      // so a re-capture never drops what an earlier capture or a human recorded.
+      // Written only when the merge actually changes something — a repeated
+      // capture of identical data shouldn't churn `updated_at`.
+      if (input.metadata) {
+        const prior = (existing.metadata ?? {}) as Record<string, unknown>;
+        const merged = { ...prior, ...input.metadata };
+        if (JSON.stringify(merged) !== JSON.stringify(prior)) {
+          data.metadata = merged as Prisma.InputJsonValue;
+        }
+      }
+      const newTags = (input.tags ?? []).filter((t) => !existing.tags.includes(t));
+      if (newTags.length > 0) data.tags = [...existing.tags, ...newTags];
       if (Object.keys(data).length === 0) return { customer: existing, created: false };
       const updated = await tx.customer.update({ where: { id: existing.id }, data });
       return { customer: updated, created: false };
@@ -837,7 +859,9 @@ export async function captureLead(
           firstName,
           lastName,
           phone: input.phone ?? null,
-          metadata: { source: input.source ?? 'form' },
+          company: input.company ?? null,
+          tags: input.tags ?? [],
+          metadata: { source: input.source ?? 'form', ...input.metadata },
         },
       });
       await writeAuditLog({

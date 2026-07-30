@@ -14,6 +14,7 @@ import {
   MergeCustomersInput,
   ReorderPipelineStagesInput,
   UpdateB2BAccountInput,
+  UpdateCustomerInput,
   UpdateDealInput,
   UpdatePipelineInput,
   UpdatePipelineStageInput,
@@ -57,6 +58,29 @@ const CustomerWriteInput = CreateCustomerInput.pick({
   tags: true,
 });
 
+// The PATCH shape must come from UpdateCustomerInput, not
+// `CustomerWriteInput.partial()`: the create schema's `.default()`s survive
+// `.partial()`, so the tool would fabricate type/lifecycleStage/doNotContact/tags
+// for a caller that never mentioned them — quietly making "update one field"
+// demote the contact to a lead, clear do-not-contact, and wipe its tags, despite
+// the tool's own promise that omitted fields are left unchanged.
+const CustomerPatchInput = UpdateCustomerInput.pick({
+  type: true,
+  lifecycleStage: true,
+  leadStatus: true,
+  email: true,
+  phone: true,
+  firstName: true,
+  lastName: true,
+  company: true,
+  jobTitle: true,
+  b2bAccountId: true,
+  assignedRepId: true,
+  preferredContactMethod: true,
+  doNotContact: true,
+  tags: true,
+});
+
 export const createCustomer: McpToolDefinition = {
   name: 'create_customer',
   description:
@@ -73,7 +97,7 @@ export const updateCustomer: McpToolDefinition = {
     'Update a customer / contact — any subset of fields, including the three classification axes (relationship `type`, `lifecycleStage`, `leadStatus`). Omitted fields are left unchanged; pass null to clear a nullable field.',
   scope: 'write:crm',
   confirmation: true,
-  input: CustomerWriteInput.partial().extend({ customerId: z.string().uuid() }),
+  input: CustomerPatchInput.extend({ customerId: z.string().uuid() }),
   run: (ctx, input) => {
     const { customerId, ...patch } = input as { customerId: string } & Record<string, unknown>;
     return customerService.update(ctx, customerId, patch);

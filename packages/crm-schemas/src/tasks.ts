@@ -18,6 +18,10 @@ export type CreateTaskInput = z.infer<typeof CreateTaskInput>;
 export const UpdateTaskInput = CreateTaskInput.omit({ assignedToUserId: true }).partial().extend({
   assignedToUserId: Uuid.optional(),
   status: TaskStatus.optional(),
+  // `priority` carries a create-default, and a `.default()` survives
+  // `.partial()` — so editing a task's due date reset an urgent task back to
+  // medium priority. Re-declared without it.
+  priority: TaskPriority.optional(),
 });
 export type UpdateTaskInput = z.infer<typeof UpdateTaskInput>;
 

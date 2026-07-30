@@ -179,7 +179,11 @@ export const UpdateConfigurationTemplateInput = z.object({
   name: z.string().min(1).max(127).optional(),
   description: z.string().max(2000).nullable().optional(),
   status: z.enum(['draft', 'active', 'archived']).optional(),
-  layout: CreateConfigurationTemplateInput.shape.layout.optional(),
+  // `.unwrap()` strips the create-side `.default({})`. Without it Zod fabricates
+  // `layout: {}` for a body that never mentioned layout, and the service writes
+  // every non-undefined key — so renaming a configurator ERASED its layout
+  // (step grouping and visual hints) and left the buyer a flat option dump.
+  layout: CreateConfigurationTemplateInput.shape.layout.unwrap().optional(),
   options: z.array(ConfigurationOptionInput).min(1).max(50).optional(),
   rules: z.array(ConfigurationRuleInput).max(100).optional(),
   addOns: z.array(ConfigurationAddOnInput).max(100).optional(),

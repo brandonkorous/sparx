@@ -30,7 +30,15 @@ export const TierBody = z.object({
   minOrderCents: z.number().int().min(0).default(0),
 });
 
-export const TierPatchBody = TierBody.partial();
+// `productScope` and `minOrderCents` are re-declared without their create
+// defaults: a `.default()` survives `.partial()`, and the route writes every key
+// that isn't undefined — so renaming a pricing tier widened it to ALL products
+// and dropped its minimum order to $0, handing every buyer on that tier a
+// discount it was never meant to cover.
+export const TierPatchBody = TierBody.extend({
+  productScope: z.enum(['all', 'collections', 'products']),
+  minOrderCents: z.number().int().min(0),
+}).partial();
 
 export const TierOverrideBody = z
   .object({

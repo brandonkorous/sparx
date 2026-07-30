@@ -54,6 +54,16 @@ export const CreateShippingZoneInput = z.object({
 });
 export type CreateShippingZoneInput = z.infer<typeof CreateShippingZoneInput>;
 
+// A `.default()` survives `.partial()`, and the update services write every key
+// that isn't undefined — so a bare `CreateShippingZoneInput.partial()` at the
+// call site reset the zone's priority to 0 on any edit, changing which zone
+// wins for an address. Update paths must use THIS, never `.partial()` on the
+// create schema.
+export const UpdateShippingZoneInput = CreateShippingZoneInput.extend({
+  priority: z.number().int().nonnegative(),
+}).partial();
+export type UpdateShippingZoneInput = z.infer<typeof UpdateShippingZoneInput>;
+
 // ─── Profiles ─────────────────────────────────────────────────────────
 //
 // A shipping profile groups products that share carrier eligibility.
@@ -72,6 +82,19 @@ export const CreateShippingProfileInput = z.object({
   requiresFreight: z.boolean().default(false),
 });
 export type CreateShippingProfileInput = z.infer<typeof CreateShippingProfileInput>;
+
+// Same trap as UpdateShippingZoneInput, with more at stake: renaming a profile
+// through `CreateShippingProfileInput.partial()` cleared its carrier allow-list
+// (making every carrier eligible), reset its hazmat classes to `['none']`, and
+// dropped the signature + freight requirements — routing regulated goods onto
+// carriers that must not carry them.
+export const UpdateShippingProfileInput = CreateShippingProfileInput.extend({
+  allowedCarrierServices: z.array(z.string().min(1).max(63)).max(50),
+  hazmatClassesAllowed: z.array(HazmatClass),
+  requiresSignature: z.boolean(),
+  requiresFreight: z.boolean(),
+}).partial();
+export type UpdateShippingProfileInput = z.infer<typeof UpdateShippingProfileInput>;
 
 export const AssignProductsToProfileInput = z.object({
   profileId: Uuid,

@@ -41,8 +41,15 @@ export type CreateAutomationInput = z.infer<typeof CreateAutomationInput>;
 // Update is a partial of the create shape plus a status transition. Tenants drive
 // active/paused/draft here; `error` is engine-set. Locked automations reject a
 // status change at the service layer (not expressible in the schema alone).
+// `conditions` and `maxDepth` are re-declared without their create-defaults: a
+// `.default()` survives `.partial()`, and the service writes every key that
+// isn't undefined — so renaming an automation RESET ITS CONDITIONS to the empty
+// group, which is the difference between "email customers who spent over $500"
+// and "email everyone".
 export const UpdateAutomationInput = CreateAutomationInput.partial().extend({
   status: AutomationStatus.optional(),
+  conditions: ConditionGroup.optional(),
+  maxDepth: z.number().int().min(1).max(10).optional(),
 });
 export type UpdateAutomationInput = z.infer<typeof UpdateAutomationInput>;
 

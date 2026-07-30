@@ -52,7 +52,20 @@ function refineSurcharge(v: { type?: SurchargeType; value?: number }, ctx: z.Ref
 export const CreateSurchargeRuleInput = SurchargeRuleObject.superRefine(refineSurcharge);
 export type CreateSurchargeRuleInput = z.infer<typeof CreateSurchargeRuleInput>;
 
-export const UpdateSurchargeRuleInput = SurchargeRuleObject.partial().superRefine(refineSurcharge);
+// Defaults stripped before `.partial()` (a `.default()` survives it, and the
+// service writes every non-undefined key). This one moved money: editing a
+// surcharge's label alone turned a FLAT fee back into a PERCENTAGE, reset the
+// basis it is calculated on, narrowed the payment methods it applies to back to
+// card only, and switched the rule off (isActive defaults to false on create).
+export const UpdateSurchargeRuleInput = SurchargeRuleObject.extend({
+  type: SurchargeType,
+  basis: SurchargeBasis,
+  paymentMethods: z.array(SurchargePaymentMethod).min(1).max(8),
+  appliesTo: SurchargeAppliesTo,
+  isActive: z.boolean(),
+})
+  .partial()
+  .superRefine(refineSurcharge);
 export type UpdateSurchargeRuleInput = z.infer<typeof UpdateSurchargeRuleInput>;
 
 // ─── The pure engine ──────────────────────────────────────────────────

@@ -10,6 +10,7 @@ import {
   CreateTaxZoneInput,
   type TaxBreakdown,
   TaxCalculationRequest,
+  UpdateTaxZoneInput,
 } from '@sparx/commerce-schemas';
 import { withTenant } from '@sparx/db';
 import type { TaxExemption, TaxRate, TaxZone, TxClient } from '@sparx/db';
@@ -117,7 +118,7 @@ export async function updateZone(
   id: string,
   rawInput: unknown
 ): Promise<void> {
-  const input = CreateTaxZoneInput.partial().parse(rawInput);
+  const input = UpdateTaxZoneInput.parse(rawInput);
   await withTenant(ctx, async (tx) => {
     const before = await tx.taxZone.findFirst({ where: { id } });
     if (!before) throw new CommerceNotFoundError('TaxZone', id);

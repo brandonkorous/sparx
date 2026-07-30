@@ -43,7 +43,19 @@ export const CreateWarehouseInput = z.object({
 });
 export type CreateWarehouseInput = z.infer<typeof CreateWarehouseInput>;
 
-export const UpdateWarehouseInput = CreateWarehouseInput.partial();
+// Defaults survive `.partial()` (see UpdateProductInput / UpdateCategoryInput),
+// and the service writes every key that isn't undefined — so renaming a
+// warehouse REACTIVATED a deactivated one (isActive → true), cleared its
+// per-channel fallback assignments, and reset its type to 'owned'. Re-declared
+// as plain optional. Keep in sync with every `.default()` in
+// CreateWarehouseInput.
+export const UpdateWarehouseInput = CreateWarehouseInput.partial().extend({
+  type: WarehouseType.optional(),
+  defaultForChannel: z
+    .array(z.enum(['storefront', 'b2b_portal', 'admin', 'subscription']))
+    .optional(),
+  isActive: z.boolean().optional(),
+});
 export type UpdateWarehouseInput = z.infer<typeof UpdateWarehouseInput>;
 
 // ─── Inventory levels + adjustments ──────────────────────────────────
@@ -290,7 +302,15 @@ export const CreateSupplierInput = z.object({
 });
 export type CreateSupplierInput = z.infer<typeof CreateSupplierInput>;
 
-export const UpdateSupplierInput = CreateSupplierInput.partial();
+// Same defaults-survive-`.partial()` trap as UpdateWarehouseInput above:
+// editing a supplier's contact details REACTIVATED a supplier that had been
+// switched off and forced its currency back to USD — silently repricing every
+// cost quoted in another currency. Keep in sync with every `.default()` in
+// CreateSupplierInput.
+export const UpdateSupplierInput = CreateSupplierInput.partial().extend({
+  currency: z.string().length(3).optional(),
+  isActive: z.boolean().optional(),
+});
 export type UpdateSupplierInput = z.infer<typeof UpdateSupplierInput>;
 
 // Upsert a (supplier, variant) purchasing link. One row per pair; re-upserting

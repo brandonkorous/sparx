@@ -194,7 +194,23 @@ function refineMarkupRule(
 export const CreateMarkupRuleInput = MarkupRuleObject.superRefine(refineMarkupRule);
 export type CreateMarkupRuleInput = z.infer<typeof CreateMarkupRuleInput>;
 
-export const UpdateMarkupRuleInput = MarkupRuleObject.partial().superRefine(refineMarkupRule);
+// The defaults are stripped before `.partial()` because a `.default()` survives
+// it, and markupRuleService.update writes every key that isn't undefined. The
+// worst of these is `scope`: renaming a rule reset it to `{type:'all'}`, so a
+// rule deliberately targeting one collection silently started repricing the
+// ENTIRE catalog. It also reactivated disabled rules, reset priority (changing
+// which rule wins), and flipped the recompute mode back to automatic.
+export const UpdateMarkupRuleInput = MarkupRuleObject.extend({
+  costBasis: MarkupCostBasis,
+  ceilingSrc: CeilingSrc,
+  appliesTo: MarkupAppliesTo,
+  scope: MarkupScope,
+  priority: z.number().int().nonnegative().max(1_000_000),
+  isActive: z.boolean(),
+  recomputeMode: RecomputeMode,
+})
+  .partial()
+  .superRefine(refineMarkupRule);
 export type UpdateMarkupRuleInput = z.infer<typeof UpdateMarkupRuleInput>;
 
 // Scope override for preview/apply — lets a bulk tool target a scope without

@@ -89,8 +89,16 @@ export const CreateSequenceInput = z.object({
 });
 export type CreateSequenceInput = z.infer<typeof CreateSequenceInput>;
 
+// The three defaulted fields are re-declared without their defaults: a
+// `.default()` survives `.partial()`, and the service writes every key that
+// isn't undefined — so renaming a sequence DELETED ALL OF ITS STEPS (steps
+// defaults to `[]`), emptying the whole email flow, and reset its re-entry and
+// exit-on-purchase rules along with it.
 export const UpdateSequenceInput = CreateSequenceInput.partial().extend({
   status: SequenceStatus.optional(),
+  reentryPolicy: ReentryPolicy.optional(),
+  exitOnPurchase: z.boolean().optional(),
+  steps: SequenceSteps.optional(),
 });
 export type UpdateSequenceInput = z.infer<typeof UpdateSequenceInput>;
 

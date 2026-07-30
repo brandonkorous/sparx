@@ -36,7 +36,15 @@ export const CreatePriceListInput = z.object({
 });
 export type CreatePriceListInput = z.infer<typeof CreatePriceListInput>;
 
-export const UpdatePriceListInput = CreatePriceListInput.partial();
+// Defaults survive `.partial()` (see UpdateProductInput / UpdateCategoryInput),
+// and the service writes every key that isn't undefined — so editing a price
+// list's NAME silently reverted it to `draft`, unpublishing live pricing, and
+// reset its priority to 0, changing which list wins. Re-declared as plain
+// optional. Keep in sync with every `.default()` in CreatePriceListInput.
+export const UpdatePriceListInput = CreatePriceListInput.partial().extend({
+  priority: z.number().int().nonnegative().optional(),
+  status: PriceListStatus.optional(),
+});
 export type UpdatePriceListInput = z.infer<typeof UpdatePriceListInput>;
 
 // Entry: either a fixed price OR a percent-off-list, never both.
