@@ -147,16 +147,31 @@ fails visibly instead of silently skipping every signup.
 
 ## 7. Backfill
 
-Tenants that existed before this shipped get onto the board with:
+Tenants that existed before this shipped — plus anything published while the subscriptions didn't
+exist yet, since a Pub/Sub subscription only receives what is published after it is created — get
+onto the board through the `platform-crm-backfill` Cloud Run **job**:
 
 ```bash
-cd services/platform-crm-worker
-DATABASE_URL=... SPARX_PLATFORM_TENANT_ID=... pnpm backfill      # DRY_RUN=1 to preview
+# Dry run: reports what it would touch, writes nothing.
+gcloud run jobs execute platform-crm-backfill --region us-central1 --wait
+
+# For real (execution-time override; the safe default stays in Terraform state).
+gcloud run jobs execute platform-crm-backfill --region us-central1 --wait \
+  --args=--import,tsx,scripts/backfill-tenants.ts,--apply
 ```
+
+**Why a job and not a `packages/db` backfill.** Cloud SQL is private-IP, so a backfill has to run
+inside the VPC — which is exactly why the db-migrate Job exists and why `RUN_BACKFILL=true` lives
+there. This one deliberately does not use that path: the db-migrate backfills run as the migration
+OWNER doing raw data rewrites, while the mirror writes **through the CRM service layer under RLS**.
+It must run as the same identity, on the same image, in the same runtime the worker uses in
+production, or the backfill exercises a code path nobody ships. Reusing the worker's image also
+keeps the CRM service layer out of the migration image.
 
 It calls the mirror directly rather than replaying `tenant.created`, so each tenant lands in the
 stage it actually belongs in — a tenant who already pays goes straight to Paying — instead of
-replaying a signup that happened months ago. Re-running is safe.
+replaying a signup that happened months ago. Idempotent: re-running updates the same contact and
+deal rather than duplicating them.
 
 ## 8. Configuration
 
@@ -166,19 +181,21 @@ replaying a signup that happened months ago. Re-running is safe.
 | `SPARX_PLATFORM_TENANT_SLUG` | dev `.env` (`wizeworks`)                         | Dev default; the seed creates this tenant     |
 | `DATABASE_URL`               | Secret Manager (`database-url-cloudrun`)         | Required — every message reads and writes     |
 | Subscriptions                | `terraform/envs/prod/serverless.tf`              | One primary + four `additional_subscriptions` |
+| Backfill job                 | `google_cloud_run_v2_job.platform_crm_backfill`  | Dry-run by default; `--apply` to write        |
 
 ## 9. Decisions
 
-| ID  | Decision                                                          | Why                                                                                                              |
-| --- | ----------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| D1  | Consume `tenant.created` instead of calling the CRM from signup   | Covers all three signup paths at once, keeps a cross-tenant write out of the request path, gets retries for free |
-| D2  | A dedicated worker, not a second handler in `legal-seed-worker`   | Independent retry and DLQ; a CRM failure must not re-run legal seeding. Scale-to-zero, so no meaningful cost     |
-| D3  | Hydrate from the tenant row, not the event payload                | No owner PII on the bus; redelivery reflects current state; the backfill is the same code path                   |
-| D4  | `captureLead`, not `subscribe`                                    | Signing up for a trial is not consent to marketing email                                                         |
-| D5  | Contact per person, deal per tenant                               | One owner can hold several tenants, and each is its own trial to win                                             |
-| D6  | Two lost stages                                                   | "Never converted" and "converted then left" are different problems; one Closed Lost column hides which           |
-| D7  | Pipeline lives in `@sparx/platform-crm`, not in the CRM built-ins | Built-ins seed into every tenant; no customer wants a pipeline modelling sparx's own trials                      |
-| D8  | Dev parity via `SPARX_DEV_WORKER_ROUTES`, not an in-process twin  | Exercises the real HTTP entry point, and keeps the CRM service layer out of every app that can sign a tenant up  |
+| ID  | Decision                                                                        | Why                                                                                                                                                                                                 |
+| --- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| D1  | Consume `tenant.created` instead of calling the CRM from signup                 | Covers all three signup paths at once, keeps a cross-tenant write out of the request path, gets retries for free                                                                                    |
+| D2  | A dedicated worker, not a second handler in `legal-seed-worker`                 | Independent retry and DLQ; a CRM failure must not re-run legal seeding. Scale-to-zero, so no meaningful cost                                                                                        |
+| D3  | Hydrate from the tenant row, not the event payload                              | No owner PII on the bus; redelivery reflects current state; the backfill is the same code path                                                                                                      |
+| D4  | `captureLead`, not `subscribe`                                                  | Signing up for a trial is not consent to marketing email                                                                                                                                            |
+| D5  | Contact per person, deal per tenant                                             | One owner can hold several tenants, and each is its own trial to win                                                                                                                                |
+| D6  | Two lost stages                                                                 | "Never converted" and "converted then left" are different problems; one Closed Lost column hides which                                                                                              |
+| D7  | Pipeline lives in `@sparx/platform-crm`, not in the CRM built-ins               | Built-ins seed into every tenant; no customer wants a pipeline modelling sparx's own trials                                                                                                         |
+| D8  | Dev parity via `SPARX_DEV_WORKER_ROUTES`, not an in-process twin                | Exercises the real HTTP entry point, and keeps the CRM service layer out of every app that can sign a tenant up                                                                                     |
+| D9  | Backfill as a Cloud Run job on the worker's image, not a `packages/db` backfill | The mirror writes through the CRM service layer under RLS, so it must run as the worker's identity in the worker's runtime — the db-migrate backfills run as the migration owner doing raw rewrites |
 
 ## 10. Where the code lives
 
