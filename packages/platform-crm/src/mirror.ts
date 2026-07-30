@@ -301,9 +301,29 @@ async function ensureMirror(
   };
 }
 
+/**
+ * A CRM tag safe for the `TagList` contract: `^[a-zA-Z0-9_-]+$`, max 63 chars.
+ *
+ * The acquisition channel is free-form first-party data (a UTM value, a referrer
+ * host), so it CANNOT be interpolated into a tag as-is. It was — as
+ * `channel:<value>` — and the colon fails the pattern, so every tenant with a
+ * recorded channel threw on the way in and never reached the board. Anything
+ * unusable collapses to a hyphen; a value with nothing usable left yields null
+ * and is simply not tagged.
+ */
+export function toTag(prefix: string, value: string): string | null {
+  const cleaned = value
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  if (!cleaned) return null;
+  return `${prefix}-${cleaned}`.slice(0, 63).replace(/-+$/, '');
+}
+
 function contactTags(facts: TenantFacts): string[] {
   const tags = [SIGNUP_TAG];
-  if (facts.acquisitionChannel) tags.push(`channel:${facts.acquisitionChannel}`);
+  const channel = facts.acquisitionChannel ? toTag('channel', facts.acquisitionChannel) : null;
+  if (channel) tags.push(channel);
   return tags;
 }
 
