@@ -20,6 +20,7 @@ import {
   framesToDelete,
   hasStagedTree,
   pagesToDelete,
+  rowsToStoredSite,
   stagedFrameId,
   stagedTree,
   symbolsUpdateFor,
@@ -350,6 +351,110 @@ describe('framesToDelete — a layout is only removed when it is named', () => {
     // with no chrome at all — so a stale client naming it is ignored, not obeyed.
     expect(framesToDelete([LAYOUT_A], LAYOUT_A)).toEqual([]);
     expect(framesToDelete([LAYOUT_A, LAYOUT_B], LAYOUT_A)).toEqual([LAYOUT_B]);
+  });
+});
+
+// ── The other half: does a second layout SURVIVE A RELOAD? ───────────────────
+//
+// `framesToDelete` above guards the write. This guards the READ, and together they are
+// the claim the builder audit left open: an author creates a second layout, saves, comes
+// back tomorrow, and it is still in the switcher.
+//
+// It needs its own tests because the two halves agree by CONVENTION, in three places, and
+// every disagreement is silent. `syncNamedLayoutsTx` writes `frames[id]` to rows with
+// `isActive: false` and skips the active id; `rowsToStoredSite` has to split them back the
+// same way, key by the same value, and make the same call about a tree-less row. Get any
+// of the three wrong and the layout simply is not there after a reload — which an author
+// reads as "it never saved", not as a read bug.
+
+/** A `builder_layouts` row, at the width these functions actually touch. Same `as`-cast
+ *  idiom as `row()` above: the real model carries thirty columns none of this reads. */
+function layoutRow(over: {
+  id: string;
+  name?: string;
+  isActive?: boolean;
+  silicaDraftTree?: unknown;
+}) {
+  return {
+    name: 'Layout',
+    isActive: false,
+    silicaDraftTree: DRAFT,
+    ...over,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } as any;
+}
+
+/** A page row, ditto — every case here needs at least one so the site is non-empty. */
+function pageRow(id = 'page-1') {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return { id, name: 'Home', slug: '/', silicaDraftTree: DRAFT, frameId: null } as any;
+}
+
+describe('rowsToStoredSite — a named layout survives the reload', () => {
+  it('splits the ACTIVE layout into `frame` and every other one into `frames`', () => {
+    const site = rowsToStoredSite(
+      [pageRow()],
+      [
+        layoutRow({ id: LAYOUT_A, name: 'Default layout', isActive: true }),
+        layoutRow({ id: LAYOUT_B, name: 'Landing pages', silicaDraftTree: LIVE }),
+      ],
+      null
+    );
+    expect(site.frame?.root).toBe(DRAFT);
+    // The whole claim, in one assertion: the second layout comes back, under its own id.
+    expect(Object.keys(site.frames ?? {})).toEqual([LAYOUT_B]);
+    expect(site.frames?.[LAYOUT_B]).toMatchObject({ root: LIVE, name: 'Landing pages' });
+  });
+
+  it('keys `frames` by the ROW id, which is what a page points at', () => {
+    // Load-bearing, and the reason there is no translation table anywhere: `Page.frameId`
+    // in the engine, `builder_pages.frame_id` in Postgres and `builder_layouts.id` are one
+    // value. A read that keyed by name or position would break every page's chrome pointer
+    // while looking perfectly reasonable in the switcher.
+    const site = rowsToStoredSite(
+      [pageRow()],
+      [layoutRow({ id: LAYOUT_A, isActive: true }), layoutRow({ id: LAYOUT_B })],
+      null
+    );
+    expect(site.frames?.[LAYOUT_B]).toBeDefined();
+  });
+
+  it('SKIPS a layout with no silica tree rather than returning an empty shell', () => {
+    // A row from the legacy `.bx-*` catalog, or one never opened. Sent through, the engine
+    // lists a layout with no Outlet — which an author cannot repair from inside the editor,
+    // so absence is the kinder failure.
+    const site = rowsToStoredSite(
+      [pageRow()],
+      [
+        layoutRow({ id: LAYOUT_A, isActive: true }),
+        layoutRow({ id: LAYOUT_B, silicaDraftTree: null }),
+      ],
+      null
+    );
+    expect(site.frames).toBeUndefined();
+  });
+
+  it('omits `frames` entirely when the site has only its default shell', () => {
+    // Not `{}`. The engine reads an absent map as "no alternatives", and a present-but-empty
+    // one is the shape that makes a switcher render a header with nothing under it.
+    const site = rowsToStoredSite([pageRow()], [layoutRow({ id: LAYOUT_A, isActive: true })], null);
+    expect(site.frames).toBeUndefined();
+    expect(site.frame).toBeDefined();
+  });
+
+  it('round-trips the write half: what sync excludes is exactly what the read adds back', () => {
+    // The two conventions meeting. `syncNamedLayoutsTx` skips `frameId === activeId`, so
+    // the active layout is never in the payload's `frames` — and the read must therefore be
+    // the only thing that puts it in `frame`. If both did it, one save would carry two trees
+    // for one row; if neither did, the site would reload with no chrome.
+    const layouts = [
+      layoutRow({ id: LAYOUT_A, isActive: true }),
+      layoutRow({ id: LAYOUT_B, silicaDraftTree: LIVE }),
+    ];
+    const site = rowsToStoredSite([pageRow()], layouts, null);
+    const payloadFrameIds = Object.keys(site.frames ?? {});
+    expect(payloadFrameIds).not.toContain(LAYOUT_A);
+    expect(framesToDelete(payloadFrameIds, LAYOUT_A)).toEqual([LAYOUT_B]);
   });
 });
 

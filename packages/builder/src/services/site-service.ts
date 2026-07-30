@@ -99,8 +99,15 @@ function symbolsOf(value: unknown): Record<string, SilicaSymbolDef> {
  *  layout's frame + the property's site-global theme + symbols (docs/118). Page
  *  identity is the row's (id/name/slug); a null slug (a sparx-seeded home) shows as
  *  "/". A null `theme` means the author never edited it — the caller falls back to
- *  the tenant's brand-derived theme. */
-function rowsToStoredSite(
+ *  the tenant's brand-derived theme.
+ *
+ *  EXPORTED for tests. It is the READ half of the named-layout round trip whose write
+ *  half is `syncNamedLayoutsTx`, and the two have to agree on three separate conventions
+ *  — which layout is `frame` vs `frames`, that the key IS the row id, and that a
+ *  tree-less row is skipped. Nothing about a disagreement is loud: the author's second
+ *  layout would simply not come back after a reload, which is indistinguishable from
+ *  never having saved. Not part of the service's public surface. */
+export function rowsToStoredSite(
   pages: BuilderPage[],
   layouts: BuilderLayout[],
   site: BuilderSite | null
