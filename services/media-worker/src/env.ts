@@ -16,16 +16,29 @@ const EnvSchema = z.object({
   // Expected `email` claim in the Pub/Sub push OIDC token — defense in
   // depth on top of Cloud Run's frontend auth check. Leave unset in dev.
   PUBSUB_INVOKER_SA: z.string().email().optional(),
-  // Cloud Storage — must be set, the worker has no local-disk fallback.
-  // Originals are read from the private bucket; variants are written to
-  // the public bucket (world-readable behind CDN). Both names come from
-  // terraform/modules/storage. In dev you can set them to the same value.
-  GCS_MEDIA_BUCKET: z.string().min(1),
+  // Cloud Storage. OPTIONAL, and its absence is what selects the local-disk
+  // backend — the same switch `packages/media` and api-rest already use
+  // (`if (env.GCS_MEDIA_BUCKET)` in both). When set, originals are read from
+  // the private bucket and variants written to the public one (world-readable
+  // behind the CDN); both names come from terraform/modules/storage, and in dev
+  // they can be the same value.
+  //
+  // This used to be `.min(1)` — required, with a comment claiming the worker had
+  // no local-disk fallback. That made media-worker the ONE service that could
+  // not run without GCS, so on a cluster with no Google project it exited 78
+  // (EX_CONFIG) at boot and crashlooped, while every other consumer of the same
+  // volume was perfectly happy. The fallback exists now; see storage.ts.
+  GCS_MEDIA_BUCKET: z.string().min(1).optional(),
   GCS_MEDIA_PUBLIC_BUCKET: z
     .string()
     .min(1)
     .optional()
     .transform((v) => v ?? process.env.GCS_MEDIA_BUCKET ?? ''),
+  // Where the local backend reads originals and writes variants. Only consulted
+  // when GCS_MEDIA_BUCKET is unset. Must be the SAME volume api-rest mounts —
+  // it streams these variants back out over /v1/public/media/variants/*, so two
+  // different directories transcode successfully and then 404 forever.
+  MEDIA_LOCAL_DIR: z.string().min(1).default('/media'),
   // Variant widths (px). Smaller than 400 isn't worth a network round-trip;
   // larger than 2000 hits CDN cache pressure without quality gains.
   VARIANT_WIDTHS: z
