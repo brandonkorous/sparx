@@ -3,7 +3,7 @@
 # Multi-stage Next.js build for the @sparx/site tenant storefront.
 # Mirrors apps/web/Dockerfile — same standalone output shape.
 #
-# Built from the repo root context (per .github/workflows/build-images.yml):
+# Built from the repo root context (per .github/workflows/build-images-gcp.yml):
 #   docker build -f apps/site/Dockerfile -t sparx/storefront:tag .
 
 ARG NODE_VERSION=24-alpine
@@ -58,7 +58,7 @@ COPY apps/site apps/site
 
 # Stripe.js publishable key. `NEXT_PUBLIC_*` is INLINED INTO THE CLIENT BUNDLE AT
 # BUILD TIME — setting it on the running pod does nothing, so it has to arrive as a
-# build-arg here (wired from the repo variable in build-images.yml). Without it the
+# build-arg here (wired from the repo variable in build-images-gcp.yml). Without it the
 # checkout's Payment Element never mounts and every tenant storefront shows
 # "Payments aren't configured for this store yet". This is the PLATFORM key: sparx
 # Pay's intents are destination charges on sparx's own account, so the platform key

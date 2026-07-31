@@ -8,7 +8,7 @@
 # leaving @sparx/commerce-schemas (which pulls @sparx/crm-schemas) as its only
 # workspace dep. There is no @sparx/site-ui stylesheet build step.
 #
-# Built from the repo root context (per .github/workflows/build-images.yml):
+# Built from the repo root context (per .github/workflows/build-images-gcp.yml):
 #   docker build -f apps/market/Dockerfile -t sparx/market:tag .
 
 ARG NODE_VERSION=24-alpine

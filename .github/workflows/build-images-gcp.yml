@@ -1,18 +1,45 @@
-name: Build & push images
+name: Build images (GCP)
+
+# Builds every platform image and pushes it to ARTIFACT REGISTRY. The sibling is
+# build-images-ghcr.yml.
+#
+# NAMED FOR THE REGISTRY'S PROVIDER, and note the asymmetry with that sibling —
+# it is deliberate. Artifact Registry is a GCP service needing GCP auth, so this
+# workflow genuinely is GCP-coupled. GHCR is not Azure's registry; it is
+# GitHub's, and GKE could pull the very same images. Calling the other one
+# `build-images-azure.yml` would imply you need one build per cloud, which is
+# the opposite of true — the deploy and migrate layers are provider-coupled, the
+# build layer is REGISTRY-coupled, and one of the two registries happens to be
+# cloud-neutral.
 
 on:
-  # Builds are driven by TAGS, never by raw pushes to main. auto-tag.yml runs on
-  # every push to main, creates the release tag when there's something
-  # releasable, and dispatches this workflow against that tag (the
-  # workflow_dispatch trigger below). A GITHUB_TOKEN-pushed tag does not fire the
-  # `tags: ['v*']` trigger on its own, which is why auto-tag dispatches
-  # explicitly; the `tags` trigger stays as a safety net for a human manually
-  # pushing a v* tag. There is deliberately NO `branches: [main]` trigger: it
-  # double-built every releasable commit (once on the push, once on the
-  # dispatched tag) and only ever produced SHA-tagged images that nothing
-  # deploys — deploy-prod.yml rolls out tags, not main-branch SHAs.
+  # DISABLED VIA THE TAG PATTERN. `__disabled__` matches no tag we cut (releases
+  # are `v*`), so this cannot fire automatically while the platform runs on AKS
+  # and pulls from GHCR — see build-images-ghcr.yml, which builds on the push
+  # itself and needs no tag. Every run of this one died on
+  # `gcloud.auth.docker-helper` after building all 20 images, because Artifact
+  # Registry needs a live GCP project. Re-arm by changing that word back to `v*`.
+  #
+  # The switch lives HERE rather than in `gh workflow disable` because GitHub
+  # keys the disabled state to the FILE PATH. This file WAS `build-images.yml`,
+  # and it was disabled; renaming it to sit beside its GHCR sibling produced a
+  # brand-new workflow that arrived ENABLED and silently undid that. The sentinel
+  # is what actually survived the move — a filter inside the file travels with
+  # the file.
+  #
+  # When re-armed, builds are driven by TAGS, never by raw pushes to main.
+  # There is deliberately NO `branches: [main]` trigger: it double-built every
+  # releasable commit (once on the push, once on the tag) and only ever produced
+  # SHA-tagged images that nothing deploys — deploy-gcp.yml rolls out tags, not
+  # main-branch SHAs.
+  #
+  # NOTE: a GITHUB_TOKEN-pushed tag does NOT fire `tags:` on its own. auto-tag.yml
+  # used to work around that by dispatching this workflow explicitly; that job is
+  # gone (see the note at the bottom of auto-tag.yml), so re-arming the pattern
+  # below is not sufficient on its own — restore the dispatch there too, or run
+  # this by hand against the tag.
   push:
-    tags: ['v*']
+    tags: ['__disabled__']
   workflow_dispatch:
     inputs:
       service:
@@ -27,7 +54,7 @@ env:
   PROJECT_ID: sparxworks
   REGION: us-central1
   AR_REPO: sparx
-  # OIDC federation — same values used by db-migrate.yml. These are public
+  # OIDC federation — same values used by db-migrate-gcp.yml. These are public
   # identifiers (no credential value); WIF binds the brandonkorous/sparx repo
   # to the sparx-deployer SA via the github-pool provider.
   WIF_PROVIDER: projects/631794111842/locations/global/workloadIdentityPools/github-pool/providers/github-provider
@@ -167,28 +194,36 @@ jobs:
           severity: CRITICAL,HIGH
           exit-code: '0' # report only — flip to '1' once base images are stable
 
-  # Gate the production rollout on a green build. Dispatching deploy-prod here
-  # (instead of firing it from auto-tag in parallel with this build) closes the
-  # race where deploy ran `kubectl set image :<tag>` before the image existed →
+  # Gate the GKE rollout on a green build. Dispatching the deploy here (instead
+  # of firing it from auto-tag in parallel with this build) closes the race where
+  # deploy ran `kubectl set image :<tag>` before the image existed →
   # ImagePullBackOff and a timed-out rollout (what red-flagged v0.77.0's deploy).
   # `needs: build` only resolves to success once every matrix service is pushed,
-  # so a broken build never reaches production. Tag refs only — pushes to main
-  # build images but don't deploy.
+  # so a broken build never reaches the cluster. Tag refs only.
+  #
+  # UNREACHABLE IN PRACTICE while GCP is the fallback: `build` above can now only
+  # start from a manual dispatch, and a dispatch carries a branch ref, not a tag
+  # — so `startsWith(github.ref, 'refs/tags/v')` is false and this skips. It is
+  # kept wired so that re-arming the sentinel above restores the whole chain in
+  # one edit rather than two.
   dispatch-deploy:
-    name: Dispatch production deploy
+    name: Dispatch GKE deploy
     needs: build
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
-      actions: write # dispatch deploy-prod.yml
+      actions: write # dispatch deploy-gcp.yml
     steps:
-      - name: Trigger deploy-prod on the built tag
+      - name: Trigger the GKE deploy on the built tag
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GH_REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
         run: |
           set -euo pipefail
-          echo "All images built & pushed for $TAG — dispatching deploy-prod.yml"
-          gh workflow run deploy-prod.yml --repo "$GH_REPO" --ref "$TAG"
+          # deploy-gcp.yml, renamed from deploy-gcp.yml. A stale filename here
+          # is not a comment that reads oddly — it is a dispatch that 404s and
+          # fails the job.
+          echo "All images built & pushed for $TAG — dispatching deploy-gcp.yml"
+          gh workflow run deploy-gcp.yml --repo "$GH_REPO" --ref "$TAG"

@@ -22,7 +22,7 @@ dropship sync ─────┘   (Pub/Sub topic)      worker
   `terraform/envs/prod/serverless.tf`; the `variant.cost.updated`,
   `price.recomputed`, and `price.recompute.staged` topics in
   `terraform/envs/prod/main.tf`.
-- **Image:** built by `.github/workflows/build-images.yml` (matrix entry
+- **Image:** built by `.github/workflows/build-images-gcp.yml` (matrix entry
   `markup-recompute-worker`) and rolled by the standard tag → deploy pipeline.
 
 ## Env

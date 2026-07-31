@@ -1,27 +1,70 @@
-name: Deploy to production
+name: Deploy (GCP)
 
-# Triggered by a v* tag push (from release-please) or manual workflow_dispatch.
-# Rolls out the image for the resolved tag to each Deployment that exists in
-# the cluster, then runs a smoke check.
+# Rolls out to GKE Autopilot. The Azure sibling is deploy-azure.yml.
 #
-# Migrations are NOT part of this workflow — db-migrate.yml owns them and
+# NAMED FOR THE PROVIDER, NOT THE ENVIRONMENT — it was `deploy-prod.yml`.
+# Provider is what dictates the mechanics: the auth flow, the registry, the way
+# you reach the cluster. Environment is a VALUE that varies inside a provider.
+# Naming the file after the environment conflates the two, and the cost shows up
+# the day a second environment appears: `deploy-prod` + `deploy-staging` +
+# `deploy-azure-prod` + `deploy-azure-staging` is four files maintained in
+# parallel where two files and an input do the same work. So: file = provider,
+# input = environment.
+#
+# It also makes running BOTH providers at once a toggle rather than a rewrite,
+# which is the point of keeping GKE alive as a fallback.
+#
+# Triggered by a v* tag push or manual workflow_dispatch. Rolls out the image
+# for the resolved tag to each Deployment that exists in the cluster, then runs
+# a smoke check.
+#
+# Migrations are NOT part of this workflow — db-migrate-gcp.yml owns them and
 # runs on every push to main that touches the schema. By the time a tag is
 # released and this workflow runs, migrations have already been applied.
 
+# MANUAL ONLY while GCP is the FALLBACK rather than the live target.
+#
+# THE OFF SWITCH IS THE TAG PATTERN BELOW. `__disabled__` matches no tag we cut;
+# releases are `v*`. Re-arm by changing that one word back to `v*`.
+#
+# It has to sit on `tags:` and not on a branch filter — for a TAG push GitHub
+# ignores `branches:` entirely, so a never-matching branch here would be
+# decoration and this would still fire on the next release.
+#
+# Why in the FILE rather than `gh workflow disable`: GitHub keys a workflow's
+# disabled state to its FILE PATH, so a rename produces a brand-new workflow
+# that arrives ENABLED whatever the old one was. This file was `deploy-prod.yml`
+# and WAS disabled; renaming it silently re-armed it, and auto-tag.yml cuts a
+# `v*` tag on every releasable push — the next one would have rolled out to GKE,
+# the cluster deliberately held in reserve with real data on it. Out-of-band
+# state cannot protect a file that is moving; a filter inside the file can.
+#
+# The standing reason, independent of the rename: rolling out to a standby
+# should be a decision, not a side effect of tagging.
 on:
   push:
-    tags: ['v*']
+    tags: ['__disabled__']
   workflow_dispatch:
     inputs:
       sha:
         description: 'Image tag/sha to deploy (default: current commit)'
         required: false
+      environment:
+        description: 'Target environment'
+        required: false
+        default: prod
+        type: choice
+        options: [prod]
 
 permissions:
   contents: read
   id-token: write
 
 env:
+  # `prod` is the only environment that exists on GCP today, which is exactly
+  # why it belongs in a variable rather than in the filename: adding staging
+  # becomes a new option above plus these three values, not a second file.
+  ENVIRONMENT: ${{ inputs.environment || 'prod' }}
   PROJECT_ID: sparxworks
   REGION: us-central1
   CLUSTER: sparx-prod-autopilot

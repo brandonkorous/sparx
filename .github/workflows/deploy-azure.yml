@@ -6,7 +6,7 @@
 #
 # Runs AFTER the image build, not beside it: rolling out a SHA whose images do
 # not exist yet is the single most common way this kind of pipeline fails.
-name: Deploy to Azure
+name: Deploy (Azure)
 
 on:
   workflow_run:
@@ -19,6 +19,12 @@ on:
         description: 'Commit SHA to deploy (blank = the current ref)'
         required: false
         type: string
+      environment:
+        description: 'Target environment'
+        required: false
+        default: prod
+        type: choice
+        options: [prod]
       run_migrations:
         description: 'Run database migrations before rolling out'
         required: false
@@ -37,12 +43,31 @@ permissions:
   packages: read
 
 env:
+  # Environment as a VALUE, not part of the filename. This workflow is named for
+  # its PROVIDER; `prod` is simply the only environment on Azure today, and
+  # adding staging is a new option plus these three values rather than a second
+  # deploy-azure-staging.yml maintained in parallel.
+  ENVIRONMENT: ${{ inputs.environment || 'prod' }}
   RESOURCE_GROUP: rg-sparx-prod-cus
   CLUSTER: aks-sparx-prod-cus
   NAMESPACE: sparx-prod
 
+# THREE JOBS, because the middle one is a REUSABLE WORKFLOW.
+#
+#   prepare  → secrets, tunnel, and the image SHA everything else pins to
+#   migrate  → db-migrate-azure.yml, the same workflow you can dispatch alone
+#   rollout  → pin images, apply, wait
+#
+# The migration used to be two steps inlined here. Extracting it is what lets
+# `DB Migrate (Azure)` exist as a peer of `DB Migrate (GCP)` without a second
+# copy of the Jobs drifting out of sync — GitHub only allows `uses:` at the JOB
+# level, so the split is the price of having one definition.
+#
+# Ordering is not incidental: secrets must exist before the migration reads
+# them, and the migration must finish before pods start, or new code meets the
+# old schema.
 jobs:
-  deploy:
+  prepare:
     # Two independent guards.
     #
     # 1. AZURE_DEPLOY_ENABLED — an explicit opt-in repository variable. Until the
@@ -63,6 +88,13 @@ jobs:
        github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     environment: prod
+
+    # Resolved once and handed downstream. The migrate and rollout jobs run on
+    # fresh runners with no shared filesystem, so re-deriving these would mean
+    # re-walking GHCR twice and risking two jobs pinning different SHAs.
+    outputs:
+      manifest_sha: ${{ steps.sha.outputs.manifest_sha }}
+      image_sha: ${{ steps.sha.outputs.image_sha }}
 
     steps:
       - uses: actions/checkout@v4
@@ -227,100 +259,51 @@ jobs:
           # to be picked up. Ignored when the Deployment does not exist yet.
           kubectl rollout restart deployment/cloudflared -n "$NAMESPACE" 2>/dev/null || true
 
-      # ---------------------------------------------------------------------
-      # Database roles.
-      #
-      # `sparx_app` — the unprivileged NOBYPASSRLS role every application
-      # connection uses — comes from a Docker-image entrypoint convention
-      # (packages/db/docker/init/01-roles.sql) that a MANAGED Postgres will never
-      # run. The server is VNet-private, so it also cannot be created from a
-      # laptop. Doing it as an in-cluster Job is the only automated path.
-      #
-      # Idempotent, so it is safe on every deploy.
-      # ---------------------------------------------------------------------
-      # `github.event_name != 'workflow_dispatch'` first, and NOT
-      # `inputs.run_migrations != false`. On a workflow_run there are no inputs,
-      # so `inputs.run_migrations` is null — and GitHub compares mismatched types
-      # by casting both to a number, where null and false are both 0. The
-      # expression that reads as "unless explicitly turned off" therefore
-      # evaluates FALSE on exactly the automatic path, and this step plus the
-      # migration below were silently skipped on the first real deploy. The pods
-      # rolled out fine and then crashlooped on `sparx_app` authentication,
-      # because the role the whole platform connects as had never been created.
-      - name: Ensure database roles
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_migrations }}
-        run: |
-          kubectl create configmap db-bootstrap-roles -n "$NAMESPACE" \
-            --from-file=azure-bootstrap.sql=packages/db/sql/azure-bootstrap.sql \
-            --dry-run=client -o yaml | kubectl apply -f -
+  # The middle of the pipeline, and a WORKFLOW rather than two steps so that
+  # `DB Migrate (Azure)` is a real peer of `DB Migrate (GCP)` — dispatchable
+  # on its own to re-run a failed migration or bring a restored database
+  # forward, with no second copy of the Jobs to drift out of sync.
+  #
+  # `secrets: inherit` is required, not decorative: a called workflow
+  # inherits nothing by default, and this one needs the OIDC variables and
+  # GITHUB_TOKEN to reach both Azure and GHCR.
+  migrate:
+    needs: prepare
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_migrations }}
+    uses: ./.github/workflows/db-migrate-azure.yml
+    with:
+      image_sha: ${{ needs.prepare.outputs.image_sha }}
+      environment: ${{ inputs.environment || 'prod' }}
+    secrets: inherit
 
-          kubectl delete job db-roles -n "$NAMESPACE" --ignore-not-found
-          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
-          apiVersion: batch/v1
-          kind: Job
-          metadata:
-            name: db-roles
-          spec:
-            backoffLimit: 1
-            ttlSecondsAfterFinished: 600
-            template:
-              spec:
-                restartPolicy: Never
-                enableServiceLinks: false
-                containers:
-                  - name: psql
-                    image: postgres:18-alpine
-                    command: ['sh', '-c']
-                    args:
-                      - psql "$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 -v app_password="$SPARX_APP_PASSWORD" -f /sql/azure-bootstrap.sql
-                    env:
-                      - name: AUTH_DATABASE_URL
-                        valueFrom:
-                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
-                      - name: SPARX_APP_PASSWORD
-                        valueFrom:
-                          secretKeyRef: { name: sparx-app-secrets, key: SPARX_APP_PASSWORD }
-                    volumeMounts:
-                      - { name: sql, mountPath: /sql, readOnly: true }
-                volumes:
-                  - name: sql
-                    configMap: { name: db-bootstrap-roles }
-          YAML
-          ./.github/scripts/await-job.sh db-roles "$NAMESPACE" 300
+  rollout:
+    needs: [prepare, migrate]
+    # `always()` plus explicit result checks, because a `needs` on a SKIPPED
+    # job skips this one too — and run_migrations=false is a legitimate way
+    # to deploy. Skipped is acceptable; failed or cancelled is not, and
+    # rolling out new code over an un-migrated schema is the exact failure
+    # this ordering exists to prevent.
+    if: >-
+      always() && needs.prepare.result == 'success' &&
+      needs.migrate.result != 'failure' && needs.migrate.result != 'cancelled'
+    runs-on: ubuntu-latest
+    environment: prod
 
-      - name: Run migrations
-        if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_migrations }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha || github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get cluster credentials
         run: |
-          kubectl delete job db-migrate -n "$NAMESPACE" --ignore-not-found
-          kubectl apply -n "$NAMESPACE" -f - <<YAML
-          apiVersion: batch/v1
-          kind: Job
-          metadata:
-            name: db-migrate
-          spec:
-            backoffLimit: 0
-            ttlSecondsAfterFinished: 600
-            template:
-              spec:
-                restartPolicy: Never
-                enableServiceLinks: false
-                imagePullSecrets: [{ name: ghcr }]
-                containers:
-                  - name: migrate
-                    # image_sha, not manifest_sha: the migration runner is an
-                    # IMAGE, so it has to be one that was actually published.
-                    image: ghcr.io/${{ github.repository }}/db:${{ steps.sha.outputs.image_sha }}
-                    envFrom:
-                      - configMapRef: { name: sparx-app-env }
-                      - secretRef: { name: sparx-app-secrets }
-                    env:
-                      # Migrations and the hand-edited RLS SQL run as the OWNER
-                      # role, not the RLS-constrained role the apps use.
-                      - name: DATABASE_URL
-                        valueFrom:
-                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
-          YAML
-          ./.github/scripts/await-job.sh db-migrate "$NAMESPACE" 1200
+          az aks get-credentials --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" --overwrite-existing
 
       # ---------------------------------------------------------------------
       # Roll out. Pin every image to this SHA — never `latest`, so a rollback is

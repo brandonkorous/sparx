@@ -1,9 +1,10 @@
 name: Auto tag
 
 # On every push to main, analyze conventional-commit messages since the last
-# v* tag and push a new tag if there's something releasable. The new tag fires
-# build-images.yml, which dispatches deploy-prod.yml only after every image has
-# built and pushed successfully — so the rollout never runs ahead of the image.
+# v* tag and push a new tag if there's something releasable.
+#
+# TAGGING ONLY. It no longer dispatches anything — see the note at the bottom of
+# this file. A tag marks a release; it does not decide who deploys it.
 #
 # Bump rules (driven by mathieudutour/github-tag-action's defaults):
 #   feat: / feat(scope):           → minor
@@ -13,12 +14,6 @@ name: Auto tag
 #
 # If no releasable commits exist, the workflow runs but creates no tag.
 # Force a release manually with workflow_dispatch + the bump input.
-#
-# Why we explicitly dispatch build-images: tags pushed by the default
-# GITHUB_TOKEN don't trigger other workflows. We use `actions: write`
-# permission and `gh workflow run --ref <tag>` to kick it off ourselves —
-# no PAT required. build-images then dispatches deploy-prod once its image
-# builds succeed (see build-images.yml), so deploy never races the push.
 
 on:
   push:
@@ -34,7 +29,8 @@ on:
 
 permissions:
   contents: write # push the tag
-  actions: write # dispatch downstream workflows
+  # `actions: write` is gone with the dispatch job it existed for. Nothing here
+  # starts another workflow any more, so the token should not be able to.
 
 concurrency:
   # Don't race multiple tagging runs on rapid pushes.
@@ -80,24 +76,23 @@ jobs:
         if: steps.tag.outputs.new_tag == '' && steps.tag_forced.outputs.new_tag == ''
         run: echo "::notice::No releasable commits since last tag — skipping tag creation."
 
-  dispatch:
-    name: Dispatch image build
-    needs: tag
-    if: needs.tag.outputs.new_tag != ''
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Trigger image build on new tag
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ needs.tag.outputs.new_tag }}
-        run: |
-          set -euo pipefail
-          # Only build-images is dispatched here. It chains deploy-prod itself
-          # once every image is pushed (see build-images.yml's dispatch-deploy
-          # job), so the rollout never runs ahead of the image — the
-          # ImagePullBackOff race that red-flagged v0.77.0's deploy.
-          echo "Dispatching build-images.yml @ $TAG"
-          gh workflow run build-images.yml --ref "$TAG"
+# NO DISPATCH JOB. This used to end by running `gh workflow run
+# build-images-gcp.yml --ref $TAG`, which pushed to Artifact Registry and needed a
+# live GCP project — so every releasable commit produced one guaranteed-red
+# run once the platform moved to AKS.
+#
+# Removing it rather than gating it, because there is nothing left for it to
+# do. Each provider now builds on its own terms:
+#
+#   Azure — build-images-ghcr.yml triggers on the push itself, path-filtered
+#           to source. It never wanted a tag; dispatching per tag would only
+#           have double-built the same commit.
+#   GCP   — build-images-gcp.yml is a manual fallback. Dispatch it yourself when
+#           you actually intend to rebuild GKE.
+#
+# Note that a never-matching trigger filter (the `__disabled__` sentinel used
+# in the GCP workflows) would NOT have covered this: a sentinel blocks `push`,
+# and `gh workflow run` fires `workflow_dispatch`, which is a different door.
+# The only way to stop an explicit dispatch is to stop dispatching.
+#
+# Tags themselves still get cut — they mark releases regardless of who deploys.

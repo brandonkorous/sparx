@@ -3,7 +3,7 @@
 # Multi-stage Next.js build for the @sparx/web marketing site.
 # Produces a minimal standalone bundle (~150MB) on Node 24 alpine.
 #
-# Built from the repo root context (per .github/workflows/build-images.yml):
+# Built from the repo root context (per .github/workflows/build-images-gcp.yml):
 #   docker build -f apps/web/Dockerfile -t sparx/web:tag .
 
 ARG NODE_VERSION=24-alpine
@@ -53,7 +53,7 @@ COPY apps/web apps/web
 
 # PostHog analytics — NEXT_PUBLIC_* is inlined at build time, so the key must be
 # present during `next build`; runtime env can't reach an already-bundled client
-# JS. Passed as a build-arg from build-images.yml. Absent ⇒ the provider no-ops
+# JS. Passed as a build-arg from build-images-gcp.yml. Absent ⇒ the provider no-ops
 # (`if (!key) return`), so a build without the arg simply ships PostHog disabled.
 # HOST carries the canonical default so a plain `docker build` needs no arg.
 ARG NEXT_PUBLIC_POSTHOG_KEY

@@ -1,5 +1,20 @@
-name: Cleanup old images
+name: Cleanup images (GCP)
 
+# A MANUAL FORCE-PRUNE for Artifact Registry. Routine retention is NOT this
+# workflow's job any more — it is a server-side cleanup policy declared in
+# terraform/modules/artifact-registry, which runs whether or not anyone
+# remembers it.
+#
+# This file is why that moved. It was the only pruning mechanism, it was
+# manual, and `dry_run` defaulted to TRUE — so on the rare occasion someone did
+# run it, it printed a list and deleted nothing. Meanwhile the repository grew
+# to 2.95 TB, about $295/month. The first symptom was the bill.
+#
+# Kept for the case a policy cannot serve: reclaiming space immediately rather
+# than on the policy's next pass, or pruning ahead of a retention change.
+# `dry_run` still defaults to true HERE, which is correct for a manual
+# destructive tool — the argument above is about automation, not about making
+# hand-run deletes fire without confirmation.
 on:
   workflow_dispatch:
     inputs:

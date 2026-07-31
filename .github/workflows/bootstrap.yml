@@ -7,7 +7,7 @@ name: Bootstrap cluster
 #   - Redis (cache + BullMQ broker)
 #   - PgBouncer (transaction-mode pool — required for RLS SET LOCAL)
 #
-# Why this exists separately from deploy-prod.yml: deploy-prod only rolls
+# Why this exists separately from deploy-gcp.yml: deploy-prod only rolls
 # app container images into existing Deployments. Adding a new platform pod
 # is a separate operation with different blast radius and review needs.
 #
@@ -82,7 +82,7 @@ jobs:
         with:
           install_components: gke-gcloud-auth-plugin
 
-      # Same auth path as db-migrate.yml — Connect Gateway through Google's
+      # Same auth path as db-migrate-gcp.yml — Connect Gateway through Google's
       # proxy. Works against the cluster's locked-down master without needing
       # the runner's IP in the authorized networks list.
       - name: Get GKE credentials via Connect Gateway

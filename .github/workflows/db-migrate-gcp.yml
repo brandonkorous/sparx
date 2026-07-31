@@ -1,4 +1,14 @@
-# Database migration pipeline.
+# Database migration pipeline — CLOUD SQL. The Azure sibling is
+# db-migrate-azure.yml.
+#
+# NAMED FOR THE PROVIDER, NOT THE ENVIRONMENT — it was `db-migrate.yml`, an
+# unqualified name that read as "the migration pipeline" when it is in fact one
+# provider's. That ambiguity had teeth: on 2026-07-31 a
+# `packages/db/scripts/**` edit matched the path filter below and this ran green
+# against Cloud SQL while the platform was being migrated to Azure, touching the
+# fallback database nobody meant to touch. It was a no-op only because Cloud SQL
+# was already ahead of the repo. A name that says GCP would have made the run
+# entry obvious at a glance.
 #
 # Trigger: push to main that touches the schema or a migration file, OR
 # manual run via workflow_dispatch (with optional RUN_SEED toggle).
@@ -11,11 +21,33 @@
 #      manifest (envsubst injects the image tag + RUN_SEED flag).
 #   4. Wait for the Job to complete and stream its logs back into the run.
 
-name: DB Migrate
+name: DB Migrate (GCP)
 
+# MANUAL ONLY while GCP is the FALLBACK rather than the live target.
+#
+# THE OFF SWITCH IS THE BRANCH NAME BELOW. `__disabled__` does not exist, so the
+# push trigger can never match; the rest of the trigger is intact, real YAML,
+# and says exactly what this would run on. Re-arm by changing that one word back
+# to `main`.
+#
+# Why in the FILE rather than `gh workflow disable`: GitHub keys a workflow's
+# disabled state to its FILE PATH, so a rename produces a brand-new workflow
+# that arrives ENABLED whatever the old one was. This file was `db-migrate.yml`.
+# Worse, a DELETED path counts as a CHANGED path, so the stale
+# `.github/workflows/db-migrate.yml` entry in the list below matched the very
+# commit that renamed it — the rename would have migrated Cloud SQL on its way
+# past, against the cluster deliberately held in reserve. Out-of-band state
+# cannot protect a file that is moving; a filter inside the file can.
+#
+# Commenting the block out would also work and is worse: commented YAML is
+# validated by nothing, so it silently rots until the day someone needs it.
+#
+# The standing reason, independent of the rename: automatic migrations against a
+# standby nobody is deploying to is how a fallback drifts without anyone
+# deciding it should — which already happened once (see the header).
 on:
   push:
-    branches: [main]
+    branches: [__disabled__]
     paths:
       - 'packages/db/prisma/schema.prisma'
       - 'packages/db/prisma/migrations/**'
@@ -25,9 +57,15 @@ on:
       - 'packages/db/scripts/backfill-property-name.ts'
       - 'packages/db/Dockerfile'
       - 'k8s/sparx-prod/db-migrate-job.yaml'
-      - '.github/workflows/db-migrate.yml'
+      - '.github/workflows/db-migrate-gcp.yml'
   workflow_dispatch:
     inputs:
+      environment:
+        description: 'Target environment'
+        required: false
+        default: prod
+        type: choice
+        options: [prod]
       run_seed:
         description: 'Run the dev seed after migrations complete'
         required: false
@@ -51,6 +89,9 @@ permissions:
   id-token: write # required for Workload Identity Federation OIDC token
 
 env:
+  # Environment as a value, not a filename — see the header. `prod` is the only
+  # one on GCP today; adding staging is a new option plus these values.
+  ENVIRONMENT: ${{ inputs.environment || 'prod' }}
   PROJECT_ID: sparxworks
   REGION: us-central1
   CLUSTER: sparx-prod-autopilot

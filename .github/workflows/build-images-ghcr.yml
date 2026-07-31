@@ -1,6 +1,6 @@
 # Builds every platform image and pushes it to GHCR.
 #
-# Replaces the Artifact Registry path in build-images.yml, which depended on the
+# Replaces the Artifact Registry path in build-images-gcp.yml, which depended on the
 # GCP project. GHCR is free for this repo's packages and needs no credential
 # beyond the automatic GITHUB_TOKEN — one less secret than the registry it
 # replaces.
@@ -61,7 +61,10 @@ jobs:
           # Workers, formerly Cloud Run (k8s/self-hosted/workers.yaml)
           - { name: email-worker, dockerfile: services/email-worker/Dockerfile }
           - { name: push-worker, dockerfile: services/push-worker/Dockerfile }
-          - { name: markup-recompute-worker, dockerfile: services/markup-recompute-worker/Dockerfile }
+          - {
+              name: markup-recompute-worker,
+              dockerfile: services/markup-recompute-worker/Dockerfile,
+            }
           - { name: media-worker, dockerfile: services/media-worker/Dockerfile }
           - { name: commerce-indexer, dockerfile: services/commerce-indexer/Dockerfile }
           - { name: channel-sync-worker, dockerfile: services/channel-sync-worker/Dockerfile }

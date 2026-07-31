@@ -1137,7 +1137,7 @@ resource "google_cloud_run_v2_job" "platform_crm_backfill" {
 # trusted/routable immediately in resolveSiteByHost — but the worker keeps status
 # accurate and retries a failed DNS write.)
 #
-# The image is already built + pushed by build-images.yml; this is the missing
+# The image is already built + pushed by build-images-gcp.yml; this is the missing
 # Cloud Run + subscription wiring (the `domain.purchased = ["worker-domain"]` map
 # entry in main.tf only created an idle pull sub — nothing consumed the event).
 #

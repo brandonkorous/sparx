@@ -45,7 +45,7 @@ verify locally). To finish wiring the trigger:
    `secret_ids`, and set the same value as `SPARX_REVALIDATE_SECRET` on the
    **storefront** deployment (`k8s/apps/site.yaml`).
 4. **Build + deploy** — add `cache-revalidation-worker` to the image matrices
-   in `.github/workflows/build-images.yml` and `deploy-prod.yml` (Cloud Run
+   in `.github/workflows/build-images-gcp.yml` and `deploy-gcp.yml` (Cloud Run
    workers deploy via the serverless path, per the deploy-workflow split).
 5. **Partial wiring is worse than none** — a subscription that pushes to a
    not-yet-deployed service produces delivery errors. Land steps 1–4 together.

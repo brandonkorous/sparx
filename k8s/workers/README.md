@@ -20,6 +20,6 @@ Subscriptions are declared in Terraform alongside topics — see `terraform/envs
 1. Copy `worker.example.yaml` to `<name>-worker.yaml`, replace every `REPLACE_NAME` and `REPLACE_TOPIC` placeholder.
 2. Add the consumer to the relevant topic in `terraform/envs/prod/main.tf` and `terraform apply`.
 3. Add `<name>-worker.yaml` to `kustomization.yaml`.
-4. Add `<name>-worker` to the build-images matrix in `.github/workflows/build-images.yml`.
-5. Add `<name>-worker` to the deploy-prod rollout loop in `.github/workflows/deploy-prod.yml`.
+4. Add `<name>-worker` to the build-images matrix in `.github/workflows/build-images-gcp.yml`.
+5. Add `<name>-worker` to the deploy-prod rollout loop in `.github/workflows/deploy-gcp.yml`.
 6. Push to `main` → image builds → bootstrap apps/workers → deploy-prod rolls.

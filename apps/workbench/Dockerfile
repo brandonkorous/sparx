@@ -3,7 +3,7 @@
 # Multi-stage Next.js build for @sparx/workbench — the multi-window workbench
 # at workbench.sparx.works. Produces a standalone bundle on Node 24 alpine.
 #
-# Built from the repo root context (per .github/workflows/build-images.yml):
+# Built from the repo root context (per .github/workflows/build-images-gcp.yml):
 #   docker build -f apps/workbench/Dockerfile -t sparx/workbench:tag .
 
 ARG NODE_VERSION=24-alpine
@@ -127,7 +127,7 @@ ENV NEXT_PUBLIC_APP_VERSION=$APP_VERSION
 
 # PostHog product analytics — browser-side only (NEXT_PUBLIC_*), so it's inlined
 # into the client bundle at build time. CI passes these to every image
-# (build-images.yml); a build without the key simply ships PostHog disabled (the
+# (build-images-gcp.yml); a build without the key simply ships PostHog disabled (the
 # provider bails on `if (!key) return`). HOST defaults to PostHog US cloud.
 ARG NEXT_PUBLIC_POSTHOG_KEY
 ENV NEXT_PUBLIC_POSTHOG_KEY=$NEXT_PUBLIC_POSTHOG_KEY
