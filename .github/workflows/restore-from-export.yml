@@ -1,0 +1,321 @@
+# Restores the GCP export into Azure — the Postgres dump and/or the media
+# files — from blobs in the private `db-restore` container.
+#
+# BOTH HALVES OR NEITHER, usually. `media_assets` rows and the bytes they point
+# at are one dataset: restore the database alone and 36 assets plus 235 variants
+# resolve to a 404, because MEDIA_LOCAL_DIR is empty. Restore the media alone
+# and nothing references it. The defaults therefore do both.
+#
+# WHY THIS EXISTS AS A WORKFLOW rather than psql + kubectl cp on a laptop:
+# psql-sparx-prod-cus has public access DISABLED and lives in the VNet, and the
+# media volume is a ReadWriteOnce Azure Disk that only ever attaches inside the
+# cluster. Neither is reachable from outside. That is the same constraint that
+# forces `Ensure database roles` and `Run migrations` into Jobs in
+# deploy-azure.yml, and the same answer applies here.
+#
+# WHY THE ARTIFACTS ARE NOT KUBERNETES SECRETS: a Secret caps at 1 MiB. The
+# first real dump was 1,093,540 bytes — over the line on day one — and the media
+# tarball is 16 MB. So the Jobs stream from Blob Storage under a short-lived
+# user-delegation SAS. Each SAS is minted per run, read-only, scoped to one
+# blob, and expires in 30 minutes; nothing durable is handed to the cluster and
+# no credential is committed.
+#
+# DESTRUCTIVE. The database half drops and recreates the `public` schema. It
+# refuses to run against a database that already has tables unless `force` is
+# set, because the realistic mistake is not "restored the wrong file" — it is
+# "ran migrations first, then tried to restore on top", which fails messily
+# halfway through.
+name: Restore from export (Azure)
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type RESTORE to confirm this overwrites existing data'
+        required: true
+        type: string
+      restore_database:
+        description: 'Restore the Postgres dump'
+        required: false
+        default: true
+        type: boolean
+      restore_media:
+        description: 'Restore the media files onto the sparx-media volume'
+        required: false
+        default: true
+        type: boolean
+      blob:
+        description: 'Database dump blob'
+        required: false
+        default: 'sparx-20260731.sql.gz'
+        type: string
+      media_blob:
+        description: 'Media tarball blob (paths relative to MEDIA_LOCAL_DIR)'
+        required: false
+        default: 'media-20260731.tar.gz'
+        type: string
+      force:
+        description: 'Restore the database even if it already has tables'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  # Never concurrent with itself OR with a deploy: deploy-azure.yml runs
+  # migrations, and a restore racing a migration would interleave DDL.
+  group: deploy-azure
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  RESOURCE_GROUP: rg-sparx-prod-cus
+  CLUSTER: aks-sparx-prod-cus
+  NAMESPACE: sparx-prod
+  STORAGE_ACCOUNT: stsparxprodcustfstate
+  CONTAINER: db-restore
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    environment: prod
+    steps:
+      - name: Check the confirmation
+        run: |
+          if [ '${{ inputs.confirm }}' != 'RESTORE' ]; then
+            echo "::error::confirm must be exactly RESTORE. Nothing was changed."
+            exit 1
+          fi
+
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get cluster credentials
+        run: |
+          az aks get-credentials --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" --overwrite-existing
+
+      # ---------------------------------------------------------------------
+      # A user-delegation SAS (`--auth-mode login --as-user`) is signed by the
+      # workflow's own Entra identity, not by a storage ACCOUNT KEY. That
+      # matters: the account key would grant everything forever, including the
+      # Terraform state sitting in the same account. This grants read, on one
+      # blob, for 30 minutes.
+      # ---------------------------------------------------------------------
+      - name: Mint read-only SAS URLs
+        id: sas
+        run: |
+          EXPIRY=$(date -u -d '30 minutes' '+%Y-%m-%dT%H:%MZ')
+
+          sas_url() {
+            name="$1"
+            if ! az storage blob show --account-name "$STORAGE_ACCOUNT" \
+                  --container-name "$CONTAINER" --name "$name" \
+                  --auth-mode login -o none 2>/dev/null; then
+              echo "::error::Blob '$name' not found in $CONTAINER. Upload it first:" >&2
+              echo "  az storage blob upload --account-name $STORAGE_ACCOUNT \\" >&2
+              echo "    --container-name $CONTAINER --name <file> --file <path> --auth-mode login" >&2
+              return 1
+            fi
+            token=$(az storage blob generate-sas \
+              --account-name "$STORAGE_ACCOUNT" --container-name "$CONTAINER" \
+              --name "$name" --permissions r --expiry "$EXPIRY" \
+              --auth-mode login --as-user -o tsv)
+            printf 'https://%s.blob.core.windows.net/%s/%s?%s' \
+              "$STORAGE_ACCOUNT" "$CONTAINER" "$name" "$token"
+          }
+
+          if [ '${{ inputs.restore_database }}' = 'true' ]; then
+            URL=$(sas_url '${{ inputs.blob }}')
+            # Masked so it cannot surface in a log line, an error message, or
+            # the `set -x` output of any later step.
+            echo "::add-mask::$URL"
+            echo "url=$URL" >> "$GITHUB_OUTPUT"
+          fi
+
+          if [ '${{ inputs.restore_media }}' = 'true' ]; then
+            MURL=$(sas_url '${{ inputs.media_blob }}')
+            echo "::add-mask::$MURL"
+            echo "media_url=$MURL" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Restore the database
+        if: ${{ inputs.restore_database }}
+        run: |
+          kubectl create secret generic db-restore-source -n "$NAMESPACE" \
+            --from-literal=url='${{ steps.sas.outputs.url }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl delete job db-restore -n "$NAMESPACE" --ignore-not-found
+
+          # FORCE is read inside the container so the guard runs against the
+          # database itself, not against something the runner assumed.
+          kubectl apply -n "$NAMESPACE" -f - <<YAML
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: db-restore
+          spec:
+            backoffLimit: 0
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                containers:
+                  - name: restore
+                    image: postgres:18-alpine
+                    command: ['sh', '-euc']
+                    args:
+                      - |
+                        # pipefail is the load-bearing one. In `curl | gunzip | psql`
+                        # a plain `set -e` only inspects psql, so a download that dies
+                        # halfway can still end on a statement boundary and exit 0 —
+                        # a PARTIAL restore reported as a success. busybox ash
+                        # supports this; the guard keeps a stricter /bin/sh from
+                        # aborting the script on an unknown option.
+                        set -o pipefail 2>/dev/null || echo "warning: no pipefail"
+
+                        apk add --no-cache curl >/dev/null
+
+                        EXISTING=\$(psql "\$AUTH_DATABASE_URL" -tAc \
+                          "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'")
+                        echo "public schema currently holds \$EXISTING tables"
+                        if [ "\$EXISTING" -gt 0 ] && [ "\$FORCE" != "true" ]; then
+                          echo "REFUSING: the database already has \$EXISTING tables."
+                          echo "A dump restores a WHOLE schema; layering it over an existing one"
+                          echo "fails partway and leaves a mix. Re-run with force=true only if"
+                          echo "you intend to discard what is there."
+                          exit 1
+                        fi
+
+                        # DROP SCHEMA, not --clean in the dump: the export carries no
+                        # DROP statements, so a re-run would collide on every CREATE.
+                        echo "resetting public schema ..."
+                        psql "\$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 -c \
+                          "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+
+                        echo "streaming and restoring ..."
+                        # Piped, never staged on disk: the container has no volume
+                        # and the dump only grows. gunzip -c handles a plain .sql
+                        # too, so the blob can be either.
+                        curl -fsSL "\$RESTORE_URL" | gunzip -cf | \
+                          psql "\$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 --quiet
+
+                        echo "--- verification ---"
+                        psql "\$AUTH_DATABASE_URL" -tAc \
+                          "SELECT 'tables=' || count(*) FROM information_schema.tables WHERE table_schema='public'"
+                        psql "\$AUTH_DATABASE_URL" -tAc \
+                          "SELECT 'policies=' || count(*) FROM pg_policies WHERE schemaname='public'"
+                        psql "\$AUTH_DATABASE_URL" -tAc \
+                          "SELECT 'migrations=' || count(*) FROM _prisma_migrations"
+                        # The apps connect as sparx_app, and the dump's GRANTs are
+                        # what make that work. Prove it rather than assume it.
+                        psql "\$AUTH_DATABASE_URL" -tAc \
+                          "SELECT 'sparx_app_can_read=' || has_table_privilege('sparx_app','tenants','SELECT')"
+                    env:
+                      - name: AUTH_DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+                      - name: RESTORE_URL
+                        valueFrom:
+                          secretKeyRef: { name: db-restore-source, key: url }
+                      - name: FORCE
+                        value: '${{ inputs.force }}'
+          YAML
+
+          ./.github/scripts/await-job.sh db-restore "$NAMESPACE" 1800
+
+      # ---------------------------------------------------------------------
+      # Media.
+      #
+      # The tarball's paths are relative to MEDIA_LOCAL_DIR, so they land as
+      # `<tenantId>/originals/...` and `<tenantId>/variants/...` — exactly the
+      # object keys the GCS buckets used, and exactly what LocalStorage in
+      # packages/media joins onto its root. api-rest serves these back over
+      # /v1/public/media/variants/*, so a path that is off by one segment
+      # transcodes fine and then 404s forever.
+      #
+      # The pod MUST land on the node holding the volume: sparx-media is a
+      # ReadWriteOnce Azure Disk already attached wherever api-rest is running,
+      # and RWO scopes to a NODE. The podAffinity makes that a scheduling
+      # requirement rather than a single-node assumption — the cluster reaches
+      # two nodes during any upgrade surge or node-pool rotation.
+      # ---------------------------------------------------------------------
+      - name: Restore the media files
+        if: ${{ inputs.restore_media }}
+        run: |
+          kubectl create secret generic media-restore-source -n "$NAMESPACE" \
+            --from-literal=url='${{ steps.sas.outputs.media_url }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl delete job media-restore -n "$NAMESPACE" --ignore-not-found
+
+          kubectl apply -n "$NAMESPACE" -f - <<YAML
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: media-restore
+          spec:
+            backoffLimit: 0
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                affinity:
+                  podAffinity:
+                    requiredDuringSchedulingIgnoredDuringExecution:
+                      - labelSelector:
+                          matchLabels: { app: api-rest }
+                        topologyKey: kubernetes.io/hostname
+                containers:
+                  - name: restore
+                    image: alpine:3.20
+                    command: ['sh', '-euc']
+                    args:
+                      - |
+                        set -o pipefail 2>/dev/null || echo "warning: no pipefail"
+                        apk add --no-cache curl tar >/dev/null
+
+                        echo "before: \$(find /media -type f | wc -l) files"
+
+                        # Extracted OVER whatever is there, never after wiping.
+                        # Anything uploaded since the export lives on this same
+                        # volume and is not in the tarball; clearing the
+                        # directory first would delete it. Same-named files are
+                        # overwritten, which is correct — variant keys are
+                        # content-immutable.
+                        curl -fsSL "\$RESTORE_URL" | tar -xzf - -C /media
+
+                        echo "after : \$(find /media -type f | wc -l) files"
+                        echo "--- top-level ---"
+                        ls -1 /media | head -20
+                    volumeMounts:
+                      - { name: media, mountPath: /media }
+                    env:
+                      - name: RESTORE_URL
+                        valueFrom:
+                          secretKeyRef: { name: media-restore-source, key: url }
+                volumes:
+                  - name: media
+                    persistentVolumeClaim:
+                      claimName: sparx-media
+          YAML
+
+          ./.github/scripts/await-job.sh media-restore "$NAMESPACE" 1800
+
+      - name: Drop the SAS secrets
+        if: always()
+        run: |
+          # They expire on their own, but there is no reason for them to sit in
+          # etcd until then.
+          kubectl delete secret db-restore-source media-restore-source \
+            -n "$NAMESPACE" --ignore-not-found
