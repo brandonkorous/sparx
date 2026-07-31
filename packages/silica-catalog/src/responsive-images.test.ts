@@ -81,6 +81,81 @@ describe('responsiveImages', () => {
     expect(imgAttrs(out).sizes).toBe('64px');
   });
 
+  it('sizes to an ancestor max-w cap instead of the whole viewport', () => {
+    // The common case in this library: a section caps its content, so a picture inside it
+    // can never render wider than the cap however large the display. Offering `100vw` there
+    // made every desktop visitor download the 2000px rung for a 768px slot.
+    const capped = responsiveImages(
+      el('section', 'px-6 py-16', {
+        children: [
+          el('div', 'mx-auto max-w-3xl', {
+            children: [el('img', 'w-full rounded-box', { attrs: { src: RESOLVER } })],
+          }),
+        ],
+      })
+    );
+    expect(imgAttrs(capped).sizes).toBe('(min-width: 768px) 768px, 100vw');
+    // The ladder is unchanged — the cap narrows the SLOT, never the offer, so a 2× display
+    // at the cap can still take a larger rung.
+    expect(String(imgAttrs(capped).srcset)).toContain('w=2000 2000w');
+  });
+
+  it('takes the TIGHTEST cap when containers nest', () => {
+    const nested = responsiveImages(
+      el('div', 'mx-auto max-w-6xl', {
+        children: [
+          el('div', 'max-w-xl', {
+            children: [el('img', 'w-full', { attrs: { src: RESOLVER } })],
+          }),
+        ],
+      })
+    );
+    expect(imgAttrs(nested).sizes).toBe('(min-width: 576px) 576px, 100vw');
+  });
+
+  it('reads a cap on the image itself', () => {
+    const own = responsiveImages(el('img', 'w-full max-w-sm', { attrs: { src: RESOLVER } }));
+    expect(imgAttrs(own).sizes).toBe('(min-width: 384px) 384px, 100vw');
+  });
+
+  it('lets a fixed size beat an ancestor cap', () => {
+    // A 64px avatar inside a capped column is 64px, not the cap.
+    const avatar = responsiveImages(
+      el('div', 'max-w-3xl', {
+        children: [el('img', 'size-16 rounded-full', { attrs: { src: RESOLVER } })],
+      })
+    );
+    expect(imgAttrs(avatar).sizes).toBe('64px');
+  });
+
+  it('ignores a cap that only applies above a container width', () => {
+    // `@2xl:max-w-3xl` is a CONTAINER query. It may not be in force at all, so it is not a
+    // bound — and an under-stated `sizes` is a blurry image, which is worse than a
+    // wasteful one.
+    const variant = responsiveImages(
+      el('div', '@2xl:max-w-3xl', {
+        children: [el('img', 'w-full', { attrs: { src: RESOLVER } })],
+      })
+    );
+    expect(imgAttrs(variant).sizes).toBe('100vw');
+  });
+
+  it('treats max-w-full and max-w-none as no cap at all', () => {
+    for (const cls of ['max-w-full', 'max-w-none', 'max-w-prose']) {
+      const out = responsiveImages(
+        el('div', cls, { children: [el('img', 'w-full', { attrs: { src: RESOLVER } })] })
+      );
+      expect(imgAttrs(out).sizes, cls).toBe('100vw');
+    }
+  });
+
+  it('keeps 100vw for genuinely full-bleed imagery', () => {
+    const bleed = responsiveImages(
+      el('section', 'py-0', { children: [el('img', 'w-full', { attrs: { src: RESOLVER } })] })
+    );
+    expect(imgAttrs(bleed).sizes).toBe('100vw');
+  });
+
   it('does not read w-full or w-1/2 as a pixel width', () => {
     for (const cls of ['w-full', 'w-1/2 object-cover', 'h-auto w-full']) {
       const out = responsiveImages(el('img', cls, { attrs: { src: RESOLVER } }));

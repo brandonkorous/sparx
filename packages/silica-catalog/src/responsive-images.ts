@@ -62,6 +62,46 @@ const RESOLVER_URL =
  *  `w-full` and `w-1/2` deliberately do not match: neither is a pixel width. */
 const FIXED_SIZE = /(?:^|\s)(?:size|w|h)-(\d+)(?:\s|$)/;
 
+/**
+ * Tailwind's `max-w-*` scale in CSS pixels, for the named steps this library actually
+ * uses. Deliberately NOT the whole scale: `max-w-full` / `max-w-none` are not caps, and
+ * `max-w-prose` is `65ch`, which depends on the theme's font and cannot be resolved here.
+ */
+const MAX_W_PX: Readonly<Record<string, number>> = {
+  xs: 320, // 20rem
+  sm: 384, // 24rem
+  md: 448, // 28rem
+  lg: 512, // 32rem
+  xl: 576, // 36rem
+  '2xl': 672, // 42rem
+  '3xl': 768, // 48rem
+  '4xl': 896, // 56rem
+  '5xl': 1024, // 64rem
+  '6xl': 1152, // 72rem
+  '7xl': 1280, // 80rem
+};
+
+/** An UNPREFIXED `max-w-<step>` on this node, in px, or undefined. Variant-prefixed caps
+ *  (`@2xl:max-w-3xl`) are skipped on purpose: they apply only above a CONTAINER width,
+ *  and a cap that might not be in force is not a bound we can rely on. */
+function capOf(cls: string | undefined): number | undefined {
+  if (!cls) return undefined;
+  for (const token of cls.split(/\s+/)) {
+    if (token.includes(':')) continue;
+    if (!token.startsWith('max-w-')) continue;
+    const px = MAX_W_PX[token.slice(6)];
+    if (px) return px;
+  }
+  return undefined;
+}
+
+/** The tighter of two caps — nested containers compound, and the innermost wins. */
+function tighter(a: number | undefined, b: number | undefined): number | undefined {
+  if (a == null) return b;
+  if (b == null) return a;
+  return Math.min(a, b);
+}
+
 function srcsetFor(src: string): string {
   const sep = src.includes('?') ? '&' : '?';
   return MEDIA_WIDTHS.map((w) => `${src}${sep}w=${w} ${w}w`).join(', ');
@@ -70,25 +110,41 @@ function srcsetFor(src: string): string {
 /**
  * What slot will this image be painted into?
  *
- * `100vw` for anything laid out fluidly. It is the honest default: it never
- * UNDER-fetches (which would be a visibly soft image), and it captures the win that
- * actually matters — on a phone, 100vw is ~390px, so the browser picks the 400 or 800
- * rung instead of the 2000 it takes today. A narrower guess would need to know the
- * grid column count, which is an ancestor fact this walk deliberately does not carry.
+ * Three answers, tightest first.
  *
- * A fixed-size image is the exception worth special-casing, because 100vw is badly
- * wrong for it: a 64px avatar on a wide display would otherwise still select the
- * 2000px rung, which is the exact waste this file exists to remove.
+ * A FIXED SIZE on the image wins outright. `100vw` is badly wrong for it: a 64px avatar
+ * on a wide display would otherwise still select the 2000px rung, which is the exact
+ * waste this file exists to remove.
+ *
+ * Next, an ancestor's `max-w-*` CAP. A picture inside a `max-w-3xl` column can never
+ * render wider than 768px however large the display, so offering `100vw` there means
+ * every desktop visitor downloads the 2000px rung for a 768px slot. `(min-width: 768px)
+ * 768px, 100vw` is EXACT rather than a guess: above the cap the slot is the cap, below it
+ * the slot is the viewport. Most sections in this library cap their content, so this is
+ * the common case, not an edge one.
+ *
+ * Otherwise `100vw` — the honest default for genuinely full-bleed imagery. It never
+ * UNDER-fetches (which would be a visibly soft image), and it already captures the win
+ * that matters most: on a phone 100vw is ~390px, so the browser picks the 400 or 800 rung
+ * instead of the 2000 it used to take.
+ *
+ * WHAT IS DELIBERATELY NOT DONE: dividing by a grid's column count. `grid-cols-*` here is
+ * written as a CONTAINER query (`@2xl:grid-cols-4`), and `sizes` can only express VIEWPORT
+ * conditions — the two are not interchangeable, because a wide viewport says nothing about
+ * a narrow container. Guessing the mapping risks claiming 25vw for a slot that is actually
+ * the full container width, and an UNDER-stated `sizes` is a blurry image, which is worse
+ * than a wasteful one. The cap above needs no such guess.
  */
-function sizesFor(cls: string | undefined): string {
+function sizesFor(cls: string | undefined, cap: number | undefined): string {
   const match = cls ? FIXED_SIZE.exec(cls) : null;
-  if (!match) return '100vw';
-  return `${Number(match[1]) * 4}px`;
+  if (match) return `${Number(match[1]) * 4}px`;
+  if (cap == null) return '100vw';
+  return `(min-width: ${cap}px) ${cap}px, 100vw`;
 }
 
 /** Add the ladder to one lowered `<img>`, or return it untouched. Pure — the tree may
  *  be a shared, memoized starter tree, so nothing here mutates in place. */
-function withSrcset(node: ElementNode): ElementNode {
+function withSrcset(node: ElementNode, cap: number | undefined): ElementNode {
   if (node.tag !== 'img') return node;
   const attrs = node.attrs;
   const src = typeof attrs?.src === 'string' ? attrs.src : '';
@@ -103,7 +159,7 @@ function withSrcset(node: ElementNode): ElementNode {
     attrs: {
       ...attrs,
       srcset: srcsetFor(src),
-      sizes: typeof attrs?.sizes === 'string' ? attrs.sizes : sizesFor(node.class),
+      sizes: typeof attrs?.sizes === 'string' ? attrs.sizes : sizesFor(node.class, cap),
     },
   };
 }
@@ -120,7 +176,10 @@ function withSrcset(node: ElementNode): ElementNode {
  *  A component that carries `src` but lowers to something else (`Video`) builds its own
  *  attrs and simply ignores these props, so there is nothing to detect and no
  *  component-name allowlist to keep in step with the engine. */
-function withSrcsetProps(node: Extract<Node, { kind: 'component' }>): Node {
+function withSrcsetProps(
+  node: Extract<Node, { kind: 'component' }>,
+  cap: number | undefined
+): Node {
   const props = node.props;
   const src = typeof props?.src === 'string' ? props.src : '';
   if (!src || props?.srcset != null) return node;
@@ -131,19 +190,26 @@ function withSrcsetProps(node: Extract<Node, { kind: 'component' }>): Node {
     props: {
       ...props,
       srcset: srcsetFor(src),
-      sizes: typeof props?.sizes === 'string' ? props.sizes : sizesFor(node.class),
+      sizes: typeof props?.sizes === 'string' ? props.sizes : sizesFor(node.class, cap),
     },
   };
 }
 
-function rewrite(child: Child): Child {
+/** `cap` is the tightest `max-w-*` of everything ENCLOSING this node, in px — the width
+ *  bound an image here cannot exceed. Threaded down rather than looked up because a tree
+ *  has no parent pointers, and it is the only ancestor fact `sizes` needs. */
+function rewrite(child: Child, cap: number | undefined): Child {
   if (typeof child === 'string' || child.kind === 'outlet') return child;
 
+  // This node's own cap applies to its descendants AND to itself: an `<img max-w-3xl>` is
+  // bounded by its own class just as much as by its container's.
+  const inner = tighter(cap, capOf(child.class));
+
   if (child.kind === 'element') {
-    const patched = withSrcset(child);
+    const patched = withSrcset(child, inner);
     if (patched !== child) return patched;
   } else if (child.kind === 'component') {
-    const patched = withSrcsetProps(child);
+    const patched = withSrcsetProps(child, inner);
     // An image atom is a leaf — no children to walk — so returning here is complete.
     if (patched !== child) return patched;
   }
@@ -152,7 +218,7 @@ function rewrite(child: Child): Child {
   if (!children?.length) return child;
   let changed = false;
   const next = children.map((c) => {
-    const out = rewrite(c);
+    const out = rewrite(c, inner);
     if (out !== c) changed = true;
     return out;
   });
@@ -163,5 +229,5 @@ function rewrite(child: Child): Child {
  *  Returns the SAME node when nothing matched, so a site with no sparx-hosted
  *  imagery pays nothing but the walk. */
 export function responsiveImages(node: Node): Node {
-  return rewrite(node) as Node;
+  return rewrite(node, undefined) as Node;
 }
