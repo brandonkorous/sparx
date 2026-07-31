@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "ledger",
+  "name": "Ledger",
+  "version": "1.0.0",
+  "tagline": "Precise and trustworthy for finance and law.",
+  "description": "A restrained navy on a wide, orderly layout that reads as competence and discretion. For accountants, lawyers, and financial advisers whose clients are buying judgment.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Professional",
+    "colorFamily": "Navy",
+    "density": "Wide",
+    "industry": "Professional Services"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#091628",
+  "sortWeight": 88
+}

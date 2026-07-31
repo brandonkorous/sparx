@@ -1,0 +1,81 @@
+# Caddy — the origin router. Sits behind cloudflared and in front of every app.
+#
+# Much simpler than the GKE deployment: no LoadBalancer Service, no PVC for the
+# ACME certificate store, no on-demand TLS. It speaks plain HTTP on :80 to
+# cloudflared inside the cluster, so there is nothing to persist between
+# restarts and the pod is fully stateless.
+#
+# Why keep Caddy at all, rather than letting cloudflared route hostnames
+# directly to Services? Because the routing rules are not trivial — the tenant
+# catch-all alone carves out /mcp*, three well-known families and the shopper
+# auth path across two different upstreams, all keyed on the incoming Host
+# header. That logic already exists and is already correct; re-expressing it as
+# cloudflared ingress rules would be a rewrite with nothing gained. cloudflared
+# stays a dumb pipe to :80.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caddy
+  namespace: sparx-prod
+  labels: { app: caddy, tier: ingress }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: caddy }
+  template:
+    metadata:
+      labels: { app: caddy, tier: ingress }
+      annotations:
+        # Roll the pod when the Caddyfile changes. kustomize's configMapGenerator
+        # normally forces this by hashing the name, but disableNameSuffixHash is
+        # on (the base Deployments reference sparx-app-env by fixed name), so
+        # nothing would otherwise trigger a restart on a config edit.
+        # Bump this string, or `kubectl rollout restart deploy/caddy`.
+        sparx.works/config-revision: '1'
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: caddy
+          image: caddy:2-alpine
+          ports:
+            - { name: http, containerPort: 80 }
+          volumeMounts:
+            - name: config
+              mountPath: /etc/caddy
+              readOnly: true
+            # Caddy writes its own state here. An emptyDir is right: with TLS
+            # terminated at Cloudflare there are no certificates to persist, so
+            # losing this on restart costs nothing.
+            - { name: data, mountPath: /data }
+            - { name: config-home, mountPath: /config }
+          # Keeps a real request: Caddy is the single ingress, so evicting it
+          # takes every hostname down at once. It is also genuinely small.
+          resources:
+            requests: { cpu: '50m', memory: '64Mi' }
+            limits: { memory: '256Mi' }
+          readinessProbe:
+            tcpSocket: { port: 80 }
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            tcpSocket: { port: 80 }
+            periodSeconds: 30
+            failureThreshold: 5
+      volumes:
+        - name: config
+          configMap: { name: caddy-config }
+        - name: data
+          emptyDir: {}
+        - name: config-home
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: caddy
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 80, targetPort: 80 }]
+  selector: { app: caddy }

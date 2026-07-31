@@ -1,0 +1,43 @@
+# Shared base for every self-hosted deployment of sparx — the parts that are
+# identical whether the cluster runs on a workstation or in AKS.
+#
+# WHY THIS EXISTS AS A BASE rather than living in one overlay: kustomize will not
+# let an overlay reference an individual FILE outside its own directory, only a
+# directory with a kustomization. So `k8s/azure` could not borrow `workers.yaml`
+# or the `Caddyfile` from `k8s/local` — it would need copies, and two copies of
+# the ingress routing table drift the first time either is edited. A third copy
+# appears the moment a second region is added.
+#
+# What belongs here: anything whose content does NOT depend on where the cluster
+# runs. What does NOT: images, storage classes, the app env ConfigMap, and the
+# backing data services — those are the overlay's whole job.
+#
+# Consumed by k8s/local (workstation) and k8s/azure (AKS).
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  # The 11 workers that ran on Cloud Run. Plain Deployments, no cloud coupling —
+  # they receive the same Pub/Sub push envelope from api-rest either way.
+  - workers.yaml
+  # Ingress. Plain HTTP; TLS terminates at Cloudflare in both deployments.
+  - caddy.yaml
+  # The tunnel back to Cloudflare. Identical in both: it is what removes the need
+  # for a public IP or an inbound port, on a laptop and on a cloud node alike.
+  - cloudflared.yaml
+
+configMapGenerator:
+  # The routing table. Lives here because the Caddyfile does, and kustomize can
+  # only read files from its own directory — which is the same constraint that
+  # made this base necessary in the first place.
+  - name: caddy-config
+    files:
+      - Caddyfile
+
+generatorOptions:
+  # The Deployments reference `caddy-config` by fixed name, so a content-hash
+  # suffix would point them at a ConfigMap that does not exist. The cost is that
+  # editing the Caddyfile does not itself restart Caddy — bump the
+  # `sparx.works/config-revision` annotation in caddy.yaml, or
+  # `kubectl rollout restart deploy/caddy`.
+  disableNameSuffixHash: true

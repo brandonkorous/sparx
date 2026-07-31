@@ -3,9 +3,9 @@ title: Color follows functionality
 node: design
 type: rule
 status: active
-applies-to: [dashboard]
+applies-to: [platform]
 sources:
-  - apps/dashboard/DESIGN.md
+  - DESIGN.md
   - docs/35-ui-variant-system.md
   - docs/sparx-brand-guide.md
 ---

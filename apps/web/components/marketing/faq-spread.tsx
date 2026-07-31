@@ -39,7 +39,7 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
                 // Inactive questions are still meant to be READ, so they get a
                 // real ink token (`text-ink-muted`), not a mix into transparent.
                 className={`text-body-sm flex w-full cursor-pointer items-start gap-3 rounded-lg border-none px-3.5 py-3 text-left transition-colors duration-150 ${
-                  on ? 'bg-base-100 text-base-content font-medium' : 'text-ink-muted bg-transparent'
+                  on ? 'bg-base-100 font-medium' : 'text-ink-muted bg-transparent'
                 }`}
               >
                 <span
@@ -59,7 +59,7 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
       </ul>
 
       <div className="bg-base-100 border-base-300 min-w-0 flex-1 rounded-xl border p-[clamp(24px,3vw,40px)]">
-        <h3 className="text-base-content m-0 text-[clamp(20px,2.4vw,26px)] leading-[1.25] font-medium tracking-[-0.02em]">
+        <h3 className="m-0 text-[clamp(20px,2.4vw,26px)] leading-[1.25] font-medium tracking-[-0.02em]">
           {hasMark ? q.slice(0, -1) : q}
           {hasMark ? <span style={{ color: accent }}>?</span> : null}
         </h3>

@@ -29,7 +29,7 @@ export const BRAND_SECTIONS = [
 
 const IDENTITY: { label: string; value: string }[] = [
   { label: 'Platform', value: 'sparx' },
-  { label: 'Company', value: 'WizeWorks, Inc.' },
+  { label: 'Company', value: 'WizeWorks LLC' },
   { label: 'Primary domain', value: 'sparx.works' },
   { label: 'Maintained by', value: 'brand@sparx.works' },
 ];

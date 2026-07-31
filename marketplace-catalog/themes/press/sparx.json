@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "press",
+  "name": "Press",
+  "version": "1.0.0",
+  "tagline": "Column-driven and literary for publishing.",
+  "description": "A paper-white editorial look built around type and columns, with a single decisive red for mastheads and links. For publishers, newsletters, magazines, and blogs where the writing is the product.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Editorial",
+    "colorFamily": "Red",
+    "density": "Wide",
+    "industry": "Media & Publishing"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#b30000",
+  "sortWeight": 83
+}

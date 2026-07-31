@@ -37,8 +37,8 @@ const LEGAL_LINKS: FooterLink[] = [
   { label: 'Buyer protection', href: '/legal/buyer-protection' },
 ];
 
-const colTitle = 'mb-3 text-xs font-semibold tracking-[0.04em] text-base-content uppercase';
-const footerLink = 'block py-1 text-sm text-base-content transition-colors hover:text-base-content';
+const colTitle = 'mb-3 text-xs font-semibold tracking-[0.04em] uppercase';
+const footerLink = 'block py-1 text-sm transition-colors';
 
 export function SiteFooter() {
   return (
@@ -49,9 +49,9 @@ export function SiteFooter() {
           <div>
             <Link href="/" aria-label="sparx.market home" className="inline-flex items-baseline">
               <Wordmark size={22} />
-              <span className="text-base-content ml-0.5 text-sm font-medium">.market</span>
+              <span className="ml-0.5 text-sm font-medium">.market</span>
             </Link>
-            <p className="text-base-content mt-3 max-w-xs text-sm">
+            <p className="mt-3 max-w-xs text-sm">
               One destination for thousands of independent sellers. Real shops, real makers, shipped
               direct.
             </p>
@@ -94,15 +94,11 @@ export function SiteFooter() {
           </div>
         </div>
 
-        <div className="border-base-300 text-base-content flex flex-wrap items-center justify-between gap-4 border-t py-6 text-[0.8125rem]">
-          <span>© {FOOTER_YEAR} WizeWorks, Inc. sparx.market is a sparx property.</span>
+        <div className="border-base-300 flex flex-wrap items-center justify-between gap-4 border-t py-6 text-[0.8125rem]">
+          <span>© {FOOTER_YEAR} WizeWorks LLC sparx.market is a sparx property.</span>
           <nav className="flex flex-wrap items-center gap-4" aria-label="Legal">
             {LEGAL_LINKS.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className="text-base-content hover:text-base-content transition-colors"
-              >
+              <Link key={link.href} href={link.href} className="transition-colors">
                 {link.label}
               </Link>
             ))}

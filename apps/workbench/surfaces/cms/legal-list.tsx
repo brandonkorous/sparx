@@ -518,7 +518,7 @@ function PlacementsSection({ items, placements }: PlacementsSectionProps) {
                   >
                     <div className="flex min-w-0 flex-[1_1_16rem] flex-col">
                       <div className="flex flex-wrap items-center gap-2">
-                        <Link2 className="text-base-content size-4 shrink-0" aria-hidden />
+                        <Link2 className="size-4 shrink-0" aria-hidden />
                         <Text className="font-medium">{name}</Text>
                         {!row.enabled ? (
                           <Badge color="neutral" variant="soft" size="sm">

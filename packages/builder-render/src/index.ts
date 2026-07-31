@@ -34,6 +34,11 @@ export {
 // The customer-account navbar island (docs/27) — reads the runtime session.
 export { BuilderAccountMenu, type BuilderAccountMenuProps } from './account-menu';
 
+// The sparx components filling silicaui's gaps for the site render path — the
+// storefront needs a handful of them directly (NavShell, ThemeToggle, the CTA
+// button classes). See atoms/index.ts for the bar on adding one.
+export * from './atoms';
+
 // Interactive islands — rendered identically on both surfaces.
 export { BuilderCarousel, type BuilderCarouselProps } from './carousel';
 export { BuilderIcon } from './icon';

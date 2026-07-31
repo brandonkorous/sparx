@@ -180,7 +180,7 @@ export function SessionsCard({ sessions, isPending, isError, refetch }: Sessions
                 key={row.token}
                 className="border-base-300 flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg border p-3"
               >
-                <MonitorSmartphone className="text-base-content size-5 shrink-0" aria-hidden />
+                <MonitorSmartphone className="size-5 shrink-0" aria-hidden />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="font-medium">{device}</span>

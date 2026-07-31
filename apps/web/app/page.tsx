@@ -9,7 +9,10 @@ import { LandingV3Faq } from '@/components/marketing/landing-v3/faq';
 import { LandingV3FinalCta } from '@/components/marketing/landing-v3/final-cta';
 
 export const metadata = {
-  title: 'Sparx — Run the business, not the software',
+  // Lowercase `sparx` — it is the brand, and the title promised a different line
+  // ("Run the business, not the software") than the H1 delivers, so a visitor
+  // arriving from a search result was sold one thing and shown another.
+  title: 'sparx — Your story, multiplied',
   description:
     'A narrative walkthrough of sparx — the modular content and commerce OS that brings your site, customers, sales, email and AI into one connected system.',
 };

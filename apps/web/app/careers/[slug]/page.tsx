@@ -45,7 +45,7 @@ function BulletList({ items }: { items: string[] }) {
 function RoleColumn({ heading, items }: { heading: string; items: string[] }) {
   return (
     <div className="flex flex-col gap-5">
-      <h2 className="text-h3 text-base-content m-0 font-medium tracking-[-0.01em]">{heading}</h2>
+      <h2 className="text-h3 m-0 font-medium tracking-[-0.01em]">{heading}</h2>
       <BulletList items={items} />
     </div>
   );
@@ -74,7 +74,7 @@ function RoleHeader({ role }: { role: Role }) {
       </div>
       <Card className="bg-base-200 max-w-[720px] rounded-lg">
         <CardBody className="gap-2 px-5 py-[18px]">
-          <span className="text-body-sm text-base-content inline-flex items-center gap-2 font-medium tracking-[0.01em]">
+          <span className="text-body-sm inline-flex items-center gap-2 font-medium tracking-[0.01em]">
             <Dot color={EMBER} />
             The honest deal
           </span>

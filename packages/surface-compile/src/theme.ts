@@ -1,20 +1,79 @@
 // The Surface tenant-flavored Tailwind theme entrypoint (docs/47 §5.2).
 //
 // This is the CSS the per-tenant compile runs against. It pulls in Tailwind's
-// default theme + the full utility set, then REMAPS the color / type / shape /
-// effect / rhythm theme tokens onto the tenant `--st-*` vars. So a utility a
-// power user authored — `bg-base-100`, `text-primary-content`, `rounded-box`,
-// `gap-6`, `shadow-md` — compiles to a rule that references `--st-*`, and the
-// generated tenant.css themes off exactly the tokens the storefront sets at
-// `:root` (via @sparx/site-themes). No baked color ever reaches the output.
+// default theme + the full utility set, then REGISTERS the color / type / shape /
+// effect / rhythm theme tokens in silica's OWN `--color-*` / `--radius-*` / `--font-*`
+// vocabulary. So a utility a power user authored — `bg-base-100`,
+// `text-primary-content`, `rounded-box`, `gap-6`, `shadow-md` — compiles to a rule
+// that references the very same custom properties the storefront's per-tenant theme
+// file sets at `:root` (`buildSilicaThemeCssFromTheme`). No baked color ever reaches
+// the output, and there is no translation layer.
 //
-// Isolation (docs/47 §5.2): because this @theme lives in THIS package's compile
-// — never in the dashboard's Tailwind content — the same utility names that map
-// to the admin `--color-*` palette in the dashboard map to `--st-*` here, with
-// no chance of cross-contamination.
+// This block USED to remap every one of those keys onto the legacy `--st-*` vars —
+// `--color-primary: var(--st-primary)`. That made the compiled surface CSS a second
+// source of truth for tenant color, pointing the OPPOSITE way from the storefront's
+// own `--st-primary: var(--color-primary)` bridge, so a builder-authored page could
+// resolve its palette from the legacy brand compile instead of the applied theme.
+// See docs/implementation/st-token-retirement.md §1.
+//
+// The values below are FALLBACKS only — every one is overridden by the theme the
+// storefront injects in an unlayered `:root`, which always carries a concrete value
+// for each (BASE_SILICA_THEME is exhaustive by construction). They are interpolated
+// from that same constant rather than hand-copied so the default look lives in ONE
+// place; the keys must stay declared regardless, because this compile has no silicaui
+// plugin and `@theme` is the only thing that makes `bg-primary` et al. generate.
+//
+// Isolation (docs/47 §5.2): because this @theme lives in THIS package's compile —
+// never in the dashboard's Tailwind content — a tenant surface can never pick up the
+// admin palette, and vice versa.
 //
 // Preflight is intentionally NOT imported: the tenant stylesheet is a delta
 // layered over the storefront's own reset, exactly like @sparx/site-ui's build.
+
+import { BASE_SILICA_THEME } from '@sparx/silica-catalog';
+
+// `--key: value;` lines for the theme keys this compile must register, read off the
+// platform base theme. Any key the base theme lacks is skipped rather than emitted
+// empty — an empty custom property would register the utility and then paint nothing.
+function baseThemeDecls(keys: readonly string[]): string {
+  return keys
+    .map((k) => {
+      const v = BASE_SILICA_THEME.tokens[k];
+      return v ? `  ${k}: ${v};` : '';
+    })
+    .filter(Boolean)
+    .join('\n');
+}
+
+const COLOR_KEYS = [
+  '--color-base-100',
+  '--color-base-200',
+  '--color-base-300',
+  '--color-base-content',
+  '--color-primary',
+  '--color-primary-content',
+  '--color-secondary',
+  '--color-secondary-content',
+  '--color-accent',
+  '--color-accent-content',
+  '--color-neutral',
+  '--color-neutral-content',
+  '--color-info',
+  '--color-info-content',
+  '--color-success',
+  '--color-success-content',
+  '--color-warning',
+  '--color-warning-content',
+  '--color-error',
+  '--color-error-content',
+  '--color-danger',
+  '--color-danger-content',
+  '--color-highlight',
+  '--color-highlight-content',
+  '--color-border',
+] as const;
+
+const SHAPE_KEYS = ['--radius-box', '--radius-field', '--radius-selector'] as const;
 
 export const SURFACE_THEME_CSS = `
 @layer theme, base, components, utilities;
@@ -22,53 +81,35 @@ export const SURFACE_THEME_CSS = `
 @import 'tailwindcss/utilities.css' layer(utilities);
 
 @theme {
-  /* ── Color — every bg-/text-/border- utility resolves to a tenant --st-* var ── */
-  --color-base-100: var(--st-base-100);
-  --color-base-200: var(--st-base-200);
-  --color-base-300: var(--st-base-300);
-  --color-base-content: var(--st-base-content);
-  --color-primary: var(--st-primary);
-  --color-primary-content: var(--st-primary-content);
-  --color-secondary: var(--st-secondary);
-  --color-secondary-content: var(--st-secondary-content);
-  --color-accent: var(--st-accent);
-  --color-accent-content: var(--st-accent-content);
-  --color-neutral: var(--st-neutral);
-  --color-neutral-content: var(--st-neutral-content);
-  --color-info: var(--st-info);
-  --color-info-content: var(--st-info-content);
-  --color-success: var(--st-success);
-  --color-success-content: var(--st-success-content);
-  --color-warning: var(--st-warning);
-  --color-warning-content: var(--st-warning-content);
-  --color-danger: var(--st-danger);
-  --color-danger-content: var(--st-danger-content);
-  --color-highlight: var(--st-highlight);
-  --color-highlight-content: var(--st-highlight-content);
-  --color-border: var(--st-border);
+  /* ── Color — every bg-/text-/border- utility resolves to a silica --color-* var,
+        the same one the storefront's injected per-tenant theme sets. ── */
+${baseThemeDecls(COLOR_KEYS)}
 
-  /* ── Type — font-heading / font-body ── */
-  --font-heading: var(--st-font-heading);
-  --font-body: var(--st-font-body);
+  /* ── Type — font-heading / font-body. --font-heading is the sparx residual
+        (silica's own heading token is --font-head); body copy rides --font-sans. ── */
+  --font-heading: ${BASE_SILICA_THEME.tokens['--font-heading']};
+  --font-body: ${BASE_SILICA_THEME.tokens['--font-sans']};
 
   /* ── Shape — rounded-box / rounded-field / rounded-selector ── */
-  --radius-box: var(--st-radius-box);
-  --radius-field: var(--st-radius-field);
-  --radius-selector: var(--st-radius-selector);
+${baseThemeDecls(SHAPE_KEYS)}
 
-  /* ── Effect — shadow-sm / shadow-md / shadow-lg ── */
-  --shadow-sm: var(--st-shadow-sm);
-  --shadow-md: var(--st-shadow-md);
-  --shadow-lg: var(--st-shadow-lg);
+  /* ── Effect — shadow-sm / shadow-md / shadow-lg. Shadow INTENSITY rides silica's
+        \`--depth\` rather than a bespoke pre-derived shadow set, so a theme that
+        flattens depth flattens these too. ── */
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / calc(0.04 * var(--depth, 1))), 0 1px 3px rgb(0 0 0 / calc(0.06 * var(--depth, 1)));
+  --shadow-md: 0 4px 12px -2px rgb(0 0 0 / calc(0.08 * var(--depth, 1))), 0 2px 6px -2px rgb(0 0 0 / calc(0.05 * var(--depth, 1)));
+  --shadow-lg: 0 18px 40px -12px rgb(0 0 0 / calc(0.18 * var(--depth, 1)));
 
-  /* ── Rhythm — the whole numeric spacing scale (p-*, gap-*, m-*, w-*, h-*)
-        tracks the tenant base unit, so it reflows with --st-space-base. ── */
-  --spacing: var(--st-space-base, 0.25rem);
+  /* ── Rhythm — the whole numeric spacing scale (p-*, gap-*, m-*, w-*, h-*). The
+        legacy model let a tenant rescale this off \`--st-space-base\`; silica has no
+        counterpart (spacing is Tailwind's own fixed scale, docs/118), so it anchors
+        to the standard unit. ── */
+  --spacing: 0.25rem;
 
   /* ── Layout — max-w-site off the tenant container width. The container-query
         breakpoint scale (@sm … @7xl) ships from the default theme; container
         queries key off the node's OWN width, not the viewport (docs/61 §7). ── */
-  --container-site: var(--st-container);
+  --container-site: var(--container-max, ${BASE_SILICA_THEME.tokens['--container-max']});
 
   /* ── Motion — animate-spin/ping/pulse/bounce ship from the default theme;
         these are Surface's custom entrance animations (docs/61 §9): animate-fade-in,
@@ -181,13 +222,13 @@ export const SURFACE_THEME_CSS = `
       (docs/98 §3.1). Edge bars span their axis but are height/width-capped;
       corners are anchored + size-capped (FAB / cookie card / toast). ── */
 @layer components {
-  .st-fixed-top { position: fixed; top: 0; inset-inline: 0; max-height: 50vh; }
-  .st-fixed-bottom { position: fixed; bottom: 0; inset-inline: 0; max-height: 50vh; }
-  .st-fixed-left { position: fixed; left: 0; inset-block: 0; max-width: 33vw; }
-  .st-fixed-right { position: fixed; right: 0; inset-block: 0; max-width: 33vw; }
-  .st-fixed-tl { position: fixed; top: 0; left: 0; max-width: 90vw; max-height: 90vh; }
-  .st-fixed-tr { position: fixed; top: 0; right: 0; max-width: 90vw; max-height: 90vh; }
-  .st-fixed-bl { position: fixed; bottom: 0; left: 0; max-width: 90vw; max-height: 90vh; }
-  .st-fixed-br { position: fixed; bottom: 0; right: 0; max-width: 90vw; max-height: 90vh; }
+  .bx-fixed-top { position: fixed; top: 0; inset-inline: 0; max-height: 50vh; }
+  .bx-fixed-bottom { position: fixed; bottom: 0; inset-inline: 0; max-height: 50vh; }
+  .bx-fixed-left { position: fixed; left: 0; inset-block: 0; max-width: 33vw; }
+  .bx-fixed-right { position: fixed; right: 0; inset-block: 0; max-width: 33vw; }
+  .bx-fixed-tl { position: fixed; top: 0; left: 0; max-width: 90vw; max-height: 90vh; }
+  .bx-fixed-tr { position: fixed; top: 0; right: 0; max-width: 90vw; max-height: 90vh; }
+  .bx-fixed-bl { position: fixed; bottom: 0; left: 0; max-width: 90vw; max-height: 90vh; }
+  .bx-fixed-br { position: fixed; bottom: 0; right: 0; max-width: 90vw; max-height: 90vh; }
 }
 `;

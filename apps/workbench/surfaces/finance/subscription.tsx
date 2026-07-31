@@ -222,9 +222,7 @@ export function SubscriptionSurface({ ctx }: { ctx: SurfaceContext }) {
                   <Text className="text-sm">What you pay sparx</Text>
                   <Heading level={2} className="mt-1 text-3xl font-semibold tabular-nums">
                     {formatMoney(bill.planTotalCents / 100)}
-                    <span className="text-base-content ml-1 text-base font-normal">
-                      {intervalNote}
-                    </span>
+                    <span className="ml-1 text-base font-normal">{intervalNote}</span>
                   </Heading>
                   {renewal ? <Text className="mt-1 text-sm">{renewal}</Text> : null}
                 </div>

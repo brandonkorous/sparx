@@ -1,5 +1,6 @@
 import Link from 'next/link';
-import { Button, cn, Input } from '@sparx/ui';
+import { Input } from '@wizeworks/silicaui-react';
+import { Button, cn } from '@sparx/ui';
 import type { OperatorFeedbackCounts } from '@sparx/operator';
 import {
   categoryLabel,

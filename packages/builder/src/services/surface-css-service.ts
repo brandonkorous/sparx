@@ -4,7 +4,7 @@
 // across ALL of a tenant's PUBLISHED Builder trees — every published page plus
 // the active published layout chrome — and compiles them, through the
 // tenant-flavored Tailwind theme, into the `tenant.css` the storefront loads
-// after its `--st-*` token block.
+// after its theme token block.
 //
 // Compiling a few hundred classes is milliseconds, but it must never sit in the
 // hot path (docs/47 §5.3). So the output is cached per (tenant, class-set hash):
@@ -37,11 +37,11 @@ import type { PropertyContext, ServiceContext } from '../errors';
 
 // Render-surface CSS shipped ONCE with every tenant sheet (docs/61 §9): the
 // reduced-motion baseline + the scroll-reveal entrance rules + the hover-effect
-// library (`st-hover--*`). It is identical for every tenant (not compiled from their
+// library (`bx-hover--*`). It is identical for every tenant (not compiled from their
 // classes) and rides this same stylesheet so the live site receives it through the
 // existing HTTP path with no extra dependency, and so does the editor canvas.
 // Prepended (not passed through the Tailwind compiler) so its custom
-// `st-reveal`/`st-hover--*`/`@keyframes` rules are never tree-shaken or mangled.
+// `bx-reveal`/`bx-hover--*`/`@keyframes` rules are never tree-shaken or mangled.
 const RENDER_LAYER_CSS = REDUCED_MOTION_CSS + SCROLL_MOTION_CSS + HOVER_MOTION_CSS;
 
 export interface PublishedStylesheet {
@@ -242,7 +242,7 @@ export const CompilePreviewInput = z.object({
  * Compile an editor-supplied class set for canvas preview. Tenant-scoped so the
  * tenant's utility allowlist (docs/61 §8 Phase 6b) applies in the canvas exactly
  * as it will at publish — a class the tenant has blocked silently no-ops live,
- * matching production. The `--st-*` tokens still resolve in the browser. Non-
+ * matching production. The silica theme tokens still resolve in the browser. Non-
  * minified for speed + readability; the Tailwind compiler is process-memoized, so
  * repeat calls only pay the candidate build.
  */

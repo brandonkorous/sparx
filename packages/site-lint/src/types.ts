@@ -193,6 +193,34 @@ export interface LintFinding {
   /** The offending value verbatim when there is one — the href, the class, the
    *  duplicated title. Shown as evidence so the owner recognises what we mean. */
   evidence?: string;
+  /**
+   * A correction an editor may apply on the author's behalf — present ONLY when the
+   * answer is a single unambiguous substitution AND applying it cannot make the page
+   * worse. Absent is the default and the safe reading.
+   *
+   * MOST FINDINGS WILL NEVER CARRY ONE, and that is the point rather than a gap. "This
+   * looks like a link but is not one" is fixed by choosing a destination, which is the
+   * author's sentence to write; "these words are hard to read" is fixed by a colour
+   * decision. Offering to make those choices would be a guess wearing the clothes of a
+   * fix — and a check that silently changes a page is a worse failure than one that only
+   * describes it.
+   */
+  fix?: LintFix;
+}
+
+/**
+ * The only fix kind so far: swap one class token for another on the node the finding
+ * names. Deliberately narrow — a fix that can only replace one class is a fix whose
+ * blast radius is knowable by reading it.
+ */
+export interface LintFix {
+  kind: 'replace-class';
+  /** The exact token to remove, as it appears in the node's class string. */
+  from: string;
+  /** The token to put in its place. */
+  to: string;
+  /** One short line for the button's tooltip, in the owner's language. */
+  label: string;
 }
 
 /** Advisory only. `fail` means "a visitor will see something broken", never "you

@@ -2,7 +2,8 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { hasCapability, requireCapability } from '@sparx/operator-auth/next';
 import { logOperatorAction } from '@sparx/operator-auth';
-import { Button, Card, Heading, Input, Label, NativeSelect, Stack, Text } from '@sparx/ui';
+import { Input, Label, NativeSelect } from '@wizeworks/silicaui-react';
+import { Button, Card, Heading, Stack, Text } from '@sparx/ui';
 import {
   OperatorApiError,
   type OperatorEmailLogResult,

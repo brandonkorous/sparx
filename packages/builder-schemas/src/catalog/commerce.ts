@@ -51,7 +51,7 @@ function shoppableCard(): PlatformCatalogEntry['tree'] {
                   'item.price'
                 ),
                 act(
-                  atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
+                  atom('Button', 'btn btn-primary btn-sm', {
                     label: 'Add to cart',
                   }),
                   'add-to-cart'
@@ -262,7 +262,7 @@ export const COMMERCE_CATALOG: PlatformCatalogEntry[] = [
             ],
           }),
           act(
-            atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md w-full', {
+            atom('Button', 'btn btn-primary btn-md w-full', {
               label: 'Checkout',
             }),
             'link',

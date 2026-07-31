@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 
-import { SparxButton, type TreatmentKey } from '@sparx/site-ui';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { Cta } from '@sparx/sitebuilder-schemas';
 
 /** True for an absolute external URL; internal links start with "/". */
@@ -36,18 +36,18 @@ export function SbLink({
   );
 }
 
-// A CTA's style maps to a SparxButton recipe — never a hand-built button (brand
-// rule). The "scrim" styles (light/dark/ghost) become `glass` compositions so a
-// CTA stays legible over arbitrary section media (docs/46): glass × surface =
-// the old light CTA, glass × neutral = the old dark CTA. Unknown/missing style
-// falls back to the primary solid button.
-const CTA_RECIPE = {
-  solid: { color: 'primary', variant: 'solid' },
-  light: { color: 'surface', variant: 'glass' },
-  dark: { color: 'neutral', variant: 'glass' },
-  ghost: { color: 'surface', variant: 'glass' },
+// A CTA's style maps to a silica button — never a hand-built one (RULE #1). The
+// "scrim" styles (light/dark/ghost) add silica's universal `glass` treatment so a
+// CTA stays legible over arbitrary section media. `solid` is silica's default
+// variant and emits no class, so the plain rows carry only a colour. An
+// unknown/missing style falls back to the primary button.
+const CTA_RECIPE: Record<string, Parameters<typeof buttonClasses>[0]> = {
+  solid: { color: 'primary' },
+  light: { className: 'glass' },
+  dark: { color: 'neutral', className: 'glass' },
+  ghost: { className: 'glass' },
   link: { color: 'primary', variant: 'link' },
-} satisfies Record<string, { color: string; variant: TreatmentKey }>;
+};
 
 /** A row of up to two CTA buttons. Empty/invalid CTAs are dropped; renders
  *  nothing when none remain. `size="lg"` enlarges them (hero); `layout="stacked"`
@@ -84,16 +84,17 @@ export function SbCtaRow({
     <div className={rowCls}>
       {items.map((c, i) => {
         const recipe = CTA_RECIPE[c.style] ?? CTA_RECIPE.solid;
+        // `buttonClasses` rather than <Button render={…}>: these sections are
+        // Server Components, and silicaui-react's `render` composition only works
+        // inside a client module (the element would cross the boundary and lose
+        // its href). Styling the link directly is the documented server path.
         return (
-          <SparxButton
+          <SbLink
             key={i}
-            asChild
-            color={recipe.color}
-            variant={recipe.variant}
-            size={size === 'lg' ? 'lg' : 'md'}
-          >
-            <SbLink url={c.url} label={c.label} />
-          </SparxButton>
+            url={c.url}
+            label={c.label}
+            className={buttonClasses({ ...recipe, size: size === 'lg' ? 'lg' : 'md' })}
+          />
         );
       })}
     </div>

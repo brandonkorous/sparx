@@ -71,10 +71,10 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
             }),
             el('div', 'flex flex-wrap items-center justify-center gap-3 pt-2', {
               children: [
-                atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-lg', {
+                atom('Button', 'btn btn-primary btn-lg', {
                   label: 'Get started free',
                 }),
-                atom('Button', 'st-btn st-c-neutral st-v-ghost st-btn--sz-lg', {
+                atom('Button', 'btn btn-neutral btn-ghost btn-lg', {
                   label: 'See how it works',
                 }),
               ],
@@ -117,10 +117,10 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                 }),
                 el('div', 'flex flex-wrap items-center gap-3 pt-2', {
                   children: [
-                    atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-lg', {
+                    atom('Button', 'btn btn-primary btn-lg', {
                       label: 'Start selling',
                     }),
-                    atom('Button', 'st-btn st-c-neutral st-v-outline st-btn--sz-lg', {
+                    atom('Button', 'btn btn-neutral btn-outline btn-lg', {
                       label: 'Browse the demo',
                     }),
                   ],
@@ -497,12 +497,12 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
     // The real Join atom (st-join) collapses the inner seam between an Input and a
     // Button so they read as one control. (Was hand-rolled rounded-l/r + -ml-px.)
     tree: atom('Join', 'w-full max-w-md', { orientation: 'horizontal' }, [
-      atom('Input', 'st-c-primary st-fv-outline grow', {
+      atom('Input', 'input-primary grow', {
         type: 'email',
         name: 'email',
         placeholder: 'you@example.com',
       }),
-      atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', { label: 'Subscribe' }),
+      atom('Button', 'btn btn-primary btn-md', { label: 'Subscribe' }),
     ]),
   }),
 
@@ -529,7 +529,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
                 level: 'h2',
                 text: 'Recent orders',
               }),
-              atom('Button', 'st-btn st-c-primary st-v-soft st-btn--sz-sm', { label: 'Export' }),
+              atom('Button', 'btn btn-primary btn-soft btn-sm', { label: 'Export' }),
             ],
           }
         ),
@@ -565,7 +565,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
       {
         name: 'Coming soon',
         children: [
-          atom('Badge', 'st-c-primary st-v-soft', { label: 'Launching soon' }),
+          atom('Badge', 'badge-primary badge-soft', { label: 'Launching soon' }),
           atom(
             'Heading',
             'max-w-2xl text-4xl font-bold tracking-tight text-base-content @2xl:text-6xl',
@@ -578,12 +578,12 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
           el('form', 'mt-4 flex w-full max-w-md flex-col gap-3 @md:flex-row', {
             name: 'Notify form',
             children: [
-              atom('Input', 'st-c-primary st-fv-outline w-full', {
+              atom('Input', 'input-primary w-full', {
                 type: 'email',
                 name: 'email',
                 placeholder: 'you@example.com',
               }),
-              atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md shrink-0', {
+              atom('Button', 'btn btn-primary btn-md shrink-0', {
                 label: 'Notify me',
               }),
             ],
@@ -619,7 +619,7 @@ export const LAYOUT_CATALOG: PlatformCatalogEntry[] = [
             variant: 'body',
             text: 'The link may be broken, or the page may have moved. Let us get you back on track.',
           }),
-          el('a', 'st-btn st-c-primary st-v-solid st-btn--sz-md mt-2', {
+          el('a', 'btn btn-primary btn-md mt-2', {
             text: 'Back to home',
             attrs: { href: '/' },
           }),

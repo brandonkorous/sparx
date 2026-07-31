@@ -1,15 +1,22 @@
-// Guard for the site-ui atom map (docs/102 Track A). Confirms the recipe bridge
-// (class tokens → typed props) and that a representative slice of the newly-exposed
-// atoms renders the REAL @sparx/site-ui component — its `st-<base>` identity, the
-// author's recipe, and the authored content — through the same renderLeaf path the
-// canvas and live site use. Server-render is enough (presentational components).
+// Guard for the site atom map (docs/102 Track A). Confirms that a representative
+// slice of the exposed atoms renders the REAL silica component — its base class,
+// the author's own recipe, and the authored content — through the same renderLeaf
+// path the canvas and the live site use.
+//
+// The recipe-bridge tests that used to sit here are gone with the bridge itself:
+// the node's class IS the silica recipe now, so there is nothing to parse back out
+// and nothing to keep in sync. What replaced them is `rootClass`, which only has
+// to guarantee that a node authored before the class-first catalog still gets its
+// base class. See docs/implementation/st-token-retirement.md.
+//
+// Server-render is enough — every atom asserted here is presentational.
 
 import { describe, expect, it } from 'vitest';
 import { renderToStaticMarkup } from 'react-dom/server';
 import type { BuilderNode } from '@sparx/builder-schemas';
 
 import { renderLeaf, leafWearsClass, type LeafRenderArgs } from './render-leaf';
-import { recipeFromClass } from './site-atoms';
+import { rootClass } from './site-atoms';
 
 /** Render one leaf to static markup with the contextual args defaulted. The atom
  *  types are all CLASS_ON_LEAF, so the host passes node.class through as leafClass —
@@ -33,68 +40,57 @@ function leaf(
   return renderToStaticMarkup(<>{renderLeaf(args)}</>);
 }
 
-describe('recipeFromClass — lifts recipe tokens out of the leaf class', () => {
-  it('splits color / variant / residual utilities', () => {
-    expect(recipeFromClass('st-c-success st-v-soft w-full')).toEqual({
-      color: 'success',
-      variant: 'soft',
-      size: undefined,
-      className: 'w-full',
-    });
+describe('rootClass — the base class is guaranteed, never duplicated', () => {
+  it('passes a class-first recipe through untouched', () => {
+    expect(rootClass('alert', 'alert alert-success alert-soft w-full')).toBe(
+      'alert alert-success alert-soft w-full'
+    );
   });
 
-  it('reads the field treatment (st-fv-*) and the element-scoped size', () => {
-    expect(recipeFromClass('st-c-primary st-fv-outline st-input--sz-lg max-w-sm')).toEqual({
-      color: 'primary',
-      variant: 'outline',
-      size: 'lg',
-      className: 'max-w-sm',
-    });
+  it('prepends the base when the class carries only modifiers', () => {
+    // What a node authored before the class-first catalog looks like.
+    expect(rootClass('badge', 'badge-primary badge-soft')).toBe('badge badge-primary badge-soft');
   });
 
-  it('is all-undefined for an empty class', () => {
-    expect(recipeFromClass(undefined)).toEqual({
-      color: undefined,
-      variant: undefined,
-      size: undefined,
-      className: undefined,
-    });
+  it('is just the base for an empty class, so the atom is never unstyled', () => {
+    expect(rootClass('input', undefined)).toBe('input');
+    expect(rootClass('input', '   ')).toBe('input');
   });
 });
 
-describe('renderSiteUiAtom (via renderLeaf) — real components + the author recipe', () => {
-  it('Alert: the author color WINS over the component default (no duplicate token)', () => {
+describe('renderSiteAtom (via renderLeaf) — real silica components + the author recipe', () => {
+  it('Alert: the author colour reaches the element, once', () => {
     const html = leaf(
       { type: 'Alert', props: { title: 'Saved', body: 'All good.' } },
-      { leafClass: 'st-c-success st-v-soft' }
+      { leafClass: 'alert alert-success alert-soft' }
     );
-    expect(html).toContain('st-alert');
-    expect(html).toContain('st-c-success');
+    expect(html).toContain('alert-success');
+    expect(html).toContain('alert-soft');
     expect(html).toContain('Saved');
     expect(html).toContain('All good.');
-    // The component's prop default is info; passing the parsed color as a prop (not a
-    // raw className) means the default is never emitted alongside it.
-    expect(html).not.toContain('st-c-info');
+    // No second colour token fighting the author's.
+    expect(html).not.toContain('alert-info');
+    // The base appears once, not doubled by the atom re-adding it.
+    expect(html.match(/class="alert /g) ?? []).toHaveLength(1);
   });
 
   it('Input: renders a real <input> with type/placeholder + the field recipe', () => {
     const html = leaf(
       { type: 'Input', props: { type: 'email', placeholder: 'you@example.com', name: 'email' } },
-      { leafClass: 'st-c-primary st-fv-outline' }
+      { leafClass: 'input input-primary' }
     );
     expect(html).toContain('<input');
-    expect(html).toContain('st-input');
     expect(html).toContain('type="email"');
     expect(html).toContain('placeholder="you@example.com"');
-    expect(html).toContain('st-c-primary');
+    expect(html).toContain('input-primary');
   });
 
   it('Avatar: derives initials from the name', () => {
     const html = leaf(
       { type: 'Avatar', props: { name: 'Jordan Avery', shape: 'circle', status: 'none' } },
-      { leafClass: 'st-c-neutral st-avatar--sz-md' }
+      { leafClass: 'avatar avatar-neutral' }
     );
-    expect(html).toContain('st-avatar');
+    expect(html).toContain('avatar-neutral');
     expect(html).toContain('JA');
   });
 
@@ -103,7 +99,7 @@ describe('renderSiteUiAtom (via renderLeaf) — real components + the author rec
       type: 'Table',
       props: { columns: 'Name, Role', rows: 'Jordan | Owner\nRiley | Editor' },
     });
-    expect(html).toContain('st-table');
+    expect(html).toContain('table');
     expect(html).toContain('<th');
     expect(html).toContain('Name');
     expect(html).toContain('Owner');
@@ -115,20 +111,34 @@ describe('renderSiteUiAtom (via renderLeaf) — real components + the author rec
       type: 'Menu',
       props: { orientation: 'vertical', items: 'Dashboard | /\nOrders | /orders' },
     });
-    expect(html).toContain('st-menu');
+    expect(html).toContain('class="menu"');
     expect(html).toContain('Dashboard');
     expect(html).toContain('href="/orders"');
   });
 
-  it('Steps: marks complete (x) and active (*) states', () => {
+  it('Steps: colours the reached steps (x / *) and leaves the rest plain', () => {
     const html = leaf({
       type: 'Steps',
       props: { orientation: 'horizontal', items: 'x Account\n* Profile\nConfirm' },
     });
-    expect(html).toContain('st-steps');
+    expect(html).toContain('class="steps"');
     expect(html).toContain('Account');
     expect(html).toContain('Profile');
     expect(html).toContain('Confirm');
+    // Two reached steps carry the accent; the upcoming one does not.
+    expect(html.match(/step-primary/g) ?? []).toHaveLength(2);
+    // The authored prefixes are markers, not content.
+    expect(html).not.toContain('x Account');
+    expect(html).not.toContain('* Profile');
+  });
+
+  it('Tag: the builder type renders silica’s badge', () => {
+    const html = leaf(
+      { type: 'Tag', props: { text: 'Beta' } },
+      { leafClass: 'badge badge-warning badge-soft' }
+    );
+    expect(html).toContain('badge-warning');
+    expect(html).toContain('Beta');
   });
 
   // An unrecognized `node.type` used to render `null` in BOTH modes, silently: no
@@ -155,26 +165,28 @@ describe('overlay / floating atoms (docs/102 Track C follow-up)', () => {
       { type: 'Toast', props: { horizontal: 'end', vertical: 'top' } },
       { children: <span>Heads up</span> }
     );
-    expect(html).toContain('st-toast');
-    expect(html).toContain('st-toast--h-end');
-    expect(html).toContain('st-toast--v-top');
+    expect(html).toContain('fixed');
+    expect(html).toContain('end-4');
+    expect(html).toContain('top-4');
     expect(html).toContain('Heads up');
   });
 
   it('Toast: previews a sample notification in the editor when empty', () => {
     const html = leaf({ type: 'Toast', props: {} }, { mode: 'edit' });
-    expect(html).toContain('st-alert');
+    expect(html).toContain('alert');
     expect(html).toContain('Saved');
   });
 
-  it('FAB: a floating action button wearing the recipe color + an icon', () => {
+  it('FAB: a floating action button wearing the recipe colour + an icon', () => {
     const html = leaf(
       { type: 'FAB', props: { icon: 'plus', label: 'New post', placement: 'bottom-end' } },
-      { leafClass: 'st-c-accent' }
+      { leafClass: 'btn-accent' }
     );
-    expect(html).toContain('st-fab');
-    expect(html).toContain('st-fab--bottom-end');
-    expect(html).toContain('st-c-accent');
+    expect(html).toContain('fixed');
+    expect(html).toContain('bottom-6');
+    expect(html).toContain('end-6');
+    expect(html).toContain('btn-accent');
+    expect(html).toContain('btn-circle');
     expect(html).toContain('aria-label="New post"');
   });
 
@@ -190,28 +202,36 @@ describe('overlay / floating atoms (docs/102 Track C follow-up)', () => {
         type: 'Dialog',
         props: { triggerLabel: 'Open', title: 'Are you sure?', closeLabel: 'Got it' },
       },
-      { mode: 'edit', leafClass: 'st-c-accent st-v-soft', children: <p>Body content</p> }
+      { mode: 'edit', leafClass: 'btn btn-accent btn-soft', children: <p>Body content</p> }
     );
-    // The trigger wears node.class as a real Button.
-    expect(html).toContain('st-btn');
-    expect(html).toContain('st-c-accent');
-    expect(html).toContain('st-v-soft');
+    // The trigger wears node.class as a real silica button.
+    expect(html).toContain('btn-accent');
+    expect(html).toContain('btn-soft');
     expect(html).toContain('>Open<');
-    // The canvas panel is the inline static variant (NOT the fixed live modal).
-    expect(html).toContain('st-dialog--static');
+    // The canvas panel sits in flow (NOT the fixed live modal).
+    expect(html).toContain('dialog-popup static');
     expect(html).toContain('Are you sure?');
     expect(html).toContain('Body content');
     expect(html).toContain('Got it');
   });
 
-  it('Dialog (live): renders the trigger; the closed Radix panel is not inline', () => {
+  it('Dialog (edit): a node with no class still gets a real button trigger', () => {
+    const html = leaf(
+      { type: 'Dialog', props: { triggerLabel: 'Open', title: 'Hi' } },
+      { mode: 'edit' }
+    );
+    expect(html).toContain('btn');
+    expect(html).toContain('btn-primary');
+  });
+
+  it('Dialog (live): renders the trigger; the closed panel is not inline', () => {
     const html = leaf(
       { type: 'Dialog', props: { triggerLabel: 'Open dialog', title: 'Hi' } },
-      { mode: 'live', leafClass: 'st-c-primary st-v-solid' }
+      { mode: 'live', leafClass: 'btn btn-primary' }
     );
-    expect(html).toContain('st-btn');
+    expect(html).toContain('btn-primary');
     expect(html).toContain('Open dialog');
-    expect(html).not.toContain('st-dialog--static');
+    expect(html).not.toContain('dialog-popup static');
   });
 
   it('Dialog (email): falls through to the body content (no JS modal)', () => {
@@ -220,11 +240,11 @@ describe('overlay / floating atoms (docs/102 Track C follow-up)', () => {
       { surface: 'email', children: <p>Just the body</p> }
     );
     expect(html).toContain('Just the body');
-    expect(html).not.toContain('st-dialog');
+    expect(html).not.toContain('dialog-popup');
   });
 });
 
-describe('leafWearsClass — the new atoms style their own element', () => {
+describe('leafWearsClass — the atoms style their own element', () => {
   it('is true across the form / feedback / display / nav / mockup / overlay families', () => {
     for (const t of [
       'Input',

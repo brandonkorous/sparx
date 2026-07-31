@@ -36,7 +36,7 @@ export const toc: Behavior = (root, ctx) => {
     const a = document.createElement('a');
     a.href = `#${h.id}`;
     a.textContent = h.textContent ?? '';
-    a.className = h.tagName === 'H3' ? 'st-toc__link st-toc__link--sub' : 'st-toc__link';
+    a.className = h.tagName === 'H3' ? 'bx-toc__link bx-toc__link--sub' : 'bx-toc__link';
     list.appendChild(a);
     linkById.set(h.id, a);
   });

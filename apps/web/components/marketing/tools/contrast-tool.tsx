@@ -21,7 +21,7 @@ import { contrastRatio, rateContrast } from './lib/color';
 function Verdict({ label, pass }: { label: string; pass: boolean }) {
   return (
     <ListRow>
-      <ListColGrow className="text-body-sm text-base-content">{label}</ListColGrow>
+      <ListColGrow className="text-body-sm">{label}</ListColGrow>
       <Badge color={pass ? 'success' : 'danger'} variant="soft" size="sm">
         {pass ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
         {pass ? 'Pass' : 'Fail'}

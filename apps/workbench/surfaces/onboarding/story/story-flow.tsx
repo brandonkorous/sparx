@@ -37,7 +37,7 @@ export function StoryFlow({
         <Heading level={2} className="text-xl font-semibold">
           We couldn’t load your setup
         </Heading>
-        <Text className="text-base-content max-w-md text-center">
+        <Text className="max-w-md text-center">
           Something went wrong reaching your account. Check your connection and try again — nothing
           you’ve entered is lost.
         </Text>

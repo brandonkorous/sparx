@@ -77,9 +77,7 @@ export function ChartTooltipContent({
   if (!active || !payload || payload.length === 0) return null;
   return (
     <div className="border-base-300 bg-base-100 rounded-lg border px-3 py-2 text-xs shadow-md">
-      {label != null && label !== '' && (
-        <div className="text-base-content mb-1.5 font-medium">{label}</div>
-      )}
+      {label != null && label !== '' && <div className="mb-1.5 font-medium">{label}</div>}
       <div className="flex flex-col gap-1">
         {payload.map((entry, i) => (
           <div key={entry.dataKey ?? i} className="flex items-center gap-2">
@@ -88,8 +86,8 @@ export function ChartTooltipContent({
               className="h-2 w-2 shrink-0 rounded-full"
               style={{ background: entry.color }}
             />
-            <span className="text-base-content">{entry.name}</span>
-            <span className="text-base-content ml-auto font-medium">
+            <span>{entry.name}</span>
+            <span className="ml-auto font-medium">
               {typeof entry.value === 'number' && valueFormatter
                 ? valueFormatter(entry.value)
                 : entry.value}
@@ -118,7 +116,7 @@ export function ChartLegendContent({ payload }: { payload?: LegendEntry[] }) {
             className="h-2 w-2 shrink-0 rounded-full"
             style={{ background: entry.color }}
           />
-          <span className="text-base-content text-xs">{entry.value}</span>
+          <span className="text-xs">{entry.value}</span>
         </div>
       ))}
     </div>

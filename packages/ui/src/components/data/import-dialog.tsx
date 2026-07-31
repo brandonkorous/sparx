@@ -7,9 +7,7 @@ import { Button } from '../primitives/button';
 import { Text } from '../primitives/text';
 import { Badge } from '../primitives/badge';
 import { Stack } from '../layout/stack';
-import { Switch } from '../primitives/switch';
-import { Label } from '../primitives/label';
-import { Progress } from './progress';
+import { Label, Progress, Switch } from '@wizeworks/silicaui-react';
 import { cn } from '../../utils/cn';
 
 // ImportDialog — three-phase modal for bulk CSV import (docs/68 §8).
@@ -337,7 +335,7 @@ export function ImportDialog({
 
             {fileName && (
               <Stack direction="row" align="center" gap={2}>
-                <FileText className="text-base-content h-4 w-4 shrink-0" />
+                <FileText className="h-4 w-4 shrink-0" />
                 <Text size="sm" className="truncate font-medium">
                   {fileName}
                 </Text>
@@ -412,7 +410,12 @@ export function ImportDialog({
                 <Label htmlFor="upsert-toggle" className="text-sm">
                   Update existing records
                 </Label>
-                <Switch id="upsert-toggle" checked={upsert} onCheckedChange={setUpsert} />
+                <Switch
+                  id="upsert-toggle"
+                  color="module"
+                  checked={upsert}
+                  onCheckedChange={setUpsert}
+                />
               </Stack>
             </Stack>
 
@@ -426,14 +429,14 @@ export function ImportDialog({
               <table className="w-full text-xs">
                 <thead className="bg-base-200">
                   <tr>
-                    <th className="text-base-content px-3 py-2 text-left font-medium">#</th>
+                    <th className="px-3 py-2 text-left font-medium">#</th>
                     {previewHeaders.map((h) => (
-                      <th key={h} className="text-base-content px-3 py-2 text-left font-medium">
+                      <th key={h} className="px-3 py-2 text-left font-medium">
                         {h}
                       </th>
                     ))}
                     {headers.length > 8 && (
-                      <th className="text-base-content px-3 py-2 text-left font-medium">
+                      <th className="px-3 py-2 text-left font-medium">
                         +{headers.length - 8} more
                       </th>
                     )}
@@ -442,10 +445,10 @@ export function ImportDialog({
                 <tbody>
                   {previewRows.map((row, i) => (
                     <tr key={i} className="border-base-300 border-t">
-                      <td className="text-base-content px-3 py-1.5">{i + 1}</td>
+                      <td className="px-3 py-1.5">{i + 1}</td>
                       {previewHeaders.map((h) => (
                         <td key={h} className="max-w-[120px] truncate px-3 py-1.5" title={row[h]}>
-                          {row[h] ?? <span className="text-base-content">—</span>}
+                          {row[h] ?? <span>—</span>}
                         </td>
                       ))}
                       {headers.length > 8 && <td />}
@@ -489,7 +492,8 @@ export function ImportDialog({
                 This runs in the background. You can close this dialog.
               </Text>
             </Stack>
-            <Progress value={undefined} className="w-full max-w-xs" />
+            {/* No `value` → silica's indeterminate (unknown-duration) bar. */}
+            <Progress color="primary" className="w-full max-w-xs" />
           </Stack>
         )}
 
@@ -546,9 +550,9 @@ export function ImportDialog({
                   <table className="w-full text-xs">
                     <thead className="bg-base-200">
                       <tr>
-                        <th className="text-base-content px-3 py-2 text-left font-medium">Row</th>
-                        <th className="text-base-content px-3 py-2 text-left font-medium">Key</th>
-                        <th className="text-base-content px-3 py-2 text-left font-medium">Error</th>
+                        <th className="px-3 py-2 text-left font-medium">Row</th>
+                        <th className="px-3 py-2 text-left font-medium">Key</th>
+                        <th className="px-3 py-2 text-left font-medium">Error</th>
                       </tr>
                     </thead>
                     <tbody>

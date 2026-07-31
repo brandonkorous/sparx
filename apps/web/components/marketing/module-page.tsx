@@ -97,9 +97,7 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
               >
                 <Dot color={color.color} size={8} />
               </span>
-              <h3 className="text-base-content text-h4 m-0 pt-2 font-medium tracking-[-0.02em]">
-                {f.title}
-              </h3>
+              <h3 className="text-h4 m-0 pt-2 font-medium tracking-[-0.02em]">{f.title}</h3>
               <p className="text-ink-muted text-small m-0">{f.body}</p>
             </div>
           ))}
@@ -122,7 +120,7 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
                 {meta.pricing.modifier}
               </span>
             ) : null}
-            <span className="text-base-content text-[56px] font-medium tracking-[-0.025em]">
+            <span className="text-[56px] font-medium tracking-[-0.025em]">
               {meta.pricing.price}
             </span>
             <span className="text-ink-subtle text-body">{meta.pricing.period}</span>

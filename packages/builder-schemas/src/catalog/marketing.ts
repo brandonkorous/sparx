@@ -96,10 +96,10 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               }),
               el('div', 'flex flex-col gap-3 @sm:flex-row', {
                 children: [
-                  atom('Button', 'st-btn st-c-neutral st-v-solid st-btn--sz-lg', {
+                  atom('Button', 'btn btn-neutral btn-lg', {
                     label: 'Start free trial',
                   }),
-                  atom('Button', 'st-btn st-c-primary st-v-outline st-btn--sz-lg', {
+                  atom('Button', 'btn btn-primary btn-outline btn-lg', {
                     label: 'Book a demo',
                   }),
                 ],
@@ -167,7 +167,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       featureLine('sparx subdomain'),
                     ],
                   }),
-                  atom('Button', 'st-btn st-c-neutral st-v-outline st-btn--sz-md mt-auto w-full', {
+                  atom('Button', 'btn btn-neutral btn-outline btn-md mt-auto w-full', {
                     label: 'Get started',
                   }),
                 ],
@@ -180,9 +180,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               {
                 children: [
                   el('div', 'absolute -top-3 left-1/2 -translate-x-1/2', {
-                    children: [
-                      atom('Badge', 'st-badge st-c-primary st-v-solid', { label: 'Most popular' }),
-                    ],
+                    children: [atom('Badge', 'badge badge-primary', { label: 'Most popular' })],
                   }),
                   el('div', 'flex flex-col gap-1', {
                     children: [
@@ -209,7 +207,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       featureLine('Advanced analytics'),
                     ],
                   }),
-                  atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md mt-auto w-full', {
+                  atom('Button', 'btn btn-primary btn-md mt-auto w-full', {
                     label: 'Start free trial',
                   }),
                 ],
@@ -245,7 +243,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                       featureLine('99.9% uptime SLA'),
                     ],
                   }),
-                  atom('Button', 'st-btn st-c-neutral st-v-outline st-btn--sz-md mt-auto w-full', {
+                  atom('Button', 'btn btn-neutral btn-outline btn-md mt-auto w-full', {
                     label: 'Contact sales',
                   }),
                 ],
@@ -331,7 +329,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               'flex flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm',
               {
                 children: [
-                  atom('Rating', 'st-c-warning', { value: '5', count: '5' }),
+                  atom('Rating', 'rating-warning', { value: '5', count: '5' }),
                   el('blockquote', 'text-base leading-relaxed text-base-content', {
                     text: '“Setup took an afternoon and the storefront looks like we hired an agency. The brand controls are unreal.”',
                   }),
@@ -361,7 +359,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               'flex flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm',
               {
                 children: [
-                  atom('Rating', 'st-c-warning', { value: '5', count: '5' }),
+                  atom('Rating', 'rating-warning', { value: '5', count: '5' }),
                   el('blockquote', 'text-base leading-relaxed text-base-content', {
                     text: '“We run wholesale and retail from one dashboard now. Net-terms invoicing alone paid for the year.”',
                   }),
@@ -391,7 +389,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               'flex flex-col gap-5 rounded-box border border-base-200 bg-base-100 p-6 shadow-sm',
               {
                 children: [
-                  atom('Rating', 'st-c-warning', { value: '5', count: '5' }),
+                  atom('Rating', 'rating-warning', { value: '5', count: '5' }),
                   el('blockquote', 'text-base leading-relaxed text-base-content', {
                     text: '“Support actually answers, the platform is fast, and our checkout conversion jumped after the move.”',
                   }),
@@ -560,12 +558,12 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               children: [
                 // The real Input atom (st-input) — the field recipe drives its focus
                 // color. (Was a hand-rolled <input> with bespoke border/focus classes.)
-                atom('Input', 'st-c-primary st-fv-outline flex-1', {
+                atom('Input', 'input-primary flex-1', {
                   type: 'email',
                   name: 'email',
                   placeholder: 'you@example.com',
                 }),
-                atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md shrink-0', {
+                atom('Button', 'btn btn-primary btn-md shrink-0', {
                   label: 'Subscribe',
                 }),
               ],
@@ -866,9 +864,9 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                 text: 'Compare every plan',
               }
             ),
-            el('div', 'st-table-wrap rounded-box border border-base-200', {
+            el('div', 'overflow-x-auto rounded-box border border-base-200', {
               children: [
-                el('table', 'st-table st-table--sz-md min-w-lg', {
+                el('table', 'table table-md min-w-lg', {
                   children: [
                     el('thead', '', {
                       children: [
@@ -1005,7 +1003,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
             }),
             el('div', 'flex flex-col items-start gap-5', {
               children: [
-                atom('Badge', 'st-badge st-c-primary st-v-soft', { label: 'Storefront builder' }),
+                atom('Badge', 'badge badge-primary badge-soft', { label: 'Storefront builder' }),
                 atom(
                   'Heading',
                   'text-3xl font-bold tracking-tight text-base-content @3xl:text-4xl',
@@ -1024,7 +1022,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                     featureLine('Reusable sections you build once'),
                   ],
                 }),
-                atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', {
+                atom('Button', 'btn btn-primary btn-md', {
                   label: 'Explore the builder',
                 }),
               ],
@@ -1114,7 +1112,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               variant: 'body',
               text: 'A two-minute look at how it all fits together — from a blank canvas to a published, polished site.',
             }),
-            atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-lg', { label: 'Start free' }),
+            atom('Button', 'btn btn-primary btn-lg', { label: 'Start free' }),
           ],
         }),
         el('div', 'mx-auto mt-10 w-full max-w-4xl overflow-hidden rounded-box shadow-lg', {
@@ -1262,26 +1260,26 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
               name: 'Contact form',
               children: [
                 atom('Field', 'w-full', { label: 'Name' }, [
-                  atom('Input', 'st-c-primary st-fv-outline', {
+                  atom('Input', 'input-primary', {
                     type: 'text',
                     name: 'name',
                     placeholder: 'Jordan Avery',
                   }),
                 ]),
                 atom('Field', 'w-full', { label: 'Email' }, [
-                  atom('Input', 'st-c-primary st-fv-outline', {
+                  atom('Input', 'input-primary', {
                     type: 'email',
                     name: 'email',
                     placeholder: 'you@example.com',
                   }),
                 ]),
                 atom('Field', 'w-full', { label: 'Message' }, [
-                  atom('Textarea', 'st-c-primary st-fv-outline', {
+                  atom('Textarea', 'input-primary', {
                     name: 'message',
                     placeholder: 'How can we help?',
                   }),
                 ]),
-                atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', {
+                atom('Button', 'btn btn-primary btn-md', {
                   label: 'Send message',
                 }),
               ],
@@ -1322,7 +1320,7 @@ export const MARKETING_CATALOG: PlatformCatalogEntry[] = [
                     minutes: 30,
                     seconds: 0,
                   }),
-                  el('a', 'st-btn st-c-neutral st-v-solid st-btn--sz-sm', {
+                  el('a', 'btn btn-neutral btn-sm', {
                     text: 'Shop the sale',
                     attrs: { href: '/products' },
                   }),

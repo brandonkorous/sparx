@@ -188,8 +188,9 @@ checks. Top-level shape (full field reference:
 > helper by **relative path** (`../../packages/builder-schemas/src/index`) and
 > serializes the compiled manifest to `blueprint.ts` as `export default { … }`. The
 > theme + component bundles use exactly this generator mechanism — see
-> [`_gen/gen-theme-bundles.ts`](../../marketplace-catalog/_gen/gen-theme-bundles.ts) and
-> [`_gen/gen-component-bundles.ts`](../../marketplace-catalog/_gen/gen-component-bundles.ts).
+> [`_gen/gen-silica-themes.ts`](../../marketplace-catalog/_gen/gen-silica-themes.ts) and
+> [`_gen/gen-silica-components.ts`](../../marketplace-catalog/_gen/gen-silica-components.ts)
+> (both now emit silica-native payloads rendered as live in-browser previews, docs/118).
 > A **captured** blueprint like [`sparx`](../../marketplace-catalog/blueprints/sparx/) skips
 > this entirely: its `site.json` comes from `blueprint:capture` / the MCP `get_silica_site`
 > read, already serialized, so there is no `node()` authoring to generate.

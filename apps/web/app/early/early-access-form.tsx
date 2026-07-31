@@ -20,7 +20,7 @@ import { joinWaitlist, type WaitlistState } from './actions';
 
 const INITIAL: WaitlistState = { status: 'idle' };
 
-const LABEL_CLASS = 'text-caption text-base-content font-medium';
+const LABEL_CLASS = 'text-caption font-medium';
 const OPTIONAL_CLASS = 'text-ink-subtle font-normal';
 
 export function EarlyAccessForm() {
@@ -120,15 +120,15 @@ function Confirmation({ email }: { email?: string }) {
       >
         ✓
       </span>
-      <span className="text-h2 text-base-content font-medium tracking-[-0.02em]">
+      <span className="text-h2 font-medium tracking-[-0.02em]">
         You&rsquo;re on the list
         <Spark />
       </span>
       <p className="text-body-sm text-ink-muted m-0 max-w-[380px]">
         {email ? (
           <>
-            We&rsquo;ve got <strong className="text-base-content">{email}</strong>. We&rsquo;ll
-            reach out the moment your invite is ready.
+            We&rsquo;ve got <strong>{email}</strong>. We&rsquo;ll reach out the moment your invite
+            is ready.
           </>
         ) : (
           <>We&rsquo;ll reach out the moment your invite is ready.</>

@@ -73,7 +73,7 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
             className="border-base-200 text-caption flex items-center justify-between border-b pb-2.5 font-sans"
           >
             <span className="text-ink-muted">{l}</span>
-            <span className="text-base-content font-medium">{v}</span>
+            <span className="font-medium">{v}</span>
           </div>
         ))}
       </div>
@@ -173,7 +173,7 @@ export function B2bRfq() {
             key={s.title}
             className="mkt-pipe-cell relative flex min-h-[196px] flex-col gap-3 px-6 pt-6 pb-7"
           >
-            <h3 className="text-lede text-base-content m-0 flex items-center gap-2 font-sans font-medium tracking-[-0.01em]">
+            <h3 className="text-lede m-0 flex items-center gap-2 font-sans font-medium tracking-[-0.01em]">
               <Dot color={M.color} size={8} />
               {s.title}
             </h3>

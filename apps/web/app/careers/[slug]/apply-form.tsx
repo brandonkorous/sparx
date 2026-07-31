@@ -22,7 +22,7 @@ import { submitApplication, type ApplicationState } from '../actions';
 
 const INITIAL: ApplicationState = { status: 'idle' };
 
-const LABEL_CLASS = 'text-caption text-base-content font-medium';
+const LABEL_CLASS = 'text-caption font-medium';
 const OPTIONAL_CLASS = 'text-ink-subtle font-normal';
 
 export interface ApplyFormRole {
@@ -243,7 +243,7 @@ function Confirmation() {
       >
         ✓
       </span>
-      <span className="text-h2 text-base-content font-medium tracking-[-0.02em]">
+      <span className="text-h2 font-medium tracking-[-0.02em]">
         Application received
         <Spark />
       </span>

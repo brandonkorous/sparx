@@ -38,9 +38,7 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
         )}
       </div>
 
-      <h3 className="text-base-content text-lede-lg m-0 font-medium tracking-[-0.015em]">
-        {bootcamp.title}
-      </h3>
+      <h3 className="text-lede-lg m-0 font-medium tracking-[-0.015em]">{bootcamp.title}</h3>
 
       <div className="text-caption text-ink-muted flex flex-col gap-[5px]">
         <span>{bootcampDates(bootcamp)}</span>

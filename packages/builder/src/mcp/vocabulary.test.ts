@@ -47,12 +47,12 @@ describe('BUILDER_STYLE_GUIDE', () => {
   it('teaches motion classes that all pass the safety allowlist (docs/61 §9)', () => {
     const m = BUILDER_STYLE_GUIDE.classVocabulary.motion;
     const classes = [
-      'st-reveal',
-      'st-reveal-stagger',
-      'st-reveal-stagger--bold',
+      'bx-reveal',
+      'bx-reveal-stagger',
+      'bx-reveal-stagger--bold',
       ...m.tokens.map((t) => `animate-${t}`),
       ...m.tokens.map((t) => `hover:animate-${t}`),
-      ...m.tokens.map((t) => `st-reveal--${t}`),
+      ...m.tokens.map((t) => `bx-reveal--${t}`),
       ...m.transitions,
     ];
     expect(validateClasses(classes).blocked).toEqual([]);

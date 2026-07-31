@@ -33,11 +33,9 @@ function ReviewCard({ review }: { review: ProductReview }) {
     <article className="border-base-300 border-t py-5 first:border-t-0 first:pt-0">
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
         <Stars rating={review.rating} reviewCount={1} size={15} />
-        {review.title ? (
-          <span className="text-base-content font-semibold">{review.title}</span>
-        ) : null}
+        {review.title ? <span className="font-semibold">{review.title}</span> : null}
       </div>
-      <div className="text-base-content mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem]">
+      <div className="mt-1 flex flex-wrap items-center gap-x-2 gap-y-1 text-[0.8125rem]">
         <span>{review.author ?? 'Verified buyer'}</span>
         {review.verifiedPurchase ? (
           <span className="text-success inline-flex items-center gap-1">
@@ -48,17 +46,15 @@ function ReviewCard({ review }: { review: ProductReview }) {
         <span aria-hidden>·</span>
         <span>{formatDate(review.createdAt)}</span>
       </div>
-      <p className="text-base-content mt-2 text-sm leading-relaxed whitespace-pre-line">
-        {review.body}
-      </p>
+      <p className="mt-2 text-sm leading-relaxed whitespace-pre-line">{review.body}</p>
       {review.response ? (
         <div className="bg-base-200 mt-3 rounded-lg p-3 text-sm">
-          <p className="text-base-content font-semibold">Seller response</p>
-          <p className="text-base-content mt-1 whitespace-pre-line">{review.response}</p>
+          <p className="font-semibold">Seller response</p>
+          <p className="mt-1 whitespace-pre-line">{review.response}</p>
         </div>
       ) : null}
       {review.helpfulCount > 0 ? (
-        <p className="text-base-content mt-2 inline-flex items-center gap-1.5 text-[0.8125rem]">
+        <p className="mt-2 inline-flex items-center gap-1.5 text-[0.8125rem]">
           <ThumbsUp size={13} aria-hidden />
           {review.helpfulCount.toLocaleString()} found this helpful
         </p>
@@ -188,20 +184,16 @@ export function ProductReviews({
     <section aria-labelledby="reviews-heading" className="flex flex-col gap-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 id="reviews-heading" className="text-base-content text-xl font-semibold">
+          <h2 id="reviews-heading" className="text-xl font-semibold">
             Customer reviews
           </h2>
           {hasReviews ? (
             <div className="mt-1 flex items-center gap-2">
-              <span className="text-base-content text-2xl font-semibold">
-                {summary.averageRating.toFixed(1)}
-              </span>
+              <span className="text-2xl font-semibold">{summary.averageRating.toFixed(1)}</span>
               <Stars rating={summary.averageRating} reviewCount={summary.total} />
             </div>
           ) : (
-            <p className="text-base-content mt-1 text-sm">
-              No reviews yet — be the first to share your experience.
-            </p>
+            <p className="mt-1 text-sm">No reviews yet — be the first to share your experience.</p>
           )}
         </div>
         {!writing && !submitted ? (
@@ -240,7 +232,7 @@ export function ProductReviews({
             <ReviewCard key={review.id} review={review} />
           ))}
           {summary.total > reviews.length ? (
-            <p className="text-base-content mt-4 text-sm">
+            <p className="mt-4 text-sm">
               Showing {reviews.length} of {summary.total.toLocaleString()} reviews.
             </p>
           ) : null}

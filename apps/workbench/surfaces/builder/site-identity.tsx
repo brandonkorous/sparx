@@ -147,12 +147,16 @@ function IdentityEditor({
   const save = useSaveIdentity();
   const { data: domains } = useDomains();
 
+  // Still meaningful for ROUTING (the site a bare tenant host lands on) — it just
+  // no longer decides where this surface reads or writes the brand.
   const isPrimary = property.isPrimary;
-  // The identity the site actually renders: the base for a primary site, else the
-  // base with this site's override applied.
+  // The identity the site actually renders: the tenant base with THIS site's own
+  // override applied. Every site is treated the same — the primary used to be read
+  // (and written) as the bare base, which is what let its logo and colours leak onto
+  // every sibling site that had no override of its own.
   const effective = useMemo(
-    () => (isPrimary ? base : effectiveBrand(base, property.brandOverride)),
-    [isPrimary, base, property.brandOverride]
+    () => effectiveBrand(base, property.brandOverride),
+    [base, property.brandOverride]
   );
 
   const [name, setName] = useState(property.name);
@@ -193,7 +197,6 @@ function IdentityEditor({
     save.mutate(
       {
         propertyId: property.id,
-        isPrimary,
         name,
         socials,
         identity: {
@@ -264,26 +267,13 @@ function IdentityEditor({
             </Text>
           </div>
 
-          {/* Which brand these edits touch. A secondary site earns a full note
-              because "blank inherits" is a real, non-obvious behaviour; the main
-              site gets one quiet line. Neither is an eyebrow — both sit BELOW the
-              heading and explain, they don't introduce. */}
-          {isPrimary ? (
-            <Text className="text-sm">
-              This is your main site, so its name and logo are the identity every other site starts
-              from.
-            </Text>
-          ) : (
-            <Alert color="info" variant="soft">
-              <AlertContent>
-                <AlertTitle>You&apos;re editing a secondary site</AlertTitle>
-                <AlertDescription>
-                  The identity below belongs to this site alone. Anything you leave blank keeps
-                  inheriting from your main site.
-                </AlertDescription>
-              </AlertContent>
-            </Alert>
-          )}
+          {/* Which sites these edits touch — the same answer for every site now,
+              so there is no longer a main/secondary split to explain. Sits BELOW
+              the heading and explains; it does not introduce it (not an eyebrow). */}
+          <Text className="text-sm">
+            Everything here belongs to this site on its own. Changing it won&apos;t touch the name,
+            logo, or links on any of your other sites.
+          </Text>
 
           {failure ? (
             <Alert color="error" variant="soft">

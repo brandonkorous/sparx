@@ -44,7 +44,7 @@ export const PageHeader = React.forwardRef<HTMLElement, PageHeaderProps>(
             </Heading>
             {badge}
           </div>
-          {description && <p className="text-base-content mt-1 max-w-2xl text-sm">{description}</p>}
+          {description && <p className="mt-1 max-w-2xl text-sm">{description}</p>}
         </div>
       </div>
       {actions && <div className="flex shrink-0 items-center gap-2">{actions}</div>}

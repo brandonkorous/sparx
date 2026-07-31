@@ -43,7 +43,7 @@ const heroSlide = (
               text: heading,
             }),
             el('p', 'text-lg opacity-90', { text: body }),
-            atom('Button', 'st-btn st-c-neutral st-v-solid st-btn--sz-lg', { label: cta }),
+            atom('Button', 'btn btn-neutral btn-lg', { label: cta }),
           ],
         }),
       ],
@@ -83,7 +83,7 @@ const marqueeLogo = (label: string) =>
   );
 
 // A five-star rating row — the real Rating atom (st-rating), read-only display.
-const starRow = () => atom('Rating', 'st-c-warning', { value: '5', count: '5' });
+const starRow = () => atom('Rating', 'rating-warning', { value: '5', count: '5' });
 
 // One testimonial slide — quote + attribution. `part(_, 'slide')`.
 const testimonialSlide = (quote: string, name: string, role: string) =>
@@ -228,7 +228,7 @@ const priceTier = (name: string, price: string, cadence: string) =>
           el('span', 'text-sm text-base-content', { text: cadence }),
         ],
       }),
-      atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', { label: 'Choose plan' }),
+      atom('Button', 'btn btn-primary btn-md', { label: 'Choose plan' }),
     ],
   });
 
@@ -444,7 +444,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
             el('div', 'navbar-end gap-3', {
               name: 'navbar-end',
               children: [
-                atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
+                atom('Button', 'btn btn-primary btn-sm', {
                   label: 'Get started',
                 }),
               ],
@@ -612,7 +612,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
   }),
 
   // ── Drawer — a button slides in a side panel (menu behavior) ──────────────────
-  // The panel pins with the SANCTIONED `st-fixed-right` (a full-height right rail
+  // The panel pins with the SANCTIONED `bx-fixed-right` (a full-height right rail
   // capped at 33vw — never a full-viewport overlay, so it can't be a clickjacking
   // surface; raw `fixed inset-0` is denied by the compile allowlist). A modal/dialog
   // needs a dimmed full-viewport backdrop, which the position model intentionally
@@ -635,7 +635,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
           // which only the raw-element render path does. It wears the st-btn recipe so
           // it still looks like a Button.
           part(
-            el('button', 'st-btn st-c-neutral st-v-outline st-btn--sz-md', {
+            el('button', 'btn btn-neutral btn-outline btn-md', {
               text: 'Open menu',
               attrs: { type: 'button' },
             }),
@@ -644,7 +644,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
           part(
             el(
               'div',
-              'st-fixed-right z-50 flex w-72 flex-col gap-1 border-l border-base-200 bg-base-100 p-5 shadow-2xl',
+              'bx-fixed-right z-50 flex w-72 flex-col gap-1 border-l border-base-200 bg-base-100 p-5 shadow-2xl',
               {
                 name: 'Panel',
                 attrs: { hidden: true, role: 'dialog', ariaLabel: 'Menu' },
@@ -707,7 +707,7 @@ export const INTERACTIVE_CATALOG: PlatformCatalogEntry[] = [
           // A RAW button (a behavior part must emit data-sx-*; the Button atom does
           // not). It wears the st-btn recipe so it still looks like a Button.
           part(
-            el('button', 'st-btn st-c-neutral st-v-outline st-btn--sz-sm', {
+            el('button', 'btn btn-neutral btn-outline btn-sm', {
               text: 'Details',
               attrs: { type: 'button' },
             }),

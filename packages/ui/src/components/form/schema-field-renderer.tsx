@@ -9,15 +9,28 @@
 // Used by: CMS content wizard (Publish Settings step), B2B Account wizard,
 // Customer wizard. Complex CMS fields (rich_text, asset, reference) are
 // rendered by the app-level FieldRenderer which can import @sparx/cms-editor.
+//
+// Every row is silica's `<Field>`: it wires label ↔ control ↔ description ↔
+// error together (ids, aria-describedby, validity), and `status` +
+// `statusMessage` drive the control's accent, its trailing icon, and the
+// message panel from ONE place. That replaces what this file used to do by
+// hand — a `<Label>`, a muted help `<Text>`, a danger `<Text role="alert">`,
+// and an `error` variant threaded onto the control — four call-site decisions
+// that had to agree with each other on every field.
 
 import * as React from 'react';
-import { Checkbox } from '../primitives/checkbox';
-import { Input } from './input';
-import { Label } from '../primitives/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './select';
+import {
+  Checkbox,
+  Field,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
+  FieldStatus,
+  Input,
+  Select,
+  Textarea,
+} from '@wizeworks/silicaui-react';
 import { Stack } from '../layout/stack';
-import { Text } from '../primitives/text';
-import { Textarea } from './textarea';
 
 // ─── Field shape ────────────────────────────────────────────────────────────
 
@@ -68,7 +81,7 @@ export function SchemaFieldRenderer({
   return (
     <Stack gap={4} className={className}>
       {fields.map((field) => (
-        <FieldControl
+        <SimpleFieldControl
           key={field.key}
           field={field}
           value={values[field.key]}
@@ -83,7 +96,7 @@ export function SchemaFieldRenderer({
 
 // ─── Single field control ────────────────────────────────────────────────────
 
-interface FieldControlProps {
+interface SimpleFieldControlProps {
   field: SimpleField;
   value: unknown;
   error?: string;
@@ -91,129 +104,98 @@ interface FieldControlProps {
   disabled?: boolean;
 }
 
-function FieldControl({ field, value, error, onChange, disabled }: FieldControlProps) {
+const INPUT_TYPE: Partial<Record<SimpleFieldType, React.HTMLInputTypeAttribute>> = {
+  number: 'number',
+  date: 'date',
+  'datetime-local': 'datetime-local',
+  email: 'email',
+  url: 'url',
+  tel: 'tel',
+};
+
+function SimpleFieldControl({ field, value, error, onChange, disabled }: SimpleFieldControlProps) {
   const id = `sfr-${field.key}`;
+  // One shape for every row: status + message on the Field, everything under it
+  // inherits. `undefined` status leaves the control at its resting accent.
+  const status = error ? ('error' as const) : undefined;
 
   if (field.type === 'boolean') {
     return (
-      <Stack gap={1}>
+      // A checkbox has no bordered control for the status panel to attach to,
+      // so the message renders as a plain colored row (silica's own guidance
+      // for checkbox/switch/radio).
+      <Field status={status} disabled={disabled}>
         <Stack direction="row" align="center" gap={2}>
           <Checkbox
             id={id}
+            color="module"
             checked={value === true}
-            onCheckedChange={(next) => onChange(next === true)}
+            onChange={(e) => onChange(e.target.checked)}
             disabled={disabled}
           />
-          <Label htmlFor={id} required={field.required}>
+          <FieldLabel htmlFor={id} required={field.required}>
             {field.label}
-          </Label>
+          </FieldLabel>
         </Stack>
-        {field.helpText && (
-          <Text size="xs" variant="muted">
-            {field.helpText}
-          </Text>
-        )}
+        {field.helpText && <FieldDescription>{field.helpText}</FieldDescription>}
         {error && (
-          <Text size="xs" variant="danger" role="alert">
+          <FieldStatus attached={false} role="alert">
             {error}
-          </Text>
+          </FieldStatus>
         )}
-      </Stack>
+      </Field>
     );
   }
 
   if (field.type === 'select') {
     const strVal = typeof value === 'string' ? value : '';
-    // Radix's SelectItem forbids an empty-string value (it's reserved to mean
-    // "cleared, show the placeholder"), but an "(unspecified)" option with
-    // value: '' is a normal thing for a caller's schema to want. Map it to an
-    // internal sentinel so the external contract (option value '' = unset)
-    // still works without crashing the whole form on mount.
-    const UNSET = '__sfr_unset__';
-    const toRadix = (v: string) => (v === '' ? UNSET : v);
-    const fromRadix = (v: string) => (v === UNSET ? '' : v);
+    // Base UI reserves `null` for "nothing selected", so an option whose value
+    // is the empty string is a legal item and needs no sentinel — the mapping
+    // is only between '' (the caller's "unset") and null (silica's).
+    const items = Object.fromEntries((field.options ?? []).map((o) => [o.value, o.label]));
     return (
-      <Stack gap={1}>
-        <Label htmlFor={id} required={field.required}>
+      <Field status={status} statusMessage={error} disabled={disabled}>
+        <FieldLabel htmlFor={id} required={field.required}>
           {field.label}
-        </Label>
+        </FieldLabel>
         <Select
-          value={toRadix(strVal)}
-          onValueChange={(v) => onChange(fromRadix(v))}
+          id={id}
+          items={items}
+          value={strVal === '' ? null : strVal}
+          // Every key in `items` is a string, so anything else (including the
+          // `null` silica sends on clear) means "unset".
+          onValueChange={(v) => onChange(typeof v === 'string' ? v : '')}
+          placeholder={field.placeholder ?? `Select ${field.label.toLowerCase()}…`}
           disabled={disabled}
-        >
-          <SelectTrigger id={id}>
-            <SelectValue
-              placeholder={field.placeholder ?? `Select ${field.label.toLowerCase()}…`}
-            />
-          </SelectTrigger>
-          <SelectContent>
-            {field.options?.map((opt) => (
-              <SelectItem key={opt.value} value={toRadix(opt.value)}>
-                {opt.label}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-        {field.helpText && (
-          <Text size="xs" variant="muted">
-            {field.helpText}
-          </Text>
-        )}
-        {error && (
-          <Text size="xs" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </Stack>
+        />
+        {field.helpText && <FieldDescription>{field.helpText}</FieldDescription>}
+      </Field>
     );
   }
 
   if (field.type === 'textarea') {
-    const strVal = typeof value === 'string' ? value : '';
     return (
-      <Stack gap={1}>
-        <Label htmlFor={id} required={field.required}>
+      <Field status={status} statusMessage={error} disabled={disabled}>
+        <FieldLabel htmlFor={id} required={field.required}>
           {field.label}
-        </Label>
-        <Textarea
+        </FieldLabel>
+        <FieldControl
           id={id}
-          value={strVal}
+          render={<Textarea rows={4} />}
+          value={typeof value === 'string' ? value : ''}
+          // `FieldControl` types its event against HTMLInputElement whatever it
+          // renders, so let inference stand rather than annotate a textarea
+          // event it would reject — `.value` is on both element types.
           onChange={(e) => onChange(e.target.value)}
           placeholder={field.placeholder}
           disabled={disabled}
-          rows={4}
         />
-        {field.helpText && (
-          <Text size="xs" variant="muted">
-            {field.helpText}
-          </Text>
-        )}
-        {error && (
-          <Text size="xs" variant="danger" role="alert">
-            {error}
-          </Text>
-        )}
-      </Stack>
+        {field.helpText && <FieldDescription>{field.helpText}</FieldDescription>}
+      </Field>
     );
   }
 
   // text / number / date / datetime-local / email / url / tel
-  const inputType =
-    field.type === 'number'
-      ? 'number'
-      : field.type === 'date'
-        ? 'date'
-        : field.type === 'datetime-local'
-          ? 'datetime-local'
-          : field.type === 'email'
-            ? 'email'
-            : field.type === 'url'
-              ? 'url'
-              : field.type === 'tel'
-                ? 'tel'
-                : 'text';
-
   const strVal =
     field.type === 'number'
       ? typeof value === 'number'
@@ -226,13 +208,14 @@ function FieldControl({ field, value, error, onChange, disabled }: FieldControlP
         : '';
 
   return (
-    <Stack gap={1}>
-      <Label htmlFor={id} required={field.required}>
+    <Field status={status} statusMessage={error} disabled={disabled}>
+      <FieldLabel htmlFor={id} required={field.required}>
         {field.label}
-      </Label>
-      <Input
+      </FieldLabel>
+      <FieldControl
         id={id}
-        type={inputType}
+        render={<Input />}
+        type={INPUT_TYPE[field.type] ?? 'text'}
         value={strVal}
         onChange={(e) =>
           onChange(
@@ -248,16 +231,7 @@ function FieldControl({ field, value, error, onChange, disabled }: FieldControlP
         min={field.min}
         max={field.max}
       />
-      {field.helpText && (
-        <Text size="xs" variant="muted">
-          {field.helpText}
-        </Text>
-      )}
-      {error && (
-        <Text size="xs" variant="danger" role="alert">
-          {error}
-        </Text>
-      )}
-    </Stack>
+      {field.helpText && <FieldDescription>{field.helpText}</FieldDescription>}
+    </Field>
   );
 }

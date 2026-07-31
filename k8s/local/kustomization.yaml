@@ -1,0 +1,387 @@
+# Local self-hosted overlay — Docker Desktop Kubernetes on a workstation,
+# fronted by Cloudflare Tunnel. Replaces the GKE Autopilot deployment.
+#
+# DELIBERATE: the namespace stays `sparx-prod`, exactly as in the base
+# manifests. Every in-cluster address in k8s/apps/*.yaml, k8s/cronjobs/*.yaml
+# and the app ConfigMap is a literal
+# `<svc>.sparx-prod.svc.cluster.local` string — kustomize rewrites resource
+# metadata, NOT arbitrary strings inside env values or CronJob args. Renaming
+# the namespace would silently break all 15 CronJobs and the internal
+# service-to-service hops while every manifest still looked correct. A
+# different cluster is already the isolation boundary, so there is nothing to
+# gain by renaming and a whole class of bug to lose.
+#
+# What this overlay changes, and nothing else:
+#   1. images      → locally built `sparx/*:local` (no Artifact Registry)
+#   2. HPA + PDB   → deleted (meaningless on a single node)
+#   3. replicas    → 1 (the base pins api-rest at 2 for rolling-update HA)
+#   4. ConfigMap   → app-env-configmap.yaml (local origins, no GCP)
+#   5. adds        → Postgres/Redis/Typesense, the 11 ex-Cloud Run workers,
+#                    an HTTP-only Caddy, and cloudflared
+#
+# Apply: kubectl apply -k k8s/local
+# Full runbook: k8s/local/README.md
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sparx-prod
+
+resources:
+  - namespace.yaml
+  # Apps + APIs, verbatim from the production manifests. Their probes, security
+  # contexts, graceful-shutdown hooks and `enableServiceLinks: false` are all
+  # still correct on a laptop — only the five things listed above differ.
+  - ../apps
+  # All 15 CronJobs, verbatim. They are `curlimages/curl` containers POSTing to
+  # http://api-rest.sparx-prod.svc.cluster.local:3000/internal/* — no per-service
+  # image to build, and nothing GKE-specific in them.
+  - ../cronjobs
+  # Workers, Caddy, cloudflared and the ingress routing table — shared with
+  # k8s/azure so there is exactly ONE copy of each. See that directory's
+  # kustomization for why it is a base rather than duplicated files.
+  - ../self-hosted
+  # Local stand-ins for the managed dependencies: Postgres, Redis, Typesense and
+  # the media volume. This is the main thing that differs from the Azure overlay,
+  # which uses a managed Postgres and drops Redis.
+  - infra.yaml
+
+# The base manifests reference Artifact Registry, which is gone with the GCP
+# project. `newTag: local` pairs with the imagePullPolicy patch below — both
+# are required, since a tag alone would still be pulled.
+images:
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-rest
+    newName: sparx/api-rest
+    newTag: local
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-graphql
+    newName: sparx/api-graphql
+    newTag: local
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-mcp
+    newName: sparx/api-mcp
+    newTag: local
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/mcp-site
+    newName: sparx/mcp-site
+    newTag: local
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/workbench
+    newName: sparx/workbench
+    newTag: local
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/web
+    newName: sparx/web
+    newTag: local
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/site
+    newName: sparx/site
+    newTag: local
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/market
+    newName: sparx/market
+    newTag: local
+
+# The non-secret runtime env. Replaces k8s/sparx-prod/app-env-configmap.yaml
+# wholesale rather than patching it — nearly every value differs, and a partial
+# patch would leave a stale GCP_PROJECT_ID behind, which is the single switch
+# that decides whether the publisher talks to a Pub/Sub project that no longer
+# exists (packages/events/src/publisher.ts `createPublisher`).
+configMapGenerator:
+  - name: sparx-app-env
+    behavior: create
+    envs:
+      - app-env-configmap.env
+  # NOTE: the `postgres-init` ConfigMap is deliberately NOT generated here.
+  # It has to carry packages/db/docker/init/01-roles.sql — the same file the dev
+  # compose stack mounts, so local k8s and `pnpm db:up` provision `sparx_app`
+  # and `wize_operator` identically and cannot drift. kustomize refuses to read
+  # a file outside its own directory (a load restriction that `kubectl apply -k`
+  # gives no way to relax), and copying the SQL in here would create exactly the
+  # duplicate that sharing it was meant to avoid. So scripts/local-up.ps1 builds
+  # that ConfigMap from the real path instead.
+  #
+
+# generatorOptions.disableNameSuffixHash: the base Deployments reference
+# `sparx-app-env` by fixed name in `envFrom`, so a content hash suffix would
+# leave them pointing at a ConfigMap that does not exist.
+generatorOptions:
+  disableNameSuffixHash: true
+
+replicas:
+  - name: api-rest
+    count: 1
+  - name: api-graphql
+    count: 1
+  - name: api-mcp
+    count: 1
+  - name: mcp-site
+    count: 1
+  - name: workbench
+    count: 1
+  - name: web
+    count: 1
+  - name: site
+    count: 1
+  - name: market
+    count: 1
+
+patches:
+  # --- Delete the scaling/availability objects -------------------------------
+  # Both are no-ops on a single node with replicas pinned to 1, and the HPA
+  # actively fights the `replicas` transformer above (it would scale api-rest
+  # back to its minReplicas of 2). Targeting by kind deletes all 8 of each
+  # without naming them, so a new app added to k8s/apps needs no edit here.
+  - target:
+      kind: HorizontalPodAutoscaler
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: placeholder
+      $patch: delete
+  - target:
+      kind: PodDisruptionBudget
+    patch: |-
+      apiVersion: policy/v1
+      kind: PodDisruptionBudget
+      metadata:
+        name: placeholder
+      $patch: delete
+
+  # --- Drop the Workload Identity ServiceAccount -----------------------------
+  # `sparx-app` is annotated with a GCP service account to mint tokens for
+  # Pub/Sub, GCS and Secret Manager. None of those exist here, and the KSA
+  # itself is never created by this overlay — a pod referencing a missing
+  # ServiceAccount stays Pending forever. Applies to Deployments and to the
+  # CronJobs' pod templates, which set the same KSA.
+  - target:
+      kind: Deployment
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: placeholder
+      spec:
+        template:
+          spec:
+            serviceAccountName: default
+  - target:
+      kind: CronJob
+    patch: |-
+      apiVersion: batch/v1
+      kind: CronJob
+      metadata:
+        name: placeholder
+      spec:
+        jobTemplate:
+          spec:
+            template:
+              spec:
+                serviceAccountName: default
+
+  # --- Per-app container patches ---------------------------------------------
+  # Two things, and they must be per-app because a strategic-merge patch on
+  # `containers` merges by container name:
+  #
+  #   imagePullPolicy: Never — the images are built straight into Docker
+  #     Desktop's image store, which its Kubernetes shares. `Always` (what the
+  #     base sets, correctly, for a mutable `:latest` in a registry) would try
+  #     to reach Artifact Registry and ImagePullBackOff. `Never` rather than
+  #     `IfNotPresent` so a missing local build fails loudly and immediately
+  #     instead of silently attempting a pull.
+  #
+  #   resources — tiny requests, generous limits. The base numbers are tuned for
+  #     Autopilot bin-packing, where every request is billed; on a 16GB host the
+  #     binding constraint is different. `requests` is what the SCHEDULER
+  #     reserves, so eight apps asking 1Gi each reserve 8GB before a single one
+  #     does any work. Dropping requests to 64-128Mi lets them schedule and then
+  #     grow into whatever they actually use.
+  #
+  #     Unlike the workers (which have no resources block at all — see
+  #     workers.yaml), the apps KEEP a memory limit and an explicit request.
+  #     Two reasons: an explicit request makes them Burstable rather than
+  #     BestEffort, so the kubelet evicts a worker before it evicts the app
+  #     serving traffic; and a limit means one leaking Next process gets
+  #     OOMKilled on its own instead of taking the node down with it. CPU limits
+  #     are dropped entirely — CPU is compressible, so a cap only throttles
+  #     cold starts on a box that has
+  #     cores to spare.
+  #
+  #     api-rest gets the larger ceiling because it loads its ~50-package
+  #     workspace through runtime tsx at boot. That is what made 512Mi crashloop
+  #     on Autopilot and forced `--max-old-space-size=384`; 1536Mi with a
+  #     1024MB old-space cap gives it room without letting it run away.
+  #     NODE_OPTIONS must move with the limit — left at 384 it would cap the
+  #     heap regardless of how much memory the container is allowed.
+  - target:
+      kind: Deployment
+      name: api-rest
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-rest
+      spec:
+        # RWO media volume — the replacement pod cannot attach it while the
+        # outgoing pod holds it, so the base RollingUpdate strategy deadlocks.
+        strategy:
+          type: Recreate
+          rollingUpdate: null
+        template:
+          spec:
+            containers:
+              - name: api-rest
+                imagePullPolicy: Never
+                env:
+                  - name: NODE_OPTIONS
+                    value: '--max-old-space-size=1024'
+                # Same claim media-worker mounts. api-rest STREAMS variants from
+                # here (GET /v1/public/media/variants/...) now that
+                # GCS_MEDIA_PUBLIC_BUCKET is unset and packages/media resolves to
+                # LocalStorage; media-worker writes them. Two different volumes
+                # would transcode successfully and then 404 forever.
+                volumeMounts:
+                  - name: media
+                    mountPath: /media
+                resources:
+                  requests:
+                    cpu: '50m'
+                    memory: '128Mi'
+                  limits:
+                    memory: '1536Mi'
+            volumes:
+              - name: media
+                persistentVolumeClaim:
+                  claimName: sparx-media
+  - target:
+      kind: Deployment
+      name: api-graphql
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-graphql
+      spec:
+        template:
+          spec:
+            containers:
+              - name: api-graphql
+                imagePullPolicy: Never
+                resources:
+                  requests:
+                    cpu: '25m'
+                    memory: '64Mi'
+                  limits:
+                    memory: '768Mi'
+  - target:
+      kind: Deployment
+      name: api-mcp
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-mcp
+      spec:
+        template:
+          spec:
+            containers:
+              - name: api-mcp
+                imagePullPolicy: Never
+                resources:
+                  requests:
+                    cpu: '25m'
+                    memory: '64Mi'
+                  limits:
+                    memory: '768Mi'
+  - target:
+      kind: Deployment
+      name: mcp-site
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: mcp-site
+      spec:
+        template:
+          spec:
+            containers:
+              - name: mcp-site
+                imagePullPolicy: Never
+                resources:
+                  requests:
+                    cpu: '25m'
+                    memory: '64Mi'
+                  limits:
+                    memory: '768Mi'
+  - target:
+      kind: Deployment
+      name: workbench
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: workbench
+      spec:
+        template:
+          spec:
+            containers:
+              - name: workbench
+                imagePullPolicy: Never
+                resources:
+                  requests:
+                    cpu: '25m'
+                    memory: '64Mi'
+                  limits:
+                    memory: '768Mi'
+  - target:
+      kind: Deployment
+      name: web
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web
+      spec:
+        template:
+          spec:
+            containers:
+              - name: web
+                imagePullPolicy: Never
+                resources:
+                  requests:
+                    cpu: '25m'
+                    memory: '64Mi'
+                  limits:
+                    memory: '768Mi'
+  - target:
+      kind: Deployment
+      name: site
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: site
+      spec:
+        template:
+          spec:
+            containers:
+              - name: site
+                imagePullPolicy: Never
+                resources:
+                  requests:
+                    cpu: '25m'
+                    memory: '64Mi'
+                  limits:
+                    memory: '768Mi'
+  - target:
+      kind: Deployment
+      name: market
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: market
+      spec:
+        template:
+          spec:
+            containers:
+              - name: market
+                imagePullPolicy: Never
+                resources:
+                  requests:
+                    cpu: '25m'
+                    memory: '64Mi'
+                  limits:
+                    memory: '768Mi'

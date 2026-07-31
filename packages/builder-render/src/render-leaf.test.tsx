@@ -44,12 +44,12 @@ describe('renderLeaf — Button is a real, correct element (not an inert span)',
   it('renders a linked button as an <a> carrying the recipe class + label', () => {
     const html = leaf(
       { type: 'Button', props: { label: 'Shop now', href: '/shop' } },
-      { leafClass: 'st-btn st-c-primary st-v-solid st-btn--sz-md' }
+      { leafClass: 'btn btn-primary btn-md' }
     );
     expect(html).toContain('<a');
     expect(html).toContain('href="/shop"');
     expect(html).toContain('Shop now');
-    expect(html).toContain('st-c-primary');
+    expect(html).toContain('btn-primary');
     expect(html).not.toContain('<span'); // the old canvas mock was an inert <span>
   });
 
@@ -80,7 +80,8 @@ describe('renderLeaf — commerce atoms render the REAL component with sample da
     // confirm the picker markup shape exists in that output.
     const html = leaf({ type: 'BuyBox', props: {} }, { mode: 'edit' });
     expect(html).toContain('bx-variant-picker');
-    expect(html).toContain('st-option__values');
+    // The option's values are real silica buttons, one per swatch/chip.
+    expect(html).toContain('btn-outline');
   });
 });
 
@@ -94,10 +95,10 @@ describe('renderLeaf — email surface paints the email scale', () => {
     expect(html).toContain('Order confirmed');
   });
 
-  it('a Button on email renders the accent CTA span (no st-btn recipe)', () => {
+  it('a Button on email renders the accent CTA span (no silica button class)', () => {
     const html = leaf({ type: 'Button', props: { label: 'View order' } }, { surface: 'email' });
     expect(html).toContain('View order');
-    expect(html).not.toContain('st-btn');
+    expect(html).not.toContain('btn-primary');
   });
 
   // Email v2 §3.6c — the canvas leaf compiles the email-safe subset of node.class to
@@ -122,9 +123,11 @@ describe('renderLeaf — email surface paints the email scale', () => {
       { type: 'Button', props: { label: 'View order' }, class: 'bg-base-200' },
       { surface: 'email' }
     );
-    // bg-base-200 → the canvas palette's `--st-*` var, so the preview tracks the theme
-    // exactly like the leaf's built-in colors (the documented brand-source behavior).
-    expect(html).toContain('var(--st-base-200');
+    // bg-base-200 → the canvas palette's silica theme var, so the preview tracks the
+    // theme exactly like the leaf's built-in colors (the documented brand-source
+    // behavior). Was `--st-base-200` until that parallel vocabulary was retired
+    // (docs/implementation/st-token-retirement.md).
+    expect(html).toContain('var(--color-base-200');
   });
 
   it('drops web-only class tokens without corrupting the email leaf', () => {
@@ -153,11 +156,11 @@ describe('renderLeaf — edit placeholders keep empty nodes selectable; live ren
   // (docs/57 rebuild). Its only render concern still in this module is the
   // back-compat helper that renders a not-yet-migrated NavMenu's legacy
   // `props.links[]` as NavItem-equivalent anchors.
-  it('renderLegacyNavLinks maps legacy props.links to st-nav__item anchors', () => {
+  it('renderLegacyNavLinks maps legacy props.links to nav-item anchors', () => {
     const html = renderToStaticMarkup(
       <>{renderLegacyNavLinks([{ label: 'Shop', href: '/products', openInNewTab: true }])}</>
     );
-    expect(html).toContain('class="st-nav__item"');
+    expect(html).toContain('bx-nav-item');
     expect(html).toContain('href="/products"');
     expect(html).toContain('>Shop</a>');
     expect(html).toContain('target="_blank"');
@@ -172,7 +175,7 @@ describe('renderLeaf — edit placeholders keep empty nodes selectable; live ren
 describe('renderLeaf — nav composites (docs/57 rebuild)', () => {
   it('a childless NavItem renders an anchor; with children it becomes a dropdown', () => {
     const link = leaf({ type: 'NavItem', props: { label: 'Home', href: '/' } });
-    expect(link).toContain('class="st-nav__item"');
+    expect(link).toContain('bx-nav-item');
     expect(link).toContain('href="/"');
     expect(link).toContain('>Home</a>');
 
@@ -180,14 +183,17 @@ describe('renderLeaf — nav composites (docs/57 rebuild)', () => {
       { type: 'NavItem', props: { label: 'More' } },
       {
         children: (
-          <a className="st-nav__item" href="/a">
+          <a className="bx-nav-item" href="/a">
             A
           </a>
         ),
       }
     );
-    expect(drop).toContain('st-navitem-drop');
-    expect(drop).toContain('st-navitem-drop__panel');
+    // A NavItem WITH children becomes a <details> disclosure whose panel is in
+    // flow on a narrow frame and floats once it is wide.
+    expect(drop).toContain('<details');
+    expect(drop).toContain('group/navdrop');
+    expect(drop).toContain('@3xl/bx-frame:absolute');
   });
 
   it('NavMegamenu renders a details trigger + a column-count panel of its children', () => {
@@ -195,21 +201,21 @@ describe('renderLeaf — nav composites (docs/57 rebuild)', () => {
       { type: 'NavMegamenu', props: { label: 'Products', columns: '4' } },
       {
         children: (
-          <a className="st-nav__item" href="/products">
+          <a className="bx-nav-item" href="/products">
             Shop
           </a>
         ),
       }
     );
-    expect(html).toContain('st-navmega');
-    expect(html).toContain('st-navmega__panel--c4');
+    expect(html).toContain('<details');
+    expect(html).toContain('@3xl/bx-frame:grid-cols-4');
     expect(html).toContain('>Products<');
     expect(html).toContain('href="/products"');
   });
 
   it('NavMegamenu defaults an out-of-range columns value to 3', () => {
     const html = leaf({ type: 'NavMegamenu', props: { label: 'Menu', columns: '9' } });
-    expect(html).toContain('st-navmega__panel--c3');
+    expect(html).toContain('@3xl/bx-frame:grid-cols-3');
   });
 
   it('AccountMenu renders the signed-out affordance on a live page with no session', () => {
@@ -218,7 +224,7 @@ describe('renderLeaf — nav composites (docs/57 rebuild)', () => {
       { type: 'AccountMenu', props: { signInLabel: 'Sign in', signUpLabel: 'Join' } },
       { mode: 'live' }
     );
-    expect(html).toContain('st-account');
+    expect(html).toContain('Sign in');
     expect(html).toContain('Sign in');
     expect(html).toContain('Join');
   });

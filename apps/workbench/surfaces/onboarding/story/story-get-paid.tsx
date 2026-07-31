@@ -49,7 +49,7 @@ export function StoryGetPaid({
       {connected ? (
         <div className="border-success flex items-start gap-3 rounded-xl border px-5 py-4">
           <CheckCircle className="text-success mt-0.5 size-5 shrink-0" aria-hidden />
-          <Text className="text-base-content max-w-[58ch] text-base">
+          <Text className="max-w-[58ch] text-base">
             You’re set to get paid — Stripe is connected and checkout is ready. Money from your
             customers lands straight in your bank account.
           </Text>
@@ -59,7 +59,7 @@ export function StoryGetPaid({
           <Button color="module" size="lg" onClick={connect} loading={connecting}>
             Connect Stripe
           </Button>
-          <Text className="text-base-content max-w-[58ch] text-sm">
+          <Text className="max-w-[58ch] text-sm">
             Stripe is how the money reaches you — cards, wallets, and bank debits, paid straight to
             your bank. It’s the account that <span className="font-medium">receives</span> customer
             payments, separate from your own sparx subscription.

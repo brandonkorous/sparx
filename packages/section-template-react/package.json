@@ -2,7 +2,7 @@
   "name": "@sparx/section-template-react",
   "version": "0.0.0",
   "private": true,
-  "description": "sparx Site Builder — the shared React interpreter that renders a custom-section template AST into st-tpl-* markup (docs/38 Phase C). One renderer for the storefront (SSR) and the dashboard Section Studio preview, via injected adapters, so the preview can't drift from production.",
+  "description": "sparx Site Builder — the shared React interpreter that renders a custom-section template AST into bx-tpl-* markup (docs/38 Phase C). One renderer for the storefront (SSR) and the dashboard Section Studio preview, via injected adapters, so the preview can't drift from production.",
   "type": "module",
   "sideEffects": [
     "**/*.css"

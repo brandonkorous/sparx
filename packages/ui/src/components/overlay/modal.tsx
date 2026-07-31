@@ -99,9 +99,9 @@ export function ModalContent({
             aria-label="Close"
             className={cn(
               'absolute top-3 right-3 rounded-md p-1',
-              'text-base-content hover:text-base-content hover:bg-base-200',
+              'hover:bg-base-200',
               'transition-colors duration-150',
-              'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none'
+              'focus-ring'
             )}
           >
             <X className="h-4 w-4" />
@@ -133,10 +133,7 @@ export function ModalTitle({
   ...props
 }: React.ComponentPropsWithoutRef<typeof SilicaDialogTitle>) {
   return (
-    <SilicaDialogTitle
-      className={cn('text-base-content text-lg leading-tight font-medium', className)}
-      {...props}
-    />
+    <SilicaDialogTitle className={cn('text-lg leading-tight font-medium', className)} {...props} />
   );
 }
 
@@ -144,9 +141,7 @@ export function ModalDescription({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<typeof SilicaDialogDescription>) {
-  return (
-    <SilicaDialogDescription className={cn('text-base-content text-sm', className)} {...props} />
-  );
+  return <SilicaDialogDescription className={cn('text-sm', className)} {...props} />;
 }
 
 export { modalContentVariants };

@@ -1,6 +1,6 @@
-import { Button } from '@wizeworks/silicaui-react';
+import { Button, Status } from '@wizeworks/silicaui-react';
 import { CAPABILITY_AREAS, capabilityCounts } from '@/lib/capabilities';
-import { Display, Dot, Section, SectionHeader } from './primitives';
+import { Display, Section, SectionHeader } from './primitives';
 import { Reveal } from './reveal';
 
 /**
@@ -37,7 +37,7 @@ const SAMPLE = SAMPLE_AREA_IDS.flatMap((id) => {
   return area.capabilities
     .filter((c) => c.status === 'live')
     .slice(0, 2)
-    .map((c) => ({ name: c.name, accent: area.accent }));
+    .map((c) => ({ name: c.name, color: area.color }));
 });
 
 export function EverythingIncluded() {
@@ -58,8 +58,8 @@ export function EverythingIncluded() {
           lede={
             <>
               Each module is a deep product, not a checkbox. Together they ship{' '}
-              <b className="text-base-content font-medium">{counts.live} capabilities</b> you can
-              use today — with {counts.building} more in build. Here&apos;s a taste.
+              <b className="font-medium">{counts.live} capabilities</b> you can use today — with{' '}
+              {counts.building} more in build. Here&apos;s a taste.
             </>
           }
         />
@@ -92,9 +92,9 @@ export function EverythingIncluded() {
             {SAMPLE.map((cap) => (
               <span
                 key={cap.name}
-                className="border-base-300 bg-base-100 text-base-content text-caption inline-flex items-center gap-2 rounded-full border px-3.5 py-2"
+                className="border-base-300 bg-base-100 text-caption inline-flex items-center gap-2 rounded-full border px-3.5 py-2"
               >
-                <Dot color={cap.accent} size={7} />
+                <Status color={cap.color} size="sm" />
                 {cap.name}
               </span>
             ))}

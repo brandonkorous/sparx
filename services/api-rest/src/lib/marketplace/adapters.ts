@@ -13,7 +13,7 @@
 // link).
 
 import type { TxClient } from '@sparx/db';
-import { readArtifact } from './artifacts.js';
+import { readSilicaComponentTree } from '@sparx/marketplace-schemas';
 import type {
   BlueprintContents,
   ComponentFacets,
@@ -176,6 +176,23 @@ interface ThemeRow extends SpineRow {
   colorFamily: string | null;
   density: string | null;
   industry: string | null;
+  // The stored silica Theme payload ({ name, tokens, dark?, fonts? }) — the row's
+  // `tokens` JSON column. Rendered as the live preview (docs/118); null on a legacy row.
+  tokens: unknown;
+}
+
+/** The stored silica payload shape (mirrors @sparx/marketplace-schemas SilicaThemePayload),
+ *  narrowed defensively — a legacy/hand-edited row may hold anything or NULL. */
+function themePreview(raw: unknown): Pick<ThemeFacets, 'tokens' | 'dark' | 'fonts'> {
+  if (!raw || typeof raw !== 'object') return { tokens: null, dark: null, fonts: null };
+  const p = raw as Record<string, unknown>;
+  const bag = (v: unknown): Record<string, string> | null =>
+    v && typeof v === 'object' && !Array.isArray(v) ? (v as Record<string, string>) : null;
+  return {
+    tokens: bag(p.tokens),
+    dark: bag(p.dark),
+    fonts: p.fonts ?? null,
+  };
 }
 
 function themeListing(row: ThemeRow): MarketplaceListing {
@@ -184,6 +201,7 @@ function themeListing(row: ThemeRow): MarketplaceListing {
     colorFamily: row.colorFamily,
     density: row.density,
     industry: row.industry,
+    ...themePreview(row.tokens),
   };
   return {
     ...baseListing(row, 'themes'),
@@ -225,37 +243,24 @@ interface ComponentRow extends SpineRow {
   group: string;
   kind: string | null;
   surfaces: string[];
+  // The stored silica node tree — the row's `tree` JSON column. Rendered as the
+  // live preview (docs/118); null on a legacy row (a BuilderNode tree or NULL).
+  tree: unknown;
 }
 
-// The component DATA payload (docs/85 §6) — the node tree + prop spec — lives in
-// the storage artifact, NOT a column. `artifact` is the parsed object on a DETAIL
-// load (`loadOne` reads it from storage); browse passes nothing, so the heavy tree
-// never rides a card and browse never touches storage.
-interface ComponentArtifact {
-  tree?: unknown;
-  propSpec?: unknown;
-}
-
-function componentListing(
-  row: ComponentRow,
-  artifact?: ComponentArtifact | null
-): MarketplaceListing {
-  const tree = artifact?.tree ?? null;
+function componentListing(row: ComponentRow): MarketplaceListing {
+  // The silica tree travels on BOTH browse + detail (the card renders it live), the
+  // same posture as the theme token bag. `readSilicaComponentTree` narrows the
+  // stored column: a legacy BuilderNode / NULL row yields null and the preview
+  // degrades to a neutral placeholder.
+  const tree = readSilicaComponentTree(row.tree);
   const component: ComponentFacets = {
     group: row.group,
     kind: row.kind,
     surfaces: row.surfaces,
-    // dataBacked + tree/propSpec are DETAIL-only (resolved from the storage
-    // artifact). On browse `artifact` is undefined, so a card carries neither and
-    // routes to the detail page, which resolves the real "Add" vs palette-pointer
-    // action.
-    ...(artifact
-      ? {
-          dataBacked: tree != null,
-          tree,
-          propSpec: Array.isArray(artifact.propSpec) ? artifact.propSpec : [],
-        }
-      : {}),
+    dataBacked: tree != null,
+    tree,
+    propSpec: [],
   };
   return {
     ...baseListing(row, 'components'),
@@ -273,18 +278,14 @@ const componentAdapter: CategoryAdapter = {
       where: BROWSE_WHERE,
       include: { publisher: PUBLISHER_SELECT },
     });
-    return rows.map((r) => componentListing(r));
+    return rows.map(componentListing);
   },
   loadOne: async (tx, slug) => {
     const row = await tx.marketplaceComponent.findFirst({
       where: { slug },
       include: { publisher: PUBLISHER_SELECT },
     });
-    if (!row) return null;
-    // Resolve the DATA payload from storage (docs/85 §7); a row with no artifact is
-    // a legacy palette pointer → tree stays null, the card deep-links to the builder.
-    const artifact = await readArtifact<ComponentArtifact>('components', slug, row.version);
-    return componentListing(row, artifact);
+    return row ? componentListing(row) : null;
   },
   searchText: (l) => `${l.name} ${l.tagline ?? ''} ${l.component?.group ?? ''}`,
   facets: [

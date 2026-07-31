@@ -2,6 +2,18 @@
 
 Read [docs/123-workbench.md](../../docs/123-workbench.md) before building a surface here.
 
+## Color: read the root DESIGN.md
+
+[../../DESIGN.md](../../DESIGN.md) is the **platform** design language — one system across the
+workbench, `apps/web` and `apps/market` — and is binding for every surface in this app. Read it
+before you type a `color=` prop.
+
+The one-line version: **neutral has to be earned, exactly like a modal.** There are 27 registered
+colors, and `SilicaColor`'s `(string & {})` escape hatch means TypeScript will never catch a wrong
+one or suggest a right one — so surfaces default to grey, and grey says nothing. DESIGN.md carries
+the full palette, the three color axes (identity · state · consequence), the per-element assignment
+table, the four legitimate uses of neutral, and the ship gate.
+
 ## Build it, don't port it
 
 For any work in the workbench that is coming from the dashboard app, you must not

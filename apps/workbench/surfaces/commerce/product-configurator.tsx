@@ -1343,7 +1343,7 @@ function ConfiguratorBody({
             <div className="bg-base-300 shrink-0 rounded-full px-4 py-2">
               <TabsList className="overflow-x-auto">
                 {rows.map((row) => (
-                  <TabsTab key={row.id} value={row.id} className="text-base-content">
+                  <TabsTab key={row.id} value={row.id}>
                     {row.name}
                   </TabsTab>
                 ))}

@@ -205,7 +205,7 @@ function DropshipProof() {
       <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
           <div key={s.l} className={i === 0 ? undefined : 'border-base-300 border-l pl-8'}>
-            <div className="text-base-content font-sans text-[clamp(34px,5vw,52px)] leading-none font-medium tracking-[-0.03em]">
+            <div className="font-sans text-[clamp(34px,5vw,52px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
             <Text className="text-small text-ink-muted mt-3">{s.l}</Text>
@@ -225,9 +225,7 @@ function DropshipPricing() {
       >
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-base-content font-sans text-[56px] font-medium tracking-[-0.025em]">
-              $29
-            </span>
+            <span className="font-sans text-[56px] font-medium tracking-[-0.025em]">$29</span>
             <Text as="span" className="text-body text-ink-subtle">
               /mo
             </Text>

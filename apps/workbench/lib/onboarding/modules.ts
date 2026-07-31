@@ -6,10 +6,12 @@
 // (b2b→commerce, the bundled-free rules) on save; this file is the user-intended
 // set the UI drives from, and the price/savings math the plan summary shows.
 //
-// Colors are brand token vars (`var(--color-module-<key>)`), never hex, so a row's
-// accent stays in lockstep with @sparx/brand's module palette. The workbench's own
-// module-hue mechanism is `ModuleScope` (data-module ⇒ --color-module); a row that
-// wants one module's accent wraps in <ModuleScope module="commerce">.
+// A row carries NO color of its own. The workbench's module-hue mechanism is
+// `ModuleScope` (data-module ⇒ --color-module), so a row that wants a module's
+// accent wraps in <ModuleScope module={m.key}> and its children read `bg-module` /
+// `text-module`. A `colorVar` field used to sit here holding
+// `var(--color-module-<key>)` per entry; nothing ever read it, and duplicating the
+// palette in TS is exactly the drift the tokens exist to prevent.
 //
 // This mirrors the same catalog the pricing page and Settings → Modules present, so
 // a tenant sees an identical offer whether shopping, onboarding, or managing a live
@@ -25,8 +27,6 @@ export interface SwitchboardModule {
   price: number;
   /** Real monthly cost of the tool this module replaces (the savings ledger). */
   elsewhere: number;
-  /** Token var for the module's accent color. */
-  colorVar: string;
   long: string;
   feats: string[];
   replaces: string;
@@ -42,7 +42,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Themes, pages, live URLs',
     price: 10,
     elsewhere: 39,
-    colorVar: 'var(--color-module-builder)',
     long: 'The foundation every sparx site starts on. Pick a polished theme, edit blocks, point your domain — automatic SSL, edge-cached pages, instant TTFB worldwide. Power users go fully headless against the same API.',
     feats: [
       'Theme-first, customize what matters',
@@ -58,7 +57,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Cart, checkout, orders',
     price: 49,
     elsewhere: 399,
-    colorVar: 'var(--color-module-commerce)',
     long: 'Products, inventory, payments, tax, and shipping. A conversion-optimized single-page checkout out of the box, D2C and B2B from the same codebase.',
     feats: [
       'Variants, bundles, real-time inventory',
@@ -74,7 +72,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Words, media, SEO',
     price: 49,
     elsewhere: 99,
-    colorVar: 'var(--color-module-cms)',
     long: 'A real editor with revisions, structured content types with a typed API, a media library, and SEO scored on every publish. Standalone or paired with your site.',
     feats: [
       'Block editor with revisions',
@@ -90,7 +87,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Customers, pipeline, signal',
     price: 49,
     elsewhere: 300,
-    colorVar: 'var(--color-module-crm)',
     long: 'One customer record across orders, email, support, RFQs, and AI conversations — sitting on the same database as everything else. No sync, no glue, no duplicate records.',
     feats: [
       'One record, no deduping',
@@ -106,7 +102,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Transactional + marketing',
     price: 29,
     elsewhere: 165,
-    colorVar: 'var(--color-module-email)',
     long: 'Transactional and marketing email from your own sending domain, with SPF, DKIM, and DMARC auto-configured. Flat price — send 10K or 1M a month, same bill.',
     feats: [
       'Transactional wired into every module',
@@ -122,7 +117,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Wholesale, net terms, fleet',
     price: 99,
     elsewhere: 2400,
-    colorVar: 'var(--color-module-b2b)',
     long: 'Wholesale pricing, net terms, purchase orders, RFQ, fleet accounts, and service scheduling — natively, not a bolt-on. Built for how industrial actually works.',
     feats: [
       'Account-tier + contract pricing',
@@ -138,7 +132,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Native MCP server',
     price: 49,
     elsewhere: 103,
-    colorVar: 'var(--color-module-ai)',
     long: 'The first content + commerce platform built around the Model Context Protocol. Connect any AI client once and read or write live data in plain English. Scoped, audited, revocable.',
     feats: [
       'First-class MCP server, per-tenant',
@@ -154,7 +147,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Appointments, classes, reservations',
     price: 29,
     elsewhere: 49,
-    colorVar: 'var(--color-module-scheduling)',
     long: 'Online booking for anything time-based — appointments, group classes, table reservations, equipment rentals — on one engine. Availability that prevents double-booking at the database level, deposits and no-show fees, automated reminders, and two-way calendar sync.',
     feats: [
       'Appointments, classes, reservations & rentals',
@@ -170,7 +162,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Suppliers, sync, fulfillment',
     price: 29,
     elsewhere: 60,
-    colorVar: 'var(--color-module-dropship)',
     long: 'Supplier sync, margin math, and automated order routing — on a real platform underneath, not an app stacked on an app. Sell without holding inventory.',
     feats: [
       'Supplier connectors + CSV/FTP/API',
@@ -186,7 +177,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Estimates, invoices, AR',
     price: 19,
     elsewhere: 30,
-    colorVar: 'var(--color-module-invoicing)',
     long: 'Author estimates, work orders, and invoices line by line — parts marked up, labor by the hour, deposits and partial payments — through stages you name. Tracks balances and AR aging, and prints on your brand. Included free with Commerce or B2B.',
     feats: [
       'Estimate → invoice workflows you name',
@@ -203,7 +193,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Stock, warehouses, ledger',
     price: 29,
     elsewhere: 99,
-    colorVar: 'var(--color-module-inventory)',
     long: 'A real inventory system under your catalog — multi-warehouse stock with an append-only movement ledger that makes every count auditable, reservations, lots and serials, and reorder alerts. Included free with Commerce or B2B; runs standalone as WMS-lite.',
     feats: [
       'Multi-warehouse on-hand / allocated / available',
@@ -220,7 +209,6 @@ export const SWITCHBOARD_MODULES: SwitchboardModule[] = [
     desc: 'Widget, AI replies, inbox',
     price: 19,
     elsewhere: 74,
-    colorVar: 'var(--color-module-chat)',
     long: 'A themed chat widget on every page, an AI first responder that answers product and policy questions from your own catalog, and a staff inbox for everything it escalates. Leads from sparx.market route here too.',
     feats: [
       'Site widget in your theme',

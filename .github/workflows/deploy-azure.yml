@@ -1,0 +1,234 @@
+# Deploys the platform to AKS (aks-sparx-prod-cus, centralus).
+#
+# Authenticates to Azure by OIDC — no stored credential. The three `vars` below
+# are ids, not secrets; the trust is established by the federated credential in
+# terraform/bootstrap-azure, which Entra matches against this repo and ref.
+#
+# Runs AFTER the image build, not beside it: rolling out a SHA whose images do
+# not exist yet is the single most common way this kind of pipeline fails.
+name: Deploy to Azure
+
+on:
+  workflow_run:
+    workflows: ['Build images (GHCR)']
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Commit SHA to deploy (blank = the current ref)'
+        required: false
+        type: string
+      run_migrations:
+        description: 'Run database migrations before rolling out'
+        required: false
+        default: true
+        type: boolean
+
+concurrency:
+  # Never two rollouts at once — the second would fight the first's
+  # `rollout status` and could interleave `kubectl apply` writes.
+  group: deploy-azure
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # required to request the OIDC token
+  packages: read
+
+env:
+  RESOURCE_GROUP: rg-sparx-prod-cus
+  CLUSTER: aks-sparx-prod-cus
+  NAMESPACE: sparx-prod
+
+jobs:
+  deploy:
+    # A failed build must not deploy. workflow_run fires on completion of ANY
+    # conclusion, including failure, so this guard is load-bearing.
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha || github.event.workflow_run.head_sha || github.sha }}
+
+      - name: Resolve the SHA being deployed
+        id: sha
+        run: echo "value=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get cluster credentials
+        run: |
+          az aks get-credentials \
+            --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" \
+            --overwrite-existing
+          kubectl version --client
+
+      # ---------------------------------------------------------------------
+      # Secrets. Recreated every deploy from repository secrets so the cluster
+      # never holds a value that has been rotated in GitHub.
+      #
+      # `create --dry-run | apply` is the idempotent form: plain `create` fails
+      # on the second run, and `apply` alone cannot build a Secret from literals.
+      # ---------------------------------------------------------------------
+      - name: Sync secrets
+        env:
+          APP_SECRETS: ${{ secrets.SPARX_APP_SECRETS_ENV }}
+          TYPESENSE_API_KEY: ${{ secrets.TYPESENSE_API_KEY }}
+        run: |
+          kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+
+          if [ -z "$APP_SECRETS" ]; then
+            echo "::error::SPARX_APP_SECRETS_ENV is empty. See k8s/azure/README.md."
+            exit 1
+          fi
+
+          # A dotenv blob, so one repo secret carries the whole bundle rather
+          # than ~30 individually-managed ones.
+          printf '%s' "$APP_SECRETS" > /tmp/app.env
+          kubectl create secret generic sparx-app-secrets -n "$NAMESPACE" \
+            --from-env-file=/tmp/app.env \
+            --dry-run=client -o yaml | kubectl apply -f -
+          rm -f /tmp/app.env
+
+          kubectl create secret generic typesense-secrets -n "$NAMESPACE" \
+            --from-literal=api-key="$TYPESENSE_API_KEY" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          # Pull secret for the private GHCR namespace. GITHUB_TOKEN is scoped to
+          # this run, so it is refreshed on every deploy by construction.
+          kubectl create secret docker-registry ghcr -n "$NAMESPACE" \
+            --docker-server=ghcr.io \
+            --docker-username='${{ github.actor }}' \
+            --docker-password='${{ secrets.GITHUB_TOKEN }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # ---------------------------------------------------------------------
+      # Database roles.
+      #
+      # `sparx_app` — the unprivileged NOBYPASSRLS role every application
+      # connection uses — comes from a Docker-image entrypoint convention
+      # (packages/db/docker/init/01-roles.sql) that a MANAGED Postgres will never
+      # run. The server is VNet-private, so it also cannot be created from a
+      # laptop. Doing it as an in-cluster Job is the only automated path.
+      #
+      # Idempotent, so it is safe on every deploy.
+      # ---------------------------------------------------------------------
+      - name: Ensure database roles
+        if: ${{ inputs.run_migrations != false }}
+        run: |
+          kubectl create configmap db-bootstrap-roles -n "$NAMESPACE" \
+            --from-file=azure-bootstrap.sql=packages/db/sql/azure-bootstrap.sql \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl delete job db-roles -n "$NAMESPACE" --ignore-not-found
+          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: db-roles
+          spec:
+            backoffLimit: 1
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                containers:
+                  - name: psql
+                    image: postgres:18-alpine
+                    command: ['sh', '-c']
+                    args:
+                      - psql "$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 -v app_password="$SPARX_APP_PASSWORD" -f /sql/azure-bootstrap.sql
+                    env:
+                      - name: AUTH_DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+                      - name: SPARX_APP_PASSWORD
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: SPARX_APP_PASSWORD }
+                    volumeMounts:
+                      - { name: sql, mountPath: /sql, readOnly: true }
+                volumes:
+                  - name: sql
+                    configMap: { name: db-bootstrap-roles }
+          YAML
+          kubectl wait --for=condition=complete job/db-roles -n "$NAMESPACE" --timeout=300s \
+            || { kubectl logs job/db-roles -n "$NAMESPACE" --tail=50; exit 1; }
+
+      - name: Run migrations
+        if: ${{ inputs.run_migrations != false }}
+        run: |
+          kubectl delete job db-migrate -n "$NAMESPACE" --ignore-not-found
+          kubectl apply -n "$NAMESPACE" -f - <<YAML
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: db-migrate
+          spec:
+            backoffLimit: 0
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                imagePullSecrets: [{ name: ghcr }]
+                containers:
+                  - name: migrate
+                    image: ghcr.io/${{ github.repository }}/db:${{ steps.sha.outputs.value }}
+                    envFrom:
+                      - configMapRef: { name: sparx-app-env }
+                      - secretRef: { name: sparx-app-secrets }
+                    env:
+                      # Migrations and the hand-edited RLS SQL run as the OWNER
+                      # role, not the RLS-constrained role the apps use.
+                      - name: DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+          YAML
+          kubectl wait --for=condition=complete job/db-migrate -n "$NAMESPACE" --timeout=900s \
+            || { kubectl logs job/db-migrate -n "$NAMESPACE" --tail=80; exit 1; }
+
+      # ---------------------------------------------------------------------
+      # Roll out. Pin every image to this SHA — never `latest`, so a rollback is
+      # a real thing and a node cannot serve a stale cached layer.
+      # ---------------------------------------------------------------------
+      - name: Pin images and apply
+        run: |
+          SHA='${{ steps.sha.outputs.value }}'
+          REPO='ghcr.io/${{ github.repository }}'
+          cd k8s/azure
+
+          for svc in api-rest api-graphql api-mcp mcp-site workbench web site market \
+                     email-worker push-worker markup-recompute-worker media-worker \
+                     commerce-indexer channel-sync-worker social-worker \
+                     legal-seed-worker platform-crm-worker domain-worker dropship-worker; do
+            kubectl kustomize edit set image "$REPO/$svc=$REPO/$svc:$SHA" 2>/dev/null \
+              || kustomize edit set image "$REPO/$svc=$REPO/$svc:$SHA"
+          done
+
+          cd ../..
+          kubectl apply -k k8s/azure
+
+      - name: Wait for rollout
+        run: |
+          # Deployments only — StatefulSets and Jobs have their own lifecycles.
+          # 2 vCPU means a cold start of 20 containers is minutes, not seconds,
+          # which is why the timeout is generous rather than optimistic.
+          kubectl rollout status deployment --all -n "$NAMESPACE" --timeout=15m
+
+      - name: Report
+        if: always()
+        run: |
+          echo '### Deployed `${{ steps.sha.outputs.value }}`' >> "$GITHUB_STEP_SUMMARY"
+          kubectl get pods -n "$NAMESPACE" -o wide >> "$GITHUB_STEP_SUMMARY" 2>&1 || true

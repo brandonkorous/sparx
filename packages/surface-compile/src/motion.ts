@@ -14,35 +14,35 @@ export const REDUCED_MOTION_CSS =
 // Scroll-reveal entrance motion (docs/61 §9).
 //
 // The render layer ships this ONCE (live site + editor canvas), alongside the
-// per-tenant compiled stylesheet. The author classes it powers — `st-reveal`,
-// `st-reveal--<token>`, `st-reveal-stagger` (+ `--bold`) — are NOT Tailwind
+// per-tenant compiled stylesheet. The author classes it powers — `bx-reveal`,
+// `bx-reveal--<token>`, `bx-reveal-stagger` (+ `--bold`) — are NOT Tailwind
 // utilities, so the per-tenant compile emits nothing for them; their CSS lives
 // here and matches the classes the renderer applies verbatim to the one styled
 // element per node. Self-contained @keyframes so it never depends on the compile
 // emitting the `--animate-*` theme vars (which tree-shake on use).
 //
-// The hidden initial state is gated on `html.st-anim-ready`, set before paint
+// The hidden initial state is gated on `html.bx-anim-ready`, set before paint
 // ONLY when motion is allowed (a tiny script in the render layer) — so with JS
 // off, or under prefers-reduced-motion, nothing is ever hidden (no FOUC, no CLS).
-// The MotionController island flips `.st-in` as each element scrolls into view.
+// The MotionController island flips `.bx-in` as each element scrolls into view.
 
 /** Entrance token (matches the inspector + the compile-theme `--animate-*` set)
  *  → the `animation` shorthand it plays once in view. */
 const REVEAL_TOKENS: Record<string, string> = {
-  'fade-in': 'st-fade-in 0.5s ease-out both',
-  'fade-up': 'st-fade-up 0.6s ease-out both',
-  'fade-down': 'st-fade-down 0.6s ease-out both',
-  'scale-in': 'st-scale-in 0.4s ease-out both',
-  'slide-in-left': 'st-slide-in-left 0.5s ease-out both',
-  'slide-in-right': 'st-slide-in-right 0.5s ease-out both',
+  'fade-in': 'bx-fade-in 0.5s ease-out both',
+  'fade-up': 'bx-fade-up 0.6s ease-out both',
+  'fade-down': 'bx-fade-down 0.6s ease-out both',
+  'scale-in': 'bx-scale-in 0.4s ease-out both',
+  'slide-in-left': 'bx-slide-in-left 0.5s ease-out both',
+  'slide-in-right': 'bx-slide-in-right 0.5s ease-out both',
 };
 
 /** Direct children that get a sequenced delay; beyond this they share the last step. */
 const STAGGER_MAX = 12;
 
 function staggerRules(modifier: string, step: number): string {
-  const sel = `html.st-anim-ready .st-reveal-stagger${modifier}.st-in > *`;
-  let css = `${sel}{animation:st-fade-up 0.6s ease-out both}`;
+  const sel = `html.bx-anim-ready .bx-reveal-stagger${modifier}.bx-in > *`;
+  let css = `${sel}{animation:bx-fade-up 0.6s ease-out both}`;
   for (let i = 1; i <= STAGGER_MAX; i++) {
     css += `${sel}:nth-child(${i}){animation-delay:${(i - 1) * step}ms}`;
   }
@@ -50,41 +50,41 @@ function staggerRules(modifier: string, step: number): string {
 }
 
 const REVEAL_KEYFRAMES =
-  '@keyframes st-fade-in{from{opacity:0}to{opacity:1}}' +
-  '@keyframes st-fade-up{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:none}}' +
-  '@keyframes st-fade-down{from{opacity:0;transform:translateY(-1rem)}to{opacity:1;transform:none}}' +
-  '@keyframes st-scale-in{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}' +
-  '@keyframes st-slide-in-left{from{opacity:0;transform:translateX(-1.5rem)}to{opacity:1;transform:none}}' +
-  '@keyframes st-slide-in-right{from{opacity:0;transform:translateX(1.5rem)}to{opacity:1;transform:none}}';
+  '@keyframes bx-fade-in{from{opacity:0}to{opacity:1}}' +
+  '@keyframes bx-fade-up{from{opacity:0;transform:translateY(1rem)}to{opacity:1;transform:none}}' +
+  '@keyframes bx-fade-down{from{opacity:0;transform:translateY(-1rem)}to{opacity:1;transform:none}}' +
+  '@keyframes bx-scale-in{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:none}}' +
+  '@keyframes bx-slide-in-left{from{opacity:0;transform:translateX(-1.5rem)}to{opacity:1;transform:none}}' +
+  '@keyframes bx-slide-in-right{from{opacity:0;transform:translateX(1.5rem)}to{opacity:1;transform:none}}';
 
 export const SCROLL_MOTION_CSS =
   REVEAL_KEYFRAMES +
   // Resting (hidden) state for any single reveal element, gated on readiness.
-  'html.st-anim-ready .st-reveal:not(.st-in){opacity:0}' +
+  'html.bx-anim-ready .bx-reveal:not(.bx-in){opacity:0}' +
   // Default entrance when no token modifier is present.
-  'html.st-anim-ready .st-reveal.st-in{animation:st-fade-in 0.5s ease-out both}' +
+  'html.bx-anim-ready .bx-reveal.bx-in{animation:bx-fade-in 0.5s ease-out both}' +
   // Per-token entrances (later in source order than the default → they win at equal specificity).
   Object.entries(REVEAL_TOKENS)
-    .map(([token, anim]) => `html.st-anim-ready .st-reveal--${token}.st-in{animation:${anim}}`)
+    .map(([token, anim]) => `html.bx-anim-ready .bx-reveal--${token}.bx-in{animation:${anim}}`)
     .join('') +
-  // Container stagger: direct children start hidden, then fade-up in sequence on `.st-in`.
-  'html.st-anim-ready .st-reveal-stagger > *,html.st-anim-ready .st-reveal-stagger--bold > *{opacity:0}' +
+  // Container stagger: direct children start hidden, then fade-up in sequence on `.bx-in`.
+  'html.bx-anim-ready .bx-reveal-stagger > *,html.bx-anim-ready .bx-reveal-stagger--bold > *{opacity:0}' +
   staggerRules('', 80) +
   staggerRules('--bold', 140) +
   // Print + non-scrolling renderers (Save-as-PDF, headless snapshots, some reader
-  // modes) never scroll, so the IntersectionObserver never flips `.st-in` and every
+  // modes) never scroll, so the IntersectionObserver never flips `.bx-in` and every
   // below-fold reveal would capture at its hidden opacity:0 state — a blank band.
-  // The reduced-motion/JS-off paths are already safe (they never set st-anim-ready);
+  // The reduced-motion/JS-off paths are already safe (they never set bx-anim-ready);
   // this covers the JS-ran-but-never-scrolled case by force-revealing under print.
   '@media print{' +
-  'html.st-anim-ready .st-reveal:not(.st-in),' +
-  'html.st-anim-ready .st-reveal-stagger > *,' +
-  'html.st-anim-ready .st-reveal-stagger--bold > *' +
+  'html.bx-anim-ready .bx-reveal:not(.bx-in),' +
+  'html.bx-anim-ready .bx-reveal-stagger > *,' +
+  'html.bx-anim-ready .bx-reveal-stagger--bold > *' +
   '{opacity:1 !important;transform:none !important;animation:none !important}}';
 
 // Hover-interaction effects (docs/61 §9 — the hover counterpart to scroll entrances).
 //
-// A named, one-click hover EFFECT library: the `st-hover--<token>` class a node wears
+// A named, one-click hover EFFECT library: the `bx-hover--<token>` class a node wears
 // to animate a PERSISTENT :hover state (lift, grow, glow, …). This is distinct from the
 // entrance system's `hover:animate-<token>`, which fires a ONE-SHOT keyframe on
 // hover-IN; an effect is a state the element HOLDS while hovered and eases back on
@@ -99,7 +99,9 @@ export const SCROLL_MOTION_CSS =
 // a non-motion cue (shadow / brightness) stays, so hover still gives feedback. The
 // shared REDUCED_MOTION_CSS additionally flattens the transition, so that cue is
 // instant rather than animated. Brand-aware: the shadow tints off the tenant
-// `--st-neutral` / `--st-primary` root vars, so each tenant's hover reads on-brand.
+// `--color-neutral` / `--color-primary` root vars, so each tenant's hover reads
+// on-brand. (These read silica's vocabulary directly since the `--st-*` retarget —
+// docs/implementation/st-token-retirement.md.)
 
 /** Hover-effect token → its human label. The single source of truth shared by the
  *  render CSS below, the inspector's Hover-effect picker, and the Builder MCP
@@ -113,20 +115,20 @@ export const HOVER_EFFECTS: { value: string; label: string }[] = [
   { value: 'tilt', label: 'Tilt' },
 ];
 
-const HOVER_SELECTOR_ALL = HOVER_EFFECTS.map((e) => `.st-hover--${e.value}`).join(',');
+const HOVER_SELECTOR_ALL = HOVER_EFFECTS.map((e) => `.bx-hover--${e.value}`).join(',');
 
 export const HOVER_MOTION_CSS =
   // One shared transition for every effect element (transform + shadow + filter).
   `${HOVER_SELECTOR_ALL}{transition:transform .18s ease,box-shadow .18s ease,filter .18s ease}` +
   // Non-motion :hover cues (shadow / brightness) — safe under reduced motion.
-  '.st-hover--lift:hover{box-shadow:0 24px 48px -20px color-mix(in oklab,var(--st-neutral,#1f2937) 32%,transparent)}' +
-  '.st-hover--sink:hover{box-shadow:0 6px 16px -10px color-mix(in oklab,var(--st-neutral,#1f2937) 36%,transparent)}' +
-  '.st-hover--glow:hover{box-shadow:0 0 0 1px color-mix(in oklab,var(--st-primary) 35%,transparent),0 18px 44px -16px color-mix(in oklab,var(--st-primary) 50%,transparent)}' +
-  '.st-hover--brighten:hover{filter:brightness(1.06)}' +
+  '.bx-hover--lift:hover{box-shadow:0 24px 48px -20px color-mix(in oklab,var(--color-neutral,#1f2937) 32%,transparent)}' +
+  '.bx-hover--sink:hover{box-shadow:0 6px 16px -10px color-mix(in oklab,var(--color-neutral,#1f2937) 36%,transparent)}' +
+  '.bx-hover--glow:hover{box-shadow:0 0 0 1px color-mix(in oklab,var(--color-primary) 35%,transparent),0 18px 44px -16px color-mix(in oklab,var(--color-primary) 50%,transparent)}' +
+  '.bx-hover--brighten:hover{filter:brightness(1.06)}' +
   // Movement :hover cues (translate / scale / tilt) — only when motion is allowed.
   '@media (prefers-reduced-motion:no-preference){' +
-  '.st-hover--lift:hover{transform:translateY(-4px)}' +
-  '.st-hover--grow:hover{transform:scale(1.03)}' +
-  '.st-hover--sink:hover{transform:translateY(2px) scale(.985)}' +
-  '.st-hover--tilt:hover{transform:perspective(900px) rotateX(2.5deg) rotateY(-2.5deg)}' +
+  '.bx-hover--lift:hover{transform:translateY(-4px)}' +
+  '.bx-hover--grow:hover{transform:scale(1.03)}' +
+  '.bx-hover--sink:hover{transform:translateY(2px) scale(.985)}' +
+  '.bx-hover--tilt:hover{transform:perspective(900px) rotateX(2.5deg) rotateY(-2.5deg)}' +
   '}';

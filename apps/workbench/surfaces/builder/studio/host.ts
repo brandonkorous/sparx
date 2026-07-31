@@ -62,6 +62,17 @@ export interface StudioHostOptions {
    *
    *  Passed in like `renderHostNode` for the same reason: it returns React. */
   inspectorPanels?: BuilderHost['inspectorPanels'];
+  /** Whole TABS in the inspector rail, peers of Design and Settings (silicaui 0.43).
+   *
+   *  The coarser of the two inspector seams. `inspectorPanels` above adds sections
+   *  INSIDE Settings and is node-scoped; this one carries a surface big enough to
+   *  own a tab, and — with `scope: "panel"` — one that is about the DOCUMENT rather
+   *  than the selected element. sparx's History (draft versions + published releases)
+   *  is exactly that: it must survive the author clicking empty canvas, which a
+   *  node-scoped contribution cannot.
+   *
+   *  Passed in like `renderHostNode` for the same reason: it returns React. */
+  inspectorTabs?: BuilderHost['inspectorTabs'];
 }
 
 /** The host cores the Insert palette offers (docs/122) — `HOST_COMPONENTS` mapped
@@ -138,5 +149,6 @@ export function buildStudioHost(opts: StudioHostOptions): BuilderHost {
     ...(opts.renderHostNode ? { renderHostNode: opts.renderHostNode } : {}),
     ...(opts.pickAsset ? { pickAsset: opts.pickAsset } : {}),
     ...(opts.inspectorPanels ? { inspectorPanels: opts.inspectorPanels } : {}),
+    ...(opts.inspectorTabs ? { inspectorTabs: opts.inspectorTabs } : {}),
   };
 }

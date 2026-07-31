@@ -119,7 +119,7 @@ describe('serializeTreeToHtml', () => {
 describe('serialize — curated leaves go through renderLeaf', () => {
   it('renders a Heading leaf as a real heading element wearing its class', () => {
     const html = serializeNodeToHtml(
-      node({ id: 'h', type: 'Heading', class: 'st-h', props: { level: 'h2', text: 'Hello' } }),
+      node({ id: 'h', type: 'Heading', class: 'h2', props: { level: 'h2', text: 'Hello' } }),
       { pretty: false }
     );
     expect(html).toContain('Hello');

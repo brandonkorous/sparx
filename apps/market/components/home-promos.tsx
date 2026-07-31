@@ -34,10 +34,7 @@ function PromoCard({ promo }: { promo: PromoCardData }) {
             className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
           />
         ) : (
-          <span
-            className="text-base-content flex h-full w-full items-center justify-center"
-            aria-hidden
-          >
+          <span className="flex h-full w-full items-center justify-center" aria-hidden>
             <ImageOff size={28} />
           </span>
         )}
@@ -45,9 +42,9 @@ function PromoCard({ promo }: { promo: PromoCardData }) {
       <div className="p-4">
         <div className="flex items-center gap-2">
           <Icon size={18} aria-hidden className={hueText(promo.color)} />
-          <span className="text-base-content text-lg font-semibold">{promo.label}</span>
+          <span className="text-lg font-semibold">{promo.label}</span>
         </div>
-        <span className="text-base-content mt-1 block text-[0.875rem]">{promo.sub}</span>
+        <span className="mt-1 block text-[0.875rem]">{promo.sub}</span>
       </div>
     </LinkCard>
   );

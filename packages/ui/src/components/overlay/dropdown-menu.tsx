@@ -38,7 +38,7 @@ DropdownMenuContent.displayName = DropdownMenuPrimitive.Content.displayName;
 
 const itemBase = [
   'relative flex cursor-pointer select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none',
-  'text-base-content',
+  '',
   'transition-colors duration-100',
   'focus:bg-base-200',
   'data-[disabled]:pointer-events-none data-[disabled]:opacity-40',
@@ -102,7 +102,7 @@ export const DropdownMenuLabel = React.forwardRef<
   <DropdownMenuPrimitive.Label
     ref={ref}
     className={cn(
-      'text-base-content px-2 py-1.5 text-xs font-medium tracking-wide uppercase',
+      'px-2 py-1.5 text-xs font-medium tracking-wide uppercase',
       inset && 'pl-8',
       className
     )}
@@ -127,7 +127,7 @@ export const DropdownMenuShortcut = ({
   className,
   ...props
 }: React.HTMLAttributes<HTMLSpanElement>) => (
-  <span className={cn('text-base-content ml-auto text-xs tracking-wide', className)} {...props} />
+  <span className={cn('ml-auto text-xs tracking-wide', className)} {...props} />
 );
 DropdownMenuShortcut.displayName = 'DropdownMenuShortcut';
 

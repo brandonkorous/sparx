@@ -59,7 +59,7 @@ export function FacetBar({
           <div key={facet.key} className="flex flex-col gap-2">
             {/* A filter GROUP label over its controls — a real form label, not an
                 eyebrow. Full ink so it reads. */}
-            <span className="text-base-content text-small font-medium">{facet.label}</span>
+            <span className="text-small font-medium">{facet.label}</span>
             <div className="flex flex-wrap items-center gap-2">
               {values.map((value) => {
                 const isOn = selected.includes(value);
@@ -101,10 +101,7 @@ export function FacetBar({
       })}
 
       {anySelected ? (
-        <a
-          href={`/market/${category.id}`}
-          className="text-base-content text-caption self-start underline"
-        >
+        <a href={`/market/${category.id}`} className="text-caption self-start underline">
           Clear all filters
         </a>
       ) : null}

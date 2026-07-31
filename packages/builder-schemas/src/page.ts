@@ -23,6 +23,26 @@ export const PageSlug = z
   .max(160)
   .regex(/^[a-z0-9]+(?:[-/][a-z0-9]+)*$/, 'Use lowercase letters, numbers, and hyphens.');
 
+/** `PageSlug` as a WRITE input: the root page normalized to `null` before the
+ *  pattern is applied.
+ *
+ *  The home page's stored form is `null` — `apps/site/lib/page-slug.ts` maps `/` to
+ *  `null` on the read side, and `PageSlug` deliberately forbids both the empty
+ *  string and a leading slash. But nothing normalized on the way IN, so a writer
+ *  that sent the URL form persisted `slug: '/'` — a value the very same schema then
+ *  refuses, leaving the page uneditable ("Use lowercase letters, numbers, and
+ *  hyphens.") until its slug changed, and colliding with the slugless page that is
+ *  the real root.
+ *
+ *  Accepting the URL form and storing the canonical one keeps both spellings
+ *  working without letting the un-editable state exist: `'/'` and `''` → `null`,
+ *  `'/about/'` → `'about'`. Matches `captureSite`'s `normalizeSlug`. */
+export const PageSlugInput = z.preprocess((raw) => {
+  if (typeof raw !== 'string') return raw;
+  const trimmed = raw.trim().replace(/^\/+|\/+$/g, '');
+  return trimmed === '' ? null : trimmed;
+}, PageSlug.nullish());
+
 /** A page's chrome choice: the `'none'` sentinel or a layout id. Mirrors the CHECK
  *  constraint on `builder_pages.frame_id` so a bad value is rejected at the API rather
  *  than by Postgres — a 400 naming the field beats a 500 naming a constraint. */
@@ -112,7 +132,7 @@ export const CreatePageInput = z.object({
   name: z.string().min(1).max(255),
   kind: BuilderPageKind.default('singleton'),
   recordType: z.string().max(63).nullish(),
-  slug: PageSlug.nullish(),
+  slug: PageSlugInput,
   tree: BuilderNodeSchema.optional(),
   ...PageSeoShape,
 });
@@ -125,7 +145,7 @@ export const UpdatePageInput = z
     name: z.string().min(1).max(255).optional(),
     tree: BuilderNodeSchema.optional(),
     recordType: z.string().max(63).nullish(),
-    slug: PageSlug.nullish(),
+    slug: PageSlugInput,
     /**
      * Which chrome wraps this page (doc 139 §5). Three values, and the two that look
      * empty mean opposite things:

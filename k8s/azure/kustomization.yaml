@@ -1,0 +1,234 @@
+# AKS overlay — the deployed platform, on `aks-sparx-prod-cus` in centralus.
+#
+# Same shape as k8s/local and for the same reasons; read that file for the
+# decisions both share (why the namespace stays `sparx-prod`, why HPAs and PDBs
+# are deleted, why the workers are BestEffort). Only the DIFFERENCES are
+# explained here.
+#
+# What differs from the workstation overlay:
+#   1. images     → ghcr.io/brandonkorous/sparx/*, pulled from a registry rather
+#                   than read out of a local Docker daemon
+#   2. Postgres   → MANAGED (psql-sparx-prod-cus). No in-cluster StatefulSet.
+#   3. Redis      → dropped entirely
+#   4. storage    → Azure Disk via the `managed-csi` StorageClass
+#   5. resources  → the node is 8 GiB with a managed database beside it, so the
+#                   apps get slightly more headroom than on a 16 GiB laptop that
+#                   is also hosting Postgres
+#
+# Deployed by .github/workflows/deploy-azure.yml, not by hand.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sparx-prod
+
+resources:
+  - namespace.yaml
+  - ../apps
+  - ../cronjobs
+  # Workers, Caddy, cloudflared, the ingress routing table.
+  - ../self-hosted
+  # Typesense + the media volume. NOT Postgres (managed) and NOT Redis.
+  - infra.yaml
+
+# CI rewrites the tag to the commit SHA before applying
+# (`kustomize edit set image`), so a rollout is always to an immutable digest and
+# `kubectl rollout undo` means something. `latest` here is a placeholder that
+# should never actually be deployed.
+images:
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-rest
+    newName: ghcr.io/brandonkorous/sparx/api-rest
+    newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-graphql
+    newName: ghcr.io/brandonkorous/sparx/api-graphql
+    newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-mcp
+    newName: ghcr.io/brandonkorous/sparx/api-mcp
+    newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/mcp-site
+    newName: ghcr.io/brandonkorous/sparx/mcp-site
+    newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/workbench
+    newName: ghcr.io/brandonkorous/sparx/workbench
+    newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/web
+    newName: ghcr.io/brandonkorous/sparx/web
+    newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/site
+    newName: ghcr.io/brandonkorous/sparx/site
+    newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/market
+    newName: ghcr.io/brandonkorous/sparx/market
+    newTag: latest
+  # The 11 workers carry `sparx/<name>:local` in the shared base, since that base
+  # is written for the workstation case. Rewrite them the same way.
+  - name: sparx/email-worker
+    newName: ghcr.io/brandonkorous/sparx/email-worker
+    newTag: latest
+  - name: sparx/push-worker
+    newName: ghcr.io/brandonkorous/sparx/push-worker
+    newTag: latest
+  - name: sparx/markup-recompute-worker
+    newName: ghcr.io/brandonkorous/sparx/markup-recompute-worker
+    newTag: latest
+  - name: sparx/media-worker
+    newName: ghcr.io/brandonkorous/sparx/media-worker
+    newTag: latest
+  - name: sparx/commerce-indexer
+    newName: ghcr.io/brandonkorous/sparx/commerce-indexer
+    newTag: latest
+  - name: sparx/channel-sync-worker
+    newName: ghcr.io/brandonkorous/sparx/channel-sync-worker
+    newTag: latest
+  - name: sparx/social-worker
+    newName: ghcr.io/brandonkorous/sparx/social-worker
+    newTag: latest
+  - name: sparx/legal-seed-worker
+    newName: ghcr.io/brandonkorous/sparx/legal-seed-worker
+    newTag: latest
+  - name: sparx/platform-crm-worker
+    newName: ghcr.io/brandonkorous/sparx/platform-crm-worker
+    newTag: latest
+  - name: sparx/domain-worker
+    newName: ghcr.io/brandonkorous/sparx/domain-worker
+    newTag: latest
+  - name: sparx/dropship-worker
+    newName: ghcr.io/brandonkorous/sparx/dropship-worker
+    newTag: latest
+
+configMapGenerator:
+  - name: sparx-app-env
+    behavior: create
+    envs:
+      - app-env-configmap.env
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+replicas:
+  - name: api-rest
+    count: 1
+  - name: api-graphql
+    count: 1
+  - name: api-mcp
+    count: 1
+  - name: mcp-site
+    count: 1
+  - name: workbench
+    count: 1
+  - name: web
+    count: 1
+  - name: site
+    count: 1
+  - name: market
+    count: 1
+
+patches:
+  # --- Same deletions as the local overlay, same reasons ----------------------
+  - target:
+      kind: HorizontalPodAutoscaler
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: placeholder
+      $patch: delete
+  - target:
+      kind: PodDisruptionBudget
+    patch: |-
+      apiVersion: policy/v1
+      kind: PodDisruptionBudget
+      metadata:
+        name: placeholder
+      $patch: delete
+
+  # --- Workload Identity ServiceAccount ---------------------------------------
+  # `sparx-app` is annotated for GCP Workload Identity. It is never created here
+  # and nothing in this cluster needs GCP credentials, so a pod referencing it
+  # would stay Pending forever.
+  - target:
+      kind: Deployment
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: placeholder
+      spec:
+        template:
+          spec:
+            serviceAccountName: default
+  - target:
+      kind: CronJob
+    patch: |-
+      apiVersion: batch/v1
+      kind: CronJob
+      metadata:
+        name: placeholder
+      spec:
+        jobTemplate:
+          spec:
+            template:
+              spec:
+                serviceAccountName: default
+
+  # --- Registry pull ----------------------------------------------------------
+  # The images live in a PRIVATE GHCR namespace, so every pod needs the pull
+  # secret. Created by the deploy workflow from a GitHub token, not committed.
+  #
+  # imagePullPolicy is left at the base's `Always` for the apps: unlike the
+  # workstation overlay (which pins `Never` because images are read straight out
+  # of the local Docker daemon), here the tag is rewritten to an immutable SHA by
+  # CI, so `Always` costs one registry HEAD request and guarantees the node never
+  # serves a stale cached layer.
+  - target:
+      kind: Deployment
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: placeholder
+      spec:
+        template:
+          spec:
+            imagePullSecrets:
+              - name: ghcr
+
+  # --- api-rest ---------------------------------------------------------------
+  # Larger ceiling than its siblings: it loads a ~50-package workspace through
+  # runtime tsx at boot, which is what made 512Mi crashloop on Autopilot and
+  # forced `--max-old-space-size=384`. NODE_OPTIONS must move with the limit or
+  # the heap stays capped regardless of what the container is allowed.
+  #
+  # It also mounts the media volume, because with GCS_MEDIA_BUCKET unset
+  # packages/media resolves to LocalStorage and api-rest STREAMS variants from
+  # the same volume media-worker writes them to.
+  - target:
+      kind: Deployment
+      name: api-rest
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-rest
+      spec:
+        strategy:
+          type: Recreate
+          rollingUpdate: null
+        template:
+          spec:
+            containers:
+              - name: api-rest
+                env:
+                  - name: NODE_OPTIONS
+                    value: '--max-old-space-size=1024'
+                volumeMounts:
+                  - name: media
+                    mountPath: /media
+                resources:
+                  requests:
+                    cpu: '50m'
+                    memory: '128Mi'
+                  limits:
+                    memory: '1536Mi'
+            volumes:
+              - name: media
+                persistentVolumeClaim:
+                  claimName: sparx-media

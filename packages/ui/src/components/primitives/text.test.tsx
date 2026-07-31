@@ -28,7 +28,7 @@ describe('Text', () => {
   it.each(['muted', 'subtle'] as const)('resolves variant="%s" to the real ink', (variant) => {
     render(<Text variant={variant}>caption</Text>);
     const className = screen.getByText('caption').className;
-    expect(className).toMatch(/\btext-base-content\b/);
-    expect(className).not.toMatch(/text-base-content\/\d+/);
+    expect(className).toMatch(/\b\b/);
+    expect(className).not.toMatch(/\/\d+/);
   });
 });

@@ -299,28 +299,10 @@ const BRAND_COLORS: [keyof Json, string][] = [
 
 const brandHandler: KindHandler = {
   kind: 'brand',
+  // A site's brand is its OWN `brand_override` — the primary included. Reading the
+  // primary's from TenantBrand meant a blueprint update diffed against, and wrote
+  // back to, the tenant-wide default that every unbranded sibling inherits.
   async extractCurrent(env, _artifact) {
-    if (env.isPrimary) {
-      const row = await withTenant(env.ctx, (tx) =>
-        tx.tenantBrand.findUnique({ where: { tenantId: env.tenantId } })
-      );
-      if (!row) return null;
-      const colors: Json = {};
-      for (const [k, col] of BRAND_COLORS) {
-        const v = (row as unknown as Json)[col];
-        if (v != null) colors[k] = v;
-      }
-      return compact({
-        businessName: row.businessName,
-        tagline: row.tagline ?? undefined,
-        colors,
-        fonts: { heading: row.fontHeading, body: row.fontBody },
-        logoLight: row.logoLightMediaId ?? undefined,
-        logoDark: row.logoDarkMediaId ?? undefined,
-        favicon: row.faviconMediaId ?? undefined,
-      });
-    }
-    // Secondary: the per-site override carries only the subset the installer writes.
     const prop = await withTenant(env.ctx, (tx) =>
       tx.property.findUnique({
         where: { id: env.propCtx.propertyId },
@@ -328,44 +310,37 @@ const brandHandler: KindHandler = {
       })
     );
     const ov = (prop?.brandOverride ?? {}) as Json;
+    if (Object.keys(ov).length === 0) return null;
     const colors: Json = {};
-    if (ov.colorPrimary != null) colors.primary = ov.colorPrimary;
-    if (ov.colorPrimaryForeground != null) colors.primaryForeground = ov.colorPrimaryForeground;
-    if (ov.colorAccent != null) colors.accent = ov.colorAccent;
+    for (const [k, col] of BRAND_COLORS) {
+      if (ov[col] != null) colors[k] = ov[col];
+    }
     return compact({
       businessName: ov.businessName,
+      tagline: ov.tagline ?? undefined,
       colors,
-      logoLight: ov.logoMediaId ?? undefined,
+      fonts: { heading: ov.fontHeading, body: ov.fontBody },
+      // `logoMediaId` is the legacy single-logo key; an override written before the
+      // light/dark split still carries the light logo there.
+      logoLight: ov.logoLightMediaId ?? ov.logoMediaId ?? undefined,
+      logoDark: ov.logoDarkMediaId ?? undefined,
+      favicon: ov.faviconMediaId ?? undefined,
     });
   },
   async writeMerged(env, _artifact, merged) {
     const colors = (merged.colors ?? {}) as Json;
     const fonts = (merged.fonts ?? {}) as Json;
-    if (env.isPrimary) {
-      const data: Prisma.TenantBrandUncheckedUpdateInput = {};
-      if (typeof merged.businessName === 'string') data.businessName = merged.businessName;
-      if (merged.tagline !== undefined) data.tagline = merged.tagline;
-      for (const [k, col] of BRAND_COLORS) {
-        if (colors[k] != null) (data as Json)[col] = colors[k];
-      }
-      if (typeof fonts.heading === 'string') data.fontHeading = fonts.heading;
-      if (typeof fonts.body === 'string') data.fontBody = fonts.body;
-      if (merged.logoLight != null) data.logoLightMediaId = merged.logoLight;
-      if (merged.logoDark != null) data.logoDarkMediaId = merged.logoDark;
-      if (merged.favicon != null) data.faviconMediaId = merged.favicon;
-      if (Object.keys(data).length === 0) return;
-      await withTenant(env.ctx, (tx) =>
-        tx.tenantBrand.update({ where: { tenantId: env.tenantId }, data })
-      );
-      return;
-    }
     const override: Json = {};
     if (typeof merged.businessName === 'string') override.businessName = merged.businessName;
-    if (colors.primary != null) override.colorPrimary = colors.primary;
-    if (colors.primaryForeground != null)
-      override.colorPrimaryForeground = colors.primaryForeground;
-    if (colors.accent != null) override.colorAccent = colors.accent;
-    if (merged.logoLight != null) override.logoMediaId = merged.logoLight;
+    if (merged.tagline !== undefined) override.tagline = merged.tagline;
+    for (const [k, col] of BRAND_COLORS) {
+      if (colors[k] != null) override[col] = colors[k];
+    }
+    if (typeof fonts.heading === 'string') override.fontHeading = fonts.heading;
+    if (typeof fonts.body === 'string') override.fontBody = fonts.body;
+    if (merged.logoLight != null) override.logoLightMediaId = merged.logoLight;
+    if (merged.logoDark != null) override.logoDarkMediaId = merged.logoDark;
+    if (merged.favicon != null) override.faviconMediaId = merged.favicon;
     if (Object.keys(override).length === 0) return;
     await withTenant(env.ctx, async (tx) => {
       const prop = await tx.property.findUnique({

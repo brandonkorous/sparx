@@ -152,8 +152,30 @@ export function compiledToSilicaTheme(compiled: CompiledThemeV2, name = 'tenant'
   };
 }
 
+/** A custom-property name: `--` then a slug. Matches silicaui's own `DECL_RE` for
+ *  theme CSS pasted into the builder. */
+const TOKEN_KEY_RE = /^--[a-zA-Z][a-zA-Z0-9-]*$/;
+
+/** Anything that could end the declaration or the block, or open a new context. */
+const TOKEN_VALUE_RE = /[;{}<>]|\/\*|@import|expression\(/i;
+
+/**
+ * `--key:value;` pairs, skipping any entry that isn't one.
+ *
+ * The maps reaching here are NOT a validated surface: `SilicaThemeInput` stores a
+ * theme's token bag opaquely (`z.record(z.string(), z.unknown())`), so an MCP
+ * `set_silica_theme` call, a blueprint manifest, or an imported marketplace theme
+ * can put an arbitrary string in either position — and the result is concatenated
+ * into a `<style>` block via `dangerouslySetInnerHTML`. A key of
+ * `--x:red}body{display:none` would escape the rule entirely.
+ *
+ * A malformed entry is DROPPED rather than escaped: there is no legitimate token
+ * called that, and a theme silently missing one token degrades to the inherited
+ * value, where a mangled one would take the whole stylesheet down with it.
+ */
 function declBlock(vars: Record<string, string>): string {
   return Object.entries(vars)
+    .filter(([k, v]) => TOKEN_KEY_RE.test(k) && typeof v === 'string' && !TOKEN_VALUE_RE.test(v))
     .map(([k, v]) => `${k}:${v};`)
     .join('');
 }

@@ -20,7 +20,7 @@ import { Container } from '@/components/ui/layout';
 
 // Shared nav-link chrome (primary destinations + category strip).
 const navLink =
-  'inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-medium text-base-content transition-colors hover:bg-base-200 hover:text-base-content';
+  'inline-flex items-center gap-1.5 whitespace-nowrap rounded-md px-2.5 py-2 text-sm font-medium transition-colors hover:bg-base-200';
 
 export function SiteHeader() {
   return (
@@ -33,7 +33,7 @@ export function SiteHeader() {
             className="inline-flex shrink-0 items-baseline"
           >
             <Wordmark size={22} />
-            <span className="text-base-content ml-0.5 text-sm font-medium">.market</span>
+            <span className="ml-0.5 text-sm font-medium">.market</span>
           </Link>
 
           {/* The search takes the middle and grows — the marketplace signature. */}

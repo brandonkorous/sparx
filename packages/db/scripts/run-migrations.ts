@@ -221,17 +221,16 @@ async function main(): Promise<void> {
     // builder tables per-tenant (it sets app.tenant_id itself), and the owner
     // role is guaranteed DML grants on the tables it owns. `--apply` writes;
     // without it the script only dry-runs.
+    // `migrateTree` emits silicaui classes directly (`btn btn-primary btn-md`),
+    // so this is safe to run after the `st-*` → silica migration — it cannot
+    // reintroduce the retired vocabulary.
+    //
+    // There WAS a second step here, an `sf-` → `st-` prefix normalizer. It is
+    // gone with the rest of `st-*`: running it after that migration would have
+    // written the retired prefix back into trees the migration had just cleaned.
+    // Its script is deleted (docs/implementation/st-token-retirement.md §4).
     console.log('[migrate] running Builder box→class backfill…');
     await run('pnpm', ['exec', 'tsx', 'scripts/backfill-builder-class.ts', '--apply'], {
-      ...baseEnv,
-      DATABASE_URL: migrationUrl,
-    });
-    // Then normalize the CSS prefix on those class strings: `sf-` → `st-`
-    // (store→site rename, docs/34 §5). Runs AFTER box→class so it catches any
-    // `sf-` the class backfill just emitted; idempotent, so a tree already on
-    // `st-` passes through untouched.
-    console.log('[migrate] running Builder sf-→st- prefix backfill…');
-    await run('pnpm', ['exec', 'tsx', 'scripts/backfill-sf-to-st.ts', '--apply'], {
       ...baseEnv,
       DATABASE_URL: migrationUrl,
     });
@@ -247,9 +246,7 @@ async function main(): Promise<void> {
       DATABASE_URL: migrationUrl,
     });
   } else {
-    console.log(
-      '[migrate] RUN_BACKFILL!=true, skipping Builder class + sf-→st- + Property.name backfills.'
-    );
+    console.log('[migrate] RUN_BACKFILL!=true, skipping Builder class + Property.name backfills.');
   }
 
   console.log('[migrate] done.');

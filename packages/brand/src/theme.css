@@ -74,7 +74,26 @@
   --color-error: #b42318;
   --color-error-content: #ffffff;
 
-  /* --color-neutral: #0c1433; */
+  /* neutral — the INVERSE UTILITY SURFACE: dark bands (`bg-neutral`), the dark
+     button (`btn-neutral`), tooltips, mockup chrome. It is deliberately a
+     desaturated SLATE, not a second navy, so it reads as a different ROLE from
+     `secondary`.
+
+     oklch(30% 0.022 265). Hue 265 matches the base ramp's cool cast (base-200
+     and base-300 are both h=265) so it sits in the family; chroma 0.022 is about
+     a THIRD of secondary's 0.062, which is what keeps it legible as "neutral"
+     rather than "navy again."
+
+     This was previously `#0c1433` and commented out, correctly: that value is
+     byte-identical to `--color-secondary`, i.e. a contrast ratio of 1.00 against
+     it. Two registered color names resolving to one color is not a palette, and
+     it made `bg-neutral` and `bg-secondary` indistinguishable wherever they met.
+
+     Contrast: 13.6:1 against `--color-neutral-content` (#ffffff) — past AAA at
+     every size — and a 1.32 step off `secondary`, which is a visible surface
+     change without being a clash. The three sparx darks now form a deliberate
+     ladder: near-black canvas → brand navy (`secondary`) → utility slate. */
+  --color-neutral: #282e39;
   --color-neutral-content: #ffffff;
 
   /* danger — the N-th named color. sparx `statusTone()` returns `danger`, so we
@@ -116,7 +135,21 @@
   --color-error: #ef4444;
   --color-error-content: #ffffff;
 
-  /* --color-neutral: #08111f; */
+  /* neutral — see the light theme's note. In DARK the constraint inverts and is
+     stricter: an inverse surface on an already-dark canvas has to be RAISED, not
+     sunk, or the band disappears into the page.
+
+     oklch(34% 0.022 265) — the same hue and chroma as light, four points lighter,
+     which puts it 1.68 clear of the dark canvas (`base-100` #070a16) and 1.71
+     clear of `base-200`. That is a legible surface step.
+
+     The previous value, `#08111f`, was commented out for exactly this reason:
+     it measured 1.04 against the dark canvas. A `bg-neutral` band rendered with
+     it was, for practical purposes, invisible — the Timeline section on the
+     homepage would simply have had no band at all in dark mode.
+
+     Contrast against `--color-neutral-content` (#ffffff) is 11.8:1. */
+  --color-neutral: #323844;
   --color-neutral-content: #ffffff;
 
   /* danger — see the light theme's note; same hue as `error`, own name so the
@@ -201,7 +234,13 @@
   --color-module-builder: #4f46e5; /* indigo-600 — the site-building foundation module */
   --color-module-builder-content: #ffffff;
   --color-module-commerce: #f97316; /* orange */
-  --color-module-commerce-content: #ffffff; /* white fails AA on this fill */
+  /* Was #ffffff, which measures 2.80:1 on this fill — failing not just AA's 4.5
+     but the 3.0 LARGE-text floor too, the only module pair in this block that
+     did. The comment beside it already said "white fails AA on this fill"; the
+     value simply never followed, while cms/crm/email/inventory all carry that
+     same note AND a dark ink. This is orange-950, the dark tint of the module's
+     own hue, exactly matching how those four resolve it: 5.58:1. */
+  --color-module-commerce-content: #431407; /* orange-950 — white measures 2.80:1 here */
   --color-module-cms: #14b8a6; /* teal */
   --color-module-cms-content: #042f2e; /* white fails AA on this fill */
   --color-module-crm: #06b6d4; /* cyan */
@@ -356,4 +395,59 @@
 [data-module='platform'] {
   --color-module: var(--color-module-platform);
   --color-module-content: var(--color-module-platform-content);
+}
+
+/* ── Focus ring ──────────────────────────────────────────────────────────────
+ *
+ * ONE definition of the platform's focus treatment, for every sparx-owned app —
+ * workbench, web, market and admin all `@import` this file.
+ *
+ * Why it exists: silicaui's plugin emits colour utilities for `bg-`, `text-` and
+ * `border-` only. There is no `ring-<color>`, and the apps deliberately do NOT
+ * bridge colours into Tailwind's own `@theme` namespace (colour is owned
+ * entirely by the silica plugin). So a branded focus ring could only be spelled
+ * `focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]` — and it was,
+ * at 43 call sites, every one a place the treatment would have to be edited
+ * again. That is the propagation break DESIGN.md's Contract exists to stop, so
+ * the recipe lives here once.
+ *
+ * Shape deliberately MATCHES silica's own focus idiom rather than inventing a
+ * parallel one — see any component in @wizeworks/silicaui:
+ *
+ *     outline: var(--focus-width, 2px) solid <accent>;
+ *     outline-offset: var(--focus-offset, 2px);
+ *
+ * `outline` (not a box-shadow ring) is what silica uses, it honours the same
+ * `--focus-width` / `--focus-offset` knobs silica reads, and it never fights a
+ * component's own `box-shadow`.
+ *
+ * PLAIN CSS, not `@utility`, on purpose: Tailwind v4 does not pick up `@utility`
+ * declarations from an `@import`ed file — verified with the CLI, the class is
+ * simply never emitted. Ordinary rules in this file DO survive the import, so a
+ * plain class is what gives all four apps one definition. These carry their own
+ * `:focus-visible`, so they need no Tailwind variant support.
+ */
+.focus-ring:focus-visible {
+  outline: var(--focus-width, 2px) solid var(--color-primary);
+  outline-offset: var(--focus-offset, 2px);
+}
+
+/* Semantic variants — for a control that is itself a success or destructive
+ * affordance, so the ring agrees with what it wraps. */
+.focus-ring-success:focus-visible {
+  outline: var(--focus-width, 2px) solid var(--color-success);
+  outline-offset: var(--focus-offset, 2px);
+}
+
+.focus-ring-danger:focus-visible {
+  outline: var(--focus-width, 2px) solid var(--color-danger);
+  outline-offset: var(--focus-offset, 2px);
+}
+
+/* A container that rings when something INSIDE it takes focus — a combobox
+ * shell wrapping its input, an editor frame wrapping its contenteditable. Same
+ * treatment, different trigger: `:focus-within`, not `:focus-visible`. */
+.focus-ring-within:focus-within {
+  outline: var(--focus-width, 2px) solid var(--color-primary);
+  outline-offset: var(--focus-offset, 2px);
 }

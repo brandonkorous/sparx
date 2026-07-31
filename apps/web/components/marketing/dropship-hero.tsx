@@ -94,7 +94,7 @@ function RoutedHeader({ d, customerName }: { d: D; customerName: string }) {
       <span className="flex items-center gap-2.5">
         <Dot color={M.color} size={9} />
         <span>
-          <Text as="span" className="text-small text-base-content font-medium">
+          <Text as="span" className="text-small font-medium">
             {d.routed.number}
           </Text>
           <br />
@@ -125,9 +125,7 @@ function RoutedProfit({ d }: { d: D }) {
           key={l}
           className={`px-4 py-3.5 ${i === 0 ? '' : 'border-base-200 border-l'}`.trimEnd()}
         >
-          <div
-            className={`text-body-lg font-medium tracking-[-0.01em] ${i === 2 ? M.ink : 'text-base-content'}`}
-          >
+          <div className={`text-body-lg font-medium tracking-[-0.01em] ${i === 2 ? M.ink : ''}`}>
             {v}
           </div>
           <Text className="text-micro text-ink-subtle mt-0.5 font-mono">{l}</Text>
@@ -143,7 +141,7 @@ function RoutedTracking({ d }: { d: D }) {
       <div className="bg-base-200 border-base-300 flex items-center gap-2.5 rounded-[10px] border px-3.5 py-3">
         <TruckIcon size={16} color={M.color} />
         <span className="min-w-0">
-          <Text as="span" className="text-caption text-base-content block font-medium">
+          <Text as="span" className="text-caption block font-medium">
             {d.routed.carrier}
           </Text>
           <Text as="span" className="text-micro text-ink-subtle font-mono">

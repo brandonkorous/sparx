@@ -373,7 +373,7 @@ function Closures({
               : exceptionRange(exception);
             return (
               <div key={exception.id} className="flex items-center gap-3 py-2">
-                <Icon className="text-base-content size-4 shrink-0" aria-hidden />
+                <Icon className="size-4 shrink-0" aria-hidden />
                 <div className="flex min-w-0 flex-1 flex-col">
                   <Text as="span" className="truncate font-medium">
                     {title}

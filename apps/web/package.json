@@ -15,9 +15,11 @@
     "@sparx/app-kit": "workspace:*",
     "@sparx/attribution": "workspace:*",
     "@sparx/brand": "workspace:*",
+    "@sparx/builder-schemas": "workspace:*",
     "@sparx/chat-widget": "workspace:*",
     "@sparx/forms": "workspace:*",
     "@sparx/legal": "workspace:*",
+    "@sparx/silica-catalog": "workspace:*",
     "@sparx/site-themes": "workspace:*",
     "@sparx/story-schemas": "workspace:*",
     "@sparx/ui": "workspace:*",
@@ -31,6 +33,7 @@
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "@wizeworks/silicaui": "catalog:",
+    "@wizeworks/silicaui-html": "catalog:",
     "@wizeworks/silicaui-react": "catalog:"
   },
   "devDependencies": {

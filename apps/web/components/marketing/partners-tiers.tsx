@@ -113,11 +113,7 @@ function TierBadge({ tier }: { tier: PartnerTier }) {
 }
 
 function Commission({ children }: { children: ReactNode }) {
-  return (
-    <div className="text-base-content mt-3.5 text-[32px] font-medium tracking-[-0.03em]">
-      {children}
-    </div>
-  );
+  return <div className="mt-3.5 text-[32px] font-medium tracking-[-0.03em]">{children}</div>;
 }
 
 function cellContent(cell: Cell): ReactNode {
@@ -192,7 +188,7 @@ function BodyCell({
     <div
       className={[
         'text-small flex items-center px-[26px] py-[18px]',
-        spine ? 'text-base-content font-medium' : 'border-base-300 border-l',
+        spine ? 'font-medium' : 'border-base-300 border-l',
         certified ? 'bg-primary/5' : '',
       ]
         .filter(Boolean)
@@ -223,7 +219,7 @@ function TierPanel({ head, tierIndex }: { head: TierHead; tierIndex: number }) {
             <li key={r.label} className="text-ink-muted text-small flex gap-2.5">
               <span className="text-primary shrink-0">✓</span>
               <span>
-                <span className="text-base-content">{r.label}</span>
+                <span>{r.label}</span>
                 {detail ? ` — ${detail}` : ''}
               </span>
             </li>

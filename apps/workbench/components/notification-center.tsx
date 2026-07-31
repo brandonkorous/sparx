@@ -96,11 +96,7 @@ export function NotificationCenter() {
           // likely: an unread-only list is empty exactly when nothing needs you.
           <EmptyState
             size="sm"
-            // Silica ships `.empty-state-description` at 65% alpha. The icon can
-            // be faded — it is decoration — but this sentence is the only thing
-            // the panel actually says, so it takes a real ink token. Faded text
-            // is for text not meant to be read; this is the opposite.
-            className="[&_.empty-state-description]:text-base-content py-6 [&_.empty-state-description]:text-sm"
+            className="py-6"
             icon={<Bell className="size-5" aria-hidden />}
             // Empty is a WIN, and the words have to say so. The first draft read
             // "Nothing needs you" — which lands as *nobody needs you*, from a

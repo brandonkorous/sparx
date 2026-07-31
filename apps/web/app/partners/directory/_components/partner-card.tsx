@@ -43,7 +43,7 @@ export function PartnerDirectoryCard({ partner }: { partner: PartnerCardData }) 
           ) : null}
         </div>
 
-        <Heading level={3} size={4} className="text-base-content">
+        <Heading level={3} size={4}>
           {partner.displayName}
         </Heading>
 

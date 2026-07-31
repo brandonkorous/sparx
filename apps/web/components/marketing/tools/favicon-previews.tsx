@@ -59,7 +59,7 @@ export function FaviconPreviews({
               style={{ borderTop: `2px solid ${themeColor}` }}
             >
               <img src={small} alt="" width={16} height={16} className="flex-shrink-0" />
-              <span className="text-base-content text-mini min-w-0 truncate font-sans">{name}</span>
+              <span className="text-mini min-w-0 truncate font-sans">{name}</span>
               <span aria-hidden className="text-ink-subtle text-small ml-auto">
                 ×
               </span>

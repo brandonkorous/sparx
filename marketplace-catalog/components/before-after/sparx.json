@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "before-after",
+  "name": "Before and after",
+  "version": "1.0.0",
+  "tagline": "Two photographs side by side, each labelled. The strongest thing a trade business can show.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Pictures",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 52
+}

@@ -12,7 +12,7 @@
 
 import { z } from 'zod';
 import { BuilderNodeSchema, type BuilderNode } from './node';
-import { BuilderPageKind, PageSeoShape, PageSlug } from './page';
+import { BuilderPageKind, PageSeoShape, PageSlugInput } from './page';
 
 /** The document format tag. Bump the version when the envelope shape changes
  *  (the node tree itself is versioned by the schema, not here). */
@@ -25,7 +25,7 @@ export const BuilderPageDocumentSchema = z.object({
   type: z.literal('page'),
   name: z.string().min(1).max(255),
   kind: BuilderPageKind.default('singleton'),
-  slug: PageSlug.nullish(),
+  slug: PageSlugInput,
   recordType: z.string().max(63).nullish(),
   // Optional SEO the envelope carries inline (title/description/canonical/og/
   // noindex) so an MCP or Import author sets page meta without a second call.

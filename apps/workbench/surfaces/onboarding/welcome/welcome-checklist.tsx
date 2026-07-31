@@ -65,7 +65,7 @@ function ProgressMeter({ completion, steps }: { completion: number; steps: Onboa
         <span className="font-medium">
           {done} of {steps.length} done
         </span>
-        <span className="text-base-content/70 text-sm tabular-nums">{pct}%</span>
+        <span className="text-sm tabular-nums">{pct}%</span>
       </div>
       <Progress value={done} max={steps.length} color="module" />
     </div>
@@ -90,7 +90,7 @@ function ChecklistItem({ step, ctx }: { step: OnboardingStep; ctx: SurfaceContex
         {step.done ? <Check className="size-3.5" /> : null}
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <p className={cx('font-medium', step.done && 'text-base-content/70')}>{step.title}</p>
+        <p className={cx('font-medium', step.done && '')}>{step.title}</p>
         <Text className="text-sm">{step.description}</Text>
       </div>
       {!step.done && step.cta ? (

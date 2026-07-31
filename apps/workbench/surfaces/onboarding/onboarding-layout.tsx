@@ -31,7 +31,7 @@ export function OnboardingHeader({ right }: { right?: ReactNode }) {
         {right}
         <button
           type="button"
-          className="text-base-content/70 hover:text-base-content text-sm"
+          className="text-base-content/70 hover:text-sm"
           onClick={() => {
             // Onboarding persists every step as it goes, so leaving loses nothing —
             // "Save & exit" is an honest label, not a promise we then break.
@@ -63,7 +63,7 @@ export function StepRail({ steps }: { steps: StepMark[] }) {
           <span
             className={cn(
               'flex items-center gap-1.5 text-sm',
-              step.status === 'current' && 'text-base-content font-medium',
+              step.status === 'current' && 'font-medium',
               step.status === 'done' && 'text-base-content/70',
               step.status === 'upcoming' && 'text-base-content/40'
             )}

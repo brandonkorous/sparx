@@ -67,7 +67,7 @@ export function storyTotals(story: StoryState): {
 function Section({ label, children }: { label: string; children: ReactNode }): ReactNode {
   return (
     <div className="border-base-300 flex flex-col gap-2 border-t pt-4">
-      <Text className="text-base-content text-sm font-medium">{label}</Text>
+      <Text className="text-sm font-medium">{label}</Text>
       {children}
     </div>
   );
@@ -101,19 +101,17 @@ export function StoryExtras({
       <Section label="Your starting point">
         {blueprint ? (
           <div className="flex flex-col gap-0.5">
-            <Text className="text-base-content font-medium">{blueprint.name}</Text>
-            <Text className="text-base-content text-sm">{blueprint.summary}</Text>
+            <Text className="font-medium">{blueprint.name}</Text>
+            <Text className="text-sm">{blueprint.summary}</Text>
           </div>
         ) : (
-          <Text className="text-base-content text-sm">
-            A blank Builder site — yours to design from scratch.
-          </Text>
+          <Text className="text-sm">A blank Builder site — yours to design from scratch.</Text>
         )}
       </Section>
 
       <Section label="Your web address">
         <div className="flex items-center gap-2">
-          <span className="text-base-content font-mono text-sm font-medium">{slug}.sparx.zone</span>
+          <span className="font-mono text-sm font-medium">{slug}.sparx.zone</span>
           <span className="ml-auto">
             <Badge color="success" variant="soft" size="sm">
               <Check className="size-3" aria-hidden /> free
@@ -139,7 +137,7 @@ export function StoryExtras({
 
       {selling ? (
         <Section label="Getting paid">
-          <Text className="text-base-content text-sm">
+          <Text className="text-sm">
             Connect <span className="font-medium">Stripe</span> to take payments — the next beat
             after you build.
           </Text>

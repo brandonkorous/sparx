@@ -3,10 +3,10 @@ title: Status is its own color axis
 node: design
 type: rule
 status: active
-applies-to: [dashboard]
+applies-to: [platform]
 sources:
   - docs/35-ui-variant-system.md
-  - apps/dashboard/DESIGN.md
+  - DESIGN.md
 ---
 
 State (status) is **orthogonal** to module hue. It is resolved through one helper pair and rendered as one component — there is **no `StatusBadge` component**.

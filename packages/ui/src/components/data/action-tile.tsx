@@ -44,7 +44,7 @@ export interface ActionTileProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 const TILE_CLASS =
-  'group relative flex items-center gap-3 rounded-lg border border-base-300 bg-base-100 p-4 text-left transition-colors hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:ring-offset-2';
+  'group relative flex items-center gap-3 rounded-lg border border-base-300 bg-base-100 p-4 text-left transition-colors hover:border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)] focus-ring';
 
 export const ActionTile = React.forwardRef<HTMLDivElement, ActionTileProps>(
   (
@@ -66,14 +66,14 @@ export const ActionTile = React.forwardRef<HTMLDivElement, ActionTileProps>(
     );
     const text = (
       <span key="text" className="min-w-0">
-        <span className="text-base-content block text-2xl leading-none font-medium">{count}</span>
-        <span className="text-base-content mt-1 block truncate text-sm">{label}</span>
+        <span className="block text-2xl leading-none font-medium">{count}</span>
+        <span className="mt-1 block truncate text-sm">{label}</span>
       </span>
     );
     const chevron = (
       <ChevronRight
         key="chevron"
-        className="text-base-content group-hover:text-module ml-auto h-4 w-4 shrink-0 transition-colors"
+        className="group-hover:text-module ml-auto h-4 w-4 shrink-0 transition-colors"
       />
     );
 
@@ -121,11 +121,11 @@ export const ActionQueue = React.forwardRef<HTMLElement, ActionQueueProps>(
     <section ref={ref} className={className} {...props}>
       {(title != null || meta != null) && (
         <div className="mb-3 flex items-center justify-between gap-3">
-          <h2 className="text-base-content flex items-center gap-2 text-[0.9375rem] font-medium">
+          <h2 className="flex items-center gap-2 text-[0.9375rem] font-medium">
             {icon && <span className="text-module">{icon}</span>}
             {title}
           </h2>
-          {meta && <span className="text-base-content text-xs">{meta}</span>}
+          {meta && <span className="text-xs">{meta}</span>}
         </div>
       )}
       <div className={cn('grid gap-3', COLUMN_CLASS[columns])}>{children}</div>

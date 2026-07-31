@@ -1,14 +1,14 @@
 'use client';
 
 // The AccountMenu render island (docs/27, docs/57 rebuild). Reads the live customer
-// session from the Builder runtime and renders the presentational @sparx/site-ui
+// session from the Builder runtime and renders the presentational
 // AccountMenu. On the live storefront the runtime supplies the real session
 // (bridged from apps/site's CustomerProvider); on the editor canvas there is none,
 // so we PREVIEW the signed-in state — the author gets to see and open the account
 // dropdown they're configuring instead of only the signed-out buttons.
 
 import * as React from 'react';
-import { AccountMenu } from '@sparx/site-ui';
+import { AccountMenu } from './atoms';
 import { useBuilderRuntime, useEditMode } from './runtime-context';
 
 export interface BuilderAccountMenuProps {

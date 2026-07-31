@@ -2,7 +2,7 @@ import * as React from 'react';
 import { cva, type VariantProps } from '../../utils/cva';
 import { cn } from '../../utils/cn';
 
-const codeVariants = cva('text-base-content bg-base-200 rounded font-mono', {
+const codeVariants = cva('bg-base-200 rounded font-mono', {
   variants: {
     variant: {
       inline: 'inline px-1.5 py-0.5 text-xs',

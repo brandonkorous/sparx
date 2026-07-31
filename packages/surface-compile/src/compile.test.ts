@@ -1,26 +1,45 @@
-// Runs the REAL Tailwind compiler — proves token utilities resolve to --st-*,
-// structural utilities still work, and unknown classes are dropped (not fatal).
+// Runs the REAL Tailwind compiler — proves token utilities resolve to silica's
+// --color-* vocabulary (NOT the retired --st-* bridge, which made this compile a
+// second source of truth for tenant colour; see docs/implementation/
+// st-token-retirement.md), structural utilities still work, and unknown classes
+// are dropped (not fatal).
 
 import { describe, expect, it } from 'vitest';
 import { type BuilderNode } from '@sparx/builder-schemas';
+import { BASE_SILICA_THEME } from '@sparx/silica-catalog';
 import { compileClasses } from './compile';
 import { buildTenantStylesheet } from './index';
 
 describe('compileClasses', () => {
-  it('maps a color utility onto the tenant --st-* var', async () => {
+  it('maps a color utility onto silica --color-* vars', async () => {
     const css = await compileClasses(['bg-base-100', 'text-primary-content']);
     expect(css).toContain('.bg-base-100');
-    expect(css).toContain('--color-base-100: var(--st-base-100)');
-    expect(css).toContain('--color-primary-content: var(--st-primary-content)');
+    expect(css).toContain('background-color: var(--color-base-100)');
+    expect(css).toContain('color: var(--color-primary-content)');
   });
 
-  it('emits structural utilities and the tenant spacing scale', async () => {
+  it('never emits the retired --st-* bridge', async () => {
+    // The whole point of the retarget: a compiled surface must not reintroduce a
+    // second colour vocabulary for the storefront theme to fight with.
+    const css = await compileClasses(['bg-primary', 'text-base-content', 'rounded-box', 'p-6']);
+    expect(css).not.toContain('--st-');
+  });
+
+  it('falls back to the platform base theme when nothing injects a theme', async () => {
+    // The :root block is a fallback only — the storefront overrides it unlayered —
+    // but it must carry a real value, not an empty custom property.
+    const css = await compileClasses(['bg-base-100']);
+    expect(css).toContain(`--color-base-100: ${BASE_SILICA_THEME.tokens['--color-base-100']}`);
+  });
+
+  it('emits structural utilities and the standard spacing scale', async () => {
     const css = await compileClasses(['flex', 'p-6', 'rounded-box']);
     expect(css).toMatch(/\.flex\b/);
     expect(css).toMatch(/display:\s*flex/);
-    // p-6 references the --spacing multiplier, which we remap to --st-space-base.
-    expect(css).toContain('--spacing: var(--st-space-base');
-    expect(css).toContain('--radius-box: var(--st-radius-box)');
+    // p-6 references the --spacing multiplier — silica has no tenant-rescalable
+    // counterpart, so it anchors to the standard unit (docs/118).
+    expect(css).toContain('--spacing: 0.25rem');
+    expect(css).toContain(`--radius-box: ${BASE_SILICA_THEME.tokens['--radius-box']}`);
   });
 
   it('drops unknown candidates without throwing', async () => {
@@ -52,7 +71,7 @@ describe('compileClasses', () => {
   });
 
   it('emits the Pillar 4 motion library, bounded z-scale, and guarded fixed', async () => {
-    const css = await compileClasses(['animate-marquee', 'z-60', 'z-80', 'st-fixed-top']);
+    const css = await compileClasses(['animate-marquee', 'z-60', 'z-80', 'bx-fixed-top']);
     // The CONTINUOUS animation library (not just the entrance set) + its keyframes.
     expect(css).toMatch(/\.animate-marquee\b/);
     expect(css).toContain('@keyframes marquee');
@@ -61,8 +80,8 @@ describe('compileClasses', () => {
     expect(css).toMatch(/\.z-80\s*\{[^}]*z-index:\s*80/);
     // The ONLY sanctioned position:fixed emitter — pinned + cross-axis capped so it
     // can never become a full-viewport clickjacking overlay (docs/98 §3.1).
-    expect(css).toMatch(/\.st-fixed-top\s*\{[^}]*position:\s*fixed/);
-    expect(css).toMatch(/\.st-fixed-top\s*\{[^}]*max-height:\s*50vh/);
+    expect(css).toMatch(/\.bx-fixed-top\s*\{[^}]*position:\s*fixed/);
+    expect(css).toMatch(/\.bx-fixed-top\s*\{[^}]*max-height:\s*50vh/);
   });
 
   it('keeps raw fixed + arbitrary z-index denied while the named z-scale passes', async () => {
@@ -119,7 +138,7 @@ describe('buildTenantStylesheet', () => {
     });
     const sheet = await buildTenantStylesheet(tree);
     expect(sheet.classes).toEqual(['bg-base-100', 'flex', 'text-base-content']);
-    expect(sheet.css).toContain('var(--st-base-100)');
+    expect(sheet.css).toContain('var(--color-base-100)');
     expect(sheet.hash).toMatch(/^[0-9a-f]{16}$/);
   });
 

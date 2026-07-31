@@ -1,8 +1,8 @@
 # sparx Platform — Frontend Component Architecture
 
-**Version:** 1.6.3
+**Version:** 1.8.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-08
+**Last Updated:** 2026-07-31
 
 ---
 
@@ -92,7 +92,7 @@ packages/
     │
     └── utils/
         ├── cn.ts              # clsx + extendTailwindMerge (registers the `soft` class family)
-        ├── colorVars.ts       # per-instance --sx-sel for Radix controls that can't take a color class
+        ├── pluginColor.ts     # slot name -> silicaui plugin color name (commerce -> module-commerce)
         ├── statusTone.ts      # statusTone / statusLabel resolvers
         └── format.ts          # formatCurrency, formatDate, formatRelative
 ```
@@ -295,9 +295,13 @@ neutral info success warning error danger module`.
 - **`size`** → `btn-xs … btn-xl`.
 - **`shape`** → `btn-square` / `btn-circle` / `btn-block` / `btn-wide`.
 
-**Radix-based controls** (Checkbox/Radio/Switch/Slider) can't take a plugin color class, so
-`@sparx/ui` sets a per-instance `--sx-sel` / `--sx-sel-fg` custom property via the
-`colorVars(color)` helper, consumed by `data-[state=checked]:bg-[var(--sx-sel)]`-style classes.
+**Selection controls follow the same rule, from silicaui directly.** `Checkbox` / `Switch` /
+`RadioGroup` / `Slider` / `Progress` are imported from `@wizeworks/silicaui-react` and take
+`checkbox-<color>`, `switch-<color>`, `progress-<color>`. `@sparx/ui` once hand-rolled them on
+Radix — where a plugin color class can't attach — and drove each accent off a per-instance
+`--sx-sel` / `--sx-sel-fg` custom property from a `colorVars(color)` helper. That was the last
+parallel token vocabulary in the repo; the components and the helper were **deleted 2026-07-31**.
+See [implementation/st-token-retirement.md](implementation/st-token-retirement.md) §7.
 
 **Tints** are the universal `soft` treatment: `bg-<color> bg-soft` paints
 `color-mix(in oklab, <accent> 15%, base)` — theme-aware, computed once, never a baked value. A
@@ -389,8 +393,9 @@ a `<ModuleProvider>` layers `bg-module bg-soft` — the universal `soft` treatme
 `color-mix(in oklab, var(--color-module) 15%, var(--color-base-100))`, theme-aware and computed
 once. It follows the nearest `<ModuleProvider>` (which sets `--color-module`), so wrapping a
 cross-module panel in its provider re-tints its `module` cards with no props. The `accent` prop is
-the escape hatch for a one-off color with no surrounding provider — it sets `--sx-sel` and tints
-from that. Same wayfinding discipline as before: tint ONE "primary" card per module hue on a
+the escape hatch for a one-off color with no surrounding provider — it names a different plugin
+color (`bg-module-commerce bg-soft`), so it resolves only where that app registered the full module
+palette. Same wayfinding discipline as before: tint ONE "primary" card per module hue on a
 cross-module page; single-module working surfaces (forms/wizards/editors) keep neutral cards.
 
 ### Badge
@@ -399,11 +404,33 @@ cross-module page; single-module working surfaces (forms/wizards/editors) keep n
 `neutral / soft / md`. Status pills are just a `<Badge color={statusTone(s)} variant="soft">` — see
 doc 35 §9. A soft badge is `bg-<color> bg-soft text-<color>`; there are no baked `-tint` tokens.
 
-### Input
+### Input, and the rest of the form tier
 
-`<Input variant size>` → silica's `input input-<size>`, with the `error` / `success` states mapping
-to a `danger` / `success` border + focus ring. Placeholder and disabled states come from the plugin;
-text uses `text-base-content`, placeholder `text-base-content/50`.
+**`Input` is silicaui's — `@sparx/ui` no longer exports one.** Nor `Textarea`, `NativeSelect`,
+`Select`, `PasswordInput`, `Combobox`, `Calendar`, `DatePicker`, `ColorPicker`, `FileUpload`, or
+`Label`. Each once had a hand-rolled twin here; all are deleted.
+
+`<Input color size>` → `input input-<color> input-<size>`. Note the axis: it's **`color`**, not a
+`variant` state enum — `color="error"` sets `--input-accent`, and that single variable drives the
+focused border AND the focus ring together, so the two can't disagree. Placeholder, hover, disabled
+and the ring all come from the plugin's `.input`; never add `focus-ring` on top (§1 — every silica
+control already rings itself).
+
+**Validation is `Field`, not a hand-built error row:**
+
+```tsx
+<Field status="error" statusMessage="Enter a valid email address.">
+  <FieldLabel required>Work email</FieldLabel>
+  <FieldControl type="email" />
+  <FieldDescription>We&apos;ll send a magic link.</FieldDescription>
+</Field>
+```
+
+`status` resolves the control's accent, its trailing icon, and the message panel at once; Base UI
+wires the ids and `aria-describedby` between the parts. Use `<FieldControl render={<Textarea />} />`
+for a non-input control, `<FieldStatus attached={false}>` for checkbox/switch/radio rows (no
+bordered control for a flush panel to sit under), and `floating` when the message must not push
+sibling fields as it appears. `SchemaFieldRenderer` in `@sparx/ui` is the worked example.
 
 ### Stat (metric card)
 
@@ -490,13 +517,13 @@ action/status primitives.
 | ------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------- |
 | `Button`     | color × variant (solid soft outline dash ghost link) | Sizes xs–xl; shapes square / circle / block / wide                                          |
 | `Badge`      | color × variant (solid soft outline dash)            | Default `neutral / soft`; status pills via `statusTone()`                                   |
-| `Input`      | default, error                                       | Sizes: sm, md, lg                                                                           |
-| `Textarea`   | default, error                                       |                                                                                             |
-| `Select`     | default, error                                       | Wraps Radix Select                                                                          |
-| `Checkbox`   | —                                                    | Wraps Radix Checkbox, uses primary color                                                    |
-| `RadioGroup` | —                                                    | Wraps Radix Radio                                                                           |
-| `Switch`     | —                                                    | Uses primary color, module-aware                                                            |
-| `Slider`     | —                                                    | Uses primary/module color                                                                   |
+| `Input`      | silicaui — `color` × `size`                          | Not in `@sparx/ui`. `color` drives border + ring off one `--input-accent`                   |
+| `Textarea`   | silicaui — `color` × `size`                          | Not in `@sparx/ui`                                                                          |
+| `Select`     | silicaui — `color` × `size`                          | Not in `@sparx/ui`. Base UI listbox; `NativeSelect` for a bare platform `<select>`          |
+| `Checkbox`   | silicaui — `color`                                   | Not in `@sparx/ui`                                                                          |
+| `RadioGroup` | silicaui — `color`                                   | Not in `@sparx/ui`                                                                          |
+| `Switch`     | silicaui — `color`                                   | Not in `@sparx/ui`; module-aware via `color="module"`                                       |
+| `Slider`     | silicaui — `color`                                   | Not in `@sparx/ui`                                                                          |
 | `Avatar`     | default, initials                                    | Sizes: sm, md, lg; falls back to initials on image error                                    |
 | `Spinner`    | —                                                    | Sizes: sm, md, lg; inherits current color                                                   |
 | `Skeleton`   | —                                                    | Pulse animation, used for loading states                                                    |
@@ -555,14 +582,21 @@ action/status primitives.
 
 ### Form
 
-| Component        | Notes                                               |
-| ---------------- | --------------------------------------------------- |
-| `Form`           | Wraps React Hook Form + Zod                         |
-| `FormField`      | Label + Input + Error message — composes primitives |
-| `DatePicker`     | Calendar popover                                    |
-| `FileUpload`     | Drag-and-drop zone                                  |
-| `ColorPicker`    | For theme customization                             |
-| `RichTextEditor` | TipTap wrapper                                      |
+Almost nothing here is ours. `Field` / `FieldLabel` / `FieldControl` / `FieldDescription` /
+`FieldStatus` / `FieldError` are silicaui's and carry the whole label ↔ control ↔ description ↔
+error contract (§8 above); so are `DatePicker`, `Calendar`, `FileUpload`, `Dropzone` and
+`ColorPicker`. The shadcn-shaped react-hook-form adapter that used to live in `@sparx/ui`
+(`Form`/`FormField`/`FormItem`/`FormLabel`/`FormControl`/`FormDescription`/`FormMessage`/
+`useFormField`) reimplemented that same wiring and is **deleted** — pair RHF's own `<Controller>`
+with `<Field>`.
+
+What `@sparx/ui` still owns:
+
+| Component             | Notes                                                                      |
+| --------------------- | -------------------------------------------------------------------------- |
+| `FormActionBar`       | The sparx save/cancel bar — dirty state, pending state, leave-guard        |
+| `RichTextEditor`      | TipTap wrapper; silica ships no equivalent                                 |
+| `SchemaFieldRenderer` | Renders a `SimpleField[]` as silica `Field` rows — the reference call site |
 
 ---
 
@@ -819,7 +853,7 @@ When wiring the dashboard component stack, the moving parts are:
 1. `@sparx/brand` owns `theme.css` — the `--color-*` authority (semantic palette + `--color-base-*`
    - the 18-module palette). Colors live here and nowhere else.
 2. `@sparx/ui` keeps the compositions (§3), the non-color `tokens.css`, and the helpers
-   (`cn` with the `soft`-family `extendTailwindMerge`, `colorVars`, `statusTone`).
+   (`cn` with the `soft`-family `extendTailwindMerge`, `pluginColor`, `statusTone`).
 3. Styled primitives come from `@wizeworks/silicaui-react`; their classes from the
    `@wizeworks/silicaui` plugin.
 4. Each app's `globals.css` imports both token files and registers the plugin naming the palette

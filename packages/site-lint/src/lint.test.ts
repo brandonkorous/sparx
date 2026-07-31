@@ -193,6 +193,36 @@ describe('links', () => {
       })
     ).toContain('link-broken');
   });
+
+  // A form's own Send button has no destination BY DESIGN — it acts on the fields it
+  // sits in. Reporting it told every owner with a working contact form that the button
+  // was broken, and the suggested remedy (choose a page for it) would have broken it.
+  // Found on the shipped `sparx` blueprint, where it fired on all 21.
+  it('leaves a form submit button alone, but still flags a destination-less one', () => {
+    expect(
+      rules({
+        pages: [
+          page({ root: body(atom('Button', '', { label: 'Send message', type: 'submit' })) }),
+        ],
+        targets: FULL_ROSTER,
+      })
+    ).not.toContain('link-no-destination');
+
+    expect(
+      rules({
+        pages: [page({ root: body(atom('Button', '', { label: 'Reset', type: 'reset' })) })],
+        targets: FULL_ROSTER,
+      })
+    ).not.toContain('link-no-destination');
+
+    // No `type` at all: a bare button outside a form really does nothing.
+    expect(
+      rules({
+        pages: [page({ root: body(atom('Button', '', { label: 'Learn more' })) })],
+        targets: FULL_ROSTER,
+      })
+    ).toContain('link-no-destination');
+  });
 });
 
 /* ── Images ─────────────────────────────────────────────────────────────────── */

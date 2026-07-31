@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "promises",
+  "name": "What you can hold us to",
+  "version": "1.0.0",
+  "tagline": "Four checkable promises. Reads as a guarantee rather than as marketing.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "How it works",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 38
+}

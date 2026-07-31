@@ -44,24 +44,22 @@ export function MerchantCard({ merchant }: { merchant: MerchantCardData }) {
               className="object-cover"
             />
           ) : (
-            <Store size={22} aria-hidden className="text-base-content" />
+            <Store size={22} aria-hidden />
           )}
         </span>
 
         <span className="flex min-w-0 flex-col gap-0.5">
-          <span className="text-base-content truncate text-[0.9375rem] font-semibold">
-            {merchant.name}
-          </span>
+          <span className="truncate text-[0.9375rem] font-semibold">{merchant.name}</span>
           {merchant.rating != null && merchant.ratingCount > 0 ? (
             <Stars rating={merchant.rating} reviewCount={merchant.ratingCount} size={13} compact />
           ) : null}
           {merchant.location ? (
-            <span className="text-base-content inline-flex items-center gap-1 text-[0.8125rem]">
+            <span className="inline-flex items-center gap-1 text-[0.8125rem]">
               <MapPin size={13} aria-hidden />
               {merchant.location}
             </span>
           ) : null}
-          <span className="text-base-content text-[0.8125rem]">{listingLabel}</span>
+          <span className="text-[0.8125rem]">{listingLabel}</span>
         </span>
       </Link>
     </Card>

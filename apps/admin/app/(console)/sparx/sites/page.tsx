@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { requireCapability } from '@sparx/operator-auth/next';
 import { logOperatorAction } from '@sparx/operator-auth';
-import { Button, Card, cn, Input, PageHeader, Stack, Text } from '@sparx/ui';
+import { Input } from '@wizeworks/silicaui-react';
+import { Button, Card, cn, PageHeader, Stack, Text } from '@sparx/ui';
 import { OperatorApiError, type OperatorSiteListResult } from '@sparx/operator';
 import { operatorApi } from '@/lib/operator-api';
 import { SitesTable } from './_components/sites-table';

@@ -97,7 +97,7 @@ export function MarginTool() {
           </Field>
           <div className="flex items-center justify-between gap-3">
             <Text as="span" className="text-ink-muted">
-              Charge <strong className="text-base-content">{money(priceForTarget)}</strong>
+              Charge <strong>{money(priceForTarget)}</strong>
             </Text>
             <Button
               type="button"

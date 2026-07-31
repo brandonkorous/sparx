@@ -53,10 +53,7 @@ export const SidebarSectionLabel = ({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn(
-      'text-base-content px-2 pb-1 text-xs font-medium tracking-wider uppercase',
-      className
-    )}
+    className={cn('px-2 pb-1 text-xs font-medium tracking-wider uppercase', className)}
     {...props}
   />
 );
@@ -71,13 +68,13 @@ const sidebarItemVariants = cva(
   [
     'group flex items-center gap-2 rounded-md px-2 py-1.5 text-sm font-medium',
     'transition-colors duration-150',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+    'focus-ring',
     'disabled:pointer-events-none disabled:opacity-40',
   ],
   {
     variants: {
       active: {
-        false: 'text-base-content hover:text-base-content hover:bg-base-200',
+        false: 'hover:bg-base-200',
         true: 'bg-module bg-soft text-module',
       },
     },
@@ -131,7 +128,7 @@ export const SidebarItem = React.forwardRef<HTMLButtonElement, SidebarItemProps>
       <span
         className={cn(
           'inline-flex h-4 w-4 shrink-0 items-center justify-center',
-          moduleIcon || active ? 'text-module' : 'text-base-content group-hover:text-base-content'
+          moduleIcon || active ? 'text-module' : undefined
         )}
       >
         {icon}

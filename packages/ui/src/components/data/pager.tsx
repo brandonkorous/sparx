@@ -1,9 +1,8 @@
 'use client';
 
 import * as React from 'react';
-import { Pagination } from '@wizeworks/silicaui-react';
+import { NativeSelect, Pagination } from '@wizeworks/silicaui-react';
 import { cn } from '../../utils/cn';
-import { NativeSelect } from '../form/native-select';
 
 // Pager — the shared offset/page-number pager that sits below a Collection/List
 // (docs/34 §7: ListToolbar → list → pager). Presentational + controlled: it
@@ -58,10 +57,7 @@ export function Pager({
 
   return (
     <div
-      className={cn(
-        'text-base-content flex flex-wrap items-center justify-between gap-3 px-1 text-xs',
-        className
-      )}
+      className={cn('flex flex-wrap items-center justify-between gap-3 px-1 text-xs', className)}
     >
       <span className="tabular-nums">
         {start.toLocaleString()}–{end.toLocaleString()} of {total.toLocaleString()}

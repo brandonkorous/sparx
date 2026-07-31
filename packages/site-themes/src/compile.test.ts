@@ -1,7 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { compileTokens, getTheme, toCommerceSiteThemeColumns } from './compile';
 import { THEME_LIST } from './presets';
-import { tokensToCssVars } from './tokens';
 
 describe('compileTokens', () => {
   it('returns complete light + dark token maps from preset defaults', () => {
@@ -44,16 +43,11 @@ describe('compileTokens', () => {
   });
 });
 
-describe('tokensToCssVars', () => {
-  it('maps tokens to --st-* custom properties with font fallbacks', () => {
-    const { light } = compileTokens('apex');
-    const vars = tokensToCssVars(light);
-    expect(vars['--st-primary']).toBe('#4f46e5');
-    expect(vars['--st-font-body']).toContain("'Inter'");
-    // Named container width compiles to a CSS length.
-    expect(vars['--st-container']).toBe('72rem');
-  });
-});
+// `tokensToCssVars` was tested here — it projected each token key onto `--st-*`
+// custom properties (dual-writing a `--color-*` twin for some). Both it and the
+// vocabulary are deleted: tokens are a DATA contract now
+// (`SiteVersion.compiledTokens`), and CSS is emitted only by the v2 engine's silica
+// projection. See docs/implementation/st-token-retirement.md.
 
 describe('theme catalog', () => {
   it('ships all six themes with light + dark defaults', () => {

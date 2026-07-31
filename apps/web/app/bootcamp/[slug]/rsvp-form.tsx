@@ -136,7 +136,7 @@ function Confirmation({ waitlisted }: { waitlisted: boolean }) {
       >
         ✓
       </span>
-      <span className="text-base-content text-h3 font-medium tracking-[-0.02em]">
+      <span className="text-h3 font-medium tracking-[-0.02em]">
         {waitlisted ? 'You’re on the waitlist' : 'Your seat is reserved'}
         <span className="text-primary">.</span>
       </span>

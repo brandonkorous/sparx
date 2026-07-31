@@ -78,7 +78,7 @@ function VendorPicker() {
             <Dot color={i === 0 ? M.color : 'var(--color-ink-subtle)'} size={8} />
           </span>
           <span className="min-w-0">
-            <Text as="span" className="text-small text-base-content block font-medium">
+            <Text as="span" className="text-small block font-medium">
               {v.name}
             </Text>
             <Text as="span" className="text-micro text-ink-subtle font-mono">
@@ -114,7 +114,7 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
       <div className="border-base-300 flex items-center gap-3 border-b px-[22px] py-[18px]">
         <span className="bg-base-200 border-base-300 h-10 w-10 shrink-0 rounded-[9px] border" />
         <span className="min-w-0">
-          <Text as="span" className="text-body text-base-content block font-medium">
+          <Text as="span" className="text-body block font-medium">
             {d.pricing.item}
           </Text>
           <Text as="span" className="text-mini text-ink-subtle font-mono">
@@ -134,7 +134,7 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
             className="border-base-200 text-caption flex items-center justify-between border-b py-3"
           >
             <span className="text-ink-muted">{l}</span>
-            <span className="text-base-content font-medium">{v}</span>
+            <span className="font-medium">{v}</span>
           </div>
         ))}
         <div className="flex items-center gap-2.5 pt-3.5">
@@ -186,7 +186,7 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
       <span className="mkt-margin-item flex items-center gap-3">
         <span className="bg-base-200 border-base-300 h-[34px] w-[34px] shrink-0 rounded-lg border" />
         <span className="min-w-0">
-          <Text as="span" className="text-small text-base-content block font-medium">
+          <Text as="span" className="text-small block font-medium">
             {d.pricing.item}
           </Text>
           <Text as="span" className="text-micro text-ink-subtle font-mono">
@@ -195,9 +195,7 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
         </span>
       </span>
       <span className="mkt-margin-cell text-caption text-ink-muted">{d.rule}</span>
-      <span className="mkt-margin-cell text-body-sm text-base-content font-medium">
-        {d.pricing.sell}
-      </span>
+      <span className="mkt-margin-cell text-body-sm font-medium">{d.pricing.sell}</span>
       <span className="mkt-margin-cell">
         <span className={`text-small font-medium ${M.ink}`}>{d.pricing.margin}</span>
         <span className="text-micro text-ink-subtle ml-2 font-mono">{d.pricing.marginPct}</span>

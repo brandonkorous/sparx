@@ -16,7 +16,7 @@ type Node = ReturnType<typeof atom>;
 
 // A bare text-style input atom (st-input) carrying the field recipe.
 const input = (type: string, name: string, placeholder: string): Node =>
-  atom('Input', 'st-c-primary st-fv-outline', { type, name, placeholder });
+  atom('Input', 'input-primary', { type, name, placeholder });
 
 // A labeled field: the Field atom (st-field) wraps the control with its label + hint.
 const field = (
@@ -43,7 +43,7 @@ const choiceRow = (control: 'Checkbox' | 'Radio', caption: string, name: string)
     'flex cursor-pointer items-center gap-3 rounded-field px-2 py-1.5 hover:bg-base-200',
     {
       children: [
-        atom(control, 'st-c-primary', { name }),
+        atom(control, control === 'Checkbox' ? 'checkbox-primary' : 'radio-primary', { name }),
         el('span', 'text-sm text-base-content', { text: caption }),
       ],
     }
@@ -97,7 +97,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     tags: ['input', 'textarea', 'multiline', 'field', 'form', 'message'],
     tree: field(
       'Your message',
-      atom('Textarea', 'st-c-primary st-fv-outline', {
+      atom('Textarea', 'input-primary', {
         name: 'message',
         placeholder: 'Tell us how we can help…',
         rows: '4',
@@ -118,7 +118,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
     tags: ['input', 'select', 'dropdown', 'field', 'form', 'option'],
     tree: field(
       'Department',
-      atom('Select', 'st-c-primary st-fv-outline', {
+      atom('Select', 'input-primary', {
         name: 'department',
         options: 'Sales\nSupport\nBilling\nPartnerships',
       })
@@ -197,7 +197,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
             }),
           ],
         }),
-        atom('Switch', 'st-c-primary', { name: 'notifications' }),
+        atom('Switch', 'toggle-primary', { name: 'notifications' }),
       ],
     }),
   }),
@@ -224,7 +224,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
             ),
           ],
         }),
-        atom('Range', 'st-c-primary w-full', { name: 'budget', min: '0', max: '10000' }),
+        atom('Range', 'range-primary w-full', { name: 'budget', min: '0', max: '10000' }),
         el('span', 'flex items-center justify-between text-xs text-base-content', {
           children: [el('span', '', { text: '$0' }), el('span', '', { text: '$10,000' })],
         }),
@@ -261,7 +261,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
             ],
           }
         ),
-        atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md rounded-l-none', {
+        atom('Button', 'btn btn-primary btn-md rounded-l-none', {
           label: 'Search',
         }),
       ],
@@ -311,7 +311,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
         }),
         field(
           'Message',
-          atom('Textarea', 'st-c-primary st-fv-outline', {
+          atom('Textarea', 'input-primary', {
             name: 'message',
             placeholder: 'How can we help?',
             rows: '4',
@@ -377,7 +377,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
         }),
         field(
           'What do you need a quote for?',
-          atom('Textarea', 'st-c-primary st-fv-outline', {
+          atom('Textarea', 'input-primary', {
             name: 'message',
             placeholder: 'Describe the project, quantities, timing — whatever helps us scope it.',
             rows: '4',
@@ -388,7 +388,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
           children: [
             field(
               'Estimated budget',
-              atom('Select', 'st-c-primary st-fv-outline', {
+              atom('Select', 'input-primary', {
                 name: 'budget',
                 options: 'Not sure yet\nUnder $1,000\n$1,000 – $5,000\n$5,000 – $25,000\n$25,000+',
               }),
@@ -396,7 +396,7 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
             ),
             field(
               'Ideal timeline',
-              atom('Select', 'st-c-primary st-fv-outline', {
+              atom('Select', 'input-primary', {
                 name: 'timeline',
                 options: 'As soon as possible\nWithin a month\n1 – 3 months\nJust exploring',
               }),
@@ -446,14 +446,14 @@ export const DATA_INPUT_CATALOG: PlatformCatalogEntry[] = [
                   }),
                 ],
               }),
-              atom('Input', 'st-c-primary st-fv-outline', {
+              atom('Input', 'input-primary', {
                 type: 'password',
                 name: 'password',
                 placeholder: '••••••••',
               }),
             ],
           }),
-          atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md w-full', {
+          atom('Button', 'btn btn-primary btn-md w-full', {
             label: 'Sign in',
           }),
           el('p', 'text-center text-sm text-base-content', {

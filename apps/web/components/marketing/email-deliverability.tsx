@@ -105,7 +105,7 @@ function SenderHealth() {
   return (
     <div className="bg-base-100 border-base-300 overflow-hidden rounded-[14px] border">
       <div className="border-base-300 bg-base-200 flex items-center justify-between border-b px-5 py-4">
-        <span className="text-body-sm text-base-content flex items-center gap-2.5 font-medium">
+        <span className="text-body-sm flex items-center gap-2.5 font-medium">
           <span className={`${E.bg} h-[9px] w-[9px] rounded-full`} /> Sender health
         </span>
         <Pill label="Verified" tone="email" />
@@ -135,7 +135,7 @@ function HealthRow({
 }) {
   return (
     <div
-      className={`text-small text-base-content flex items-center gap-3 px-5 py-3.5 ${
+      className={`text-small flex items-center gap-3 px-5 py-3.5 ${
         first ? '' : 'border-base-200 border-t'
       }`.trimEnd()}
     >

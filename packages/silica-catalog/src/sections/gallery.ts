@@ -9,7 +9,7 @@
 // block reads as a design the moment it is dropped rather than as an empty frame the
 // author has to imagine their way past.
 
-import { behave, el, part, type Node } from '@wizeworks/silicaui-html';
+import { atom, behave, el, part, type Node } from '@wizeworks/silicaui-html';
 
 import {
   actions,
@@ -207,23 +207,31 @@ export function galleryShowcase(): Node {
   ]);
 }
 
-/** A tight logo wall. Neutral tiles rather than the real marks, because a placeholder
- *  logo an author forgets to replace is a claim about a customer they may not have. */
+/** A tight logo wall — a NEUTRAL mark + wordmark per tile, so it reads as an actual
+ *  logo wall (not a text list) while still being an obvious placeholder: an abstract
+ *  monochrome mark is not a claim about a specific customer the way a real borrowed logo
+ *  would be. The author swaps each name for a real client (and can drop in a real logo
+ *  image). The mark cycles a small set of geometric icons so the six tiles read as
+ *  distinct marks rather than a repeat. */
 export function logoWall(): Node {
-  const tileNode = (): Node =>
+  const tile = (icon: string): Node =>
     el(
       'div',
-      'flex h-20 items-center justify-center rounded-box border border-base-300 bg-base-100',
+      'flex h-20 items-center justify-center gap-3 rounded-box border border-base-300 bg-base-100',
       {
         children: [
+          el('div', 'flex size-8 shrink-0 items-center justify-center rounded-field bg-base-200', {
+            children: [atom('Icon', 'size-4 text-base-content', { name: icon })],
+          }),
           el('span', 'text-base font-semibold text-base-content', { text: 'Your client' }),
         ],
       }
     );
+  const marks = ['globe', 'shield', 'zap', 'sparkles', 'command', 'box'];
   return sectionAlt([
     sectionHead('Who we work with'),
     el('div', 'grid grid-cols-2 gap-4 @2xl:grid-cols-3 @4xl:grid-cols-6', {
-      children: [tileNode(), tileNode(), tileNode(), tileNode(), tileNode(), tileNode()],
+      children: marks.map((m) => tile(m)),
     }),
   ]);
 }

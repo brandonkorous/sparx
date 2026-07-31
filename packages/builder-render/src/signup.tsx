@@ -1,7 +1,7 @@
 'use client';
 
 // Newsletter signup island — the interactive half of the Builder "Email signup"
-// block (docs/51 §7). Renders the shared presentational <Signup> from site-ui
+// block (docs/51 §7). Renders the shared presentational <Signup> composition
 // (identical markup to the static preview) and owns the submit lifecycle: it
 // validates the email, calls the Builder runtime's capture effect, then swaps the
 // form for a thank-you.
@@ -12,7 +12,7 @@
 
 import { useState } from 'react';
 
-import { Signup } from '@sparx/site-ui';
+import { Signup } from './atoms';
 
 import { useBuilderRuntime } from './runtime-context';
 

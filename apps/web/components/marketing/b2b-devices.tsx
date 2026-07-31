@@ -167,7 +167,7 @@ export function B2bBulkPo() {
               <Dot color={M.color} size={9} />
             </span>
             <div>
-              <h3 className="text-body text-base-content mt-0 mb-1.5 font-sans font-medium tracking-[-0.01em]">
+              <h3 className="text-body mt-0 mb-1.5 font-sans font-medium tracking-[-0.01em]">
                 {r.title}
               </h3>
               <Text size={13} className="m-0">

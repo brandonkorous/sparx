@@ -269,11 +269,7 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
     if (!brand.data || !siteConfig.data) return FALLBACK_THEME;
     try {
       const property = siteBrands.data?.find((s) => s.id === activeSite?.propertyId);
-      const effective = effectiveTenantBrand(
-        brand.data,
-        property?.isPrimary ?? true,
-        property?.brandOverride
-      );
+      const effective = effectiveTenantBrand(brand.data, property?.brandOverride);
       const compiled = compileThemeForTenant({
         themeKey: siteConfig.data.themeKey,
         brand: effective,
@@ -1437,7 +1433,7 @@ function HistoryDialog({
                 Loading…
               </p>
             ) : !versions || versions.length === 0 ? (
-              <p className="text-base-content/70 p-4 text-sm">
+              <p className="p-4 text-sm">
                 No published versions yet. Each time you publish, a version is saved here so you can
                 roll back.
               </p>
@@ -1451,7 +1447,7 @@ function HistoryDialog({
                     <span className="flex min-w-0 flex-1 flex-col">
                       <span className="font-medium">{new Date(v.createdAt).toLocaleString()}</span>
                       {v.subject.trim() !== '' ? (
-                        <span className="text-base-content/70 truncate text-sm">{v.subject}</span>
+                        <span className="truncate text-sm">{v.subject}</span>
                       ) : null}
                     </span>
                     {v.current ? (

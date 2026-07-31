@@ -112,7 +112,7 @@ export function twoUpCompare(): Node {
     gridTwo([
       option(
         'By the hour',
-        '£65 / hour',
+        '$65 / hour',
         ['No minimum booking', 'Pay only for time on site', 'Materials billed at cost'],
         secondaryAction('Book an hour')
       ),

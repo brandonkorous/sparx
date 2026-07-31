@@ -20,6 +20,11 @@ import { getCategory } from '@/lib/marketplace-registry';
 import { fetchChatAvailability } from '@/lib/chat';
 import { ListingCard } from '../../_components/listing-card';
 import { MarketChatCta } from '../../_components/chat-cta';
+import { ThemePreviewDetail } from '../../_components/theme-preview';
+import { ComponentPreview } from '../../_components/component-preview';
+import { ComponentPreviewStyles } from '../../_components/component-preview-styles';
+import { ComponentThemePicker } from '../../_components/component-theme-picker';
+import { PREVIEW_THEME_GROUPS } from '@/lib/preview-themes';
 
 export const revalidate = 300;
 
@@ -91,6 +96,12 @@ export default async function ListingDetailPage({
   const accent = item.accent ?? cat.accent;
   const images = item.media.filter((m) => m.kind === 'image');
   const hero = images[0]?.url ?? item.media[0]?.url;
+  // Themes + components render a LIVE preview (docs/118) — the real theme on a sample
+  // layout / the real section on the base theme, theme-aware to the viewer's
+  // light/dark — instead of a baked hero image.
+  const liveTheme = item.category === 'themes' && item.theme?.tokens ? item.theme : null;
+  const componentHtml =
+    item.category === 'components' ? (item.component?.previewHtml ?? null) : null;
   const included = includedLines(item);
   const requires = item.blueprint?.requiredModules ?? [];
   const tag =
@@ -101,13 +112,24 @@ export default async function ListingDetailPage({
     null;
 
   // The funnel hand-off. Blueprints carry their slug so a later onboarding slice
-  // can auto-install; other categories fall back to a generic signup.
+  // can auto-install; themes carry theirs so onboarding can preselect the silica
+  // theme (docs/118); other categories fall back to a generic signup.
   const ctaHref =
-    item.category === 'blueprints' ? signUpHref({ blueprint: item.slug }) : signUpHref();
+    item.category === 'blueprints'
+      ? signUpHref({ blueprint: item.slug })
+      : item.category === 'themes'
+        ? signUpHref({ theme: item.slug })
+        : item.category === 'components'
+          ? signUpHref({ component: item.slug })
+          : signUpHref();
   const ctaLabel =
     item.category === 'blueprints'
       ? 'Start with this blueprint'
-      : `Sign up to use this ${cat.singular}`;
+      : item.category === 'themes'
+        ? 'Start with this theme'
+        : item.category === 'components'
+          ? 'Start with this component'
+          : `Sign up to use this ${cat.singular}`;
 
   // "Chat with {publisher}" CTA (docs/72 §"Chat module integration"). Only for
   // tenant-published listings whose tenant has the chat module live — first-party
@@ -129,7 +151,19 @@ export default async function ListingDetailPage({
         <div className="flex flex-col items-start gap-10 lg:flex-row">
           {/* Gallery + description */}
           <div className="flex min-w-0 flex-[2_1_0] flex-col gap-5">
-            {hero ? (
+            {componentHtml ? (
+              <>
+                <ComponentPreviewStyles />
+                <div className="flex justify-end">
+                  <ComponentThemePicker groups={PREVIEW_THEME_GROUPS} />
+                </div>
+              </>
+            ) : null}
+            {liveTheme ? (
+              <ThemePreviewDetail slug={item.slug} name={item.name} theme={liveTheme} />
+            ) : componentHtml ? (
+              <ComponentPreview name={item.name} html={componentHtml} variant="detail" />
+            ) : hero ? (
               /* Hot-linked preview (docs/54). */
               <img
                 src={hero}
@@ -181,18 +215,14 @@ export default async function ListingDetailPage({
             ) : null}
 
             <div>
-              <h1 className="text-base-content text-h1 m-0 font-medium tracking-[-0.02em]">
-                {item.name}
-              </h1>
+              <h1 className="text-h1 m-0 font-medium tracking-[-0.02em]">{item.name}</h1>
               {item.tagline ? (
                 <p className="text-ink-muted text-small m-0 pt-2">{item.tagline}</p>
               ) : null}
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="text-base-content text-h4 font-medium">
-                {priceLabel(item.price)}
-              </span>
+              <span className="text-h4 font-medium">{priceLabel(item.price)}</span>
               {item.installCount > 0 ? (
                 <span className="text-ink-muted text-caption">{item.installCount} installs</span>
               ) : null}
@@ -265,7 +295,7 @@ function Detail({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="border-base-300 flex flex-col gap-2 border-t pt-4">
       {/* A spec-group label, meant to be read — full ink, not a faded caption. */}
-      <span className="text-base-content text-small font-medium">{label}</span>
+      <span className="text-small font-medium">{label}</span>
       {children}
     </div>
   );

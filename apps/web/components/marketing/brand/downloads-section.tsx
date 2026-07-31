@@ -172,7 +172,7 @@ export function DownloadsSection() {
         <div className="border-base-300 flex flex-wrap items-center justify-between gap-6 border-t pt-8">
           <div className="flex flex-col gap-1">
             <Text as="span" size={13} tone="subtle">
-              © 2026 WizeWorks, Inc. · sparx is a registered trademark of WizeWorks.
+              © 2026 WizeWorks LLC · sparx is a registered trademark of WizeWorks.
             </Text>
             {/* The system underneath. Every sparx interface — this page included —
                 is composed on silicaui, WizeWorks' open design system. An

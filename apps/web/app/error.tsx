@@ -25,9 +25,7 @@ export default function Error({
         <div className="mb-5 flex justify-center">
           <SparkMascot expression="sad" tone="light" size={104} bob={false} />
         </div>
-        <h1 className="text-h1 text-base-content m-0 mb-2.5 font-semibold">
-          This page hit an error
-        </h1>
+        <h1 className="text-h1 m-0 mb-2.5 font-semibold">This page hit an error</h1>
         <p className="text-body-sm text-ink-muted m-0 mb-6">
           Something unexpected happened. Try again, or head back to the homepage.
         </p>

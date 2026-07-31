@@ -187,6 +187,11 @@ function contactContent(): Node {
  *  flex-col` column pins the footer to the bottom on short pages. The main carries
  *  id="st-main" so the storefront skip-link targets it. Exactly one Outlet.
  *
+ *  That id keeps its `st-` spelling deliberately, and is the ONE survivor of the
+ *  retirement (docs/implementation/st-token-retirement.md): it is an HTML anchor,
+ *  not a class or a token, and a tenant may already have authored a skip link
+ *  pointing at `#st-main`. Renaming it would break that silently for no gain.
+ *
  *  `@container` on the `<main>` is the backstop for the whole responsive
  *  vocabulary: a page body drops into the Outlet, and an author who writes
  *  `@2xl:grid-cols-2` on a section they added themselves needs SOME ancestor

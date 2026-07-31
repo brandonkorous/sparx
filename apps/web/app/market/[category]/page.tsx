@@ -13,6 +13,9 @@ import { getCategory, type MarketplaceCategory } from '@/lib/marketplace-registr
 import { canonicalQueryString, type BrowseParams } from '@/lib/browse-params';
 import { ListingCard } from '../_components/listing-card';
 import { FacetBar } from '../_components/facet-bar';
+import { ComponentPreviewStyles } from '../_components/component-preview-styles';
+import { ComponentThemePicker } from '../_components/component-theme-picker';
+import { PREVIEW_THEME_GROUPS } from '@/lib/preview-themes';
 import { LoadMore } from './load-more';
 
 export const revalidate = 300;
@@ -102,6 +105,9 @@ export default async function CategoryBrowsePage({
   return (
     <Section surface="page" padding="lg">
       <div className="flex flex-col gap-10">
+        {/* The one shared base-theme stylesheet every component preview on this page
+            reads (docs/118) — emitted once here, not per card. */}
+        {cat.id === 'components' ? <ComponentPreviewStyles /> : null}
         {/* Header */}
         <div className="flex flex-col gap-5">
           <a href="/market" className="text-ink-muted text-caption no-underline">
@@ -136,6 +142,14 @@ export default async function CategoryBrowsePage({
         {/* Facets */}
         <FacetBar category={cat} facetCounts={page.facets} current={current} />
 
+        {/* Preview theme picker — re-themes every component preview on this page
+            (light/dark + any of the 20 themes), affecting only the previews. */}
+        {cat.id === 'components' ? (
+          <div className="flex justify-end">
+            <ComponentThemePicker groups={PREVIEW_THEME_GROUPS} />
+          </div>
+        ) : null}
+
         {/* Result count + sort */}
         <div className="border-base-300 flex flex-wrap items-center justify-between gap-4 border-t pt-5">
           <span className="text-ink-muted text-small">
@@ -148,9 +162,7 @@ export default async function CategoryBrowsePage({
                 <a
                   key={s.key}
                   href={sortHref(cat, current, s.key)}
-                  className={`text-caption no-underline ${
-                    isOn ? 'text-base-content font-medium' : 'text-ink-muted'
-                  }`}
+                  className={`text-caption no-underline ${isOn ? 'font-medium' : 'text-ink-muted'}`}
                 >
                   {s.label}
                 </a>

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "bundle-offer",
+  "name": "Bundle",
+  "version": "1.0.0",
+  "tagline": "Several things together at one price, with what they add up to separately.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Selling",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 5
+}

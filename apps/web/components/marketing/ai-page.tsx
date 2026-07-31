@@ -274,7 +274,7 @@ function Bubble({ who, children }: { who: 'user' | 'ai'; children: ReactNode }) 
       className={`text-caption max-w-[90%] px-3 py-2.5 font-sans ${
         user
           ? 'bg-neutral text-neutral-content self-end rounded-[14px_14px_4px_14px] font-medium'
-          : 'bg-base-100 border-base-300 text-base-content self-start rounded-[14px_14px_14px_4px] border'
+          : 'bg-base-100 border-base-300 self-start rounded-[14px_14px_14px_4px] border'
       }`}
     >
       {children}
@@ -413,7 +413,7 @@ function GroundedInData() {
       <div className="mt-14 grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
         <div className="bg-base-100 border-base-300 rounded-xl border p-7">
           <Receipt dotColor="var(--color-neutral)">A customer asks</Receipt>
-          <p className="text-h3 text-base-content mt-3.5 mb-0 font-sans font-medium tracking-[-0.01em]">
+          <p className="text-h3 mt-3.5 mb-0 font-sans font-medium tracking-[-0.01em]">
             &ldquo;Is the pour-over kit back in stock, and what&rsquo;s your return window?&rdquo;
           </p>
         </div>
@@ -431,9 +431,7 @@ function GroundedInData() {
                 {/* A record label, not an eyebrow: full ink, sentence case, no
                     uppercase-mono micro-caps introducing the value below it. */}
                 <div className="text-mini text-ink-muted font-sans">{r.label}</div>
-                <div className="text-body-sm text-base-content mt-0.5 font-sans font-medium">
-                  {r.value}
-                </div>
+                <div className="text-body-sm mt-0.5 font-sans font-medium">{r.value}</div>
                 <div className="text-caption text-ink-muted mt-0.5 font-sans">{r.sub}</div>
               </div>
             </div>
@@ -584,7 +582,7 @@ function ShapeItYourself() {
           {fields.map((f) => (
             <div key={f.label} className="mb-4">
               <span className="text-mini text-ink-muted mb-1.5 block font-sans">{f.label}</span>
-              <div className="border-base-300 text-small text-base-content rounded-lg border px-3 py-2.5 font-sans">
+              <div className="border-base-300 text-small rounded-lg border px-3 py-2.5 font-sans">
                 {f.value}
               </div>
             </div>

@@ -9,6 +9,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 allowed** — layout, spacing, sizing, positioning, one-off chrome. That is the whole sanctioned
 toolbox.
 
+**Why this rule exists — the single point of change.** silicaui is the design system; feature code
+**chooses**, it does not **paint**. Change `--color-primary` once and every button, badge, tab, link
+and focus ring across workbench, web and market follows. Change `--radius-field` and every input
+re-shapes. Add a hover treatment to `.btn` and the whole platform gets it — no hunting, no sweep, no
+migration PR. **That propagation is the entire reason silicaui was built, and it holds only where
+nothing downstream has painted over it.** Every local override is a place the change stops and a
+place someone has to find later. The test on any UI you write: _if a token or a component changed
+tomorrow, would this screen follow with zero edits here?_
+
+**This is not "never improve" — it is "improve where it propagates."** When a silica default is
+genuinely wrong: (1) check for a prop (`get_component` — there usually is one); (2) if it's a value,
+change the token in `@sparx/brand/theme.css`; (3) if it's a missing variant or component, add it to
+silicaui or a composition to `@sparx/ui`; (4) only then, with approval, a local exception documented
+as debt. **A call-site patch is not a fix — it is a deferred fix everyone else pays interest on.**
+Full contract + ownership table: [DESIGN.md](DESIGN.md).
+
 **Anything that is not silicaui or Tailwind requires Brandon's explicit approval, asked for
 up front — not shipped and explained afterwards.** That includes: a new dependency or component
 library, a hand-rolled replacement for something silicaui already provides, a bespoke CSS file,
@@ -74,6 +90,13 @@ person is meant to READ. Readable text gets a real ink token (`--color-base-cont
 surface's `-content`). Faded text is reserved for text deliberately not meant to be read —
 decorative watermarks, disabled controls, a de-emphasized duplicate.
 
+**This is not an instruction to write `text-base-content`.** On a component, that ink token is
+already resolved for you from `color × variant` — reach for the component's `color` prop, never a
+text-color utility on top of it (RULE #4). For bare prose it is inherited from `body`. If a silica
+component genuinely renders readable text too faint at rest, that is a silica-level issue to raise,
+**not** something to patch per call site — patching it is how `<TabsTab className="text-base-content">`
+spread to 5+ workbench call sites.
+
 **Backgrounds:** the same. `bg-soft` is **not** part of the primary theme — it is an accent applied
 on purpose, to the ONE thing that earns it. Applying `soft` everywhere drains the exact power it
 exists for and flattens the design system into mush. **If everything were meant to be soft, soft
@@ -82,12 +105,46 @@ would be the theme color.** It isn't.
 Practical test before typing `soft`/`muted`/`/opacity`: _what is this de-emphasized relative to,
 and is that contrast actually doing work on this screen?_ If the answer is "nothing in particular,
 it just looked nicer," use the real token. Hierarchy comes from **scale, weight, and color** —
-not from fading things out. Related: [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md), and the
+not from fading things out. Related: [DESIGN.md](DESIGN.md), and the
 base font floor of 16px for body text.
+
+## RULE #4 — neutral has to be earned
+
+**A screen where everything is the same color is a design failure**, with the same weight as a
+gradient hero. Rules #1–#3 are prohibitions, and monochrome is the one output that satisfies every
+prohibition at once — so grey is what gets built unless something requires otherwise. This rule
+requires otherwise.
+
+`color="neutral"` is a decision, not a default. It is earned by the chassis (backgrounds, borders,
+dividers), bare prose you authored yourself, the dismiss half of a decision pair, or a genuinely
+untyped value — **nothing else.** If an element distinguishes A from B, its color carries the
+distinction; two badges that mean different things and render the same grey are wrong, not safe.
+
+**"Readable ink" does NOT mean `text-base-content`.** A silica color class only sets CSS variables
+(`--btn-fg`, `--tabs-accent-content`, …); the component paints itself from them, so its foreground is
+already resolved from `color × variant` and stays correct on fills, soft tints, outlines and dark
+islands. Writing a text color onto a component overrides that and is a RULE #1 re-skin — set its
+`color` prop instead. Bare prose needs nothing: `body` sets `color: var(--color-base-content)`, so it
+inherits. Write a text color only to deliberately color bare text (`text-module`, `text-success`).
+
+There are **27 registered colors** (10 semantic + 18 module identities), but `SilicaColor` is
+`… | (string & {})`, so autocomplete shows 8 and TypeScript catches nothing. Pick from the real
+list, not the one the editor offers.
+
+**The positive form — color IS the design, not decoration on it.** A filled tab says _you are here_
+faster than a label can be read; a solid button says _this is the point_ before the eye reaches the
+word. So: **selection is a filled shape, not a 2px underline** (`<Tabs variant="pills">`); **the
+action a surface exists for is solid and colored**, never `outline`/`ghost`; and **if every row in a
+list says it, it cannot be the headline** — lead with what differs, demote the repeat to a badge.
+The test: _when the color is right, the explanation becomes redundant._ **If adding color didn't let
+you delete any words, you decorated rather than designed.** Worked before/after: [DESIGN.md](DESIGN.md) §5.
+
+Full palette, the per-element assignment table, the ship gate, and a worked example:
+[DESIGN.md](DESIGN.md).
 
 ## Repository status
 
-The repo is **substantially built out**. Alongside the design docs under [docs/](docs/), the platform ships **4 Next.js apps** (`dashboard`, `site`, `market`, `web`; `admin` + `b2b-portal` remain empty placeholders), **~18 services** (`api-rest`, `api-graphql`, `api-mcp`, `mcp-site`, + a worker fleet), **~60 packages**, and a Prisma schema of **~277 models across 164 migrations**. `@sparx/ui` is a full CVA + Radix + Tailwind v4 component library, not a skeleton.
+The repo is **substantially built out**. Alongside the design docs under [docs/](docs/), the platform ships **4 Next.js apps** (`workbench`, `site`, `market`, `web`; `admin` + `b2b-portal` remain empty placeholders — `dashboard` has been **removed**, superseded by `workbench`), **~18 services** (`api-rest`, `api-graphql`, `api-mcp`, `mcp-site`, + a worker fleet), **~60 packages**, and a Prisma schema of **~277 models across 164 migrations**. `@sparx/ui` is a full CVA + Radix + Tailwind v4 component library, not a skeleton.
 
 > **Start at the knowledge brain — [docs/brain/README.md](docs/brain/README.md).** It is the canonical, grounded, interlinked map of everything below (design, architecture, data, modules, infra, integrations, conventions…) with a task-router that tells you which nodes to read before a given kind of work. This file is the binding summary; the brain is the navigable detail, and its notes hard-link the real source-of-truth files.
 
@@ -146,9 +203,9 @@ These are architectural commitments that won't be obvious from reading individua
 - **A component's _appearance_ lives in the component library; feature code never re-skins a control — but it may compose layout with utilities.** Feature code in `apps/*` uses named component variants (`<Button color="primary" variant="soft">`). Layout/positioning/spacing/sizing utilities and one-off chrome (e.g. an `absolute top-0 right-0` indicator) are fine in feature code. The banned pattern is **re-skinning a control**: a background fill paired with a foreground text color (or hand-built `hover:`/`focus:`/`disabled:` states) = recreating a `<Button>`/`<Input>`/`<Badge>` — use the silicaui primitive/variant instead, or add a composition to `@sparx/ui`. ESLint flags exactly that fill+foreground fingerprint (a warning), not raw utilities in general — **a warning is NOT the enforcement mechanism; RULE #1 at the top of this file is.** 54 re-skinned `<Button style={{ backgroundColor: '#0A0A0A' }}>` call sites accumulated across `apps/web` under that warning before being migrated on 2026-07-18. See [docs/23-frontend-component-architecture.md](docs/23-frontend-component-architecture.md) §1 and §15, plus the multi-axis variant system in [docs/35-ui-variant-system.md](docs/35-ui-variant-system.md).
 - Controls are still **four-axis `color × variant × size × shape`** (never a flat enum), but resolution is now silicaui's plugin-emitted classes — `<Button color variant size>` → `btn btn-<color> btn-<variant> btn-<size>` (silica spells `dashed` as `btn-dash`) — not the old `.sx-c-*` role vars. Every variant references a silica token CSS var (`--color-*`, never a hardcoded color). Module color shifts automatically via `<ModuleProvider module="…">`, which sets `--color-module` (+ `-content`) on its subtree. The sparx wordmark keeps the **"x" in sparx Ember `#e04631`** (the brand primary — `--color-primary`; note this SPLIT from the Builder module hue, which stays Indigo `#6366F1`). Build mechanics, the silica-class mapping, tints-via-`soft`, and house decisions live in [packages/ui/CLAUDE.md](packages/ui/CLAUDE.md). **Brand marks are centralized in `@sparx/brand`** — the spark/wordmark/mascot geometry + `BRAND` color constants in [packages/brand/src/marks.ts](packages/brand/src/marks.ts), the React components (`Spark`, `Wordmark`, `SparkMascot`) at `@sparx/brand/react`. `@sparx/ui`, market, and the marketing site all re-export from there; edge OG routes import the constants. Change the art in ONE place — never re-inline SVG paths or the wordmark's "x" hex in a component or OG route.
 - Per-module colors (Builder=Indigo, Commerce=Orange, CMS=Teal, CRM=Cyan, etc.) live in `@sparx/brand/theme.css` as `--color-module-<name>` and appear identically across the module's marketing site, its sidebar nav item, and the subtle module-tint background on `<Card variant="module">` cards (`bg-module bg-soft` — a theme-aware `color-mix` into the surface via silica's universal `soft` treatment, formerly a 3px top stripe; there are no baked tint tokens). Full list in [docs/sparx-brand-guide.md](docs/sparx-brand-guide.md).
-- **Color follows functionality, not the page — there is NO "one hue per screen" rule** (the earlier DESIGN.md framing, "the active module's color is the only brand color on screen," was wrong and is corrected). The active route tints the chrome + page-level primary action; any panel/badge/action that surfaces _another_ module's functionality wears THAT module's hue via a **nested `<ModuleProvider module="…">`** (a product page's inventory panel is amber, its SEO panel yellow, a linked customer cyan). One screen legibly carries several module hues — carried by the _signals_ (module-tinted cards, primaries, key badges/icons) while the chassis (page background + non-primary cards) stays neutral. A module-tint background IS now a sanctioned signal, but a disciplined one: on a dense cross-module page tint only the **one "primary" card per module hue** and leave the rest plain (`<Card variant="module">` is the tint; `OverviewCard`'s `plain` prop is the neutral opt-out) — a wall of tinted cards is competing washes, not wayfinding. And a **single-module working surface** (create/edit form, wizard, editor) keeps its cards neutral entirely — the tint differentiates nothing there, so identity rides the chrome + Save button (read-only detail/transaction views may keep one tinted KPI accent card). Orthogonally, **state is its own color axis**: resolve status with `statusTone()` and render `<Badge color={statusTone(s)} variant="soft">`, and reach for soft semantic callouts (info/success/warning/danger) to break a wall of black-on-white into something scannable. The only banned use of color is decoration (a second brand hue for flavor, or a module color as a decorative background wash on the chassis). Detail in [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md) (Color-Follows-Functionality + Semantic-Status rules), [docs/35-ui-variant-system.md](docs/35-ui-variant-system.md) §9, and the `surface-review` skill's cross-module wayfinding heuristic.
+- **Color follows functionality, not the page — there is NO "one hue per screen" rule** (the earlier DESIGN.md framing, "the active module's color is the only brand color on screen," was wrong and is corrected). The active route tints the chrome + page-level primary action; any panel/badge/action that surfaces _another_ module's functionality wears THAT module's hue via a **nested `<ModuleProvider module="…">`** (a product page's inventory panel is amber, its SEO panel yellow, a linked customer cyan). One screen legibly carries several module hues — carried by the _signals_ (module-tinted cards, primaries, key badges/icons) while the chassis (page background + non-primary cards) stays neutral. A module-tint background IS now a sanctioned signal, but a disciplined one: on a dense cross-module page tint only the **one "primary" card per module hue** and leave the rest plain (`<Card variant="module">` is the tint; `OverviewCard`'s `plain` prop is the neutral opt-out) — a wall of tinted cards is competing washes, not wayfinding. And a **single-module working surface** (create/edit form, wizard, editor) keeps its **card backgrounds** neutral — the tint differentiates nothing there, so identity rides the chrome + Save button (read-only detail/transaction views may keep one tinted KPI accent card). **This clause is about `<Card>` tint and NOTHING else** — it does not reach badges, tabs, buttons, icons, alerts or metrics, and it has never meant "this surface is monochrome" (misreading it that way is what produced the all-grey builder History rail; see RULE #4). Orthogonally, **state is its own color axis**: resolve status with `statusTone()` and render `<Badge color={statusTone(s)} variant="soft">`, and reach for soft semantic callouts (info/success/warning/danger) to break a wall of black-on-white into something scannable. The only banned use of color is decoration (a second brand hue for flavor, or a module color as a decorative background wash on the chassis). Detail in [DESIGN.md](DESIGN.md) (the palette, the three color axes, the per-element assignment table), [docs/35-ui-variant-system.md](docs/35-ui-variant-system.md) §9, and the `surface-review` skill's cross-module wayfinding heuristic.
 - Tenant site themes override `:root` tokens via `--st-*` CSS custom properties (bridged to silica base tokens in `site-themes/tokens.ts`) — never edit `@sparx/brand/theme.css` for a tenant-specific change.
-- **Detail surfaces show identity once + lifecycle in the header.** An entity's name/slug is its editable field, never ALSO a read-only heading atop the body; status + lifecycle actions (Publish/Archive/Preview/…) teleport into the frame header via `DetailHeaderSlot` (the drawer/modal chrome or the full-page `DetailPageShell`), never a bespoke in-body "Status" card — secondary actions go icon-only with a tooltip. Read-only/transaction details (orders, quotes, inventory ops) keep their identity heading (no editable name field). See [docs/86-surface-frame-pattern.md](docs/86-surface-frame-pattern.md) §5.1 + [apps/dashboard/DESIGN.md](apps/dashboard/DESIGN.md). **CMS editors are explicit-save only** — one Save button, last-write-wins, like every other editor. Autosave + ETag conflict detection were **removed** platform-wide (they were never consistent with the rest of the platform); an unsaved edit registers the leave-guard so closing/navigating away confirms before discarding.
+- **Detail surfaces show identity once + lifecycle in the header.** An entity's name/slug is its editable field, never ALSO a read-only heading atop the body; status + lifecycle actions (Publish/Archive/Preview/…) teleport into the frame header via `DetailHeaderSlot` (the drawer/modal chrome or the full-page `DetailPageShell`), never a bespoke in-body "Status" card — secondary actions go icon-only with a tooltip. Read-only/transaction details (orders, quotes, inventory ops) keep their identity heading (no editable name field). See [docs/86-surface-frame-pattern.md](docs/86-surface-frame-pattern.md) §5.1 + [DESIGN.md](DESIGN.md). **CMS editors are explicit-save only** — one Save button, last-write-wins, like every other editor. Autosave + ETag conflict detection were **removed** platform-wide (they were never consistent with the rest of the platform); an unsaved edit registers the leave-guard so closing/navigating away confirms before discarding.
 
 ## Document style
 

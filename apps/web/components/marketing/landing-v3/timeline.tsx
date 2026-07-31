@@ -1,15 +1,17 @@
 import { Badge, Card, CardBody, CardTitle, Heading, Text } from '@wizeworks/silicaui-react';
 import { Reveal } from '../reveal';
-import { MODULE_HEX } from '../modules-catalog';
+import { MODULE_BACKGROUND_COLOR, MODULE_CONTENT_COLOR } from '../modules-catalog';
 
 /**
  * "One ordinary day" — a chronological walk through moments across several
  * modules. Same copy/order as v2; the dark band is `bg-neutral` (a real
  * theme token that's ALREADY a dark surface even in light mode, so — unlike
  * Hero/Whoever — no `data-theme="dark"` scoping is needed here, just
- * `text-neutral-content`). Each moment's numbered chip pulls its color from
- * `MODULE_HEX` (the same map the switchboard cards use) instead of a
- * re-typed literal hex.
+ * `text-neutral-content`). Each moment's numbered chip wears its module's
+ * `bg-module-*` fill AND the paired `-content` ink, both as real utility
+ * classes — it used to paint the fill with an inline `MODULE_HEX` style and
+ * then hardcode `text-white` on top, which is the exact pairing the token
+ * system exists to make unnecessary.
  */
 const MOMENTS = [
   {
@@ -67,7 +69,7 @@ export function LandingV3Timeline() {
             >
               One ordinary day. One extraordinary advantage.
             </Heading>
-            <Text variant="lead" className="text-neutral-content/70 max-w-xl text-2xl">
+            <Text variant="lead" className="text-neutral-content max-w-xl text-2xl">
               sparx is most valuable in the moments that used to steal your attention. Here&apos;s
               what it feels like when your whole business shares one brain.
             </Text>
@@ -96,8 +98,7 @@ function Moment({ moment: m, index }: { moment: (typeof MOMENTS)[number]; index:
   return (
     <article className="flex items-start gap-5">
       <span
-        className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-[15px] font-bold text-white"
-        style={{ backgroundColor: MODULE_HEX[m.module] }}
+        className={`relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-[15px] font-bold ${MODULE_BACKGROUND_COLOR[m.module]} ${MODULE_CONTENT_COLOR[m.module]}`}
       >
         {String(index + 1).padStart(2, '0')}
       </span>

@@ -491,7 +491,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
     // theme row is one-per-(tenant, property); settings stays one-per-tenant. A
     // missing row means the site hasn't customized, so we fall back to
     // nulls/defaults the storefront's token layer reads as "use the default theme".
-    const [theme, storefront, brand, consent, propertyRow, propertyNameRow] = await withTenant(
+    const [theme, storefront, brand, consent, propertyRow] = await withTenant(
       { tenantId: tenant.id },
       (tx) =>
         Promise.all([
@@ -536,23 +536,29 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
           // storefront layout decides off/quiet-notice/banner server-side in
           // the same fetch — no second round-trip, no client flash (docs/42 §4).
           readPublicConsentConfig(tx, tenant.id, propertyId),
-          // The active site's optional brand override (docs/49 §3, Phase 4). Read
-          // by slug within the tenant; null when no `?property=` or no override.
-          query.property
-            ? tx.property.findFirst({
-                where: { slug: query.property },
-                select: { brandOverride: true, moduleScope: true },
-              })
-            : Promise.resolve(null),
-          // The active site's NAME + SETTINGS — the customer-facing SITE name the
-          // storefront renders in chrome/title/OG, plus the per-site settings bag
-          // that carries the site's own social links (docs/49 "full per-site
-          // brand"). Keyed by the resolved propertyId (the `?property=` site, else
-          // the primary), so present even for the bare primary host. The name is
-          // NEVER the tenant's legal/org name.
+          // The active site's row — everything per-site the payload needs, keyed by
+          // the RESOLVED propertyId (the `?property=` site, else the primary):
+          //
+          //  · name      — the customer-facing SITE name the storefront renders in
+          //                chrome/title/OG. NEVER the tenant's legal/org name.
+          //  · settings  — the per-site bag carrying this site's own social links.
+          //  · brandOverride — this site's own brand (docs/49 §3, Phase 4).
+          //  · moduleScope   — the modules disabled for this site alone.
+          //
+          // The last two used to be read from a SEPARATE query gated on
+          // `query.property` (and looked up by slug), so the PRIMARY site's own
+          // brand and module scope were invisible on its bare host — it could only
+          // ever show the tenant base. That gate is why branding the primary had to
+          // be written to TenantBrand, which is what leaked it to every sibling.
           tx.property.findUnique({
             where: { id: propertyId },
-            select: { name: true, settings: true, showSparxCredit: true },
+            select: {
+              name: true,
+              settings: true,
+              showSparxCredit: true,
+              brandOverride: true,
+              moduleScope: true,
+            },
           }),
         ])
     );
@@ -618,7 +624,7 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       // tenant.ts) so chrome/title/OG never show the tenant's legal name.
       name: tenant.name,
       businessName: identity.businessName,
-      propertyName: propertyNameRow?.name ?? null,
+      propertyName: propertyRow?.name ?? null,
       // The brand tagline, with the per-site override applied. Bindable as
       // `site.identity.tagline` — it was resolved here but never returned, so the
       // binding the picker offers could only ever resolve to an empty string (and
@@ -626,12 +632,12 @@ const publicContentRoutes: FastifyPluginAsync = (app) => {
       tagline: identity.tagline,
       // Platform attribution: whether this site shows the "Made with sparx" footer
       // credit. Defaults true so a site predating the column still shows it.
-      showSparxCredit: propertyNameRow?.showSparxCredit ?? true,
+      showSparxCredit: propertyRow?.showSparxCredit ?? true,
       settings: tenant.settings,
       // PER-SITE social links (docs/49 "full per-site brand"): each site has its
       // own, stored in the property settings bag. Falls back to the tenant-level
       // links (legacy / not-yet-set) so existing single-site links keep rendering.
-      socials: readSiteSocials(propertyNameRow?.settings, tenant.socials),
+      socials: readSiteSocials(propertyRow?.settings, tenant.socials),
       theme: mergedTheme,
       commerce: {
         // Per-site override wins; falls back to tenant CommerceSiteSettings then hardcoded default.

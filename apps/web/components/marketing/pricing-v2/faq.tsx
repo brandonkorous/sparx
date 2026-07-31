@@ -58,7 +58,7 @@ export function PricingV2Faq() {
             </Text>
           </div>
 
-          <Card className="bg-base-100 text-base-content shadow-none">
+          <Card className="bg-base-100 shadow-none">
             <Accordion defaultValue={firstOpen ? [firstOpen] : []}>
               {PRICING_FAQ.map((item) => (
                 <AccordionItem key={item.id} value={item.id}>

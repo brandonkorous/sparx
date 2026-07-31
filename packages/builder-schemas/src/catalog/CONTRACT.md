@@ -98,7 +98,7 @@ mail client renders inline styles, not `tenant.css` (docs/98 §3.6c):
 - **No header block.** The `email_wordmark` header is pinned + auto-injected by
   `normalizeEmailTree`; a second one would be de-duped.
 
-## Token utilities (these compile to tenant `--st-*`; use ONLY these colors)
+## Token utilities (these compile to the tenant's silica theme; use ONLY these colors)
 
 - Surfaces/text: `bg-base-100|200|300`, `text-base-content` (+ opacity: `text-base-content/60`),
   `border-base-200|300`.

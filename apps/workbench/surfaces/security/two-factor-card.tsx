@@ -340,7 +340,7 @@ export function TwoFactorCard({ enabled }: { enabled: boolean }) {
       {step === 'off' ? (
         <div className="flex flex-col gap-4">
           <div className="flex items-start gap-3">
-            <Smartphone className="text-base-content mt-0.5 size-5 shrink-0" aria-hidden />
+            <Smartphone className="mt-0.5 size-5 shrink-0" aria-hidden />
             <Text className="text-sm">
               You will need a free authenticator app on your phone — Google Authenticator, Microsoft
               Authenticator, and 1Password all work. It shows a 6-digit code that changes every 30

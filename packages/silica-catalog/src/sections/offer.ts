@@ -76,7 +76,7 @@ export function offerHero(): Node {
             el('p', 'text-lg text-base-content', {
               text: 'Solid oak, 40mm, made to your length. The one we have built more of than anything else.',
             }),
-            el('p', 'text-3xl font-semibold text-base-content', { text: '£1,480' }),
+            el('p', 'text-3xl font-semibold text-base-content', { text: '$1,480' }),
             actions([primaryAction('Add to basket'), secondaryAction('Ask a question')]),
             caption('Free delivery within 50 miles. Four to six weeks from order.'),
           ],
@@ -93,7 +93,7 @@ export function shopReassurance(): Node {
     gridThree([
       card(CARD, [
         cardTitle('Delivery'),
-        body('Free within 50 miles, £45 beyond. We deliver ourselves and carry it in.'),
+        body('Free within 50 miles, $45 beyond. We deliver ourselves and carry it in.'),
       ]),
       card(CARD, [
         cardTitle('Returns'),
@@ -141,8 +141,8 @@ export function bundleOffer(): Node {
           'flex flex-col items-start gap-4 rounded-box border border-base-300 bg-base-100 p-6',
           {
             children: [
-              el('p', 'text-base text-base-content', { text: 'Bought separately: £4,120' }),
-              el('p', 'text-4xl font-semibold text-base-content', { text: '£3,450' }),
+              el('p', 'text-base text-base-content', { text: 'Bought separately: $4,120' }),
+              el('p', 'text-4xl font-semibold text-base-content', { text: '$3,450' }),
               actions([primaryAction('Order the set')]),
               caption('Price held for 60 days from your quote.'),
             ],
@@ -210,9 +210,9 @@ export function costExamples(): Node {
       'Three real jobs from this year, with what they actually cost. Yours will differ — these are for calibration, not a quote.'
     ),
     gridThree([
-      example('A small kitchen', 'Eight units, oak worktop, three weeks on site.', 'about £9,400'),
-      example('One fitted wardrobe', 'Floor to ceiling, painted, two days.', 'about £2,100'),
-      example('A pair of doors', 'Solid oak, made, finished and hung.', 'about £840'),
+      example('A small kitchen', 'Eight units, oak worktop, three weeks on site.', 'about $9,400'),
+      example('One fitted wardrobe', 'Floor to ceiling, painted, two days.', 'about $2,100'),
+      example('A pair of doors', 'Solid oak, made, finished and hung.', 'about $840'),
     ]),
     caption('All figures include VAT, materials, fitting and disposal.'),
   ]);

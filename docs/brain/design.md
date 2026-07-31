@@ -10,7 +10,7 @@ cssclasses:
 
 Design is the **language**, not the library. It is the layer that got skipped on the partner pages. It applies *down* onto three surfaces — this is the node's shape:
 
-- **→ components** — how the [[components]] look: variant, color, tint, elevation. See [[color-follows-functionality]], [[status-is-its-own-axis]].
+- **→ components** — how the [[components]] look: variant, color, tint, elevation. Start at [[silicaui-owns-the-design]] (feature code CHOOSES, never PAINTS — the single-point-of-change contract), then [[neutral-must-be-earned]] (the one that keeps getting violated), then [[color-follows-functionality]], [[status-is-its-own-axis]].
 - **→ elements** — raw layout, type, spacing, chrome built from utilities. See [[typography]], [[flat-by-default]], [[tokens-are-truth]].
 - **→ content** — voice, microcopy, and which *composition idioms* are allowed, all pitched to our [[audience]] (non-technical business owners — informative + jargon-free). See [[console-is-not-marketing]], [[voice]].
 
@@ -20,14 +20,14 @@ Design is the **language**, not the library. It is the layer that got skipped on
 
 ## Sources of truth
 
-- Dashboard values → `packages/ui/src/tokens.css`. Dashboard language → `apps/dashboard/DESIGN.md`.
+- Console non-color values → `packages/ui/src/tokens.css`. Console **color + design language** → `DESIGN.md` (replaces the deleted `apps/dashboard/DESIGN.md`; `apps/dashboard` no longer exists).
 - Site tokens → `docs/33-token-model-v2.md`. Site compile → `packages/surface-compile/src/theme.ts`.
 - Component contract → `docs/23-frontend-component-architecture.md`. Variant API → `docs/35-ui-variant-system.md`.
 - Brand + voice → `docs/sparx-brand-guide.md`.
 
 ## Notes
 
-[[two-design-systems]] · [[tokens-are-truth]] · [[color-follows-functionality]] · [[status-is-its-own-axis]] · [[typography]] · [[flat-by-default]] · [[console-is-not-marketing]] · [[voice]]
+[[two-design-systems]] · [[silicaui-owns-the-design]] · [[tokens-are-truth]] · [[neutral-must-be-earned]] · [[color-follows-functionality]] · [[status-is-its-own-axis]] · [[typography]] · [[flat-by-default]] · [[console-is-not-marketing]] · [[voice]]
 
 ## Why this node is acute
 

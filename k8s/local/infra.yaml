@@ -1,0 +1,251 @@
+# Local stand-ins for the managed dependencies that vanished with the GCP
+# project: Cloud SQL, the media buckets, and (in-cluster already, but GKE-shaped)
+# Redis + Typesense.
+#
+# PgBouncer is deliberately NOT reproduced. Its job in prod was to make a
+# transaction-mode pool available to Cloud Run workers arriving over a VPC
+# connector, and to keep a fleet of pods from exhausting Cloud SQL's connection
+# cap. Here there is one replica of everything on one node talking to a Postgres
+# with default max_connections=100 — a pooler would add a failure mode and solve
+# nothing. RLS still works: `SET LOCAL` needs a transaction-scoped connection,
+# which a direct connection trivially is (it was *pooling* that threatened that
+# invariant, hence transaction-mode in prod).
+
+# ---------------------------------------------------------------------------
+# Media — the local-disk replacement for the two GCS buckets.
+#
+# ReadWriteOnce is correct here despite two consumers: RWO scopes a volume to a
+# NODE, not a pod, and Docker Desktop is single-node. api-rest streams variants
+# out of this volume and media-worker writes them in; they must be the same
+# volume or every upload 404s after transcoding.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sparx-media
+  namespace: sparx-prod
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 50Gi
+---
+# ---------------------------------------------------------------------------
+# Postgres 18 — replaces Cloud SQL.
+#
+# Same image and same bootstrap role as the dev compose stack
+# (packages/db/docker-compose.yml) so local k8s and `pnpm db:up` cannot drift.
+#
+# The data volume mounts the PARENT directory, not /data: Postgres 18 stores
+# its cluster under a major-version subdirectory inside /var/lib/postgresql, and
+# mounting the versioned path breaks the image's pg_ctlcluster layout
+# (docker-library/postgres#1259). This mirrors the compose file for the same
+# reason — do not "fix" it to /var/lib/postgresql/data.
+#
+# NOTE ON CREDENTIALS: 01-roles.sql creates `sparx_app` with the literal
+# password 'devpassword', so DATABASE_URL must match it. That is acceptable
+# only because this Service is ClusterIP — Postgres is never routed through
+# Caddy or the tunnel and has no path in from the internet. If you ever expose
+# it, ALTER ROLE first.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: postgres, port: 5432, targetPort: 5432 }]
+  selector: { app: postgres }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+  namespace: sparx-prod
+  labels: { app: postgres, tier: data }
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels: { app: postgres }
+  template:
+    metadata:
+      labels: { app: postgres, tier: data }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: postgres
+          image: postgres:18-alpine
+          ports: [{ name: postgres, containerPort: 5432 }]
+          env:
+            - { name: POSTGRES_USER, value: sparx_owner }
+            - { name: POSTGRES_PASSWORD, value: devpassword }
+            - { name: POSTGRES_DB, value: sparx }
+            # The image only runs /docker-entrypoint-initdb.d on an EMPTY data
+            # dir, and PGDATA must point inside the mounted volume for that
+            # emptiness check to mean anything across restarts.
+            - { name: PGDATA, value: /var/lib/postgresql/18/docker }
+          volumeMounts:
+            - { name: data, mountPath: /var/lib/postgresql }
+            - { name: init, mountPath: /docker-entrypoint-initdb.d, readOnly: true }
+          # The data services are the ONLY things here that keep meaningful
+          # requests. Everything else on this node is BestEffort (workers) or
+          # lightly-Burstable (apps), and the kubelet evicts in that order — so
+          # a real request is what guarantees Postgres is never the pod chosen
+          # to die when the box is under pressure. Sized for what Postgres
+          # actually uses (default shared_buffers is 128MB), not for headroom.
+          resources:
+            requests: { cpu: '100m', memory: '512Mi' }
+            limits: { memory: '2Gi' }
+          readinessProbe:
+            exec:
+              command: ['pg_isready', '-U', 'sparx_owner', '-d', 'sparx']
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            exec:
+              command: ['pg_isready', '-U', 'sparx_owner', '-d', 'sparx']
+            periodSeconds: 30
+            failureThreshold: 5
+      volumes:
+        - name: init
+          configMap: { name: postgres-init }
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 40Gi
+---
+# ---------------------------------------------------------------------------
+# Redis — chat socket.io adapter fan-out + BullMQ broker.
+# AOF on, matching k8s/redis. Single replica, as in prod.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: redis, port: 6379, targetPort: 6379 }]
+  selector: { app: redis }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: redis
+  namespace: sparx-prod
+  labels: { app: redis, tier: data }
+spec:
+  serviceName: redis
+  replicas: 1
+  selector:
+    matchLabels: { app: redis }
+  template:
+    metadata:
+      labels: { app: redis, tier: data }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: redis
+          image: redis:7-alpine
+          args: ['--appendonly', 'yes', '--dir', '/data']
+          ports: [{ name: redis, containerPort: 6379 }]
+          volumeMounts:
+            - { name: data, mountPath: /data }
+          resources:
+            requests: { cpu: '25m', memory: '64Mi' }
+            limits: { memory: '512Mi' }
+          readinessProbe:
+            exec: { command: ['redis-cli', 'ping'] }
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            exec: { command: ['redis-cli', 'ping'] }
+            periodSeconds: 30
+            failureThreshold: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 5Gi
+---
+# ---------------------------------------------------------------------------
+# Typesense — same engine and major version as the GKE StatefulSet and the dev
+# compose stack (28.0). Service name `typesense` matches the @sparx/search
+# default host and the TYPESENSE_HOST in app-env-configmap.env.
+#
+# The index is DERIVED state, not a source of truth. Nothing needs migrating
+# from the old cluster — run `rebuild_search_index` once the DB is seeded.
+#
+# No readiness probe with a shell: the Typesense image does not reliably ship
+# curl or wget (same reason the compose file omits one). httpGet needs no
+# in-container binary, so it works here where the compose healthcheck could not.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: typesense
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8108, targetPort: 8108 }]
+  selector: { app: typesense }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: typesense
+  namespace: sparx-prod
+  labels: { app: typesense, tier: data }
+spec:
+  serviceName: typesense
+  replicas: 1
+  selector:
+    matchLabels: { app: typesense }
+  template:
+    metadata:
+      labels: { app: typesense, tier: data }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: typesense
+          image: typesense/typesense:28.0
+          args: ['--data-dir', '/data', '--enable-cors']
+          ports: [{ name: http, containerPort: 8108 }]
+          env:
+            - name: TYPESENSE_API_KEY
+              valueFrom:
+                secretKeyRef: { name: typesense-secrets, key: api-key }
+          volumeMounts:
+            - { name: data, mountPath: /data }
+          # Typesense holds its index in memory, so its real footprint grows
+          # with catalog size. 256Mi reserved is enough to keep it off the
+          # eviction list; the 1536Mi ceiling is where to look first if search
+          # starts OOMKilling on a large catalog.
+          resources:
+            requests: { cpu: '100m', memory: '256Mi' }
+            limits: { memory: '1536Mi' }
+          readinessProbe:
+            httpGet: { path: /health, port: 8108 }
+            periodSeconds: 5
+            failureThreshold: 24
+          livenessProbe:
+            httpGet: { path: /health, port: 8108 }
+            periodSeconds: 30
+            failureThreshold: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 20Gi

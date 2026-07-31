@@ -200,18 +200,21 @@ export async function resolveEmailBrand(
             select: { name: true, brandOverride: true, settings: true },
           })
         : Promise.resolve(null),
-      // The tenant's PRIMARY site name + socials — the fallback when no specific
-      // property is in scope (a tenant-wide send). Only read when we don't already
-      // have the active property row.
+      // The tenant's PRIMARY site — the fallback when no specific property is in
+      // scope (a tenant-wide send). Only read when we don't already have the active
+      // property row. Carries `brandOverride` because the primary site's brand now
+      // lives on its OWN property row like every other site's; TenantBrand is only
+      // the inherited default for a site that has never been branded, so a
+      // tenant-wide send that read the base alone would render an unbranded email.
       propertyId
         ? Promise.resolve(null)
         : tx.property.findFirst({
             where: { isPrimary: true },
-            select: { id: true, name: true, settings: true },
+            select: { id: true, name: true, settings: true, brandOverride: true },
           }),
     ]);
 
-    const override = parseBrandOverride(propertyRow?.brandOverride);
+    const override = parseBrandOverride((propertyRow ?? primaryProperty)?.brandOverride ?? null);
     const slug = tenant?.slug ?? '';
 
     // Merge the per-site override OVER the tenant brand, field-by-field — an

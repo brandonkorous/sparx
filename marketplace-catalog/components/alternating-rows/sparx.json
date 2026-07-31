@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "alternating-rows",
+  "name": "Alternating picture rows",
+  "version": "1.0.0",
+  "tagline": "Three rows that swap sides — what keeps a long page from becoming a column.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Page structure",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 63
+}

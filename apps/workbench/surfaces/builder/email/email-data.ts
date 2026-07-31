@@ -401,19 +401,18 @@ export function useEmailChrome() {
 }
 
 /**
- * The brand the ACTIVE site actually authors against — the tenant base for a
- * primary site, and the base with this site's override laid on top for a
- * non-primary one (docs/49). Only the token-bearing fields (colour, type, and the
- * shape/rhythm/effect `tokens` doc) matter to the theme compiler, so only those are
- * merged; logos and taglines don't shift the canvas palette. `null`/absent override
- * fields inherit the base.
+ * The brand the ACTIVE site actually authors against — the tenant base with THIS
+ * site's override laid on top (docs/49). Only the token-bearing fields (colour,
+ * type, and the shape/rhythm/effect `tokens` doc) matter to the theme compiler, so
+ * only those are merged; logos and taglines don't shift the canvas palette.
+ * `null`/absent override fields inherit the base.
+ *
+ * The primary site is not special-cased. It used to short-circuit to the bare base,
+ * which was correct only while the primary's brand WAS the base — the arrangement
+ * that leaked one site's identity onto its siblings. Every site now stores its own.
  */
-export function effectiveTenantBrand(
-  base: TenantBrand,
-  isPrimary: boolean,
-  overrideRaw: unknown
-): TenantBrand {
-  if (isPrimary || !overrideRaw || typeof overrideRaw !== 'object') return base;
+export function effectiveTenantBrand(base: TenantBrand, overrideRaw: unknown): TenantBrand {
+  if (!overrideRaw || typeof overrideRaw !== 'object') return base;
   const o = overrideRaw as Record<string, unknown>;
   const pick = (key: keyof TenantBrand): string | null => {
     const value = o[key as string];

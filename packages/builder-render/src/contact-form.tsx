@@ -25,7 +25,7 @@ import {
   MAX_FORM_ATTACHMENT_BYTES,
   MAX_FORM_ATTACHMENTS,
 } from '@sparx/builder-schemas';
-import { Button } from '@sparx/site-ui';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
 
 import { useBuilderRuntime } from './runtime-context';
 
@@ -129,7 +129,7 @@ export function ContactForm({
   if (status === 'done') {
     return (
       <div className={className}>
-        <p className="st-callout st-c-success st-v-soft" role="status">
+        <p className="alert alert-success alert-soft" role="status">
           {cfg.successMessage}
         </p>
       </div>
@@ -154,15 +154,19 @@ export function ContactForm({
       {children}
 
       {status === 'error' && error ? (
-        <p className="st-field__error" role="alert">
+        <p className="field-error" role="alert">
           {error}
         </p>
       ) : null}
 
       <div className="flex items-center justify-end">
-        <Button type="submit" color={cfg.color} disabled={status === 'pending'}>
+        <button
+          type="submit"
+          className={buttonClasses({ color: cfg.color })}
+          disabled={status === 'pending'}
+        >
           {status === 'pending' ? 'Sending…' : cfg.submitLabel}
-        </Button>
+        </button>
       </div>
     </form>
   );

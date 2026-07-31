@@ -27,9 +27,7 @@ function RoleCard({ role }: { role: Role }) {
         <CardBody className="p-8">
           <div className="mkt-role-row">
             <div className="flex min-w-0 flex-col gap-2.5">
-              <h3 className="text-h4 text-base-content m-0 font-medium tracking-[-0.01em]">
-                {role.title}
-              </h3>
+              <h3 className="text-h4 m-0 font-medium tracking-[-0.01em]">{role.title}</h3>
               <div className="text-caption text-ink-subtle flex flex-wrap items-center gap-x-3 gap-y-2">
                 <span>{role.team}</span>
                 <Dot color={META_DOT} size={3} />

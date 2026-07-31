@@ -17,7 +17,7 @@ import type { PropertyContext, ServiceContext } from '../errors';
 import { SitebuilderNotFoundError } from '../errors';
 import { getOrCreateConfig } from './_config';
 import { publishWithinTx } from './publish-internals';
-import { applyThemeBrandWithinTx } from './saved-theme-service';
+import { applyThemeBrandToSiteOverrideWithinTx } from './saved-theme-service';
 
 export async function schedule(
   ctx: PropertyContext,
@@ -152,9 +152,15 @@ export async function processDueSchedule(
             },
           });
           // ...and apply the theme's captured brand "look", so the swap recolours
-          // the WHOLE store (brand is read live by the storefront), not just the
-          // surface overlay. Matches the interactive "apply to brand" model.
-          await applyThemeBrandWithinTx(tx, ctx.tenantId, theme.brand as SavedThemeBrand | null);
+          // the whole SITE (brand is read live by the storefront), not just the
+          // surface overlay. Matches the interactive "apply to brand" model. Scoped
+          // to the schedule's own property — a swap scheduled on one site must not
+          // recolour its siblings.
+          await applyThemeBrandToSiteOverrideWithinTx(
+            tx,
+            propertyId,
+            theme.brand as SavedThemeBrand | null
+          );
         }
       }
 

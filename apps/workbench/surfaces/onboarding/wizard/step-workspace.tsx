@@ -101,13 +101,13 @@ export function StepWorkspace({
               />
             }
           />
-          <span className="text-base-content whitespace-nowrap">.{SITE_ZONE}</span>
+          <span className="whitespace-nowrap">.{SITE_ZONE}</span>
         </div>
 
         {check.status === 'checking' && !unchangedSlug ? (
           <div className="flex items-center gap-2">
             <Loading size="sm" />
-            <span className="text-base-content text-sm">Checking availability…</span>
+            <span className="text-sm">Checking availability…</span>
           </div>
         ) : null}
 
@@ -124,7 +124,7 @@ export function StepWorkspace({
             </FieldStatus>
             {result.suggestions.length > 0 ? (
               <div className="flex flex-wrap items-center gap-1.5">
-                <span className="text-base-content text-sm">Try:</span>
+                <span className="text-sm">Try:</span>
                 {result.suggestions.map((s) => (
                   <Button key={s} color="module" variant="link" size="sm" onClick={() => onSlug(s)}>
                     {s}

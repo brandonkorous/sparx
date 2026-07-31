@@ -15,7 +15,7 @@ import { MAKER_IMAGE, MAKER_ALT } from '@/lib/editorial';
 
 export function MakerStory() {
   return (
-    <section className="bg-warning/10 text-base-content">
+    <section className="bg-warning/10">
       <Container className="py-14 md:py-20">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           <div className="max-w-xl">

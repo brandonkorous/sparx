@@ -57,7 +57,7 @@ export function ConsentForm({ params, catalog, defaultSelected }: ConsentFormPro
         <Button type="button" size="sm" variant="ghost" onClick={clearAll}>
           Clear
         </Button>
-        <Text className="text-base-content ml-auto text-sm font-medium">
+        <Text className="ml-auto text-sm font-medium">
           {selected.size} of {catalog.length} selected
         </Text>
       </div>
@@ -95,7 +95,7 @@ export function ConsentForm({ params, catalog, defaultSelected }: ConsentFormPro
                             </Badge>
                           )}
                         </div>
-                        <span id={descId} className="text-base-content text-xs">
+                        <span id={descId} className="text-xs">
                           {meta.description}
                         </span>
                       </div>

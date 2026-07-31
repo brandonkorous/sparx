@@ -54,7 +54,7 @@ const SITE_SCHEMA = {
       description: DESCRIPTION,
       parentOrganization: {
         '@type': 'Organization',
-        name: 'WizeWorks, Inc.',
+        name: 'WizeWorks LLC',
         url: 'https://wize.works',
       },
     },

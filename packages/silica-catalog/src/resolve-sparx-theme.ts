@@ -28,6 +28,22 @@ import { resolveThemeTokens, type Theme } from '@wizeworks/silicaui-html';
 /** The container max every sparx site ships (1152px), matching the golden template. */
 const CONTAINER_MAX = '72rem';
 
+/**
+ * The `--color-*` roles EVERY sparx theme carries beyond silicaui's semantic eight.
+ *
+ * Named here because the distinction matters twice. `rolesOf` reports anything outside
+ * silicaui's own `SEMANTIC_ROLES` as a custom role, so without this list a stock sparx
+ * theme reads as three tenant-invented colors — see `custom-colors.ts`, which uses it
+ * to tell "the author added this" from "sparx always adds this".
+ *
+ *   · `danger` / `highlight` are real component roles, registered in every app's
+ *     `@plugin '@wizeworks/silicaui' { colors: … }` block, so their classes are already
+ *     in the static bundle.
+ *   · `border` is a color token but NOT a component role — a hairline hue, deliberately
+ *     left out of that list (there is no such thing as a `.btn-border`).
+ */
+export const SPARX_RESIDUAL_COLOR_ROLES = ['danger', 'highlight', 'border'] as const;
+
 /** danger←error, highlight←accent, border←base-300 — the color residuals silica's
  *  role set lacks, derived from roles it DOES resolve so they stay on-theme + AA. */
 function colorResiduals(bag: Record<string, string>): Record<string, string> {

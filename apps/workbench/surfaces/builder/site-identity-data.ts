@@ -193,12 +193,10 @@ export function computeOverride(
 
 /* ── The save ──────────────────────────────────────────────────────────────── */
 
-/** Everything one save needs. `effective` and `base` are only used for a
- *  non-primary site's override diff; `existingOverride` preserves unrelated
- *  per-site settings. */
+/** Everything one save needs. `effective` and `base` drive the override diff;
+ *  `existingOverride` preserves unrelated per-site settings. */
 export interface SaveIdentityInput {
   propertyId: string;
-  isPrimary: boolean;
   name: string;
   socials: SocialLink[];
   identity: IdentityFields;
@@ -208,14 +206,15 @@ export interface SaveIdentityInput {
 }
 
 /**
- * Persist the active site's identity in one action.
+ * Persist the active site's identity in one action: ONE property write
+ * (`PATCH /v1/properties/:id`) carrying the customer-facing name, the social
+ * links, AND the diffed `brandOverride` — so nothing ever touches the tenant base.
  *
- * PRIMARY site → two writes: the tenant base brand (`PATCH /v1/brand`) for the
- * identity images + tagline, and the property (`PATCH /v1/properties/:id`) for
- * the customer-facing name + social links.
- *
- * NON-PRIMARY site → one property write carrying the name, socials, AND the
- * diffed `brandOverride`, so nothing touches the tenant base.
+ * The primary site used to take a different path, writing its identity images and
+ * tagline to the tenant base brand via `PATCH /v1/brand`. The tenant base is the
+ * default every UNBRANDED site inherits, so branding the primary rebranded every
+ * sibling that had not overridden that field — a logo attached to one site
+ * appearing on another. Every site now stores its own identity on its own row.
  */
 export function useSaveIdentity() {
   const queryClient = useQueryClient();
@@ -235,21 +234,13 @@ export function useSaveIdentity() {
         faviconMediaId: input.identity.faviconMediaId,
       };
 
-      if (input.isPrimary) {
-        // Order matters only for error attribution; both must land. Run together.
-        await Promise.all([
-          api.patch('/v1/brand', identityBrand),
-          api.patch(`/v1/properties/${input.propertyId}`, { name, socials: cleanSocials }),
-        ]);
-      } else {
-        const current: Brand = { ...input.effective, ...identityBrand };
-        const brandOverride = computeOverride(current, input.base, input.existingOverride);
-        await api.patch(`/v1/properties/${input.propertyId}`, {
-          name,
-          socials: cleanSocials,
-          brandOverride,
-        });
-      }
+      const current: Brand = { ...input.effective, ...identityBrand };
+      const brandOverride = computeOverride(current, input.base, input.existingOverride);
+      await api.patch(`/v1/properties/${input.propertyId}`, {
+        name,
+        socials: cleanSocials,
+        brandOverride,
+      });
     },
     onSuccess: (_data, input) => {
       void queryClient.invalidateQueries({ queryKey: ['brand'] });

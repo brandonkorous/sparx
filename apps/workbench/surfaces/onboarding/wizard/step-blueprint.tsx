@@ -72,7 +72,7 @@ export function StepBlueprint({
             aria-label="Search starting points"
           />
         </div>
-        <Text className="text-base-content text-sm">
+        <Text className="text-sm">
           {shown.length} of {blueprints.length} starting points
         </Text>
       </div>
@@ -89,7 +89,7 @@ export function StepBlueprint({
       ) : shown.length === 0 ? (
         <div className="border-base-300 bg-base-100 flex flex-col items-center gap-2 rounded-xl border px-6 py-12 text-center">
           <Text className="font-medium">No starting points match</Text>
-          <Text className="text-base-content max-w-md text-sm">
+          <Text className="max-w-md text-sm">
             {q
               ? `Nothing matches “${search}”. Clear the search to see every starting point.`
               : 'No starting points are available yet. Start from a blank canvas below.'}
@@ -119,8 +119,8 @@ export function StepBlueprint({
         <div className="flex min-w-0 items-center gap-3">
           <PencilRuler className="text-module size-5 shrink-0" aria-hidden />
           <div className="min-w-0">
-            <p className="text-base-content font-medium">Start from a blank canvas</p>
-            <p className="text-base-content text-sm">
+            <p className="font-medium">Start from a blank canvas</p>
+            <p className="text-sm">
               Design every page yourself, or build headless against our API.
             </p>
           </div>
@@ -179,9 +179,9 @@ function BlueprintCard({
         </span>
       </div>
       <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <p className="text-base-content font-medium">{bp.name}</p>
-        <p className="text-base-content line-clamp-2 text-sm">{bp.summary}</p>
-        <p className="text-base-content mt-1 text-sm">{contentsLine(bp)}</p>
+        <p className="font-medium">{bp.name}</p>
+        <p className="line-clamp-2 text-sm">{bp.summary}</p>
+        <p className="mt-1 text-sm">{contentsLine(bp)}</p>
       </div>
     </button>
   );

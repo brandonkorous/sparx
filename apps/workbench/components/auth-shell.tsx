@@ -129,7 +129,7 @@ export interface AuthShellProps {
 
 export function AuthShell({ tabs, activeTab, onSelect, children, footer }: AuthShellProps) {
   return (
-    <div className="bg-base-200 text-base-content relative grid min-h-dvh place-items-center overflow-hidden p-6">
+    <div className="bg-base-200 relative grid min-h-dvh place-items-center overflow-hidden p-6">
       <SparkField />
       <div className="relative z-10 flex w-full max-w-md flex-col items-center gap-6">
         {/* Sized via the `size` prop (height in px) — the wordmark sets its own

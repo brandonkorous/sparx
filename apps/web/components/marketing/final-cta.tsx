@@ -22,10 +22,7 @@ export function FinalCta() {
     // dark, and every ink resolves from `base-content` with no inverse-tier
     // class. `bg-base-100` is the standalone fallback for the same section
     // rendered outside `.mkt-paneled`.
-    <section
-      data-theme="dark"
-      className="mkt-inverse bg-base-100 text-base-content px-page py-section-xl"
-    >
+    <section data-theme="dark" className="mkt-inverse bg-base-100 px-page py-section-xl">
       <Container>
         <Reveal className="flex flex-col items-start justify-between gap-12 lg:flex-row lg:items-end">
           <div className="flex max-w-[920px] flex-col gap-8">

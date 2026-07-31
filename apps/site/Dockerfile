@@ -26,7 +26,6 @@ COPY packages/brand/package.json packages/brand/
 COPY packages/ui/package.json packages/ui/
 COPY packages/cms-editor/package.json packages/cms-editor/
 COPY packages/site-themes/package.json packages/site-themes/
-COPY packages/site-ui/package.json packages/site-ui/
 COPY packages/sitebuilder-schemas/package.json packages/sitebuilder-schemas/
 COPY packages/section-template-react/package.json packages/section-template-react/
 COPY packages/builder-schemas/package.json packages/builder-schemas/
@@ -35,8 +34,8 @@ COPY packages/builder-schemas/package.json packages/builder-schemas/
 # workspace deps of its own.
 COPY packages/silica-catalog/package.json packages/silica-catalog/
 # @sparx/builder-render — the shared canvas↔live render path (docs/builder/02); the
-# live storefront renders through it. Its workspace deps (builder-schemas, cms-editor,
-# site-ui) are above.
+# live storefront renders through it. Its workspace deps (builder-schemas,
+# cms-editor) are above.
 COPY packages/builder-render/package.json packages/builder-render/
 COPY packages/chat-widget/package.json packages/chat-widget/
 
@@ -49,7 +48,6 @@ COPY packages/brand packages/brand
 COPY packages/ui packages/ui
 COPY packages/cms-editor packages/cms-editor
 COPY packages/site-themes packages/site-themes
-COPY packages/site-ui packages/site-ui
 COPY packages/sitebuilder-schemas packages/sitebuilder-schemas
 COPY packages/section-template-react packages/section-template-react
 COPY packages/builder-schemas packages/builder-schemas
@@ -57,12 +55,6 @@ COPY packages/silica-catalog packages/silica-catalog
 COPY packages/builder-render packages/builder-render
 COPY packages/chat-widget packages/chat-widget
 COPY apps/site apps/site
-
-# @sparx/site-ui ships its stylesheet as a BUILD artifact (dist/styles.css, Tailwind
-# @apply → plain CSS); dist is gitignored, so the fresh CI checkout lacks it. Build
-# it before the app so `import '@sparx/site-ui/styles.css'` resolves. tailwind CLI is
-# an installed devDep of site-ui (the filtered install above is not --prod).
-RUN pnpm --filter @sparx/site-ui build
 
 # Stripe.js publishable key. `NEXT_PUBLIC_*` is INLINED INTO THE CLIENT BUNDLE AT
 # BUILD TIME — setting it on the running pod does nothing, so it has to arrive as a

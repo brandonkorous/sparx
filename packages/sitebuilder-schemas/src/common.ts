@@ -42,8 +42,8 @@ export type LayoutSlot = z.infer<typeof LayoutSlot>;
 export const LinkUrl = z.string().max(2048);
 
 // A call-to-action button, reused by every banner-like section (hero, image
-// banner, panels, media+text, stats). `style` maps to a storefront `st-btn--*`
-// variant — never a hand-built button (brand rule). Sections expose up to two.
+// banner, panels, media+text, stats). `style` maps to a silica `btn-*` recipe —
+// never a hand-built button (RULE #1). Sections expose up to two.
 export const CtaStyle = z.enum(['solid', 'light', 'dark', 'ghost', 'link']);
 export type CtaStyle = z.infer<typeof CtaStyle>;
 

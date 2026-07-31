@@ -95,7 +95,7 @@ export function LandingV3Faq() {
             </Text>
           </div>
 
-          <Card className="bg-base-100 text-base-content shadow-none">
+          <Card className="bg-base-100 shadow-none">
             <Accordion defaultValue={[FAQ_ITEMS[0].id]}>
               {FAQ_ITEMS.map((item) => (
                 <AccordionItem key={item.id} value={item.id}>

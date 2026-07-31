@@ -97,6 +97,18 @@ export async function selectTheme(
   return updated;
 }
 
+// The `settings` keys the CALLER actually supplied, before Zod fills its defaults.
+// `SiteSettings` defaults `tokens` and `customCss`, so a parse of `{presentation}`
+// alone comes back carrying `customCss: ''` — indistinguishable from an explicit
+// blanking. Reading the raw object keeps "sent" and "defaulted" apart so the merge
+// below only touches what was really asked for.
+function suppliedSettingKeys(rawInput: unknown): Set<string> {
+  if (!rawInput || typeof rawInput !== 'object') return new Set();
+  const s = (rawInput as { settings?: unknown }).settings;
+  if (!s || typeof s !== 'object' || Array.isArray(s)) return new Set();
+  return new Set(Object.keys(s));
+}
+
 export async function updateSettings(ctx: PropertyContext, rawInput: unknown): Promise<SiteConfig> {
   const input = UpdateSettingsInput.parse(rawInput);
   return withTenant(ctx, async (tx) => {
@@ -108,10 +120,26 @@ export async function updateSettings(ctx: PropertyContext, rawInput: unknown): P
     if (input.settings === undefined && input.appearancePolicy === undefined) {
       return config;
     }
+    // MERGE, don't replace. `draftSettings` is one blob holding several independently
+    // owned slices — the token overlay, `customCss`, the v2 `presentation`, and the
+    // `activeSavedThemeId` pointer stamped by savedThemeService.apply. Assigning
+    // `input.settings` wholesale meant a caller updating ONE slice silently destroyed
+    // the others: sending `{tokens}` dropped the applied theme's presentation AND its
+    // pointer, so the site reverted to its base preset with no error anywhere.
+    const merged = ((): Record<string, unknown> | undefined => {
+      if (input.settings === undefined) return undefined;
+      const prev = (config.draftSettings ?? {}) as Record<string, unknown>;
+      const supplied = suppliedSettingKeys(rawInput);
+      const next: Record<string, unknown> = { ...prev };
+      for (const [k, v] of Object.entries(input.settings)) {
+        if (supplied.has(k)) next[k] = v;
+      }
+      return next;
+    })();
     return tx.siteConfig.update({
       where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
       data: {
-        ...(input.settings !== undefined ? { draftSettings: input.settings } : {}),
+        ...(merged !== undefined ? { draftSettings: merged as Prisma.InputJsonValue } : {}),
         ...(input.appearancePolicy !== undefined
           ? { appearancePolicy: input.appearancePolicy }
           : {}),
@@ -128,11 +156,17 @@ const IDENTITY_MEDIA_KEYS: readonly IdentityMediaKey[] = [
   'faviconMediaId',
 ];
 
-// Write the site's logo/favicon media ids to the right brand scope — mirrors the
-// colour/font split (applyThemeBrandWithinTx vs …ToSiteOverride). The storefront
-// projects theme.logoMediaId from brand.logoLightMediaId (+ dark/favicon), with a
-// non-primary site's brand_override merged over the base (public content route +
+// Write the site's logo/favicon media ids to the site's OWN brand scope — its
+// Property `brand_override` — mirroring the colour/font path
+// (applyThemeBrandToSiteOverrideWithinTx). The storefront projects
+// theme.logoMediaId from brand.logoLightMediaId (+ dark/favicon), with the site's
+// brand_override merged over the tenant base (public content route +
 // site-brand.mergeBrand). undefined = leave as-is; null = set null (clear/inherit).
+//
+// The primary site is NOT special-cased. It used to write straight to TenantBrand,
+// which is the default every unbranded sibling inherits — so attaching a logo to
+// the primary put that logo on every other site in the tenant (the wize.works →
+// silicaui leak). A logo set on one site belongs to that site alone.
 async function applyIdentityMedia(
   tx: TxClient,
   ctx: PropertyContext,
@@ -141,24 +175,6 @@ async function applyIdentityMedia(
   const present = IDENTITY_MEDIA_KEYS.filter((k) => input[k] !== undefined);
   if (present.length === 0) return;
 
-  const property = await tx.property.findUnique({
-    where: { id: ctx.propertyId },
-    select: { isPrimary: true },
-  });
-
-  if (property?.isPrimary) {
-    // Primary → the tenant base brand (recolours/rebrands every primary surface).
-    const data: Prisma.TenantBrandUncheckedUpdateInput = {};
-    for (const k of present) data[k] = input[k];
-    await tx.tenantBrand.upsert({
-      where: { tenantId: ctx.tenantId },
-      create: { tenantId: ctx.tenantId, ...data } as Prisma.TenantBrandUncheckedCreateInput,
-      update: data,
-    });
-    return;
-  }
-
-  // Non-primary → merge into the Property brand_override (only THIS site changes).
   const row = await tx.property.findUnique({
     where: { id: ctx.propertyId },
     select: { brandOverride: true },

@@ -70,7 +70,7 @@ export function MonogramSection() {
             <UseList title="The app icon" items={USE_ICON} />
             <div className="flex flex-wrap items-end gap-7 pt-1">
               {SIZES.map((s) => (
-                <div key={s} className="text-base-content flex flex-col items-center gap-2">
+                <div key={s} className="flex flex-col items-center gap-2">
                   <AppIcon size={s} />
                   <Text as="span" mono size={11} tone="subtle">
                     {s}px

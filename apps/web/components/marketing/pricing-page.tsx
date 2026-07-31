@@ -19,8 +19,10 @@ import { PricingSwitchboard } from './pricing-switchboard';
  * no metering. Builder is a normal $10 module, not a required base.
  *
  * Authoring: silica components + Tailwind utilities only (SILICA-VOCABULARY.md).
- * The only inline `style` left is a per-row module hue read out of MOD — a
- * genuinely dynamic value, not a static appearance.
+ * No inline `style` at all. The per-row module hue used to be a `var()` string
+ * read into `style={{ backgroundColor }}`, justified as "genuinely dynamic" — it
+ * isn't: the set is twelve known modules, each with a registered plugin class, so
+ * MOD is now a table of `bg-module-<slug>`. See DESIGN.md, the Contract.
  */
 
 /** Join class fragments, dropping falsy ones. */
@@ -28,19 +30,30 @@ function cx(...parts: (string | false | null | undefined)[]): string {
   return parts.filter(Boolean).join(' ');
 }
 
+/**
+ * Module hue as a PLUGIN CLASS, not a `var()` read into an inline style.
+ *
+ * The hue looks dynamic but the set is finite and known — twelve modules, each
+ * registered in this app's `@plugin '@wizeworks/silicaui'` block, so
+ * `bg-module-<slug>` is a real emitted class. Quantising to literal classes is
+ * the house rule for exactly this shape (the same reason `BAR_HEIGHT` is a class
+ * table and not a computed style), and it keeps the dot tracking the token: change
+ * `--color-module-commerce` in `@sparx/brand/theme.css` and this follows, with no
+ * edit here.
+ */
 const MOD: Record<string, string> = {
-  builder: 'var(--color-module-builder)',
-  commerce: 'var(--color-module-commerce)',
-  cms: 'var(--color-module-cms)',
-  crm: 'var(--color-module-crm)',
-  invoicing: 'var(--color-module-invoicing)',
-  email: 'var(--color-module-email)',
-  b2b: 'var(--color-module-b2b)',
-  ai: 'var(--color-module-ai)',
-  dropship: 'var(--color-module-dropship)',
-  inventory: 'var(--color-module-inventory)',
-  chat: 'var(--color-module-chat)',
-  scheduling: 'var(--color-module-scheduling)',
+  builder: 'bg-module-builder',
+  commerce: 'bg-module-commerce',
+  cms: 'bg-module-cms',
+  crm: 'bg-module-crm',
+  invoicing: 'bg-module-invoicing',
+  email: 'bg-module-email',
+  b2b: 'bg-module-b2b',
+  ai: 'bg-module-ai',
+  dropship: 'bg-module-dropship',
+  inventory: 'bg-module-inventory',
+  chat: 'bg-module-chat',
+  scheduling: 'bg-module-scheduling',
 };
 
 export function PricingPage() {
@@ -294,10 +307,7 @@ function CostSavings() {
               )}
             >
               <span className="mkt-ledger-mod flex min-w-0 items-center gap-3">
-                <span
-                  className="size-2.5 shrink-0 rounded-full"
-                  style={{ backgroundColor: MOD[row.key] }}
-                />
+                <span className={cx('size-2.5 shrink-0 rounded-full', MOD[row.key])} />
                 <Text as="span" size={15} tone="default" weight={500}>
                   {row.name}
                 </Text>
@@ -605,10 +615,7 @@ function FeatureTable() {
                   weight={500}
                   className="mkt-ft-name flex w-[188px] shrink-0 items-center gap-3 tracking-[-0.01em]"
                 >
-                  <span
-                    className="size-2.5 shrink-0 rounded-full"
-                    style={{ backgroundColor: MOD[m.key] }}
-                  />
+                  <span className={cx('size-2.5 shrink-0 rounded-full', MOD[m.key])} />
                   {m.name}
                 </Text>
                 <Text as="span" size={13} mono className="mkt-ft-price w-[76px] shrink-0">
@@ -640,10 +647,7 @@ function FeatureTable() {
                 <div className="mkt-ft-feats">
                   {m.feats.map((f) => (
                     <span key={f}>
-                      <span
-                        className="size-[5px] shrink-0 rounded-full"
-                        style={{ backgroundColor: MOD[m.key] }}
-                      />
+                      <span className={cx('size-[5px] shrink-0 rounded-full', MOD[m.key])} />
                       {f}
                     </span>
                   ))}
@@ -802,7 +806,7 @@ function Faq() {
         <div className="border-base-300 max-w-[820px] border-t">
           {FAQS.map((f) => (
             <details key={f.q} className="mkt-faq-item border-base-300 border-b">
-              <summary className="mkt-summary text-base-content text-body-lg flex items-center justify-between gap-4 px-1 py-5 font-sans font-medium tracking-[-0.01em]">
+              <summary className="mkt-summary text-body-lg flex items-center justify-between gap-4 px-1 py-5 font-sans font-medium tracking-[-0.01em]">
                 {f.q}
                 <span className="mkt-faq-icon text-ink-muted">
                   <svg

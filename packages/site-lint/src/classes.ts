@@ -18,7 +18,7 @@ import { checkClassString, containerVariants, type VocabularyIssue } from '@spar
 
 import type { DocumentInventory } from './walk';
 import type { RawFinding } from './finding';
-import type { LintRuleId, LintSeverity } from './types';
+import type { LintFix, LintRuleId, LintSeverity } from './types';
 
 interface Wording {
   rule: LintRuleId;
@@ -62,6 +62,40 @@ function wordingFor(reason: VocabularyIssue['reason']): Wording {
           'ignored completely — on the canvas and on the live page.'
         : 'This styling names a size that the site stylesheet does not contain, so it is ignored ' +
           'completely — on the canvas and on the live page.',
+  };
+}
+
+/**
+ * Whether this issue may be offered as a one-click fix, and with what.
+ *
+ * TWO SEPARATE QUESTIONS, and conflating them is how an editor ships a "fix" that makes
+ * a page worse:
+ *
+ *   1. IS THERE A SINGLE ANSWER? `vocabulary-check` answers that with `replacement`, and
+ *      only sets it when there is one. `arbitrary-value` never carries one.
+ *   2. IS APPLYING IT SAFE HERE? That is an ANCESTOR question, so only this walk can
+ *      answer it — and for a viewport variant the answer is usually no. Rewriting
+ *      `md:grid-cols-3` to `@3xl:grid-cols-3` under a node with no `@container` above it
+ *      swaps a rule that works on a real device for one that matches nowhere at all. The
+ *      author would watch their layout stop reflowing and have been told it was a fix.
+ *      So the offer is withheld unless `inContainer`, and the hint — which explains the
+ *      `@container` requirement in words — carries the case this cannot.
+ *
+ * A node with no id is unaddressable: nothing downstream could find it to edit it.
+ */
+function fixFor(
+  issue: VocabularyIssue,
+  visited: DocumentInventory['nodes'][number]
+): { fix?: LintFix } {
+  if (!issue.replacement || !visited.node.id) return {};
+  if (issue.reason === 'viewport-variant' && !visited.inContainer) return {};
+  return {
+    fix: {
+      kind: 'replace-class',
+      from: issue.className,
+      to: issue.replacement,
+      label: `Change ${issue.className} to ${issue.replacement}`,
+    },
   };
 }
 
@@ -121,6 +155,7 @@ export function checkClasses(inventory: DocumentInventory): RawFinding[] {
         title: wording.title,
         detail: `${wording.lead} ${issue.hint}`,
         evidence: issue.className,
+        ...fixFor(issue, visited),
       });
     }
   }

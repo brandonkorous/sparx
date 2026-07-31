@@ -82,3 +82,24 @@ apps/dashboard/_marketplace-assets.mjs
 # `.playwright-cli/` is already ignored; this covers custom state-save paths.
 wb-auth.json
 *-auth.json
+
+# Local self-hosted deployment (k8s/local) — real credentials for the
+# workstation stack. secrets.env is the filled-in copy of secrets.example.env
+# (which IS committed, as the template); tunnel-credentials.json is the
+# Cloudflare Tunnel secret written by `cloudflared tunnel create`.
+k8s/local/secrets.env
+k8s/local/tunnel-credentials.json
+
+# Terraform. Never mattered before — terraform/envs/prod uses a GCS backend, so
+# no state ever landed on disk. terraform/envs/azure uses a LOCAL backend, and
+# its state contains the generated Postgres admin password in plaintext. Local
+# state is also not something to version: it is a lock-managed database, not
+# source, and committing it is how two applies overwrite each other.
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
+override.tf
+override_*.tf

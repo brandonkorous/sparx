@@ -14,9 +14,34 @@
 // component renders + behaves in the canvas without mutating a cart.
 
 import * as React from 'react';
+import { buttonClasses, cx } from '@wizeworks/silicaui-react/server';
 
 import type { BuilderProduct, BuilderVariant } from './commerce-types';
 import { useBuilderRuntime } from './runtime-context';
+
+// ── The picker's own layout vocabulary ───────────────────────────────────────
+//
+// silica has no "product option row", so these are layout utilities, not a
+// restyled control: an option's VALUES are real silica buttons (`btn`), and
+// `btn-active` is how silica spells a pressed one.
+
+const OPTION_ROW = 'flex flex-col gap-2';
+const OPTION_LABEL = 'text-sm font-medium';
+const OPTION_VALUES = 'flex flex-wrap items-center gap-2';
+
+/** An option value rendered as a selectable chip. */
+function chipClass(selected: boolean): string {
+  return buttonClasses({ variant: 'outline', size: 'sm', active: selected });
+}
+
+/** A colour swatch. The fill is PRODUCT DATA (the option value's own hex), so it
+ *  cannot come from a theme token — the selected ring and the border do. */
+function swatchClass(selected: boolean): string {
+  return cx(
+    'size-8 rounded-full border transition-shadow disabled:opacity-40',
+    selected ? 'border-primary ring-primary ring-2 ring-offset-2' : 'border-base-300'
+  );
+}
 
 export type {
   BuilderProduct,
@@ -230,21 +255,21 @@ export function BuilderVariantPicker() {
   if (f.optionless) {
     return (
       <div className="bx-variant-picker">
-        <div className="st-option">
-          <span className="st-option__label">
+        <div className={OPTION_ROW}>
+          <span className={OPTION_LABEL}>
             Variant
             {f.resolvedVariant ? (
-              <span className="st-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
+              <span className="text-base-content ml-1.5 font-normal">
                 {variantLabel(f.resolvedVariant)}
               </span>
             ) : null}
           </span>
-          <div className="st-option__values">
+          <div className={OPTION_VALUES}>
             {f.product.variants.map((v) => (
               <button
                 key={v.id}
                 type="button"
-                className="st-chip"
+                className={chipClass(f.selectedVariantId === v.id)}
                 aria-pressed={f.selectedVariantId === v.id}
                 disabled={!v.inStock}
                 onClick={() => f.selectVariant(v.id)}
@@ -263,16 +288,16 @@ export function BuilderVariantPicker() {
       {f.product.options.map((opt) => {
         const isSwatch = opt.displayType === 'swatch' || opt.values.some((v) => v.swatchHex);
         return (
-          <div key={opt.id} className="st-option">
-            <span className="st-option__label">
+          <div key={opt.id} className={OPTION_ROW}>
+            <span className={OPTION_LABEL}>
               {opt.name}
               {f.selected[opt.id] ? (
-                <span className="st-muted" style={{ fontWeight: 400, marginLeft: '0.4rem' }}>
+                <span className="text-base-content ml-1.5 font-normal">
                   {opt.values.find((v) => v.id === f.selected[opt.id])?.value}
                 </span>
               ) : null}
             </span>
-            <div className="st-option__values">
+            <div className={OPTION_VALUES}>
               {opt.values.map((val) => {
                 const isSelected = f.selected[opt.id] === val.id;
                 const disabled = !f.valueAvailable[val.id];
@@ -280,7 +305,11 @@ export function BuilderVariantPicker() {
                   <button
                     key={val.id}
                     type="button"
-                    className="st-swatch"
+                    className={swatchClass(isSelected)}
+                    // The ONE inline style in the render path, unchanged from the
+                    // pre-silica picker: this hex is the merchant's own option
+                    // value from the database, not a design decision, so no token
+                    // can express it. Everything else on the control is silica.
                     style={{ background: val.swatchHex }}
                     aria-pressed={isSelected}
                     aria-label={val.value}
@@ -291,7 +320,7 @@ export function BuilderVariantPicker() {
                   <button
                     key={val.id}
                     type="button"
-                    className="st-chip"
+                    className={chipClass(isSelected)}
                     aria-pressed={isSelected}
                     disabled={disabled}
                     onClick={() => f.selectValue(opt.id, val.id)}
@@ -313,9 +342,10 @@ export function BuilderQuantity() {
   const f = useProductForm();
   if (!f) return null;
   return (
-    <div className="st-qty">
+    <div className="join">
       <button
         type="button"
+        className={buttonClasses({ variant: 'outline', className: 'join-item' })}
         aria-label="Decrease quantity"
         onClick={() => f.setQty(Math.max(1, f.qty - 1))}
       >
@@ -326,9 +356,15 @@ export function BuilderQuantity() {
         min={1}
         value={f.qty}
         aria-label="Quantity"
+        className="input join-item w-16 text-center"
         onChange={(e) => f.setQty(Math.max(1, Number(e.target.value) || 1))}
       />
-      <button type="button" aria-label="Increase quantity" onClick={() => f.setQty(f.qty + 1)}>
+      <button
+        type="button"
+        className={buttonClasses({ variant: 'outline', className: 'join-item' })}
+        aria-label="Increase quantity"
+        onClick={() => f.setQty(f.qty + 1)}
+      >
         +
       </button>
     </div>
@@ -350,8 +386,7 @@ export function BuilderAddToCart({ label }: { label?: string }) {
   return (
     <button
       type="button"
-      className="st-btn st-c-primary st-v-solid st-btn--sz-lg"
-      style={{ minWidth: '200px' }}
+      className={buttonClasses({ color: 'primary', size: 'lg', className: 'min-w-[200px]' })}
       disabled={!f.resolvedVariant || !f.inStock || f.adding}
       onClick={() => void f.addToCart()}
     >
@@ -445,22 +480,22 @@ function BuyBoxInner() {
   const f = useProductForm();
   if (!f) return null;
   return (
-    <div className="bx-buybox st-pdp__info">
-      <div className="st-pdp__price">
+    <div className="bx-buybox flex flex-col gap-5">
+      <div className="text-2xl font-semibold tabular-nums">
         {moneyOf(f.priceCents, f.product.currency)}
         {f.onSale && f.compareAtCents != null ? (
-          <span className="st-card__compare" style={{ fontSize: '1rem' }}>
+          <span className="ms-2 text-base font-normal line-through">
             {moneyOf(f.compareAtCents, f.product.currency)}
           </span>
         ) : null}
       </div>
       <BuilderVariantPicker />
-      <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="flex flex-wrap items-center gap-3">
         <BuilderQuantity />
         <BuilderAddToCart />
       </div>
       {f.addError ? (
-        <p className="st-buybox__error" role="alert">
+        <p className="text-error" role="alert">
           {f.addError}
         </p>
       ) : null}

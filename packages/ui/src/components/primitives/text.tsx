@@ -18,9 +18,9 @@ const textVariants = cva('', {
     // making the words harder to see. (Kept as variant names so ~570 call sites
     // don't churn — they're aliases now, not a fading scale.)
     variant: {
-      default: 'text-base-content',
-      muted: 'text-base-content',
-      subtle: 'text-base-content',
+      default: '',
+      muted: '',
+      subtle: '',
       inverse: 'text-base-100',
       danger: 'text-danger',
       warning: 'text-warning',

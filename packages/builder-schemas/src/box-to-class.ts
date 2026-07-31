@@ -15,7 +15,7 @@
 // build-time convenience: nothing here ships to the runtime node beyond a class
 // string + bg props. The output utilities are exactly what a power user or an AI
 // agent would type, and they compile through @sparx/surface-compile to the
-// tenant `--st-*` tokens.
+// tenant's silica theme tokens.
 
 import type { Binding, BuilderNode } from './node';
 
@@ -86,7 +86,7 @@ export function isSeedContainer(type: string): boolean {
 // Box-radius default: in sparx a "card" isn't just the `Card` type — any SURFACED
 // container (a Stack/Section styled as a panel) is treated as a card. So a `Card`,
 // OR any surfaced container that isn't a full-bleed band, carries the box radius
-// (`rounded-box` → `--st-radius-box`), and the theme's Box-corners control reaches
+// (`rounded-box` → `--radius-box`), and the theme's Box-corners control reaches
 // ALL of them uniformly. Full-bleed surfaced strips (the order/announcement/
 // how-it-works bands) stay edge-to-edge. A per-node `rounded-*` class still wins.
 function typeShapeClass(type: string, box: BoxStyle | undefined): string {
@@ -271,34 +271,38 @@ export function boxLayoutClass(
 // (primary/soft/dark/glass/link). The storefront painted that with inline CSS; the
 // editor canvas couldn't reproduce it and fell back to a neutral button — a WYSIWYG
 // drift, and such a button isn't restyleable from the inspector (its Color/Variant
-// controls read & write `st-*` classes). The class-first button IS the Surface
-// recipe (`st-btn st-c-* st-v-* st-btn--sz-*`), so each legacy style maps to its
-// recipe equivalent. Frosted CTAs use the recipe's `glass` treatment:
-// glass×neutral = frosted-dark, glass×surface = frosted-light (site-ui recipes.css).
+// controls read & write the button's classes). A class-first button IS a silicaui
+// button (`btn btn-<color> btn-<variant> btn-<size>`), so each legacy style maps to
+// its silica equivalent. Frosted CTAs use silica's universal `glass` treatment.
+//
+// `solid` is silica's DEFAULT variant and emits no class of its own, which is why
+// the plain colour rows below carry only `btn-<color>`.
 const LEGACY_BUTTON_STYLE_CLASS: Record<string, string> = {
-  primary: 'st-c-primary st-v-solid',
-  soft: 'st-c-primary st-v-soft',
-  dark: 'st-c-neutral st-v-glass',
-  glass: 'st-c-surface st-v-glass',
-  link: 'st-c-primary st-v-link',
+  primary: 'btn-primary',
+  soft: 'btn-primary btn-soft',
+  dark: 'btn-neutral glass',
+  // The frosted-light CTA. silica has no `surface` colour, so the glass treatment
+  // rides the button alone and tints from whatever it sits on.
+  glass: 'glass',
+  link: 'btn-primary btn-link',
   // The accent/secondary brand roles (parity with the editor's Background control
-  // + the recipe color set): a solid berry/secondary CTA the seed vocabulary can name.
-  accent: 'st-c-accent st-v-solid',
-  secondary: 'st-c-secondary st-v-solid',
+  // + the colour set): a solid berry/secondary CTA the seed vocabulary can name.
+  accent: 'btn-accent',
+  secondary: 'btn-secondary',
 };
 
-/** The class-first recipe class for a legacy Button `style` value (default
- *  `primary` — matching the storefront's old `buttonStyle` default). Always a full
- *  recipe: the `st-btn` base + color×treatment + the `md` size. */
+/** The silica class for a legacy Button `style` value (default `primary` —
+ *  matching the storefront's old `buttonStyle` default). Always a full recipe: the
+ *  `btn` base + colour/treatment + the `md` size. */
 export function legacyButtonStyleToClass(style?: string): string {
   const recipe = LEGACY_BUTTON_STYLE_CLASS[style ?? 'primary'] ?? LEGACY_BUTTON_STYLE_CLASS.primary;
-  return `st-btn ${recipe} st-btn--sz-md`;
+  return `btn ${recipe} btn-md`;
 }
 
-/** True when a class string already carries the Surface button recipe base — so a
- *  conversion is a no-op (keeps the migration idempotent). */
+/** True when a class string already carries the button base — so a conversion is a
+ *  no-op (keeps the migration idempotent). */
 function hasButtonRecipe(cls: string | undefined): boolean {
-  return /(^|\s)st-btn(\s|$)/.test(cls ?? '');
+  return /(^|\s)btn(\s|$)/.test(cls ?? '');
 }
 
 /** If `node` is a legacy Button (a `props.style` enum, no recipe class yet), return

@@ -1,7 +1,0 @@
-/* Surface Textarea — deltas over the shared `.st-input` base (docs/46 §3.6). */
-
-.st-textarea {
-  min-height: 6rem;
-  line-height: 1.5;
-  resize: vertical;
-}

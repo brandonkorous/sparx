@@ -53,11 +53,7 @@ export function StoreControls({
     <div className="flex flex-wrap items-center justify-between gap-3">
       <form onSubmit={submitSearch} role="search" className="flex min-w-0 flex-1 gap-2 sm:max-w-sm">
         <div className="relative flex min-w-0 flex-1 items-center">
-          <Search
-            size={16}
-            aria-hidden
-            className="text-base-content pointer-events-none absolute left-3 z-10"
-          />
+          <Search size={16} aria-hidden className="pointer-events-none absolute left-3 z-10" />
           <Input
             type="search"
             value={q}
@@ -97,7 +93,7 @@ export function StoreControls({
       </form>
 
       <div className="flex items-center gap-2">
-        <span className="text-base-content text-sm">Sort</span>
+        <span className="text-sm">Sort</span>
         <NativeSelect
           className="w-44"
           value={sort}

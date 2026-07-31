@@ -72,9 +72,7 @@ export function ResetPasswordForm() {
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">Password updated</h2>
-            <Text className="text-base-content/70 text-sm">
-              You can now sign in with your new password.
-            </Text>
+            <Text className="text-sm">You can now sign in with your new password.</Text>
           </div>
           <Button color="primary" render={<Link href="/sign-in" />}>
             Go to sign in
@@ -84,7 +82,7 @@ export function ResetPasswordForm() {
         <form onSubmit={onSubmit} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">Set a new password</h2>
-            <Text className="text-base-content/70 text-sm">
+            <Text className="text-sm">
               Choose something strong — at least {MIN_PASSWORD} characters.
             </Text>
           </div>

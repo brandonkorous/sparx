@@ -264,9 +264,7 @@ export function Launcher({
             ) : (
               groups.map(([group, rows]) => (
                 <div key={group} className="mb-1">
-                  <div className="text-base-content px-3 pt-2 pb-1 text-xs font-semibold tracking-wide">
-                    {group}
-                  </div>
+                  <div className="px-3 pt-2 pb-1 text-xs font-semibold tracking-wide">{group}</div>
                   {rows.map(({ entry, index }) => {
                     const isActive = index === activeIndex;
                     const Icon = entry.icon;
@@ -285,14 +283,12 @@ export function Launcher({
                           select(index, { shiftKey: event.shiftKey, altKey: event.altKey })
                         }
                       >
-                        {Icon ? (
-                          <Icon className="text-base-content size-4 shrink-0" aria-hidden />
-                        ) : null}
+                        {Icon ? <Icon className="size-4 shrink-0" aria-hidden /> : null}
                         <span className="min-w-0 flex-1 truncate text-sm font-medium">
                           {entry.label}
                         </span>
                         {entry.subtitle ? (
-                          <span className="text-base-content max-w-[45%] shrink truncate text-sm">
+                          <span className="max-w-[45%] shrink truncate text-sm">
                             {entry.subtitle}
                           </span>
                         ) : null}
@@ -306,7 +302,7 @@ export function Launcher({
 
           {/* The modifier contract, spelled out — the same three destinations for
               a surface and a record. */}
-          <div className="border-base-300 text-base-content flex items-center gap-4 border-t px-3 py-2 text-xs">
+          <div className="border-base-300 flex items-center gap-4 border-t px-3 py-2 text-xs">
             <span className="flex items-center gap-1">
               <Kbd size="sm">↵</Kbd> open
             </span>

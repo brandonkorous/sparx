@@ -7,11 +7,11 @@ import {
   toggleClass,
 } from './class-utils';
 
-const COLORS = ['st-c-primary', 'st-c-secondary', 'st-c-accent'] as const;
+const COLORS = ['btn-primary', 'btn-secondary', 'btn-accent'] as const;
 
 describe('parseClasses / joinClasses', () => {
   it('tokenizes, dropping blanks + extra whitespace', () => {
-    expect(parseClasses('  st-btn   st-c-primary ')).toEqual(['st-btn', 'st-c-primary']);
+    expect(parseClasses('  btn   btn-primary ')).toEqual(['btn', 'btn-primary']);
     expect(parseClasses(undefined)).toEqual([]);
     expect(parseClasses('')).toEqual([]);
   });
@@ -22,32 +22,32 @@ describe('parseClasses / joinClasses', () => {
 
 describe('readClassGroup', () => {
   it('returns the active group member, or null', () => {
-    expect(readClassGroup('st-btn st-c-secondary st-v-solid', COLORS)).toBe('st-c-secondary');
-    expect(readClassGroup('st-btn st-v-solid', COLORS)).toBeNull();
+    expect(readClassGroup('btn btn-secondary btn-md', COLORS)).toBe('btn-secondary');
+    expect(readClassGroup('btn btn-md', COLORS)).toBeNull();
   });
 });
 
 describe('setClassGroup', () => {
   it('swaps the active member, preserving other tokens + their order', () => {
-    expect(setClassGroup('st-btn st-c-primary st-v-solid', COLORS, 'st-c-accent')).toBe(
-      'st-btn st-v-solid st-c-accent'
+    expect(setClassGroup('btn btn-primary btn-md', COLORS, 'btn-accent')).toBe(
+      'btn btn-md btn-accent'
     );
   });
   it('adds the token when the group was empty', () => {
-    expect(setClassGroup('st-btn', COLORS, 'st-c-primary')).toBe('st-btn st-c-primary');
+    expect(setClassGroup('btn', COLORS, 'btn-primary')).toBe('btn btn-primary');
   });
   it('clears the group when token is null', () => {
-    expect(setClassGroup('st-btn st-c-primary', COLORS, null)).toBe('st-btn');
+    expect(setClassGroup('btn btn-primary', COLORS, null)).toBe('btn');
   });
   it('does not duplicate when re-selecting the active member', () => {
-    expect(setClassGroup('st-c-primary', COLORS, 'st-c-primary')).toBe('st-c-primary');
+    expect(setClassGroup('btn-primary', COLORS, 'btn-primary')).toBe('btn-primary');
   });
 });
 
 describe('toggleClass', () => {
   it('adds when on, removes when off, idempotently', () => {
-    expect(toggleClass('st-btn', 'st-rounded', true)).toBe('st-btn st-rounded');
-    expect(toggleClass('st-btn st-rounded', 'st-rounded', true)).toBe('st-btn st-rounded');
-    expect(toggleClass('st-btn st-rounded', 'st-rounded', false)).toBe('st-btn');
+    expect(toggleClass('btn', 'rounded-full', true)).toBe('btn rounded-full');
+    expect(toggleClass('btn rounded-full', 'rounded-full', true)).toBe('btn rounded-full');
+    expect(toggleClass('btn rounded-full', 'rounded-full', false)).toBe('btn');
   });
 });

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
-import { Button, Heading, Text } from '@wizeworks/silicaui-react';
-import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Button, Heading, Status, Text } from '@wizeworks/silicaui-react';
+import { buttonClasses, cx } from '@wizeworks/silicaui-react/server';
 import {
   CAPABILITY_AREAS,
   STATUS_META,
@@ -9,7 +9,7 @@ import {
   type CapabilityArea,
   type CapabilityStatus,
 } from '@/lib/capabilities';
-import { Container, Display, Dot, Section, SectionHeader, Spark } from './primitives';
+import { Container, Display, Section, SectionHeader, Spark } from './primitives';
 
 /**
  * The /features marketing page — the answer to "what do I actually get?".
@@ -23,8 +23,8 @@ import { Container, Display, Dot, Section, SectionHeader, Spark } from './primit
  * the home page (which sells the cost story). This page is a scannable index of
  * sheer surface area. Built on the marketing primitives + silicaui typography;
  * module areas reuse their brand color, cross-cutting platform areas carry their
- * own accent. Per SILICA-VOCABULARY.md every static value is a utility class —
- * the only inline `style` left is a genuinely dynamic per-area accent.
+ * own accent. Per SILICA-VOCABULARY.md every value is a utility class — there is
+ * no inline `style` on this page at all.
  */
 
 export function FeaturesPage() {
@@ -77,7 +77,7 @@ export function FeaturesPage() {
         />
         <div className="mt-12 flex flex-col gap-5">
           {platform.map((area) => (
-            <AreaBlock key={area.id} area={area} surface />
+            <AreaBlock key={area.id} area={area} />
           ))}
         </div>
       </Section>
@@ -137,7 +137,7 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
         <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-x-14 gap-y-8 border-t pt-8">
           {metrics.map((m) => (
             <div key={m.s} className="flex flex-col gap-1">
-              <span className="text-base-content text-h1 font-medium tracking-[-0.02em]">
+              <span className="text-h1 font-medium tracking-[-0.02em]">
                 {m.v}
                 {'suffix' in m && m.suffix ? (
                   <span className="text-ink-subtle text-body font-normal">{m.suffix}</span>
@@ -165,7 +165,7 @@ function StatusLegend() {
     <div className="flex flex-wrap items-center gap-5">
       {order.map((s) => (
         <span key={s} className="inline-flex items-center gap-2">
-          <Dot color={STATUS_META[s].color} size={8} />
+          <Status color={STATUS_META[s].color} size="sm" label={STATUS_META[s].label} />
           <Text as="span" className="text-caption text-ink-muted">
             {STATUS_META[s].label}
           </Text>
@@ -176,35 +176,33 @@ function StatusLegend() {
 }
 
 // ── AREA BLOCK ───────────────────────────────────────────────────────────────
-function AreaBlock({ area, surface }: { area: CapabilityArea; surface?: boolean }) {
+function AreaBlock({ area }: { area: CapabilityArea }) {
   const liveN = area.capabilities.filter((c) => c.status === 'live').length;
   const total = area.capabilities.length;
 
   return (
     <div
       id={area.id}
-      className="border-base-300 scroll-mt-[88px] rounded-xl border p-7"
-      // Legend of capability areas: each block wears a soft 8% wash of its area
-      // hue (a color key, not the retired 3px stripe) — softer than a lead card's
-      // 12% since these are large, stacked surfaces. The hue arrives as a runtime
-      // value from lib/capabilities, so the mix cannot be a static utility.
-      style={{
-        backgroundColor: `color-mix(in oklab, ${area.accent} 8%, ${
-          surface ? 'var(--color-base-200)' : 'var(--color-base-100)'
-        })`,
-      }}
+      // Each block wears a soft wash of its area hue. This is silica's OWN `soft`
+      // treatment (`bg-<color> bg-soft` → `color-mix(in oklab, accent 15%, base)`),
+      // not a local one. It used to be a hand-written `color-mix` at 8% against a
+      // per-row base — the third private reimplementation of `soft` found in this
+      // codebase, and the reason `lib/capabilities` had to carry a colour VALUE at
+      // all. `bg-soft` reads `--u-accent`, which `bg-<color>` sets, so the two
+      // classes compose with nothing threaded between them.
+      className={cx('border-base-300 scroll-mt-[88px] rounded-xl border p-7', area.fill, 'bg-soft')}
     >
       <div className="flex flex-col gap-8 lg:flex-row">
         {/* header column */}
         <div className="w-[280px] shrink-0">
           <div className="flex items-center gap-2.5">
-            <Dot color={area.accent} size={10} />
+            <Status color={area.color} size="md" />
             <Heading level={3} size={4}>
               {area.name}
             </Heading>
           </div>
           <Text className="text-small text-ink-muted mt-3">{area.summary}</Text>
-          <div className="text-mini text-base-content mt-4 inline-flex items-baseline gap-1.5 font-mono">
+          <div className="text-mini mt-4 inline-flex items-baseline gap-1.5 font-mono">
             <span className="font-medium">{total}</span>
             capabilities
             <span>· {liveN} live</span>
@@ -231,10 +229,10 @@ function CapabilityChip({ cap }: { cap: Capability }) {
   const meta = STATUS_META[cap.status];
   return (
     <span
-      className="border-base-300 bg-base-200 text-base-content text-caption inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
+      className="border-base-300 bg-base-200 text-caption inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
       title={meta.label}
     >
-      <Dot color={meta.color} size={7} />
+      <Status color={meta.color} size="sm" label={meta.label} />
       {cap.name}
     </span>
   );

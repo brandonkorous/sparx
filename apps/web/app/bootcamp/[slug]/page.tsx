@@ -189,7 +189,7 @@ function RegistrationCard({ b }: { b: BootcampDetail }) {
               }
             >
               <span className="text-ink-subtle">{r.k}</span>
-              <span className="text-base-content text-right font-medium">{r.v}</span>
+              <span className="text-right font-medium">{r.v}</span>
             </div>
           ))}
         </div>

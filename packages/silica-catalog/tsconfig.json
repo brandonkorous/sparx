@@ -1,4 +1,10 @@
 {
   "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // `node` for base-theme.css.test.ts only, which reads base-theme.css off disk to
+    // assert it still matches BASE_SILICA_THEME. The package itself stays React-free
+    // AND runtime-free — nothing under src/ outside that test imports node:*.
+    "types": ["node"]
+  },
   "include": ["src/**/*"]
 }

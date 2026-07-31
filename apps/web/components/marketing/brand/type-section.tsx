@@ -14,7 +14,7 @@ const ROLES: Role[] = [
   {
     role: 'Display',
     specimen: (
-      <span className="text-base-content font-sans text-[clamp(34px,5vw,52px)] leading-[1.05] font-medium tracking-[-0.025em]">
+      <span className="font-sans text-[clamp(34px,5vw,52px)] leading-[1.05] font-medium tracking-[-0.025em]">
         Everything, ignited.
       </span>
     ),
@@ -24,7 +24,7 @@ const ROLES: Role[] = [
   {
     role: 'Heading',
     specimen: (
-      <span className="text-base-content font-sans text-[24px] leading-[1.25] font-medium tracking-normal">
+      <span className="font-sans text-[24px] leading-[1.25] font-medium tracking-normal">
         Activate only what you need
       </span>
     ),

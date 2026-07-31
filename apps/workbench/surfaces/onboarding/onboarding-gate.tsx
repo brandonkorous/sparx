@@ -49,7 +49,7 @@ export function OnboardingGate({ onFinished }: { onFinished?: () => void }) {
   return (
     <ModuleScope
       module="builder"
-      className="bg-base-200 text-base-content relative flex h-dvh w-full flex-col overflow-hidden"
+      className="bg-base-200 relative flex h-dvh w-full flex-col overflow-hidden"
     >
       <SparkField />
       {/* The header + flow ride above the watermark; the opaque base-100 surfaces

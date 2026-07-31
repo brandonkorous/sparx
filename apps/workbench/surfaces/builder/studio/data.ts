@@ -602,7 +602,20 @@ export interface CheckFinding {
   title: string;
   detail: string;
   evidence?: string;
+  /** A correction the editor may apply for the author — present only when the server
+   *  judged it BOTH unambiguous and safe to apply here (`@sparx/site-lint`'s `LintFix`).
+   *  Most findings never carry one: "choose a destination for this link" and "pick a
+   *  readable colour" are the author's decisions, not ours. */
+  fix?: CheckFix;
   location: CheckLocation;
+}
+
+/** Swap one class token for another on the node the finding names. The only fix kind. */
+export interface CheckFix {
+  kind: 'replace-class';
+  from: string;
+  to: string;
+  label: string;
 }
 
 /** How a page reads at a glance. Three bands, not a score — and NOT a severity:
@@ -662,18 +675,24 @@ export const SITE_CHECK_KEY = ['builder', 'site', 'check'] as const;
  * check that is one save behind is worse than none — it says "clean" about work it has
  * not seen.
  *
- * `enabled` gates it to when the drawer is open or a publish is being decided. It is a
- * full walk of every page's composed document plus a handful of roster reads, so it is
- * not something to run on every keystroke.
+ * IT NEVER RUNS ON ITS OWN — `enabled: false`, and the only way to a report is
+ * `refetch()` behind an explicit Run/Check again. It used to fire on every open, which
+ * made opening the panel cost a save plus a full walk of every page's composed document
+ * and a handful of roster reads, just to glance at a list the author had already read.
+ *
+ * The result therefore PERSISTS between opens (`staleTime: Infinity`, a real `gcTime`)
+ * rather than being thrown away, because it is now the thing the status bar reports. Its
+ * freshness is not this hook's problem: the studio marks the report stale on the next
+ * edit and stops showing a count that has stopped being true — a number that is either
+ * right or absent, never quietly wrong.
  */
-export function useSiteCheck(enabled: boolean) {
+export function useSiteCheck() {
   return useQuery({
     queryKey: SITE_CHECK_KEY,
     queryFn: () => api.get<SiteCheckReport>('/v1/builder/site/check'),
-    enabled,
-    // Always refetched on open: the point of the panel is what is wrong RIGHT NOW.
-    staleTime: 0,
-    gcTime: 0,
+    enabled: false,
+    staleTime: Infinity,
+    gcTime: 5 * 60_000,
   });
 }
 

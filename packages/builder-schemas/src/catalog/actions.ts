@@ -1,7 +1,7 @@
 // Catalog · Actions (docs/98 §5). Buttons, button groups, dropdowns, toggles.
 //
 // The action family is where the recipe class earns its keep: every button is a
-// raw `Button` atom wearing `st-btn st-c-<color> st-v-<treatment> st-btn--sz-<sz>`
+// raw `Button` atom wearing `btn btn-<color> btn-<variant> btn-<size>`
 // — color × variant × size as separate axes, never a flat enum (cf. docs/35). A
 // "split button" or "button group" is then just composition: join the recipe
 // buttons in a flex row, share a border, and the segmented control falls out for
@@ -33,7 +33,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
       children: [
         el(
           'summary',
-          'st-btn st-c-neutral st-v-outline st-btn--sz-md flex cursor-pointer list-none items-center gap-2 [&::-webkit-details-marker]:hidden',
+          'btn btn-neutral btn-outline btn-md flex cursor-pointer list-none items-center gap-2 [&::-webkit-details-marker]:hidden',
           {
             children: [
               el('span', '', { text: 'Options' }),
@@ -168,9 +168,9 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     tree: el('div', 'flex w-full flex-wrap items-center gap-3', {
       attrs: { role: 'toolbar', ariaLabel: 'Document actions' },
       children: [
-        atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', { label: 'Publish' }),
-        atom('Button', 'st-btn st-c-neutral st-v-outline st-btn--sz-md', { label: 'Preview' }),
-        atom('Button', 'st-btn st-c-neutral st-v-ghost st-btn--sz-md', { label: 'Discard' }),
+        atom('Button', 'btn btn-primary btn-md', { label: 'Publish' }),
+        atom('Button', 'btn btn-neutral btn-outline btn-md', { label: 'Preview' }),
+        atom('Button', 'btn btn-neutral btn-ghost btn-md', { label: 'Discard' }),
         el('span', 'hidden h-6 w-px bg-base-300 @2xl:block', {}),
         el(
           'button',
@@ -254,7 +254,7 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     tags: ['swap', 'toggle', 'switch', 'play pause', 'state', 'actions'],
     tree: el(
       'label',
-      'st-btn st-c-primary st-v-soft st-btn--sz-md inline-flex cursor-pointer items-center gap-2',
+      'btn btn-primary btn-soft btn-md inline-flex cursor-pointer items-center gap-2',
       {
         children: [
           el('input', 'peer sr-only', { attrs: { type: 'checkbox' } }),
@@ -280,14 +280,10 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
       'An outline button with a leading clipboard icon for copying a value — pairs with a code snippet or share link.',
     surfaces: ['page', 'site'],
     tags: ['copy', 'clipboard', 'duplicate', 'button', 'actions'],
-    tree: el(
-      'button',
-      'st-btn st-c-neutral st-v-outline st-btn--sz-sm inline-flex items-center gap-2',
-      {
-        attrs: { type: 'button', ariaLabel: 'Copy to clipboard' },
-        children: [atom('Icon', 'h-4 w-4', { name: 'copy' }), el('span', '', { text: 'Copy' })],
-      }
-    ),
+    tree: el('button', 'btn btn-neutral btn-outline btn-sm inline-flex items-center gap-2', {
+      attrs: { type: 'button', ariaLabel: 'Copy to clipboard' },
+      children: [atom('Icon', 'h-4 w-4', { name: 'copy' }), el('span', '', { text: 'Copy' })],
+    }),
   }),
 
   // ── Load more — centered outline pagination control ──────────────────────────
@@ -303,17 +299,13 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     tags: ['load more', 'pagination', 'infinite', 'show more', 'actions'],
     tree: el('div', 'flex w-full justify-center py-2', {
       children: [
-        el(
-          'button',
-          'st-btn st-c-primary st-v-outline st-btn--sz-md inline-flex items-center gap-2',
-          {
-            attrs: { type: 'button' },
-            children: [
-              atom('Icon', 'h-4 w-4', { name: 'arrow-down' }),
-              el('span', '', { text: 'Load more' }),
-            ],
-          }
-        ),
+        el('button', 'btn btn-primary btn-outline btn-md inline-flex items-center gap-2', {
+          attrs: { type: 'button' },
+          children: [
+            atom('Icon', 'h-4 w-4', { name: 'arrow-down' }),
+            el('span', '', { text: 'Load more' }),
+          ],
+        }),
       ],
     }),
   }),
@@ -352,10 +344,10 @@ export const ACTIONS_CATALOG: PlatformCatalogEntry[] = [
     tags: ['button stack', 'vertical', 'confirm', 'cancel', 'block', 'actions'],
     tree: el('div', 'flex w-full max-w-sm flex-col gap-3', {
       children: [
-        atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-lg w-full', {
+        atom('Button', 'btn btn-primary btn-lg w-full', {
           label: 'Confirm order',
         }),
-        atom('Button', 'st-btn st-c-neutral st-v-ghost st-btn--sz-lg w-full', {
+        atom('Button', 'btn btn-neutral btn-ghost btn-lg w-full', {
           label: 'Keep editing',
         }),
       ],

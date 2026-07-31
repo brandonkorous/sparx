@@ -4,16 +4,16 @@
 // lucide's lazy `DynamicIcon`: the live renderer is a Server Component and the
 // canvas is a client tree, but DynamicIcon resolves each glyph via React.lazy
 // (code-split, loaded on demand), so it must render under a client component —
-// same split as BuilderCarousel / the commerce atoms. The `st-icon` class on the
-// wrapper owns color from the loaded @sparx/site-ui recipe; the SVG sits at 1em,
-// so a sizeless icon inherits its context's font-size (matching a button's label)
-// and an explicit `st-icon--sz-*` overrides it.
+// same split as BuilderCarousel / the commerce atoms. The wrapper sets no colour
+// of its own — the icon inherits the ink of whatever it sits in (a button label, a
+// nav item), which is what makes it correct on every silica variant without a
+// per-call-site override. It sizes at 1em for the same reason.
 
 import { DynamicIcon, type IconName } from 'lucide-react/dynamic';
 
 export function BuilderIcon({ name, className }: { name: string; className?: string }) {
   return (
-    <span className={className ?? 'st-icon'}>
+    <span className={className ?? 'inline-flex items-center [&>svg]:size-[1em]'}>
       <DynamicIcon name={(name || 'star') as IconName} />
     </span>
   );

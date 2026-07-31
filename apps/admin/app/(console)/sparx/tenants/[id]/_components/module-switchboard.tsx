@@ -18,12 +18,12 @@ import {
   Heading,
   ModuleProvider,
   Stack,
-  Switch,
   Text,
   cn,
   toast,
   useConfirm,
 } from '@sparx/ui';
+import { Switch } from '@wizeworks/silicaui-react';
 import type { OperatorTenantModule } from '@sparx/operator';
 import { moduleColor, moduleLabel } from '@/lib/modules';
 import { formatMoneyCents } from '@/lib/format';
@@ -197,6 +197,11 @@ function ModuleRow({
         >
           {priceLabel}
         </span>
+        {/* The switch takes `color="module"`, not the module's own name: the row
+            is already wrapped in its <ModuleProvider>, so the hue arrives through
+            --color-module. A named `module-<key>` color would need this app to
+            have registered the full module palette, and the console registers
+            only `module`. */}
         {lock === 'included' ? (
           <span className="w-9 shrink-0" aria-hidden="true" />
         ) : (
@@ -204,7 +209,7 @@ function ModuleRow({
             checked={on}
             onCheckedChange={onToggle}
             disabled={lock !== null || busy}
-            color={moduleColor(m.key)}
+            color="module"
             aria-label={moduleLabel(m.key)}
           />
         )}

@@ -40,9 +40,7 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
               )}
             </div>
 
-            <h3 className="text-base-content text-h4 m-0 pt-7 font-medium tracking-[-0.015em]">
-              {cat.label}
-            </h3>
+            <h3 className="text-h4 m-0 pt-7 font-medium tracking-[-0.015em]">{cat.label}</h3>
             <p className="text-ink-muted text-small m-0 pt-2">{cat.tagline}</p>
 
             {live ? (

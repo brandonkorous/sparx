@@ -655,11 +655,7 @@ function ManageProduct({ ctx, id }: { ctx: SurfaceContext; id: string }) {
               // answer. The selected tab is already distinguished by a filled
               // pill, so the fade buys no hierarchy it was not already getting for
               // free. Full ink on every label; the pill carries the state.
-              <TabsTab
-                key={entry.value}
-                value={entry.value}
-                className="text-base-content flex items-center gap-1.5"
-              >
+              <TabsTab key={entry.value} value={entry.value} className="flex items-center gap-1.5">
                 {entry.label}
                 {/* The dot is what makes a toolbar Save honest. Save commits the
                     tab you are standing on, so something has to say "Pricing

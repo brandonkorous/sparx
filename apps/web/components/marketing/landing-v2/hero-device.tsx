@@ -22,21 +22,19 @@ export function BusinessDemoCard() {
 
         <div className="flex flex-col gap-[22px] p-6">
           <div className="flex items-start justify-between">
-            <h3 className="text-base-content text-h4 m-0 font-medium tracking-[-0.02em]">
-              Good morning, Jess.
-            </h3>
+            <h3 className="text-h4 m-0 font-medium tracking-[-0.02em]">Good morning, Jess.</h3>
             {/* Status signal — silica's own `soft` wash, not a hand-rolled color-mix. */}
             <span className="bg-success bg-soft text-success text-micro rounded-full px-2.5 py-1.5 font-medium whitespace-nowrap">
               Business online
             </span>
           </div>
 
-          <p className="text-base-content m-0 text-[clamp(20px,2.4vw,26px)] leading-[1.15] font-medium tracking-[-0.02em]">
+          <p className="m-0 text-[clamp(20px,2.4vw,26px)] leading-[1.15] font-medium tracking-[-0.02em]">
             &ldquo;What needs my attention today?&rdquo;
           </p>
 
           <div className="bg-base-200 border-base-300 rounded-2xl border p-[18px]">
-            <p className="text-base-content text-small m-0 mb-2 font-medium">
+            <p className="text-small m-0 mb-2 font-medium">
               Three things. I&apos;ve already handled two.
             </p>
             <p className="text-ink-muted text-caption m-0">
@@ -73,7 +71,7 @@ export function BusinessDemoCard() {
 function DemoAction({ label, sub }: { label: string; sub: string }) {
   return (
     <div className="bg-base-100 border-base-300 rounded-[10px] border p-3 text-left">
-      <span className="text-base-content text-mini block font-medium">{label}</span>
+      <span className="text-mini block font-medium">{label}</span>
       <span className="text-ink-subtle text-micro mt-0.5 block">{sub}</span>
     </div>
   );

@@ -143,7 +143,7 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
 
         {step === 'contact' ? (
           <form onSubmit={handleContact} className="flex flex-col gap-4">
-            <h2 className="text-base-content text-lg font-semibold">Contact</h2>
+            <h2 className="text-lg font-semibold">Contact</h2>
             <Field label="Email">
               <Input
                 type="email"
@@ -154,7 +154,7 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
                 autoComplete="email"
               />
             </Field>
-            <label className="text-base-content flex items-center gap-2 text-sm">
+            <label className="flex items-center gap-2 text-sm">
               <input
                 type="checkbox"
                 className="accent-primary"
@@ -178,12 +178,12 @@ export function CheckoutFlow({ cart }: { cart: Cart }) {
 
         {step === 'shipping' ? (
           <form onSubmit={handleShipping} className="flex flex-col gap-4">
-            <h2 className="text-base-content text-lg font-semibold">Shipping address</h2>
+            <h2 className="text-lg font-semibold">Shipping address</h2>
             <AddressForm value={address} onChange={setAddress} />
 
             {rates.length > 0 ? (
               <fieldset className="m-0 flex flex-col gap-2 border-0 p-0">
-                <legend className="text-base-content mb-1 text-xs font-semibold tracking-[0.04em] uppercase">
+                <legend className="mb-1 text-xs font-semibold tracking-[0.04em] uppercase">
                   Shipping method
                 </legend>
                 {rates.map((rate) => {

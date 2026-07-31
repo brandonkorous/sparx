@@ -19,7 +19,8 @@
     "./theme.css": "./src/theme.css",
     "./layers.css": "./src/layers.css",
     "./toast.css": "./src/toast.css",
-    "./mascot.css": "./src/mascot.css"
+    "./mascot.css": "./src/mascot.css",
+    "./silica-gaps.css": "./src/silica-gaps.css"
   },
   "files": [
     "src"

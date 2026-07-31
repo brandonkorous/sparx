@@ -27,7 +27,7 @@
   "dependencies": {
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/cms-editor": "workspace:*",
-    "@sparx/site-ui": "workspace:*",
+    "@wizeworks/silicaui-react": "catalog:",
     "lucide-react": "^0.577.0"
   },
   "peerDependencies": {

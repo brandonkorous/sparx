@@ -302,12 +302,12 @@ export const CONTENT_CATALOG: PlatformCatalogEntry[] = [
             children: [
               el('p', 'mb-2 text-xs font-semibold text-base-content', { text: 'On this page' }),
               part(
-                el('div', 'st-toc__list', {
+                el('div', 'bx-toc__list', {
                   name: 'Links',
                   children: [
-                    el('a', 'st-toc__link', { text: 'Introduction', attrs: { href: '#' } }),
-                    el('a', 'st-toc__link', { text: 'Getting started', attrs: { href: '#' } }),
-                    el('a', 'st-toc__link st-toc__link--sub', {
+                    el('a', 'bx-toc__link', { text: 'Introduction', attrs: { href: '#' } }),
+                    el('a', 'bx-toc__link', { text: 'Getting started', attrs: { href: '#' } }),
+                    el('a', 'bx-toc__link bx-toc__link--sub', {
                       text: 'A closer look',
                       attrs: { href: '#' },
                     }),

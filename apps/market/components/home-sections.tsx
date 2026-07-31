@@ -30,10 +30,8 @@ export function SectionHeading({
   return (
     <div className="mb-6 flex items-end justify-between gap-4">
       <div>
-        <h2 className="text-base-content text-2xl font-semibold tracking-[-0.01em] md:text-[1.75rem]">
-          {title}
-        </h2>
-        {sub ? <p className="text-base-content mt-1.5 text-[0.9375rem]">{sub}</p> : null}
+        <h2 className="text-2xl font-semibold tracking-[-0.01em] md:text-[1.75rem]">{title}</h2>
+        {sub ? <p className="mt-1.5 text-[0.9375rem]">{sub}</p> : null}
       </div>
       {href ? (
         <Link
@@ -98,17 +96,13 @@ export function CategoryTiles({ categories }: { categories: CategoryTileData[] }
           </div>
           <div className="flex items-center justify-between gap-2 px-3.5 py-3">
             <div className="min-w-0">
-              <span className="text-base-content block truncate text-base font-semibold">
-                {category.name}
-              </span>
-              <span className="text-base-content block text-[0.8125rem]">
-                {categoryCountLabel(category.count)}
-              </span>
+              <span className="block truncate text-base font-semibold">{category.name}</span>
+              <span className="block text-[0.8125rem]">{categoryCountLabel(category.count)}</span>
             </div>
             <ArrowRight
               size={16}
               aria-hidden
-              className="text-base-content group-hover:text-primary shrink-0 transition-all group-hover:translate-x-0.5"
+              className="group-hover:text-primary shrink-0 transition-all group-hover:translate-x-0.5"
             />
           </div>
         </LinkCard>
@@ -189,8 +183,8 @@ export function TrustStrip() {
               <Icon size={20} />
             </span>
             <div>
-              <p className="text-base-content text-[0.9375rem] font-semibold">{item.title}</p>
-              <p className="text-base-content mt-0.5 text-[0.8125rem] leading-snug">{item.text}</p>
+              <p className="text-[0.9375rem] font-semibold">{item.title}</p>
+              <p className="mt-0.5 text-[0.8125rem] leading-snug">{item.text}</p>
             </div>
           </Card>
         );

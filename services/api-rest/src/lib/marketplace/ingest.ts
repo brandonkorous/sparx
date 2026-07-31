@@ -20,8 +20,11 @@ import { z } from 'zod';
 
 import { Prisma, withSystem } from '@sparx/db';
 import type { TxClient } from '@sparx/db';
-import { DataThemePreset, type MarketplaceCategory } from '@sparx/marketplace-schemas';
-import { BuilderNodeSchema, PropSpecListSchema } from '@sparx/builder-schemas';
+import {
+  SilicaComponentPayload,
+  SilicaThemePayload,
+  type MarketplaceCategory,
+} from '@sparx/marketplace-schemas';
 import { safeParseBlueprint, type Blueprint } from '@sparx/blueprints';
 
 import { artifactExists, writeArtifact } from './artifacts.js';
@@ -141,30 +144,28 @@ async function loadPayload(dir: string, payloadFile: string): Promise<unknown> {
   return data;
 }
 
-// A marketplace COMPONENT payload. Still a legacy `BuilderNode` tree, and
-// deliberately so: this category feeds the TENANT COMPONENT LIBRARY
-// (`/builder/components` → `componentService` → `BuilderComponent`), which is a
-// separate surface from the blueprint/site path and is still legacy end to end.
-// Converting the payload here without converting that consumer would just feed
-// silica trees to a legacy renderer. It moves when the component library does.
-const ComponentPayloadSchema = z.object({
-  tree: BuilderNodeSchema,
-  propSpec: PropSpecListSchema.default([]),
-});
-
 /** Validate + normalize the payload for its category into the artifact that gets
  *  stored. Throws IngestError on any schema/integrity failure. */
 function compileArtifact(manifest: Manifest, payload: unknown, dir: string): unknown {
   switch (manifest.category) {
     case 'theme': {
-      const parsed = DataThemePreset.safeParse(payload);
+      // A marketplace theme is now a silica `Theme` token bag (docs/118) — the
+      // same preset the Builder applies as `site.theme` — not the retired v1/v2
+      // DataThemePreset. The row stays a discovery pointer (its `name` matches the
+      // in-code silica theme); the payload is stored so the catalog is self-describing.
+      const parsed = SilicaThemePayload.safeParse(payload);
       if (!parsed.success) {
         throw new IngestError(`invalid theme payload: ${parsed.error.message}`, dir);
       }
       return parsed.data;
     }
     case 'component': {
-      const parsed = ComponentPayloadSchema.safeParse(payload);
+      // A marketplace component is now a silica section — the same node tree the
+      // Builder inserts from its Insert palette (docs/118) — not the retired legacy
+      // `BuilderNode` component. The row stays a discovery pointer (its `slug`
+      // matches the in-code catalog key); the tree is stored so the catalog renders
+      // a LIVE in-browser preview.
+      const parsed = SilicaComponentPayload.safeParse(payload);
       if (!parsed.success) {
         throw new IngestError(`invalid component payload: ${parsed.error.message}`, dir);
       }
@@ -197,8 +198,12 @@ const MEDIA_CONTENT_TYPES: Record<string, string> = {
   svg: 'image/svg+xml',
 };
 
-/** The two card images every bundle must ship (docs/85 §4). */
+/** The two card images most bundles must ship (docs/85 §4). */
 const REQUIRED_MEDIA = ['icon.png', 'preview.png'] as const;
+
+/** Categories that render a LIVE in-browser preview (docs/118) rather than a baked
+ *  image, so they ship NO media — the marketplace draws them from the payload itself. */
+const LIVE_PREVIEW_CATEGORIES = new Set<Manifest['category']>(['theme', 'component']);
 
 export interface MediaEntry {
   url: string;
@@ -207,8 +212,9 @@ export interface MediaEntry {
 }
 
 /** Fail fast if a required image is missing — checked in validateBundle so a bad
- *  bundle never reaches storage. */
-async function assertRequiredMedia(dir: string): Promise<void> {
+ *  bundle never reaches storage. Skipped for live-preview categories (no baked media). */
+async function assertRequiredMedia(dir: string, category: Manifest['category']): Promise<void> {
+  if (LIVE_PREVIEW_CATEGORIES.has(category)) return;
   for (const req of REQUIRED_MEDIA) {
     try {
       await fs.access(join(dir, 'media', req));
@@ -228,7 +234,10 @@ async function processMedia(
   manifest: Manifest
 ): Promise<MediaEntry[]> {
   const mediaDir = join(dir, 'media');
-  const files = (await fs.readdir(mediaDir)).filter((f) => MEDIA_EXT_RE.test(f));
+  // A live-preview bundle ships no media dir — nothing to copy, empty media[].
+  const files = (await fs.readdir(mediaDir).catch(() => [] as string[])).filter((f) =>
+    MEDIA_EXT_RE.test(f)
+  );
   const rank = (f: string): number => (f === 'preview.png' ? 0 : f === 'icon.png' ? 1 : 2);
   files.sort((a, b) => rank(a) - rank(b) || a.localeCompare(b));
 
@@ -321,9 +330,10 @@ async function upsertRow(
     case 'theme': {
       const data = {
         ...spine,
-        // Null the payload column: the DataThemePreset lives in storage, never here
-        // (docs/85 §6). Explicit so re-ingesting a legacy SQL-inline row clears it.
-        tokens: Prisma.DbNull,
+        // The silica Theme payload lives IN the row (not just storage): it's small
+        // (~60 tokens) and the marketplace renders it as a LIVE preview in-browser
+        // (docs/118), so browse + detail both need it without a per-card storage read.
+        tokens: artifact as Prisma.InputJsonValue,
         mood: facetString(manifest.facets, 'mood'),
         colorFamily: facetString(manifest.facets, 'colorFamily'),
         density: facetString(manifest.facets, 'density'),
@@ -339,8 +349,10 @@ async function upsertRow(
     case 'component': {
       const data = {
         ...spine,
-        // Null the payload columns: the node tree + propSpec live in storage.
-        tree: Prisma.DbNull,
+        // The silica node tree lives IN the row (like the theme token bag): it's
+        // small and the marketplace renders it as a LIVE preview in-browser
+        // (docs/118), so browse + detail both need it without a per-card storage read.
+        tree: (artifact as { tree: unknown }).tree as Prisma.InputJsonValue,
         propSpec: [] as unknown as Prisma.InputJsonValue,
         group: facetString(manifest.facets, 'group') ?? 'content',
         kind: facetString(manifest.facets, 'kind'),
@@ -413,7 +425,7 @@ export async function validateBundle(
     throw new IngestError(`invalid sparx.json: ${parsed.error.message}`, dir);
   }
   const manifest = parsed.data;
-  await assertRequiredMedia(dir);
+  await assertRequiredMedia(dir, manifest.category);
   const payload = await loadPayload(dir, manifest.payload);
   const artifact = compileArtifact(manifest, payload, dir);
   return { manifest, category: SINGULAR_TO_PLURAL[manifest.category], artifact };

@@ -180,10 +180,10 @@ function CheckoutForm({ business }: { business: ExampleBusiness }) {
   return (
     <div className="flex flex-col gap-4 px-7 py-6">
       {step('Contact & shipping')}
-      {field(<span className="text-base-content">{business.customer.email}</span>)}
+      {field(<span>{business.customer.email}</span>)}
       {field(
         <>
-          <span className="text-base-content">
+          <span>
             {business.customer.address}
             <span className="text-ink-subtle"> · suggested</span>
           </span>
@@ -235,7 +235,7 @@ function CheckoutSummary({ business }: { business: ExampleBusiness }) {
         <div key={t} className="text-ink-muted text-caption flex items-center gap-3 font-sans">
           <span className="bg-base-300 size-8 shrink-0 rounded-md" />
           <span>{t}</span>
-          <span className="text-base-content ml-auto">{amt}</span>
+          <span className="ml-auto">{amt}</span>
         </div>
       ))}
       <div className="border-base-300 text-ink-muted text-caption flex justify-between border-t pt-3 font-sans">

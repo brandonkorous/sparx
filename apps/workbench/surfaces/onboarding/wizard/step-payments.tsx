@@ -31,19 +31,19 @@ export function StepPayments({
               {connected ? (
                 <CheckCircle className="text-success size-5" aria-hidden />
               ) : (
-                <CreditCard className="text-base-content size-5" aria-hidden />
+                <CreditCard className="size-5" aria-hidden />
               )}
             </span>
             <div className="min-w-0">
               <span className="flex items-center gap-2">
-                <p className="text-base-content font-medium">Stripe</p>
+                <p className="font-medium">Stripe</p>
                 {connected ? (
                   <Badge color="success" variant="soft" size="sm">
                     Connected
                   </Badge>
                 ) : null}
               </span>
-              <p className="text-base-content text-sm">
+              <p className="text-sm">
                 {connected
                   ? 'Your Stripe account is connected — checkout is ready to take payments.'
                   : 'Cards, wallets, and bank debits — paid out straight to your bank.'}
@@ -64,8 +64,8 @@ export function StepPayments({
         </div>
 
         <div className="border-base-300 mt-4 flex items-start gap-2.5 border-t pt-4">
-          <Info className="text-base-content mt-0.5 size-4 shrink-0" aria-hidden />
-          <p className="text-base-content text-sm">
+          <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
+          <p className="text-sm">
             This is the account that{' '}
             <span className="font-medium">receives money from your customers</span> — separate from
             your own sparx subscription. You can connect it now or come back to it later; checkout

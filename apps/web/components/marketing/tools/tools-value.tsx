@@ -70,7 +70,7 @@ export function ToolsValue() {
                     <pillar.icon size={22} strokeWidth={1.6} />
                   </span>
                   <div className="flex min-w-0 flex-col gap-1.5">
-                    <h3 className="text-body-lg text-base-content m-0 font-sans font-medium tracking-tight">
+                    <h3 className="text-body-lg m-0 font-sans font-medium tracking-tight">
                       {pillar.title}
                     </h3>
                     <p className="text-body text-ink-muted m-0 font-sans">{pillar.body}</p>

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "boutique",
+  "name": "Boutique",
+  "version": "1.0.0",
+  "tagline": "Quiet, considered retail where the product is the color.",
+  "description": "Near-white and almost colorless, with a near-black primary and one soft blush accent. Built for the shop that hangs forty things, not four hundred — small fashion, jewelry, and considered goods.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Editorial",
+    "colorFamily": "Mono",
+    "density": "Spacious",
+    "industry": "Apparel & Lifestyle"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#1a0e0f",
+  "sortWeight": 100
+}

@@ -93,7 +93,7 @@ silicaui's Tailwind plugin emits every `color × variant` class from the palette
 
 - **solid** = `bg-<color>` + `text-<color>-content` · **soft** = `bg-<color> bg-soft` (tint) + `text-<color>` (ink) · **outline** = `border-<color>` + `text-<color>` · **ghost/link** = `text-<color>`, transparent.
 - **`bg-soft`** paints `color-mix(in oklab, <accent> 15%, base)` — theme-aware, computed once. A tint is ALWAYS `<color> + soft`; never hand-pick a per-module light hex.
-- **Radix-based controls** (Checkbox/Radio/Switch/Slider) can't take a plugin color class, so `@sparx/ui` sets a per-instance `--sx-sel` / `--sx-sel-fg` from `colorVars(color)` and consumes it via `data-[state=checked]:bg-[var(--sx-sel)]`.
+- **Selection controls come from silicaui, not `@sparx/ui`** — `Checkbox` / `Switch` / `RadioGroup` / `Slider` / `Progress` are imported from `@wizeworks/silicaui-react` and take a real plugin color class (`checkbox-primary`, `switch-module`, …). `@sparx/ui` once hand-rolled them on Radix, where a color class couldn't attach, so each set a per-instance `--sx-sel` / `--sx-sel-fg` from `colorVars(color)`. That was the last parallel token vocabulary in the repo; both the components and `colorVars` are **deleted** (2026-07-31).
 
 **Module *card* tint:** `<Card variant="module">` = `bg-module bg-soft` inside a `<ModuleProvider>` (theme-aware ~15% `color-mix` into `--color-base-100`, text/border untouched). Wrap a panel in `<ModuleProvider module="…">` to tint it. Detail: `packages/ui/CLAUDE.md`.
 

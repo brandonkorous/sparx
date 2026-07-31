@@ -29,10 +29,11 @@ import {
   type DataSources,
   type Scope,
 } from '@sparx/builder-schemas';
-import { NavShell, ThemeToggle } from '@sparx/site-ui';
 import {
   BuilderCarousel,
+  NavShell,
   ProductFormProvider,
+  ThemeToggle,
   leafWearsClass,
   renderLeaf,
   renderLegacyNavLinks,

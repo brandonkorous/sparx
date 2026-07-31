@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "lodge",
+  "name": "Lodge",
+  "version": "1.0.0",
+  "tagline": "Grounded and welcoming for stays and hospitality.",
+  "description": "An earthy, outdoorsy palette of forest and clay that feels like arriving somewhere. For hotels, cabins, lodges, and short-stay rentals that trade on place and calm.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Earthy",
+    "colorFamily": "Green",
+    "density": "Standard",
+    "industry": "Travel & Hospitality"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#004b2c",
+  "sortWeight": 96
+}

@@ -2,7 +2,12 @@
 
 import type { LucideIcon } from 'lucide-react';
 import { Badge, Card, CardBody, CardTitle, Switch, Text } from '@wizeworks/silicaui-react';
-import { MODULE_BACKGROUND_COLOR, MODULE_BORDER_COLOR, MODULE_COLOR } from './modules-catalog';
+import {
+  MODULE_BACKGROUND_COLOR,
+  MODULE_BORDER_COLOR,
+  MODULE_COLOR,
+  MODULE_CONTENT_COLOR,
+} from './modules-catalog';
 
 /**
  * One module tile in a switchboard card grid — icon, name, blurb, an on/off
@@ -34,10 +39,13 @@ export function ModuleToggleCard({
     <Card className={`gap-4 border border-1 ${MODULE_BORDER_COLOR[color]}`}>
       <CardBody className="gap-4">
         <div className="flex items-start justify-between">
+          {/* The fill and its paired ink, both as tokens. The glyph inherits
+              `currentColor` from the span, so a module hue that ever needs dark
+              ink gets it — the old `color="#FFFFFF"` could not. */}
           <span
-            className={`flex h-10 w-10 items-center justify-center rounded-lg ${MODULE_BACKGROUND_COLOR[color]}`}
+            className={`flex h-10 w-10 items-center justify-center rounded-lg ${MODULE_BACKGROUND_COLOR[color]} ${MODULE_CONTENT_COLOR[color]}`}
           >
-            <Icon size={20} color="#FFFFFF" strokeWidth={2} aria-hidden />
+            <Icon size={20} strokeWidth={2} aria-hidden />
           </span>
           <Switch checked={active} onCheckedChange={onToggle} color={color} disabled={disabled} />
         </div>

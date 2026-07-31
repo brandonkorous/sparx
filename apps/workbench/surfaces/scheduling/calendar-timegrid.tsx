@@ -81,7 +81,7 @@ export function TimeGrid({ columns, window, columnMinClass, onOpenEvent }: TimeG
             {marks.map((mark) => (
               <div
                 key={mark.hour}
-                className={`text-base-content absolute right-1 ${mark.topClass} -translate-y-1/2 text-xs tabular-nums`}
+                className={`absolute right-1 ${mark.topClass} -translate-y-1/2 text-xs tabular-nums`}
               >
                 {hourLabel(mark.hour)}
               </div>

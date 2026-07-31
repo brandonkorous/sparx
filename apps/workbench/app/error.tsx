@@ -45,21 +45,21 @@ export default function WorkbenchError({
   // The reload is navigating the tab away; don't flash the fallback behind it.
   if (reloading) {
     return (
-      <div className="bg-base-300 text-base-content flex h-dvh w-full items-center justify-center p-6">
+      <div className="bg-base-300 flex h-dvh w-full items-center justify-center p-6">
         <p className="text-base">Updating to the latest version…</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-base-300 text-base-content flex h-dvh w-full items-center justify-center p-6">
+    <div className="bg-base-300 flex h-dvh w-full items-center justify-center p-6">
       <div className="bg-base-100 border-base-300 flex max-w-md flex-col items-center gap-4 rounded-xl border p-8 text-center">
         <AlertTriangle className="text-warning size-7" aria-hidden />
         <div>
           <h1 className="text-lg font-semibold">
             {stale ? 'A new version of sparx is ready' : 'The workbench hit a problem'}
           </h1>
-          <p className="text-base-content mt-2 text-base">
+          <p className="mt-2 text-base">
             {stale
               ? 'This tab was left open across an update. Reload to load the latest version — your panel arrangement comes back.'
               : 'Something unexpected happened. Try again, and if it keeps happening, reload to start fresh.'}
@@ -81,9 +81,7 @@ export default function WorkbenchError({
             </>
           )}
         </div>
-        {error.digest ? (
-          <p className="text-base-content font-mono text-sm">Reference: {error.digest}</p>
-        ) : null}
+        {error.digest ? <p className="font-mono text-sm">Reference: {error.digest}</p> : null}
       </div>
     </div>
   );

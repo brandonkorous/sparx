@@ -97,7 +97,7 @@ function BigNumerals() {
               </span>
             ) : null}
           </span>
-          <Text className="text-base-content max-w-[30ch] text-sm">{s.label}</Text>
+          <Text className="max-w-[30ch] text-sm">{s.label}</Text>
         </div>
       ))}
     </div>

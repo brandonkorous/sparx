@@ -178,7 +178,7 @@ function Preview({ asset }: { asset: MediaAsset }) {
   if (asset.kind === 'audio' && url) {
     return (
       <div className="bg-base-200 rounded-box border-base-300 flex flex-col items-center gap-3 border p-6">
-        <Music className="text-base-content size-8" aria-hidden />
+        <Music className="size-8" aria-hidden />
         {/* eslint-disable-next-line jsx-a11y/media-has-caption -- a tenant's own uploaded audio file has no caption track; controls let them play it to confirm it is the right file. */}
         <audio controls src={url} className="w-full max-w-md" />
       </div>
@@ -187,7 +187,7 @@ function Preview({ asset }: { asset: MediaAsset }) {
 
   return (
     <div className="bg-base-200 rounded-box border-base-300 flex flex-col items-center gap-2 border p-8">
-      {kindIcon(asset.kind, 'text-base-content size-10')}
+      {kindIcon(asset.kind, 'size-10')}
       <Text className="text-sm">No preview for this kind of file.</Text>
     </div>
   );

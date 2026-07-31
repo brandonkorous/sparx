@@ -47,6 +47,19 @@ export interface VocabularyIssue {
   reason: 'arbitrary-value' | 'out-of-range' | 'viewport-variant';
   /** What to write instead — a concrete nearest legal value, never just "don't". */
   hint: string;
+  /**
+   * The SAME answer as `hint`, as one class a machine can substitute for `className`.
+   *
+   * `hint` is a sentence for a person; this is for an editor offering to make the change.
+   * They are derived from the same values on purpose — a second, hand-written answer to
+   * "what should I have written" is how the two quietly diverge.
+   *
+   * ABSENT WHEN THERE IS NO SINGLE ANSWER, which is the whole contract: `arbitrary-value`
+   * has none (`leading-[1.05]` could become any of a dozen tokens, and picking one for the
+   * author would be a guess wearing the clothes of a fix), so nothing may offer to fix it
+   * automatically. A caller can rely on this being unambiguous whenever it is set.
+   */
+  replacement?: string;
 }
 
 /** Viewport breakpoint → the container step nearest it in px.
@@ -218,6 +231,13 @@ export function checkClass(className: string): VocabularyIssue | null {
         `previews cannot reflow it — the design changes on a real device but never on the canvas. ` +
         `Write \`${viewport.container}:${viewport.rest}\` instead, and make sure some parent carries ` +
         `\`@container\` (every seeded section, the nav and the footer already do).`,
+      // Unambiguous as a SUBSTITUTION, but not unconditionally safe to apply: the hint's
+      // second clause is load-bearing. Swapping this in under a node with no `@container`
+      // ancestor turns a rule that works on a real device into one that never matches
+      // anywhere — a downgrade dressed as a fix. Only `site-lint` can see the ancestors,
+      // so it is the one that decides whether to OFFER this; the string itself is correct
+      // either way.
+      replacement: `${viewport.container}:${viewport.rest}`,
     };
   }
 
@@ -241,12 +261,19 @@ export function checkClass(className: string): VocabularyIssue | null {
   if (!Number.isFinite(Number(value)) || !numericScale) return null;
 
   const near = nearest(values, value);
+  // The variant prefix (`@2xl:`, `hover:`) has to survive the substitution: only the
+  // FAMILY-VALUE tail was out of range, and dropping the prefix would move the styling
+  // to every width at once — silently, and while calling itself a fix.
+  const prefix = className.slice(0, className.lastIndexOf(':') + 1);
   return {
     className,
     reason: 'out-of-range',
     hint: near
       ? `\`${family}-${value}\` is not in the declared scale and emits no CSS — the nearest declared step is \`${family}-${near}\`. Declared: ${sortValues(values).join(', ')}.`
       : `\`${family}-${value}\` is not in the declared scale and emits no CSS. Declared: ${sortValues(values).join(', ')}.`,
+    // Only when a nearest step exists. A declared family with no numeric values at all
+    // leaves `near` null, and there is nothing to substitute.
+    ...(near ? { replacement: `${prefix}${family}-${near}` } : {}),
   };
 }
 

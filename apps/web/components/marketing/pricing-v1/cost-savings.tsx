@@ -78,10 +78,7 @@ function Ledger() {
                 {row.price}
               </Badge>
             </span>
-            <Text
-              as="span"
-              className="text-base-content order-last col-span-2 text-sm sm:order-none sm:col-span-1"
-            >
+            <Text as="span" className="order-last col-span-2 text-sm sm:order-none sm:col-span-1">
               → {row.alt}
             </Text>
             <span className="text-right text-lg font-medium">{row.amt}</span>
@@ -113,7 +110,7 @@ function ScenarioCard({ scenario: sc }: { scenario: (typeof SCENARIOS)[number] }
             <Text as="span" className="text-sm">
               Bought separately
             </Text>
-            <span className="text-base-content text-xl line-through">{sc.separate}</span>
+            <span className="text-xl line-through">{sc.separate}</span>
           </div>
 
           <div className="flex flex-col gap-1">

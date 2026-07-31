@@ -1,8 +1,8 @@
 # @sparx/ui Variant System (multi-axis)
 
-**Version:** 1.2.2
+**Version:** 1.4.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-08
+**Last Updated:** 2026-07-31
 
 ---
 
@@ -35,12 +35,12 @@ error/danger` + `-content`) rather than `@sparx/ui`'s `tokens.css`. `sparx` and 
 
 ### Decisions locked (2026-05-31)
 
-| #   | Decision            | Choice                                                                                                                                                                                                                                                                                                                                                                                                            |
-| --- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | **API shape**       | **Orthogonal axes.** `color × variant × size × shape`. Breaking — call sites are migrated in the same pass (codemod, §7).                                                                                                                                                                                                                                                                                         |
-| 2   | **Token layer**     | **Bring v2 palette into @sparx/ui.** Add `accent/info/neutral` + `-content` pairs + `color-mix` hover/tint to `tokens.css`. Deviates from doc 33 §6 — see §3.4.                                                                                                                                                                                                                                                   |
-| 3   | **Scope**           | **Comprehensive.** A pass over the whole inventory: full `color × variant` on Tier-A action/status components, state-color + size on Tier-B controls, structural variants on Tier-C, plus net-new staples (Alert, Progress, Kbd, StatusDot, ButtonGroup, Collapse/Accordion). See §5.                                                                                                                             |
-| 4   | **Color mechanism** | **Superseded → silicaui plugin classes.** Originally role-variable indirection (`.sx-c-*` remapping `--c-bg`/`--c-content`/…). As shipped, silicaui's Tailwind plugin statically emits `btn-<color>`/`bg-<color>`/`bg-soft`/… for every registered slot, so `color × variant` composes at the class level (§4). The Radix controls that can't take a color class use a per-instance `--sx-sel` via `colorVars()`. |
+| #   | Decision            | Choice                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| --- | ------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **API shape**       | **Orthogonal axes.** `color × variant × size × shape`. Breaking — call sites are migrated in the same pass (codemod, §7).                                                                                                                                                                                                                                                                                                                                                                                               |
+| 2   | **Token layer**     | **Bring v2 palette into @sparx/ui.** Add `accent/info/neutral` + `-content` pairs + `color-mix` hover/tint to `tokens.css`. Deviates from doc 33 §6 — see §3.4.                                                                                                                                                                                                                                                                                                                                                         |
+| 3   | **Scope**           | **Comprehensive.** A pass over the whole inventory: full `color × variant` on Tier-A action/status components, state-color + size on Tier-B controls, structural variants on Tier-C, plus net-new staples (Alert, Progress, Kbd, StatusDot, ButtonGroup, Collapse/Accordion). See §5.                                                                                                                                                                                                                                   |
+| 4   | **Color mechanism** | **Superseded → silicaui plugin classes.** Originally role-variable indirection (`.sx-c-*` remapping `--c-bg`/`--c-content`/…). As shipped, silicaui's Tailwind plugin statically emits `btn-<color>`/`bg-<color>`/`bg-soft`/… for every registered slot, so `color × variant` composes at the class level (§4). This now covers the selection controls too — they come from silicaui and take `checkbox-<color>`/`switch-<color>` directly; the `--sx-sel` custom property they briefly used in `@sparx/ui` is deleted. |
 
 > **Relationship to Token Model v2 (doc 33).** Doc 33 §6 deliberately scoped `@sparx/ui`
 > _out_ of the v2 token refactor ("the dashboard depends on them and that's out of scope").
@@ -78,7 +78,8 @@ is gone.
 which paints `color-mix(in oklab, var(--color-module) 15%, var(--color-base-100))`, theme-aware and
 computed once. It follows the nearest `<ModuleProvider>`: wrap a cross-module panel in its provider
 and its `module` cards re-tint with no props. The Card `accent` prop is an **escape hatch** for a
-one-off color with no surrounding provider (it sets `--sx-sel`) — not the normal way to color a card.
+one-off color with no surrounding provider (it names a different plugin color, `bg-module-commerce
+bg-soft`) — not the normal way to color a card.
 
 ### 2.2 `variant` — style / treatment
 
@@ -182,9 +183,13 @@ codegen, and no per-component Tailwind authoring. The same holds for `badge-*`, 
 `bg-<color>` + `bg-soft`, etc. `module` tracks `--color-module` (set by `ModuleProvider`), so
 `<Button color="module">` inside `<ModuleProvider>` stays automatic.
 
-For the few **Radix-based controls** (Checkbox/Radio/Switch/Slider) that can't take a plugin color
-class, `@sparx/ui` sets a per-instance `--sx-sel` / `--sx-sel-fg` via the `colorVars(color)` helper,
-consumed by `data-[state=checked]:bg-[var(--sx-sel)]`-style classes.
+The **selection controls** (Checkbox/Radio/Switch/Slider/Progress) resolve the same way, straight
+from `@wizeworks/silicaui-react`: `checkbox-<color>`, `switch-<color>`, `progress-<color>`. They
+were briefly hand-rolled in `@sparx/ui` on Radix, where a plugin color class can't attach, and each
+set a per-instance `--sx-sel` / `--sx-sel-fg` via a `colorVars(color)` helper. Once silicaui shipped
+real versions there were two vocabularies for one accent, so the `@sparx/ui` copies and the helper
+were **deleted 2026-07-31** — see
+[implementation/st-token-retirement.md](implementation/st-token-retirement.md) §7.
 
 ### 4.2 Why plugin emission wins — custom theme colors
 
@@ -247,15 +252,15 @@ decision 2026-05-31).
 Color applies to the **active/checked/validation** part only; sensible default color so
 existing call sites are unaffected.
 
-| Component              | color usage                                                                                      | other axes      |
-| ---------------------- | ------------------------------------------------------------------------------------------------ | --------------- |
-| Checkbox               | checked fill (`primary` default)                                                                 | size sm/md/lg   |
-| Switch                 | on-state track (`primary` default)                                                               | size sm/md/lg   |
-| RadioGroup / RadioItem | selected dot (`primary` default)                                                                 | size sm/md/lg   |
-| Slider                 | range/thumb (`primary` default)                                                                  | size sm/md/lg   |
-| Input / Textarea       | keep `variant` **state** (default/error/**success**); state maps to a color (`danger`/`success`) | size sm/md/lg   |
-| Select (trigger)       | same state model as Input                                                                        | size sm/md/lg   |
-| Spinner                | optional `color` (default `neutral` → `currentColor`)                                            | size (existing) |
+| Component              | color usage                                                                                  | other axes      |
+| ---------------------- | -------------------------------------------------------------------------------------------- | --------------- |
+| Checkbox               | checked fill (`primary` default)                                                             | size sm/md/lg   |
+| Switch                 | on-state track (`primary` default)                                                           | size sm/md/lg   |
+| RadioGroup / RadioItem | selected dot (`primary` default)                                                             | size sm/md/lg   |
+| Slider                 | range/thumb (`primary` default)                                                              | size sm/md/lg   |
+| Input / Textarea       | silicaui's — a real `color` axis, no state enum; `--input-accent` drives border **and** ring | size sm/md/lg   |
+| Select (trigger)       | same as Input; validation rides `<Field status>` above the control, not a variant on it      | size sm/md/lg   |
+| Spinner                | optional `color` (default `neutral` → `currentColor`)                                        | size (existing) |
 
 ### 5.3 Tier C — structural variants (token-driven, no color palette)
 
@@ -367,8 +372,8 @@ matrix grids collapse to fewer columns on small screens (no fixed desktop-only l
   (authenticated app, modern browsers). Unlike the site we do not SSR-derive to hex;
   if a legacy browser matters later we precompute. Noted, not blocking.
 - **Runtime custom colors.** The registered slots are fixed at the plugin's `colors:` list (§5,
-  doc 23). A one-off color with no registered slot uses the `accent` escape hatch (a per-instance
-  `--sx-sel` via `colorVars()`), not a new `btn-<name>` class. Introducing a genuinely new named
+  doc 23). A one-off color still has to name a REGISTERED slot — `accent` picks a different one
+  (`pluginColor()` maps `commerce` → `module-commerce`), it does not invent a color. Introducing a genuinely new named
   slot means adding it to the plugin's `colors:` list and rebuilding — a deliberate, not runtime,
   act (the dashboard is a fixed house palette, unlike per-tenant site themes).
 - **AA contrast on arbitrary `-content`.** Our palette is fixed (not tenant-set), so

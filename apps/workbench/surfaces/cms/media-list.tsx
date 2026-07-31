@@ -375,7 +375,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
                           unoptimized
                         />
                       ) : (
-                        kindIcon(asset.kind, 'text-base-content size-8')
+                        kindIcon(asset.kind, 'size-8')
                       )}
                       {asset.status !== 'ready' ? (
                         <span className="absolute top-1.5 left-1.5">
@@ -389,7 +389,7 @@ export function MediaListSurface({ ctx }: { ctx: SurfaceContext }) {
                       <span className="block w-full truncate text-sm font-medium">
                         {asset.filename}
                       </span>
-                      <span className="text-base-content flex items-center gap-1 text-sm">
+                      <span className="flex items-center gap-1 text-sm">
                         {kindIcon(asset.kind, 'size-3.5 shrink-0')}
                         {formatBytes(asset.byteSize)}
                       </span>

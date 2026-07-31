@@ -75,13 +75,13 @@ const RATING_INK: Record<string, string> = {
   warning: 'text-warning',
   success: 'text-success',
   info: 'text-info',
-  neutral: 'text-base-content',
+  neutral: '',
 };
 
 /** A review's stars, drawn rather than described — five little marks read faster than
  *  "4 out of 5" and carry the tone of the thing at a glance. */
 function Stars({ rating }: { rating: number }) {
-  const ink = RATING_INK[ratingTone(rating)] ?? 'text-base-content';
+  const ink = RATING_INK[ratingTone(rating)] ?? '';
   return (
     <span className={`${ink} inline-flex items-center gap-0.5`} aria-label={`${rating} out of 5`}>
       {[1, 2, 3, 4, 5].map((n) => (

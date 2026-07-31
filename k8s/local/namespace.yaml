@@ -1,0 +1,13 @@
+# Local copy of the sparx-prod namespace.
+#
+# k8s/00-namespaces.yaml is the production original, but kustomize refuses to
+# reference a bare FILE outside the overlay directory (directories like ../apps
+# are fine). This carries no configuration worth sharing — it is four lines with
+# nothing to drift — so a local copy is the honest fix rather than restructuring
+# the base to satisfy a loader rule.
+#
+# The name matches production on purpose; see kustomization.yaml.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: sparx-prod

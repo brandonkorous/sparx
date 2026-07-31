@@ -70,7 +70,7 @@ export const Pagination = React.forwardRef<HTMLElement, PaginationProps>(
             <span
               key={`e-${idx}`}
               aria-hidden
-              className="text-base-content inline-flex h-8 w-8 items-center justify-center"
+              className="inline-flex h-8 w-8 items-center justify-center"
             >
               <MoreHorizontal className="h-4 w-4" />
             </span>

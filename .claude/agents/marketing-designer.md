@@ -98,6 +98,16 @@ You own the whole pipeline. Do not stop at the mockup unless explicitly told to.
 
 ## The sparx visual system (design from this — values are canonical)
 
+**Read [DESIGN.md](DESIGN.md) at the repo root before you type a `color=` prop.** `apps/web` is
+**not** a separate design system from the console — same `@sparx/brand/theme.css`, same silicaui
+plugin, same 27-color palette, same rules. The **only** difference in the whole platform is one
+token override: `apps/web` sets `--radius-box: 1.5rem` against the brand default `0.5rem`. Variance
+is a token, never a fork of the language.
+
+RULE #4 binds here exactly as it does in the workbench: **neutral has to be earned.** `SilicaColor`
+ends in `(string & {})`, so autocomplete shows 8 of 27 colors and TypeScript catches nothing — a
+marketing page that comes out grey is the same failure as a console pane that does.
+
 **Type.** One family: **Geist** (sans) + **Geist Mono**. Weights 400 and 500
 only — there is no bold-700 in this design language; weight 500 _is_ the
 "bold." Display headlines are large with tight tracking: `-0.035em` above ~80px,

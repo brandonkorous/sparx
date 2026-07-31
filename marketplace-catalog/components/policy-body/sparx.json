@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "policy-body",
+  "name": "Policy text",
+  "version": "1.0.0",
+  "tagline": "Numbered clauses at a readable width — for terms, privacy, or returns.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Page structure",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 56
+}

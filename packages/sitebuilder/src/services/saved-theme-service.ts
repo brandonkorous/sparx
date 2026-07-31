@@ -110,52 +110,19 @@ export async function update(
   });
 }
 
-// Apply a saved theme's captured brand "look" onto the tenant brand — the
-// "apply to brand everywhere" model (docs/33). Writes ONLY the look fields
-// (colours, fonts, shape tokens); never the business identity (name/logo/
-// socials). A theme with no snapshot (brand == null) is a no-op, leaving the
-// current brand untouched. Used by the scheduled-swap path so a scheduled theme
-// recolours the whole store — the storefront reads brand live (publish-service
-// overlayBrand). The interactive dashboard apply writes the same fields via
-// /v1/brand; this is the server-side equivalent for headless application.
-export async function applyThemeBrandWithinTx(
-  tx: TxClient,
-  tenantId: string,
-  brand: SavedThemeBrand | null | undefined
-): Promise<void> {
-  if (!brand) return;
-  const data: Prisma.TenantBrandUncheckedUpdateInput = {};
-  if (brand.colorPrimary !== undefined) data.colorPrimary = brand.colorPrimary;
-  if (brand.colorPrimaryForeground !== undefined)
-    data.colorPrimaryForeground = brand.colorPrimaryForeground;
-  if (brand.colorAccent !== undefined) data.colorAccent = brand.colorAccent;
-  if (brand.colorAccentForeground !== undefined)
-    data.colorAccentForeground = brand.colorAccentForeground;
-  if (brand.colorSecondary !== undefined) data.colorSecondary = brand.colorSecondary;
-  if (brand.colorSecondaryForeground !== undefined)
-    data.colorSecondaryForeground = brand.colorSecondaryForeground;
-  if (brand.fontHeading !== undefined) data.fontHeading = brand.fontHeading;
-  if (brand.fontBody !== undefined) data.fontBody = brand.fontBody;
-  // tokens is a JSON column — only set it when the theme carries a shape doc, so
-  // a brand without one leaves the tenant's shape untouched (avoids the DbNull
-  // dance; clearing shape isn't a goal of a theme swap).
-  if (brand.tokens != null) data.tokens = brand.tokens as Prisma.InputJsonValue;
-  if (Object.keys(data).length === 0) return;
-  await tx.tenantBrand.upsert({
-    where: { tenantId },
-    create: { tenantId, ...data } as Prisma.TenantBrandUncheckedCreateInput,
-    update: data,
-  });
-}
-
-// The non-primary-site counterpart to applyThemeBrandWithinTx: a non-primary site
-// carries its brand as the Property's `brand_override` JSON (the compile-relevant
-// colour/type/shape subset publish-service.readPropertyBrandOverride reads), NOT
-// the tenant base brand — so applying a theme there recolours ONLY that site, never
-// the tenant base (docs/49). Merge the theme's look fields OVER any existing
-// override: a carried field wins, an untouched override field survives, and the
-// shape doc is replaced only when the theme brings one. A theme with no snapshot is
-// a no-op.
+// Apply a saved theme's captured brand "look" to ONE site. A site carries its brand
+// as its Property's `brand_override` JSON (the compile-relevant colour/type/shape
+// subset publish-service.readPropertyBrandOverride reads), NOT the tenant base
+// brand — so applying a theme recolours ONLY that site (docs/49). Writes ONLY the
+// look fields (colours, fonts, shape tokens); never the business identity
+// (name/logo/socials). Merge the theme's look fields OVER any existing override: a
+// carried field wins, an untouched override field survives, and the shape doc is
+// replaced only when the theme brings one. A theme with no snapshot is a no-op.
+//
+// There is deliberately NO tenant-base counterpart. Writing the primary site's
+// theme to TenantBrand is what made `apply_saved_theme` on the primary recolour
+// every sibling site that had no override of its own — the tenant base is the
+// inherited default for an unbranded site, never a site's own storage.
 export async function applyThemeBrandToSiteOverrideWithinTx(
   tx: TxClient,
   propertyId: string,
@@ -239,22 +206,29 @@ export async function apply(
         // presentation, so the dashboard rail restores the selection on reload.
         // Stamped here (server-side, within the merge) so it can't race the
         // dashboard's debounced settings autosave.
-        draftSettings: { ...draft, presentation: theme.presentation, activeSavedThemeId: id },
+        draftSettings: {
+          ...draft,
+          // CLEAR the v1 `tokens` overlay. It is the previous theme's colours +
+          // fonts in the legacy vocabulary, and merging over `draft` used to carry
+          // it through untouched — so a swap landed the new presentation while
+          // `compileTokens()` (publish-service) still compiled the OLD primary and
+          // the old type stack, and the site silently kept its former brand. The
+          // overlay is the layer being retired (docs/implementation/
+          // st-token-retirement.md), so a theme apply clears it rather than
+          // rewriting it: the theme's own presentation + brand snapshot below are
+          // the complete look.
+          tokens: { light: {}, dark: {} },
+          presentation: theme.presentation,
+          activeSavedThemeId: id,
+        },
       },
     });
-    // Apply the captured brand look to the right scope — primary → tenant base
-    // brand, non-primary → this site's brand_override — so the colours/fonts land
-    // for headless callers (the dashboard's client does this itself). A legacy
-    // theme with no snapshot (brand == null) leaves the brand untouched.
+    // Apply the captured brand look to THIS site's brand_override — whether or not
+    // it is the primary — so the colours/fonts land for headless callers (the
+    // dashboard's client does this itself) without touching any sibling site. A
+    // legacy theme with no snapshot (brand == null) leaves the brand untouched.
     const brand = (theme.brand ?? null) as SavedThemeBrand | null;
-    if (brand) {
-      const property = await tx.property.findUnique({
-        where: { id: ctx.propertyId },
-        select: { isPrimary: true },
-      });
-      if (property?.isPrimary) await applyThemeBrandWithinTx(tx, ctx.tenantId, brand);
-      else await applyThemeBrandToSiteOverrideWithinTx(tx, ctx.propertyId, brand);
-    }
+    if (brand) await applyThemeBrandToSiteOverrideWithinTx(tx, ctx.propertyId, brand);
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,

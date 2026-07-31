@@ -302,21 +302,47 @@ export function Code({ children }: { children: React.ReactNode }) {
 }
 
 /**
- * Ember dot used as a bullet/decorative accent. Size + color are per-instance
- * dynamic, so they stay inline; structure is utilities.
+ * Bullet / decorative accent dot.
+ *
+ * `fill` is a FILL CLASS (`bg-primary`, `bg-module-crm`), not a colour value —
+ * `getModuleColor(m).bg` hands you the right literal. It used to take a
+ * `var(--color-…)` string and paint via `style={{ backgroundColor }}`, which is
+ * what forced ~100 call sites to mention `var()` at all: a component whose prop
+ * is a colour string makes every caller hand it one.
+ *
+ * `size` is quantised to literal classes for the same reason — the six sizes in
+ * use are a known set, so nothing here needs an inline style. See DESIGN.md,
+ * the Contract.
  */
 export function Dot({
-  color = 'var(--color-primary)',
+  fill,
+  color,
   size = 6,
 }: {
+  /**
+   * PREFERRED — a fill CLASS (`bg-module-crm`, `bg-success`). Keeps the dot
+   * tracking the token: re-point `@sparx/brand/theme.css` and it follows with no
+   * edit here. `getModuleColor(m).bg` and `CapabilityArea.fill` both hand you one.
+   */
+  fill?: string;
+  /**
+   * LEGACY — a colour VALUE (`var(--color-…)`). Still the shape most call sites
+   * use; being migrated to `fill`. A component whose prop is a colour string
+   * forces every caller to hand it a `var()`, which is why ~100 sites mention one.
+   * Ignored when `fill` is set.
+   */
   color?: string;
   size?: number;
 }) {
   return (
     <span
       aria-hidden
-      className="inline-block shrink-0 rounded-full"
-      style={{ width: size, height: size, backgroundColor: color }}
+      className={cx('inline-block shrink-0 rounded-full', fill)}
+      style={
+        fill
+          ? { width: size, height: size }
+          : { width: size, height: size, backgroundColor: color ?? 'var(--color-primary)' }
+      }
     />
   );
 }
@@ -415,7 +441,8 @@ export function SectionHeader({
   invert?: boolean;
   headlineSize?: number;
   headlineLineHeight?: number;
-  /** Section identity — renders the closing "spark" period in this color. */
+  /** Section identity — renders the closing "spark" period in this INK CLASS
+   *  (`text-primary`, `text-module-crm`), not a colour value. */
   accent?: string;
   /** Override the lede ink (token only) — e.g. over bright media. */
   ledeColor?: string;
@@ -481,8 +508,12 @@ export function EyebrowBadge({
 
 /**
  * Ember period — the recurring "spark" brand moment at the end of display
- * headlines. Defaults to the primary hue via `text-primary`; a passed `color`
- * (a token) renders inline for section-accent sparks.
+ * headlines.
+ *
+ * `ink` is an INK CLASS (`text-primary`, `text-module-crm`), not a colour value;
+ * `getModuleColor(m).ink` hands you the right literal. Previously a
+ * `var(--color-…)` string painted inline, which is why ~113 call sites carried a
+ * `var()` — the prop's type was the multiplier.
  */
 export function Spark({ color }: { color?: string }) {
   return (

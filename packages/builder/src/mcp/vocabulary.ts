@@ -2,7 +2,7 @@
 //
 // The Builder is "a semantic component library over a tokenized utility layer":
 // every node carries a Tailwind-native `class` string that the per-tenant compile
-// (@sparx/surface-compile) tree-shakes and resolves to the tenant's `--st-*`
+// (@sparx/surface-compile) tree-shakes and resolves to the tenant's silica `--color-*`
 // theme. So a class an agent types here — `bg-primary`, `p-6`, `rounded-box`,
 // `@3xl:grid-cols-3` — renders in the tenant's own colors, spacing, and shape.
 // This object is the contract: the class families that resolve, the node-type
@@ -144,7 +144,7 @@ export const BUILDER_STYLE_GUIDE = {
 
   classVocabulary: {
     note:
-      'Author Tailwind utilities directly. Every color/shape/spacing token below resolves to the tenant `--st-*` theme at compile time — ' +
+      'Author Tailwind utilities directly. Every color/shape/spacing token below resolves to the tenant silica theme (`--color-*`, `--radius-*`) at compile time — ' +
       'never hardcode hex. Unknown utilities are silently dropped (no error), so typos are safe but inert.',
     color: {
       surfaces: [
@@ -189,7 +189,7 @@ export const BUILDER_STYLE_GUIDE = {
       misc: ['opacity-90', 'backdrop-blur'],
     },
     spacing: {
-      note: 'The whole numeric spacing scale tracks the tenant base unit (--st-space-base) — it reflows with the theme.',
+      note: 'The standard Tailwind spacing scale.',
       padding: ['p-3', 'p-6', 'p-10', 'p-16', 'px-6', 'py-10'],
       margin: ['m-4', 'mx-auto', 'mt-8'],
       gap: ['gap-2', 'gap-4', 'gap-6', 'gap-8'],
@@ -216,15 +216,15 @@ export const BUILDER_STYLE_GUIDE = {
         'An entrance has THREE triggers — choose the class shape by WHEN it should play:',
       triggers: {
         scroll:
-          'Plays as the element scrolls into view (the alive-feeling default). Emit `st-reveal st-reveal--<token>` (e.g. `st-reveal st-reveal--fade-up`). A tiny IntersectionObserver island flips it on; nothing is hidden when JS is off or reduced motion is set.',
+          'Plays as the element scrolls into view (the alive-feeling default). Emit `bx-reveal bx-reveal--<token>` (e.g. `bx-reveal bx-reveal--fade-up`). A tiny IntersectionObserver island flips it on; nothing is hidden when JS is off or reduced motion is set.',
         load: 'Plays once on first paint. Emit the bare `animate-<token>` (e.g. `animate-fade-up`).',
         hover: 'Plays on hover. Emit `hover:animate-<token>` (e.g. `hover:animate-scale-in`).',
       },
       tokens: ['fade-in', 'fade-up', 'fade-down', 'scale-in', 'slide-in-left', 'slide-in-right'],
       stagger:
-        'On a CONTAINER, `st-reveal-stagger` (or `st-reveal-stagger--bold`) fades its direct children in sequence as it scrolls into view — do NOT also put a reveal on each child.',
+        'On a CONTAINER, `bx-reveal-stagger` (or `bx-reveal-stagger--bold`) fades its direct children in sequence as it scrolls into view — do NOT also put a reveal on each child.',
       hoverEffects: {
-        note: 'A PERSISTENT hover effect (held while hovered, eases back on hover-out) — the card/tile/image idiom, distinct from the one-shot `hover:animate-<token>` entrance. Emit ONE `st-hover--<effect>` class on the element; it is reduced-motion aware on its own (movement is gated, a shadow/brightness cue stays), so never add a guard.',
+        note: 'A PERSISTENT hover effect (held while hovered, eases back on hover-out) — the card/tile/image idiom, distinct from the one-shot `hover:animate-<token>` entrance. Emit ONE `bx-hover--<effect>` class on the element; it is reduced-motion aware on its own (movement is gated, a shadow/brightness cue stays), so never add a guard.',
         effects: ['lift', 'grow', 'sink', 'glow', 'brighten', 'tilt'],
         guidance:
           '`lift` (rise + shadow) is the default for cards; `grow`/`brighten` suit images & media; `glow` (brand-tinted) suits feature cards & CTAs; `sink` suits pressable tiles; `tilt` is a playful 3D accent.',
@@ -444,13 +444,13 @@ export const BUILDER_STYLE_GUIDE = {
           {
             type: 'Heading',
             // scroll trigger: the heading fades up as it enters the viewport
-            class: 'st-reveal st-reveal--fade-up text-center',
+            class: 'bx-reveal bx-reveal--fade-up text-center',
             props: { level: 'h2', text: 'Why teams choose us' },
           },
           {
             type: 'Grid',
             // container stagger: the cards fade up in sequence on reveal (no per-card reveal)
-            class: 'grid grid-cols-1 @2xl:grid-cols-3 gap-6 st-reveal-stagger',
+            class: 'grid grid-cols-1 @2xl:grid-cols-3 gap-6 bx-reveal-stagger',
             props: {},
             children: [
               {

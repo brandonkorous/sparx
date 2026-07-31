@@ -16,7 +16,7 @@ export default function NotFound() {
         404
       </Text>
       <Heading level={1}>We couldn’t find that page</Heading>
-      <Text className="text-base-content max-w-md">
+      <Text className="max-w-md">
         The product, shop, or category you’re looking for may have moved or sold out. Try browsing
         the full marketplace instead.
       </Text>

@@ -7,6 +7,8 @@
 
 import { getCategory } from '@/lib/marketplace-registry';
 import type { MarketplaceListing } from '@/lib/marketplace';
+import { ThemePreview } from './theme-preview';
+import { ComponentPreview } from './component-preview';
 
 /** Price label — Free when zero, else dollars, with a /mo suffix for subscriptions. */
 function priceLabel(price: MarketplaceListing['price']): string {
@@ -44,15 +46,22 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
   const tag = listingTag(item);
   const hint = contentsHint(item);
   const preview = item.media.find((m) => m.kind === 'image')?.url ?? item.media[0]?.url;
+  // Themes + components render a LIVE preview (docs/118) — the real theme applied to
+  // a sample / the real section (server-rendered on the base theme), not a baked image.
+  const liveTheme = item.category === 'themes' && item.theme?.tokens ? item.theme : null;
+  const componentHtml =
+    item.category === 'components' ? (item.component?.previewHtml ?? null) : null;
 
   return (
-    <a
-      href={`/market/${item.category}/${item.slug}`}
-      className="border-base-300 bg-base-100 flex w-full flex-col overflow-hidden rounded-lg border text-inherit no-underline"
-    >
-      {/* Preview */}
-      <div className="bg-base-200 border-base-300 flex aspect-[16/10] w-full items-center justify-center border-b">
-        {preview ? (
+    <div className="border-base-300 bg-base-100 relative flex w-full flex-col overflow-hidden rounded-lg border">
+      {/* Preview. `pointer-events-none` keeps a live component preview's own controls
+          inert so the overlay link below owns every click. */}
+      <div className="bg-base-200 border-base-300 pointer-events-none flex aspect-[16/10] w-full items-center justify-center overflow-hidden border-b">
+        {liveTheme ? (
+          <ThemePreview slug={item.slug} name={item.name} theme={liveTheme} variant="card" />
+        ) : componentHtml ? (
+          <ComponentPreview name={item.name} html={componentHtml} variant="card" />
+        ) : preview ? (
           /* Hot-linked external/tenant preview (docs/54); next/image gains little here. */
           <img src={preview} alt={`${item.name} preview`} className="h-full w-full object-cover" />
         ) : (
@@ -80,9 +89,7 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
           </span>
         ) : null}
 
-        <h3 className="text-base-content text-lede m-0 font-medium tracking-[-0.015em]">
-          {item.name}
-        </h3>
+        <h3 className="text-lede m-0 font-medium tracking-[-0.015em]">{item.name}</h3>
 
         {item.tagline ? (
           <p className="text-ink-muted text-small m-0 pt-1.5">{item.tagline}</p>
@@ -95,11 +102,18 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
             {item.publisher.displayName}
             {item.publisher.verified ? <span style={{ color: accent }}>✓</span> : null}
           </span>
-          <span className="text-base-content text-caption font-medium">
-            {priceLabel(item.price)}
-          </span>
+          <span className="text-caption font-medium">{priceLabel(item.price)}</span>
         </div>
       </div>
-    </a>
+      {/* Stretched overlay link — the whole card navigates to the detail page. It's a
+          SIBLING (not a wrapper) so a live component preview's own <a>/<button>/<form>
+          are valid HTML inside the card <div>, instead of interactive content illegally
+          nested in an anchor (which the browser un-nests, breaking hydration). */}
+      <a
+        href={`/market/${item.category}/${item.slug}`}
+        aria-label={item.name}
+        className="absolute inset-0 z-10"
+      />
+    </div>
   );
 }

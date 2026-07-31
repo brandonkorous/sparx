@@ -26,7 +26,7 @@ export function ProductGallery({
 
   if (gallery.length === 0) {
     return (
-      <div className="bg-base-200 text-base-content flex aspect-square items-center justify-center rounded-xl">
+      <div className="bg-base-200 flex aspect-square items-center justify-center rounded-xl">
         <ImageOff size={48} aria-hidden />
       </div>
     );

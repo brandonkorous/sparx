@@ -17,11 +17,11 @@ describe('collectClasses', () => {
       type: 'Section',
       class: 'navbar bg-base-100',
       children: [
-        node({ id: 'c1', type: 'Heading', class: 'st-h  bg-base-100' }), // dup + extra space
+        node({ id: 'c1', type: 'Heading', class: 'h2  bg-base-100' }), // dup + extra space
         node({ id: 'c2', type: 'Text', class: 'text-primary-content' }),
       ],
     });
-    expect(collectClasses(tree)).toEqual(['bg-base-100', 'navbar', 'st-h', 'text-primary-content']);
+    expect(collectClasses(tree)).toEqual(['bg-base-100', 'h2', 'navbar', 'text-primary-content']);
   });
 
   it('merges classes across multiple trees (page + chrome)', () => {

@@ -25,13 +25,13 @@ export const EmptyState = React.forwardRef<HTMLDivElement, EmptyStateProps>(
       {...props}
     >
       {icon && (
-        <div className="text-base-content bg-base-100 flex h-10 w-10 items-center justify-center rounded-full">
+        <div className="bg-base-100 flex h-10 w-10 items-center justify-center rounded-full">
           {icon}
         </div>
       )}
       <div className="flex flex-col gap-1">
-        <p className="text-base-content text-sm font-medium">{title}</p>
-        {description && <p className="text-base-content max-w-sm text-xs">{description}</p>}
+        <p className="text-sm font-medium">{title}</p>
+        {description && <p className="max-w-sm text-xs">{description}</p>}
       </div>
       {action && <div className="mt-2 flex items-center gap-2">{action}</div>}
     </div>

@@ -50,7 +50,12 @@ export function LandingV3Hero() {
             <div className="flex flex-wrap gap-3">
               <a
                 href={signupHref('landing-v3-hero')}
-                aria-label="Launch your site"
+                // The accessible name must CONTAIN the visible text (WCAG 2.5.3,
+                // label-in-name) — this read "Launch your site" on a button that
+                // says "Start your story", so a voice-control user saying what
+                // they could see hit nothing. The label exists only to drop the
+                // trailing arrow glyph.
+                aria-label="Start your story"
                 className={buttonClasses({ size: 'xl', color: 'primary', variant: 'solid' })}
               >
                 Start your story &rarr;

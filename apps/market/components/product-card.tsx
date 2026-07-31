@@ -74,10 +74,7 @@ export function ProductCard({ product }: { product: ProductCardData }) {
             className="object-cover transition-transform duration-300 group-hover:scale-[1.04]"
           />
         ) : (
-          <span
-            className="text-base-content flex h-full w-full items-center justify-center"
-            aria-hidden
-          >
+          <span className="flex h-full w-full items-center justify-center" aria-hidden>
             <ImageOff size={28} />
           </span>
         )}
@@ -93,23 +90,19 @@ export function ProductCard({ product }: { product: ProductCardData }) {
       <div className="flex flex-1 flex-col gap-1.5 p-3.5">
         <Link
           href={`/products/${product.slug}`}
-          className="text-base-content group-hover:text-primary line-clamp-2 text-[0.9375rem] leading-tight font-semibold transition-colors"
+          className="group-hover:text-primary line-clamp-2 text-[0.9375rem] leading-tight font-semibold transition-colors"
         >
           {product.title}
         </Link>
         <Link
           href={`/merchants/${product.merchantSlug}`}
-          className="text-base-content text-[0.8125rem] transition-colors hover:underline"
+          className="text-[0.8125rem] transition-colors hover:underline"
         >
           {product.merchantName}
         </Link>
         <Stars rating={product.averageRating} reviewCount={product.reviewCount} size={13} compact />
         <div className="mt-auto flex items-center justify-between gap-2 pt-0.5">
-          {price ? (
-            <p className="text-base-content text-[0.9375rem] font-semibold">{price}</p>
-          ) : (
-            <span />
-          )}
+          {price ? <p className="text-[0.9375rem] font-semibold">{price}</p> : <span />}
           {product.inStock && product.lowStock ? (
             <span className="text-warning text-[0.75rem] font-medium">Only a few left</span>
           ) : null}

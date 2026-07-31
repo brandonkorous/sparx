@@ -42,7 +42,7 @@ import {
   safeElementAttrs,
   type BuilderNode,
 } from '@sparx/builder-schemas';
-import { NavShell } from '@sparx/site-ui';
+import { NavShell } from './atoms';
 
 import { leafWearsClass, renderLeaf, renderLegacyNavLinks } from './render-leaf';
 

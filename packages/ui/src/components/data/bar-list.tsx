@@ -1,13 +1,18 @@
 import * as React from 'react';
 import { cn } from '../../utils/cn';
-import { Progress } from './progress';
+import { Progress } from '@wizeworks/silicaui-react';
 import { type ColorKey } from '../_recipes/variants';
 import { resolveFormatter, type ValueFormat } from './chart/value-format';
 
 // BarList — a labelled set of horizontal proportional bars (traffic sources,
 // A/R aging buckets, model mix, pipeline stages). Each row is label · track ·
-// value; the track reuses <Progress> so it themes off the same role vars. Bars
-// scale to `max` (defaults to the largest value) so the set reads comparatively.
+// value; the track is silicaui's own <Progress>, so a bar and a standalone
+// progress bar are the same control. Bars scale to `max` (defaults to the
+// largest value) so the set reads comparatively.
+//
+// `color` is a silicaui PLUGIN color — `module` (the active <ModuleProvider>
+// hue, the default) or a semantic tone. A bare per-module name like `commerce`
+// is not one: wrap the list in that module's provider instead.
 
 export interface BarListItem {
   label: React.ReactNode;
@@ -61,13 +66,9 @@ export const BarList = React.forwardRef<HTMLDivElement, BarListProps>(
               key={item.key ?? i}
               className="grid grid-cols-[6.5rem_1fr_auto] items-center gap-3 text-sm"
             >
-              <span className="text-base-content truncate">{item.label}</span>
+              <span className="truncate">{item.label}</span>
               <Progress value={item.value} max={ceiling} color={item.color ?? color} />
-              {showValue && (
-                <span className="text-base-content text-right font-medium tabular-nums">
-                  {display}
-                </span>
-              )}
+              {showValue && <span className="text-right font-medium tabular-nums">{display}</span>}
             </div>
           );
         })}

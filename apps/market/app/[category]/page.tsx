@@ -68,12 +68,10 @@ export default async function CategoryPage({ params, searchParams }: PageProps) 
           <span className="text-primary bg-primary/10 inline-flex h-12 w-12 items-center justify-center rounded-xl">
             <CategoryIcon name={category.icon} size={22} />
           </span>
-          <h1 className="text-base-content mt-4 max-w-2xl text-[2rem] leading-[1.05] font-bold tracking-[-0.03em] md:text-[3rem]">
+          <h1 className="mt-4 max-w-2xl text-[2rem] leading-[1.05] font-bold tracking-[-0.03em] md:text-[3rem]">
             {category.name}
           </h1>
-          <p className="text-base-content mt-3 max-w-xl text-[1.0625rem] leading-relaxed">
-            {category.tagline}
-          </p>
+          <p className="mt-3 max-w-xl text-[1.0625rem] leading-relaxed">{category.tagline}</p>
         </div>
       </section>
 

@@ -11,6 +11,8 @@
    canonical order, silently dropping ours. */
 @import 'tailwindcss';
 @import '@sparx/brand/theme.css';
+/* Rules that close a hole in a silicaui component — see the file header. */
+@import '@sparx/brand/silica-gaps.css';
 @import '@sparx/brand/toast.css';
 /* SparkMascot motion (blink/bob/wink) — the brand loading state renders the
    mascot, and without these keyframes its face would sit frozen. See

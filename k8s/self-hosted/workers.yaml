@@ -1,0 +1,621 @@
+# The 11 workers that ran on Cloud Run (terraform/envs/prod/serverless.tf),
+# moved into the cluster as ordinary Deployments.
+#
+# Nothing in the worker SOURCE changes. On Cloud Run each one was a container
+# behind a Pub/Sub push subscription; here it is a container behind a ClusterIP
+# Service, receiving the identical push envelope from the api-rest publisher via
+# SPARX_DEV_WORKER_ROUTES (see app-env-configmap.env). Same HTTP contract, same
+# handler, different sender.
+#
+# WHAT IS LOST relative to Pub/Sub: the broker. No retry, no dead-letter queue,
+# no at-least-once delivery, no backlog while a worker restarts. The publisher
+# fires and forgets. This is the one place the local deployment is genuinely
+# weaker than GKE + Cloud Run, and it is called out again in README.md rather
+# than buried here.
+#
+# Probes are tcpSocket, not httpGet: these are raw `node:http` servers
+# (services/*/src/index.ts `createServer`) that handle POST and have no GET
+# health route, so an httpGet probe would fail on a perfectly healthy worker.
+#
+# NO `resources` BLOCK ANYWHERE IN THIS FILE — deliberate, on a 16GB host.
+#
+# `requests` are what the SCHEDULER reserves; the sum of every request on the
+# node must fit in allocatable memory or pods simply never schedule, however
+# little they actually use. These 11 workers are event-driven and idle
+# essentially all the time — a Node process parked on an HTTP listener sits
+# around 50-80MB RSS — so reserving 512Mi-1Gi each was reserving ~7GB to do
+# nothing. Omitting requests lets them take what they really need.
+#
+# The non-obvious part: you cannot keep a `limits` block and drop `requests`.
+# Kubernetes DEFAULTS a missing request to the value of the matching limit, so
+# `limits: {memory: 512Mi}` alone silently reserves 512Mi anyway. Getting a true
+# no-minimum pod means omitting BOTH — which is what makes these BestEffort QoS.
+#
+# The trade that buys: under memory pressure the kubelet evicts BestEffort pods
+# FIRST. That is the correct pod class to sacrifice here — a worker is
+# stateless, restarts in seconds, and its event delivery is already
+# fire-and-forget (see app-env-configmap.env), so an eviction costs at most the
+# event in flight. The data services in infra.yaml keep real requests precisely
+# so they are never the thing that gets killed.
+#
+# Editors will flag "containers do not have resources" on every pod here. That
+# warning is correct in general and wrong for this file.
+
+# ---------------------------------------------------------------------------
+# email-worker — email.send
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: email-worker
+  namespace: sparx-prod
+  labels: { app: email-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: email-worker }
+  template:
+    metadata:
+      labels: { app: email-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: email-worker
+          image: sparx/email-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: email-worker }
+            - { name: PORT, value: '8080' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: email-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: email-worker }
+---
+# ---------------------------------------------------------------------------
+# push-worker — push.send
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: push-worker
+  namespace: sparx-prod
+  labels: { app: push-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: push-worker }
+  template:
+    metadata:
+      labels: { app: push-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: push-worker
+          image: sparx/push-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: push-worker }
+            - { name: PORT, value: '8080' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: push-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: push-worker }
+---
+# ---------------------------------------------------------------------------
+# markup-recompute-worker — variant.cost.updated
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: markup-recompute-worker
+  namespace: sparx-prod
+  labels: { app: markup-recompute-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: markup-recompute-worker }
+  template:
+    metadata:
+      labels: { app: markup-recompute-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: markup-recompute-worker
+          image: sparx/markup-recompute-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: markup-recompute-worker }
+            - { name: PORT, value: '8080' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: markup-recompute-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: markup-recompute-worker }
+---
+# ---------------------------------------------------------------------------
+# media-worker — media.uploaded
+#
+# The ONLY worker with a volume. It transcodes uploads into variants and must
+# write to the SAME local-disk media root api-rest streams from, since
+# GCS_MEDIA_BUCKET is unset and packages/media falls back to LocalStorage.
+# Mismatch here = uploads that transcode successfully and then 404 forever.
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: media-worker
+  namespace: sparx-prod
+  labels: { app: media-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    # RWO PersistentVolume: the replacement pod cannot attach the volume while
+    # the outgoing one still holds it, so a RollingUpdate deadlocks.
+    type: Recreate
+  selector:
+    matchLabels: { app: media-worker }
+  template:
+    metadata:
+      labels: { app: media-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: media-worker
+          image: sparx/media-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: media-worker }
+            - { name: PORT, value: '8080' }
+          volumeMounts:
+            - { name: media, mountPath: /media }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+      volumes:
+        - name: media
+          persistentVolumeClaim:
+            claimName: sparx-media
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: media-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: media-worker }
+---
+# ---------------------------------------------------------------------------
+# commerce-indexer — product/variant/inventory/order changes + search.*
+# Writes to Typesense, so it needs the API key the search client expects.
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: commerce-indexer
+  namespace: sparx-prod
+  labels: { app: commerce-indexer, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: commerce-indexer }
+  template:
+    metadata:
+      labels: { app: commerce-indexer, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: commerce-indexer
+          image: sparx/commerce-indexer:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: commerce-indexer }
+            - { name: PORT, value: '8080' }
+            - name: TYPESENSE_API_KEY
+              valueFrom:
+                secretKeyRef: { name: typesense-secrets, key: api-key }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: commerce-indexer
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: commerce-indexer }
+---
+# ---------------------------------------------------------------------------
+# channel-sync-worker — product/inventory/fulfilment → sales channels
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: channel-sync-worker
+  namespace: sparx-prod
+  labels: { app: channel-sync-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: channel-sync-worker }
+  template:
+    metadata:
+      labels: { app: channel-sync-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: channel-sync-worker
+          image: sparx/channel-sync-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: channel-sync-worker }
+            - { name: PORT, value: '8080' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: channel-sync-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: channel-sync-worker }
+---
+# ---------------------------------------------------------------------------
+# social-worker — scheduled posts, metrics, inbox
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: social-worker
+  namespace: sparx-prod
+  labels: { app: social-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: social-worker }
+  template:
+    metadata:
+      labels: { app: social-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: social-worker
+          image: sparx/social-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: social-worker }
+            - { name: PORT, value: '8080' }
+            # URL-fetch platforms (Instagram/Threads/Pinterest) hand THEIR
+            # servers this URL to fetch. Unchanged from prod — but the hostname
+            # now earns its name a different way: it was grey-cloud DNS-only so
+            # fetchers bypassed Cloudflare and its 206-to-ranged-requests, and a
+            # tunnel carries only proxied hostnames so that bypass is gone.
+            # cloudflare/media-direct-worker/ restores the guarantee at the edge
+            # instead, by stripping `Range` ahead of the cache. Requires that
+            # Worker to be deployed — without it, images silently drop from
+            # Instagram/Threads/Pinterest posts and they publish text-only.
+            - { name: MEDIA_DIRECT_BASE_URL, value: 'https://media-direct.sparx.works' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: social-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: social-worker }
+---
+# ---------------------------------------------------------------------------
+# legal-seed-worker — tenant.created
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legal-seed-worker
+  namespace: sparx-prod
+  labels: { app: legal-seed-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: legal-seed-worker }
+  template:
+    metadata:
+      labels: { app: legal-seed-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: legal-seed-worker
+          image: sparx/legal-seed-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: legal-seed-worker }
+            - { name: PORT, value: '8080' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: legal-seed-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: legal-seed-worker }
+---
+# ---------------------------------------------------------------------------
+# platform-crm-worker — tenant + module lifecycle → the dogfood CRM
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: platform-crm-worker
+  namespace: sparx-prod
+  labels: { app: platform-crm-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: platform-crm-worker }
+  template:
+    metadata:
+      labels: { app: platform-crm-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: platform-crm-worker
+          image: sparx/platform-crm-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: platform-crm-worker }
+            - { name: PORT, value: '8080' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: platform-crm-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: platform-crm-worker }
+---
+# ---------------------------------------------------------------------------
+# domain-worker — domain.purchased
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: domain-worker
+  namespace: sparx-prod
+  labels: { app: domain-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: domain-worker }
+  template:
+    metadata:
+      labels: { app: domain-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: domain-worker
+          image: sparx/domain-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: domain-worker }
+            - { name: PORT, value: '8080' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: domain-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: domain-worker }
+---
+# ---------------------------------------------------------------------------
+# dropship-worker — supplier sync + order routing
+# ---------------------------------------------------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dropship-worker
+  namespace: sparx-prod
+  labels: { app: dropship-worker, tier: worker }
+spec:
+  replicas: 1
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: dropship-worker }
+  template:
+    metadata:
+      labels: { app: dropship-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: dropship-worker
+          image: sparx/dropship-worker:local
+          imagePullPolicy: Never
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: dropship-worker }
+            - { name: PORT, value: '8080' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dropship-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: dropship-worker }

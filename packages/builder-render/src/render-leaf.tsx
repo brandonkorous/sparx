@@ -12,7 +12,7 @@
 //               renders the SAME components but feeds the commerce atoms a sample
 //               product, and substitutes representative placeholders for
 //               otherwise-empty leaves so an unauthored node stays selectable.
-//   · surface — `page`/`site` paint the @sparx/site-ui storefront scale; `email`
+//   · surface — `page`/`site` paint the silicaui storefront scale; `email`
 //               paints the @sparx/email pixel scale (the email-leaf set).
 //   · leafClass — for leaves that style their OWN element (leafWearsClass), the
 //               host passes node.class here so the recipe/Surface paints it and
@@ -45,22 +45,30 @@ import {
   type Cardinality,
 } from '@sparx/builder-schemas';
 import {
-  Divider,
   EditorialSection,
   EmbedFrame,
   FAQ,
   FeatureGrid,
-  Heading,
-  Image,
-  Logo,
+  NAV_CARET_CLASS,
+  NAV_DROPDOWN_CLASS,
+  NAV_DROPDOWN_PANEL_CLASS,
+  NAV_ICON_CLASS,
+  NAV_ITEM_CLASS,
+  NAV_MEGA_CLASS,
+  NAV_SUMMARY_CLASS,
   PriceTag,
+  SiteDivider,
+  SiteHeading,
+  SiteImage,
+  SiteLogo,
+  SiteStat,
+  SiteText,
+  SiteWordmark,
   SocialLinks,
-  Stat,
-  Text,
   ThemeToggle,
-  Wordmark,
+  navMegaPanelClass,
   type WordmarkCollapse,
-} from '@sparx/site-ui';
+} from './atoms';
 // Server-safe JSON→HTML serializer (no React/jsdom) — the audited CMS path. Used
 // by the Prose leaf for both a bound rich-text body and an authored doc.
 import { renderDocToHtml } from '@sparx/cms-editor/serialize';
@@ -76,7 +84,7 @@ import {
 import { BuilderDialog } from './dialog';
 import { BuilderLightbox } from './lightbox';
 import { BuilderIcon } from './icon';
-import { renderSiteUiAtom } from './site-atoms';
+import { renderSiteAtom } from './site-atoms';
 import { SignupForm } from './signup';
 import { ContactForm } from './contact-form';
 import { BuilderAccountMenu } from './account-menu';
@@ -105,7 +113,7 @@ export interface LeafRenderArgs {
   /** `live` ships acting elements + production-empty output; `edit` (the canvas)
    *  feeds commerce atoms a sample product and shows placeholders for empties. */
   mode: RenderMode;
-  /** `page`/`site` → @sparx/site-ui scale; `email` → the @sparx/email pixel scale. */
+  /** `page`/`site` → the silicaui scale; `email` → the @sparx/email pixel scale. */
   surface: RenderSurface;
   /** node.class to apply on the leaf's OWN element, for leaves that style
    *  themselves by class (leafWearsClass). Undefined → the host wrapper carries
@@ -144,8 +152,8 @@ const CLASS_ON_LEAF: ReadonlySet<string> = new Set([
   'NavMegamenu',
   'AccountMenu',
   'SocialLinks',
-  // Site-UI atoms (docs/102 Track A) — each renders a real @sparx/site-ui component
-  // that wears the recipe + utilities on its own root, so the host suppresses its
+  // Site atoms (docs/102 Track A) — each renders a real silica component that
+  // wears the recipe + utilities on its own root, so the host suppresses its
   // wrapper class and passes node.class through as leafClass.
   'Input',
   'Textarea',
@@ -195,8 +203,8 @@ const CLASS_ON_LEAF: ReadonlySet<string> = new Set([
   'Hover3DCard',
   'HoverGallery',
   // Overlay / floating (docs/102 Track C follow-up): the positioned regions
-  // (Toast/FAB, platform `st-*` CSS owns the `fixed`) + the Dialog island, all
-  // styling their own element with node.class.
+  // (Toast/FAB, which pin themselves) + the Dialog island, all styling their own
+  // element with node.class.
   'Toast',
   'FAB',
   'Dialog',
@@ -352,7 +360,7 @@ function Placeholder({ label, ratio }: { label?: string; ratio?: string }) {
 // still carries its links in the old `props.links[]` bag (the leaf model); until
 // the `20260703_navmenu_container` tree migration converts those into NavItem
 // children, the host container branch falls back to these. The markup is the
-// SAME `<a class="st-nav__item">` a childless NavItem renders, so the two paths
+// SAME nav-item markup a childless NavItem renders, so the two paths
 // are pixel-identical during the transition and existing sites never render an
 // empty nav. Shared by the live renderer, the canvas, and the View-HTML
 // serializer so all three agree.
@@ -360,7 +368,7 @@ export function renderLegacyNavLinks(links: unknown): React.ReactNode[] {
   return coerceNavLinks(links, undefined).map((l, i) => (
     <a
       key={`legacy-${i}-${l.label}`}
-      className="st-nav__item"
+      className={NAV_ITEM_CLASS}
       href={l.href || '#'}
       {...(l.openInNewTab ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
     >
@@ -500,9 +508,9 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
           </EmailHeadingLeaf>
         );
       return (
-        <Heading level={level} size={size} className={leafClass}>
+        <SiteHeading level={level} size={size} className={leafClass}>
           {text}
-        </Heading>
+        </SiteHeading>
       );
     }
     case 'Text': {
@@ -515,9 +523,9 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
           </EmailTextLeaf>
         );
       return (
-        <Text variant={variant} className={leafClass}>
+        <SiteText variant={variant} className={leafClass}>
           {text}
-        </Text>
+        </SiteText>
       );
     }
     case 'Prose': {
@@ -590,7 +598,7 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
           </EmailButtonLeaf>
         );
       }
-      // Class-first (docs/47 §7): the look is the recipe class (`st-btn st-c-* …`),
+      // Class-first (docs/47 §7): the look is the silica class (`btn btn-primary …`),
       // carried on the element via leafClass; a LEGACY button (no class, styled via
       // the old `props.style` enum) maps that enum to the SAME recipe. A linked
       // button is an <a>; an action button a real <button>. The capture-phase canvas
@@ -613,7 +621,7 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
     case 'Badge': {
       const label = boundOr(str('label') || 'Badge');
       return (
-        <span className={leafClass ?? 'st-badge st-c-neutral st-v-soft st-badge--sz-md'}>
+        <span className={leafClass ?? 'badge badge-neutral badge-soft badge-md'}>
           {label}
           {children}
         </span>
@@ -624,7 +632,7 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       return <BuilderIcon name={name} className={leafClass} />;
     }
     case 'Divider':
-      return email ? <EmailDividerLeaf /> : <Divider className={leafClass} />;
+      return email ? <EmailDividerLeaf /> : <SiteDivider className={leafClass} />;
     case 'PriceTag': {
       const n = bound && typeof value === 'number' ? value : null;
       return <PriceTag amount={n} className={leafClass} />;
@@ -648,7 +656,12 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       // Keep an empty image node visible + selectable in the editor.
       if (edit && !img?.url) return <Placeholder ratio={ratio} label={str('alt')} />;
       return (
-        <Image src={img?.url} alt={img?.alt ?? str('alt')} ratio={ratio} className={leafClass} />
+        <SiteImage
+          src={img?.url}
+          alt={img?.alt ?? str('alt')}
+          ratio={ratio}
+          className={leafClass}
+        />
       );
     }
     case 'Video': {
@@ -672,7 +685,7 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
     }
     case 'Stat': {
       const big = boundOr(str('value') || '0');
-      return <Stat value={big} label={str('label')} className={leafClass} />;
+      return <SiteStat value={big} label={str('label')} className={leafClass} />;
     }
 
     // ── Tier-2 commerce (docs/40 §7) ─────────────────────────────────────────
@@ -741,7 +754,7 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
         value && typeof value === 'object' ? (value as { name?: unknown; logo?: unknown }) : null;
       const name = typeof identity?.name === 'string' ? identity.name : '';
       const img = firstImage(identity?.logo);
-      return <Logo name={name} src={img?.url} alt={img?.alt ?? name} className={leafClass} />;
+      return <SiteLogo name={name} src={img?.url} alt={img?.alt ?? name} className={leafClass} />;
     }
     case 'Wordmark': {
       const identity =
@@ -750,7 +763,7 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       const img = firstImage(identity?.logo);
       const collapse = (str('collapse') || 'mark') as WordmarkCollapse;
       return (
-        <Wordmark
+        <SiteWordmark
           name={name}
           src={img?.url}
           alt={img?.alt ?? name}
@@ -763,29 +776,31 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       // A composed nav link (docs/57 rebuild). Alone it renders an <a>; WITH child
       // NavItems it becomes a CSS-only <details> dropdown (trigger + panel of the
       // rendered children), the same way a Button nests an Icon. Wears node.class
-      // (leafClass) on its own tag; the structural `st-*` class is always present.
+      // (leafClass) on its own tag; the structural nav class is always present.
       const label = str('label') || (edit ? 'Menu item' : '');
       const iconName = str('icon');
-      const glyph = iconName ? <BuilderIcon name={iconName} className="st-navitem__icon" /> : null;
+      const glyph = iconName ? <BuilderIcon name={iconName} className={NAV_ICON_CLASS} /> : null;
       const newTab = p.openInNewTab === true;
       if (children) {
         return (
-          <details className={leafClass ? `st-navitem-drop ${leafClass}` : 'st-navitem-drop'}>
-            <summary className="st-navitem-drop__summary">
+          <details
+            className={leafClass ? `${NAV_DROPDOWN_CLASS} ${leafClass}` : NAV_DROPDOWN_CLASS}
+          >
+            <summary className={NAV_SUMMARY_CLASS}>
               {glyph}
               <span>{label || (edit ? 'Menu' : '')}</span>
-              <span className="st-navitem-drop__caret" aria-hidden>
+              <span className={NAV_CARET_CLASS} aria-hidden>
                 ▾
               </span>
             </summary>
-            <div className="st-navitem-drop__panel">{children}</div>
+            <div className={NAV_DROPDOWN_PANEL_CLASS}>{children}</div>
           </details>
         );
       }
       const href = str('href') || '#';
       return (
         <a
-          className={leafClass ? `st-nav__item ${leafClass}` : 'st-nav__item'}
+          className={leafClass ? `${NAV_ITEM_CLASS} ${leafClass}` : NAV_ITEM_CLASS}
           href={href}
           {...(newTab ? { target: '_blank', rel: 'noreferrer noopener' } : {})}
         >
@@ -802,18 +817,20 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       // the rendered children straight through and each column stays selectable.
       const label = str('label') || (edit ? 'Menu' : '');
       const iconName = str('icon');
-      const glyph = iconName ? <BuilderIcon name={iconName} className="st-navitem__icon" /> : null;
-      const cols = str('columns') === '2' || str('columns') === '4' ? str('columns') : '3';
+      const glyph = iconName ? <BuilderIcon name={iconName} className={NAV_ICON_CLASS} /> : null;
+      const authoredCols = str('columns');
+      const cols: '2' | '3' | '4' =
+        authoredCols === '2' || authoredCols === '4' ? authoredCols : '3';
       return (
-        <details className={leafClass ? `st-navmega ${leafClass}` : 'st-navmega'}>
-          <summary className="st-navitem-drop__summary">
+        <details className={leafClass ? `${NAV_MEGA_CLASS} ${leafClass}` : NAV_MEGA_CLASS}>
+          <summary className={NAV_SUMMARY_CLASS}>
             {glyph}
             <span>{label}</span>
-            <span className="st-navitem-drop__caret" aria-hidden>
+            <span className={NAV_CARET_CLASS} aria-hidden>
               ▾
             </span>
           </summary>
-          <div className={`st-navmega__panel st-navmega__panel--c${cols}`}>{children}</div>
+          <div className={navMegaPanelClass(cols)}>{children}</div>
         </details>
       );
     }
@@ -933,11 +950,11 @@ export function renderLeaf(args: LeafRenderArgs): React.ReactNode {
       );
     }
 
-    // The rest of the @sparx/site-ui library, exposed as droppable atoms (docs/102
-    // Track A) — form controls, feedback, data display, navigation, mockups. Their
-    // render is the shared site-atoms map; `undefined` means not one of them.
+    // The rest of the silica library, exposed as droppable atoms (docs/102 Track A)
+    // — form controls, feedback, data display, navigation, mockups. Their render is
+    // the shared site-atoms map; `undefined` means not one of them.
     default: {
-      const atom = renderSiteUiAtom(node, { leafClass, value, bound, cardinality, edit, children });
+      const atom = renderSiteAtom(node, { leafClass, value, bound, cardinality, edit, children });
       if (atom !== undefined) return atom;
       // Not a site-ui atom either, so nothing renders this type. Say so (see above) —
       // visibly in the editor, once to the log everywhere.

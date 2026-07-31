@@ -470,59 +470,44 @@ export async function installBlueprint(
     const prop = await withTenant(ctx, (tx) =>
       tx.property.findUnique({
         where: { id: propertyId },
-        select: { isPrimary: true, name: true, settings: true },
+        select: { name: true, settings: true },
       })
     );
-    const isPrimary = prop?.isPrimary ?? true;
 
-    // 3. Brand identity
+    // 3. Brand identity — onto the TARGET SITE's own `brand_override`, whether or
+    // not it is the primary. Installing the primary's brand into TenantBrand (the
+    // default every unbranded site inherits) is what made a blueprint install on one
+    // site restyle its siblings; the base is left alone so it stays a neutral
+    // fallback. The full identity set is carried — the old secondary-site branch
+    // wrote only businessName + two colours + the light logo, silently dropping the
+    // fonts, the dark logo and the favicon, so a non-primary install inherited the
+    // tenant's type stack instead of the blueprint's.
     const b = blueprint.brand;
-    if (isPrimary) {
-      await withTenant(ctx, async (tx) => {
-        const data: Prisma.TenantBrandUncheckedCreateInput = {
-          tenantId,
-          businessName: b.businessName,
-          ...(b.tagline !== undefined ? { tagline: b.tagline } : {}),
-          colorPrimary: b.colors.primary,
-          ...(b.colors.primaryForeground
-            ? { colorPrimaryForeground: b.colors.primaryForeground }
-            : {}),
-          ...(b.colors.accent ? { colorAccent: b.colors.accent } : {}),
-          ...(b.colors.accentForeground
-            ? { colorAccentForeground: b.colors.accentForeground }
-            : {}),
-          ...(b.colors.secondary ? { colorSecondary: b.colors.secondary } : {}),
-          ...(b.colors.secondaryForeground
-            ? { colorSecondaryForeground: b.colors.secondaryForeground }
-            : {}),
-          fontHeading: b.fonts.heading,
-          fontBody: b.fonts.body,
-          ...(asset(b.logoLightAssetId) ? { logoLightMediaId: asset(b.logoLightAssetId) } : {}),
-          ...(asset(b.logoDarkAssetId) ? { logoDarkMediaId: asset(b.logoDarkAssetId) } : {}),
-          ...(asset(b.faviconAssetId) ? { faviconMediaId: asset(b.faviconAssetId) } : {}),
-        };
-        const { tenantId: _t, ...update } = data;
-        await tx.tenantBrand.upsert({ where: { tenantId }, create: data, update });
-      });
-    } else {
-      // Secondary site: the per-site override (docs/49 §3) carries only the
-      // identity fields it supports (businessName + the brand colors + logo);
-      // everything else inherits the tenant brand.
-      const override: Record<string, string> = {
-        businessName: b.businessName,
-        colorPrimary: b.colors.primary,
-      };
-      if (b.colors.primaryForeground) override.colorPrimaryForeground = b.colors.primaryForeground;
-      if (b.colors.accent) override.colorAccent = b.colors.accent;
-      const logo = asset(b.logoLightAssetId);
-      if (logo) override.logoMediaId = logo;
-      await withTenant(ctx, (tx) =>
-        tx.property.update({
-          where: { id: propertyId },
-          data: { brandOverride: override },
-        })
-      );
-    }
+    const override: Record<string, string> = {
+      businessName: b.businessName,
+      colorPrimary: b.colors.primary,
+      fontHeading: b.fonts.heading,
+      fontBody: b.fonts.body,
+    };
+    if (b.tagline !== undefined) override.tagline = b.tagline;
+    if (b.colors.primaryForeground) override.colorPrimaryForeground = b.colors.primaryForeground;
+    if (b.colors.accent) override.colorAccent = b.colors.accent;
+    if (b.colors.accentForeground) override.colorAccentForeground = b.colors.accentForeground;
+    if (b.colors.secondary) override.colorSecondary = b.colors.secondary;
+    if (b.colors.secondaryForeground)
+      override.colorSecondaryForeground = b.colors.secondaryForeground;
+    const logoLight = asset(b.logoLightAssetId);
+    const logoDark = asset(b.logoDarkAssetId);
+    const favicon = asset(b.faviconAssetId);
+    if (logoLight) override.logoLightMediaId = logoLight;
+    if (logoDark) override.logoDarkMediaId = logoDark;
+    if (favicon) override.faviconMediaId = favicon;
+    await withTenant(ctx, (tx) =>
+      tx.property.update({
+        where: { id: propertyId },
+        data: { brandOverride: override },
+      })
+    );
 
     // 3b. Site name + social links on the TARGET property (docs/49). The customer-
     // facing site name is Property.name (storefront chrome/title/OG read it), seeded

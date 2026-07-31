@@ -29,8 +29,20 @@ export const metadata: Metadata = {
 export const revalidate = 300;
 
 export default async function MarketplaceHomePage() {
-  const featured = await fetchCategory('blueprints', { sort: 'popular', limit: '6' });
-  const counts: Record<string, number> = { blueprints: featured.total };
+  // One request per category (all cached by the data layer) so every tile shows a
+  // real count — themes + components are live shelves now, not "coming soon" teasers.
+  const [featured, themes, components, integrations] = await Promise.all([
+    fetchCategory('blueprints', { sort: 'popular', limit: '6' }),
+    fetchCategory('themes', { limit: '1' }),
+    fetchCategory('components', { limit: '1' }),
+    fetchCategory('integrations', { limit: '1' }),
+  ]);
+  const counts: Record<string, number> = {
+    blueprints: featured.total,
+    themes: themes.total,
+    components: components.total,
+    integrations: integrations.total,
+  };
 
   return (
     <>
@@ -72,7 +84,7 @@ export default async function MarketplaceHomePage() {
             accent="var(--color-primary)"
             headlineSize={48}
             headline="Browse by category"
-            lede="Each category grows on its own — install a blueprint today; themes, components, and integrations are landing next."
+            lede="Start from a whole themed site, restyle it with a theme, or drop in a ready-made section — every listing previews live, right here in your browser."
           />
           <CategoryTiles counts={counts} />
         </div>

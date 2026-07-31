@@ -1,6 +1,6 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.14.0
+Version: 2.17.0
 Author: Brandon Korous
 Last Updated: 2026-07-30
 
@@ -537,6 +537,130 @@ Where "no better in the world" is actually won or lost.
   > **Deletion is explicit and the active layout is exempt** (`framesToDelete`), which is the page lesson from docs/126 §4.4 applied one namespace over: the engine hands a client the whole `Site`, so a stale client is missing every layout added since it loaded, and absence must never be read as removal. Pages pointing at a deleted layout fall back to the site DEFAULT rather than to bare — losing a header is a much louder change than the author asked for, and it is what the engine's own `deleteLayout` does.
   >
   > **This is what makes slice 17's picker complete.** Its third option — "use this other design for this page" — now lists designs an operator can actually author by clicking. The picker deliberately does NOT offer the live layout by id: silica's default shell is not a member of `Site.frames`, so such a page would dangle in the editor while resolving fine on the storefront — the same page previewing differently from how it publishes.
+
+---
+
+## Wave 5 — the two surfaces that break the MDI
+
+Raised by Brandon on 2026-07-30, looking at the shipped studio. Both are **surfaces I built as
+drawers**, and the objection is not cosmetic: _"nowhere in this MDI platform do we have panels,
+they completely break the flow."_ An earlier pass this session made these drawers PANE-SCOPED so
+they stopped covering the whole MDI — that treated the symptom. The container itself is wrong.
+
+- [x] **26. History belongs in the right panel as a third tab — `Design` · `Settings` · `History`.**
+      — _silicaui-ask → SHIPPED in `0.43.0`; adopted and browser-verified 2026-07-31 · M_
+
+  > **Why it could not be built host-side, and what changed.** Against `0.41.0` the engine offered
+  > exactly one inspector seam, `BuilderHost.inspectorPanels?(node): InspectorPanel[]`, wrong on
+  > both axes: it appends SECTIONS INSIDE an existing tab rather than adding a tab, and it is
+  > NODE-SCOPED, so a document-scoped tool would appear and vanish with the selection. Filed as
+  > **doc 139 §17**; `0.43.0` answered it with
+  > `inspectorTabs?(node: SelectableNode | undefined): InspectorTabDef[]` and a `scope: "panel"`
+  > variant that renders with nothing selected.
+  >
+  > **What shipped here.** The drawer is gone. History is a panel-scoped tab at `order: 20`
+  > (Design is 0, Settings 10), returned unconditionally — filtering it on the selection is the
+  > documented way to make it unreachable the moment the author clicks empty canvas. Each side
+  > fetches only while its own sub-tab is showing, so opening History costs one request.
+  >
+  > **The rail is not the drawer, and the first pass proved it.** Porting the rows verbatim into a
+  > 16–34%-wide column produced four identical bordered cards, each with a grey "You saved" badge
+  > and an outlined button. Brandon: _"it still looks like absolute garbage."_ The rebuild is in
+  > [apps/workbench/DESIGN.md](../../apps/workbench/DESIGN.md) §5 as the canonical worked example:
+  > clock times under day headings (three saves in an afternoon all read "3 hours ago"), the actor
+  > badge colored by WHO — `info` / `module-ai` / `warning` — so the rows differ with the text
+  > covered, `info`/`warning` on the tab strip itself to carry draft-vs-live, solid `primary`
+  > Restore and solid `danger` Put back.
+  >
+  > Two smaller corrections found on the way: silica's `<ListTitle>` is an 11px uppercase 60%-opacity
+  > micro-cap (replaced with real ink at real size), and `<TabsTab className="text-base-content">`
+  > — carried over from the drawer — was overriding the ACTIVE pill's own `-content` foreground.
+  > Brandon caught that one: _"why the hell did you set the tab to be text-base-content instead of
+  > letting our theme engine handle it?"_ The resting tab was never faded; the override only broke
+  > the selected state.
+
+- [x] **27. The Check surface does not earn a person's attention.** — _design · REBUILT and
+      browser-verified 2026-07-30 · L_
+
+  > **What shipped.** The drawer is a **popover** anchored to the Check button — no scrim, canvas
+  > never covered, `PaneScope`'d so a torn-off window opens it on the right monitor
+  > (`PopoverContent` reads `usePortalContainer`). Findings are **one line each** — dot, title,
+  > place — with the paragraph behind a per-row disclosure. **The row itself is the button**;
+  > "Show me" was a second target for the thing clicking a row obviously does. Page weight is
+  > collapsed: it is reference, not a worklist, and expanded it was most of the panel's length.
+  >
+  > **The count moved to the status bar** (`CheckCount` → `statusBarSlot`), which is the half a
+  > busy person actually reads — "15 to fix" without opening anything. Brandon asked for the popup
+  > to hang off the status bar itself; §14 documents that slot as non-interactive, so the COUNT is
+  > down there and the CONTROL stayed in the toolbar — which is the engine's own split, state below
+  > and actions above. The rule looks one case too broad and is challenged as **doc 139 §18**,
+  > without pre-empting it.
+  >
+  > **And it no longer runs on open** — opening cost a save plus a full walk of every page to
+  > re-read a list you had just read. There is a Run button. The studio marks the report stale on
+  > the next edit and **drops the count rather than showing one that has stopped being true**: fix
+  > three broken links and a strip still reading "3 broken" is the number you were meant to trust
+  > telling you the one lie that matters.
+  >
+  > **Verified in a browser end to end:** popover opens anchored with the canvas visible · Run
+  > produces 15 findings · the status bar picks up "15 to fix" · a chevron expands one row's prose
+  > and `gap-2.5` evidence while the other 14 stay one line · clicking a row closes the popover,
+  > selects the `<a>` in Layers, rings it on canvas and opens the inspector on it · **one padding
+  > edit and the count disappears**.
+  >
+  > **AND IT FIXES THINGS NOW.** I argued this should wait — every correction is a real edit to the
+  > author's document, and "the check silently changed your page" is a worse failure than the wall
+  > of text was. Brandon wanted it, and the objection turned out to be satisfiable rather than a
+  > reason to defer: the danger is entirely in WHICH findings offer it, so that judgement was made
+  > server-side where the evidence is, and the edit goes through `setClass` — an op, so **Ctrl+Z
+  > takes it back like any other edit**. That was the condition for building it at all.
+  >
+  > **Two separate questions decide whether a finding may offer a fix**, and conflating them is how
+  > this ships a "fix" that makes a page worse:
+  >
+  > 1. **Is there a single answer?** `VocabularyIssue.replacement` (silica-catalog) — set only when
+  >    there is one, and never for an `arbitrary-value`: `leading-[1.05]` could become any of a
+  >    dozen tokens, and picking one would be a guess wearing the clothes of a fix. The prefix is
+  >    preserved, so `@2xl:gap-7` → `@2xl:gap-6` and not `gap-6`, which would have moved the spacing
+  >    to every width at once.
+  > 2. **Would applying it here make things worse?** An ANCESTOR question, so only the site walk can
+  >    answer it (`site-lint`'s `fixFor`). A viewport variant is withheld unless the node is inside
+  >    an `@container`: rewriting `md:grid-cols-3` → `@3xl:grid-cols-3` with no container above it
+  >    swaps a rule that works on a real device for one that matches nowhere — and the author would
+  >    have been told it was a fix. The finding still reports; only the button is withheld.
+  >
+  > Most findings will never carry one, and that is the design rather than a gap: "choose a
+  > destination for this link" and "pick a readable colour" are the author's decisions.
+  > **`fix.test.ts` (6 tests) is where the whole risk lives**, including a sweep asserting that no
+  > non-class rule ever attaches one. site-lint is now **116**.
+  >
+  > **Verified live:** Fix it appeared on exactly one of the 15 rows — the `gap-2.5` — and on none
+  > of the link or contrast findings. Clicking it moved the spine to the FRAME tree (that class is
+  > in the header/footer), applied the change, marked the row **Fixed**, raised the stale banner and
+  > dropped the status-bar count. One unsaved change, undone with Ctrl+Z.
+
+  > Brandon: _"I have no idea what to do with this because it doesn't do anything. It feels like a
+  > wall of text that will never get a user to engage."_ Both halves are fair and they are separate
+  > problems.
+  >
+  > **It reads as prose because it IS prose.** Every finding carries a multi-sentence `detail`
+  > written for a non-technical owner (correct per the audience rule — see `contrast.ts`, where one
+  > finding's detail runs to four sentences). What was never designed is what happens when twenty of
+  > those stack: an explanatory paragraph is right for ONE finding a person already cares about, and
+  > is a wall when it is the list format.
+  >
+  > **"It doesn't do anything" is the deeper half.** The panel narrates problems and hands every
+  > one of them back as homework. Its only action is **Show me**, which navigates — it does not FIX.
+  > A check that can name "your price text is 1.6:1 on this theme" precisely enough to find the node
+  > can very often also offer the correction.
+  >
+  > **Directions, none chosen — Brandon's call.** (a) Kill the standalone surface and put findings
+  > where the problem IS: a marker on the layer row and the canvas node, so the check is ambient
+  > rather than a place you visit. (b) Keep a list but make it a scannable ledger — one line per
+  > finding, the prose behind a disclosure — and add **Fix it** wherever the correction is
+  > mechanical. (c) Fold it into publish as a blocking gate only for errors, which is already half
+  > true. My read: (a)+(b) together, since the current thing is a report and what an author needs is
+  > a worklist. **Do not build until Brandon picks** — this is design, not a defect.
 
 ---
 

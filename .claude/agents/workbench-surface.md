@@ -32,11 +32,19 @@ out for yourself before writing code — do not ask unless genuinely ambiguous:
 
 ## Read these first, in this order
 
-1. `CLAUDE.md` (root) — RULE #1 silicaui-first, RULE #2 no eyebrows, RULE #3 soft is a signal.
-2. `apps/workbench/CLAUDE.md` — build from scratch, never port dashboard code; plus the pane/modal rule.
-3. `docs/123-workbench.md` — architecture, and the **"Pane or modal?"** section. Read it before you
+1. `CLAUDE.md` (root) — RULE #1 silicaui-first, RULE #2 no eyebrows, RULE #3 soft is a signal,
+   RULE #4 neutral has to be earned.
+2. `DESIGN.md` (repo root) — **the platform design law. Read it before you type a `color=` prop.**
+   Opens with the Contract: **silicaui owns the design; you CHOOSE, you never PAINT.** One token
+   change must propagate everywhere with zero edits at your call site — every override is a place
+   that stops. Then the palette (27 colors, not the 8 autocomplete shows you), the three axes, the
+   per-element assignment table, the four legitimate uses of neutral, and the ship gate.
+   If a silica default looks wrong: check for a prop → change the token → add the variant upstream.
+   **Never patch it at the call site.**
+3. `apps/workbench/CLAUDE.md` — build from scratch, never port dashboard code; plus the pane/modal rule.
+4. `docs/123-workbench.md` — architecture, and the **"Pane or modal?"** section. Read it before you
    choose a shape. Getting this wrong is the single most common mistake on this app.
-4. **The exemplars.** Read them properly, don't skim — they are the house style:
+5. **The exemplars.** Read them properly, don't skim — they are the house style:
    - `apps/workbench/surfaces/domains/` — list + detail + data layer, the current best reference
    - `apps/workbench/surfaces/sites/site-detail.tsx` — create-and-manage as ONE surface
    - `apps/workbench/surfaces/invoicing/` — the oldest and richest module
@@ -102,6 +110,17 @@ toast, wrap the toast in `afterPaneChange()` from `lib/defer.ts`, or React throw
 
 Check your work against every one of these before you say you are done.
 
+- **The surface came out grey.** THE most common rejection. Every badge neutral, every tab neutral,
+  the primary action neutral — a screen carrying one color, which means it carries no information
+  you don't have to read. Neutral is earned by the chassis, body ink, a dismiss control, or a
+  genuinely untyped value; nothing else. If an element distinguishes A from B, its color carries
+  the distinction. Two badges meaning different things and rendering the same grey are wrong, not
+  safe. **Cover the text: if you can't tell the rows apart, you built the failure.**
+  `DESIGN.md` §4 is the checklist.
+- **`color="module-finance"` typechecks and renders nothing.** `SilicaColor` ends in `(string & {})`,
+  so any string compiles. Only 15 `module-*` colors are registered in `app/globals.css` — `finance`,
+  `partner`, `platform` and `storefront` are NOT among them and silently produce an unstyled pill
+  that reads as grey. Wrap in `<ModuleScope module="finance">` and use `color="module"` instead.
 - **Do not reach for `EditorLayout` by default.** It is a FORM chassis: a completion-ordered main
   column plus a running summary rail. Used on a screen that is really "a status, two values and two
   facts" it produces a near-empty rail floating beside a near-empty column with the actual point of

@@ -1,115 +1,67 @@
-// Site-UI atom renders (docs/102 Track A).
+// Site atom renders (docs/102 Track A).
 //
-// The builder registry exposes the full @sparx/site-ui library as droppable atoms;
-// this module is their shared render — the second half of each atom (the first is
-// its ComponentDef metadata in the dashboard registry). `renderLeaf` delegates any
-// type it doesn't itself own to `renderSiteUiAtom`, so the live site and the editor
-// canvas paint the SAME real component (one map, no per-surface drift — the same
-// contract render-leaf.tsx documents).
+// The builder registry exposes silicaui's library as droppable atoms; this module
+// is their shared render — the second half of each atom (the first is its
+// ComponentDef metadata in the registry). `renderLeaf` delegates any type it
+// doesn't itself own to `renderSiteAtom`, so the live site and the editor canvas
+// paint the SAME real component. One map, no per-surface drift.
 //
-// Recipe model (docs/35 / docs/46 §3.6): every color-bearing site-ui component takes
-// `color`/`variant`/`size` as TYPED props and emits its own `st-<base>` identity
-// class. A builder node instead carries the recipe as CLASS TOKENS on `node.class`
-// (so the inspector's Color/Emphasis controls — which read/write `st-c-*`/`st-v-*` —
-// drive it). `recipeFromClass` bridges the two: it lifts the recipe tokens out of the
-// leaf class into the component's props and passes only the residual layout utilities
-// as `className`, so the rendered element carries exactly ONE clean copy of each token
-// (not the duplicate the component's own prop-derived defaults would add).
+// ── The class model ──────────────────────────────────────────────────────────
 //
-// Server- AND client-safe (no 'use client'): every atom here is presentational, so
-// the live RSC tree and the client canvas both call it. Genuinely-interactive site-ui
-// components (Radix dialog/drawer/tabs/accordion/popover/tooltip) are NOT here — they
-// land in Track C, wired to the data-sx behavior runtime.
+// A node's `class` string IS the silica recipe: a Badge leaf carries
+// `badge badge-primary badge-soft badge-sm`, and the inspector's Colour/Emphasis
+// controls swap tokens within that string. So the atom's job is simply to render
+// the right element and put that string on it — `rootClass()` only guarantees the
+// base class is present for a node authored before the class-first catalog.
+//
+// This replaces a `recipeFromClass` bridge that parsed `st-c-*` / `st-v-*` /
+// `--sz-*` tokens back OUT of the class and fed them in as typed props, because
+// the old vocabulary and the components' prop names were two different spellings
+// of the same thing. Under silica there is one spelling, so the bridge is gone.
+// See docs/implementation/st-token-retirement.md.
+//
+// ── Server vs client ─────────────────────────────────────────────────────────
+//
+// No 'use client' here: the live RSC tree and the client canvas both call it. An
+// atom that is markup + classes is emitted directly, so it ships ZERO JavaScript;
+// an atom that is a genuine behavior (Rating, Calendar, Diff, Pagination, Filter,
+// Switch, Countdown, Field) uses the real `@wizeworks/silicaui-react` component,
+// which is a `'use client'` module — so those pay for a client bundle, and only on
+// pages whose author actually dropped one.
 
 import * as React from 'react';
 import {
-  Alert,
-  Avatar,
-  Breadcrumb,
-  BreadcrumbItem,
-  Browser,
   Calendar,
-  Callout,
-  ChatBubble,
-  ChatHeader,
-  ChatMessage,
-  Checkbox,
-  Code,
-  CodeLine,
   Countdown,
   Diff,
-  DiffItem1,
-  DiffItem2,
-  DiffResizer,
-  Dock,
-  DockItem,
-  FAB,
   Field,
-  FileInput,
+  FieldControl,
+  FieldDescription,
+  FieldLabel,
   Filter,
-  Hover3DCard,
-  HoverGallery,
-  Indicator,
-  IndicatorItem,
-  Input,
-  Join,
-  Kbd,
-  Label,
-  Link,
-  List,
-  ListRow,
-  Mask,
-  Menu,
-  MenuItem,
-  NativeSelect,
+  FilterItem,
   Pagination,
-  Phone,
   Progress,
   RadialProgress,
-  Radio,
-  Range,
   Rating,
-  Skeleton,
-  Spinner,
-  Status,
-  Step,
-  Steps,
   Swap,
   Switch,
-  Table,
-  Tag,
-  Textarea,
-  TextRotate,
-  Toast,
   Validator,
-  Window,
-  type AvatarShape,
-  type ChatPlacement,
-  type ChipTreatmentKey,
-  type ColorKey,
-  type FABPlacement,
-  type FieldTreatmentKey,
-  type IndicatorPlacement,
-  type JoinOrientation,
-  type LinkUnderline,
-  type MaskShape,
-  type MenuOrientation,
-  type SizeKey,
-  type SkeletonShape,
-  type SpinnerKind,
-  type StepsOrientation,
-  type StepState,
-  type SwapAnimation,
-  type ToastHorizontal,
-  type ToastVertical,
-} from '@sparx/site-ui';
+} from '@wizeworks/silicaui-react';
+// `cx` comes from the SERVER entry, not the barrel above. The barrel is a
+// `'use client'` module, so a plain function imported from it can't be CALLED
+// during a server render — only components can cross that boundary. The `/server`
+// entry exists for exactly this.
+import { cx } from '@wizeworks/silicaui-react/server';
 import type { BuilderNode, Cardinality } from '@sparx/builder-schemas';
 
 import { BuilderIcon } from './icon';
+import { FAB, Hover3DCard, HoverGallery, TextRotate, ToastRegion } from './atoms';
+import type { FABPlacement, ToastHorizontal, ToastVertical } from './atoms';
 
 export interface AtomRenderCtx {
-  /** node.class for a leaf that styles its own element (leafWearsClass) — carries
-   *  the recipe tokens the inspector wrote + any layout utilities. */
+  /** node.class for a leaf that styles its own element (leafWearsClass) — the
+   *  full silica recipe plus any layout utilities. */
   leafClass?: string;
   /** Resolved binding value (undefined when unbound). */
   value: unknown;
@@ -123,40 +75,40 @@ export interface AtomRenderCtx {
   children?: React.ReactNode;
 }
 
-// ── Recipe + content helpers ──────────────────────────────────────────────────
+// ── Class + content helpers ───────────────────────────────────────────────────
 
-export interface Recipe {
-  color?: string;
-  /** Button/chip treatment (`st-v-*`) OR field treatment (`st-fv-*`) — only one is
-   *  meaningful per component, so they share the `variant` slot (field wins). */
-  variant?: string;
-  /** Size step (xs…xl) lifted from a `<base>--sz-<step>` token. */
-  size?: string;
-  /** The leftover utilities (layout/spacing) — everything that isn't a recipe axis. */
-  className?: string;
+/** The leaf's own class string, guaranteed to carry `base`. A node authored before
+ *  the class-first catalog — or one whose class an author cleared — still renders as
+ *  the component rather than as unstyled markup. */
+export function rootClass(base: string, leafClass: string | undefined): string {
+  const tokens = (leafClass ?? '').split(/\s+/).filter(Boolean);
+  return tokens.includes(base) ? tokens.join(' ') : [base, ...tokens].join(' ');
 }
 
-/** Split a leaf's class into the site-ui recipe props it carries + the residual
- *  utility className (docs/102 §3.1). The component re-emits the `st-c-*`/`st-v-*`/
- *  `--sz-*` tokens from the props, so passing them here (not on className) keeps the
- *  rendered element free of duplicate recipe tokens. */
-export function recipeFromClass(leafClass: string | undefined): Recipe {
-  let color: string | undefined;
-  let variant: string | undefined;
-  let fieldVariant: string | undefined;
-  let size: string | undefined;
-  const rest: string[] = [];
-  for (const t of (leafClass ?? '').split(/\s+/).filter(Boolean)) {
-    if (t.startsWith('st-c-')) color = t.slice(5);
-    else if (t.startsWith('st-fv-')) fieldVariant = t.slice(6);
-    else if (t.startsWith('st-v-')) variant = t.slice(5);
-    else {
-      const m = /--sz-([a-z]+)$/.exec(t);
-      if (m) size = m[1];
-      else rest.push(t);
+/** The colour token a leaf carries for a given silica family, e.g. `badge-primary`
+ *  → `primary`. Used only by the few atoms that take colour as a PROP (silica's
+ *  React components) rather than as a class. */
+function colorOf(base: string, leafClass: string | undefined): string | undefined {
+  const prefix = `${base}-`;
+  const skip = new Set(['soft', 'outline', 'dash', 'ghost', 'xs', 'sm', 'md', 'lg', 'xl']);
+  for (const t of (leafClass ?? '').split(/\s+/)) {
+    if (t.startsWith(prefix)) {
+      const rest = t.slice(prefix.length);
+      if (!skip.has(rest)) return rest;
     }
   }
-  return { color, variant: fieldVariant ?? variant, size, className: rest.join(' ') || undefined };
+  return undefined;
+}
+
+/** The size step a leaf carries for a given silica family, e.g. `input-lg` → `lg`. */
+function sizeOf(base: string, leafClass: string | undefined): string | undefined {
+  const sizes = new Set(['xs', 'sm', 'md', 'lg', 'xl']);
+  for (const t of (leafClass ?? '').split(/\s+/)) {
+    if (t.startsWith(`${base}-`) && sizes.has(t.slice(base.length + 1))) {
+      return t.slice(base.length + 1);
+    }
+  }
+  return undefined;
 }
 
 const str = (node: BuilderNode, k: string): string =>
@@ -202,272 +154,244 @@ function pairLines(node: BuilderNode, key: string): { label: string; href?: stri
     });
 }
 
-// Cast helpers — recipeFromClass yields free strings; the components type their axes,
-// and an unknown custom color still resolves (ColorKey is `… | (string & {})`).
-const asColor = (c?: string): ColorKey | undefined => c as ColorKey | undefined;
-const asSize = (s?: string): SizeKey | undefined => s as SizeKey | undefined;
+// The size axis is a CLOSED union (`xs`…`xl`), so the lifted token needs a cast.
+// Colour needs none: silica types it `… | (string & {})` precisely so a tenant's
+// own registered colour is accepted, and a plain `string` already satisfies it.
+type AnySize = Parameters<typeof Pagination>[0]['size'];
 
 // ── The atom render map ───────────────────────────────────────────────────────
 
-/** Render a site-ui atom by type, or `undefined` when `node.type` isn't one (so
+/** Render a site atom by type, or `undefined` when `node.type` isn't one (so
  *  `renderLeaf` falls through to its own default). */
-export function renderSiteUiAtom(
-  node: BuilderNode,
-  ctx: AtomRenderCtx
-): React.ReactNode | undefined {
-  const r = recipeFromClass(ctx.leafClass);
+export function renderSiteAtom(node: BuilderNode, ctx: AtomRenderCtx): React.ReactNode | undefined {
+  const cls = ctx.leafClass;
 
   switch (node.type) {
     // ── Form controls (Tier 3) ───────────────────────────────────────────────
     case 'Input':
       return (
-        <Input
+        <input
           type={str(node, 'type') || 'text'}
           name={str(node, 'name') || undefined}
           placeholder={str(node, 'placeholder') || undefined}
-          color={asColor(r.color)}
-          variant={r.variant as FieldTreatmentKey | undefined}
-          size={asSize(r.size)}
-          className={r.className}
+          className={rootClass('input', cls)}
         />
       );
     case 'Textarea':
       return (
-        <Textarea
+        <textarea
           name={str(node, 'name') || undefined}
           placeholder={str(node, 'placeholder') || undefined}
           rows={numOr(str(node, 'rows'), 4)}
-          color={asColor(r.color)}
-          variant={r.variant as FieldTreatmentKey | undefined}
-          size={asSize(r.size)}
-          className={r.className}
+          className={rootClass('textarea', cls)}
         />
       );
     case 'Select': {
-      const options = str(node, 'options')
-        .split('\n')
-        .map((o) => o.trim())
-        .filter(Boolean);
+      const options = textLines(node, 'options');
       const opts = options.length ? options : ['Option one', 'Option two', 'Option three'];
       return (
-        <NativeSelect
-          name={str(node, 'name') || undefined}
-          color={asColor(r.color)}
-          variant={r.variant as FieldTreatmentKey | undefined}
-          size={asSize(r.size)}
-          wrapperClassName={r.className}
-        >
+        <select name={str(node, 'name') || undefined} className={rootClass('select', cls)}>
           {opts.map((o, i) => (
             <option key={i} value={o}>
               {o}
             </option>
           ))}
-        </NativeSelect>
+        </select>
       );
     }
     case 'Checkbox':
       return (
-        <Checkbox
+        <input
+          type="checkbox"
           name={str(node, 'name') || undefined}
-          color={asColor(r.color)}
-          size={asSize(r.size)}
-          className={r.className}
+          className={rootClass('checkbox', cls)}
         />
       );
     case 'Radio':
       return (
-        <Radio
+        <input
+          type="radio"
           name={str(node, 'name') || undefined}
-          color={asColor(r.color)}
-          size={asSize(r.size)}
-          className={r.className}
+          className={rootClass('radio', cls)}
         />
       );
     case 'Switch':
+      // Base UI behind it (a real switch role + keyboard semantics), so this is
+      // the silica component rather than markup.
       return (
         <Switch
           name={str(node, 'name') || undefined}
-          color={asColor(r.color)}
-          size={asSize(r.size)}
-          className={r.className}
+          color={colorOf('switch', cls)}
+          size={sizeOf('switch', cls) as AnySize}
+          className={cls}
         />
       );
     case 'Range':
       return (
-        <Range
+        <input
+          type="range"
           name={str(node, 'name') || undefined}
           min={numOr(str(node, 'min'), 0)}
           max={numOr(str(node, 'max'), 100)}
-          color={asColor(r.color)}
-          size={asSize(r.size)}
-          className={r.className}
+          className={rootClass('range', cls)}
         />
       );
     case 'FileInput':
       return (
-        <FileInput
+        <input
+          type="file"
           name={str(node, 'name') || undefined}
-          color={asColor(r.color)}
-          variant={r.variant as FieldTreatmentKey | undefined}
-          size={asSize(r.size)}
-          className={r.className}
+          className={rootClass('file-input', cls)}
         />
       );
     case 'Label':
       return (
-        <Label required={flag(node, 'required')} className={r.className}>
+        <label className={rootClass('label', cls)}>
           {boundOr(ctx, node, 'text', 'Label')}
-        </Label>
+          {flag(node, 'required') ? <span className="label-required" aria-hidden /> : null}
+        </label>
       );
-    case 'Field':
+    case 'Field': {
+      const label = str(node, 'label') || (ctx.edit ? 'Field label' : '');
+      const hint = str(node, 'hint');
       return (
-        <Field
-          label={str(node, 'label') || (ctx.edit ? 'Field label' : undefined)}
-          hint={str(node, 'hint') || undefined}
-          required={flag(node, 'required')}
-          className={r.className}
-        >
-          {ctx.children ?? (ctx.edit ? <Input placeholder="Value" /> : null)}
+        <Field className={cls}>
+          {label ? <FieldLabel required={flag(node, 'required')}>{label}</FieldLabel> : null}
+          {ctx.children ?? (ctx.edit ? <FieldControl placeholder="Value" /> : null)}
+          {hint ? <FieldDescription>{hint}</FieldDescription> : null}
         </Field>
       );
-    case 'Validator':
+    }
+    case 'Validator': {
+      // silica's Validator styles exactly ONE control child; with nothing dropped
+      // in it there is nothing to validate, so an empty node previews a control.
+      const control =
+        ctx.children ?? (ctx.edit ? <input className="input" placeholder="Value" /> : null);
+      if (!React.isValidElement(control)) return null;
+      const hint = str(node, 'hint');
       return (
-        <Validator hint={str(node, 'hint') || undefined} className={r.className}>
-          {ctx.children ?? (ctx.edit ? <Input placeholder="Value" /> : null)}
-        </Validator>
+        <div className={cls}>
+          <Validator>{control as React.ReactElement<{ className?: string }>}</Validator>
+          {hint ? <p className="validator-hint">{hint}</p> : null}
+        </div>
       );
+    }
 
     // ── Feedback / status ─────────────────────────────────────────────────────
-    case 'Alert': {
-      const icon = str(node, 'icon');
-      const title = boundOr(ctx, node, 'title', 'Heads up');
-      const body = boundOr(ctx, node, 'body', 'A short supporting message goes here.');
-      return (
-        <Alert
-          color={asColor(r.color)}
-          variant={r.variant as ChipTreatmentKey | undefined}
-          vertical={flag(node, 'vertical')}
-          className={r.className}
-        >
-          {icon ? (
-            <Alert.Icon>
-              <BuilderIcon name={icon} />
-            </Alert.Icon>
-          ) : null}
-          {title ? <Alert.Title>{title}</Alert.Title> : null}
-          {body ? <Alert.Body>{body}</Alert.Body> : null}
-        </Alert>
-      );
-    }
+    // Callout was a second editorial flavour of the same thing; silica has one
+    // Alert, with `soft`/`outline`/`dash` covering the range, so both map here.
+    case 'Alert':
     case 'Callout': {
       const icon = str(node, 'icon');
-      const title = boundOr(ctx, node, 'title', 'Good to know');
+      const isCallout = node.type === 'Callout';
+      const title = boundOr(ctx, node, 'title', isCallout ? 'Good to know' : 'Heads up');
+      const body = boundOr(
+        ctx,
+        node,
+        'body',
+        isCallout
+          ? 'A longer note with context and a recommendation.'
+          : 'A short supporting message goes here.'
+      );
       return (
-        <Callout
-          color={asColor(r.color)}
-          variant={r.variant as ChipTreatmentKey | undefined}
-          icon={icon ? <BuilderIcon name={icon} /> : undefined}
-          title={title || undefined}
-          className={r.className}
+        <div
+          role="alert"
+          className={cx(rootClass('alert', cls), flag(node, 'vertical') && 'flex-col items-start')}
         >
-          {boundOr(ctx, node, 'body', 'A longer note with context and a recommendation.')}
-        </Callout>
+          {icon ? <BuilderIcon name={icon} /> : null}
+          <div className="alert-content">
+            {title ? <div className="alert-title">{title}</div> : null}
+            {body ? <div className="alert-description">{body}</div> : null}
+          </div>
+        </div>
       );
     }
-    case 'Progress':
+    // Both progress atoms are silica COMPONENTS rather than markup: each paints
+    // its fill from a CSS custom property that has to be set per instance, and
+    // silica's own component is the only sanctioned place that happens.
+    case 'Progress': {
+      const raw = str(node, 'value');
       return (
         <Progress
-          value={str(node, 'value') ? numOr(str(node, 'value'), 0) : undefined}
+          value={raw ? numOr(raw, 0) : undefined}
           max={numOr(str(node, 'max'), 100)}
           label={str(node, 'label') || undefined}
-          color={asColor(r.color)}
-          size={asSize(r.size)}
-          className={r.className}
+          color={colorOf('progress', cls)}
+          size={sizeOf('progress', cls) as AnySize}
+          className={cls}
         />
       );
+    }
     case 'RadialProgress': {
       const value = numOr(str(node, 'value'), 0);
       const max = numOr(str(node, 'max'), 100);
-      const pct = Math.round((value / (max || 100)) * 100);
       return (
-        <RadialProgress value={value} max={max} color={asColor(r.color)} className={r.className}>
-          {`${pct}%`}
-        </RadialProgress>
+        <RadialProgress
+          value={(value / (max || 100)) * 100}
+          color={colorOf('radial-progress', cls)}
+          className={cls}
+        />
       );
     }
-    case 'Skeleton':
-      return (
-        <Skeleton
-          shape={(str(node, 'shape') || 'block') as SkeletonShape}
-          className={r.className}
-        />
-      );
+    case 'Skeleton': {
+      const shape = str(node, 'shape') || 'block';
+      const modifier =
+        shape === 'circle' ? 'skeleton-circle' : shape === 'text' ? 'skeleton-text' : '';
+      return <div aria-hidden className={cx(rootClass('skeleton', cls), modifier)} />;
+    }
     case 'Spinner':
-      return (
-        <Spinner
-          kind={(str(node, 'kind') || 'spinner') as SpinnerKind}
-          size={asSize(r.size)}
-          className={r.className}
-        />
-      );
+      // silica calls it `loading`; the builder's node type predates that name and
+      // is persisted in tenant trees, so the TYPE stays `Spinner`.
+      return <span role="status" aria-label="Loading" className={rootClass('loading', cls)} />;
 
     // ── Data display ──────────────────────────────────────────────────────────
     case 'Avatar': {
+      const src = str(node, 'src');
+      const name = str(node, 'name');
       const statusV = str(node, 'status');
+      const shape = str(node, 'shape');
       return (
-        <Avatar
-          src={str(node, 'src') || undefined}
-          name={str(node, 'name') || undefined}
-          shape={(str(node, 'shape') || 'circle') as AvatarShape}
-          status={statusV === 'online' || statusV === 'offline' ? statusV : undefined}
-          color={asColor(r.color)}
-          size={asSize(r.size)}
-          className={r.className}
-        />
+        <span
+          className={cx(
+            rootClass('avatar', cls),
+            shape === 'rounded' && 'avatar-rounded',
+            (statusV === 'online' || statusV === 'offline') && `avatar-${statusV}`
+          )}
+          role={src ? undefined : 'img'}
+          aria-label={src ? undefined : name || undefined}
+        >
+          {src ? <img src={src} alt={name} /> : initialsOf(name)}
+        </span>
       );
     }
     case 'Tag':
-      return (
-        <Tag
-          color={asColor(r.color)}
-          variant={r.variant as ChipTreatmentKey | undefined}
-          size={asSize(r.size)}
-          dot={flag(node, 'dot')}
-          className={r.className}
-        >
-          {boundOr(ctx, node, 'text', 'Tag')}
-        </Tag>
-      );
+      // The builder type is `Tag`; silica's equivalent is the badge.
+      return <span className={rootClass('badge', cls)}>{boundOr(ctx, node, 'text', 'Tag')}</span>;
     case 'Rating':
       return (
         <Rating
-          name={node.id}
-          count={numOr(str(node, 'count'), 5)}
           value={
             ctx.bound && typeof ctx.value === 'number' ? ctx.value : numOr(str(node, 'value'), 0)
           }
+          max={numOr(str(node, 'count'), 5)}
           readOnly
-          color={asColor(r.color)}
-          size={asSize(r.size)}
-          className={r.className}
+          color={colorOf('rating', cls)}
+          size={sizeOf('rating', cls) as AnySize}
+          className={cls}
         />
       );
     case 'Kbd':
+      return <kbd className={rootClass('kbd', cls)}>{boundOr(ctx, node, 'text', 'Ctrl')}</kbd>;
+    case 'Status': {
+      const label = str(node, 'label');
       return (
-        <Kbd size={asSize(r.size)} className={r.className}>
-          {boundOr(ctx, node, 'text', 'Ctrl')}
-        </Kbd>
-      );
-    case 'Status':
-      return (
-        <Status
-          color={asColor(r.color)}
-          size={asSize(r.size)}
-          pulse={flag(node, 'pulse')}
-          label={str(node, 'label') || undefined}
-          className={r.className}
+        <span
+          className={cx(rootClass('status', cls), flag(node, 'pulse') && 'status-ping')}
+          role={label ? 'status' : undefined}
+          aria-label={label || undefined}
         />
       );
+    }
     case 'Table': {
       const head = str(node, 'columns')
         .split(',')
@@ -482,7 +406,7 @@ export function renderSiteUiAtom(
             ['Riley Chen', 'Editor', 'Invited'],
           ];
       return (
-        <Table zebra={flag(node, 'zebra')} size={asSize(r.size)} className={r.className}>
+        <table className={cx(rootClass('table', cls), flag(node, 'zebra') && 'table-zebra')}>
           <thead>
             <tr>
               {cols.map((h, i) => (
@@ -499,44 +423,54 @@ export function renderSiteUiAtom(
               </tr>
             ))}
           </tbody>
-        </Table>
+        </table>
       );
     }
     case 'List': {
       const items = textLines(node, 'items');
       const rows = items.length ? items : ['First item', 'Second item', 'Third item'];
       return (
-        <List className={r.className}>
+        <div className={rootClass('list', cls)}>
           {rows.map((it, i) => (
-            <ListRow key={i}>{it}</ListRow>
+            <div key={i} className="list-row">
+              {it}
+            </div>
           ))}
-        </List>
+        </div>
       );
     }
     case 'ChatBubble': {
       const author = str(node, 'author');
       const message = boundOr(ctx, node, 'message', 'Hey — thanks for reaching out!');
+      const side = str(node, 'placement') === 'end' ? 'chat-end' : 'chat-start';
       return (
-        <ChatBubble
-          placement={(str(node, 'placement') || 'start') as ChatPlacement}
-          className={r.className}
-        >
-          {author ? <ChatHeader>{author}</ChatHeader> : null}
-          <ChatMessage color={asColor(r.color)}>{message}</ChatMessage>
-        </ChatBubble>
+        <div className={cx(rootClass('chat', cls), side)}>
+          {author ? <div className="chat-header">{author}</div> : null}
+          <div className={cx('chat-bubble', colorClassFor('chat-bubble', cls))}>{message}</div>
+        </div>
       );
     }
-    case 'Countdown':
+    case 'Countdown': {
+      // silica counts down to a TARGET; the node stores a duration, so the target
+      // is "now plus that duration". `to` is read once per render, which is what a
+      // preview of an authored duration means.
+      const secs =
+        numOr(str(node, 'days'), 0) * 86400 +
+        numOr(str(node, 'hours'), 0) * 3600 +
+        numOr(str(node, 'minutes'), 0) * 60 +
+        numOr(str(node, 'seconds'), 0);
+      const units = (['days', 'hours', 'minutes', 'seconds'] as const).filter(
+        (u) => str(node, u) !== ''
+      );
       return (
         <Countdown
-          days={str(node, 'days') ? numOr(str(node, 'days'), 0) : undefined}
-          hours={str(node, 'hours') ? numOr(str(node, 'hours'), 0) : undefined}
-          minutes={str(node, 'minutes') ? numOr(str(node, 'minutes'), 0) : undefined}
-          seconds={str(node, 'seconds') ? numOr(str(node, 'seconds'), 0) : undefined}
-          showLabels={flag(node, 'showLabels')}
-          className={r.className}
+          to={Date.now() + secs * 1000}
+          units={units.length ? [...units] : undefined}
+          plain={!flag(node, 'showLabels')}
+          className={cls}
         />
       );
+    }
 
     // ── Navigation ────────────────────────────────────────────────────────────
     case 'Menu': {
@@ -549,53 +483,50 @@ export function renderSiteUiAtom(
             { label: 'Settings', href: '#' },
           ];
       return (
-        <Menu
-          orientation={(str(node, 'orientation') || 'vertical') as MenuOrientation}
-          size={asSize(r.size)}
-          className={r.className}
+        <ul
+          className={cx(
+            rootClass('menu', cls),
+            str(node, 'orientation') === 'horizontal' && 'menu-horizontal'
+          )}
         >
           {list.map((it, i) => (
-            <MenuItem key={i} href={it.href} active={i === 0}>
-              {it.label}
-            </MenuItem>
+            <li key={i}>
+              <a href={it.href ?? '#'} {...(i === 0 ? { 'aria-current': 'page' as const } : {})}>
+                {it.label}
+              </a>
+            </li>
           ))}
-        </Menu>
+        </ul>
       );
     }
     case 'Steps': {
       const items = textLines(node, 'items');
       const list = items.length ? items : ['x Account', '* Profile', 'Confirm'];
+      // A step's colour marks it as reached; an upcoming step carries none. The
+      // authored `x ` / `* ` prefixes mean complete / active.
+      const color = colorOf('step', cls) ?? 'primary';
       return (
-        <Steps
-          orientation={(str(node, 'orientation') || 'horizontal') as StepsOrientation}
-          color={asColor(r.color)}
-          className={r.className}
-        >
+        <ol className={rootClass('steps', cls)}>
           {list.map((raw, i) => {
-            let state: StepState = 'upcoming';
-            let label = raw;
-            if (raw.startsWith('x ')) {
-              state = 'complete';
-              label = raw.slice(2);
-            } else if (raw.startsWith('* ')) {
-              state = 'active';
-              label = raw.slice(2);
-            }
+            const reached = raw.startsWith('x ') || raw.startsWith('* ');
+            const label = reached ? raw.slice(2) : raw;
             return (
-              <Step key={i} state={state}>
+              <li key={i} className={cx('step', reached && `step-${color}`)}>
                 {label}
-              </Step>
+              </li>
             );
           })}
-        </Steps>
+        </ol>
       );
     }
     case 'Pagination':
       return (
         <Pagination
           page={numOr(str(node, 'page'), 1)}
-          total={numOr(str(node, 'total'), 10)}
-          className={r.className}
+          count={numOr(str(node, 'total'), 10)}
+          color={colorOf('pagination', cls)}
+          size={sizeOf('pagination', cls) as AnySize}
+          className={cls}
         />
       );
     case 'Breadcrumb': {
@@ -608,28 +539,32 @@ export function renderSiteUiAtom(
             { label: 'Item', href: undefined },
           ];
       return (
-        <Breadcrumb className={r.className}>
-          {list.map((it, i) => {
-            const last = i === list.length - 1;
-            return (
-              <BreadcrumbItem key={i} href={last ? undefined : it.href} current={last}>
-                {it.label}
-              </BreadcrumbItem>
-            );
-          })}
-        </Breadcrumb>
+        <nav aria-label="Breadcrumb" className={rootClass('breadcrumb', cls)}>
+          <ol>
+            {list.map((it, i) => {
+              const last = i === list.length - 1;
+              return (
+                <li key={i}>
+                  {last || !it.href ? (
+                    <span aria-current={last ? 'page' : undefined}>{it.label}</span>
+                  ) : (
+                    <a href={it.href}>{it.label}</a>
+                  )}
+                </li>
+              );
+            })}
+          </ol>
+        </nav>
       );
     }
     case 'Link':
       return (
-        <Link
+        <a
           href={str(node, 'href') || '#'}
-          color={asColor(r.color)}
-          underline={(str(node, 'underline') || 'hover') as LinkUnderline}
-          className={r.className}
+          className={cx(rootClass('link', cls), str(node, 'underline') === 'hover' && 'link-hover')}
         >
           {boundOr(ctx, node, 'text', 'Learn more')}
-        </Link>
+        </a>
       );
     case 'Dock': {
       // Each line is `icon | label` (lucide icon name, then its caption).
@@ -646,77 +581,98 @@ export function renderSiteUiAtom(
             { icon: 'user', label: 'Profile' },
           ];
       return (
-        <Dock size={asSize(r.size)} className={r.className}>
+        <div className={rootClass('dock', cls)}>
           {list.map((it, i) => (
-            <DockItem key={i} active={i === 0} label={it.label || undefined}>
+            <button
+              type="button"
+              key={i}
+              className={cx('dock-item', i === 0 && 'dock-item-active')}
+            >
               <BuilderIcon name={it.icon} />
-            </DockItem>
+              {it.label ? <span className="dock-label">{it.label}</span> : null}
+            </button>
           ))}
-        </Dock>
+        </div>
       );
     }
 
     // ── Layout / containment ──────────────────────────────────────────────────
     case 'Indicator': {
       const label = str(node, 'label') || (ctx.edit ? '3' : '');
+      const placement = str(node, 'placement') || 'top-end';
       return (
-        <Indicator className={r.className}>
+        <span className={rootClass('indicator', cls)}>
           {ctx.children}
           {label ? (
-            <IndicatorItem placement={(str(node, 'placement') || 'top-end') as IndicatorPlacement}>
-              <span className="st-badge st-c-primary st-v-solid st-badge--sz-sm">{label}</span>
-            </IndicatorItem>
+            <span
+              className={cx(
+                'indicator-item',
+                placement.endsWith('start') && 'indicator-start',
+                placement.startsWith('bottom') && 'indicator-bottom'
+              )}
+            >
+              <span className="badge badge-primary badge-sm">{label}</span>
+            </span>
           ) : null}
-        </Indicator>
+        </span>
       );
     }
     case 'Join':
       return (
-        <Join
-          orientation={(str(node, 'orientation') || 'horizontal') as JoinOrientation}
-          className={r.className}
+        <div
+          className={cx(
+            rootClass('join', cls),
+            str(node, 'orientation') === 'vertical' && 'join-vertical'
+          )}
         >
           {ctx.children}
-        </Join>
+        </div>
       );
     case 'Mask':
       return (
-        <Mask shape={(str(node, 'shape') || 'squircle') as MaskShape} className={r.className}>
+        <div className={cx(rootClass('mask', cls), `mask-${str(node, 'shape') || 'squircle'}`)}>
           {ctx.children ?? (ctx.edit ? <div className="bx-ph bx-ratio-square" /> : null)}
-        </Mask>
+        </div>
       );
 
     // ── Mockup frames ─────────────────────────────────────────────────────────
     case 'Browser':
       return (
-        <Browser url={str(node, 'url') || undefined} className={r.className}>
+        <div className={rootClass('mockup-browser', cls)}>
+          <div className="mockup-browser-toolbar">
+            <div className="mockup-browser-input">{str(node, 'url')}</div>
+          </div>
           {ctx.children}
-        </Browser>
+        </div>
       );
     case 'Window':
       return (
-        <Window title={str(node, 'title') || undefined} className={r.className}>
+        <div className={rootClass('mockup-window', cls)} data-title={str(node, 'title')}>
           {ctx.children}
-        </Window>
+        </div>
       );
     case 'Phone':
-      return <Phone className={r.className}>{ctx.children}</Phone>;
+      return (
+        <div className={rootClass('mockup-phone', cls)}>
+          <div className="mockup-phone-display">{ctx.children}</div>
+        </div>
+      );
     case 'Code': {
       const lines = textLines(node, 'lines');
-      const list = lines.length ? lines : ['$ | npm install @sparx/site-ui', '$ | pnpm dev'];
+      const list = lines.length ? lines : ['$ | pnpm install', '$ | pnpm dev'];
       return (
-        <Code className={r.className}>
+        <div className={rootClass('mockup-code', cls)}>
           {list.map((raw, i) => {
             const idx = raw.indexOf('|');
             const prefix = idx >= 0 ? raw.slice(0, idx).trim() || undefined : undefined;
             const code = idx >= 0 ? raw.slice(idx + 1).trim() : raw;
             return (
-              <CodeLine key={i} prefix={prefix}>
-                {code}
-              </CodeLine>
+              <pre key={i} data-prefix={prefix}>
+                <code>{code}</code>
+              </pre>
             );
           })}
-        </Code>
+        </div>
       );
     }
 
@@ -724,124 +680,120 @@ export function renderSiteUiAtom(
     case 'Swap':
       return (
         <Swap
-          animation={(str(node, 'animation') || 'none') as SwapAnimation}
+          variant={(str(node, 'animation') || 'fade') as 'fade' | 'flip' | 'rotate'}
           on={str(node, 'on') || '🌙'}
           off={str(node, 'off') || '☀️'}
-          className={r.className}
+          className={cls}
         />
       );
     case 'Filter': {
-      const options = textLines(node, 'options').map((label) => ({
-        label,
-        value: label.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-      }));
-      const list = options.length
-        ? options
-        : [
-            { label: 'Active', value: 'active' },
-            { label: 'Archived', value: 'archived' },
-            { label: 'Drafts', value: 'drafts' },
-          ];
+      const options = textLines(node, 'options');
+      const list = options.length ? options : ['Active', 'Archived', 'Drafts'];
       return (
-        <Filter
-          name={str(node, 'name') || node.id}
-          options={list}
-          color={asColor(r.color)}
-          className={r.className}
+        <Filter color={colorOf('filter', cls)} className={cls}>
+          {list.map((label, i) => (
+            <FilterItem key={i} value={label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}>
+              {label}
+            </FilterItem>
+          ))}
+        </Filter>
+      );
+    }
+    case 'Calendar': {
+      // The node stores a year + 1-based month; silica takes a Date for the month
+      // to show. `selected` is a day-of-month.
+      const year = numOr(str(node, 'year'), 2026);
+      const month = numOr(str(node, 'month'), 6);
+      const day = str(node, 'selected') ? numOr(str(node, 'selected'), 0) : 0;
+      return (
+        <Calendar
+          defaultMonth={new Date(year, month - 1, 1)}
+          defaultValue={day > 0 ? new Date(year, month - 1, day) : undefined}
+          color={colorOf('calendar', cls)}
+          className={cls}
         />
       );
     }
-    case 'Calendar':
-      return (
-        <Calendar
-          year={numOr(str(node, 'year'), 2026)}
-          month={numOr(str(node, 'month'), 6)}
-          selected={str(node, 'selected') ? numOr(str(node, 'selected'), 0) : undefined}
-          className={r.className}
-        />
-      );
     case 'Diff': {
       const before = str(node, 'before');
       const after = str(node, 'after');
-      return (
-        <Diff className={r.className}>
-          <DiffItem1>
-            {before ? (
-              <img src={before} alt="" className="block h-full w-full object-cover" />
-            ) : (
-              <div className="bx-ph bx-ratio-wide" />
-            )}
-          </DiffItem1>
-          <DiffItem2>
-            {after ? (
-              <img src={after} alt="" className="block h-full w-full object-cover" />
-            ) : (
-              <div className="bx-ph bx-ratio-wide" />
-            )}
-          </DiffItem2>
-          <DiffResizer />
-        </Diff>
-      );
+      const layer = (src: string) =>
+        src ? (
+          <img src={src} alt="" className="block h-full w-full object-cover" />
+        ) : (
+          <div className="bx-ph bx-ratio-wide" />
+        );
+      return <Diff before={layer(before)} after={layer(after)} className={cls} />;
     }
     case 'TextRotate': {
       const items = textLines(node, 'items');
       return (
-        <TextRotate
-          items={items.length ? items : ['faster', 'simpler', 'yours']}
-          className={r.className}
-        />
+        <TextRotate items={items.length ? items : ['faster', 'simpler', 'yours']} className={cls} />
       );
     }
     case 'Hover3DCard':
-      return <Hover3DCard className={r.className}>{ctx.children}</Hover3DCard>;
+      return <Hover3DCard className={cls}>{ctx.children}</Hover3DCard>;
     case 'HoverGallery': {
       const images = textLines(node, 'images').map((src) => ({ src }));
       if (images.length < 2) return ctx.edit ? <div className="bx-ph bx-ratio-wide" /> : null;
-      return <HoverGallery images={images} className={r.className} />;
+      return <HoverGallery images={images} className={cls} />;
     }
 
     // ── Overlay / floating ────────────────────────────────────────────────────
-    // Both pin with `position: fixed` from their platform `st-*` CSS (so they
-    // bypass the Tailwind allowlist's clickjacking guard, which denies raw `fixed`).
-    // In the canvas they float to the stage corner, like the drawer's fixed rail.
+    // Both pin with `position: fixed`. In the canvas they float to the stage
+    // corner, like the drawer's fixed rail.
     case 'Toast': {
-      const horizontal = (str(node, 'horizontal') || 'end') as ToastHorizontal;
-      const vertical = (str(node, 'vertical') || 'bottom') as ToastVertical;
       // A dropped notification (Alert/Card) per child; an empty region previews a
       // sample notification in the editor so it stays visible + selectable.
       const body =
         ctx.children ??
         (ctx.edit ? (
-          <Alert color="info" variant="soft">
-            <Alert.Title>Saved</Alert.Title>
-            <Alert.Body>Your changes are live.</Alert.Body>
-          </Alert>
+          <div role="alert" className="alert alert-info alert-soft">
+            <div className="alert-content">
+              <div className="alert-title">Saved</div>
+              <div className="alert-description">Your changes are live.</div>
+            </div>
+          </div>
         ) : null);
       return (
-        <Toast horizontal={horizontal} vertical={vertical} className={r.className}>
+        <ToastRegion
+          horizontal={(str(node, 'horizontal') || 'end') as ToastHorizontal}
+          vertical={(str(node, 'vertical') || 'bottom') as ToastVertical}
+          className={cls}
+        >
           {body}
-        </Toast>
+        </ToastRegion>
       );
     }
-    case 'FAB': {
-      const icon = str(node, 'icon') || 'plus';
-      const label = str(node, 'label') || 'Open actions';
-      const href = str(node, 'href');
-      const placement = (str(node, 'placement') || 'bottom-end') as FABPlacement;
+    case 'FAB':
       return (
         <FAB
-          color={asColor(r.color)}
-          placement={placement}
-          href={href || undefined}
-          aria-label={label}
-          className={r.className}
+          color={colorOf('btn', cls)}
+          placement={(str(node, 'placement') || 'bottom-end') as FABPlacement}
+          href={str(node, 'href') || undefined}
+          aria-label={str(node, 'label') || 'Open actions'}
+          className={cls}
         >
-          <BuilderIcon name={icon} />
+          <BuilderIcon name={str(node, 'icon') || 'plus'} />
         </FAB>
       );
-    }
 
     default:
       return undefined;
   }
+}
+
+/** Initials for an avatar fallback — at most two, from the first and last word. */
+function initialsOf(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  const first = parts[0]?.[0] ?? '';
+  const last = parts.length > 1 ? (parts[parts.length - 1]?.[0] ?? '') : '';
+  return (first + last).toUpperCase();
+}
+
+/** A `<base>-<color>` class lifted from the leaf, for a PART that must repeat the
+ *  root's colour (the chat bubble inside a chat row). */
+function colorClassFor(base: string, leafClass: string | undefined): string | undefined {
+  const color = colorOf(base, leafClass) ?? colorOf('chat', leafClass);
+  return color ? `${base}-${color}` : undefined;
 }

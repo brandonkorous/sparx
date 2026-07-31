@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "callout",
+  "name": "Callout",
+  "version": "1.0.0",
+  "tagline": "The paragraph that matters more than the ones around it, marked so it says why.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Writing",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 14
+}

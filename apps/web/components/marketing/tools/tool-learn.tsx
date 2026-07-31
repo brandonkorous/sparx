@@ -93,7 +93,7 @@ function HowTo({
               {i + 1}
             </span>
             <Text size={15}>
-              <strong className="text-base-content font-medium">{step.name}.</strong> {step.text}
+              <strong className="font-medium">{step.name}.</strong> {step.text}
             </Text>
           </li>
         ))}

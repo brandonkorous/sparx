@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "booking-prompt",
+  "name": "Book a time",
+  "version": "1.0.0",
+  "tagline": "Sends a visitor to your booking page, with a phone number for the ones who would rather call.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Get in touch",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 19
+}

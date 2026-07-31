@@ -80,9 +80,9 @@ export function DataTable<TData, TValue>({
                           onClick={header.column.getToggleSortingHandler()}
                           className={cn(
                             'inline-flex items-center gap-1 text-xs font-medium tracking-wider uppercase',
-                            'hover:text-base-content transition-colors duration-150',
-                            'focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
-                            sortDir ? 'text-base-content' : 'text-base-content'
+                            'duration-150 hover:transition-colors',
+                            'focus-ring focus-visible:rounded-sm',
+                            sortDir ? '' : ''
                           )}
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
@@ -160,7 +160,7 @@ function DataTablePager({
   onNext: () => void;
 }) {
   return (
-    <div className="text-base-content flex items-center justify-between px-1 text-xs">
+    <div className="flex items-center justify-between px-1 text-xs">
       <span>
         {totalRows.toLocaleString()} {totalRows === 1 ? 'row' : 'rows'}
       </span>
@@ -176,7 +176,7 @@ function DataTablePager({
             'border-base-300 rounded-sm border px-2 py-1',
             'transition-colors duration-150',
             'hover:bg-base-200',
-            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+            'focus-ring',
             'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent'
           )}
         >
@@ -190,7 +190,7 @@ function DataTablePager({
             'border-base-300 rounded-sm border px-2 py-1',
             'transition-colors duration-150',
             'hover:bg-base-200',
-            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+            'focus-ring',
             'disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-transparent'
           )}
         >

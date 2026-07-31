@@ -47,10 +47,8 @@ export function StepModules({
           <div key={m.key}>
             {firstAddon ? (
               <div className="border-base-300 mt-1 border-t pt-4 pb-1">
-                <p className="text-base-content text-sm font-medium">Add-ons</p>
-                <p className="text-base-content text-sm">
-                  Optional extras, priced on top of your core modules.
-                </p>
+                <p className="text-sm font-medium">Add-ons</p>
+                <p className="text-sm">Optional extras, priced on top of your core modules.</p>
               </div>
             ) : null}
             <ModuleRow
@@ -103,15 +101,13 @@ function ModuleRow({
           className="flex min-w-0 flex-1 flex-col gap-0.5 text-left"
         >
           <span className="flex items-center gap-2">
-            <span className="text-base-content font-medium">{m.name}</span>
+            <span className="font-medium">{m.name}</span>
             <ChevronDown
-              className={`text-base-content size-4 transition-transform duration-200 ${
-                open ? 'rotate-180' : ''
-              }`}
+              className={`size-4 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
               aria-hidden
             />
           </span>
-          <span className="text-base-content text-sm">{m.desc}</span>
+          <span className="text-sm">{m.desc}</span>
         </button>
 
         {caption ? (
@@ -122,7 +118,7 @@ function ModuleRow({
 
         <span
           className={`w-16 shrink-0 text-right text-sm tabular-nums ${
-            lock === 'included' ? 'text-success font-medium' : 'text-base-content'
+            lock === 'included' ? 'text-success font-medium' : ''
           }`}
         >
           {lock === 'included' ? 'Included' : `+ $${m.price}`}
@@ -145,19 +141,18 @@ function ModuleRow({
 
       {open ? (
         <div className="flex flex-col gap-4 pb-5 pl-[26px]">
-          <p className="text-base-content max-w-prose text-sm">{m.long}</p>
+          <p className="max-w-prose text-sm">{m.long}</p>
           <ul className="grid gap-y-2.5 sm:grid-cols-2 sm:gap-x-8">
             {m.feats.map((f) => (
               <li key={f} className="flex items-center gap-2.5">
                 <span className="bg-module size-1.5 shrink-0 rounded-full" aria-hidden />
-                <span className="text-base-content text-sm">{f}</span>
+                <span className="text-sm">{f}</span>
               </li>
             ))}
           </ul>
-          <p className="text-base-content text-sm">
-            Replaces {m.replaces} — about{' '}
-            <span className="text-base-content font-medium">${m.elsewhere}/mo</span> bought
-            separately.
+          <p className="text-sm">
+            Replaces {m.replaces} — about <span className="font-medium">${m.elsewhere}/mo</span>{' '}
+            bought separately.
           </p>
         </div>
       ) : null}

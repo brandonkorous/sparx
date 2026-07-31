@@ -156,7 +156,7 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
             }
           />
         ) : isLoading ? (
-          <p className="text-base-content p-4 text-base" role="status">
+          <p className="p-4 text-base" role="status">
             Adding up your pages…
           </p>
         ) : rows.length === 0 ? (
@@ -196,12 +196,8 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
                     }}
                   >
                     <td>
-                      <span className="text-base-content block max-w-64 truncate font-semibold">
-                        {row.name}
-                      </span>
-                      <span className="text-base-content block max-w-64 truncate">
-                        {subtitleOf(row)}
-                      </span>
+                      <span className="block max-w-64 truncate font-semibold">{row.name}</span>
+                      <span className="block max-w-64 truncate">{subtitleOf(row)}</span>
                     </td>
                     <td className="text-right">{formatCount(row.visitors)}</td>
                     <td className="hidden text-right @lg:table-cell">{formatCount(row.views)}</td>
@@ -267,20 +263,20 @@ function ReportFootnotes({ report }: { report: ReturnType<typeof usePageResults>
   return (
     <div className="flex flex-col gap-2 p-3">
       {report.commerce ? (
-        <p className="text-base-content text-base">
+        <p className="text-base">
           Sales are credited to the page that brought the buyer to your site that day — not the page
           they bought from. So your home page can earn credit for a sale that happened three clicks
           later, which is the point: that is the page that did the work.
         </p>
       ) : null}
       {otherViews > 0 ? (
-        <p className="text-base-content text-base">
+        <p className="text-base">
           Another {formatCount(otherViews)} visits landed on addresses no page here owns — your
           products, posts and legal pages, which are built elsewhere. They are counted in your
           traffic figures but have no row above.
         </p>
       ) : null}
-      <p className="text-base-content text-base">
+      <p className="text-base">
         “Time to appear” is measured in your visitors&rsquo; own browsers, so a page nobody has
         opened has no measurement rather than a fast one.
       </p>

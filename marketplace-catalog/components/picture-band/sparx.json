@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "picture-band",
+  "name": "Wide picture",
+  "version": "1.0.0",
+  "tagline": "One full-width photograph with a line underneath it.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Pictures",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 50
+}

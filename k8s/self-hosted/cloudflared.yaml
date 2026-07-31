@@ -1,0 +1,71 @@
+# cloudflared — the Cloudflare Tunnel connector. This is what replaces the GKE
+# LoadBalancer and the public IP.
+#
+# It dials OUT to Cloudflare's edge and holds the connection open, so requests
+# arrive over a link this machine established. Nothing is listening on the
+# public internet: no port forwarding on the router, no static IP needed, works
+# behind CGNAT, and the home IP address never appears in DNS.
+#
+# LOCALLY-MANAGED tunnel (a credentials file), not a dashboard token. That
+# choice is what makes the single catch-all ingress rule below possible: every
+# hostname goes to Caddy, which already knows how to route them by Host header.
+# A remotely-managed token tunnel configures its ingress in the Cloudflare
+# dashboard instead, which would mean hand-entering ~20 public hostnames and
+# keeping them in sync with the Caddyfile by hand — two sources of truth for one
+# routing table.
+#
+# Both the config and the credentials are created by scripts/local-up.ps1 from
+# files on disk, so neither the tunnel UUID nor its secret is committed.
+#
+# Replicas: 2. Cloudflare load-balances across a tunnel's connectors, so two
+# pods mean a rollout or a crash does not drop the site. They cost almost
+# nothing — cloudflared is a small Go binary.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudflared
+  namespace: sparx-prod
+  labels: { app: cloudflared, tier: ingress }
+spec:
+  replicas: 2
+  revisionHistoryLimit: 3
+  selector:
+    matchLabels: { app: cloudflared }
+  template:
+    metadata:
+      labels: { app: cloudflared, tier: ingress }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: cloudflared
+          image: cloudflare/cloudflared:latest
+          args:
+            - tunnel
+            # Metrics must bind 0.0.0.0 to be probe-reachable; the default is
+            # 127.0.0.1 on a random port, which no probe can find.
+            - --metrics=0.0.0.0:2000
+            - --config=/etc/cloudflared/config/config.yaml
+            - run
+          volumeMounts:
+            - { name: config, mountPath: /etc/cloudflared/config, readOnly: true }
+            - { name: creds, mountPath: /etc/cloudflared/creds, readOnly: true }
+          resources:
+            requests: { cpu: '50m', memory: '128Mi' }
+            limits: { cpu: '500m', memory: '256Mi' }
+          # /ready reports whether the connector has live edge connections, so
+          # this catches "running but disconnected" — the failure mode that
+          # otherwise looks healthy while the site is down.
+          readinessProbe:
+            httpGet: { path: /ready, port: 2000 }
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet: { path: /ready, port: 2000 }
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            failureThreshold: 5
+      volumes:
+        - name: config
+          configMap: { name: cloudflared-config }
+        - name: creds
+          secret: { secretName: cloudflared-credentials }

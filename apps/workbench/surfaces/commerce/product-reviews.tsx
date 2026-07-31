@@ -609,10 +609,10 @@ export function ProductReviewsSurface({ ctx }: { ctx: SurfaceContext }) {
               >
                 <div className="bg-base-300 shrink-0 rounded-full px-4 py-2">
                   <TabsList className="overflow-x-auto">
-                    <TabsTab value="reviews" className="text-base-content">
+                    <TabsTab value="reviews">
                       Reviews{allReviews.length > 0 ? ` (${String(allReviews.length)})` : ''}
                     </TabsTab>
-                    <TabsTab value="questions" className="text-base-content">
+                    <TabsTab value="questions">
                       Questions{allQuestions.length > 0 ? ` (${String(allQuestions.length)})` : ''}
                     </TabsTab>
                   </TabsList>

@@ -61,12 +61,12 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
           <span className="text-success">
             <CheckCircle2 size={48} aria-hidden />
           </span>
-          <h1 className="text-base-content text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
+          <h1 className="text-[1.75rem] font-bold tracking-[-0.02em] md:text-4xl">
             Order confirmed
           </h1>
-          <p className="text-base-content">
+          <p>
             Thanks for your order! A confirmation email is on its way. Your order number is{' '}
-            <strong className="text-base-content">{order.orderNumber}</strong>.
+            <strong>{order.orderNumber}</strong>.
           </p>
         </div>
 
@@ -74,8 +74,8 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
         <div className="border-base-300 bg-base-100 mt-8 rounded-xl border p-5 sm:p-6">
           <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-b pb-4">
             <div>
-              <p className="text-base-content text-sm">Order {order.orderNumber}</p>
-              <p className="text-base-content text-sm">Placed {formatPlacedAt(order.placedAt)}</p>
+              <p className="text-sm">Order {order.orderNumber}</p>
+              <p className="text-sm">Placed {formatPlacedAt(order.placedAt)}</p>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Badge color={statusTone(order.status)} variant="soft">
@@ -94,11 +94,11 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
                 key={`${item.name}-${idx}`}
                 className="flex items-center justify-between gap-4 py-2.5"
               >
-                <span className="text-base-content min-w-0 flex-1 text-sm">
+                <span className="min-w-0 flex-1 text-sm">
                   {item.name}
-                  <span className="text-base-content"> × {item.quantity}</span>
+                  <span> × {item.quantity}</span>
                 </span>
-                <span className="text-base-content text-sm font-medium tabular-nums">
+                <span className="text-sm font-medium tabular-nums">
                   {formatCents(item.lineTotalCents, order.currency)}
                 </span>
               </div>
@@ -106,14 +106,14 @@ export default async function OrderPage({ params, searchParams }: PageProps) {
           </div>
 
           {/* Total */}
-          <div className="text-base-content border-base-300 flex items-center justify-between border-t pt-4 text-base font-semibold">
+          <div className="border-base-300 flex items-center justify-between border-t pt-4 text-base font-semibold">
             <span>Total</span>
             <span className="tabular-nums">{formatCents(order.totalCents, order.currency)}</span>
           </div>
 
           {/* Shipping destination */}
           {shippingParts.length > 0 ? (
-            <div className="text-base-content border-base-300 mt-4 flex items-center gap-2 border-t pt-4 text-sm">
+            <div className="border-base-300 mt-4 flex items-center gap-2 border-t pt-4 text-sm">
               <MapPin size={15} aria-hidden />
               Shipping to {shippingParts.join(', ')}
             </div>

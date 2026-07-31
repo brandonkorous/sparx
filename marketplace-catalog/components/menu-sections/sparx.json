@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "menu-sections",
+  "name": "Menu",
+  "version": "1.0.0",
+  "tagline": "Dishes grouped into courses, priced. For a kitchen, a bar, or a treatment list.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Where & when",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 24
+}

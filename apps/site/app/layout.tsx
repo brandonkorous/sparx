@@ -36,7 +36,7 @@ import type { PublishedSilicaFrameDto } from '@sparx/builder-schemas';
 import { getPublishedSilicaFrame } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
 import { buildSilicaThemeCssFromTheme, brandFontHref, themeFontFamilies } from '@sparx/site-themes';
-import { BASE_SILICA_THEME } from '@sparx/silica-catalog';
+import { BASE_SILICA_THEME, buildCustomColorCss } from '@sparx/silica-catalog';
 import { getLegalFooterLinks, type LegalLink } from '@/lib/legal';
 import { getPublishedBuilderStyles } from '@/lib/builder';
 import { ConsentManager } from '@/components/consent/consent-manager';
@@ -47,25 +47,18 @@ import { MadeWithSparx } from '@sparx/ui';
 import { ChunkReloadGuard } from '@sparx/app-kit';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
-import { resolveActivePropertySlug, resolveSite, type SiteTheme } from '@/lib/site-context';
-import { buildCommerceSiteThemeCss } from '@/lib/theme';
-import { getPublishedSite, type PublishedSnapshot } from '@/lib/site';
+import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
+import { getPublishedSite } from '@/lib/site';
 
-// MUST be first: declares the cascade-layer order so `st-legacy` (the legacy
-// site.css defaults) ranks BENEATH site-ui's `components` layer. Without this,
-// unlayered/late-registered legacy rules shadow site-ui and silently break every
-// themeable control. See layers.css.
+// MUST be first: declares the cascade-layer order, so the storefront's own
+// element defaults in site.css rank BENEATH silica's `components` layer and can't
+// shadow a themeable control. See layers.css.
 import './layers.css';
 import './globals.css';
 import './site.css';
-// The custom-section template primitives (st-tpl-*), shared with the dashboard
+// The custom-section template primitives (bx-tpl-*), shared with the dashboard
 // Section Studio preview so both render identically (docs/38 Phase C).
 import '@sparx/section-template-react/section-template.css';
-// The Surface component library (docs/46/47): the tenant-themed `st-*` component
-// + recipe classes that authored `node.class` strings resolve against. It owns
-// the `st-*` component vocabulary via `@layer components`, which outranks
-// `@layer st-legacy` (see layers.css). Plain compiled CSS — no preflight.
-import '@sparx/site-ui/styles.css';
 
 const THEME_COOKIE = 'sparx_theme';
 
@@ -136,25 +129,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
 // ── Theme CSS ──────────────────────────────────────────────────────────────
 //
-// Compiled by the Token Model v2 engine (docs/33-token-model-v2.md). The theme
-// key comes from the published snapshot when present, else the tenant's preset;
-// brand identity + presentation surfaces are sourced from the data the layout
-// already fetched. buildCommerceSiteThemeCss emits the canonical `--st-*` tokens
-// plus the legacy aliases the current site.css still reads.
-
-function buildThemeCss(
-  snapshot: PublishedSnapshot | null,
-  theme: SiteTheme | null,
-  preset: string | null | undefined
-): string {
-  const themeKey = snapshot?.themeKey ?? preset ?? 'apex';
-  return buildCommerceSiteThemeCss({
-    themeKey,
-    tenantTheme: theme,
-    snapshotTokens: snapshot?.compiledTokens ?? null,
-    compiledV2: snapshot?.compiledV2 ?? null,
-  });
-}
+// There is ONE theme payload now: `silicaThemeCss` below, silicaui's own
+// `--color-*` / `--radius-*` / `--font-*` vocabulary, projected from the site's
+// authored theme (docs/118 §1.0 north star).
+//
+// A second `themeCss` used to ship alongside it on every request — the Token Model
+// v2 engine's `--st-*` emitter, compiled from the brand columns plus the legacy v1
+// `draftSettings.tokens` overlay. Two populated token sets meant two answers to
+// "what colour is primary?", reconciled by whichever `:root` block happened to win
+// the cascade — so an applied theme could silently keep the previous palette, and
+// site fonts could never change at all (silica deliberately does not emit
+// `--font-head`, leaving the legacy `--st-font-*` unopposed).
+// Retired in docs/implementation/st-token-retirement.md.
 
 // Brand web fonts — the tenant's chosen families (e.g. 'Quicksand', 'Nunito')
 // must be LOADED or the browser silently falls back to Geist. `brandFontHref`
@@ -174,10 +160,10 @@ function noFlashScript(policy: 'auto' | 'toggle'): string {
 // Before-paint flag that enables scroll-reveal entrances. Gating the hidden
 // initial state on these classes means content is fully visible when JS is off
 // (this script never runs) or reduced motion is requested (the classes are not
-// added), avoiding any flash of invisible content. `st-reveal-ready` gates the
-// legacy section path; `st-anim-ready` gates the docs/61 Builder motion
-// (`.st-reveal` + SCROLL_MOTION_CSS, driven by MotionController).
-const REVEAL_INIT_SCRIPT = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('st-reveal-ready','st-anim-ready');}catch(e){}})();`;
+// added), avoiding any flash of invisible content. `bx-reveal-ready` gates the
+// legacy section path; `bx-anim-ready` gates the docs/61 Builder motion
+// (`.bx-reveal` + SCROLL_MOTION_CSS, driven by MotionController).
+const REVEAL_INIT_SCRIPT = `(function(){try{if(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;document.documentElement.classList.add('bx-reveal-ready','bx-anim-ready');}catch(e){}})();`;
 
 // Before-paint: reflect the recorded cookie-consent decision onto <html> as a
 // `data-consent` attribute (space-separated granted categories) so any deferred
@@ -249,13 +235,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     site ? getPublishedBuilderStyles(site.slug) : '',
   ]);
 
-  // "This property renders on silica" — NOT "this route has chrome". The two were the
-  // same thing until per-page frames (doc 139 §5), and conflating them is a real bug:
-  // `silicaActive` gates the silica THEME stylesheet, the web fonts and the accent
-  // colour, all of which are site-level. A landing page whose chrome is set to "none"
-  // has a null `frame`, so reading that alone would ship it with no theme and no fonts —
-  // the one page an author most wants to look designed.
-  const silicaActive = Boolean(silicaFrame.frame) || silicaFrame.frameless === true;
+  // NOTE — `silicaActive` (`Boolean(frame) || frameless === true`) used to live here,
+  // gating the theme stylesheet, the web fonts and the accent colour. It existed to
+  // separate "this property renders on silica" from "this route has chrome", because a
+  // landing page with chrome set to "none" has a null `frame` and reading that alone
+  // shipped it with no theme and no fonts — the one page an author most wants to look
+  // designed. All three are now resolved UNCONDITIONALLY off `silicaFrame.theme ??
+  // BASE_SILICA_THEME`, which answers that concern outright: there is no branch left to
+  // get wrong, and no page can render unthemed. Don't reintroduce the gate.
   // Depends on silicaFrame, so it stays sequential behind it.
   const silicaHost =
     site && silicaFrame.frame
@@ -277,49 +264,50 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         })
       : null;
 
-  // Active base theme preset (additive registry) for the no-snapshot path.
-  const themePreset = (site?.settings as { theme?: { preset?: string } } | undefined)?.theme
-    ?.preset;
-  const themeCss = buildThemeCss(snapshot, site?.theme ?? null, themePreset);
-
   // The per-tenant silica theme file (docs/118 §1.0 north star): silicaui's own
   // token vocabulary (`--color-primary`, `--radius-box`, …) so every generated
-  // silica class resolves with no per-tenant CSS compile. Emitted only when the
-  // silica frame is live. Two sources, one output:
-  //   · an AUTHORED theme (the builder round-trips `Site.theme` through publish)
-  //     projects straight to CSS — what the author previewed IS what ships.
-  //   · otherwise the tenant's BRAND-DERIVED compiled theme, so a tenant who never
-  //     touched the theme still renders in its brand.
-  // Both emit identical selectors, so switching between them is invisible. Coexists
-  // with `themeCss` during the parallel run; `--st-*` retires at the flip.
+  // silica class resolves with no per-tenant CSS compile. This is now the ONLY
+  // source of tenant colour and type on the storefront.
   //
   // site.theme is the SINGLE source of the look (docs/impl theming-spine plan): a
-  // silica-active site ALWAYS resolves to a concrete theme. The authored theme leads;
-  // a site that has published no theme falls back to BASE_SILICA_THEME (the sparx Ember
-  // base) rather than rendering unthemed. The legacy brand-derived tier
+  // site ALWAYS resolves to a concrete theme. The authored theme leads; a site that
+  // has published no theme falls back to BASE_SILICA_THEME (the sparx Ember base)
+  // rather than rendering unthemed. The legacy brand-derived tier
   // (`buildSilicaThemeCss(compiledV2)`) is GONE: brand is identity-only now, so an
   // un-themed site wears the base theme, not a brand-column compile.
-  const silicaThemeCss = !silicaActive
-    ? ''
-    : silicaFrame.theme
-      ? buildSilicaThemeCssFromTheme(silicaFrame.theme)
-      : buildSilicaThemeCssFromTheme(BASE_SILICA_THEME);
+  //
+  // Emitted UNCONDITIONALLY, not gated on `silicaActive`. It used to be gated, which
+  // was safe only while the legacy `--st-*` payload shipped alongside to clothe a
+  // non-silica page; with that retired, gating would mean a page rendering with no
+  // theme at all. `getPublishedSilicaFrame` falls back to the code starter frame, so
+  // in practice every served site is silica-active anyway — this makes the theme
+  // unconditional rather than resting on that.
+  const silicaThemeCss = buildSilicaThemeCssFromTheme(silicaFrame.theme ?? BASE_SILICA_THEME);
+
+  // Colors the AUTHOR invented. The theme file above declares `--color-<name>` for
+  // one, but the classes that CONSUME it (`btn-brand`, `bg-brand`, `badge-brand`)
+  // come from silicaui's Tailwind plugin, whose `colors:` list is fixed in
+  // `globals.css` at build time and cannot know a name coined later in the theme
+  // editor. So a custom color previewed correctly on the canvas (which hydrates its
+  // own scoped rules) and then shipped UNSTYLED — nothing rejected the class, it
+  // simply matched no rule. `buildCustomColorCss` recovers exactly the rules a
+  // build-time registration would have produced, plus the measured `-content` ink
+  // the author never typed. Empty for the overwhelmingly common no-custom-color
+  // theme, so this costs one token scan on the normal path.
+  const silicaCustomColorCss = silicaFrame.theme ? buildCustomColorCss(silicaFrame.theme) : '';
 
   // The theme driving the chrome OUTSIDE the frame (chat accent, OG, web fonts).
-  // Authored theme wins; a silica-active site with no authored theme uses BASE so the
-  // chrome never diverges from what `silicaThemeCss` painted. Null only when silica is
-  // inactive (a legacy non-silica site).
-  const effectiveSilicaTheme = silicaFrame.theme ?? (silicaActive ? BASE_SILICA_THEME : null);
+  // Authored theme wins, else BASE — the SAME resolution `silicaThemeCss` uses above,
+  // so the chrome can never diverge from what the frame was painted with.
+  const effectiveSilicaTheme = silicaFrame.theme ?? BASE_SILICA_THEME;
 
   // The floating chrome that lives OUTSIDE the silica frame — the chat launcher, the
   // OG accent — historically read `site.theme.colorPrimary`, the LEGACY brand-compiled
   // primary. On a silica-framed site that diverges from what the visitor actually sees:
   // the legacy value is derived from the tenant Brand record, not the authored silica
   // theme, so a tenant whose silica theme is (say) Ember still got an indigo chat
-  // bubble. Prefer the silica theme's own `--color-primary` when silica is active.
-  const silicaThemePrimary = silicaActive
-    ? effectiveSilicaTheme?.tokens?.['--color-primary']
-    : undefined;
+  // bubble. The rendered theme's own `--color-primary` is the truth.
+  const silicaThemePrimary = effectiveSilicaTheme.tokens?.['--color-primary'];
 
   // The fonts to load, or the storefront renders every theme in the Geist fallback.
   // The AUTHORED silica theme leads: a typeface/heading font picked in the builder's
@@ -328,7 +316,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // Compiled snapshot + brand columns follow as the backstop for a brand-derived
   // theme; `brandFontHref` de-dupes the overlap.
   const fontHref = brandFontHref([
-    ...(silicaActive && effectiveSilicaTheme ? themeFontFamilies(effectiveSilicaTheme) : []),
+    ...themeFontFamilies(effectiveSilicaTheme),
     snapshot?.compiledV2?.shared.fontHeading,
     snapshot?.compiledV2?.shared.fontBody,
     site?.theme?.fontHeading,
@@ -424,9 +412,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <link rel="stylesheet" href={fontHref} />
           </>
         ) : null}
-        {themeCss ? <style dangerouslySetInnerHTML={{ __html: themeCss }} /> : null}
         {silicaThemeCss ? (
           <style data-silica-theme dangerouslySetInnerHTML={{ __html: silicaThemeCss }} />
+        ) : null}
+        {silicaCustomColorCss ? (
+          <style
+            data-silica-custom-colors
+            dangerouslySetInnerHTML={{ __html: silicaCustomColorCss }}
+          />
         ) : null}
         {surfaceCss ? (
           <style data-surface-tenant dangerouslySetInnerHTML={{ __html: surfaceCss }} />

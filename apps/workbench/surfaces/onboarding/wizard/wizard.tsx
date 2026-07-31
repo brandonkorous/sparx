@@ -130,7 +130,7 @@ export function ClassicWizard({
   if (loadError) {
     return (
       <div className="flex h-full items-center justify-center p-8">
-        <Text className="text-base-content">{loadError}</Text>
+        <Text>{loadError}</Text>
       </div>
     );
   }
@@ -458,7 +458,7 @@ function WizardInner({
   const heading = head ? (
     <div className="flex flex-col gap-2">
       <h2 className="text-2xl font-semibold tracking-tight">{head.title}</h2>
-      <Text className="text-base-content max-w-prose">{head.supporting}</Text>
+      <Text className="max-w-prose">{head.supporting}</Text>
     </div>
   ) : null;
 

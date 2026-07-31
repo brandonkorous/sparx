@@ -12,12 +12,12 @@
 
 import { el, atom, behave, part, entry, type PlatformCatalogEntry } from './_kit';
 
-// A semantic alert — the real Alert atom (st-alert), not a hand-rolled box. `tone`
-// is one of our semantic roles (info/success/warning/danger) carried as the recipe
-// token st-c-<tone>, so flipping the color in the inspector recolors the WHOLE
-// component (the Layer-1 win, docs/102). Icon + title + body are the atom's slots.
+// A semantic alert — the real silica Alert, not a hand-rolled box. `tone` is one
+// of our semantic roles (info/success/warning/danger) carried as `alert-<tone>`,
+// so flipping the colour in the inspector recolours the WHOLE component (the
+// Layer-1 win, docs/102). Icon + title + body are the atom's slots.
 const alert = (tone: string, icon: string, title: string, message: string) =>
-  atom('Alert', `st-c-${tone} st-v-soft w-full`, { icon, title, body: message });
+  atom('Alert', `alert alert-${tone} alert-soft w-full`, { icon, title, body: message });
 
 export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
   // ── Alert (info) — neutral, informational notice ─────────────────────────────
@@ -179,7 +179,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
         }),
         // The real Progress atom (st-progress) — value/max drive the fill, st-c-*
         // recolors it from the inspector. (Was a hand-rolled track + filled div.)
-        atom('Progress', 'st-c-primary w-full', {
+        atom('Progress', 'progress-primary w-full', {
           value: '65',
           max: '100',
           label: 'Uploading assets',
@@ -201,7 +201,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
       'A circular progress gauge with a centered percentage, themed by the recipe color.',
     surfaces: ['page', 'site'],
     tags: ['progress', 'radial', 'circular', 'gauge', 'ring', 'feedback'],
-    tree: atom('RadialProgress', 'st-c-primary', { value: '65', max: '100' }),
+    tree: atom('RadialProgress', 'radial-progress-primary', { value: '65', max: '100' }),
   }),
 
   // ── Skeleton card — shimmering placeholder while content loads ───────────────
@@ -276,7 +276,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
       children: [
         el('div', 'group relative inline-flex', {
           children: [
-            atom('Button', 'st-btn st-c-neutral st-v-outline st-btn--sz-sm', { label: 'Hover me' }),
+            atom('Button', 'btn btn-neutral btn-outline btn-sm', { label: 'Hover me' }),
             el(
               'div',
               'pointer-events-none absolute bottom-full left-1/2 z-50 mb-2 -translate-x-1/2 whitespace-nowrap rounded-field bg-neutral px-3 py-1.5 text-xs font-medium text-neutral-content opacity-0 shadow-md transition-opacity duration-150 group-hover:opacity-100',
@@ -328,7 +328,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
               }),
             ],
           }),
-          atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-md', {
+          atom('Button', 'btn btn-primary btn-md', {
             label: 'Add your first item',
           }),
         ],
@@ -365,7 +365,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
               }),
             ],
           }),
-          atom('Button', 'st-btn st-c-neutral st-v-solid st-btn--sz-sm shrink-0', {
+          atom('Button', 'btn btn-neutral btn-sm shrink-0', {
             label: 'Shop now',
           }),
         ],
@@ -374,7 +374,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
   }),
 
   // ── Cookie consent — a sticky bottom notice with accept / essential ───────────
-  // Pinned to the viewport bottom with the sanctioned `st-fixed-bottom` (the only
+  // Pinned to the viewport bottom with the sanctioned `bx-fixed-bottom` (the only
   // allowed `position: fixed` emitter — capped at 50vh, never a clickjacking overlay;
   // raw `fixed` stays denied). The `dismiss` behavior makes it real: either action
   // hides the bar and remembers it (localStorage key) so it does not return. The
@@ -393,7 +393,7 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
     tree: behave(
       el(
         'div',
-        'st-fixed-bottom z-40 w-full border-t border-base-200 bg-base-100/95 px-4 py-4 shadow-lg backdrop-blur',
+        'bx-fixed-bottom z-40 w-full border-t border-base-200 bg-base-100/95 px-4 py-4 shadow-lg backdrop-blur',
         {
           name: 'Cookie consent',
           attrs: { role: 'region', ariaLabel: 'Cookie notice' },
@@ -410,14 +410,14 @@ export const FEEDBACK_CATALOG: PlatformCatalogEntry[] = [
                   el('div', 'flex shrink-0 gap-3', {
                     children: [
                       part(
-                        el('button', 'st-btn st-c-neutral st-v-outline st-btn--sz-sm', {
+                        el('button', 'btn btn-neutral btn-outline btn-sm', {
                           text: 'Essential only',
                           attrs: { type: 'button' },
                         }),
                         'trigger'
                       ),
                       part(
-                        el('button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
+                        el('button', 'btn btn-primary btn-sm', {
                           text: 'Accept all',
                           attrs: { type: 'button' },
                         }),

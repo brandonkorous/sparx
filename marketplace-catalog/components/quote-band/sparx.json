@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "quote-band",
+  "name": "One big quote",
+  "version": "1.0.0",
+  "tagline": "A single customer quote with a name and where it came from.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "People & proof",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 35
+}

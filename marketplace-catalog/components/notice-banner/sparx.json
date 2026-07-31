@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "notice-banner",
+  "name": "Notice",
+  "version": "1.0.0",
+  "tagline": "Holiday hours, a delivery delay, a phone line down — the block you need when you have no time to build one.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Page structure",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 59
+}

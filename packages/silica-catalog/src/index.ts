@@ -24,6 +24,7 @@ export * from './catalog';
 export * from './themes';
 export * from './content-ink';
 export * from './resolve-sparx-theme';
+export * from './custom-colors';
 export * from './base-theme';
 export * from './sections';
 export * from './site-chrome';

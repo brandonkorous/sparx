@@ -1,29 +1,53 @@
-# 139 — silicaui-builder: the asks (1–15 ANSWERED; §16 OPEN)
+# 139 — silicaui-builder: the asks (1–15 + §17 ANSWERED; §16, §18, §19 OPEN)
 
-**Version:** 3.2.0
+**Version:** 3.6.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-30
+**Last Updated:** 2026-07-31
 
-> ## ⚑ §16 IS THE ONLY OPEN ASK (raised 2026-07-30 against `0.41.0`)
+> ## ⚑ §16, §18 AND §19 ARE OPEN — §17 SHIPPED IN `0.43.0` (all raised 2026-07-30 against `0.41.0`)
 >
 > **[§16 — other editors' selections, and a soft claim on a subtree](#16--other-editors-selections-and-a-soft-claim-on-a-subtree)**
 > — the builder audit's last roadmap item (slice 24), never written up until now. A POLISH ask: the
 > document is already safe without it (per-node LWW + the op log + draft history), but two authors on
 > one page currently see each other's edits with no attribution.
 >
+> **[§17 — a host-contributed TAB in the inspector](#17--a-host-contributed-tab-in-the-inspector-for-document-scoped-tools)
+> — ANSWERED in `0.43.0`.** `inspectorTabs?(node: SelectableNode | undefined): InspectorTabDef[]`,
+> with the `scope: "panel"` variant the ask needed: it renders with NOTHING selected, receives no
+> node and no mutation ctx, and the engine hides the identity header + Duplicate/Delete footer
+> while it is open. sparx's History moved out of its drawer and is now the rail's third tab.
+>
+> **[§18 — let a status-bar item be clickable](#18--let-a-status-bar-item-be-clickable)**
+> — §14's non-interactive rule is one case too broad: a status item revealing its OWN detail
+> ("3 broken" → which three) is reading the same fact at more depth, not a control. sparx has
+> deliberately not pre-empted the rule — the count is plain text and its trigger stayed in the
+> toolbar.
+>
+> **[§19 — a custom color is a canvas-only color](#19--a-custom-color-is-a-canvas-only-color)**
+> — raised BY silicaui, and the one ask whose suggested remedy a host cannot perform: the
+> `@plugin { colors: … }` list is a build-time constant and the name is coined at runtime by a
+> tenant. Two gaps — nothing carries it to publish, and `customColorCss` covers 4 of the 41
+> rules a real registration emits, so a custom color looks button-only even ON the canvas.
+> **The second is in flight** (the remaining components, confirmed 2026-07-31). The first
+> needs a render-path entry point; until then sparx ships a workaround
+> (`buildCustomColorCss`) that reaches into plugin internals.
+>
 > ## ⚑ 1–15 are answered and adopted.
 >
-> | §    | Raised     | Shipped in    | As                                                              |
-> | ---- | ---------- | ------------- | --------------------------------------------------------------- |
-> | 1–11 | 2026-07-28 | `0.36`/`0.37` | see the table below                                             |
-> | 12   | 2026-07-29 | `0.38.0`      | `limit` on a collection binding + `applyCollectionLimit`        |
-> | 13   | 2026-07-29 | `0.40.0`      | `toolbarStatusSlot`                                             |
-> | 14   | 2026-07-29 | `0.41.0`      | `statusBarSlot` — and it SUPERSEDES §13 for sparx's use         |
-> | 15   | 2026-07-29 | `0.41.0`      | mode follows `activeTree`; `select()` returns whether it landed |
-> | 16   | 2026-07-30 | —             | **OPEN** — peer selections + a soft subtree claim               |
+> | §    | Raised     | Shipped in    | As                                                                                   |
+> | ---- | ---------- | ------------- | ------------------------------------------------------------------------------------ |
+> | 1–11 | 2026-07-28 | `0.36`/`0.37` | see the table below                                                                  |
+> | 12   | 2026-07-29 | `0.38.0`      | `limit` on a collection binding + `applyCollectionLimit`                             |
+> | 13   | 2026-07-29 | `0.40.0`      | `toolbarStatusSlot`                                                                  |
+> | 14   | 2026-07-29 | `0.41.0`      | `statusBarSlot` — and it SUPERSEDES §13 for sparx's use                              |
+> | 15   | 2026-07-29 | `0.41.0`      | mode follows `activeTree`; `select()` returns whether it landed                      |
+> | 16   | 2026-07-30 | —             | **OPEN** — peer selections + a soft subtree claim                                    |
+> | 17   | 2026-07-30 | `0.43.0`      | `inspectorTabs` + `scope: "panel"` — History is now the rail's third tab             |
+> | 18   | 2026-07-30 | —             | **OPEN** — let a status-bar item reveal its own detail                               |
+> | 19   | 2026-07-30 | in flight     | widening to every component is on its way; the render-path entry point is still open |
 >
-> Turnaround on §12–§15 was same-day or next-morning. Apart from §16, this file is the RECORD of
-> the asks and their resolutions, not a to-do list.
+> Turnaround on §12–§15 was same-day or next-morning. Apart from §16–§19, this file is the
+> RECORD of the asks and their resolutions, not a to-do list.
 
 > ## ⚑ ALL ELEVEN WERE ANSWERED AND SHIPPED IN `0.36.0` (2026-07-28)
 >
@@ -780,6 +804,185 @@ who else is in here, and stop me editing what they are holding."
 `activePage` presence is already enough for the coarse case, so this is a POLISH ask, not a
 correctness one — the document is safe without it (per-node LWW + the op log + draft version
 history). Filed at the priority that implies.
+
+---
+
+## 17 — A host-contributed TAB in the inspector, for document-scoped tools
+
+**The ask:** let a host add a TAB alongside `Design` and `Settings` in the right panel —
+something like `inspectorTabs?(): InspectorTab[]` with `{ id, title, order?, render(ctx) }` —
+where `render` takes NO node.
+
+**Why `inspectorPanels` cannot do this.** It is the only inspector seam on `BuilderHost`
+(`dist/react/index.d.ts:1387` in `0.41.0`), and it is the wrong shape on both axes:
+
+1. **It adds sections, not tabs.** A panel is rendered inside an existing tab, wrapped in a
+   titled `Group`. There is no way to reach the tab strip; nothing matching `inspectorTab` /
+   `panelTab` / `rightPanel` / `tabSlot` exists in the declarations.
+2. **It is node-scoped.** `render(node, ctx)` is keyed to the current selection, which is right
+   for what it was built for (SEO on a page root, a product pin, a per-module editor) and wrong
+   for anything about the DOCUMENT. A document-scoped tool contributed this way would appear and
+   disappear as the selection changes, and re-render on every click.
+
+**The concrete case: version history.** sparx has draft-version history (restore a draft, roll
+back a publish) and it currently lives in a drawer over the editor. Brandon's objection to that
+is a platform rule, not a preference — the workbench is an MDI shell and a drawer breaks its
+flow — and the destination he named is exactly a third tab: `Design` · `Settings` · `History`.
+It is document-scoped by nature: which version you restore has nothing to do with which element
+is selected.
+
+**Why we are not building it host-side.** The host could render its own tab strip next to the
+engine's. That is strictly worse: two strips in one panel, one of them owning state the engine
+is authoritative for, and a user with two places to click for "what tab am I on". A seam is the
+only version of this that isn't a fork.
+
+**Generic?** Yes, and probably under-asked. Any host with a document-scoped tool wants this —
+history, comments, a page/asset browser, a publish log, an accessibility report. Today all of
+them have to become a drawer or a modal, which is what every host will do, which is what makes
+every host's builder look bolted together.
+
+**Not blocking.** The drawer works; it is in the wrong container. Same priority as §16.
+
+### ANSWERED — `0.43.0`
+
+Shipped as `inspectorTabs?(node: SelectableNode | undefined): InspectorTabDef[]`, and the shape is
+better than the one asked for. Rather than making every host tab node-free, it splits the two
+cases explicitly:
+
+- `InspectorNodeTab` (`scope?: "node"`, the default) — `render(node, ctx)`, a peer of the built-in
+  Design and Settings, which are themselves this shape.
+- `InspectorPanelTab` (`scope: "panel"`) — `render()`, no node and **deliberately no mutation
+  ctx**: those are per-node primitives, and handing them to a tab that is showing something else
+  would invite it to edit "the selection" while displaying a document. A panel tab that needs to
+  write reaches the editor through the host's own state.
+
+Two details worth keeping in mind when contributing one, both from the shipped declarations:
+
+- **Return panel tabs unconditionally.** The seam is called with the selected node (or `undefined`),
+  and a host that filters everything on `node` makes its own history panel unreachable the moment
+  the author clicks empty canvas.
+- **`order` sorts against the engine's own** — Design is `0`, Settings is `10`. sparx's History is
+  `20`. Ids must be unique and `design`/`settings` are reserved; a dupe is dropped with a warning.
+
+The engine also hides the identity header and the Duplicate/Delete footer while a panel tab is
+open, so the rail reads as one surface, and a node-scoped tab that stops being returned while open
+falls back to Design rather than blanking. Adopted in
+[apps/workbench/surfaces/builder/studio/version-history.tsx](../apps/workbench/surfaces/builder/studio/version-history.tsx)
+— the drawer is gone.
+
+---
+
+## 18 — Let a status-bar item be clickable
+
+**The ask:** relax §14's "non-interactive content only" for `statusBarSlot`, so a host's
+status item can be the trigger for its own detail — the thing every IDE status bar does.
+
+**Where this came from.** sparx's pre-publish check now reports "3 broken · 15 to fix" into
+`statusBarSlot`, which is exactly what that slot is for and is the best thing about the
+feature: the count is ambient, so it is read without opening anything. Brandon's instinct on
+seeing it was to click the count — and it isn't clickable, so the control that opens the list
+is a button in the toolbar, two floors away from the number that motivates pressing it.
+
+**Why the rule exists, and why we think it is one case too broad.** §14 argued — and we
+agreed, and still agree — that a 28px strip is no place for a dense cluster of controls, and
+that state belongs below while actions belong above. That holds for a _control_. It does not
+hold for a **status item that reveals its own detail**: clicking "3 broken" to see which three
+is not a new action, it is reading the same fact at more depth. The precedent is universal —
+every status item in VS Code's bar is clickable, and none of them are toolbars.
+
+**Shape, if it helps.** Nothing needs to change structurally; the constraint is documentary.
+Either soften the doc to "no controls that ACT — a status item may reveal its own detail", or
+make it explicit with a small typed affordance:
+
+```tsx
+statusBarSlot?: React.ReactNode; // unchanged; the doc stops forbidding a disclosure
+```
+
+**Not blocking, and deliberately not pre-empted.** sparx has NOT put a button in the strip on
+the theory the rule is wrong — the count is plain text and the trigger stayed in the toolbar
+(`site-check.tsx`). That split is defensible on its own terms, so this is a polish ask.
+
+**Generic?** Yes. Any host with a countable state — unsaved conflicts, failing validations,
+queued jobs, collaborators — wants the number and the detail to be the same target.
+
+---
+
+## 19 — A custom color is a canvas-only color
+
+**The ask:** widen `customColorCss` to cover every color-aware component (it covers one),
+and give it a documented, non-`react` entry point a host can call on its RENDER path.
+
+**Where this came from.** Reported by silicaui against `0.41.0`, on the sparx theme editor:
+
+> Canvas-only. `customColorCss` is imported solely by `Canvas` and `ComponentBoard` —
+> publish/export never calls it. A published page needs the host to add the name to
+> `@plugin "@wizeworks/silicaui" { colors: … }`, or it ships unstyled.
+
+The diagnosis is right and the suggested remedy is the one thing a host cannot do. That
+`colors:` list is a **build-time constant** in each app's `globals.css`; the name is coined
+at **runtime**, by a tenant, in the theme editor, on a site whose bundle shipped months ago.
+Editing the list means the platform redeploys every time a merchant invents a color.
+
+**Two separate gaps, and the second is the surprising one.**
+
+1. _Nothing carries it to publish._ Expected, and a host's job — see below.
+2. _`customColorCss` is much narrower than a real registration._ It emits
+   `colorUtilityRules(custom)` + `buttonColorVars(custom)` — `.text-`/`.bg-`/`.border-`
+   and `.btn-<name>`. Registering the same name in `colors:` emits **41** rules at
+   `0.41.0`: `.badge-`, `.alert-`, `.input-`, `.select-`, `.textarea-`, `.tabs-`,
+   `.toggle-`, `.checkbox-`, `.radio-`, `.step-`, `.link-`, `.progress-`, `.range-`,
+   `.slider-`, `.switch-`, `.status-`, `.meter-`, `.calendar-`, `.data-table-`,
+   `.chat-bubble-`, `.toast[data-type=]`, … plus the utility trio for the `-content`
+   pair as well as the color. So an author who adds "sunset" and puts it on a Badge sees
+   a bare badge **in the canvas** — which reads as "custom colors are for buttons",
+   not as a preview limit.
+
+**What sparx shipped, and why it is a workaround rather than the fix.**
+`@sparx/silica-catalog/src/custom-colors.ts` runs the plugin itself against a stub
+Tailwind context — once with the custom names and once without — and keeps the
+difference. That recovers all 41 rules per name, serializes them into `@layer base`,
+and the storefront injects them beside the theme file. It also derives the measured
+`--color-<name>-content` via `resolveThemeTokens`, because `addColor` writes only the
+base token and the `.text-<name>-content` utility references the pair with no fallback.
+
+It works, and it is forward-compatible (a component added in `0.42` is picked up with no
+change). But it depends on `plugin.withOptions`' return shape and on `addBase` being the
+only channel that matters — two internals, in a package that publishes no types. The
+right home for it is silicaui.
+
+**Shape.** Two halves, and they are independent:
+
+```ts
+// (a) widen the existing one — same signature, every component instead of the button
+customColorCss(theme: Theme, scope?: string): string;
+
+// (b) a render-path entry point that does not import react, alongside the css/html paths
+import { customColorCss } from '@wizeworks/silicaui-html/theme';
+```
+
+**Status: (a) is in flight** — silicaui confirmed on 2026-07-31 that the remaining components
+are on their way. That closes gap 2 and squares the canvas with the published page. Sparx
+needs no change when it lands: `buildCustomColorCss` already emits all 41 and the canvas rule
+set is scoped to `.sui-canvas`, so the two never meet.
+
+**(b) is what actually retires the workaround**, and gap 1 stays open without it. Once a host
+can call `customColorCss` off the render path, `custom-colors.ts` drops the plugin difference
+and calls it — deleting the two internals sparx currently leans on (`plugin.withOptions`'
+return shape, and `addBase` being the only channel that matters). Until then the workaround
+carries a published site, and the derived `-content` stays sparx-side either way.
+
+**Generic?** Yes, and unavoidably so. It is not a sparx shape: the moment a design system
+lets a color be **named at runtime** — any multi-tenant builder, any white-label app, any
+CMS with a theme editor — the build-time `colors:` list stops being expressible, and every
+such host has to rebuild this. It is also the literal promise in `color-utilities.js`'s own
+header ("n named colors cascade through everything") applied one step further out: past the
+canvas, onto the page the visitor loads.
+
+**Adjacent, and worth a line in the docs either way.** Nothing between the theme editor and
+the live page notices the problem. sparx's class validator only rejects viewport variants,
+the engine floor only rejects `fixed`/`url(…)`, and `toHtml` emits `class` verbatim — all
+correct individually, but the combined effect is that `btn-sunset` reaches production
+looking like a typo nobody made.
 
 ---
 

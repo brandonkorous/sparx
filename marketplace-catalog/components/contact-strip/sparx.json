@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "contact-strip",
+  "name": "Contact strip",
+  "version": "1.0.0",
+  "tagline": "Phone, email and hours in one row, for the top or bottom of a page.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Page structure",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 58
+}

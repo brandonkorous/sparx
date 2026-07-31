@@ -3,6 +3,8 @@
    the standard `--color-{name}` / `--color-{name}-content` palette silicaui reads.
    Now the shared @sparx/brand package — defined once, imported by every app. */
 @import '@sparx/brand/theme.css';
+/* Rules that close a hole in a silicaui component — see the file header. */
+@import '@sparx/brand/silica-gaps.css';
 @import '@sparx/brand/toast.css';
 
 /* silicaui is the component layer — a Tailwind v4 plugin whose semantic classes

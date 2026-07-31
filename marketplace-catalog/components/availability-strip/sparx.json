@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "availability-strip",
+  "name": "Stock and lead time",
+  "version": "1.0.0",
+  "tagline": "The honest answer to \"when can I actually have it\" — the question that most often loses a sale.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Selling",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 4
+}

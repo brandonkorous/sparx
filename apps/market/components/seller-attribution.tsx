@@ -37,18 +37,15 @@ export function SellerAttribution({
               className="object-cover"
             />
           ) : (
-            <Store size={20} aria-hidden className="text-base-content" />
+            <Store size={20} aria-hidden />
           )}
         </Link>
 
         <div className="min-w-0 flex-1">
-          <Link
-            href={`/merchants/${merchantSlug}`}
-            className="text-base-content font-semibold hover:underline"
-          >
+          <Link href={`/merchants/${merchantSlug}`} className="font-semibold hover:underline">
             {merchantName}
           </Link>
-          <p className="text-base-content inline-flex items-center gap-1 text-[0.8125rem]">
+          <p className="inline-flex items-center gap-1 text-[0.8125rem]">
             <ShieldCheck size={13} aria-hidden className="text-success" />
             Independent seller on sparx.market
           </p>

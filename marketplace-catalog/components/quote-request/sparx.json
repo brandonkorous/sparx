@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "quote-request",
+  "name": "Quote request",
+  "version": "1.0.0",
+  "tagline": "The qualifying questions built in, with the reassurances beside them.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Get in touch",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 21
+}

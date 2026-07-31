@@ -109,7 +109,7 @@ function SocialHero() {
           {NETWORKS.map((n) => (
             <span
               key={n.name}
-              className="bg-base-200 border-base-300 text-base-content text-caption inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium"
+              className="bg-base-200 border-base-300 text-caption inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium"
             >
               <Dot color={S.color} size={8} />
               {n.name}
@@ -150,7 +150,7 @@ function SocialFanOut() {
             </Text>
           </div>
           <div className="bg-base-200 border-base-300 rounded-xl border p-4">
-            <Text className="text-body-sm text-base-content">
+            <Text className="text-body-sm">
               New arrivals just dropped — the whole spring set is live now. Which one’s yours?
             </Text>
           </div>
@@ -158,7 +158,7 @@ function SocialFanOut() {
           <div className="border-base-300 flex items-center gap-3 rounded-xl border p-3">
             <span className={`${S.bg} bg-soft h-12 w-12 shrink-0 rounded-lg`} aria-hidden />
             <div className="flex flex-col">
-              <Text as="span" className="text-caption text-base-content font-medium">
+              <Text as="span" className="text-caption font-medium">
                 spring-set.jpg
               </Text>
               <Text as="span" className="text-mini text-ink-subtle font-mono">
@@ -185,7 +185,7 @@ function SocialFanOut() {
               className="bg-base-100 border-base-300 flex flex-col gap-3 rounded-2xl border p-4"
             >
               <div className="flex items-center justify-between gap-2">
-                <Text as="span" className="text-caption text-base-content font-medium">
+                <Text as="span" className="text-caption font-medium">
                   {n.name}
                 </Text>
                 <Text as="span" className="text-mini text-ink-subtle font-mono">
@@ -285,7 +285,7 @@ function SocialProof() {
       <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s, i) => (
           <div key={s.l} className={i === 0 ? undefined : 'border-base-300 border-l pl-8'}>
-            <div className="text-base-content font-sans text-[clamp(36px,5vw,54px)] leading-none font-medium tracking-[-0.03em]">
+            <div className="font-sans text-[clamp(36px,5vw,54px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
             <Text className="text-small text-ink-muted mt-3">{s.l}</Text>
@@ -305,9 +305,7 @@ function SocialPricing() {
       >
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-base-content font-sans text-[56px] font-medium tracking-[-0.025em]">
-              Free
-            </span>
+            <span className="font-sans text-[56px] font-medium tracking-[-0.025em]">Free</span>
             <Text as="span" className="text-body text-ink-subtle">
               with sparx
             </Text>

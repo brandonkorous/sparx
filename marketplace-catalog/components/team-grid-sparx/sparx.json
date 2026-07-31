@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "team-grid-sparx",
+  "name": "The team",
+  "version": "1.0.0",
+  "tagline": "Faces, names, roles — and a line each, which is what makes it worth the space.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "People & proof",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 37
+}

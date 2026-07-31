@@ -126,17 +126,17 @@ export function updateList(): Node {
     el('ul', 'flex flex-col', {
       children: [
         update(
-          '18 July 2026',
+          'July 18, 2026',
           'Lead times down to four weeks',
           'The new drying shed is full, so we are no longer waiting on deliveries.'
         ),
         update(
-          '2 June 2026',
+          'June 2, 2026',
           'Saturday fittings',
           'We can now fit on Saturdays for anyone who cannot take a weekday off.'
         ),
         update(
-          '14 April 2026',
+          'April 14, 2026',
           'Ten-year guarantee',
           'Extended from five, on everything we make ourselves.'
         ),

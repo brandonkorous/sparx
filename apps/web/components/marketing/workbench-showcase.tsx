@@ -41,22 +41,35 @@ import {
 //
 // This is a STATIC Server Component: unlike DashboardFrame there is no radio/
 // `:has()` navigation, because the argument here is simultaneity, not
-// switching — nothing needs to be clicked to make the point. Appearance is
-// class-based (Tailwind utilities reading silica tokens); the only custom
-// values are the per-group module hue (`--m`) and its derived tint/ink, set in
-// a tiny static <style> block exactly the way the dashboard mock sets `--m` —
-// so nothing here stamps a hex or an inline style prop.
+// switching — nothing needs to be clicked to make the point.
+//
+// COLOUR IS THE PLATFORM'S OWN MECHANISM, not a local one. Each group carries
+// `data-module="commerce" | "crm" | "email"`, which @sparx/brand/theme.css maps
+// to `--color-module` (+ `-content`) for that subtree — the same cascade
+// <ModuleScope> uses in the real workbench. Everything below then reads it
+// through plugin classes: `bg-module`, `text-module`, `text-module-content`,
+// `border-module`, and `bg-module bg-soft` for the tint.
+//
+// This REPLACED a local `<style>` block that defined its own `--m` / `--m-tint`
+// / `--m-ink` triple. Two things were wrong with it, and both are the reason
+// DESIGN.md's Contract exists:
+//
+//   · `--m-tint` hand-rolled `color-mix(in oklab, var(--m) 13%, base)` — which
+//     is exactly what silica's `bg-soft` already computes (at 15%), from
+//     `--u-accent`, which every `bg-<color>` sets. A private reimplementation of
+//     a treatment the design system ships.
+//   · `--m-ink` was `var(--color-primary-content)` — i.e. WHITE — used as the
+//     ink on ANY module fill. But commerce, cms, crm, email, dropship,
+//     inventory, seo and finance all carry DARK `-content` tokens precisely
+//     because white fails AA on those hues (theme.css annotates commerce:
+//     "white measures 2.80:1 here"). So the local copy reintroduced a contrast
+//     bug the token system had already solved. `text-module-content` is correct
+//     per hue, automatically.
 
 const TENANT = 'Lumen & Co.';
 
-// Per-group module hue, plus the shared tint/on-fill-ink derived from it. Static
-// (no `:has()`), the sanctioned custom-prop mechanism the sibling mock uses.
-const FRAME_CSS = `
-.wbx-grp{--m-tint:color-mix(in oklab, var(--m) 13%, var(--color-base-100));--m-ink:var(--color-primary-content);}
-.wbx-commerce{--m:var(--color-module-commerce);}
-.wbx-crm{--m:var(--color-module-crm);}
-.wbx-email{--m:var(--color-module-email);}
-`;
+/** The modules this mock shows, in dock order. Drives `data-module` per group. */
+type ShowcaseModule = 'commerce' | 'crm' | 'email';
 
 // ── Sample data (Lumen & Co., the same tenant the dashboard mock uses) ──
 
@@ -120,12 +133,12 @@ function badgeFor(status: string) {
 }
 
 const RAIL: { icon: LucideIcon; tone: string; label: string }[] = [
-  { icon: LayoutTemplate, tone: 'text-[var(--color-module-builder)]', label: 'Site' },
-  { icon: ShoppingCart, tone: 'text-[var(--color-module-commerce)]', label: 'Selling' },
-  { icon: FileText, tone: 'text-[var(--color-module-cms)]', label: 'Content' },
-  { icon: Users, tone: 'text-[var(--color-module-crm)]', label: 'Customers' },
-  { icon: Send, tone: 'text-[var(--color-module-email)]', label: 'Email' },
-  { icon: Building2, tone: 'text-[var(--color-module-b2b)]', label: 'B2B' },
+  { icon: LayoutTemplate, tone: 'text-module-builder', label: 'Site' },
+  { icon: ShoppingCart, tone: 'text-module-commerce', label: 'Selling' },
+  { icon: FileText, tone: 'text-module-cms', label: 'Content' },
+  { icon: Users, tone: 'text-module-crm', label: 'Customers' },
+  { icon: Send, tone: 'text-module-email', label: 'Email' },
+  { icon: Building2, tone: 'text-module-b2b', label: 'B2B' },
 ];
 
 /**
@@ -148,7 +161,6 @@ export function WorkbenchFrame({ bleed = false }: { bleed?: boolean } = {}) {
         )}
       >
         <div className="bg-base-100 border-base-300 min-w-[1040px] overflow-hidden rounded-xl border">
-          <style dangerouslySetInnerHTML={{ __html: FRAME_CSS }} />
           <BrowserChrome />
           <Toolbar />
           <div className="bg-base-200 flex h-[560px] items-stretch">
@@ -268,7 +280,7 @@ function Dock() {
   return (
     <div className="flex min-w-0 flex-1 gap-1.5 py-1.5 pr-1.5">
       {/* Commerce (orange) — Products, with a dirty background tab. */}
-      <Group groupClass="wbx-commerce" grow="flex-[1.5]">
+      <Group module="commerce" grow="flex-[1.5]">
         <TabStrip
           tabs={[
             { icon: Package, label: 'Products', active: true },
@@ -287,7 +299,7 @@ function Dock() {
       </Group>
 
       {/* CRM (cyan) — Orders. */}
-      <Group groupClass="wbx-crm" grow="flex-[1.15]">
+      <Group module="crm" grow="flex-[1.15]">
         <TabStrip tabs={[{ icon: Receipt, label: 'Orders', active: true }]} />
         <ListPane
           icon={Receipt}
@@ -300,7 +312,7 @@ function Dock() {
       </Group>
 
       {/* Email (sky) — a live customer conversation. */}
-      <Group groupClass="wbx-email" grow="flex-[1.25]">
+      <Group module="email" grow="flex-[1.25]">
         <TabStrip tabs={[{ icon: MessageCircle, label: 'Inbox — Dana W.', active: true }]} />
         <ChatPane />
       </Group>
@@ -308,20 +320,26 @@ function Dock() {
   );
 }
 
+/**
+ * One tiled group. `data-module` is the load-bearing attribute: theme.css turns
+ * it into `--color-module` / `--color-module-content` for this subtree, so every
+ * `bg-module` / `text-module` / `text-module-content` below resolves to THIS
+ * group's hue with no props threaded through.
+ */
 function Group({
-  groupClass,
+  module,
   grow,
   children,
 }: {
-  groupClass: string;
+  module: ShowcaseModule;
   grow: string;
   children: React.ReactNode;
 }) {
   return (
     <div
+      data-module={module}
       className={cx(
-        'wbx-grp bg-base-100 border-base-300 flex min-w-0 flex-col overflow-hidden rounded-lg border',
-        groupClass,
+        'bg-base-100 border-base-300 flex min-w-0 flex-col overflow-hidden rounded-lg border',
         grow
       )}
     >
@@ -346,14 +364,14 @@ function TabStrip({ tabs }: { tabs: Tab[] }) {
           <div
             key={tab.label}
             className={cx(
-              'flex min-w-0 items-center gap-2 rounded-t-lg border-t-2 border-t-[var(--m)] px-3 py-1.5 text-[13px] whitespace-nowrap',
-              tab.active ? 'bg-[var(--m)] text-[var(--m-ink)]' : 'text-ink-muted bg-[var(--m-tint)]'
+              'border-module flex min-w-0 items-center gap-2 rounded-t-lg border-t-2 px-3 py-1.5 text-[13px] whitespace-nowrap',
+              tab.active ? 'bg-module text-module-content' : 'text-ink-muted bg-module bg-soft'
             )}
           >
             <Icon
               size={14}
               strokeWidth={1.8}
-              className={cx('shrink-0', tab.active ? 'text-[var(--m-ink)]' : 'text-[var(--m)]')}
+              className={cx('shrink-0', tab.active ? 'text-module-content' : 'text-module')}
             />
             <span className="min-w-0 truncate">{tab.label}</span>
             {tab.dirty ? (
@@ -366,7 +384,7 @@ function TabStrip({ tabs }: { tabs: Tab[] }) {
               <span
                 className={cx(
                   'inline-flex size-4 items-center justify-center rounded',
-                  tab.active ? 'text-[var(--m-ink)]' : 'text-ink-subtle'
+                  tab.active ? 'text-module-content' : 'text-ink-subtle'
                 )}
                 aria-hidden
               >
@@ -405,23 +423,21 @@ function ListPane({
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="flex items-center justify-between gap-2.5 px-3.5 pt-3 pb-2">
         <div className="flex items-center gap-2.5">
-          <span className="flex size-[30px] items-center justify-center rounded-lg bg-[var(--m-tint)] text-[var(--m)]">
+          <span className="bg-module bg-soft text-module flex size-[30px] items-center justify-center rounded-lg">
             <Icon size={16} strokeWidth={1.8} />
           </span>
           <div>
-            <h3 className="text-base-content m-0 text-[16px] font-medium tracking-[-0.01em]">
-              {title}
-            </h3>
+            <h3 className="m-0 text-[16px] font-medium tracking-[-0.01em]">{title}</h3>
             <p className="text-ink-subtle m-0 mt-px text-[11px]">{sub}</p>
           </div>
         </div>
         {action ? (
-          <span className="text-mini inline-flex items-center gap-1 rounded-lg bg-[var(--m)] px-2.5 py-1.5 font-medium whitespace-nowrap text-[var(--m-ink)]">
+          <span className="text-mini bg-module text-module-content inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 font-medium whitespace-nowrap">
             <Plus size={13} strokeWidth={2.2} />
             {action}
           </span>
         ) : count ? (
-          <span className="text-mini rounded-full bg-[var(--m-tint)] px-2.5 py-0.5 font-medium whitespace-nowrap text-[var(--m)]">
+          <span className="text-mini bg-module bg-soft text-module rounded-full px-2.5 py-0.5 font-medium whitespace-nowrap">
             {count}
           </span>
         ) : null}
@@ -468,7 +484,7 @@ function ListPane({
                       last ? null : 'border-base-300 border-b'
                     )}
                   >
-                    <div className="text-base-content font-medium">{row.main}</div>
+                    <div className="font-medium">{row.main}</div>
                     <div className="text-ink-subtle text-mini">{row.sub}</div>
                   </td>
                   <td
@@ -481,7 +497,7 @@ function ListPane({
                   </td>
                   <td
                     className={cx(
-                      'text-base-content px-3.5 py-2.5 text-right align-middle tabular-nums',
+                      'px-3.5 py-2.5 text-right align-middle tabular-nums',
                       last ? null : 'border-base-300 border-b'
                     )}
                   >
@@ -503,13 +519,11 @@ function ChatPane() {
   return (
     <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
       <div className="flex items-center gap-2.5 px-3.5 pt-3 pb-2">
-        <span className="flex size-[30px] items-center justify-center rounded-full bg-[var(--m-tint)] text-[12px] font-medium text-[var(--m)]">
+        <span className="bg-module bg-soft text-module flex size-[30px] items-center justify-center rounded-full text-[12px] font-medium">
           DW
         </span>
         <div>
-          <h3 className="text-base-content m-0 text-[16px] font-medium tracking-[-0.01em]">
-            Dana Whitfield
-          </h3>
+          <h3 className="m-0 text-[16px] font-medium tracking-[-0.01em]">Dana Whitfield</h3>
           <p className="text-ink-subtle m-0 mt-px flex items-center gap-1.5 text-[11px]">
             <span className="bg-success inline-block size-1.5 rounded-full" />
             Online now
@@ -527,15 +541,15 @@ function ChatPane() {
             className={cx(
               'max-w-[80%] rounded-2xl px-3 py-2 text-[13px] leading-snug',
               msg.from === 'in'
-                ? 'bg-base-200 text-base-content self-start rounded-bl-sm'
-                : 'self-end rounded-br-sm bg-[var(--m)] text-[var(--m-ink)]'
+                ? 'bg-base-200 self-start rounded-bl-sm'
+                : 'bg-module text-module-content self-end rounded-br-sm'
             )}
           >
             {msg.body}
             <span
               className={cx(
                 'text-micro mt-1 block',
-                msg.from === 'in' ? 'text-ink-subtle' : 'text-right text-[var(--m-ink)]'
+                msg.from === 'in' ? 'text-ink-subtle' : 'text-module-content text-right'
               )}
             >
               {msg.time}
@@ -548,7 +562,7 @@ function ChatPane() {
         <span className="bg-base-100 border-base-300 text-ink-subtle flex-1 rounded-full border px-3.5 py-1.5 text-[13px]">
           Message Dana…
         </span>
-        <span className="inline-flex size-8 shrink-0 items-center justify-center rounded-full bg-[var(--m)] text-[var(--m-ink)]">
+        <span className="bg-module text-module-content inline-flex size-8 shrink-0 items-center justify-center rounded-full">
           <SendHorizontal size={15} strokeWidth={1.8} />
         </span>
       </div>

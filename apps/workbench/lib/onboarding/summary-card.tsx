@@ -84,7 +84,7 @@ export function SummaryCard({
           activeItems.map((item) => (
             <div key={item.key} className="flex items-baseline justify-between gap-3 text-sm">
               <span>{item.name}</span>
-              <span className="text-base-content/90 tabular-nums">
+              <span className="tabular-nums">
                 {item.included ? 'Included' : `${money(item.price)}/mo`}
               </span>
             </div>
@@ -111,7 +111,7 @@ export function SummaryCard({
         <div className="border-base-300 flex flex-col gap-2 border-t pt-3">
           {entries.map((entry) => (
             <div key={entry.label} className="flex items-baseline justify-between gap-3 text-sm">
-              <span className="text-base-content/80">{entry.label}</span>
+              <span>{entry.label}</span>
               <span className="text-right font-medium">{entry.value}</span>
             </div>
           ))}

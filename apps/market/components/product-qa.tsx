@@ -31,10 +31,10 @@ function QuestionCard({ question }: { question: ProductQuestion }) {
   return (
     <article className="border-base-300 border-t py-5 first:border-t-0 first:pt-0">
       <div className="flex gap-2.5">
-        <CircleHelp size={18} aria-hidden className="text-base-content mt-0.5 shrink-0" />
+        <CircleHelp size={18} aria-hidden className="mt-0.5 shrink-0" />
         <div className="min-w-0">
-          <p className="text-base-content text-sm font-medium">{question.body}</p>
-          <p className="text-base-content mt-0.5 text-[0.8125rem]">
+          <p className="text-sm font-medium">{question.body}</p>
+          <p className="mt-0.5 text-[0.8125rem]">
             Asked by {question.displayName ?? 'a shopper'} · {formatDate(question.createdAt)}
           </p>
         </div>
@@ -43,8 +43,8 @@ function QuestionCard({ question }: { question: ProductQuestion }) {
         <div className="mt-3 flex flex-col gap-3 pl-7">
           {question.answers.map((answer) => (
             <div key={answer.id} className="bg-base-200 rounded-lg p-3">
-              <p className="text-base-content text-sm whitespace-pre-line">{answer.body}</p>
-              <p className="text-base-content mt-1 inline-flex items-center gap-1 text-[0.8125rem]">
+              <p className="text-sm whitespace-pre-line">{answer.body}</p>
+              <p className="mt-1 inline-flex items-center gap-1 text-[0.8125rem]">
                 {answer.isOfficial ? (
                   <>
                     <ShieldCheck size={13} aria-hidden className="text-success" />
@@ -155,7 +155,7 @@ export function ProductQA({ slug, questions }: { slug: string; questions: Produc
   return (
     <section aria-labelledby="qa-heading" className="flex flex-col gap-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 id="qa-heading" className="text-base-content text-xl font-semibold">
+        <h2 id="qa-heading" className="text-xl font-semibold">
           Questions &amp; answers
         </h2>
         {!asking ? (

@@ -1,12 +1,9 @@
-import { Badge, Card, CardBody, CardTitle, Heading, Text } from '@wizeworks/silicaui-react';
+import { Card, CardBody, CardTitle, Heading, Text } from '@wizeworks/silicaui-react';
 
 /**
- * "Less software. More company." — the receipt beat. v2 was already nearly
- * pure silicaui; the one real fix is the "cost of disconnected tools" badge,
- * which was a translucent-white chip built from inline `style` (hardcoded
- * rgba/hex). It's swapped for `secondary-content` (the theme's real "content
- * that sits on secondary" token, `#ffffff` in light mode) at reduced opacity
- * via a plain Tailwind class — same token, zero hardcoded color.
+ * "Less software. More business." — the receipt beat. The argument is made by an
+ * object rather than a chart: a torn-edged, barcode-footed slip tilted off a navy
+ * card, totalling what the disconnected stack actually costs per month.
  */
 const RECEIPT = [
   { label: 'Online store', price: 399 },
@@ -67,22 +64,30 @@ export function LandingV3Proof() {
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-[1.2fr_0.8fr] lg:grid-rows-2">
           <Card className="bg-secondary text-secondary-content relative overflow-hidden sm:min-h-[520px] lg:row-span-2 lg:min-h-[700px]">
             <CardBody>
+              {/* No "The cost of disconnected tools" chip above the title. It was
+                  an eyebrow — and one hand-built out of a translucent fill and
+                  border, i.e. a re-skinned Badge — introducing a heading that
+                  carries itself. The receipt below states the cost literally.
+
+                  The body copy is also no longer the section lede repeated: the
+                  two were the same sentence, verbatim, about 15px apart. The
+                  lede makes the general claim; the card sets up the receipt. */}
               <div className="flex max-w-md flex-col gap-4">
-                <Badge className="bg-secondary-content/15 border-secondary-content/25 text-secondary-content w-fit">
-                  The cost of disconnected tools
-                </Badge>
                 <CardTitle className="text-5xl leading-[0.95] sm:text-6xl lg:text-7xl">
                   Stop paying for the seams.
                 </CardTitle>
-                <Text className="text-secondary-content/85 max-w-xl text-2xl">
-                  Sparx puts the website, commerce, customer data, marketing and operations on one
-                  shared foundation — so you pay for capability instead of integrations.
+                <Text className="text-secondary-content max-w-xl text-2xl">
+                  Four subscriptions, four bills, four copies of the same customer — and you still
+                  stitch them together by hand every week.
                 </Text>
               </div>
             </CardBody>
 
             <div
-              className="border-base-300 bg-base-100 text-base-content mx-6 mt-2 mb-6 border-x border-t px-6 pt-6 pb-10 font-mono text-sm shadow-2xl sm:absolute sm:right-6 sm:bottom-0 sm:mx-0 sm:mt-0 sm:mb-0 sm:w-[60%] sm:translate-y-30 sm:rotate-[-4deg]"
+              // No `shadow-2xl`: shadows are not a sanctioned visual device here. The
+              // slip already separates from the navy card by base-tone, by its border,
+              // and by the tilt — the shadow was adding nothing the geometry didn't.
+              className="border-base-300 bg-base-100 text-base-content mx-6 mt-2 mb-6 border-x border-t px-6 pt-6 pb-10 font-mono text-sm sm:absolute sm:right-6 sm:bottom-0 sm:mx-0 sm:mt-0 sm:mb-0 sm:w-[60%] sm:translate-y-30 sm:rotate-[-4deg]"
               style={{ clipPath: RECEIPT_TORN_EDGE }}
             >
               <div className="text-base-content text-center text-xs tracking-[0.2em]">

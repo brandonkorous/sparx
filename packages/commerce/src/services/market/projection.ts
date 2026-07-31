@@ -42,6 +42,9 @@ function storefrontBaseUrl(slug: string | null): string | null {
 
 interface BrandOverride {
   businessName?: string | null;
+  /** The site's light logo. `logoMediaId` is the LEGACY single-logo key, kept so an
+   *  override written before the light/dark split still resolves. */
+  logoLightMediaId?: string | null;
   logoMediaId?: string | null;
 }
 
@@ -50,6 +53,7 @@ function readBrandOverride(value: unknown): BrandOverride {
   const v = value as Record<string, unknown>;
   return {
     businessName: typeof v.businessName === 'string' ? v.businessName : null,
+    logoLightMediaId: typeof v.logoLightMediaId === 'string' ? v.logoLightMediaId : null,
     logoMediaId: typeof v.logoMediaId === 'string' ? v.logoMediaId : null,
   };
 }
@@ -97,9 +101,12 @@ async function resolveMerchantIdentity(
   });
   const override = readBrandOverride(property?.brandOverride);
   const name = override.businessName ?? property?.name ?? tenant?.slug ?? 'Merchant';
+  // The site's own logo wins; the tenant base is only the fallback for a site that
+  // has never been branded. `logoMediaId` is the legacy single-logo key — an
+  // override written before the light/dark split still carries the light logo there.
   const logoUrl = await resolveMediaUrl(
     tx,
-    override.logoMediaId ?? brand?.logoLightMediaId ?? null
+    override.logoLightMediaId ?? override.logoMediaId ?? brand?.logoLightMediaId ?? null
   );
   return {
     // The marketplace handle → /merchants/{handle}. Never the tenant slug (post-backfill).

@@ -151,7 +151,7 @@ export function StoryGoLive({
       <div className="border-base-300 flex items-center justify-between gap-4 rounded-xl border px-5 py-4">
         <div className="flex min-w-0 items-center gap-2.5">
           <Globe className="text-module size-4 shrink-0" aria-hidden />
-          <span className="text-base-content truncate font-medium">{host}</span>
+          <span className="truncate font-medium">{host}</span>
         </div>
         {previewHref ? (
           <Button
@@ -175,7 +175,7 @@ export function StoryGoLive({
 
       {monthlySavings > 0 ? (
         <div className="flex flex-col gap-1">
-          <Text className="text-base-content max-w-[58ch] text-base">
+          <Text className="max-w-[58ch] text-base">
             And here’s the quiet part of the story: you’re running{' '}
             <span className="font-medium">
               {String(moduleCount)} {moduleCount === 1 ? 'tool' : 'tools'}

@@ -159,7 +159,7 @@ function WebhookFields({
       >
         {WEBHOOK_EVENT_GROUPS.map((group) => (
           <fieldset key={group} className="flex flex-col gap-3">
-            <legend className="text-base-content font-medium">{group}</legend>
+            <legend className="font-medium">{group}</legend>
             {WEBHOOK_EVENTS.filter((event) => event.group === group).map((event) => (
               <label key={event.key} className="flex items-start gap-3">
                 <Checkbox
@@ -225,7 +225,7 @@ function WebhookFields({
 function SecretBox({ value, onCopy }: { value: string; onCopy?: () => void }) {
   return (
     <div className="border-base-300 bg-base-200 flex items-center gap-2 rounded-md border p-3">
-      <code className="text-base-content min-w-0 flex-1 font-mono text-sm break-all">{value}</code>
+      <code className="min-w-0 flex-1 font-mono text-sm break-all">{value}</code>
       {onCopy ? (
         <Button size="sm" variant="soft" color="module" className="shrink-0" onClick={onCopy}>
           <Copy className="size-4" aria-hidden />

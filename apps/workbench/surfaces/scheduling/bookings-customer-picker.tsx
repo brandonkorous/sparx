@@ -28,7 +28,7 @@ export function CustomerPicker({
   if (value) {
     return (
       <div className="border-base-300 bg-base-100 flex items-center gap-2 rounded-md border p-2">
-        <UserRound className="text-base-content size-4 shrink-0" aria-hidden />
+        <UserRound className="size-4 shrink-0" aria-hidden />
         <span className="min-w-0 flex-1">
           <span className="block font-medium">{customerName(value)}</span>
           {value.email ? (

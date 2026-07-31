@@ -124,7 +124,7 @@ export default async function MerchantProfilePage({ params, searchParams }: Page
 
       {/* Identity head — logo overlaps the banner. */}
       <div className="-mt-12 flex flex-wrap items-end gap-5 px-2">
-        <span className="bg-base-100 text-base-content border-base-100 relative inline-flex h-[5.5rem] w-[5.5rem] flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl border-[3px] shadow-[0_4px_14px_-6px_rgba(0,0,0,0.25)]">
+        <span className="bg-base-100 border-base-100 relative inline-flex h-[5.5rem] w-[5.5rem] flex-shrink-0 items-center justify-center overflow-hidden rounded-2xl border-[3px] shadow-[0_4px_14px_-6px_rgba(0,0,0,0.25)]">
           {merchant.logoUrl ? (
             <Image src={merchant.logoUrl} alt={merchant.name} fill sizes="88px" />
           ) : (
@@ -132,11 +132,9 @@ export default async function MerchantProfilePage({ params, searchParams }: Page
           )}
         </span>
         <div className="min-w-0 flex-1 pb-1">
-          <h1 className="text-base-content text-2xl font-bold tracking-[-0.02em] md:text-3xl">
-            {merchant.name}
-          </h1>
+          <h1 className="text-2xl font-bold tracking-[-0.02em] md:text-3xl">{merchant.name}</h1>
           {/* Trust row */}
-          <div className="text-base-content mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
+          <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm">
             {merchant.rating != null && merchant.ratingCount > 0 ? (
               <Stars rating={merchant.rating} reviewCount={merchant.ratingCount} size={14} />
             ) : null}
@@ -182,12 +180,8 @@ export default async function MerchantProfilePage({ params, searchParams }: Page
       {/* Headline + bio + socials */}
       {merchant.headline || merchant.bio || merchant.socials.length > 0 ? (
         <div className="mt-6 flex max-w-3xl flex-col gap-3">
-          {merchant.headline ? (
-            <p className="text-base-content text-lg font-medium">{merchant.headline}</p>
-          ) : null}
-          {merchant.bio ? (
-            <p className="text-base-content text-sm leading-relaxed">{merchant.bio}</p>
-          ) : null}
+          {merchant.headline ? <p className="text-lg font-medium">{merchant.headline}</p> : null}
+          {merchant.bio ? <p className="text-sm leading-relaxed">{merchant.bio}</p> : null}
           {merchant.socials.length > 0 ? (
             <div className="flex flex-wrap gap-2">
               {merchant.socials.map((social) => (
@@ -196,7 +190,7 @@ export default async function MerchantProfilePage({ params, searchParams }: Page
                   href={social.url}
                   target="_blank"
                   rel="noopener noreferrer nofollow"
-                  className="border-base-300 text-base-content hover:border-base-content/20 hover:text-base-content inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-[0.8125rem] transition-colors"
+                  className="border-base-300 hover:border-base-content/20 items-center gap-1.5 rounded-full border px-3 py-1.5 text-[0.8125rem] transition-colors hover:inline-flex"
                 >
                   {social.platform}
                   <ExternalLink size={12} aria-hidden />
@@ -210,7 +204,7 @@ export default async function MerchantProfilePage({ params, searchParams }: Page
       {/* Catalog with in-store controls */}
       <section className="mt-10">
         <div className="mb-5 flex flex-col gap-4">
-          <h2 className="text-base-content text-xl font-semibold">
+          <h2 className="text-xl font-semibold">
             {q ? `Results for “${q}” in ${merchant.name}` : `Products from ${merchant.name}`}
           </h2>
           <StoreControls basePath={`/merchants/${merchant.slug}`} q={q} sort={sort} />

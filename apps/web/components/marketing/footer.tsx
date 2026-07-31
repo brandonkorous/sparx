@@ -148,7 +148,7 @@ const DOMAINS: { name: string; module?: MarketingModule; primary?: boolean }[] =
   { name: 'sparx.market' },
 ];
 
-const LINK_CLASS = 'text-base-content hover:text-base-content text-sm';
+const LINK_CLASS = 'hover:text-sm';
 
 export function Footer() {
   return (
@@ -156,7 +156,7 @@ export function Footer() {
       <SilicaFooter className="bg-base-100 border-base-300 grid-flow-row grid-cols-1 gap-x-8 gap-y-10 border-t px-6 pt-16 pb-10 sm:grid-cols-2 sm:px-8 lg:grid-cols-3 xl:grid-flow-col xl:grid-cols-none">
         <aside className="flex w-full max-w-[340px] min-w-60 flex-col gap-5">
           <Wordmark size={48} />
-          <Text className="text-base-content text-sm">
+          <Text className="text-sm">
             Modular content and commerce OS by WizeWorks. Built in Visalia, California. Operating
             worldwide.
           </Text>
@@ -180,7 +180,7 @@ export function Footer() {
                   className={LINK_CLASS}
                 >
                   {link.label}
-                  {external ? <span className="text-base-content ml-1">↗</span> : null}
+                  {external ? <span className="ml-1">↗</span> : null}
                 </Link>
               );
             })}
@@ -217,7 +217,7 @@ export function Footer() {
 
           <div className="border-base-300 flex flex-wrap items-center justify-between gap-3 border-t pt-6">
             <Text variant="caption">
-              © 2026 WizeWorks, Inc. · Visalia, California · sparx is a registered trademark of
+              © 2026 WizeWorks LLC · Visalia, California · sparx is a registered trademark of
               WizeWorks.
             </Text>
             <div className="flex items-center gap-4">

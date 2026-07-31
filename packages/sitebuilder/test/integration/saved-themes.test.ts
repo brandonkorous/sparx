@@ -86,11 +86,16 @@ describe('sitebuilder saved themes', () => {
     expect(draft.presentation?.containerWidth).toBe('1280px');
     // The applied theme is pinned so the dashboard rail restores the selection.
     expect(draft.activeSavedThemeId).toBe(summerId);
-    // Apply also lands the captured brand look — on the PRIMARY site that's the
-    // tenant BASE brand (the fix: a headless apply must colour the site, not just
+    // Apply also lands the captured brand look — on THIS SITE's own override, even
+    // though it is the primary (a headless apply must colour the site, not just
     // stage its surfaces, or the theme "doesn't apply" in the brand designer).
-    const brand = await readTenantBrand(test.tenant.tenantId);
-    expect(brand?.colorPrimary).toBe('#2f7d32');
+    const row = await readPropertyBrandOverride(test.tenant.tenantId, test.ctx.propertyId);
+    expect((row?.brandOverride as { colorPrimary?: string } | null)?.colorPrimary).toBe('#2f7d32');
+    // The tenant BASE is the default an UNBRANDED site inherits — never a site's
+    // own storage. Writing the primary's theme there is what recoloured every
+    // sibling site that had no override of its own.
+    const base = await readTenantBrand(test.tenant.tenantId);
+    expect(base?.colorPrimary ?? null).toBeNull();
     // Not published — apply only stages the draft.
     expect(config.publishedVersionId).toBeNull();
   });
@@ -195,21 +200,48 @@ describe('sitebuilder update_site_settings — identity media (logo/favicon)', (
     await disposeTestContext(test);
   });
 
-  it('primary site — logo + favicon ids land on the tenant base brand', async () => {
+  const primaryOverride = async () => {
+    const row = await readPropertyBrandOverride(test.tenant.tenantId, test.ctx.propertyId);
+    return (row?.brandOverride ?? {}) as Record<string, string | null>;
+  };
+
+  it('primary site — logo + favicon ids land on the site’s OWN override', async () => {
     await themeService.updateSettings(test.ctx, {
       logoLightMediaId: LOGO,
       faviconMediaId: FAVICON,
     });
-    const brand = await readTenantBrand(test.tenant.tenantId);
-    expect(brand?.logoLightMediaId).toBe(LOGO);
-    expect(brand?.faviconMediaId).toBe(FAVICON);
+    const override = await primaryOverride();
+    expect(override.logoLightMediaId).toBe(LOGO);
+    expect(override.faviconMediaId).toBe(FAVICON);
+
+    // The tenant base stays empty. It used to receive these ids, and because it is
+    // also the fallback an unbranded site inherits, a logo attached to the primary
+    // showed up on every sibling site — a live tenant had two unrelated web
+    // properties wearing the same wordmark (2026-07-31).
+    const base = await readTenantBrand(test.tenant.tenantId);
+    expect(base?.logoLightMediaId ?? null).toBeNull();
+    expect(base?.faviconMediaId ?? null).toBeNull();
   });
 
   it('null clears one id; an omitted field is left as-is', async () => {
     await themeService.updateSettings(test.ctx, { logoLightMediaId: null });
-    const brand = await readTenantBrand(test.tenant.tenantId);
-    expect(brand?.logoLightMediaId ?? null).toBeNull(); // cleared
-    expect(brand?.faviconMediaId).toBe(FAVICON); // untouched (undefined)
+    const override = await primaryOverride();
+    expect(override.logoLightMediaId ?? null).toBeNull(); // cleared
+    expect(override.faviconMediaId).toBe(FAVICON); // untouched (undefined)
+  });
+
+  it('a sibling site does NOT inherit the primary’s logo', async () => {
+    await themeService.updateSettings(test.ctx, { logoLightMediaId: LOGO });
+    const secondary = await addSecondaryProperty(test, 'sibling');
+
+    // The regression itself: branding one site must leave every other site alone.
+    const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);
+    const override = (row?.brandOverride ?? {}) as Record<string, string | null>;
+    expect(override.logoLightMediaId ?? null).toBeNull();
+
+    // And there is nothing on the tenant base for it to pick the logo up from.
+    const base = await readTenantBrand(test.tenant.tenantId);
+    expect(base?.logoLightMediaId ?? null).toBeNull();
   });
 
   it('non-primary site — the id lands on the site override, not the tenant base', async () => {

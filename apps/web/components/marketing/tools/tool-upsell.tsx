@@ -43,7 +43,7 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
                 <span className={cx('text-mini font-mono font-medium', color.ink)}>
                   {feature.number}
                 </span>
-                <h3 className="text-body-lg text-base-content m-0 font-sans font-medium tracking-tight">
+                <h3 className="text-body-lg m-0 font-sans font-medium tracking-tight">
                   {feature.title}
                 </h3>
                 <p className="text-body text-ink-muted m-0 font-sans">{feature.body}</p>

@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@sparx/app-kit": "workspace:*",
+    "@sparx/brand": "workspace:*",
     "@sparx/builder-render": "workspace:*",
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/chat-widget": "workspace:*",
@@ -21,7 +22,6 @@
     "@sparx/silica-catalog": "workspace:*",
     "@sparx/sitebuilder-schemas": "workspace:*",
     "@sparx/site-themes": "workspace:*",
-    "@sparx/site-ui": "workspace:*",
     "@sparx/ui": "workspace:*",
     "@stripe/react-stripe-js": "^3.7.0",
     "@stripe/stripe-js": "^5.10.0",

@@ -365,7 +365,7 @@ function ExportBlock({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-body-sm text-base-content font-medium">{title}</span>
+      <span className="text-body-sm font-medium">{title}</span>
       <CodeBlock height="short">{code}</CodeBlock>
       <div>
         <CopyButton value={code} label={copyLabel} toastLabel={toast} />

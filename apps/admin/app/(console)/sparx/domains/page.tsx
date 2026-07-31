@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { requireCapability } from '@sparx/operator-auth/next';
 import { logOperatorAction } from '@sparx/operator-auth';
-import { Button, Card, Input, PageHeader, Stack, Text } from '@sparx/ui';
+import { Input } from '@wizeworks/silicaui-react';
+import { Button, Card, PageHeader, Stack, Text } from '@sparx/ui';
 import { OperatorApiError, type OperatorDomainListResult } from '@sparx/operator';
 import { operatorApi } from '@/lib/operator-api';
 import { DomainsTable } from './_components/domains-table';

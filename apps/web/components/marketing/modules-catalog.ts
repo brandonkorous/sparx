@@ -265,6 +265,36 @@ export const MODULE_BACKGROUND_COLOR: Record<MarketingModule, string> = {
   social: 'bg-module-social',
 };
 
+/**
+ * The paired INK for a solid module fill. `bg-module-commerce` sets the fill and
+ * nothing else — silica emits the fill and its `-content` ink as two independent
+ * utilities — so anything wearing `MODULE_BACKGROUND_COLOR` must also wear the
+ * matching entry here or it inherits whatever ink the surrounding surface had.
+ *
+ * This map exists because the alternative kept being `#FFFFFF`: two call sites
+ * (the timeline markers, the module tile glyph) hit the contrast problem and
+ * reached for a literal white, which is right in light mode and wrong the moment
+ * a module hue is light enough to need dark ink. Literal class names, because
+ * Tailwind's scanner cannot see an interpolated `text-module-${id}-content`.
+ */
+export const MODULE_CONTENT_COLOR: Record<MarketingModule, string> = {
+  builder: 'text-module-builder-content',
+  commerce: 'text-module-commerce-content',
+  cms: 'text-module-cms-content',
+  crm: 'text-module-crm-content',
+  invoicing: 'text-module-invoicing-content',
+  email: 'text-module-email-content',
+  b2b: 'text-module-b2b-content',
+  dropship: 'text-module-dropship-content',
+  inventory: 'text-module-inventory-content',
+  chat: 'text-module-chat-content',
+  scheduling: 'text-module-scheduling-content',
+  ai: 'text-module-ai-content',
+  seo: 'text-module-seo-content',
+  automations: 'text-module-automations-content',
+  social: 'text-module-social-content',
+};
+
 export const MODULE_BORDER_COLOR: Record<MarketingModule, string> = {
   builder: 'border-module-builder',
   commerce: 'border-module-commerce',

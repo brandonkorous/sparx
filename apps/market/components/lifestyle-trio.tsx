@@ -30,14 +30,14 @@ function LifestyleTile({ edit, priority }: { edit: LifestyleEdit; priority: bool
       />
       <div className="bg-base-100/95 absolute inset-x-3 bottom-3 rounded-xl p-4 backdrop-blur-sm">
         <div className="flex items-center justify-between gap-2">
-          <span className="text-base-content text-lg font-semibold">{edit.title}</span>
+          <span className="text-lg font-semibold">{edit.title}</span>
           <ArrowRight
             size={18}
             aria-hidden
             className="text-primary shrink-0 transition-transform group-hover:translate-x-0.5"
           />
         </div>
-        <span className="text-base-content mt-0.5 block text-sm">{edit.sub}</span>
+        <span className="mt-0.5 block text-sm">{edit.sub}</span>
       </div>
     </Link>
   );

@@ -852,7 +852,7 @@ function CustomerEditor({
                       <TabsTab
                         key={entry.value}
                         value={entry.value}
-                        className="text-base-content flex items-center gap-1.5"
+                        className="flex items-center gap-1.5"
                       >
                         {entry.label}
                         {/* The dirty dot makes a toolbar Save honest: it says

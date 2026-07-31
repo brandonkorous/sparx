@@ -34,7 +34,7 @@ const one = (v: string | string[] | undefined): string =>
 // full owner catalog (25 scopes / 12 modules) far overflows a laptop viewport.
 function Shell({ children }: { children: React.ReactNode }) {
   return (
-    <main className="bg-base-200 text-base-content grid min-h-dvh place-items-center p-4 sm:p-6">
+    <main className="bg-base-200 grid min-h-dvh place-items-center p-4 sm:p-6">
       <div className="flex w-full max-w-2xl flex-col items-center gap-5">
         <Wordmark size={56} aria-label="sparx" />
         <div className="bg-base-100 border-base-300 flex max-h-[calc(100dvh-7rem)] w-full flex-col overflow-hidden rounded-xl border">
@@ -65,7 +65,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
           <Alert color="danger" variant="soft" role="alert">
             {validation.error}
           </Alert>
-          <Text className="text-base-content text-sm">
+          <Text className="text-sm">
             Close this window and start the connection again from your assistant.
           </Text>
         </div>
@@ -110,7 +110,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
       <div className="border-base-300 flex shrink-0 flex-col gap-3 border-b p-6 sm:px-8">
         <div className="flex flex-col gap-1.5">
           <h1 className="text-2xl font-semibold tracking-tight">Connect {clientName}</h1>
-          <Text className="text-base-content text-sm">
+          <Text className="text-sm">
             {clientName} wants to act in your sparx workspace through the MCP server. Choose exactly
             what it can do — revoke anytime in AI Connections.
           </Text>
@@ -127,7 +127,7 @@ export default async function OAuthConsentPage({ searchParams }: { searchParams:
           </Alert>
         ) : null}
 
-        <Text className="text-base-content text-sm">
+        <Text className="text-sm">
           Signed in as <strong>{session.user.email}</strong> · {role}
         </Text>
       </div>

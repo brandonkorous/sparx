@@ -45,7 +45,7 @@ export default function SearchConsoleCallbackPage() {
   }, []);
 
   return (
-    <div className="bg-base-200 text-base-content grid min-h-screen place-items-center p-8">
+    <div className="bg-base-200 grid min-h-screen place-items-center p-8">
       <div className="card bg-base-100 flex max-w-sm flex-col gap-2 p-6 text-center">
         <h1 className="text-lg font-semibold">
           {closed ? 'You can close this window' : 'Finishing up…'}

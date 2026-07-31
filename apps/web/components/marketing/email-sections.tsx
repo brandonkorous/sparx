@@ -127,7 +127,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
           {initials}
         </span>
         <span className="min-w-0">
-          <Text as="span" className="text-small text-base-content block font-medium">
+          <Text as="span" className="text-small block font-medium">
             {email.transactional.subject}
           </Text>
           <Text as="span" className="text-mini text-ink-subtle font-mono">
@@ -140,7 +140,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
           <span
             className={`${E.bg} bg-soft border-module-email h-[26px] w-[26px] rounded-[7px] border`}
           />
-          <Text as="span" className="text-small text-base-content font-medium">
+          <Text as="span" className="text-small font-medium">
             {name}
           </Text>
         </div>
@@ -164,9 +164,7 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
             key={l}
             className={`px-[18px] py-3.5 ${i === 0 ? '' : 'border-base-200 border-l'}`.trimEnd()}
           >
-            <div
-              className={`text-body-lg font-medium tracking-[-0.01em] ${i === 2 ? E.ink : 'text-base-content'}`}
-            >
+            <div className={`text-body-lg font-medium tracking-[-0.01em] ${i === 2 ? E.ink : ''}`}>
               {v}
             </div>
             <Text className="text-micro text-ink-subtle mt-0.5 font-mono">{l}</Text>

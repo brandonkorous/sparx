@@ -21,11 +21,7 @@ export function Stars({
 }) {
   if (rating === null || reviewCount === 0) {
     if (compact) return null;
-    return (
-      <span className="text-base-content inline-flex items-center gap-1.5 text-sm">
-        No reviews yet
-      </span>
-    );
+    return <span className="inline-flex items-center gap-1.5 text-sm">No reviews yet</span>;
   }
 
   const rounded = Math.round(rating * 2) / 2;
@@ -34,7 +30,7 @@ export function Stars({
 
   return (
     <span
-      className="text-base-content inline-flex items-center gap-1.5 text-sm"
+      className="inline-flex items-center gap-1.5 text-sm"
       aria-label={`Rated ${rating.toFixed(1)} out of 5 from ${reviewCount} ${
         reviewCount === 1 ? 'review' : 'reviews'
       }`}
@@ -48,7 +44,7 @@ export function Stars({
         })}
       </span>
       {compact ? (
-        <span className="text-base-content">({reviewCount.toLocaleString()})</span>
+        <span>({reviewCount.toLocaleString()})</span>
       ) : (
         <span>
           {rating.toFixed(1)} ({reviewCount.toLocaleString()})

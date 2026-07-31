@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "salon",
+  "name": "Salon",
+  "version": "1.0.0",
+  "tagline": "Polished and inviting for beauty and spa.",
+  "description": "A softly luxe mauve with generous whitespace that feels like a treatment room. For hair, beauty, nails, lashes, and spa businesses selling a little indulgence.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Luxe",
+    "colorFamily": "Mauve",
+    "density": "Spacious",
+    "industry": "Wellness & Beauty"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#e6b9e8",
+  "sortWeight": 89
+}

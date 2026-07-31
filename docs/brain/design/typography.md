@@ -5,7 +5,7 @@ type: rule
 status: active
 applies-to: [both]
 sources:
-  - apps/dashboard/DESIGN.md
+  - DESIGN.md
   - packages/ui/src/tokens.css
   - docs/sparx-brand-guide.md
 ---

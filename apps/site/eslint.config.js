@@ -17,17 +17,12 @@ export default [
       // This RE-LISTS the root config's silica map rather than adding to it:
       // flat config REPLACES `settings['jsx-a11y']` wholesale instead of
       // deep-merging, so anything omitted here is silently lost for these files.
-      // The `Sparx*` rows are the legacy @sparx/site-ui components the sections
-      // renderer still uses; they go when that render path retires (docs/118).
       'jsx-a11y': {
         components: {
           Checkbox: 'input',
           Input: 'input',
           NativeSelect: 'select',
           Textarea: 'textarea',
-          SparxInput: 'input',
-          SparxSelect: 'select',
-          SparxTextarea: 'textarea',
         },
       },
     },

@@ -135,7 +135,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
         el('div', 'navbar-end gap-3', {
           name: 'navbar-end',
           children: [
-            atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
+            atom('Button', 'btn btn-primary btn-sm', {
               label: 'Get started',
             }),
           ],
@@ -314,7 +314,7 @@ export const NAVIGATION_CATALOG: PlatformCatalogEntry[] = [
     tags: ['steps', 'stepper', 'progress', 'wizard', 'navigation'],
     // The real Steps atom (st-steps) — "x " marks a completed step, "* " the active
     // one. (Was hand-rolled numbered circles + connector rails.)
-    tree: atom('Steps', 'st-c-primary w-full', {
+    tree: atom('Steps', 'steps-primary w-full', {
       orientation: 'horizontal',
       items: 'x Cart\n* Shipping\nPayment',
     }),

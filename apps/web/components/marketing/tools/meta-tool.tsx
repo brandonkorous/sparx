@@ -126,7 +126,7 @@ export function MetaTool() {
             </div>
             <div className="bg-base-100 px-3.5 py-3">
               <div className="text-ink-subtle text-[11px] uppercase">{host}</div>
-              <div className="text-base-content text-[15px] font-semibold">
+              <div className="text-[15px] font-semibold">
                 {clip(title || 'Your page title', 70)}
               </div>
               <div className="text-ink-muted text-[13px]">

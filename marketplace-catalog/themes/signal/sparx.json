@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "signal",
+  "name": "Signal",
+  "version": "1.0.0",
+  "tagline": "Sharp and product-forward for software and apps.",
+  "description": "A confident indigo with a clean, product-forward rhythm. For software, apps, devices, and subscriptions that want the site to feel as considered as the thing it sells.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Bold",
+    "colorFamily": "Indigo",
+    "density": "Standard",
+    "industry": "Tech & Electronics"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#3f40c4",
+  "sortWeight": 81
+}

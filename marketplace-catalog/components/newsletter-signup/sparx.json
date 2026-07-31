@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "newsletter-signup",
+  "name": "Email sign-up",
+  "version": "1.0.0",
+  "tagline": "One field, and it says what will actually arrive — which is what decides whether anyone types in it.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Get in touch",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 20
+}

@@ -1,7 +1,8 @@
 import Link from 'next/link';
 import { hasCapability, requireCapability } from '@sparx/operator-auth/next';
 import { logOperatorAction } from '@sparx/operator-auth';
-import { Button, Card, cn, Input, PageHeader, Stack, Text } from '@sparx/ui';
+import { Input } from '@wizeworks/silicaui-react';
+import { Button, Card, cn, PageHeader, Stack, Text } from '@sparx/ui';
 import {
   OperatorApiError,
   type OperatorOrderSearchResult,

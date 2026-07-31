@@ -73,9 +73,9 @@ function triggerClasses(variant: TabsListVariant, size: TabsSize): string {
     return cn(
       'inline-flex shrink-0 items-center rounded-sm font-medium whitespace-nowrap',
       SIZE_PILLS[size],
-      'text-base-content hover:text-base-content',
+
       'transition-colors duration-150',
-      'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+      'focus-ring',
       'disabled:pointer-events-none disabled:opacity-40',
       // Active pill: white surface lift + the module hue on the label, so the
       // current selection carries the active-module color (DESIGN.md) instead of
@@ -86,9 +86,9 @@ function triggerClasses(variant: TabsListVariant, size: TabsSize): string {
   return cn(
     'relative -mb-px inline-flex shrink-0 items-center font-medium whitespace-nowrap',
     SIZE_DEFAULT[size],
-    'text-base-content hover:text-base-content',
+
     'border-b-2 border-transparent transition-colors duration-150',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+    'focus-ring',
     'disabled:pointer-events-none disabled:opacity-40',
     'data-[state=active]:border-module data-[state=active]:text-module'
   );
@@ -115,10 +115,7 @@ export const TabsContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <TabsPrimitive.Content
     ref={ref}
-    className={cn(
-      'mt-4 focus-visible:rounded-sm focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
-      className
-    )}
+    className={cn('focus-ring mt-4 focus-visible:rounded-sm', className)}
     {...props}
   />
 ));

@@ -160,7 +160,7 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
       className={`${M.bg} bg-soft border-base-300 flex h-full flex-col gap-[18px] rounded-[14px] border p-6`}
     >
       <div>
-        <Text as="span" className="text-body text-base-content font-medium">
+        <Text as="span" className="text-body font-medium">
           {d.routed.number}
         </Text>
         <Text as="span" className="text-mini text-ink-subtle mt-1 block font-mono">
@@ -181,7 +181,7 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
               </span>
               <Text
                 as="span"
-                className={`text-small ${done ? 'text-base-content' : 'text-ink-subtle'} ${
+                className={`text-small ${done ? '' : 'text-ink-subtle'} ${
                   i === activeIdx ? 'font-medium' : 'font-normal'
                 }`}
               >
@@ -213,7 +213,7 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
         </Text>
       </div>
       <div className="p-[22px]">
-        <div className="text-body text-base-content font-medium tracking-[-0.01em]">
+        <div className="text-body font-medium tracking-[-0.01em]">
           Your {name} order has shipped
         </div>
         <Text className="text-caption text-ink-muted mt-3">
@@ -223,7 +223,7 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
         <div className="bg-base-200 border-base-300 mt-4 flex items-center gap-3 rounded-[10px] border px-4 py-3.5">
           <TruckGlyph size={16} color={M.color} />
           <span className="min-w-0">
-            <Text as="span" className="text-mini text-base-content block font-medium">
+            <Text as="span" className="text-mini block font-medium">
               {d.routed.carrier}
             </Text>
             <Text as="span" className="text-micro text-ink-subtle font-mono">

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "offer-hero",
+  "name": "Featured offer",
+  "version": "1.0.0",
+  "tagline": "One product or package given the whole band — picture, price, buttons.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Selling",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 7
+}

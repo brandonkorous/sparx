@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "garage",
+  "name": "Garage",
+  "version": "1.0.0",
+  "tagline": "Bold and mechanical for vehicle service and parts.",
+  "description": "A dark, high-contrast shop floor with an ignition-orange primary. For vehicle service, repair, tuning, and parts sellers who want the site to look as capable as the bay.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Bold",
+    "colorFamily": "Orange",
+    "density": "Standard",
+    "industry": "Automotive"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#ff7c49",
+  "sortWeight": 94
+}

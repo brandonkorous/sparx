@@ -76,7 +76,7 @@ export default async function AcceptInvitePage({
           >
             Create an account
           </Button>
-          <Text className="text-base-content text-sm">
+          <Text className="text-sm">
             Use {invite.email} so the invitation matches your account.
           </Text>
         </div>
@@ -89,7 +89,7 @@ export default async function AcceptInvitePage({
     return (
       <InviteFrame invite={invite}>
         <div className="flex flex-col gap-3">
-          <Text className="text-base-content text-sm">
+          <Text className="text-sm">
             You&rsquo;re signed in as <strong>{session.user.email}</strong>, but this invitation was
             sent to <strong>{invite.email}</strong>. Sign in with that address to accept it.
           </Text>
@@ -105,7 +105,7 @@ export default async function AcceptInvitePage({
     return (
       <InviteFrame invite={invite}>
         <div className="flex flex-col gap-3">
-          <Text className="text-base-content text-sm">
+          <Text className="text-sm">
             Verify your email address ({invite.email}) before accepting. Open the link we sent you,
             then you&rsquo;ll return here to accept.
           </Text>
@@ -139,12 +139,12 @@ function InviteFrame({
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold tracking-tight">You&rsquo;re invited</h1>
-          <Text className="text-base-content">
+          <Text>
             {invite.inviterName} invited you to join <strong>{invite.orgName}</strong>.
           </Text>
         </div>
         <div className="flex items-center gap-2">
-          <Text className="text-base-content text-sm">Role</Text>
+          <Text className="text-sm">Role</Text>
           <Badge color="neutral" variant="soft" size="sm">
             {roleLabel(invite.role)}
           </Badge>
@@ -165,7 +165,7 @@ function InviteMessage({ title, body }: { title: string; body: string }) {
       <div className="flex flex-col gap-6">
         <div className="flex flex-col gap-2">
           <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-          <Text className="text-base-content">{body}</Text>
+          <Text>{body}</Text>
         </div>
         <Button variant="outline" className="w-full" render={<Link href="/sign-in" />}>
           Go to sign in

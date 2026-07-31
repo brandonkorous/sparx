@@ -41,8 +41,8 @@ const LINKS = [
   { label: 'Customers', href: '/customers' },
 ] as const;
 
-const NAV_LINK_CLASS = 'text-base-content hover:text-base-content text-sm font-medium';
-const DRAWER_LINK_CLASS = 'border-base-300 text-base-content border-b py-3.5 text-lg font-medium';
+const NAV_LINK_CLASS = 'hover:text-sm font-medium';
+const DRAWER_LINK_CLASS = 'border-base-300 border-b py-3.5 text-lg font-medium';
 
 /**
  * The marketing site header — built solely on silicaui: `Navbar` for the bar
@@ -154,8 +154,8 @@ export function SiteHeader({ signInHref = '/sign-in', signUpHref = '/sign-up' }:
                           <ModuleGlyph module={m.module} />
                         </span>
                         <span className="flex flex-col gap-0.5">
-                          <span className="text-base-content text-sm font-medium">{m.label}</span>
-                          <span className="text-base-content text-xs">{m.desc}</span>
+                          <span className="text-sm font-medium">{m.label}</span>
+                          <span className="text-xs">{m.desc}</span>
                         </span>
                       </a>
                     </DrawerClose>
@@ -173,7 +173,7 @@ export function SiteHeader({ signInHref = '/sign-in', signUpHref = '/sign-up' }:
             ))}
 
             <DrawerClose>
-              <a href={signInHref} className="text-base-content py-3.5 text-lg font-medium">
+              <a href={signInHref} className="py-3.5 text-lg font-medium">
                 Sign in
               </a>
             </DrawerClose>

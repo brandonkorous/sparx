@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "timeline",
+  "name": "Timeline",
+  "version": "1.0.0",
+  "tagline": "Dated stages — your history, or how a project will run.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "How it works",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 41
+}

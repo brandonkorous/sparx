@@ -56,11 +56,9 @@ function ToolButton({ onClick, active, disabled, label, children }: ToolButtonPr
       className={cn(
         'inline-flex h-7 w-7 items-center justify-center rounded-md',
         'transition-colors duration-150',
-        'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+        'focus-ring',
         'disabled:pointer-events-none disabled:opacity-40',
-        active
-          ? 'bg-module bg-soft text-module'
-          : 'text-base-content hover:text-base-content hover:bg-base-200'
+        active ? 'bg-module bg-soft text-module' : 'hover:bg-base-200'
       )}
     >
       {children}
@@ -105,13 +103,13 @@ export function RichTextEditor({
       attributes: {
         'aria-label': ariaLabel,
         class: cn(
-          'text-base-content min-h-[8rem] w-full px-3 py-2 text-sm',
+          'min-h-[8rem] w-full px-3 py-2 text-sm',
           'focus:outline-none',
-          'prose-headings:font-medium prose-headings:text-base-content',
+          'prose-headings:font-medium prose-headings:',
           '[&_h2]:mt-4 [&_h3]:mt-3 [&_p]:my-2',
           '[&_ul]:my-2 [&_ul]:list-disc [&_ul]:pl-5',
           '[&_ol]:my-2 [&_ol]:list-decimal [&_ol]:pl-5',
-          '[&_blockquote]:text-base-content [&_blockquote]:border-base-300 [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:pl-3',
+          '[&_blockquote]:[&_blockquote]:border-base-300 [&_blockquote]:my-2 [&_blockquote]:border-l-2 [&_blockquote]:pl-3',
           '[&_code]:bg-base-200 [&_code]:rounded [&_code]:px-1 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-xs',
           '[&_pre]:bg-base-200 [&_pre]:my-2 [&_pre]:rounded-md [&_pre]:p-3 [&_pre]:text-xs'
         ),
@@ -146,7 +144,7 @@ export function RichTextEditor({
       className={cn(
         'bg-base-100 rounded-md border',
         'border-base-300 focus-within:border-primary',
-        'focus-within:ring-2 focus-within:ring-[var(--color-primary)] focus-within:ring-offset-2',
+        'focus-ring-within',
         'transition-colors duration-150',
         disabled && 'cursor-not-allowed opacity-50',
         className

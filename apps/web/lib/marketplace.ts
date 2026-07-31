@@ -14,6 +14,7 @@
 // server components + the load-more server action — never shipped to the client.
 
 import { canonicalQueryString } from './browse-params';
+import { renderComponentPreview } from './component-preview-render';
 
 // In-cluster api-rest URL (k8s/apps/site.yaml injects SPARX_API_REST_URL); the
 // public routes need no auth. Falls back to the local api-rest port for dev.
@@ -58,17 +59,37 @@ export interface BlueprintFacets {
   contents: BlueprintContents;
 }
 
+export interface ThemePreviewFont {
+  family: string;
+  source: 'system' | 'google';
+  weights?: number[];
+}
+
 export interface ThemeFacets {
   mood: string | null;
   colorFamily: string | null;
   density: string | null;
   industry: string | null;
+  // Live-preview render inputs (docs/118): the silica token bag rendered in-browser
+  // instead of a baked image. Present on browse + detail; null on a legacy row.
+  tokens?: Record<string, string> | null;
+  dark?: Record<string, string> | null;
+  fonts?: { sans?: ThemePreviewFont; head?: ThemePreviewFont } | null;
 }
 
 export interface ComponentFacets {
   group: string;
   kind: string | null;
   surfaces: string[];
+  dataBacked?: boolean;
+  // The silica node tree the API returns (docs/118). Consumed ONLY server-side (this
+  // module renders it to `previewHtml`); stripped before the listing reaches the
+  // client so the heavy tree never rides the wire.
+  tree?: Record<string, unknown> | null;
+  // The section rendered to HTML against neutral sample data — produced in this
+  // server-only layer so the silica renderer never ships to the client. The card +
+  // detail inject it inside a base-theme surface. Null on a legacy row.
+  previewHtml?: string | null;
 }
 
 export interface IntegrationFacets {
@@ -118,18 +139,33 @@ export interface MarketplaceListResponse {
 
 const EMPTY_PAGE: MarketplaceListResponse = { items: [], total: 0, facets: {}, next_cursor: null };
 
+/** Render a component listing's stored tree to preview HTML server-side (docs/118),
+ *  then DROP the tree so it never travels to the client. A no-op for other categories
+ *  and for a legacy component row with no tree (the UI falls back to a placeholder). */
+function withComponentPreview(item: MarketplaceListing): MarketplaceListing {
+  const c = item.component;
+  if (item.category !== 'components' || !c) return item;
+  const previewHtml = c.tree ? renderComponentPreview(c.tree) : null;
+  return { ...item, component: { ...c, previewHtml, tree: null } };
+}
+
 interface Envelope<T> {
   success: boolean;
   data: T;
 }
 
+/** How long a fetched catalog response is cached. The catalog is tenant-agnostic +
+ *  cacheable, so prod revalidates every 5 minutes rather than per request. In dev the
+ *  window is short so a re-ingest (new bundle payloads) shows up almost immediately
+ *  instead of after the full 5-minute window. */
+const CATALOG_REVALIDATE = process.env.NODE_ENV === 'production' ? 300 : 5;
+
 /** GET a public-catalog path, unwrap the `{ success, data }` envelope. Returns
  *  null on any non-2xx / shape mismatch so callers degrade gracefully (an empty
- *  category page, a 404 detail). The catalog is tenant-agnostic + cacheable, so
- *  responses revalidate every 5 minutes rather than per request. */
+ *  category page, a 404 detail). */
 async function getPublic<T>(path: string): Promise<T | null> {
   try {
-    const res = await fetch(`${API_BASE}${path}`, { next: { revalidate: 300 } });
+    const res = await fetch(`${API_BASE}${path}`, { next: { revalidate: CATALOG_REVALIDATE } });
     if (!res.ok) return null;
     const body = (await res.json()) as Envelope<T>;
     return body.success ? body.data : null;
@@ -155,14 +191,19 @@ export async function fetchCategory(
   const data = await getPublic<MarketplaceListResponse>(
     `/v1/public/marketplace/${encodeURIComponent(category)}${qs ? `?${qs}` : ''}`
   );
-  return data ?? EMPTY_PAGE;
+  if (!data) return EMPTY_PAGE;
+  return { ...data, items: data.items.map(withComponentPreview) };
 }
 
 /** One listing by slug, or null if it isn't published/public. */
-export function fetchListing(category: string, slug: string): Promise<MarketplaceListing | null> {
-  return getPublic<MarketplaceListing>(
+export async function fetchListing(
+  category: string,
+  slug: string
+): Promise<MarketplaceListing | null> {
+  const item = await getPublic<MarketplaceListing>(
     `/v1/public/marketplace/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`
   );
+  return item ? withComponentPreview(item) : null;
 }
 
 /** Hard bound on sitemap enumeration per category. The catalog is curated (tens
@@ -204,12 +245,20 @@ export async function fetchListingSlugs(
 /**
  * The signup funnel hand-off (docs/54 §15, docs/60 §10). A public listing's CTA
  * sends the visitor to the dashboard signup carrying the intent — `ref=market`
- * for attribution, plus `blueprint=<slug>` so a later onboarding-threading slice
- * can auto-install after the tenant is created. The public side is complete here;
- * consuming the intent (async install on signup) is the separate onboarding slice.
+ * for attribution, plus `blueprint=<slug>` (auto-install the starter site),
+ * `theme=<slug>` (preselect the silica theme, docs/118), or `component=<slug>`
+ * (the section to insert first) so a later onboarding slice can apply it after the
+ * tenant is created. The public side is complete here; consuming the intent (async
+ * install/apply on signup) is the separate onboarding slice.
  */
-export function signUpHref(intent?: { blueprint?: string }): string {
+export function signUpHref(intent?: {
+  blueprint?: string;
+  theme?: string;
+  component?: string;
+}): string {
   const params = new URLSearchParams({ ref: 'market' });
   if (intent?.blueprint) params.set('blueprint', intent.blueprint);
+  if (intent?.theme) params.set('theme', intent.theme);
+  if (intent?.component) params.set('component', intent.component);
   return `${APP_BASE}/sign-up?${params.toString()}`;
 }

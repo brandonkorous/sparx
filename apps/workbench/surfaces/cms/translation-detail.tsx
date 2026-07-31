@@ -383,7 +383,7 @@ function Editor({
               <div className="bg-base-300 shrink-0 rounded-full px-4 py-2">
                 <TabsList className="overflow-x-auto">
                   {locales.map((locale) => (
-                    <TabsTab key={locale} value={locale} className="text-base-content">
+                    <TabsTab key={locale} value={locale}>
                       {localeName(locale)}
                       {dirtyLocales.includes(locale) ? (
                         <span aria-label="has unsaved changes"> •</span>

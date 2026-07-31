@@ -88,7 +88,7 @@ export function PricingV2Hero() {
 function StarterTag() {
   return (
     <div
-      className="bg-base-100 text-base-content border-base-300 mx-auto w-full max-w-sm rounded-3xl border p-7 shadow-2xl"
+      className="bg-base-100 border-base-300 mx-auto w-full max-w-sm rounded-3xl border p-7 shadow-2xl"
       data-theme="light"
     >
       <div className="text-base-content font-mono text-xs tracking-[0.14em]">START HERE</div>

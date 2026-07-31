@@ -123,21 +123,6 @@
   --chart-6: #34d399;
 }
 
-/* Indeterminate <Progress> — a sliding pill that loops when no value is set. */
-@keyframes sx-progress-indeterminate {
-  0% {
-    left: -40%;
-    width: 40%;
-  }
-  50% {
-    width: 55%;
-  }
-  100% {
-    left: 100%;
-    width: 40%;
-  }
-}
-
 /* ── Top navigation progress bar (TopProgress) ───────────────────────────────
    A page-top loading bar whose fill REVEALS a gradient sized to the viewport,
    so progress moves through the brand palette. Two scopes, one principle —

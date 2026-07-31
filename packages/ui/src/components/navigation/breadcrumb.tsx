@@ -15,11 +15,7 @@ export const BreadcrumbList = React.forwardRef<
   HTMLOListElement,
   React.ComponentPropsWithoutRef<'ol'>
 >(({ className, ...props }, ref) => (
-  <ol
-    ref={ref}
-    className={cn('text-base-content flex flex-wrap items-center gap-1.5', className)}
-    {...props}
-  />
+  <ol ref={ref} className={cn('flex flex-wrap items-center gap-1.5', className)} {...props} />
 ));
 BreadcrumbList.displayName = 'BreadcrumbList';
 
@@ -40,7 +36,7 @@ export const BreadcrumbLink = React.forwardRef<HTMLAnchorElement, BreadcrumbLink
     return (
       <Comp
         ref={ref}
-        className={cn('hover:text-base-content transition-colors duration-150', className)}
+        className={cn('duration-150 hover:transition-colors', className)}
         {...props}
       />
     );
@@ -57,7 +53,7 @@ export const BreadcrumbPage = React.forwardRef<
     aria-current="page"
     role="link"
     aria-disabled
-    className={cn('text-base-content font-medium', className)}
+    className={cn('font-medium', className)}
     {...props}
   />
 ));
@@ -68,7 +64,7 @@ export const BreadcrumbSeparator = ({
   className,
   ...props
 }: React.ComponentPropsWithoutRef<'li'>) => (
-  <li role="presentation" aria-hidden className={cn('text-base-content', className)} {...props}>
+  <li role="presentation" aria-hidden className={cn('', className)} {...props}>
     {children ?? <ChevronRight className="h-3.5 w-3.5" />}
   </li>
 );
@@ -81,7 +77,7 @@ export const BreadcrumbEllipsis = ({
   <span
     role="presentation"
     aria-hidden
-    className={cn('text-base-content flex h-5 w-5 items-center justify-center', className)}
+    className={cn('flex h-5 w-5 items-center justify-center', className)}
     {...props}
   >
     <MoreHorizontal className="h-4 w-4" />

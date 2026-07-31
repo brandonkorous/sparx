@@ -1,0 +1,197 @@
+# Local ingress — HTTP ONLY, on purpose.
+#
+# Adapted from k8s/caddy/Caddyfile. The single structural change is that every
+# `tls { on_demand }` block is gone, because TLS now terminates at Cloudflare's
+# edge and cloudflared carries the request to this origin over the tunnel. There
+# is no public IP, no port 80/443 open on the router, and therefore no way for
+# an ACME HTTP-01 or TLS-ALPN challenge to reach Caddy — on-demand issuance
+# could not succeed here even if it were wanted. This also removes the whole
+# on-demand `ask` round-trip to /internal/domain-check on every new hostname.
+#
+# Consequence to be aware of: the hop from Cloudflare to this machine is
+# protected by the tunnel (an outbound mutual-TLS connection cloudflared
+# establishes), not by a certificate Caddy holds. Set the zone's SSL/TLS mode to
+# "Full (strict)" — do NOT use Flexible.
+#
+# Sites are written `http://host` rather than bare `host`, which is what tells
+# Caddy to serve plaintext on :80 instead of trying to provision a certificate.
+#
+# Upstreams keep the `.sparx-prod.svc.cluster.local` suffix because the overlay
+# deliberately keeps that namespace (k8s/local/kustomization.yaml explains why).
+#
+# NOT carried over from prod: kanninja.com, silicaui.com and admin.wize.works.
+# They proxied through the same shared GKE ingress but their workloads live in
+# other namespaces and are not part of this overlay. Add them back only
+# alongside their own Deployments.
+
+{
+	admin off
+	# Cloudflare is the only thing that can reach this origin, so trust its
+	# forwarded client IP. Without this every request appears to come from the
+	# cloudflared pod and rate-limiting/logging sees one client.
+	servers {
+		trusted_proxies static private_ranges
+	}
+}
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}
+
+# ----- Platform hostnames -----
+http://api.sparx.works {
+	import security_headers
+	reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+}
+
+# Public media host. api-rest owns cache semantics per-path (immutable on
+# variant bytes, 60s while a transcode is still in flight) — deliberately no
+# blanket Cache-Control here, because in prod a blanket header pinned
+# mid-transcode originals AND cached 404s at the edge for a year.
+http://media.sparx.works {
+	header {
+		-Set-Cookie
+	}
+	reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+}
+
+# The SAME media routes, on the hostname social platforms are handed as an
+# image_url. Instagram/Threads/Pinterest fetch that URL from their own servers,
+# send `Range: bytes=0-`, and reject Cloudflare's 206 — the image drops and the
+# post goes out text-only.
+#
+# In prod this host was grey-cloud (DNS-only) so those fetchers bypassed
+# Cloudflare entirely. A tunnel carries only PROXIED hostnames, so that bypass no
+# longer exists. The replacement is a Worker bound to this hostname that strips
+# `Range` ahead of the cache — see cloudflare/media-direct-worker/. Caddy's job
+# is unchanged: serve the bytes.
+http://media-direct.sparx.works {
+	header {
+		-Set-Cookie
+	}
+	reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+}
+
+http://graphql.sparx.works {
+	import security_headers
+	reverse_proxy api-graphql.sparx-prod.svc.cluster.local:3200
+}
+
+http://mcp.sparx.works {
+	import security_headers
+	reverse_proxy api-mcp.sparx-prod.svc.cluster.local:3000
+}
+
+http://mcp.sparx.zone {
+	import security_headers
+	reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
+}
+
+# The staff app + the MCP OAuth authorization server + the Better Auth origin.
+http://app.sparx.works {
+	import security_headers
+	reverse_proxy workbench.sparx-prod.svc.cluster.local:3000
+}
+
+# Legacy host. Must redirect, never serve — Better Auth cookies and the OAuth
+# origin are scoped to app.sparx.works.
+http://workbench.sparx.works {
+	import security_headers
+	redir https://app.sparx.works{uri} permanent
+}
+
+http://sparx.works, http://www.sparx.works {
+	import security_headers
+
+	# Buffer the Next metadata images so Caddy emits a real Content-Length.
+	# LinkedIn's fetcher sizes an image from that header and reports "cannot
+	# find an image" without it; browsers, Slack and X tolerate the chunked
+	# response, so this presents as LinkedIn-only. Scoped to these two paths
+	# because `flush_interval -1` disables streaming, which would break the
+	# chat widget's SSE.
+	@social path */opengraph-image */twitter-image
+	reverse_proxy @social web.sparx-prod.svc.cluster.local:3000 {
+		flush_interval -1
+	}
+
+	reverse_proxy web.sparx-prod.svc.cluster.local:3000
+}
+
+# ----- Module marketing sites (one Next app reads the Host header) -----
+http://sparxcms.com, http://www.sparxcms.com,
+http://sparxcrm.com, http://www.sparxcrm.com,
+http://sparxemail.com, http://www.sparxemail.com,
+http://sparxb2b.com, http://www.sparxb2b.com,
+http://sparx.email, http://www.sparx.email {
+	import security_headers
+	reverse_proxy web.sparx-prod.svc.cluster.local:3000
+}
+
+# ----- Marketplace storefront -----
+http://www.sparx.market {
+	redir https://sparx.market{uri} permanent
+}
+
+http://sparx.market {
+	import security_headers
+	reverse_proxy market.sparx-prod.svc.cluster.local:3000
+}
+
+# ----- Placeholder domains -----
+http://sparx.host, http://www.sparx.host {
+	redir https://sparx.works/hosting{uri} permanent
+}
+
+http://sparx.software, http://www.sparx.software {
+	redir https://sparx.works/docs{uri} permanent
+}
+
+http://sparx.exchange, http://www.sparx.exchange {
+	redir https://sparx.works{uri} permanent
+}
+
+http://sparx.zone, http://www.sparx.zone {
+	redir https://sparx.works{uri} permanent
+}
+
+# ----- Catch-all: tenant sites -----
+# Matches <slug>.sparx.zone and any tenant custom domain. The carve-outs below
+# are unchanged from prod and all matter:
+#
+#   /mcp*            → the shopper-facing MCP, which resolves the site from Host.
+#                      `handle`, not `handle_path`, so the /mcp prefix survives.
+#   protected-resource well-knowns → mcp-site (the RFC 9728 resource server), in
+#                      every discovery shape a client may construct. Without
+#                      these they fall through to the site app and 404, so a
+#                      client whose unauthenticated `initialize` succeeds cannot
+#                      discover the authorization server.
+#   /v1/public/auth* + the AS well-knowns → api-rest, with Host preserved, so the
+#                      browser keeps its sparx_customer_session cookie through
+#                      authorize → consent on the store's OWN origin.
+:80 {
+	import security_headers
+
+	handle /mcp* {
+		reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
+	}
+	handle /.well-known/oauth-protected-resource* {
+		reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
+	}
+	handle /v1/public/auth* {
+		reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+	}
+	handle /.well-known/oauth-authorization-server* {
+		reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+	}
+	handle /.well-known/openid-configuration* {
+		reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+	}
+	handle {
+		reverse_proxy site.sparx-prod.svc.cluster.local:3000
+	}
+}

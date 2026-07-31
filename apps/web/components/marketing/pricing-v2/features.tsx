@@ -42,7 +42,7 @@ export function PricingV2Features() {
             </Text>
           </div>
 
-          <Card className="bg-base-100 text-base-content shadow-none">
+          <Card className="bg-base-100 shadow-none">
             <Accordion defaultValue={firstOpen ? [firstOpen] : []}>
               {FEATURES.map((m) => {
                 const hex = MODULE_HEX[m.key as MarketingModule];
@@ -60,21 +60,14 @@ export function PricingV2Features() {
                         <Badge color="primary" variant="soft">
                           {m.price}
                         </Badge>
-                        <span className="text-base-content hidden flex-1 text-sm lg:block">
-                          {m.repl}
-                        </span>
-                        <span className="text-base-content hidden text-sm sm:block">
-                          {m.feats.length} features
-                        </span>
+                        <span className="hidden flex-1 text-sm lg:block">{m.repl}</span>
+                        <span className="hidden text-sm sm:block">{m.feats.length} features</span>
                       </span>
                     </AccordionTrigger>
                     <AccordionPanel>
                       <div className="grid grid-cols-1 gap-x-8 gap-y-2.5 pt-1 pl-[22px] sm:grid-cols-2">
                         {m.feats.map((f) => (
-                          <span
-                            key={f}
-                            className="text-base-content flex items-center gap-2.5 text-base"
-                          >
+                          <span key={f} className="flex items-center gap-2.5 text-base">
                             <span
                               className="h-1.5 w-1.5 shrink-0 rounded-full"
                               style={{ backgroundColor: hex }}

@@ -78,7 +78,7 @@ export const DrawerContent = React.forwardRef<
             'absolute top-3 right-3 rounded-md p-1',
             'text-base-content hover:text-base-content hover:bg-base-200',
             'transition-colors duration-150',
-            'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none'
+            'focus-ring'
           )}
         >
           <X className="h-4 w-4" />

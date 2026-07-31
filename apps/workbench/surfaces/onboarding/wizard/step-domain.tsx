@@ -151,8 +151,8 @@ export function StepDomain({
           <div className="flex min-w-0 items-center gap-2.5">
             <Globe className="text-module size-4 shrink-0" aria-hidden />
             <div className="min-w-0">
-              <p className="text-base-content truncate font-medium">{selected.domain}</p>
-              <p className="text-base-content text-sm">
+              <p className="truncate font-medium">{selected.domain}</p>
+              <p className="text-sm">
                 Added — you are charged {money(selected.displayPrice)} when you publish.
               </p>
             </div>
@@ -182,7 +182,7 @@ export function StepDomain({
       {searching ? (
         <div className="flex items-center gap-2">
           <Loading size="sm" />
-          <span className="text-base-content text-sm">Searching…</span>
+          <span className="text-sm">Searching…</span>
         </div>
       ) : null}
 
@@ -202,24 +202,24 @@ export function StepDomain({
       ) : null}
 
       {!searching && !error && query.trim() && suggestions.length === 0 ? (
-        <Text className="text-base-content text-sm">
+        <Text className="text-sm">
           No domains found for “{query.trim()}”. Try a different name.
         </Text>
       ) : null}
 
       <div className="border-base-300 flex items-start gap-2.5 rounded-xl border px-4 py-3.5">
-        <Clock className="text-base-content mt-0.5 size-4 shrink-0" aria-hidden />
-        <p className="text-base-content text-sm">
+        <Clock className="mt-0.5 size-4 shrink-0" aria-hidden />
+        <p className="text-sm">
           A custom domain is the one optional paid add-on — you are charged only when you publish,
           at the Launch step, never for signing up.
         </p>
       </div>
 
       <div className="border-base-300 rounded-xl border border-dashed px-4 py-3.5">
-        <p className="text-base-content font-medium">Happy on the free address?</p>
-        <p className="text-base-content text-sm">
+        <p className="font-medium">Happy on the free address?</p>
+        <p className="text-sm">
           Your site is live at{' '}
-          <span className="text-base-content font-medium">
+          <span className="font-medium">
             {slug}.{SITE_ZONE}
           </span>{' '}
           — just hit Continue. You can add a domain anytime from Settings.
@@ -245,7 +245,7 @@ function DomainRow({
       }`}
     >
       <div className="min-w-0">
-        <p className="text-base-content truncate font-medium">{suggestion.domain}</p>
+        <p className="truncate font-medium">{suggestion.domain}</p>
         <span className="mt-0.5 flex items-center gap-1.5">
           <Check className="text-success size-3.5" aria-hidden />
           <span className="text-success text-sm">
@@ -255,13 +255,11 @@ function DomainRow({
       </div>
       <div className="flex shrink-0 items-center gap-3">
         <div className="text-right">
-          <p className="text-base-content text-sm">
+          <p className="text-sm">
             <span className="font-medium">{money(suggestion.displayPrice)}</span>/yr
           </p>
           {suggestion.renewalDisplayPrice > suggestion.displayPrice ? (
-            <p className="text-base-content text-sm">
-              then {money(suggestion.renewalDisplayPrice)}/yr
-            </p>
+            <p className="text-sm">then {money(suggestion.renewalDisplayPrice)}/yr</p>
           ) : null}
         </div>
         <Button
@@ -281,11 +279,9 @@ function TakenRow({ domain, lead = false }: { domain: string; lead?: boolean }) 
   return (
     <div className="border-base-300 bg-base-200 flex items-center justify-between gap-4 rounded-xl border px-4 py-3.5">
       <div className="min-w-0">
-        <p className="text-base-content truncate font-medium">{domain}</p>
+        <p className="truncate font-medium">{domain}</p>
         {lead ? (
-          <p className="text-base-content mt-0.5 text-sm">
-            Already registered — here are close ones you can grab.
-          </p>
+          <p className="mt-0.5 text-sm">Already registered — here are close ones you can grab.</p>
         ) : null}
       </div>
       <Badge color="neutral" variant="soft" size="sm">
@@ -391,8 +387,8 @@ function ContactPanel({
       <div className="flex items-center gap-2.5">
         <Globe className="text-module size-5 shrink-0" aria-hidden />
         <div className="min-w-0">
-          <p className="text-base-content font-medium">{target.domain}</p>
-          <p className="text-base-content text-sm">
+          <p className="font-medium">{target.domain}</p>
+          <p className="text-sm">
             You are not charged now — {money(total)} is billed when you publish.
           </p>
         </div>
@@ -418,17 +414,17 @@ function ContactPanel({
             id="wp-privacy"
           />
           <label htmlFor="wp-privacy" className="flex flex-col">
-            <span className="text-base-content flex items-center gap-1.5 text-sm font-medium">
+            <span className="flex items-center gap-1.5 text-sm font-medium">
               <Lock className="size-3.5" aria-hidden /> Keep my details private
             </span>
-            <span className="text-base-content text-sm">Hidden from the public WHOIS record.</span>
+            <span className="text-sm">Hidden from the public WHOIS record.</span>
           </label>
         </div>
       </div>
 
       <div className="flex flex-col gap-1">
-        <p className="text-base-content font-medium">Who is registering this</p>
-        <p className="text-base-content text-sm">
+        <p className="font-medium">Who is registering this</p>
+        <p className="text-sm">
           The domain authorities require a real contact for every registration.
         </p>
       </div>

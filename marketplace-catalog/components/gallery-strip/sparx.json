@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "gallery-strip",
+  "name": "Photo strip",
+  "version": "1.0.0",
+  "tagline": "A row of photographs a visitor swipes or scrolls through. No buttons to learn.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Pictures",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 54
+}

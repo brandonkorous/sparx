@@ -196,17 +196,17 @@ export function priceList(): Node {
         item(
           'Single door, made and hung',
           'Solid oak, finished, fitted, old one taken away.',
-          '£420'
+          '$420'
         ),
         item(
           'Fitted wardrobe, per metre',
           'Made to your ceiling height, painted to your colour.',
-          '£680'
+          '$680'
         ),
         item(
           'Kitchen, small',
           'Up to eight units, worktop included, three weeks on site.',
-          'From £9,400'
+          'From $9,400'
         ),
       ],
     }),
@@ -241,14 +241,14 @@ export function menuSections(): Node {
     el('div', 'grid grid-cols-1 gap-10 @3xl:grid-cols-2', {
       children: [
         course('To start', [
-          dish('Soda bread and cultured butter', 'Baked at six this morning', '£5'),
-          dish('Smoked mackerel', 'Beetroot, horseradish, dill', '£9'),
-          dish('Roast squash', 'Sage, hazelnut, aged cheese', '£8'),
+          dish('Soda bread and cultured butter', 'Baked at six this morning', '$5'),
+          dish('Smoked mackerel', 'Beetroot, horseradish, dill', '$9'),
+          dish('Roast squash', 'Sage, hazelnut, aged cheese', '$8'),
         ]),
         course('Mains', [
-          dish('Braised shin of beef', 'Mash, greens, red wine', '£22'),
-          dish('Whole plaice', 'Brown butter, capers, new potatoes', '£24'),
-          dish('Barley and root vegetables', 'Slow-cooked, herb oil', '£17'),
+          dish('Braised shin of beef', 'Mash, greens, red wine', '$22'),
+          dish('Whole plaice', 'Brown butter, capers, new potatoes', '$24'),
+          dish('Barley and root vegetables', 'Slow-cooked, herb oil', '$17'),
         ]),
       ],
     }),

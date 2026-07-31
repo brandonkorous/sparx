@@ -152,7 +152,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
       <RecordView slug={product.slug} />
 
       {/* Breadcrumb trail */}
-      <nav className="text-base-content mb-6 text-sm" aria-label="Breadcrumb">
+      <nav className="mb-6 text-sm" aria-label="Breadcrumb">
         <Link href="/products" className="hover:underline">
           Products
         </Link>
@@ -165,7 +165,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
           </>
         ) : null}
         <span aria-hidden> / </span>
-        <span className="text-base-content">{product.title}</span>
+        <span>{product.title}</span>
       </nav>
 
       {/* Top: gallery + buy column */}
@@ -185,14 +185,12 @@ export default async function ProductDetailPage({ params }: PageProps) {
                 </Badge>
               </Link>
             ) : null}
-            <h1 className="text-base-content text-2xl font-semibold md:text-3xl">
-              {product.title}
-            </h1>
+            <h1 className="text-2xl font-semibold md:text-3xl">{product.title}</h1>
             <Stars rating={product.averageRating} reviewCount={product.reviewCount} />
           </div>
 
           <div className="flex items-center gap-3">
-            {price ? <p className="text-base-content text-2xl font-semibold">{price}</p> : null}
+            {price ? <p className="text-2xl font-semibold">{price}</p> : null}
             {!product.inStock ? (
               <Badge color="danger" variant="soft">
                 Sold out
@@ -220,12 +218,10 @@ export default async function ProductDetailPage({ params }: PageProps) {
       <div className="mt-12 flex flex-col gap-12">
         {product.description ? (
           <section aria-labelledby="about-heading" className="flex flex-col gap-3">
-            <h2 id="about-heading" className="text-base-content text-xl font-semibold">
+            <h2 id="about-heading" className="text-xl font-semibold">
               About this product
             </h2>
-            <p className="text-base-content max-w-3xl leading-relaxed whitespace-pre-line">
-              {product.description}
-            </p>
+            <p className="max-w-3xl leading-relaxed whitespace-pre-line">{product.description}</p>
           </section>
         ) : null}
 
@@ -235,7 +231,7 @@ export default async function ProductDetailPage({ params }: PageProps) {
 
         {related.length > 0 ? (
           <section aria-labelledby="related-heading" className="flex flex-col gap-5">
-            <h2 id="related-heading" className="text-base-content text-xl font-semibold">
+            <h2 id="related-heading" className="text-xl font-semibold">
               You may also like
             </h2>
             <ProductGrid products={related} />

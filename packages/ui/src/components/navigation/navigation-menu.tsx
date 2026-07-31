@@ -60,11 +60,11 @@ export const NavigationMenuItem = NavigationMenuPrimitive.Item;
 export const navigationMenuTriggerStyle = cva(
   cn(
     'group inline-flex h-9 w-max items-center justify-center gap-1 rounded-md px-3 py-2',
-    'text-base-content text-sm font-medium transition-colors',
-    'hover:text-base-content focus:outline-none',
-    'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)]',
+    'text-sm font-medium transition-colors',
+    'hover:focus:outline-none',
+    'focus-ring',
     'disabled:pointer-events-none disabled:opacity-50',
-    'data-[state=open]:text-base-content'
+    'data-[state=open]:'
   )
 );
 

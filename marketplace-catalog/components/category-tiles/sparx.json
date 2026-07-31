@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "category-tiles",
+  "name": "Shop by category",
+  "version": "1.0.0",
+  "tagline": "The \"what are you looking for\" chooser that belongs above a big catalog.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Selling",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 8
+}

@@ -115,7 +115,7 @@ export function DigitalCardTool() {
               card, not sparx chrome. Kept bespoke (card typography) rather than
               converted to a silica Card nested inside this Panel. */}
           <div className="border-base-300 bg-base-100 flex flex-col gap-1 rounded-lg border p-[22px]">
-            <span className="text-base-content text-[18px] font-semibold">{full}</span>
+            <span className="text-[18px] font-semibold">{full}</span>
             <span className="text-ink-muted text-[13px]">
               {[data.title, data.company].filter(Boolean).join(' · ')}
             </span>

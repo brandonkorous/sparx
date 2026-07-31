@@ -98,7 +98,7 @@ export function StepLaunch({
           <h2 className="text-2xl font-semibold tracking-tight">
             {installId ? 'Your site is ready' : 'Your workspace is ready'}
           </h2>
-          <Text className="text-base-content mx-auto max-w-prose">
+          <Text className="mx-auto max-w-prose">
             {installId ? (
               <>
                 {blueprint ? (
@@ -127,7 +127,7 @@ export function StepLaunch({
       <div className="border-base-300 bg-base-100 flex items-center justify-between gap-4 rounded-xl border px-5 py-4">
         <div className="flex min-w-0 items-center gap-2.5">
           <Globe className="text-module size-4 shrink-0" aria-hidden />
-          <span className="text-base-content truncate font-medium">{host}</span>
+          <span className="truncate font-medium">{host}</span>
         </div>
         {previewHref ? (
           <Button
@@ -156,13 +156,13 @@ export function StepLaunch({
             <span className="text-module text-sm font-medium">Custom domain</span>
           </div>
           <div className="mt-1 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-            <p className="text-base-content text-lg font-medium">{pendingDomain.domain}</p>
-            <p className="text-base-content text-sm">
+            <p className="text-lg font-medium">{pendingDomain.domain}</p>
+            <p className="text-sm">
               <span className="font-medium">{money(pendingDomain.displayPrice)}</span> charged when
               you publish
             </p>
           </div>
-          <p className="text-base-content mt-2 text-sm">
+          <p className="mt-2 text-sm">
             We register it and point it at your site automatically — no DNS to set up. Not ready? Go
             back a step and switch to your free address; you will not be charged.
           </p>
@@ -178,7 +178,7 @@ export function StepLaunch({
             </span>
             <span className="text-success text-lg">/mo</span>
           </div>
-          <Text className="text-base-content mx-auto mt-2 max-w-prose text-sm">
+          <Text className="mx-auto mt-2 max-w-prose text-sm">
             That is <span className="font-medium">${usd(annualSavings)}</span> a year. {moduleCount}{' '}
             best-in-class {moduleCount === 1 ? 'tool' : 'tools'} on one platform, one login, one
             invoice — for ${usd(monthlyTotal)}/mo after your free trial.
@@ -205,7 +205,7 @@ export function StepLaunch({
       </div>
 
       {facts.length > 0 ? (
-        <Text className="text-base-content text-center text-sm">
+        <Text className="text-center text-sm">
           {facts.join(' · ')} — installed and ready to edit.
         </Text>
       ) : null}
@@ -220,8 +220,8 @@ function ValuePoint({ icon, title, body }: { icon: React.ReactNode; title: strin
         {icon}
       </span>
       <div>
-        <p className="text-base-content font-medium">{title}</p>
-        <p className="text-base-content text-sm">{body}</p>
+        <p className="font-medium">{title}</p>
+        <p className="text-sm">{body}</p>
       </div>
     </div>
   );
@@ -234,7 +234,7 @@ function LaunchSuccess({ slug, host }: { slug: string; host: string }) {
         <Rocket className="text-module-content size-7" aria-hidden />
       </span>
       <h2 className="text-2xl font-semibold tracking-tight">You are live</h2>
-      <Text className="text-base-content max-w-prose">
+      <Text className="max-w-prose">
         Your site is published and ready for the world. It is live at{' '}
         <span className="font-medium">{host}</span> — opening your workspace now.
       </Text>

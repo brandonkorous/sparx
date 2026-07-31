@@ -6,4 +6,6 @@
 export * from './enums';
 export * from './listing';
 export * from './query';
+export * from './silica-component';
+export * from './silica-theme';
 export * from './theme-preset';

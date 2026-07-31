@@ -155,9 +155,9 @@ export const AccordionTrigger = React.forwardRef<
       onClick={() => toggle(item.value)}
       className={cn(
         'flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium',
-        'text-base-content transition-colors',
+        'transition-colors',
         'hover:bg-base-200',
-        'focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none',
+        'focus-ring',
         className
       )}
       {...props}
@@ -165,7 +165,7 @@ export const AccordionTrigger = React.forwardRef<
       {children}
       <ChevronDown
         className={cn(
-          'text-base-content h-4 w-4 shrink-0 transition-transform duration-200',
+          'h-4 w-4 shrink-0 transition-transform duration-200',
           item.open && 'rotate-180'
         )}
       />
@@ -193,7 +193,7 @@ export const AccordionContent = React.forwardRef<
       {/* `inert` when closed removes the collapsed content from tab/AT order
           while keeping it in the DOM so the grid-rows animation can run. */}
       <div className="overflow-hidden" inert={!item.open ? true : undefined}>
-        <div ref={ref} className={cn('text-base-content px-4 pb-3 text-sm', className)} {...props}>
+        <div ref={ref} className={cn('px-4 pb-3 text-sm', className)} {...props}>
           {children}
         </div>
       </div>

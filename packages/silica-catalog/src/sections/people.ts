@@ -227,7 +227,7 @@ export function trustRow(): Node {
   return section([
     gridTwo([
       fact('Trading since 2016', 'Same owners, same workshop, same phone number.'),
-      fact('Fully insured to £5m', 'Certificates on request, before you book, not after.'),
+      fact('Fully insured to $5M', 'Certificates on request, before you book, not after.'),
     ]),
     actions([primaryAction('Talk to us'), secondaryAction('See our work')]),
   ]);

@@ -12,6 +12,7 @@
     "blueprint:capture": "node --import tsx src/scripts/blueprint-capture.ts",
     "marketplace:purge-blueprints": "node --import tsx src/scripts/marketplace-purge-blueprints.ts",
     "marketplace:purge-themes": "node --import tsx src/scripts/marketplace-purge-themes.ts",
+    "marketplace:purge-components": "node --import tsx src/scripts/marketplace-purge-components.ts",
     "seed:demo": "node --import tsx src/scripts/seed-demo.ts",
     "backfill:webhook-secrets": "node --import tsx src/scripts/backfill-webhook-secrets.ts",
     "lint": "eslint .",

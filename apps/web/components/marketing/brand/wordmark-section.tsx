@@ -95,8 +95,7 @@ function ClearSpacePanel() {
       </div>
       <Text size={13.5}>
         The dashed frame marks the minimum clear space — the height of the “x” on all sides. Below{' '}
-        <strong className="text-base-content">16px</strong> tall the “x” loses its color contrast;
-        switch to the mark instead.
+        <strong>16px</strong> tall the “x” loses its color contrast; switch to the mark instead.
       </Text>
     </Panel>
   );

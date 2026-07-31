@@ -86,7 +86,7 @@ function LegalAgreement({
         }}
         aria-label="I agree to the Terms of Service, Privacy Policy, and Acceptable Use Policy"
       />
-      <Text className="text-base-content text-sm">
+      <Text className="text-sm">
         I agree to the{' '}
         <a href={`${LEGAL_BASE}/terms`} target="_blank" rel="noopener noreferrer" className={link}>
           Terms of Service
@@ -380,7 +380,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
         <form onSubmit={onVerifyCode} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">Check your email</h2>
-            <Text className="text-base-content/70 text-sm">
+            <Text className="text-sm">
               We sent a {OTP_LENGTH}-digit code to <span className="font-medium">{email}</span>.
               Enter it below to continue.
             </Text>
@@ -462,7 +462,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
             <h2 className="text-xl font-semibold">
               {useBackupCode ? 'Use a backup code' : 'Enter the code from your app'}
             </h2>
-            <Text className="text-base-content/70 text-sm">
+            <Text className="text-sm">
               {useBackupCode
                 ? 'Enter one of the backup codes you saved when you turned on two-step verification. Each code works once.'
                 : 'Open your authenticator app and enter the 6-digit code it shows for sparx. The code changes every 30 seconds.'}
@@ -509,7 +509,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
                 setTrustDevice(event.target.checked);
               }}
             />
-            <label htmlFor="trustDevice" className="text-base-content text-sm">
+            <label htmlFor="trustDevice" className="text-sm">
               Don&rsquo;t ask again on this device for 30 days.
               <span className="block">
                 Only tick this on a device that is yours and that other people cannot use.
@@ -553,7 +553,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">Your sign-in link is on its way</h2>
-            <Text className="text-base-content/70 text-sm">
+            <Text className="text-sm">
               We emailed a sign-in link to <span className="font-medium">{email}</span>. Open it on
               this device and you&rsquo;ll be signed straight in — the link works once and expires
               in 15 minutes.
@@ -583,7 +583,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
         <form onSubmit={onSendReset} className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">Reset your password</h2>
-            <Text className="text-base-content/70 text-sm">
+            <Text className="text-sm">
               Enter the email tied to your account and we&rsquo;ll send a link to set a new one.
             </Text>
           </div>
@@ -637,7 +637,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
         <div className="flex flex-col gap-5">
           <div className="flex flex-col gap-1">
             <h2 className="text-xl font-semibold">Check your email</h2>
-            <Text className="text-base-content/70 text-sm">
+            <Text className="text-sm">
               If an account exists for <span className="font-medium">{email}</span>, a
               password-reset link is on its way. It expires in an hour — check your spam folder if
               you don&rsquo;t see it.
@@ -678,7 +678,7 @@ export function AuthWrapper({ initialMode, googleClientId, callbackURL = '/' }: 
           <h2 className="text-xl font-semibold">
             {isSignUp ? 'Start your story' : 'Welcome back'}
           </h2>
-          <Text className="text-base-content/70 text-sm">
+          <Text className="text-sm">
             {isSignUp
               ? 'Your story, multiplied — create your account and you’ll be up and running in minutes.'
               : 'Sign in to pick up exactly where you left off.'}

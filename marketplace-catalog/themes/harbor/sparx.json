@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "category": "theme",
+  "slug": "harbor",
+  "name": "Harbor",
+  "version": "1.0.0",
+  "tagline": "Wide and dependable for freight and heavy work.",
+  "description": "A calm navy on a wide, data-friendly layout that holds schedules and specs without clutter. For freight, haulage, plant hire, and industrial suppliers who move serious things on time.",
+  "payload": "theme.ts",
+  "facets": {
+    "mood": "Professional",
+    "colorFamily": "Blue",
+    "density": "Wide",
+    "industry": "Logistics & Freight"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#003b67",
+  "sortWeight": 92
+}

@@ -130,7 +130,7 @@ function CodeCard() {
 function CodeTabs() {
   return (
     <div className="bg-base-200 border-base-300 flex items-center border-b px-4">
-      <span className="border-b-primary text-base-content text-mini border-b px-4 py-3.5 font-mono font-medium">
+      <span className="border-b-primary text-mini border-b px-4 py-3.5 font-mono font-medium">
         create-order.ts
       </span>
       {['curl', 'graphql.gql', 'webhook.json'].map((t) => (
@@ -226,7 +226,7 @@ function CodeBody() {
           <span key={n}>{n}</span>
         ))}
       </div>
-      <div className="text-base-content text-mini flex flex-col gap-2 px-5 font-mono leading-5">
+      <div className="text-mini flex flex-col gap-2 px-5 font-mono leading-5">
         {CODE.map((line, i) => (
           <span key={i}>{line}</span>
         ))}

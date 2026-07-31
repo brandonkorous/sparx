@@ -57,11 +57,29 @@ export const BlueprintFacets = z.object({
 });
 export type BlueprintFacets = z.infer<typeof BlueprintFacets>;
 
+/** One `--font-*` token's webfont provenance (mirrors the silica payload's fonts).
+ *  Lets the live preview load the theme's Google fonts before it renders. */
+const ThemePreviewFont = z.object({
+  family: z.string(),
+  source: z.enum(['system', 'google']),
+  weights: z.array(z.number().int()).optional(),
+});
+
 export const ThemeFacets = z.object({
   mood: z.string().nullable(),
   colorFamily: z.string().nullable(),
   density: z.string().nullable(),
   industry: z.string().nullable(),
+  // Live-preview render inputs (docs/118): the silica token bag the marketplace
+  // renders IN-BROWSER instead of a baked image — the same `site.theme` a site
+  // adopts. Present on BOTH browse + detail (the card renders it too), small enough
+  // to travel in the list. Null on a legacy row with no stored payload.
+  tokens: z.record(z.string(), z.string()).nullable().optional(),
+  dark: z.record(z.string(), z.string()).nullable().optional(),
+  fonts: z
+    .object({ sans: ThemePreviewFont.optional(), head: ThemePreviewFont.optional() })
+    .nullable()
+    .optional(),
 });
 export type ThemeFacets = z.infer<typeof ThemeFacets>;
 

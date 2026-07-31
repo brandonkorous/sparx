@@ -2,12 +2,24 @@
 
 import * as React from 'react';
 import { cn } from '../../utils/cn';
-import { Checkbox } from '../primitives/checkbox';
-import { Table } from '@wizeworks/silicaui-react';
+import { Checkbox, Table } from '@wizeworks/silicaui-react';
 import { Card, CardContent } from '../layout/card';
 import { Stack } from '../layout/stack';
 import { Grid } from '../layout/grid';
 import { BulkActionBar, type BulkAction } from './bulk-action-bar';
+
+/** Ref callback that mirrors a boolean onto a checkbox's `indeterminate` DOM
+ *  property. `indeterminate` has no HTML attribute, so it is unreachable from
+ *  JSX and unreachable from a class — the element has to be touched directly.
+ *
+ *  Returns a NEW closure per render on purpose: React then runs it with `null`
+ *  and re-runs it with the node whenever `on` changes, which is what keeps the
+ *  property in sync as rows are selected. */
+function setIndeterminate(on: boolean) {
+  return (el: HTMLInputElement | null) => {
+    if (el) el.indeterminate = on;
+  };
+}
 
 // SelectionList — the shared Collection/List substrate (docs/34 §4 archetype 2,
 // §7). One component renders BOTH the `table` and `card` views the
@@ -151,8 +163,9 @@ export function SelectionList<T>({
                     {isSelectable ? (
                       <Stack direction="row" align="start" gap={2} className="min-w-0">
                         <Checkbox
+                          color="module"
                           checked={isSelected}
-                          onCheckedChange={() => toggle(id)}
+                          onChange={() => toggle(id)}
                           aria-label={`Select ${rowLabel(item)}`}
                           className="mt-0.5 shrink-0"
                         />
@@ -190,9 +203,16 @@ export function SelectionList<T>({
               <tr>
                 {isSelectable && (
                   <th className="w-10">
+                    {/* `indeterminate` is a DOM property, not an attribute, so
+                        React can't set it from JSX — hence the callback ref.
+                        Partial selection is a THIRD state: neither box means
+                        "clicking me selects everything", which is what
+                        `toggleAll` does from here. */}
                     <Checkbox
-                      checked={someSelected ? 'indeterminate' : allSelected}
-                      onCheckedChange={toggleAll}
+                      ref={setIndeterminate(someSelected)}
+                      color="module"
+                      checked={allSelected}
+                      onChange={toggleAll}
                       aria-label={`Select all ${entityLabelPlural}`}
                     />
                   </th>
@@ -220,8 +240,9 @@ export function SelectionList<T>({
                     {isSelectable && (
                       <td className="w-10">
                         <Checkbox
+                          color="module"
                           checked={isSelected}
-                          onCheckedChange={() => toggle(id)}
+                          onChange={() => toggle(id)}
                           aria-label={`Select ${rowLabel(item)}`}
                         />
                       </td>

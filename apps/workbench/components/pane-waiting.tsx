@@ -24,7 +24,7 @@ export function PaneWaiting({ label = 'Loading…' }: { label?: string }) {
       <SparkMascot expression="content" tone={theme} size={72} bob blink title="Loading" />
       {/* A real ink token, never faded — a loading caption is text meant to be
           read. Kept small because the mascot is the signal; the word is support. */}
-      <span className="text-base-content text-sm">{label}</span>
+      <span className="text-sm">{label}</span>
     </div>
   );
 }

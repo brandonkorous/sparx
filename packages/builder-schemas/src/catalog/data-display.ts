@@ -13,12 +13,12 @@
 import type { BuilderNode } from '../node';
 import { el, atom, bound, entry, type PlatformCatalogEntry } from './_kit';
 
-// A semantic badge pill — the real Tag atom (st-tag), recolored by st-c-<color>.
+// A semantic badge pill — the real silica badge, recoloured by `badge-<color>`.
 const pill = (label: string, color: string) =>
-  atom('Tag', `st-c-${color} st-v-soft`, { text: label });
+  atom('Tag', `badge badge-${color} badge-soft`, { text: label });
 
-// A single keycap — the real Kbd atom (st-kbd).
-const keycap = (glyph: string) => atom('Kbd', '', { text: glyph });
+// A single keycap — the real silica kbd.
+const keycap = (glyph: string) => atom('Kbd', 'kbd', { text: glyph });
 
 // One overlapping avatar in a stack — a colored initials circle, ringed against
 // the surface so the overlap reads cleanly.
@@ -68,7 +68,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
               ),
               el('div', 'mt-3 flex items-center gap-3', {
                 children: [
-                  atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
+                  atom('Button', 'btn btn-primary btn-sm', {
                     label: 'View details',
                   }),
                   el(
@@ -120,7 +120,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
               }),
               el('div', 'mt-2', {
                 children: [
-                  atom('Button', 'st-btn st-c-primary st-v-soft st-btn--sz-sm', {
+                  atom('Button', 'btn btn-primary btn-soft btn-sm', {
                     label: 'Learn more',
                   }),
                 ],
@@ -174,11 +174,11 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     tags: ['badge', 'pill', 'tag', 'status', 'label', 'data-display'],
     tree: el('div', 'flex w-full flex-wrap items-center gap-2', {
       children: [
-        atom('Badge', 'st-badge st-c-primary st-v-soft', { label: 'Featured' }),
-        atom('Badge', 'st-badge st-c-success st-v-soft', { label: 'In stock' }),
-        atom('Badge', 'st-badge st-c-warning st-v-soft', { label: 'Low stock' }),
-        atom('Badge', 'st-badge st-c-danger st-v-soft', { label: 'Backordered' }),
-        atom('Badge', 'st-badge st-c-neutral st-v-soft', { label: 'Archived' }),
+        atom('Badge', 'badge badge-primary badge-soft', { label: 'Featured' }),
+        atom('Badge', 'badge badge-success badge-soft', { label: 'In stock' }),
+        atom('Badge', 'badge badge-warning badge-soft', { label: 'Low stock' }),
+        atom('Badge', 'badge badge-danger badge-soft', { label: 'Backordered' }),
+        atom('Badge', 'badge badge-neutral badge-soft', { label: 'Archived' }),
       ],
     }),
   }),
@@ -432,7 +432,7 @@ export const DATA_DISPLAY_CATALOG: PlatformCatalogEntry[] = [
     // it. (Was hand-rolled ★ glyph spans.)
     tree: el('div', 'flex w-full items-center gap-2', {
       children: [
-        atom('Rating', 'st-c-warning', { value: '4', count: '5' }),
+        atom('Rating', 'rating-warning', { value: '4', count: '5' }),
         el('span', 'text-sm font-medium text-base-content', { text: '4.0' }),
         el('span', 'text-sm text-base-content', { text: '(218 reviews)' }),
       ],

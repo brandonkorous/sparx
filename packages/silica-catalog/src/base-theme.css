@@ -1,0 +1,61 @@
+/* The platform base theme as a Tailwind v4 `@theme` block.
+ *
+ * A CSS projection of `BASE_SILICA_THEME` (base-theme.ts) — the same sparx Ember
+ * look, in the form Tailwind needs at BUILD time. It exists because registration and
+ * value are two different jobs:
+ *
+ *   · silicaui's `@plugin` emits its OWN component + color classes (`btn-primary`,
+ *     `bg-primary`, `rounded-box`, …) and supplies default token values through the
+ *     cascade. It does NOT register anything in Tailwind's theme namespace.
+ *   · Tailwind's namespaced color utilities — `ring-primary`, `ring-offset-base-100`,
+ *     `from-primary`, `divide-base-300` — only generate for colors declared in
+ *     `@theme`. The storefront really uses these (product swatches, booking
+ *     selection), so the keys must be declared somewhere at build time.
+ *
+ * The VALUES here are only a fallback. Every served site injects its own theme in an
+ * unlayered `:root` (`buildSilicaThemeCssFromTheme`), which outranks this layered
+ * block — so these apply to a page that somehow injects no theme at all.
+ *
+ * KEEP IN SYNC with base-theme.ts: `base-theme.css.test.ts` fails if any key here
+ * disagrees with `BASE_SILICA_THEME.tokens`, or if the TS constant grows a
+ * `--color-*` key this file lacks. Edit base-theme.ts first, then mirror it here —
+ * the test names the exact key that drifted.
+ *
+ * Light values only. Dark is a per-mode delta that a `@theme` block cannot express;
+ * the injected theme carries it (`:root[data-theme="dark"]`).
+ *
+ * This REPLACES the `--color-*: var(--st-*)` bridge each storefront used to declare
+ * inline — the second colour vocabulary that let a builder-authored page resolve its
+ * palette from the legacy brand compile instead of the applied theme.
+ * See docs/implementation/st-token-retirement.md. */
+
+@theme {
+  --color-base-100: #ffffff;
+  --color-base-200: #f8fafc;
+  --color-base-300: #eef2f7;
+  --color-base-content: #0f172a;
+  --color-primary: #e04631;
+  --color-primary-content: #ffffff;
+  --color-secondary: #4c9a8e;
+  --color-secondary-content: #ffffff;
+  --color-accent: #c1652e;
+  --color-accent-content: #fff7ef;
+  --color-neutral: #0f172a;
+  --color-neutral-content: #ffffff;
+  --color-info: #0284c7;
+  --color-info-content: #f0f9ff;
+  --color-success: #16a34a;
+  --color-success-content: #f0fdf4;
+  --color-warning: #d97706;
+  --color-warning-content: #0a0a0a;
+  --color-error: #dc2626;
+  --color-error-content: #ffffff;
+  /* `danger` is sparx's `statusTone()` name for silica's built-in `error`. */
+  --color-danger: #dc2626;
+  --color-danger-content: #ffffff;
+  /* `highlight` — sparx's Nth promo/attention hue; silica has no counterpart. */
+  --color-highlight: #ec4899;
+  --color-highlight-content: #ffffff;
+  /* Border COLOR — silica models line WIDTH (`--border`), not a line hue. */
+  --color-border: #e2e8f0;
+}

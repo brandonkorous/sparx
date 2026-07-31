@@ -144,6 +144,25 @@ export interface FoundLink {
 const LINK_COMPONENTS = new Set(['button', 'link', 'navlink', 'anchor']);
 
 /**
+ * A `<Button>` that acts on its FORM rather than going anywhere.
+ *
+ * `type="submit"` / `type="reset"` is the whole contract of a form's own button: it
+ * sends or clears the fields it sits in, and having no destination is correct, not a
+ * defect. Without this, every contact form on the platform reported "This button
+ * doesn't go anywhere" against a Send button that works perfectly — and the fix the
+ * finding suggests (open it and choose a page) would break it. Caught on the shipped
+ * `sparx` blueprint, where it fired once per blueprint × 21 blueprints.
+ *
+ * Deliberately narrow: only the two types the HTML spec gives a non-navigating
+ * meaning. A button with no `type` at all still reports, because a bare
+ * `<Button>Learn more</Button>` outside a form really does do nothing.
+ */
+function isFormControl(node: VisitedNode['node']): boolean {
+  const type = prop(node, 'type').toLowerCase();
+  return type === 'submit' || type === 'reset';
+}
+
+/**
  * Every authored destination in the document.
  *
  * Two carriers: an `<a>` element holds it in `attrs.href`, and a silica atom
@@ -160,6 +179,7 @@ export function findLinks(nodes: readonly VisitedNode[]): FoundLink[] {
     const isAtom = node.kind === 'component' && LINK_COMPONENTS.has(type);
     if (!isAnchor && !isAtom) continue;
     if (bindsAttr(node, 'href')) continue;
+    if (isAtom && isFormControl(node)) continue;
 
     const href = isAnchor ? attr(node, 'href') : prop(node, 'href');
     // An `<a>` with no href at all is not a link — it is text that looks like one.

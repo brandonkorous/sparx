@@ -25,7 +25,7 @@ import './marketing.css';
 const ORGANIZATION_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  name: 'WizeWorks, Inc.',
+  name: 'WizeWorks LLC',
   url: 'https://wize.works',
   logo: 'https://sparx.works/icon.png',
   address: {
@@ -58,7 +58,7 @@ const PRODUCT_SCHEMA = {
   url: 'https://sparx.works',
   publisher: {
     '@type': 'Organization',
-    name: 'WizeWorks, Inc.',
+    name: 'WizeWorks LLC',
     url: 'https://wize.works',
   },
 };
@@ -74,7 +74,7 @@ const WEBSITE_SCHEMA = {
   url: 'https://sparx.works',
   publisher: {
     '@type': 'Organization',
-    name: 'WizeWorks, Inc.',
+    name: 'WizeWorks LLC',
     url: 'https://wize.works',
   },
 };
@@ -118,9 +118,9 @@ export const metadata: Metadata = {
     },
   },
   applicationName: 'sparx',
-  authors: [{ name: 'WizeWorks, Inc.', url: 'https://wize.works' }],
-  creator: 'WizeWorks, Inc.',
-  publisher: 'WizeWorks, Inc.',
+  authors: [{ name: 'WizeWorks LLC', url: 'https://wize.works' }],
+  creator: 'WizeWorks LLC',
+  publisher: 'WizeWorks LLC',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

@@ -28,7 +28,7 @@ export const CommandInput = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof CommandPrimitive.Input>
 >(({ className, ...props }, ref) => (
   <div className="border-base-300 flex items-center gap-2 border-b px-3">
-    <Search className="text-base-content h-4 w-4 shrink-0" />
+    <Search className="h-4 w-4 shrink-0" />
     <CommandPrimitive.Input
       ref={ref}
       className={cn(
@@ -61,7 +61,7 @@ export const CommandEmpty = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <CommandPrimitive.Empty
     ref={ref}
-    className={cn('text-base-content py-6 text-center text-sm', className)}
+    className={cn('py-6 text-center text-sm', className)}
     {...props}
   />
 ));
@@ -74,11 +74,11 @@ export const CommandGroup = React.forwardRef<
   <CommandPrimitive.Group
     ref={ref}
     className={cn(
-      'text-base-content overflow-hidden',
+      'overflow-hidden',
       '[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:py-1.5',
       '[&_[cmdk-group-heading]]:text-xs [&_[cmdk-group-heading]]:font-medium',
       '[&_[cmdk-group-heading]]:tracking-wider [&_[cmdk-group-heading]]:uppercase',
-      '[&_[cmdk-group-heading]]:text-base-content',
+      '[&_[cmdk-group-heading]]:',
       className
     )}
     {...props}
@@ -106,7 +106,7 @@ export const CommandItem = React.forwardRef<
     ref={ref}
     className={cn(
       'relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none select-none',
-      'text-base-content',
+      '',
       'transition-colors duration-100',
       'data-[selected=true]:bg-base-200',
       'aria-disabled:pointer-events-none aria-disabled:opacity-40',
@@ -118,7 +118,7 @@ export const CommandItem = React.forwardRef<
 CommandItem.displayName = CommandPrimitive.Item.displayName;
 
 export const CommandShortcut = ({ className, ...props }: React.HTMLAttributes<HTMLSpanElement>) => (
-  <span className={cn('text-base-content ml-auto text-xs tracking-wide', className)} {...props} />
+  <span className={cn('ml-auto text-xs tracking-wide', className)} {...props} />
 );
 CommandShortcut.displayName = 'CommandShortcut';
 

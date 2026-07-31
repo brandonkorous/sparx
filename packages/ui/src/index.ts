@@ -13,7 +13,6 @@ export {
   MODULE_COLOR_KEYS,
   ALL_COLOR_KEYS,
   TREATMENT_KEYS,
-  colorVars,
   type ColorKey,
   type SemanticColorKey,
   type ModuleColorKey,
@@ -72,11 +71,15 @@ export {
 } from './components/primitives/badge';
 export { Avatar, avatarVariants, type AvatarProps } from './components/primitives/avatar';
 export { Skeleton, type SkeletonProps } from './components/primitives/skeleton';
-export { Switch, type SwitchProps } from './components/primitives/switch';
-export { Checkbox, type CheckboxProps } from './components/primitives/checkbox';
+// Switch / Checkbox / RadioGroup / Slider / Progress are NOT re-exported here.
+// silicaui ships all five natively (`switch-<color>`, `checkbox-<color>`, …), so
+// import them straight from `@wizeworks/silicaui-react` — a wrapper here would be
+// a second name for one control, which is the drift RULE #1 exists to prevent.
 export { Heading, headingVariants, type HeadingProps } from './components/primitives/heading';
 export { Text, textVariants, type TextProps } from './components/primitives/text';
-export { Label } from './components/primitives/label';
+// `Label` joins them — silica's takes the same `required` prop and renders the
+// same asterisk. Inside a form row prefer `FieldLabel`, which also wires the
+// control's id and validity for you.
 
 // ── Layout ────────────────────────────────────────────────
 export {
@@ -112,49 +115,29 @@ export {
 } from './components/layout/sidebar-app-shell';
 
 // ── Form ──────────────────────────────────────────────────
-export { Input, inputVariants, type InputProps } from './components/form/input';
-export { PasswordInput, type PasswordInputProps } from './components/form/password-input';
-export {
-  NativeSelect,
-  nativeSelectVariants,
-  type NativeSelectProps,
-} from './components/form/native-select';
+// The CONTROLS are silicaui's, not ours. `Input` / `Textarea` / `NativeSelect` /
+// `Select` / `PasswordInput` / `Combobox` / `MultiSelect` / `Calendar` /
+// `DatePicker` / `ColorPicker` / `FileUpload` / `Label` are all shipped by
+// `@wizeworks/silicaui-react` — import them from there. Each of those once had a
+// hand-rolled twin here that rebuilt the same chassis (border, radius, hover,
+// focus, `sm/md/lg` heights, error/success states) out of utilities; silica's
+// own `.input` / `.select` / `.textarea` already carry every one of them, driven
+// by `--input-accent` so a color prop recolors border AND focus ring together.
+// The twins are deleted. Workbench never used them — it imports silica's
+// directly, and is the reference.
+//
+// VALIDATION is silica's `Field` too. `<Field status="error" statusMessage="…">`
+// resolves the accent, the trailing icon, and the message panel from one place;
+// `FieldLabel` / `FieldDescription` / `FieldStatus` complete the row and Base UI
+// wires the ids + aria between them. The old shadcn-shaped react-hook-form
+// adapter here (`Form`/`FormField`/`FormItem`/`FormLabel`/`FormControl`/
+// `FormDescription`/`FormMessage`/`useFormField`) reimplemented exactly that
+// wiring and is gone; pair RHF's own `<Controller>` with `<Field>` instead.
+//
+// What stays below is what silica does NOT ship: a sparx action bar, a TipTap
+// editor, and the schema-driven renderer (itself now built on `Field`).
 export { FormActionBar, type FormActionBarProps } from './components/form/form-action-bar';
-export { Textarea, textareaVariants, type TextareaProps } from './components/form/textarea';
-export {
-  Select,
-  SelectGroup,
-  SelectValue,
-  SelectTrigger,
-  SelectContent,
-  SelectLabel,
-  SelectItem,
-  SelectSeparator,
-  selectTriggerVariants,
-  type SelectTriggerProps,
-} from './components/form/select';
-export {
-  RadioGroup,
-  RadioGroupItem,
-  type RadioGroupItemProps,
-} from './components/form/radio-group';
-export { Slider, type SliderProps } from './components/form/slider';
-export {
-  Form,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-  useFormField,
-} from './components/form/form';
-export { Calendar, type CalendarProps } from './components/form/calendar';
-export { DatePicker, type DatePickerProps } from './components/form/date-picker';
-export { FileUpload, type FileUploadProps } from './components/form/file-upload';
-export { ColorPicker, type ColorPickerProps } from './components/form/color-picker';
 export { RichTextEditor, type RichTextEditorProps } from './components/form/rich-text-editor';
-export { Combobox, MultiCombobox, type ComboboxOption } from './components/form/combobox';
 export {
   SchemaFieldRenderer,
   type SchemaFieldRendererProps,
@@ -360,7 +343,6 @@ export { resolveRouteModule } from './components/navigation/top-progress-nav';
 export { Code, codeVariants, type CodeProps } from './components/data/code';
 export { Kbd, kbdVariants, type KbdProps } from './components/data/kbd';
 export { Alert, type AlertProps } from './components/data/alert';
-export { Progress, type ProgressProps } from './components/data/progress';
 export { StatusDot, type StatusDotProps } from './components/data/status-dot';
 export {
   Table,

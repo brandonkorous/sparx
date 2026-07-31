@@ -3,13 +3,15 @@ title: The console is not a marketing site
 node: design
 type: rule
 status: active
-applies-to: [dashboard]
+applies-to: [platform]
 sources:
-  - apps/dashboard/DESIGN.md
+  - DESIGN.md
   - docs/86-surface-frame-pattern.md
 ---
 
 **This is the note the partner pages needed.** The operator console and the marketing site are different surfaces with different idioms. Marketing idioms leaking into the console is what reads as "completely detached from our designs" — and the linter can't catch it, because every offending element is built from correct primitives.
+
+> ⚠️ **This is a rule about CONTENT REGISTER, not about design systems.** Console and marketing are **one** design system — same brand theme, same palette, same components, one `DESIGN.md` (see [[two-design-systems]]). What differs is voice, density, and which composition idioms are allowed. Do not read this note as license for a separate marketing style, a second palette, or a parallel design doc — that misreading is exactly what [[two-design-systems]] was corrected for.
 
 **Banned in the console (all seen on the partner pages):**
 

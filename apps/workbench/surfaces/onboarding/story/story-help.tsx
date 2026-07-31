@@ -16,7 +16,7 @@ function HelpRow({ glyph, children }: { glyph: ReactNode; children: ReactNode })
   return (
     <li className="flex items-start gap-3">
       <span className="mt-0.5 shrink-0">{glyph}</span>
-      <Text className="text-base-content text-sm leading-snug">{children}</Text>
+      <Text className="text-sm leading-snug">{children}</Text>
     </li>
   );
 }
@@ -28,7 +28,7 @@ export function StoryHelp(): ReactNode {
         <Heading level={3} className="text-base font-semibold">
           Ways to shape your story
         </Heading>
-        <Text className="text-base-content text-sm">
+        <Text className="text-sm">
           There’s no wrong answer — it’s your story, not a form. Change anything, add as much as you
           like, and your plan on the right keeps pace.
         </Text>
@@ -37,7 +37,7 @@ export function StoryHelp(): ReactNode {
       <ul className="flex flex-col gap-3">
         <HelpRow
           glyph={
-            <span className="border-base-300 text-base-content/80 inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-xs font-medium">
+            <span className="border-base-300 inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-xs font-medium">
               phrase
               <ChevronDown size={12} strokeWidth={2.4} aria-hidden />
             </span>
@@ -60,7 +60,7 @@ export function StoryHelp(): ReactNode {
 
         <HelpRow
           glyph={
-            <span className="bg-base-200 text-base-content/80 inline-flex size-6 items-center justify-center rounded-full">
+            <span className="bg-base-200 inline-flex size-6 items-center justify-center rounded-full">
               <X size={12} strokeWidth={2.6} aria-hidden />
             </span>
           }

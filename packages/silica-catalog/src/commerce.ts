@@ -358,20 +358,19 @@ function addToCartForm(): Node {
  *  pinning the product scopes every descendant to `item.*`. */
 export function buyBox(): Node {
   return repeat(
-    // TWO elements, not one — and this is the trap the whole container-query
-    // vocabulary has to get right. `@container` marks an element as a query container
-    // for its DESCENDANTS; a `@2xl:` class on that SAME element resolves against the
-    // nearest ANCESTOR container instead. The previous single div
-    // (`grid gap-8 @2xl:grid-cols-2 @container`) therefore never measured itself: on
-    // the PDP it happened to work, because `productDetailPage`'s section is a
-    // container — but that section is full-bleed while the buy box is capped at
-    // `max-w-6xl` inside it, so the split was keyed to the WINDOW width wearing a
-    // container query's clothes. Drop the same block standalone into a page column and
-    // it splits on the page's width, not its own. Splitting the div makes the box
-    // measure the space it was actually given, which is the entire point.
-    el('div', '@container', {
+    // A self-contained SECTION so the buy box stands alone — dropped as a bare block,
+    // or shown standalone in the marketplace preview — instead of relying on a page to
+    // wrap it. `px-6 py-12` are its own margins (without them the image and Add-to-cart
+    // button butt against the edge); `mx-auto max-w-5xl` caps it so the half-width image
+    // is a sane ~500px, not full-bleed.
+    //
+    // CONTAINER-QUERY TRAP: `@container` marks an element as a query container for its
+    // DESCENDANTS, but a `@2xl:` class on that SAME element resolves against the nearest
+    // ANCESTOR container. So the container is the SECTION and `@2xl:grid-cols-2` lives on
+    // the grid INSIDE it — the grid measures the section it was given, never the window.
+    el('section', 'bg-base-100 @container px-6 py-12', {
       children: [
-        el('div', 'grid gap-8 @2xl:grid-cols-2', {
+        el('div', 'mx-auto grid w-full max-w-5xl gap-8 @2xl:grid-cols-2', {
           children: [
             bind(
               atom('Image', 'aspect-square w-full rounded-box object-cover', {
@@ -380,7 +379,10 @@ export function buyBox(): Node {
               }),
               'image'
             ),
-            el('div', 'flex flex-col gap-4', {
+            // `justify-center` vertically centers the details beside the tall product
+            // image, so a short product (title + price + one line) sits balanced rather
+            // than packed at the top with a void beneath the Add-to-cart button.
+            el('div', 'flex flex-col justify-center gap-4', {
               children: [
                 bind(
                   el('h1', 'text-3xl font-bold text-base-content', { text: 'Product name' }),
@@ -429,18 +431,14 @@ export function buyBox(): Node {
  *  injects the routed product as the `product` object scope (a collection-of-one), so
  *  the buy box resolves `item.*` for THIS product while the rail below repeats the
  *  catalog's `commerce.product` source. Dropping it as a page needs no pinning — the
- *  page's record scope drives it. The container section gives the buy box page margins;
- *  `featuredProducts` (a `commerce.product` repeat) is the cross-sell strip. */
+ *  page's record scope drives it. `featuredProducts` (a `commerce.product` repeat) is
+ *  the cross-sell strip. */
 export function productDetailPage(): Node {
   return el('div', 'flex flex-col', {
     children: [
-      // The buy box is capped at the same `max-w-6xl` reading width every other page
-      // uses (shopHeader, the featured rail, the silica pages) and centered — without
-      // this the PDP alone spanned full-bleed while the rest of the site stayed
-      // contained, which read as a broken width.
-      el('section', 'bg-base-100 @container px-6 py-12', {
-        children: [el('div', 'mx-auto w-full max-w-6xl', { children: [buyBox()] })],
-      }),
+      // `buyBox()` is a self-contained section now (its own padding + `max-w-5xl`), so the
+      // page simply stacks it above the cross-sell rail — no extra wrapper.
+      buyBox(),
       featuredProducts(),
     ],
   });

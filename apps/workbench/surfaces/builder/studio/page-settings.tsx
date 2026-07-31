@@ -148,8 +148,8 @@ function PanelField({
 }) {
   return (
     <div className="flex flex-col gap-1.5">
-      <span className="text-base-content text-sm font-medium">{label}</span>
-      <p className="text-base-content text-sm leading-snug">{help}</p>
+      <span className="text-sm font-medium">{label}</span>
+      <p className="text-sm leading-snug">{help}</p>
       {children}
     </div>
   );
@@ -209,7 +209,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
   return (
     <div className="flex flex-col gap-4">
       {!saved ? (
-        <p className="text-base-content text-sm leading-snug">
+        <p className="text-sm leading-snug">
           This page is new. Fill these in now — they save along with the page itself.
         </p>
       ) : null}
@@ -217,9 +217,9 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
       {/* The point of the whole section, made concrete: what a person actually sees
           before they decide to click. Abstract field labels do not teach this. */}
       <div className="border-base-300 flex flex-col gap-1 rounded-lg border p-3">
-        <span className="text-base-content text-sm font-medium">In a search result</span>
+        <span className="text-sm font-medium">In a search result</span>
         <p className="text-primary mt-1 leading-snug">{previewTitle}</p>
-        <p className="text-base-content text-sm leading-snug">
+        <p className="text-sm leading-snug">
           {previewDescription || 'Add a description below and it will show up here.'}
         </p>
       </div>
@@ -237,9 +237,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
           }}
         />
         {titleHint ? (
-          <p className={`text-sm ${titleHint.over ? 'text-warning' : 'text-base-content'}`}>
-            {titleHint.text}
-          </p>
+          <p className={`text-sm ${titleHint.over ? 'text-warning' : ''}`}>{titleHint.text}</p>
         ) : null}
       </PanelField>
 
@@ -256,9 +254,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
           }}
         />
         {descHint ? (
-          <p className={`text-sm ${descHint.over ? 'text-warning' : 'text-base-content'}`}>
-            {descHint.text}
-          </p>
+          <p className={`text-sm ${descHint.over ? 'text-warning' : ''}`}>{descHint.text}</p>
         ) : null}
       </PanelField>
 
@@ -339,7 +335,7 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
       <div className="border-base-300 flex flex-col gap-3 border-t pt-3">
         <button
           type="button"
-          className="text-base-content flex items-center gap-1 text-sm font-medium"
+          className="flex items-center gap-1 text-sm font-medium"
           aria-expanded={showAdvanced}
           onClick={() => {
             setShowAdvanced((v) => !v);

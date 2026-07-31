@@ -1,12 +1,12 @@
 'use client';
 
-// Scroll-reveal controller. Watches every `[data-st-reveal]` element (the
+// Scroll-reveal controller. Watches every `[data-bx-reveal]` element (the
 // Site Builder section wrappers) and adds `is-visible` as each scrolls into
 // view, driving the fade-up entrance defined in site.css. One-shot per
 // element (unobserved after it reveals). Re-scans on route change so client
 // navigations pick up the new page's sections.
 //
-// The hidden initial state is gated on `html.st-reveal-ready` (set by a tiny
+// The hidden initial state is gated on `html.bx-reveal-ready` (set by a tiny
 // before-paint script in the layout head), so with JS disabled — or reduced
 // motion — nothing ever hides. Renders nothing.
 
@@ -18,10 +18,10 @@ export function RevealController() {
   useEffect(() => {
     if (typeof window === 'undefined') return;
     if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    const els = Array.from(document.querySelectorAll<HTMLElement>('[data-st-reveal]'));
+    const els = Array.from(document.querySelectorAll<HTMLElement>('[data-bx-reveal]'));
     if (els.length === 0) return;
     // No IntersectionObserver: reveal everything now rather than leave content
-    // stuck hidden at opacity:0 (st-reveal-ready is set before paint, so the
+    // stuck hidden at opacity:0 (bx-reveal-ready is set before paint, so the
     // hidden state would otherwise never clear).
     if (typeof IntersectionObserver === 'undefined') {
       els.forEach((el) => el.classList.add('is-visible'));

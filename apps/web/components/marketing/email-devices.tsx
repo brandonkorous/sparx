@@ -74,7 +74,7 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
       <div className="border-base-300 flex items-center gap-3 border-b px-[22px] py-5">
         <Dot color={E.color} size={9} />
         <span className="min-w-0">
-          <Text as="span" className="text-body-sm text-base-content block font-medium">
+          <Text as="span" className="text-body-sm block font-medium">
             {email.broadcastSubject}
           </Text>
           <Text as="span" className="text-mini text-ink-subtle font-mono">
@@ -90,15 +90,13 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
       </div>
       <div className="bg-base-200 border-base-300 text-caption text-ink-muted flex items-center gap-2 border-b px-[22px] py-3.5">
         <Dot color={CRM.color} size={7} />
-        Segment: <strong className="text-base-content font-medium">{email.segment}</strong> ·{' '}
-        {email.recipients} recipients
+        Segment: <strong className="font-medium">{email.segment}</strong> · {email.recipients}{' '}
+        recipients
       </div>
       <div className="mkt-bstats">
         {stats.map(([v, l]) => (
           <div key={l} className="mkt-bstat p-5">
-            <div className="text-h2 text-base-content font-sans font-medium tracking-[-0.02em]">
-              {v}
-            </div>
+            <div className="text-h2 font-sans font-medium tracking-[-0.02em]">{v}</div>
             <Text className="text-micro text-ink-subtle mt-[3px] font-mono">{l}</Text>
           </div>
         ))}
@@ -149,7 +147,7 @@ export function EmailAutomations() {
             <span className="mkt-auto-chev" aria-hidden>
               →
             </span>
-            <span className="text-small text-base-content">
+            <span className="text-small">
               {r.title}
               <small className="text-mini text-ink-muted mt-[3px] block">{r.hint}</small>
             </span>

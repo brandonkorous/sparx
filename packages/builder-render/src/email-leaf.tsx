@@ -1,6 +1,6 @@
 // Email-faithful leaf rendering for the Builder CANVAS (docs/52, docs/93).
 //
-// The page/site render path renders leaves through @sparx/site-ui so the canvas
+// The page/site render path renders leaves through silicaui so the canvas
 // preview matches the LIVE SITE. An email never renders through site-ui — it
 // renders through @sparx/email's table-based primitives at a FIXED pixel scale
 // (20px headings, 14px body, a single accent button). Reusing the site-ui
@@ -12,7 +12,7 @@
 // the SAME `EMAIL_DESIGN` tokens the renderer inlines on send — so the SCALE
 // (sizes, weights, spacing, radius, the accent CTA) is an exact match. Brand-
 // derived values (text/accent color, fonts) read the tenant theme `.bx-canvas`
-// exposes as `--st-*` vars; the EMAIL_DESIGN values are the inlined fallback when
+// exposes as `--color-*` vars; the EMAIL_DESIGN values are the inlined fallback when
 // no brand is compiled (matching @sparx/email's `defaultBrand`).
 //
 // CAVEAT: the true send resolves its brand via email-platform's brand-service —
@@ -37,16 +37,16 @@ const { typography, colors, spacing, radius } = EMAIL_DESIGN;
 // Tenant brand via the canvas theme vars, with the email default inlined as the
 // fallback. Foreground/accent/fonts are brand-derived (the email brand-service
 // maps them); muted is the fixed email token, exactly like the primitive.
-const FG = `var(--st-base-content, ${colors.textPrimary})`;
-const FONT_HEADING = `var(--st-font-heading, ${EMAIL_DESIGN.fontFamily})`;
-const FONT_BODY = `var(--st-font-body, ${EMAIL_DESIGN.fontFamily})`;
-const PRIMARY = `var(--st-primary, ${colors.brand})`;
-const PRIMARY_FG = `var(--st-primary-content, ${colors.textInverse})`;
-const BORDER = `var(--st-border, ${colors.border})`;
+const FG = `var(--color-base-content, ${colors.textPrimary})`;
+const FONT_HEADING = `var(--font-heading, ${EMAIL_DESIGN.fontFamily})`;
+const FONT_BODY = `var(--font-sans, ${EMAIL_DESIGN.fontFamily})`;
+const PRIMARY = `var(--color-primary, ${colors.brand})`;
+const PRIMARY_FG = `var(--color-primary-content, ${colors.textInverse})`;
+const BORDER = `var(--color-border, ${colors.border})`;
 
 // The palette the email-safe class compiler (`emailStyleFor`, Email v2 §3.6c)
 // resolves a node's color tokens against, for the CANVAS. It mirrors the leaf's own
-// brand source above — the `--st-*` theme vars with the EMAIL_DESIGN fallback — so a
+// brand source above — the silica theme vars with the EMAIL_DESIGN fallback — so a
 // class-set color (`text-primary`, `bg-base-200`) tracks the live theme exactly like
 // the built-in colors do, and the documented site-theme-vs-email-brand caveat applies
 // uniformly (no NEW divergence). The non-color axes the compiler emits (size, weight,
@@ -55,10 +55,10 @@ const BORDER = `var(--st-border, ${colors.border})`;
 export const CANVAS_EMAIL_PALETTE: EmailPalette = {
   primary: PRIMARY,
   primaryForeground: PRIMARY_FG,
-  accent: `var(--st-accent, ${colors.brand})`,
-  background: `var(--st-base-100, ${colors.surface})`,
+  accent: `var(--color-accent, ${colors.brand})`,
+  background: `var(--color-base-100, ${colors.surface})`,
   foreground: FG,
-  muted: `var(--st-base-200, ${colors.surfaceMuted})`,
+  muted: `var(--color-base-200, ${colors.surfaceMuted})`,
   border: BORDER,
 };
 

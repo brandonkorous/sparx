@@ -142,7 +142,12 @@ async function overlayBrand(
   // (no-code) theme renders with zero code-preset dependency.
   preset: ThemePresetV2 | null
 ): Promise<PublishedSnapshot> {
-  const [base, property] = await Promise.all([
+  // EVERY site reads its own `brand_override` — the primary included. The primary
+  // used to be excluded here (and written straight to TenantBrand), which made the
+  // tenant base double as "the primary site's brand": branding the primary silently
+  // rebranded every sibling site that had no override of its own. A site's brand is
+  // its own; TenantBrand is only the inherited default for a site never branded.
+  const [base, override] = await Promise.all([
     tx.tenantBrand.findUnique({
       where: { tenantId },
       select: {
@@ -161,9 +166,8 @@ async function overlayBrand(
         tokens: true,
       },
     }),
-    tx.property.findUnique({ where: { id: propertyId }, select: { isPrimary: true } }),
+    readPropertyBrandOverride(tx, propertyId),
   ]);
-  const override = property?.isPrimary ? null : await readPropertyBrandOverride(tx, propertyId);
   const brand = mergeCompileBrand(base, override);
   const compiledTokens = brand
     ? applyBrandIdentityTokens(snapshot.compiledTokens, brand)
@@ -191,8 +195,8 @@ interface CompileBrand {
   tokens: unknown;
 }
 
-// Read a non-primary site's brand override (the compile-relevant subset) from the
-// property's `brand_override` JSON. Defensive — the column is unvalidated.
+// Read a site's brand override (the compile-relevant subset) from the property's
+// `brand_override` JSON. Defensive — the column is unvalidated.
 async function readPropertyBrandOverride(
   tx: TxClient,
   propertyId: string

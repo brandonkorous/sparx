@@ -90,7 +90,7 @@ export function catalogSummary(e: PlatformCatalogEntry): PlatformCatalogSummary 
 // Catalog trees are written with these instead of the box/layout `seedNode`
 // vocabulary, because a daisyUI-grade component is most readable as explicit
 // utility classes (the exact strings a power user or AI agent would type, which
-// compile through @sparx/surface-compile to the tenant `--st-*` tokens). Ids only
+// compile through @sparx/surface-compile to the tenant's silica theme tokens). Ids only
 // need to be unique within a single entry's tree — stamping re-ids the whole
 // fork — but a monotonic counter keeps them unique across the catalog too, which
 // keeps module-load deterministic (cf. STARTER_PAGES).

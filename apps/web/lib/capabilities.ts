@@ -27,8 +27,24 @@ export interface CapabilityArea {
   name: string;
   /** one-line summary shown under the area heading */
   summary: string;
-  /** accent color (dot + top stripe). Module areas reuse their brand color. */
-  accent: string;
+  /**
+   * The area's hue, as a registered silica colour NAME plus its fill class.
+   * Nothing here holds a colour VALUE, so re-pointing `@sparx/brand/theme.css`
+   * re-colours this page with zero edits in this file.
+   *
+   *   color → `module-crm` / `success`   the NAME, for `<Status color=…>`
+   *   fill  → `bg-module-crm`            the CLASS, for the section's `bg-soft`
+   *           wash (Tailwind's scanner can't see an interpolated `bg-${color}`,
+   *           so the literal has to be written out)
+   *
+   * These were 25 hand-mirrored HEXES. Six had already drifted a shade off the
+   * palette they were copying — Builder `#6366F1` vs the real `#4f46e5`, AI
+   * `#EC4899` vs `#db2777`, plus Scheduling, Invoicing, Live Chat, and SEO, which
+   * had gone cyan against a yellow token. That drift is the entire argument for
+   * naming a token instead of copying its value.
+   */
+  color: string;
+  fill: string;
   /** true for the 12 activatable modules; false for cross-cutting platform areas */
   module: boolean;
   capabilities: Capability[];
@@ -43,9 +59,9 @@ export const STATUS_META: Record<
   CapabilityStatus,
   { label: string; short: string; color: string }
 > = {
-  live: { label: 'Live today', short: 'Live', color: 'var(--color-success)' },
-  building: { label: 'In build', short: 'Building', color: '#F59E0B' },
-  planned: { label: 'On the roadmap', short: 'Planned', color: '#A1A1AA' },
+  live: { label: 'Live today', short: 'Live', color: 'success' },
+  building: { label: 'In build', short: 'Building', color: 'warning' },
+  planned: { label: 'On the roadmap', short: 'Planned', color: 'neutral' },
 };
 
 export const CAPABILITY_AREAS: CapabilityArea[] = [
@@ -54,7 +70,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'builder',
     name: 'Builder',
     summary: 'Sites, pages, layouts, and email — visually authored, no code.',
-    accent: '#6366F1',
+    color: 'module-builder',
+    fill: 'bg-module-builder',
     module: true,
     capabilities: [
       live('Drag-and-drop block editor'),
@@ -95,7 +112,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'commerce',
     name: 'Commerce',
     summary: 'Cart, checkout, orders, payments, tax, and shipping.',
-    accent: '#F97316',
+    color: 'module-commerce',
+    fill: 'bg-module-commerce',
     module: true,
     capabilities: [
       live('Products & variants'),
@@ -145,7 +163,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'cms',
     name: 'CMS',
     summary: 'Words, media, structured content, and SEO — standalone or paired.',
-    accent: '#14B8A6',
+    color: 'module-cms',
+    fill: 'bg-module-cms',
     module: true,
     capabilities: [
       live('Block editor with tables & embeds'),
@@ -172,7 +191,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'crm',
     name: 'CRM',
     summary: 'Customers, pipeline, segments, and activity — on your live data.',
-    accent: '#06B6D4',
+    color: 'module-crm',
+    fill: 'bg-module-crm',
     module: true,
     capabilities: [
       live('Unified customer record'),
@@ -193,7 +213,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'email',
     name: 'Email',
     summary: 'Transactional and marketing, sent from your own domain.',
-    accent: '#0EA5E9',
+    color: 'module-email',
+    fill: 'bg-module-email',
     module: true,
     capabilities: [
       live('Self-hosted sending'),
@@ -218,7 +239,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'b2b',
     name: 'B2B · Wholesale · Fleet',
     summary: 'Accounts, net terms, RFQ, purchase orders, fleet, credit.',
-    accent: '#475569',
+    color: 'module-b2b',
+    fill: 'bg-module-b2b',
     module: true,
     capabilities: [
       live('B2B accounts & contacts'),
@@ -243,7 +265,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'invoicing',
     name: 'Invoicing & Billing Documents',
     summary: 'Estimates → work orders → invoices with snapshots and line types.',
-    accent: '#65A30D',
+    color: 'module-invoicing',
+    fill: 'bg-module-invoicing',
     module: true,
     capabilities: [
       live('Configurable document workflows'),
@@ -262,7 +285,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'dropship',
     name: 'Dropship',
     summary: 'Supplier sync, margin math, automated order routing.',
-    accent: '#10B981',
+    color: 'module-dropship',
+    fill: 'bg-module-dropship',
     module: true,
     capabilities: [
       live('Supplier connectors (DSers, Spocket, Faire…)'),
@@ -280,7 +304,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'inventory',
     name: 'Inventory',
     summary: 'Multi-warehouse stock, reservations, and a full audit trail.',
-    accent: '#F59E0B',
+    color: 'module-inventory',
+    fill: 'bg-module-inventory',
     module: true,
     capabilities: [
       live('Multi-warehouse (owned / 3PL / virtual)'),
@@ -300,7 +325,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     // never the intelligence. The concierge is inert until the tenant connects
     // their own Anthropic or OpenAI key, and escalates to a human until they do.
     summary: 'Site chat with a real-time staff inbox — answer first with your own AI.',
-    accent: '#8B5CF6',
+    color: 'module-chat',
+    fill: 'bg-module-chat',
     module: true,
     capabilities: [
       live('Site chat widget'),
@@ -320,7 +346,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'scheduling',
     name: 'Scheduling',
     summary: 'Appointments, classes, reservations, and rentals on one booking engine.',
-    accent: '#F43F5E',
+    color: 'module-scheduling',
+    fill: 'bg-module-scheduling',
     module: true,
     capabilities: [
       live('Appointments, classes, reservations, rentals'),
@@ -344,7 +371,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'ai',
     name: 'AI',
     summary: 'A first-class MCP server for Claude, ChatGPT, and Copilot.',
-    accent: '#EC4899',
+    color: 'module-ai',
+    fill: 'bg-module-ai',
     module: true,
     capabilities: [
       live('First-class MCP server'),
@@ -363,7 +391,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'search',
     name: 'Search & Discovery',
     summary: 'Typesense-backed search, facets, and a global command palette.',
-    accent: '#2563EB',
+    color: 'module-social',
+    fill: 'bg-module-social',
     module: false,
     capabilities: [
       live('Instant product / customer / order search'),
@@ -381,7 +410,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'seo',
     name: 'SEO & AI Discoverability',
     summary: 'Built to rank — and built to be read by AI crawlers.',
-    accent: '#0891B2',
+    color: 'module-seo',
+    fill: 'bg-module-seo',
     module: false,
     capabilities: [
       live('Multi-site XML sitemaps'),
@@ -401,7 +431,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'automation',
     name: 'Automation',
     summary: 'One rule engine across every module — triggers, conditions, gates.',
-    accent: '#7C3AED',
+    color: 'module-automations',
+    fill: 'bg-module-automations',
     module: false,
     capabilities: [
       live('Unified rule engine'),
@@ -423,7 +454,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'multisite',
     name: 'Multi-site & Multi-brand',
     summary: 'Many sites under one tenant — shared data where you want it.',
-    accent: '#4F46E5',
+    color: 'module-builder',
+    fill: 'bg-module-builder',
     module: false,
     capabilities: [
       live('Many properties per tenant'),
@@ -442,7 +474,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'marketplace',
     name: 'Marketplace & Integrations',
     summary: 'Blueprints, themes, components, and provider connectors.',
-    accent: '#DB2777',
+    color: 'accent',
+    fill: 'bg-accent',
     module: false,
     capabilities: [
       live('Unified marketplace catalog'),
@@ -462,7 +495,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'auth',
     name: 'Auth & Security',
     summary: 'Self-hosted auth and database-level tenant isolation.',
-    accent: '#334155',
+    color: 'neutral',
+    fill: 'bg-neutral',
     module: false,
     capabilities: [
       live('Self-hosted Better Auth'),
@@ -480,7 +514,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'billing',
     name: 'Billing & Subscriptions',
     summary: 'Per-module pricing — no seats, no tiers, off the day you stop.',
-    accent: '#16A34A',
+    color: 'success',
+    fill: 'bg-success',
     module: false,
     capabilities: [
       live('Per-module activation'),
@@ -496,7 +531,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'onboarding',
     name: 'Onboarding',
     summary: 'A live site in under five minutes — modules first, no card.',
-    accent: '#EA580C',
+    color: 'warning',
+    fill: 'bg-warning',
     module: false,
     capabilities: [
       live('Under-5-minute, no-card flow'),
@@ -514,7 +550,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'legal',
     name: 'Legal & Consent',
     summary: 'Policies and cookie consent, seeded and versioned on day one.',
-    accent: '#57534E',
+    color: 'secondary',
+    fill: 'bg-secondary',
     module: false,
     capabilities: [
       live('Auto-seeded legal pages'),
@@ -531,7 +568,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'domains',
     name: 'Domains & SSL',
     summary: 'Search, buy, and connect a domain — HTTPS live in under a minute.',
-    accent: '#0284C7',
+    color: 'info',
+    fill: 'bg-info',
     module: false,
     capabilities: [
       live('Instant *.sparx.zone subdomain'),
@@ -549,7 +587,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'attribution',
     name: 'Attribution & Analytics',
     summary: 'Know which channel actually drove the signup — and the sale.',
-    accent: '#9333EA',
+    color: 'module-chat',
+    fill: 'bg-module-chat',
     module: false,
     capabilities: [
       live('First-touch channel capture'),
@@ -566,7 +605,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'dashboard',
     name: 'Dashboard & Operations',
     summary: 'One module-aware workspace for the whole platform.',
-    accent: '#475569',
+    color: 'primary',
+    fill: 'bg-primary',
     module: false,
     capabilities: [
       live('Module-aware dashboard shell'),
@@ -583,7 +623,8 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
     id: 'partners',
     name: 'Partners & Admin',
     summary: 'Tools for agencies, consultants, and the people who run sparx.',
-    accent: '#64748B',
+    color: 'module-b2b',
+    fill: 'bg-module-b2b',
     module: false,
     capabilities: [
       planned('WizeWorks admin portal'),

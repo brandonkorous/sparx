@@ -400,7 +400,7 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
   return (
     <div className="border-base-300 bg-base-100 shrink-0 border-b px-6 py-4">
       {/* Narrow viewports collapse to a single line (top-2 rule). */}
-      <p className="text-base-content hidden text-center text-xs font-medium max-[680px]:block">
+      <p className="hidden text-center text-xs font-medium max-[680px]:block">
         Step {current + 1} of {steps.length}
         {steps[current]?.label ? ` · ${steps[current]?.label}` : ''}
       </p>
@@ -437,7 +437,7 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
                   className={cn(
                     'flex h-7 w-7 items-center justify-center rounded-full border text-[12px] font-semibold transition-colors duration-200',
                     status === 'upcoming' &&
-                      'text-base-content bg-base-100 border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
+                      'bg-base-100 border-[color-mix(in_oklab,var(--color-base-content)_30%,transparent)]',
                     status === 'done' && 'bg-module text-module-content border-transparent',
                     status === 'current' &&
                       'bg-module ring-module/20 text-module-content border-transparent ring-4'
@@ -448,7 +448,7 @@ function TopStepper({ steps, current, onStepSelect, canSelectStep }: TopStepperP
                 <span
                   className={cn(
                     'max-w-[14ch] text-center text-[11px] leading-tight font-medium transition-colors duration-200',
-                    status === 'upcoming' ? 'text-base-content' : 'text-base-content'
+                    status === 'upcoming' ? '' : ''
                   )}
                 >
                   {step.label}
@@ -525,13 +525,13 @@ function FrameToolbar({
         </Button>
       )}
       {title ? (
-        <span className="text-base-content min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">
+        <span className="min-w-0 flex-1 truncate text-sm font-semibold tracking-tight">
           {title}
         </span>
       ) : (
         <div className="flex-1" />
       )}
-      {footer && <div className="text-base-content shrink-0 text-[0.8rem]">{footer}</div>}
+      {footer && <div className="shrink-0 text-[0.8rem]">{footer}</div>}
       {/* Zone order: Form actions (Cancel/Continue) before Presentation
           (headerActions — the drawer/modal switch) before Window — the
           rightmost, strongest control is always the one that moves forward,
@@ -580,7 +580,7 @@ function TopStepperFrame({
           />
         )}
         {context && (
-          <p className="text-base-content border-base-300 bg-base-200 shrink-0 border-b px-6 py-2 text-center text-xs">
+          <p className="border-base-300 bg-base-200 shrink-0 border-b px-6 py-2 text-center text-xs">
             {context}
           </p>
         )}
@@ -609,7 +609,7 @@ function MiniProgress({
   className?: string;
 }) {
   return (
-    <div className={cn('text-base-content flex items-center gap-1.5 text-xs', className)}>
+    <div className={cn('flex items-center gap-1.5 text-xs', className)}>
       <span className="flex items-center gap-1" aria-hidden>
         {steps.map((step, idx) => (
           <span
@@ -623,7 +623,7 @@ function MiniProgress({
           />
         ))}
       </span>
-      <span className="text-base-content ml-1.5 font-medium">{steps[current]?.label}</span>
+      <span className="ml-1.5 font-medium">{steps[current]?.label}</span>
       <span>
         · step {current + 1} of {steps.length}
       </span>
@@ -648,9 +648,7 @@ export function SurfaceSummary({
 }) {
   return (
     <div className="flex h-full flex-col">
-      <p className="text-base-content mb-4 text-[1.0625rem] leading-tight font-medium tracking-tight">
-        {title}
-      </p>
+      <p className="mb-4 text-[1.0625rem] leading-tight font-medium tracking-tight">{title}</p>
       <div className="flex flex-col">{children}</div>
       {footer && <div className="mt-auto pt-5">{footer}</div>}
     </div>
@@ -669,20 +667,8 @@ export function SurfaceSummaryRow({
 }) {
   return (
     <div className="flex items-baseline justify-between gap-3 py-2">
-      <span
-        className={cn(
-          'text-base-content text-sm',
-          strong && 'text-base-content text-[0.9375rem] font-semibold'
-        )}
-      >
-        {label}
-      </span>
-      <span
-        className={cn(
-          'text-base-content text-sm tabular-nums',
-          strong && 'text-[0.9375rem] font-semibold'
-        )}
-      >
+      <span className={cn('text-sm', strong && 'text-[0.9375rem] font-semibold')}>{label}</span>
+      <span className={cn('text-sm tabular-nums', strong && 'text-[0.9375rem] font-semibold')}>
         {value}
       </span>
     </div>

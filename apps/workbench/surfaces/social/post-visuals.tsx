@@ -142,7 +142,7 @@ export function PostThumb({
 
   if (asset && isVideoAsset(asset)) {
     return (
-      <span className={`${box} bg-base-200 text-base-content flex items-center justify-center`}>
+      <span className={`${box} bg-base-200 flex items-center justify-center`}>
         <Video className={glyph} aria-hidden />
       </span>
     );
@@ -214,7 +214,7 @@ export function PostCover({
 
   if (asset && isVideoAsset(asset)) {
     return (
-      <div className={`${box} text-base-content flex items-center justify-center`}>
+      <div className={`${box} flex items-center justify-center`}>
         <Video className="size-8" aria-hidden />
       </div>
     );

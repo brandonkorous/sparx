@@ -81,7 +81,7 @@ export function PartnersProof({ partnerCount }: { partnerCount?: number }) {
         <div className="mkt-proof-3">
           {cells.map((c) => (
             <div key={c.lab} className="px-7 py-[clamp(28px,4vw,44px)]">
-              <div className="text-base-content text-[clamp(30px,4vw,44px)] font-medium tracking-[-0.03em]">
+              <div className="text-[clamp(30px,4vw,44px)] font-medium tracking-[-0.03em]">
                 {c.num === 'Be first.' ? (
                   <>
                     Be first
@@ -129,7 +129,7 @@ export function PartnersOpportunity() {
       <div className="mt-12">
         {rows.map((r) => (
           <div key={r.token} className="mkt-opp-row">
-            <p className="text-base-content m-0 max-w-[720px] text-[clamp(19px,2.2vw,25px)] leading-[1.35] font-medium tracking-[-0.02em]">
+            <p className="m-0 max-w-[720px] text-[clamp(19px,2.2vw,25px)] leading-[1.35] font-medium tracking-[-0.02em]">
               {r.claim} <span className="text-ink-muted font-normal">{r.thin}</span>
             </p>
             <span className="text-primary text-[clamp(19px,2.3vw,28px)] font-medium tracking-[-0.02em] whitespace-nowrap">

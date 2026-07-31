@@ -1,0 +1,142 @@
+# Marketplace component PURGE — clears the first-party COMPONENT catalog in prod: every
+# Sparx-core `marketplace_components` row AND every component artifact + card image in
+# object storage (all versions). The inverse of marketplace-ingest.yml, scoped to
+# components.
+#
+# WHY: the 10 legacy BuilderNode marketplace components were retired (the component system
+# moved to the silica catalog sections in @sparx/silica-catalog — the Builder's Insert
+# palette). The new shelf is 71 silica-native `component` bundles rendered as live
+# previews. Because ingest is upsert-only, the retired slugs would linger — this clears them.
+#
+# ORDER: run this FIRST, then "Marketplace Ingest" — the purge clears the legacy rows and
+# ingest repopulates the 71 current ones. Running it AFTER ingest would wipe the fresh rows.
+#
+# Manual only (workflow_dispatch) and GATED: you must type the confirmation phrase
+# `purge-components` into the `confirm` input, or the run fails before touching anything.
+# DESTRUCTIVE — run it only when intentionally retiring the marketplace component catalog.
+#
+# Self-contained, mirroring marketplace-purge-themes.yml: it BUILDS the api-rest image
+# from the current ref (the purge script is baked in) and pushes it under a distinct
+# `marketplace-purge-<sha>` tag — it does NOT touch :latest or the deployed tag. Then it
+# applies the one-off Job and streams its logs.
+
+name: Marketplace Purge Components
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "purge-components" to confirm this destructive reset'
+        required: true
+        default: ''
+
+permissions:
+  contents: read
+  id-token: write # required for Workload Identity Federation OIDC token
+
+env:
+  PROJECT_ID: sparxworks
+  REGION: us-central1
+  CLUSTER: sparx-prod-autopilot
+  AR_REPO: us-central1-docker.pkg.dev/sparxworks/sparx
+  IMAGE_NAME: api-rest
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Verify confirmation phrase
+        run: |
+          set -euo pipefail
+          if [ "${{ github.event.inputs.confirm }}" != "purge-components" ]; then
+            echo "Confirmation failed: type 'purge-components' into the confirm input to proceed."
+            exit 1
+          fi
+          echo "Confirmed — proceeding with the component catalog purge."
+
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to GCP via WIF
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: projects/631794111842/locations/global/workloadIdentityPools/github-pool/providers/github-provider
+          service_account: sparx-deployer@sparxworks.iam.gserviceaccount.com
+
+      - name: Set up gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: gke-gcloud-auth-plugin
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev --quiet
+
+      # Build the api-rest image (the purge script ships in src/scripts). Tagged
+      # distinctly so it never clobbers the deployed :latest / :<sha> images.
+      - name: Build api-rest image
+        run: |
+          set -euo pipefail
+          IMAGE="${AR_REPO}/${IMAGE_NAME}:marketplace-purge-${GITHUB_SHA}"
+          docker build \
+            -f services/api-rest/Dockerfile \
+            -t "$IMAGE" \
+            .
+          echo "IMAGE=$IMAGE" >> "$GITHUB_ENV"
+
+      - name: Push image to Artifact Registry
+        run: docker push "$IMAGE"
+
+      - name: Get GKE credentials via Connect Gateway
+        # Fleet membership lives at `global` (terraform/modules/gke/main.tf).
+        run: |
+          gcloud container fleet memberships get-credentials "$CLUSTER" --location global
+
+      - name: Render + apply purge Job
+        env:
+          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          export IMAGE RUN_ID
+          envsubst < k8s/sparx-prod/marketplace-purge-components-job.yaml > /tmp/purge-job.yaml
+          echo "--- Rendered manifest ---"
+          cat /tmp/purge-job.yaml
+          kubectl apply -f /tmp/purge-job.yaml
+          echo "JOB_NAME=marketplace-purge-components-${RUN_ID}" >> "$GITHUB_ENV"
+
+      - name: Wait for Job + stream logs
+        run: |
+          set -euo pipefail
+          POD=""
+          # Wait up to 10 min for a pod to appear and reach a tail-able state.
+          # cluster-autoscaler / node-auto-provisioning can take several minutes
+          # on a cold cluster.
+          for _ in $(seq 1 120); do
+            POD=$(kubectl -n sparx-prod get pod -l "batch.kubernetes.io/job-name=${JOB_NAME}" -o jsonpath='{.items[0].metadata.name}' 2>/dev/null || true)
+            if [ -n "$POD" ]; then
+              STATE=$(kubectl -n sparx-prod get pod "$POD" -o jsonpath='{.status.containerStatuses[?(@.name=="purge")].state}' 2>/dev/null || true)
+              if echo "$STATE" | grep -qE 'running|terminated'; then
+                break
+              fi
+            fi
+            sleep 5
+          done
+
+          if [ -z "$POD" ]; then
+            echo "Pod never appeared for job/${JOB_NAME}"
+            kubectl -n sparx-prod describe "job/${JOB_NAME}" || true
+            exit 1
+          fi
+          echo "Streaming logs from pod $POD…"
+
+          kubectl -n sparx-prod logs -f "$POD" -c purge --tail=-1 --ignore-errors=true || true
+
+          # The Job's Complete condition flips a few seconds after the purge
+          # container terminates; wait at most 5m for that.
+          if ! kubectl -n sparx-prod wait --for=condition=Complete --timeout=5m "job/${JOB_NAME}"; then
+            echo "Job did not complete successfully — final state:"
+            kubectl -n sparx-prod describe "job/${JOB_NAME}" || true
+            kubectl -n sparx-prod logs "$POD" -c purge --tail=-1 --ignore-errors=true || true
+            exit 1
+          fi
+          echo "Job completed successfully."

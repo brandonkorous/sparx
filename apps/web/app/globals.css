@@ -12,6 +12,8 @@
    semantic names during coexistence (identical values in light, so nothing
    shifts). Phase 3 deletes @sparx/ui/tokens.css and brand becomes sole. */
 @import '@sparx/brand/theme.css';
+/* Rules that close a hole in a silicaui component — see the file header. */
+@import '@sparx/brand/silica-gaps.css';
 @import '@sparx/brand/toast.css';
 @import '@sparx/ui/tokens.css';
 
@@ -38,6 +40,20 @@
 /* @sparx/chat-widget (the marketplace "Chat with {publisher}" CTA panel) —
    same reasoning: raw Tailwind utilities, no CSS of its own. */
 @source '../../../packages/chat-widget/src/**/*.{ts,tsx}';
+
+/* Silica catalog vocabulary — the marketplace COMPONENT previews (docs/118) render
+   real silica sections IN-BROWSER via `renderSilicaBody`, injecting class strings
+   authored in @sparx/silica-catalog (grid-cols-*, @container, aspect-square, snap-x,
+   rounded-box, the `card`/`navbar` component classes, …). Tailwind only emits classes
+   it SCANS in source, and the injected trees aren't source — so without these @source
+   scans the previews render unstyled. Mirrors the storefront's harness (apps/site):
+   the builder-vocabulary import safelists the DECLARED layout vocabulary (col-span-*,
+   order-*, …) an author can compose fresh, and the two @source scans pick up every
+   literal class the shipped sections + silicaui-html macros already wear. */
+@import '../../../packages/silica-catalog/src/builder-vocabulary.css';
+
+@source '../../../packages/silica-catalog/src/**/*.{ts,tsx}';
+@source '../node_modules/@wizeworks/silicaui-html/dist/**/*.js';
 
 /* Colors are owned entirely by silicaui (the @plugin registers the semantic +
    module palette, reading @sparx/brand/theme.css); this @theme carries only the

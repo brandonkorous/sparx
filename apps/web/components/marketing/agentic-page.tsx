@@ -367,7 +367,7 @@ function ChatWindow({
       <div className="border-base-300 flex items-center justify-between border-b px-4 py-3">
         <span className="inline-flex items-center gap-2.5">
           <Dot color={AI.color} size={8} />
-          <span className="text-caption text-base-content font-sans font-medium">{client}</span>
+          <span className="text-caption font-sans font-medium">{client}</span>
         </span>
         {/* Decorative "new chat" affordance, not copy — subtle ink is correct. */}
         <span aria-hidden className="text-body text-ink-subtle font-mono">
@@ -379,7 +379,7 @@ function ChatWindow({
       <div className="flex flex-1 flex-col gap-4 px-4 py-5">
         {/* user turn — right-aligned bubble + the owner's profile avatar */}
         <div className="flex max-w-[92%] items-start gap-2.5 self-end">
-          <div className="bg-base-100 text-small text-base-content rounded-[14px_14px_4px_14px] px-3.5 py-2.5 font-sans font-medium">
+          <div className="bg-base-100 text-small rounded-[14px_14px_4px_14px] px-3.5 py-2.5 font-sans font-medium">
             {ask}
           </div>
           <UserAvatar />

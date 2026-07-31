@@ -27,7 +27,7 @@ export const MediaTextConfig = z.object({
   ctas: ctas([]),
   background: z.enum(['default', 'subtle']).default('subtle'),
   sectionHeight: SectionHeight.default('auto'),
-  // Break the grid out of st-container so the image column runs edge-to-edge.
+  // Break the grid out of the section container so the image column runs edge-to-edge.
   fullBleed: z.boolean().default(false),
 });
 export type MediaTextConfig = z.infer<typeof MediaTextConfig>;

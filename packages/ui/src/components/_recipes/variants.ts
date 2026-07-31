@@ -61,16 +61,21 @@ export const ALL_COLOR_KEYS: readonly ColorKey[] = [...COLOR_KEYS, ...MODULE_COL
 export const TREATMENT_KEYS = ['solid', 'soft', 'outline', 'dashed', 'ghost', 'link'] as const;
 export type TreatmentKey = (typeof TREATMENT_KEYS)[number];
 
-/** Resolve a color slot to its silicaui token var + matching on-color content
- *  var. For Radix-based controls (Checkbox / Radio / Switch) whose checked or
- *  selected state must be set as a CSS *value* rather than a static utility
- *  class, so the accent can be driven off a per-instance custom property. The
- *  semantic slots resolve to `--color-<slot>`; the per-module slots to
- *  `--color-module-<slot>`; `module` (the active-ModuleProvider slot) resolves
- *  to `--color-module`. */
-export function colorVars(color: string): { sel: string; selFg: string } {
-  const isModule = (MODULE_COLOR_KEYS as readonly string[]).includes(color);
-  const base = isModule ? `--color-module-${color}` : `--color-${color}`;
-  const fg = isModule ? '--color-module-content' : `--color-${color}-content`;
-  return { sel: `var(${base})`, selFg: `var(${fg}, #fff)` };
+/** The silicaui PLUGIN COLOR NAME for a color slot. The semantic slots are named
+ *  identically on both sides (`success` → `success`); the per-module slots carry
+ *  a `module-` prefix in the plugin (`commerce` → `module-commerce`), because
+ *  that is how each app registers them in `@plugin '@wizeworks/silicaui'`.
+ *
+ *  Feeding this into a class (`bg-${pluginColor(c)}`) is the ONLY sanctioned way
+ *  to color for a named module. It replaced `colorVars()`, which resolved a slot
+ *  to a raw `var(--color-…)` string for a pair of `--sx-sel` custom properties —
+ *  a second, sparx-only vocabulary for something the plugin already emits, and
+ *  the last of the parallel token sets. See docs/implementation/st-token-retirement.md §7.
+ *
+ *  Prefer `<ModuleProvider module="…">` + `color="module"` over naming a module
+ *  here: the provider works in every app, while `module-<name>` resolves only
+ *  where that app registered the full module palette (workbench + web do; admin
+ *  and site register only `module`). */
+export function pluginColor(color: string): string {
+  return (MODULE_COLOR_KEYS as readonly string[]).includes(color) ? `module-${color}` : color;
 }

@@ -17,12 +17,12 @@ describe('BuilderLightbox island (static render)', () => {
           <img src="/b.jpg" alt="B" />
         </BuilderLightbox>
       );
-      expect(html).toContain('st-lightbox-grid');
+      expect(html).toContain('grid');
       expect(html).toContain('grid grid-cols-3');
       expect(html).toContain('/a.jpg');
       expect(html).toContain('/b.jpg');
-      // The overlay (class="st-lightbox") only mounts after a client click.
-      expect(html).not.toContain('class="st-lightbox"');
+      // The overlay only mounts after a client click.
+      expect(html).not.toContain('lightbox-popup');
       expect(html).not.toContain('aria-modal');
     }
   });

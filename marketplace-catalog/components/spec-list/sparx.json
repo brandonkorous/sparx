@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "spec-list",
+  "name": "Specification",
+  "version": "1.0.0",
+  "tagline": "The plain facts — material, size, lead time, guarantee — as a labelled list.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Comparison",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 44
+}

@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "faq-single-open",
+  "name": "Questions people ask",
+  "version": "1.0.0",
+  "tagline": "Answers that open one at a time, so the page never turns into a wall of text.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "How it works",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 39
+}

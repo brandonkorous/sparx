@@ -149,10 +149,10 @@ export const MOCKUP_CATALOG: PlatformCatalogEntry[] = [
           }),
           el('div', 'flex gap-3', {
             children: [
-              atom('Button', 'st-btn st-c-primary st-v-solid st-btn--sz-sm', {
+              atom('Button', 'btn btn-primary btn-sm', {
                 label: 'Continue',
               }),
-              atom('Button', 'st-btn st-c-neutral st-v-ghost st-btn--sz-sm', {
+              atom('Button', 'btn btn-neutral btn-ghost btn-sm', {
                 label: 'Cancel',
               }),
             ],

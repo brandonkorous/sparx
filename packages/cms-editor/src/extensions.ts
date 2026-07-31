@@ -68,7 +68,7 @@ export function cmsEditorExtensions(opts: CmsEditorExtensionsOptions = {}) {
     Link.configure({
       openOnClick: false,
       HTMLAttributes: {
-        class: 'text-[var(--color-primary)] underline underline-offset-2',
+        class: 'text-primary underline underline-offset-2',
         rel: 'noopener noreferrer',
       },
     }),

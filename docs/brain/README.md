@@ -20,7 +20,7 @@ Almost every UI mistake starts by conflating them. Every design/component note d
 | Compiled by | silica plugin + brand theme per app | `packages/surface-compile` per tenant |
 | Themeable | no (house system: silicaui + brand) | yes (per-tenant brand) |
 
-**Sources of truth:** dashboard color → `packages/brand/src/theme.css` (silicaui theme); dashboard non-color tokens → `packages/ui/src/tokens.css`; house rules → `apps/dashboard/DESIGN.md`. Site → `docs/33-token-model-v2.md` + `packages/surface-compile/src/theme.ts`.
+**Sources of truth:** dashboard color → `packages/brand/src/theme.css` (silicaui theme); dashboard non-color tokens → `packages/ui/src/tokens.css`; house rules → `DESIGN.md` (**read [[neutral-must-be-earned]] before any color decision**). Site → `docs/33-token-model-v2.md` + `packages/surface-compile/src/theme.ts`.
 
 > The tenant-facing system is a **site** — never a "storefront" (retired 2026-06-13, kept only as a commerce sales-channel). Glossary: [[terminology]].
 

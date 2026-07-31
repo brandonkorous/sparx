@@ -130,7 +130,7 @@ function PlatformHero() {
         <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-x-14 gap-y-8 border-t pt-8">
           {metrics.map((m) => (
             <div key={m.s} className="flex flex-col gap-1">
-              <span className="text-base-content text-h1 font-medium tracking-[-0.02em]">
+              <span className="text-h1 font-medium tracking-[-0.02em]">
                 {m.v}
                 {'suffix' in m && m.suffix ? (
                   <span className="text-ink-subtle text-body font-normal">{m.suffix}</span>
@@ -184,7 +184,7 @@ function OneSystem() {
           {chips.map((c) => (
             <span
               key={c.label}
-              className="bg-base-200 border-base-300 text-base-content text-caption inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium"
+              className="bg-base-200 border-base-300 text-caption inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium"
             >
               <Dot color={getModuleColor(c.module).color} size={8} />
               {c.label}
@@ -267,8 +267,8 @@ function OneSystem() {
         </div>
 
         <Text className="text-body-sm text-ink-muted mt-9 max-w-[620px] text-center">
-          <b className="text-base-content font-medium">Turn a module off and it stops billing</b> —
-          no migration, no exports, no goodbyes. The data stays where it was; it just goes quiet.
+          <b className="font-medium">Turn a module off and it stops billing</b> — no migration, no
+          exports, no goodbyes. The data stays where it was; it just goes quiet.
         </Text>
       </div>
     </Section>
@@ -364,7 +364,7 @@ function OneRecord() {
                   {f.label}
                 </Text>
               </div>
-              <Text className="text-body-sm text-base-content">{f.val}</Text>
+              <Text className="text-body-sm">{f.val}</Text>
               <Text className="text-caption text-ink-subtle mt-1">{f.sub}</Text>
             </div>
           ))}
@@ -490,7 +490,7 @@ function GrowsWithYou() {
               {s.tags.map((t) => (
                 <span
                   key={t.label}
-                  className="bg-base-100 border-base-300 text-base-content text-mini inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium"
+                  className="bg-base-100 border-base-300 text-mini inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium"
                 >
                   <Dot color={MODS[t.module].color} size={6} />
                   {t.label}
@@ -631,7 +631,7 @@ function ModulesStrip() {
                   {m.price}
                 </Text>
               </div>
-              <Text className="text-small text-base-content">{m.title}</Text>
+              <Text className="text-small">{m.title}</Text>
               <Text className="text-caption text-ink-muted">{m.body}</Text>
             </a>
           );
@@ -694,7 +694,7 @@ function ApiSurface() {
                 {c.ci}
               </span>
               <div>
-                <Text className="text-small text-base-content font-medium">{c.name}</Text>
+                <Text className="text-small font-medium">{c.name}</Text>
                 <Text className="text-mini text-ink-muted">{c.desc}</Text>
               </div>
             </div>
@@ -707,7 +707,7 @@ function ApiSurface() {
             <span className="text-success font-medium">GET</span>
             /v1/customers/cus_4471
           </div>
-          <div className="text-mini text-base-content overflow-x-auto px-5 py-4 font-mono leading-[22px] whitespace-pre">
+          <div className="text-mini overflow-x-auto px-5 py-4 font-mono leading-[22px] whitespace-pre">
             <div className="text-ink-subtle">{'// the same record the four modules wrote'}</div>
             <div>{'{'}</div>
             <div>

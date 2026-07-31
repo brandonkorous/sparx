@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "category": "component",
+  "slug": "trade-offs",
+  "name": "What each is good at",
+  "version": "1.0.0",
+  "tagline": "Best for, and less good for. Being straight is what sells to a wary buyer.",
+  "description": "",
+  "payload": "component.ts",
+  "facets": {
+    "group": "Comparison",
+    "kind": "Section",
+    "surfaces": ["page"]
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "media": [],
+  "author": {
+    "displayName": "sparx"
+  },
+  "sortWeight": 45
+}

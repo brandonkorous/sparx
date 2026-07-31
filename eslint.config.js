@@ -28,6 +28,12 @@ export default tseslint.config(
       // Brain — the Obsidian knowledge vault (docs/brain). Human-authored notes,
       // excluded from every push gate (mirrors .prettierignore).
       'docs/brain/**',
+      // Cloudflare Workers. Outside the pnpm workspace (which is apps/*,
+      // packages/*, services/*) and written against the Workers runtime, whose
+      // globals belong to no tsconfig project here — so `projectService` cannot
+      // resolve them and every typed rule errors. wrangler typechecks and
+      // bundles these on deploy.
+      'cloudflare/**',
     ],
   },
   js.configs.recommended,

@@ -19,7 +19,7 @@ import {
 // active-module bridge (`text-module`/`bg-module`, platform indigo) rather than per-module colors.
 
 const TILE_BASE =
-  'group relative flex h-8 items-center rounded-md text-sm font-medium transition-colors duration-150 focus-visible:ring-2 focus-visible:ring-[var(--color-primary)] focus-visible:outline-none';
+  'group relative flex h-8 items-center rounded-md text-sm font-medium transition-colors duration-150 focus-ring';
 const TILE_INACTIVE = 'text-base-content hover:bg-base-200 hover:text-base-content';
 const TILE_ACTIVE = 'bg-module bg-soft text-module';
 

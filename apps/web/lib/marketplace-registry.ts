@@ -66,11 +66,7 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: Palette,
     accent: '#8b5cf6',
     tagline: 'Brand looks — color, type, and shape — applied site-wide.',
-    // Retired as a live browse: the look system moved in-code (the Builder's silica
-    // preset panel) + into the themed `sparx-<name>` blueprint clones, so nothing
-    // repopulates this catalog. The first-party rows were purged
-    // (marketplace-purge-themes.yml); a standalone theme marketplace lands later.
-    status: 'coming-soon',
+    status: 'live',
     facets: [
       { key: 'industry', label: 'Industry', type: 'multi' },
       { key: 'mood', label: 'Style', type: 'multi' },
@@ -103,12 +99,11 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     singular: 'component',
     icon: Component,
     accent: '#14b8a6',
-    tagline: 'Reusable building blocks for the Builder canvas.',
+    tagline: 'Ready-made sections — drop one straight into any page.',
     status: 'live',
-    facets: [
-      { key: 'group', label: 'Group', type: 'multi' },
-      { key: 'surface', label: 'Surface', type: 'multi' },
-    ],
+    // Only the "Purpose" dimension filters usefully — every section targets a page,
+    // so a Surface facet would be a single dead option.
+    facets: [{ key: 'group', label: 'Purpose', type: 'multi' }],
     sorts: [
       { key: 'popular', label: 'Most popular' },
       { key: 'newest', label: 'Newest' },

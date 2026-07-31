@@ -1,8 +1,9 @@
 'use client';
 
 import * as React from 'react';
-import { Button, Checkbox, Stack, Text, toast } from '@sparx/ui';
+import { Button, Stack, Text, toast } from '@sparx/ui';
 import {
+  Checkbox,
   Field,
   FieldControl,
   FieldDescription,
@@ -132,8 +133,9 @@ export function TriageControls({
       ) : notifyOptional ? (
         <label className="flex cursor-pointer items-center gap-2">
           <Checkbox
+            color="primary"
             checked={notify}
-            onCheckedChange={(v) => setNotify(v === true)}
+            onChange={(e) => setNotify(e.target.checked)}
             aria-label="Email the submitter"
           />
           <Text size="sm">Email the submitter about this status change</Text>

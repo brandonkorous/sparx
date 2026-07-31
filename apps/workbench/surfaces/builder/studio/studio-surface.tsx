@@ -28,6 +28,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Builder, useEditor } from '@wizeworks/silicaui-builder/react';
 import type {
   InspectorPanel,
+  InspectorTabDef,
   Op,
   OpMeta,
   PageMeta,
@@ -57,6 +58,7 @@ import {
   useToast,
 } from '@wizeworks/silicaui-react';
 import { Eye, Save } from 'lucide-react';
+import { useQueryClient } from '@sparx/query';
 import { useConfirm } from '../../../lib/confirm';
 import { useDirtySource } from '../../../lib/workbench/dirty';
 import { MediaPickerProvider, useMediaPicker } from '../../cms/media-picker';
@@ -65,6 +67,8 @@ import type { SurfaceContext } from '../../../lib/surfaces/registry';
 import {
   builderErrorMessage,
   getSiteCheck,
+  SITE_CHECK_KEY,
+  useSiteCheck,
   useActiveProperty,
   useBindingCatalog,
   useBrand,
@@ -96,8 +100,8 @@ import {
   type HistoryStacks,
   type InvertOps,
 } from './undo-history';
-import { SiteCheck } from './site-check';
-import { VersionHistory } from './version-history';
+import { CheckCount, SiteCheck } from './site-check';
+import { VersionHistoryPanel } from './version-history';
 import { PageSettingsPanel, draftToPatch, type PageSettingsDraft } from './page-settings';
 import { buildStudioHost } from './host';
 import {
@@ -342,10 +346,23 @@ function StudioEditor({
   const piecesRef = useRef<SilicaPiece[]>(pieces);
 
   const confirm = useConfirm();
-  // The pre-publish check panel. Opened by its toolbar button and by the publish
-  // confirm's "Let me look first" — both AFTER a save, because the endpoint reads the
-  // saved draft (see `SiteCheck.onRequestOpen`).
+  // The pre-publish check. A popover off its toolbar button, plus the publish confirm's
+  // "Let me look first".
+  //
+  // THE QUERY LIVES HERE, NOT IN THE PANEL, because the COUNT belongs in the status bar
+  // and the LIST belongs in the popover — two consumers, so one owner. Lifting it is
+  // also what makes "never run on its own" possible: the panel can be opened, read and
+  // dismissed without touching the network.
   const [checkOpen, setCheckOpen] = useState(false);
+  const queryClient = useQueryClient();
+  const check = useSiteCheck();
+  // Has the document changed since that report was produced? Seeded true — a report
+  // that has never run is stale by definition — and set again by every `onChange`.
+  //
+  // The status bar shows a count ONLY while this is false. A count that has stopped
+  // being true is worse than no count: the author fixes three broken links, the strip
+  // still says "3 broken", and the number they were meant to trust is the one that lied.
+  const [checkStale, setCheckStale] = useState(true);
 
   const [dirty, setDirty] = useState(false);
   // Seeded from the load EXACTLY ONCE; then owned by silica's onChange and held in
@@ -353,14 +370,14 @@ function StudioEditor({
   // canvas over in-progress edits.
   const seededRef = useRef(false);
 
-  // The active site's EFFECTIVE brand (a non-primary site layers its override on
-  // the tenant base) — the source for both the compiled theme and the fonts the
-  // canvas must load. Reacts to brand/property so a site switch re-themes.
+  // The active site's EFFECTIVE brand (every site layers its own override on the
+  // tenant base) — the source for both the compiled theme and the fonts the canvas
+  // must load. Reacts to brand/property so a site switch re-themes. The primary is
+  // not excluded: it stores its brand on its own property row like every other site,
+  // so skipping the override here would paint the canvas in the tenant default.
   const effectiveBrand = useMemo<BrandColumns>(() => {
     const base: BrandColumns = brand ?? EMPTY_BRAND;
-    return property && !property.isPrimary
-      ? applyBrandOverride(base, property.brandOverride)
-      : base;
+    return property ? applyBrandOverride(base, property.brandOverride) : base;
   }, [brand, property]);
 
   // The document silica edits, built once: heal legacy id-less trees, apply the
@@ -588,6 +605,34 @@ function StudioEditor({
     ];
   };
 
+  /** silica's `inspectorTabs` seam (0.43): the whole tabs sparx contributes to the rail.
+   *
+   *  ONE today — History, the two undo ladders (saved drafts + published releases). It is
+   *  `scope: "panel"`, which is the point of it: history belongs to the DOCUMENT, so it
+   *  keeps rendering with nothing selected. A node-scoped tab would empty itself the
+   *  instant the author clicked bare canvas, which is roughly when someone looking for
+   *  "put it back how it was" is least likely to have an element selected.
+   *
+   *  Returned UNCONDITIONALLY for the same reason — the `node` argument is deliberately
+   *  ignored. Filtering it on the selection is the documented way to make a panel tab
+   *  unreachable.
+   *
+   *  `order: 20` puts it after the built-in Design (0) and Settings (10): the author's
+   *  own element is the common case, and history is where you go when something went
+   *  wrong. Held in a ref like `inspectorPanels`, because the host is built once at
+   *  mount and this closure has to reach the CURRENT `onReload`. */
+  const inspectorTabsRef = useRef<() => InspectorTabDef[]>(() => []);
+  inspectorTabsRef.current = () => [
+    {
+      id: 'sparx.history',
+      label: 'History',
+      icon: 'clock',
+      order: 20,
+      scope: 'panel',
+      render: () => <VersionHistoryPanel onReload={onReload} />,
+    },
+  ];
+
   // The host: the resolver over the canvas data root (placeholder records with the
   // tenant's REAL site.identity/site.social overlaid, so a bound Wordmark/logo/name
   // resolves to the actual brand) + the tenant's data sources + the commerce/site
@@ -606,6 +651,7 @@ function StudioEditor({
       // Through the ref, so the once-built host always reaches the live picker.
       pickAsset: (kind) => pickAssetRef.current(kind),
       inspectorPanels: (node) => inspectorPanelsRef.current(node),
+      inspectorTabs: () => inspectorTabsRef.current(),
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -710,6 +756,10 @@ function StudioEditor({
         opsBufferRef.current.push(...ops);
       }
       setDirty(true);
+      // Any edit can invalidate any finding, so the last report stops being reportable
+      // the moment one lands. Cheap: `setState` to the value it already holds is a no-op
+      // in React, so a typing burst does not re-render per keystroke.
+      setCheckStale(true);
     },
     [recordHistory]
   );
@@ -806,10 +856,18 @@ function StudioEditor({
     }
   }, [doSync, toast]);
 
-  /** Save, then open the check panel. Both routes in go through here so the endpoint
-   *  — which reads the SAVED draft — is never describing a version the author has
-   *  already edited past. */
-  const openCheck = useCallback(async () => {
+  /**
+   * Save, then RUN the check. The one place the ordering is stated.
+   *
+   * The endpoint reads the SAVED draft, so skipping the save would report on the state
+   * before the edit the author is about to publish — a check one save behind says
+   * "clean" about work it has never seen.
+   *
+   * This used to be `openCheck`: opening the panel WAS running it, which meant a save
+   * plus a full walk of every page's composed document every time someone glanced at a
+   * list they had already read. Opening is now free and this is the button.
+   */
+  const runCheck = useCallback(async () => {
     try {
       await doSync();
     } catch (error) {
@@ -823,8 +881,11 @@ function StudioEditor({
       });
       return;
     }
-    setCheckOpen(true);
-  }, [doSync, toast]);
+    const { isSuccess } = await check.refetch();
+    // Only a report that actually arrived earns the count in the status bar. A failed
+    // refetch leaves the previous one marked stale, which is the truth.
+    if (isSuccess) setCheckStale(false);
+  }, [check, doSync, toast]);
 
   // silica's own Publish button drives this: persist the current draft first (so
   // the publish reflects the newest edit), then snapshot draft → live.
@@ -867,7 +928,12 @@ function StudioEditor({
             color: 'primary',
           });
           if (!proceed) {
-            // Already saved above, so the panel opens straight onto a current report.
+            // Seed the cache with the report we ALREADY have. The publish path fetched
+            // it imperatively a few lines up, on a draft saved a few lines before that,
+            // so the panel opens onto a current list without a second round trip — and
+            // without the author having to press Run on a check that just ran.
+            queryClient.setQueryData(SITE_CHECK_KEY, report);
+            setCheckStale(false);
             setCheckOpen(true);
             return;
           }
@@ -887,7 +953,7 @@ function StudioEditor({
         });
       }
     },
-    [confirm, doSync, publish, toast]
+    [confirm, doSync, publish, queryClient, toast]
   );
 
   const onPreview = useCallback(async () => {
@@ -987,6 +1053,12 @@ function StudioEditor({
             <Badge color={status.tone} variant="soft" size="sm">
               {status.label}
             </Badge>
+            {/* The check's COUNT, and only while it is still true — the studio drops it
+                on the next edit rather than showing a number that has stopped being
+                right. This is the half of the panel a busy person actually reads: "3
+                broken" without opening anything. The CONTROL that produces it stays in
+                the toolbar, because this slot is non-interactive by contract. */}
+            {!checkStale && check.data ? <CheckCount report={check.data} /> : null}
           </div>
         }
         toolbarSlot={
@@ -1007,9 +1079,12 @@ function StudioEditor({
             <SiteCheck
               open={checkOpen}
               onOpenChange={setCheckOpen}
-              onRequestOpen={() => void openCheck()}
+              report={check.data ?? null}
+              stale={checkStale}
+              running={check.isFetching}
+              error={check.error}
+              onRun={() => void runCheck()}
             />
-            <VersionHistory onReload={onReload} />
             <Button
               data-tour="builder-preview"
               size="sm"

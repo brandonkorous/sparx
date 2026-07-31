@@ -31,7 +31,7 @@ export const metadata: Metadata = {
     type: 'article',
     publishedTime: '2026-06-11T00:00:00.000Z',
     modifiedTime: '2026-06-11T00:00:00.000Z',
-    authors: ['WizeWorks, Inc.'],
+    authors: ['WizeWorks LLC'],
   },
   twitter: {
     card: 'summary_large_image',

@@ -42,7 +42,7 @@ function Bar({ w = 'w-full' }: { w?: string }) {
 function CoreFrame({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="border-base-content/25 bg-base-100 rounded-lg border border-dashed p-6">
-      <div className="text-base-content mb-4 flex items-center gap-2 text-sm font-medium">
+      <div className="mb-4 flex items-center gap-2 text-sm font-medium">
         <span className="bg-primary inline-block size-2 rounded-full" />
         {label} · live region
       </div>
@@ -76,7 +76,7 @@ function BrandMark({ root, node }: { root: unknown; node: HostNode }) {
         <img src={logoUrl} alt="" className="h-8 w-auto object-contain" />
       ) : null}
       {mode === 'name' || mode === 'both' ? (
-        <span className="text-base-content text-lg font-semibold">{name}</span>
+        <span className="text-lg font-semibold">{name}</span>
       ) : null}
     </span>
   );
@@ -125,9 +125,9 @@ function LegalLinksColumn({ heading, hint }: { heading: string; hint: string }) 
     // so would swallow the tooltip. Nesting a column inside the node's own column
     // costs nothing visually.
     <span className="flex flex-col gap-3" title={hint}>
-      {heading ? <h3 className="text-base-content text-sm font-semibold">{heading}</h3> : null}
+      {heading ? <h3 className="text-sm font-semibold">{heading}</h3> : null}
       {['Privacy Policy', 'Terms of Service', 'Cookie Policy'].map((label) => (
-        <span key={label} className="text-base-content text-sm">
+        <span key={label} className="text-sm">
           {label}
         </span>
       ))}

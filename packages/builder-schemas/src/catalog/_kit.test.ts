@@ -24,7 +24,7 @@ describe('catalog kit — spine binding helpers', () => {
   });
 
   it('act() emits a valid action binding; href only when given', () => {
-    const cart = act(atom('Button', 'st-btn', { label: 'Add to cart' }), 'add-to-cart');
+    const cart = act(atom('Button', 'btn', { label: 'Add to cart' }), 'add-to-cart');
     expect(BindingSchema.safeParse(cart.binding).success).toBe(true);
     expect(cart.binding).toEqual({ action: 'add-to-cart' });
     expect(bindingKind(cart.binding)).toBe('action');

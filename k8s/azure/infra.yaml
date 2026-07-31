@@ -1,0 +1,121 @@
+# In-cluster data services for the AKS deployment.
+#
+# Much smaller than the workstation equivalent, because two things moved out:
+#
+#   Postgres  → MANAGED. psql-sparx-prod-cus, Flexible Server 18, Burstable
+#               B1ms, VNet-private. See terraform/envs/azure. Worth $16/mo over
+#               a StatefulSet for point-in-time restore, and it keeps 1-2 GiB
+#               free on an 8 GiB node.
+#
+#   Redis     → DROPPED. Its only job was fanning socket.io chat messages
+#               between api-rest replicas. At `replicas: 1` the in-memory adapter
+#               is correct — the app's own ConfigMap says so ("Unset → in-memory
+#               adapter, single-instance only"). Azure Cache for Redis Basic is
+#               ~$16/mo to solve a problem that does not exist yet. Add it back
+#               the same day api-rest goes to 2 replicas, and not before.
+#
+# Storage: `managed-csi` is Azure's StandardSSD class. NOT `managed-csi-premium`
+# — Premium costs roughly double for IOPS neither of these workloads needs, and
+# the budget is the binding constraint here.
+
+# ---------------------------------------------------------------------------
+# Media — the local-disk replacement for the two GCS buckets.
+#
+# ReadWriteOnce is correct despite two consumers: RWO scopes a volume to a NODE,
+# not a pod, and this cluster is single-node. api-rest streams variants out of
+# this volume and media-worker writes them in; two different volumes would
+# transcode successfully and then 404 forever.
+#
+# NOTE: this couples media durability to the disk. It survives pod restarts and
+# node reimages, but it is not replicated and has no snapshot schedule. Moving to
+# Blob Storage would need a new driver in packages/media (which today has exactly
+# two: GCS and local disk), so it is a deliberate later decision, not an
+# oversight.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: sparx-media
+  namespace: sparx-prod
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: managed-csi
+  resources:
+    requests:
+      # Azure bills disks by TIER, not by requested bytes — 32 GiB is the E4
+      # tier and the smallest that bills sensibly. Asking for 50 GiB would round
+      # up to E6 (64 GiB) and cost double for capacity nothing is using yet.
+      storage: 32Gi
+---
+# ---------------------------------------------------------------------------
+# Typesense — same engine and major version as the GKE StatefulSet it replaces.
+#
+# The index is DERIVED state, not a source of truth. Nothing needs migrating
+# from the old cluster; run `rebuild_search_index` once the database is seeded.
+#
+# httpGet probes rather than exec: the Typesense image does not reliably ship
+# curl or wget, which is why the dev compose file has no healthcheck at all.
+# httpGet needs no in-container binary.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: typesense
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8108, targetPort: 8108 }]
+  selector: { app: typesense }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: typesense
+  namespace: sparx-prod
+  labels: { app: typesense, tier: data }
+spec:
+  serviceName: typesense
+  replicas: 1
+  selector:
+    matchLabels: { app: typesense }
+  template:
+    metadata:
+      labels: { app: typesense, tier: data }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: typesense
+          image: typesense/typesense:28.0
+          args: ['--data-dir', '/data', '--enable-cors']
+          ports: [{ name: http, containerPort: 8108 }]
+          env:
+            - name: TYPESENSE_API_KEY
+              valueFrom:
+                secretKeyRef: { name: typesense-secrets, key: api-key }
+          volumeMounts:
+            - { name: data, mountPath: /data }
+          # Keeps a real request, unlike the workers. Typesense holds its index
+          # in memory, and it is one of the few pods here whose eviction is
+          # actually disruptive — search goes dark until it reloads. The 1536Mi
+          # ceiling is the first thing to raise if a large catalog starts
+          # OOMKilling it.
+          resources:
+            requests: { cpu: '100m', memory: '256Mi' }
+            limits: { memory: '1536Mi' }
+          readinessProbe:
+            httpGet: { path: /health, port: 8108 }
+            periodSeconds: 5
+            failureThreshold: 24
+          livenessProbe:
+            httpGet: { path: /health, port: 8108 }
+            periodSeconds: 30
+            failureThreshold: 5
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        storageClassName: managed-csi
+        resources:
+          requests:
+            storage: 32Gi
