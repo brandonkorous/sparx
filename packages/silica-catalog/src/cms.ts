@@ -59,7 +59,7 @@ function masthead(): Node {
               // placeholder renders the template as a floating headline over blank
               // regions — nothing to click and nothing to explain what belongs there.
               bind(
-                el('span', 'text-base font-semibold text-primary', { text: 'Published date' }),
+                el('span', 'text-base font-semibold text-base-content', { text: 'Published date' }),
                 'date'
               ),
               bind(
@@ -185,7 +185,7 @@ function postCard(): Node {
             'featuredImage'
           ),
           bind(
-            el('span', 'text-sm font-semibold text-primary', { text: 'Published date' }),
+            el('span', 'text-sm font-semibold text-base-content', { text: 'Published date' }),
             'date'
           ),
           bind(

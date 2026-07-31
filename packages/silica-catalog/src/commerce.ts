@@ -81,7 +81,15 @@ function productCardNode(extraClass = ''): ElementNode {
         el('div', 'flex flex-col gap-2 p-4', {
           children: [
             bind(el('h3', 'font-semibold text-base-content', { text: 'Product name' }), 'title'),
-            bind(el('p', 'text-lg font-bold text-primary', { text: '$0.00' }), 'price'),
+            // INK, not the brand role. `text-primary` here was pale-on-pale on three
+            // shipped themes — `petal` (1.6:1), `workshop` (2.0:1), `salon` (1.5:1) —
+            // because those themes deliberately carry a BRIGHT primary that holds dark
+            // ink ("a pale rose primary carrying DARK ink", says petal's own comment).
+            // Primary is a FILL colour on them, and the price is the one number on this
+            // card a shopper has to be able to read. Weight and scale carry the emphasis;
+            // the card's brand identity rides its Add-to-cart button, which is a
+            // `btn-primary` fill and therefore legible by construction.
+            bind(el('p', 'text-lg font-bold text-base-content', { text: '$0.00' }), 'price'),
           ],
         }),
       ],
@@ -380,7 +388,13 @@ export function buyBox(): Node {
                 ),
                 el('div', 'flex items-baseline gap-3', {
                   children: [
-                    bind(el('span', 'text-2xl font-bold text-primary', { text: '$0.00' }), 'price'),
+                    // Ink, not the brand role — same reason as the card price above, and
+                    // the same three themes failed here too. This is the price a shopper
+                    // commits money against.
+                    bind(
+                      el('span', 'text-2xl font-bold text-base-content', { text: '$0.00' }),
+                      'price'
+                    ),
                     // The was-price strikethrough, shown ONLY on an actual sale. It used
                     // to be a bare value bind, which meant a product with no
                     // `compareAtPrice` still rendered `<span class="line-through">` —

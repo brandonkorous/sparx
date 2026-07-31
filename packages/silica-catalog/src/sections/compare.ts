@@ -193,10 +193,18 @@ export function specList(): Node {
 /** A checklist — everything included, in one scannable column. Reads as reassurance
  *  rather than as a table, which is what a single-option page needs. */
 export function inclusionList(): Node {
+  // The tick is a BULLET here, not a state, so it takes ink rather than `text-success`.
+  //
+  // In `mark()` above green is doing real work — that table has both `✓` and `—`, so the
+  // colour distinguishes two answers. In an INCLUSION list every row is included, so a
+  // green tick on all of them distinguishes nothing and is decoration by RULE #3's test.
+  // It also failed AA as body text on `lodge` (4.3:1) and `academy` (4.4:1) against this
+  // section's alt surface — paying a legibility cost for a signal carrying no information.
+  // The sibling `checklist()` already writes its tick as part of the base-content string.
   const line = (text: string): Node =>
     el('li', 'flex items-start gap-3 border-t border-base-300 py-4', {
       children: [
-        el('span', 'text-success', { text: '✓' }),
+        el('span', 'text-base-content', { text: '✓' }),
         el('span', 'text-base text-base-content', { text }),
       ],
     });
