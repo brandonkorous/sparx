@@ -1,11 +1,25 @@
-// Entrypoint for the migration K8s Job (see k8s/sparx-prod/db-migrate-job.yaml).
+// Entrypoint for the migration K8s Job (see k8s/sparx-prod/db-migrate-job.yaml
+// on GCP, and the `db-migrate` Job in .github/workflows/deploy-azure.yml).
 //
-// Flow:
+// TWO MODES, chosen by whether `GCP_PROJECT_ID` is set. That is the same switch
+// the rest of the platform already uses — `packages/events/src/publisher.ts`
+// picks Pub/Sub vs. direct HTTP dispatch on it, and k8s/azure's ConfigMap omits
+// the variable deliberately and says so.
+//
+// GCP mode (GCP_PROJECT_ID set):
 //   1. Pull sparx_app + sparx_owner passwords from Secret Manager (the Pod's
 //      Workload Identity SA has roles/secretmanager.secretAccessor).
 //   2. Wait until the Cloud SQL Auth Proxy sidecar is listening on
 //      localhost:5432 — the sidecar can take a few seconds to start.
 //   3. Run sql/cloud-sql-bootstrap.sql as sparx_owner (idempotent grants).
+//
+// DIRECT mode (GCP_PROJECT_ID unset — Azure, docker, anywhere else):
+//   The connection URL arrives in the environment and the database is reached
+//   over the network, so all three of those steps are skipped. Roles and grants
+//   are somebody else's job: on Azure the `db-roles` Job runs
+//   sql/azure-bootstrap.sql before this one.
+//
+// Both modes then converge:
 //   4. Reconcile any migration-directory renames against `_prisma_migrations`
 //      so `prisma migrate deploy` sees a consistent on-disk + DB state.
 //   5. Run `prisma migrate deploy`.
@@ -13,6 +27,12 @@
 //   7. If env RUN_BACKFILL=true, run the Builder box→class backfill (docs/61) —
 //      rewrites persisted page/layout/component trees from the pre-cutover
 //      box/layout shape to the class-only model. Idempotent + dry-run-safe.
+//
+// This used to be GCP-only, with `GCP_PROJECT_ID ?? 'sparxworks'` as its
+// default — so on a cluster with no Google credentials it did not fall back, it
+// confidently tried to read secrets from a project it could not authenticate
+// to, and died with "Could not load the default credentials" before touching
+// the database. Nothing in the message mentions migrations.
 //
 // Any step that fails causes a non-zero exit so the K8s Job goes to Failed.
 
@@ -32,16 +52,27 @@ const KNOWN_MIGRATION_RENAMES: readonly (readonly [string, string])[] = [
   ['20260528070458_cms_index_alignment', '20260528100300_cms_index_alignment'],
 ];
 
-const PROJECT_ID = process.env.GCP_PROJECT_ID ?? 'sparxworks';
+// No `?? 'sparxworks'` default. An absent project means "not on GCP", and
+// defaulting it turned that into an authentication failure against a project
+// this Pod was never meant to reach.
+const PROJECT_ID = process.env.GCP_PROJECT_ID;
 const PROXY_HOST = process.env.PROXY_HOST ?? '127.0.0.1';
 const PROXY_PORT = process.env.PROXY_PORT ?? '5432';
 const DB_NAME = process.env.DB_NAME ?? 'sparx';
 const RUN_SEED = process.env.RUN_SEED === 'true';
 const RUN_BACKFILL = process.env.RUN_BACKFILL === 'true';
 
-const sm = new SecretManagerServiceClient();
+// Migrations and the hand-edited RLS SQL must run as the OWNER, not as the
+// RLS-constrained role the apps use. Callers may pass either name; DATABASE_URL
+// is what the Azure Job sets (from the AUTH_DATABASE_URL secret).
+const DIRECT_URL = process.env.MIGRATION_DATABASE_URL ?? process.env.DATABASE_URL;
+
+// Lazily constructed. At module scope this built a Secret Manager client on
+// every import — including in direct mode, where it is pure waste.
+let sm: SecretManagerServiceClient | null = null;
 
 async function getSecret(name: string): Promise<string> {
+  sm ??= new SecretManagerServiceClient();
   const [version] = await sm.accessSecretVersion({
     name: `projects/${PROJECT_ID}/secrets/${name}/versions/latest`,
   });
@@ -87,6 +118,23 @@ function run(cmd: string, args: string[], env: NodeJS.ProcessEnv): Promise<void>
   });
 }
 
+// `_prisma_migrations` is created by `prisma migrate deploy` itself, so on a
+// brand-new database it does not exist until AFTER the two maintenance steps
+// below have already run. On Cloud SQL that was invisible — the table had
+// existed since the first deploy years of migrations ago — and it stayed
+// invisible right up until the first migration against an empty Azure
+// database, which died on `relation "_prisma_migrations" does not exist`
+// before applying a single migration.
+//
+// A fresh database has no renames to reconcile and no failed rows to clear,
+// so the honest answer in both cases is "skip".
+async function hasMigrationsTable(client: PgClient): Promise<boolean> {
+  const { rows } = await client.query<{ present: boolean }>(
+    "SELECT to_regclass('public._prisma_migrations') IS NOT NULL AS present"
+  );
+  return rows[0]?.present ?? false;
+}
+
 // Apply KNOWN_MIGRATION_RENAMES against `_prisma_migrations` so the table
 // matches the renamed directories on disk before `prisma migrate deploy`
 // runs. Without this, deploy would either re-apply already-executed SQL
@@ -101,6 +149,10 @@ async function reconcileMigrationRenames(connectionUrl: string): Promise<void> {
   const client = new PgClient({ connectionString: connectionUrl });
   await client.connect();
   try {
+    if (!(await hasMigrationsTable(client))) {
+      console.log('[migrate] no _prisma_migrations table yet — nothing to reconcile.');
+      return;
+    }
     for (const [oldName, newName] of KNOWN_MIGRATION_RENAMES) {
       const { rows } = await client.query<{ migration_name: string }>(
         'SELECT migration_name FROM _prisma_migrations WHERE migration_name IN ($1, $2)',
@@ -146,6 +198,10 @@ async function clearFailedMigrations(connectionUrl: string): Promise<void> {
   const client = new PgClient({ connectionString: connectionUrl });
   await client.connect();
   try {
+    if (!(await hasMigrationsTable(client))) {
+      console.log('[migrate] no _prisma_migrations table yet — nothing to clear.');
+      return;
+    }
     const { rows } = await client.query<{ migration_name: string }>(
       'SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL AND rolled_back_at IS NULL'
     );
@@ -165,18 +221,40 @@ async function clearFailedMigrations(connectionUrl: string): Promise<void> {
 }
 
 async function main(): Promise<void> {
-  console.log(`[migrate] fetching secrets from project ${PROJECT_ID}…`);
-  const [appPassword, ownerPassword] = await Promise.all([
-    getSecret('sparx-db-app-password'),
-    getSecret('sparx-db-owner-password'),
-  ]);
+  let databaseUrl: string;
+  let migrationUrl: string;
 
-  const baseHost = `${PROXY_HOST}:${PROXY_PORT}`;
-  const databaseUrl = `postgresql://sparx_app:${encodeURIComponent(appPassword)}@${baseHost}/${DB_NAME}?sslmode=disable`;
-  const migrationUrl = `postgresql://sparx_owner:${encodeURIComponent(ownerPassword)}@${baseHost}/${DB_NAME}?sslmode=disable`;
+  if (PROJECT_ID) {
+    console.log(`[migrate] GCP mode — fetching secrets from project ${PROJECT_ID}…`);
+    const [appPassword, ownerPassword] = await Promise.all([
+      getSecret('sparx-db-app-password'),
+      getSecret('sparx-db-owner-password'),
+    ]);
 
-  console.log('[migrate] waiting for Auth Proxy sidecar…');
-  await waitForProxy();
+    // sslmode=disable is correct ONLY here: the connection is to a Cloud SQL
+    // Auth Proxy on loopback, which is itself the encrypted hop.
+    const baseHost = `${PROXY_HOST}:${PROXY_PORT}`;
+    databaseUrl = `postgresql://sparx_app:${encodeURIComponent(appPassword)}@${baseHost}/${DB_NAME}?sslmode=disable`;
+    migrationUrl = `postgresql://sparx_owner:${encodeURIComponent(ownerPassword)}@${baseHost}/${DB_NAME}?sslmode=disable`;
+
+    console.log('[migrate] waiting for Auth Proxy sidecar…');
+    await waitForProxy();
+  } else {
+    if (!DIRECT_URL) {
+      throw new Error(
+        'No GCP_PROJECT_ID and no MIGRATION_DATABASE_URL/DATABASE_URL. ' +
+          'Set GCP_PROJECT_ID to use Secret Manager + the Cloud SQL Auth Proxy, ' +
+          'or supply a connection URL for the owner role.'
+      );
+    }
+    // One URL for both: the caller already handed us an owner connection, and
+    // nothing below needs the unprivileged one — `prisma migrate deploy` reads
+    // DATABASE_URL and must run as the owner.
+    databaseUrl = DIRECT_URL;
+    migrationUrl = DIRECT_URL;
+    console.log('[migrate] direct mode — using the supplied connection URL.');
+    console.log('[migrate] no Secret Manager, no Auth Proxy sidecar.');
+  }
 
   const baseEnv: NodeJS.ProcessEnv = {
     ...process.env,
@@ -184,21 +262,29 @@ async function main(): Promise<void> {
     MIGRATION_DATABASE_URL: migrationUrl,
   };
 
-  console.log('[migrate] applying bootstrap grants as sparx_owner…');
-  await run(
-    'pnpm',
-    [
-      'exec',
-      'prisma',
-      'db',
-      'execute',
-      '--url',
-      migrationUrl,
-      '--file',
-      'sql/cloud-sql-bootstrap.sql',
-    ],
-    baseEnv
-  );
+  if (PROJECT_ID) {
+    console.log('[migrate] applying bootstrap grants as sparx_owner…');
+    await run(
+      'pnpm',
+      [
+        'exec',
+        'prisma',
+        'db',
+        'execute',
+        '--url',
+        migrationUrl,
+        '--file',
+        'sql/cloud-sql-bootstrap.sql',
+      ],
+      baseEnv
+    );
+  } else {
+    // sql/cloud-sql-bootstrap.sql assumes roles that `gcloud sql users create`
+    // made out of band, so it grants without creating. Azure has no equivalent,
+    // which is why sql/azure-bootstrap.sql both creates AND grants — and why it
+    // runs as its own `db-roles` Job before this one, not from here.
+    console.log('[migrate] skipping cloud-sql bootstrap grants (not on GCP).');
+  }
 
   console.log('[migrate] reconciling known migration renames…');
   await reconcileMigrationRenames(migrationUrl);
