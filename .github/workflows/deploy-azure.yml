@@ -43,11 +43,24 @@ env:
 
 jobs:
   deploy:
-    # A failed build must not deploy. workflow_run fires on completion of ANY
-    # conclusion, including failure, so this guard is load-bearing.
+    # Two independent guards.
+    #
+    # 1. AZURE_DEPLOY_ENABLED — an explicit opt-in repository variable. Until the
+    #    `SPARX_APP_SECRETS_ENV` and `TYPESENSE_API_KEY` secrets and the `prod`
+    #    Environment exist, an automatic deploy can only fail at the secret step,
+    #    having already created a namespace. Rather than let the first push to
+    #    main go red for a predictable reason, deployment stays off until it is
+    #    turned on:
+    #        gh variable set AZURE_DEPLOY_ENABLED -R <owner>/<repo> -b true
+    #    A manual `workflow_dispatch` bypasses this, so it never blocks a
+    #    deliberate run.
+    #
+    # 2. A failed build must not deploy. workflow_run fires on completion of ANY
+    #    conclusion, including failure, so that check is load-bearing.
     if: >-
       github.event_name == 'workflow_dispatch' ||
-      github.event.workflow_run.conclusion == 'success'
+      (vars.AZURE_DEPLOY_ENABLED == 'true' &&
+       github.event.workflow_run.conclusion == 'success')
     runs-on: ubuntu-latest
     environment: prod
 
@@ -112,6 +125,51 @@ jobs:
             --docker-username='${{ github.actor }}' \
             --docker-password='${{ secrets.GITHUB_TOKEN }}' \
             --dry-run=client -o yaml | kubectl apply -f -
+
+      # ---------------------------------------------------------------------
+      # Cloudflare Tunnel.
+      #
+      # This is what makes the platform REACHABLE. Without it cloudflared runs
+      # with no configuration, connects to nothing, and every public hostname
+      # stays dark however healthy the pods look.
+      #
+      # A LOCALLY-managed tunnel: the ingress rule lives here, not in the
+      # Cloudflare dashboard. One catch-all to Caddy, which already routes ~20
+      # hostnames by Host header — a dashboard-managed tunnel would mean
+      # re-entering every one of them and keeping two sources of truth in sync.
+      #
+      # The 404 rule is mandatory, not defensive: cloudflared refuses to start
+      # without a terminal catch-all. It is unreachable behind the rule above it.
+      # ---------------------------------------------------------------------
+      - name: Configure Cloudflare Tunnel
+        env:
+          TUNNEL_CREDENTIALS: ${{ secrets.CLOUDFLARE_TUNNEL_CREDENTIALS }}
+        run: |
+          if [ -z "$TUNNEL_CREDENTIALS" ]; then
+            echo "::warning::CLOUDFLARE_TUNNEL_CREDENTIALS is unset — cloudflared will not connect and no public hostname will resolve. Everything else still deploys."
+            exit 0
+          fi
+
+          printf '%s' "$TUNNEL_CREDENTIALS" > /tmp/creds.json
+          TUNNEL_ID=$(python3 -c "import json;print(json.load(open('/tmp/creds.json'))['TunnelID'])")
+
+          kubectl create secret generic cloudflared-credentials -n "$NAMESPACE"             --from-file=credentials.json=/tmp/creds.json             --dry-run=client -o yaml | kubectl apply -f -
+          rm -f /tmp/creds.json
+
+          cat > /tmp/cf-config.yaml <<CFG
+          tunnel: $TUNNEL_ID
+          credentials-file: /etc/cloudflared/creds/credentials.json
+          no-autoupdate: true
+          ingress:
+            - service: http://caddy.$NAMESPACE.svc.cluster.local:80
+            - service: http_status:404
+          CFG
+          kubectl create configmap cloudflared-config -n "$NAMESPACE"             --from-file=config.yaml=/tmp/cf-config.yaml             --dry-run=client -o yaml | kubectl apply -f -
+          rm -f /tmp/cf-config.yaml
+
+          # The pods mount both by fixed name, so a change here needs a restart
+          # to be picked up. Ignored when the Deployment does not exist yet.
+          kubectl rollout restart deployment/cloudflared -n "$NAMESPACE" 2>/dev/null || true
 
       # ---------------------------------------------------------------------
       # Database roles.
