@@ -176,6 +176,13 @@ resource "google_cloud_run_v2_service" "automation_worker" {
       template[0].containers[0].image,
       client,
       client_version,
+      # SERVICE-level scaling — NOT the `scaling` block above, which is inside
+      # `template`, is per-revision, and is ours. The API populates this one with
+      # zeroes on every Cloud Run service; the config never declares it, so
+      # Terraform proposed removing it forever (applying succeeds, the API
+      # repopulates, the next plan proposes it again). Same suppression as
+      # modules/cloud-run-worker — see the longer note there.
+      scaling,
     ]
   }
 

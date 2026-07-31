@@ -80,6 +80,18 @@ resource "google_cloud_run_v2_service" "this" {
       template[0].containers[0].image,
       client,
       client_version,
+      # SERVICE-level scaling (distinct from `template.scaling` above, which is
+      # per-revision and IS ours). The API populates this block with zeroes on
+      # every service; the config never declares it, so Terraform proposed
+      # removing it on all 12 workers, forever — applying the removal succeeds
+      # and the API immediately repopulates it. Verified empirically: applying
+      # it changed no revision and no generation, and the very next plan wanted
+      # the same change again.
+      #
+      # The cost was never runtime, it was legibility: with a permanent 12-line
+      # diff, `plan` can never say "No changes", so real drift hides in the
+      # noise — which is how a missing Cloud Run service went unnoticed.
+      scaling,
     ]
   }
 }
