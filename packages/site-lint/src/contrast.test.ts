@@ -22,14 +22,25 @@ const THEME: Theme = {
     '--color-base-content': '#18181b',
     // Dark blue — the derived foreground is white, and it clears AA comfortably.
     '--color-primary': '#1d4ed8',
-    // Mid grey. Light enough that silicaui's lightness rule picks WHITE, dark enough
-    // that white on it is only ~4:1 — the band this check exists for.
+    // Mid grey with an AUTHORED foreground that is too close in tone (~3.6:1) — a pair
+    // the owner chose, which is the realistic way a theme pair fails now.
+    //
+    // It used to carry no `-content` and rely on the DERIVED ink being wrong, which
+    // stopped being a real failure when the threshold moved to 0.57: the derivation
+    // picks between pure white and pure black, and one of those always clears ~4.58:1,
+    // so with the threshold sitting inside the true crossover there is almost no color
+    // left where the automatic choice fails. That is the upstream fix working, not a
+    // hole in this check — and the derived branch is still reachable, via a theme that
+    // overrides the threshold itself (covered below).
     '--color-brand': '#7d7d7d',
+    '--color-brand-content': '#efefef',
     // ~3.3:1 against white: fails as body copy, passes as large text.
     '--color-dim': '#8a8a8a',
-    // Exactly silicaui's 0.68 content threshold, written in OKLCH — the regression
-    // case for reading lightness off the token instead of a round-tripped sRGB value.
-    '--color-edge': 'oklch(68% 0.1 232)',
+    // EXACTLY silicaui's content threshold, written in OKLCH — the regression case for
+    // reading lightness off the token instead of a round-tripped sRGB value. Tracks the
+    // real threshold (0.57 since silicaui 0.36.0); at the old 0.68 this token no longer
+    // sat on the boundary at all, so it had quietly stopped guarding anything.
+    '--color-edge': 'oklch(57% 0.18 232)',
   },
 };
 
@@ -101,10 +112,43 @@ describe("the theme's own color pairs", () => {
   });
 
   it('reads lightness off the token, not off a round-tripped colour', () => {
-    // `oklch(68% …)` sits exactly on silicaui's threshold, so the browser takes BLACK
-    // and gets 7.4:1. Deriving the lightness from sRGB instead reads 0.6798, takes
-    // white, and reports 2.8:1 — a legible colour called unreadable.
-    expect(colorFindings(body(el('div', 'bg-edge', { text: 'Edge' })))).toEqual([]);
+    // `oklch(57% …)` sits exactly ON silicaui's threshold, and the CSS `clamp` resolves
+    // the boundary to the DARK ink, which reads at 5.2:1. Round-tripping the lightness
+    // through sRGB instead returns 0.5698 — a thousandth under — takes WHITE, and reports
+    // 4.1:1 on a legible colour. One rounding error, one wrong verdict.
+    //
+    // The pair is spelled out because `bg-edge` ALONE would not exercise the derivation
+    // at all: a background class does not set a text color, so the words inside inherit
+    // `--color-base-content`. The derived ink only paints where something asks for it —
+    // `text-edge-content`, or a component variant like `btn-edge`.
+    expect(colorFindings(body(el('div', 'bg-edge text-edge-content', { text: 'Edge' })))).toEqual(
+      []
+    );
+  });
+
+  it('flags a DERIVED pair when the theme moves the threshold itself', () => {
+    // The derived branch is near-unreachable at the default threshold, but a theme may
+    // set `--silica-content-threshold`, and that moves every automatic foreground on the
+    // site with it. Pushing it back to the old 0.68 makes the derivation pick WHITE for a
+    // mid grey again — precisely the class of bug 0.36.0 removed, still available to
+    // anyone who asks for it.
+    const { '--color-brand-content': _authored, ...rest } = THEME.tokens;
+    const moved: Theme = {
+      ...THEME,
+      // No authored `-content` for brand, so the derivation decides.
+      tokens: { ...rest, '--silica-content-threshold': '0.68' },
+    };
+
+    const found = colorFindings(
+      body(el('div', 'bg-brand text-brand-content', { text: 'On' })),
+      moved
+    );
+    // Two findings, at two scopes, and both are right: the theme pair itself is bad, and
+    // so is this element that uses it. Only the site-scoped one is this rule's business.
+    const pair = found.filter((f) => f.location.scope === 'site');
+    expect(pair).toHaveLength(1);
+    expect(pair[0]?.detail).toContain('picked automatically');
+    expect(pair[0]?.evidence).toContain('brand');
   });
 });
 
