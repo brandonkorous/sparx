@@ -1,0 +1,119 @@
+# Prunes old GHCR image versions. The GCP counterpart is NOT a workflow — see
+# below.
+#
+# WHY THIS IS A CRON AND NOT A BUTTON. The Artifact Registry equivalent of this
+# was a manual workflow that also defaulted to `dry_run: true`, so the rare time
+# anyone ran it, it deleted nothing. Nobody was watching, and the repository grew
+# to 2.95 TB — roughly $295/month. Retention that depends on a human remembering
+# is not retention. Artifact Registry now expresses it as a server-side cleanup
+# policy in terraform/modules/artifact-registry, which cannot stop running.
+#
+# GHCR has no server-side equivalent, so a schedule is the only option — which
+# makes the failure mode worth stating plainly: if this workflow breaks, storage
+# grows silently and the first symptom is a bill. It is deliberately noisy on
+# failure and writes a summary of every run.
+#
+# HOW MUCH IT MATTERS HERE: build-images-ghcr.yml pushes ~20 images on EVERY
+# push to main that touches source, each tagged with the commit SHA. Twenty
+# images a commit, ~800 MB for each of the API images, accumulating forever, is
+# exactly the same shape of problem the GCP registry already grew into.
+name: Cleanup images (GHCR)
+
+on:
+  schedule:
+    # 04:17 UTC daily. Off the hour on purpose — GitHub's shared cron pool is
+    # heavily contended on :00 and schedules there are routinely delayed or
+    # dropped.
+    - cron: '17 4 * * *'
+  workflow_dispatch:
+    inputs:
+      keep:
+        description: 'Versions to keep per image'
+        required: false
+        default: '3'
+        type: string
+      dry_run:
+        description: 'List what would be deleted without deleting'
+        required: false
+        default: false
+        type: boolean
+
+# DEFAULTS TO FALSE, unlike its predecessor. A pruning job whose default is
+# "do nothing" is a job that never prunes.
+
+concurrency:
+  group: cleanup-images-ghcr
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  packages: write # delete-package-versions needs write to prune
+
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Prune old versions
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          KEEP: ${{ inputs.keep || '3' }}
+          DRY_RUN: ${{ inputs.dry_run || 'false' }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          set -euo pipefail
+
+          # Packages are named `sparx/<service>` because the images are pushed as
+          # ghcr.io/<owner>/sparx/<service>. The API wants that slash encoded.
+          PACKAGES=$(gh api --paginate \
+            "/users/$OWNER/packages?package_type=container&per_page=100" \
+            --jq '.[].name' | grep '^sparx/' || true)
+
+          if [ -z "$PACKAGES" ]; then
+            echo "::error::No sparx/* container packages found for $OWNER."
+            echo "If images exist, the token is missing read:packages."
+            exit 1
+          fi
+
+          echo "### GHCR cleanup (keep $KEEP, dry_run=$DRY_RUN)" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "| package | versions | deleted |" >> "$GITHUB_STEP_SUMMARY"
+          echo "| --- | ---: | ---: |" >> "$GITHUB_STEP_SUMMARY"
+
+          total_deleted=0
+          for pkg in $PACKAGES; do
+            enc=$(printf '%s' "$pkg" | sed 's#/#%2F#g')
+
+            # Newest first, so everything past $KEEP is a candidate.
+            ids=$(gh api --paginate \
+              "/users/$OWNER/packages/container/$enc/versions?per_page=100" \
+              --jq 'sort_by(.created_at) | reverse | .[].id')
+            count=$(echo "$ids" | grep -c . || true)
+
+            # `tail -n +N` starts at the Nth line, so +$((KEEP+1)) is "everything
+            # after the newest KEEP".
+            stale=$(echo "$ids" | tail -n +$((KEEP + 1)) || true)
+            n=$(echo "$stale" | grep -c . || true)
+
+            if [ "$n" -gt 0 ] && [ "$DRY_RUN" != "true" ]; then
+              for id in $stale; do
+                # Tolerated: GHCR refuses to delete the last remaining version of
+                # a package, and a version can vanish between listing and delete.
+                # Neither is a reason to abandon the other nineteen packages.
+                gh api -X DELETE \
+                  "/users/$OWNER/packages/container/$enc/versions/$id" \
+                  >/dev/null 2>&1 || echo "  skip $pkg#$id"
+              done
+            fi
+
+            total_deleted=$((total_deleted + n))
+            printf '| %s | %s | %s |\n' "$pkg" "$count" "$n" >> "$GITHUB_STEP_SUMMARY"
+            echo "$pkg: $count versions, $n stale"
+          done
+
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$DRY_RUN" = "true" ]; then
+            echo "_Dry run — nothing was deleted._" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "**Deleted $total_deleted versions.**" >> "$GITHUB_STEP_SUMMARY"
+          fi
