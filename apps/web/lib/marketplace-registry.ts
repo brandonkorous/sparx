@@ -66,7 +66,11 @@ export const MARKETPLACE_CATEGORIES: MarketplaceCategory[] = [
     icon: Palette,
     accent: '#8b5cf6',
     tagline: 'Brand looks — color, type, and shape — applied site-wide.',
-    status: 'live',
+    // Retired as a live browse: the look system moved in-code (the Builder's silica
+    // preset panel) + into the themed `sparx-<name>` blueprint clones, so nothing
+    // repopulates this catalog. The first-party rows were purged
+    // (marketplace-purge-themes.yml); a standalone theme marketplace lands later.
+    status: 'coming-soon',
     facets: [
       { key: 'industry', label: 'Industry', type: 'multi' },
       { key: 'mood', label: 'Style', type: 'multi' },
