@@ -1,10 +1,17 @@
-# 139 — silicaui-builder: the asks (ALL 15 ANSWERED)
+# 139 — silicaui-builder: the asks (1–15 ANSWERED; §16 OPEN)
 
-**Version:** 3.0.0
+**Version:** 3.2.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-30
 
-> ## ⚑ NOTHING IS OPEN. All fifteen asks are answered and adopted.
+> ## ⚑ §16 IS THE ONLY OPEN ASK (raised 2026-07-30 against `0.41.0`)
+>
+> **[§16 — other editors' selections, and a soft claim on a subtree](#16--other-editors-selections-and-a-soft-claim-on-a-subtree)**
+> — the builder audit's last roadmap item (slice 24), never written up until now. A POLISH ask: the
+> document is already safe without it (per-node LWW + the op log + draft history), but two authors on
+> one page currently see each other's edits with no attribution.
+>
+> ## ⚑ 1–15 are answered and adopted.
 >
 > | §    | Raised     | Shipped in    | As                                                              |
 > | ---- | ---------- | ------------- | --------------------------------------------------------------- |
@@ -13,9 +20,10 @@
 > | 13   | 2026-07-29 | `0.40.0`      | `toolbarStatusSlot`                                             |
 > | 14   | 2026-07-29 | `0.41.0`      | `statusBarSlot` — and it SUPERSEDES §13 for sparx's use         |
 > | 15   | 2026-07-29 | `0.41.0`      | mode follows `activeTree`; `select()` returns whether it landed |
+> | 16   | 2026-07-30 | —             | **OPEN** — peer selections + a soft subtree claim               |
 >
-> Turnaround on the last four was same-day or next-morning. This file is now the RECORD of the
-> asks and their resolutions, not a to-do list.
+> Turnaround on §12–§15 was same-day or next-morning. Apart from §16, this file is the RECORD of
+> the asks and their resolutions, not a to-do list.
 
 > ## ⚑ ALL ELEVEN WERE ANSWERED AND SHIPPED IN `0.36.0` (2026-07-28)
 >
@@ -275,6 +283,29 @@ currently cannot.
 
 **The ask:** derive `-content` from CONTRAST, not from a lightness threshold — or move the
 threshold down to about 0.60.
+
+> **ANSWERED in silicaui 0.36.0 — the threshold is `0.57`, and it took sparx five releases to
+> notice (recorded 2026-07-30).** silicaui took the second option and went further than the ask:
+> 0.60 would still have sat above the real crossover, so it picked a value INSIDE it. The shipped
+> source now says so in as many words — "0.57 sits inside the crossover range instead of above it,
+> and clears AA for every shipped preset token" — and explicitly directs anything visible at build
+> time to `deriveContent` instead, leaving the fallback for colors injected into a live document
+> that no build step ever saw.
+>
+> **We adopted the other eleven answers from 0.36.0 and missed this one**, because it is a default
+> inside a CSS string rather than an API — nothing failed to compile. Two copies of `0.68` stayed
+> in the tree: `themes-ink.test.ts`, which then spent five releases failing 10 assertions against
+> **correctly authored themes**, and — the one that mattered — `@sparx/site-lint`'s `palette.ts`,
+> the live pre-publish contrast check, which predicted WHITE ink for every color between 0.57 and
+> 0.68 where the site actually paints BLACK. A wrong verdict in whichever direction hurt more.
+>
+> Both now read `SILICA_CONTENT_THRESHOLD` / `inkForLightness` from
+> [silica-catalog/content-ink.ts](../packages/silica-catalog/src/content-ink.ts), which also fixes
+> a boundary the two copies disagreed on. **This is the concrete case for the standing rule in this
+> document: verify a bump against the shipped bundle, never the changelog.** A changelog line would
+> have carried this; a type error never could. `content-ink.ts` records the exact `grep`, and states
+> that no test in this repo can catch the next change — neither package depends on the Tailwind
+> plugin the value lives in.
 
 `lib/auto-content.js` fills an undefined `--color-<name>-content` with
 
@@ -688,6 +719,67 @@ Worth noting that the underlying sharp edge is `select(id)` accepting an id from
 silently. A no-op is the safe behaviour, but it means "wrong tree" and "deleted node" are
 indistinguishable to a host — an `editor.select()` that returned whether it landed would let a
 host say "that block is not there any more" honestly instead of guessing.
+
+---
+
+## 16 — Other editors' selections, and a soft claim on a subtree
+
+**Status: OPEN, raised 2026-07-30 against `0.41.0`.** The last item on the builder audit's own
+roadmap (slice 24) and the only one never written up here — filed now rather than left implicit.
+
+### Where sparx already is
+
+Live co-editing works. `/ws/builder` relays `ops:relay`, `applyRemoteOps` folds another author's
+edits into the canvas as they land, and presence carries `{socketId, userId, name, activePage}` — so
+the editor can say **"3 editing"** and which page each person is on.
+
+What it cannot say is **where in the page they are**. Two authors on the same page see each other's
+edits appear with no warning and no attribution: a heading rewrites itself under your cursor and
+nothing on screen connects that to the name in the toolbar.
+
+### The ask
+
+Two seams, both small, both additive:
+
+```tsx
+// 1. Draw someone else's selection on the canvas.
+peerSelections?: { id: string; nodeIds: readonly string[]; name: string; color?: string }[];
+
+// 2. Refuse to edit a subtree someone else is holding.
+claims?: { nodeId: string; by: string }[];
+```
+
+**Selections, not cursors.** A pixel cursor is the wrong primitive for this editor — the document is
+a node tree with no x/y (the same reason §4's nudge was declined). "Ana is in this block" is the
+fact that matters, and the engine already has the ring, the hover outline and the Navigator row to
+draw it on. A host cannot: the canvas owns its own overlay layer and exposes no seam to paint one
+node's chrome, and selection is per-client by design (`select` is deliberately view-only with no
+ops), so there is nowhere to put another client's.
+
+**A claim is the softer half of a lock, and the important half.** `setLocked(id, 'host')` already
+exists and is exactly wrong here: it is permanent policy, not "someone is typing in this right
+now". A claim wants to be advisory and self-expiring — the local editor greys the subtree, names the
+holder, and refuses a mutation inside it, while everything around it stays editable. Ops-level
+last-write-wins already keeps the DOCUMENT correct; the claim is what stops two people making a
+mess they then have to untangle by hand.
+
+### Why a host cannot do either
+
+Both are canvas-rendering concerns inside the engine's own overlay, and the second additionally
+needs the mutation chokepoint (`transact`) to refuse. A host can compute who holds what — sparx
+already relays it — and has nowhere to hand it.
+
+### Generic?
+
+Yes, and this is the one ask on this list that every multiplayer editor has answered somehow. None
+of it names a domain concept: a CMS, an email builder and a static-site generator all want "show me
+who else is in here, and stop me editing what they are holding."
+
+### Scope note
+
+`activePage` presence is already enough for the coarse case, so this is a POLISH ask, not a
+correctness one — the document is safe without it (per-node LWW + the op log + draft version
+history). Filed at the priority that implies.
 
 ---
 

@@ -1,26 +1,37 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.12.0
+Version: 2.14.0
 Author: Brandon Korous
-Last Updated: 2026-07-29
+Last Updated: 2026-07-30
 
-> **Status — EVERY SLICE IS DONE EXCEPT THE BLUEPRINT SHELF (18), which is another agent's
-> (2026-07-28).** Waves 1, 2 and 4 are complete, and **wave 3 is no longer silicaui-blocked**:
-> silicaui answered all eleven asks in `0.36.0` and the sparx side is fully adopted.
+> **Status — EVERY SLICE IS DONE except the BLUEPRINT SHELF (18, another agent's) and slice 24,
+> which is now filed upstream as [doc 139 §16](../139-silicaui-builder-asks.md).** Waves 1, 2 and 4
+> are complete and **wave 3 is closed**: silicaui answered §1–§15, including `statusBarSlot` and the
+> `activeTree` mode sync in `0.41.0`, and the sparx side is adopted throughout.
 >
-> **OPEN IN THE WORKING TREE (2026-07-29):** slice 17's **frame picker** + the
-> publish-lifecycle defect building it exposed, and slice 25's **named layouts** on
-> silicaui **0.37.0** (catalog bumped, `pnpm install` run). Typecheck is **96/96** and lint
-> **94/94** — the Prisma client already knows the new column, because `pnpm install`
-> regenerates it on postinstall.
+> **Slices 13 and 15 were ticked on 2026-07-30 after re-reading the shipped bundle** — both had been
+> resolved upstream for two versions with the boxes left unchecked. 15 is partly a DECLINE that
+> stands: alignment guides and pixel nudge are absolute-position concepts and this document model has
+> no x/y, so the ask was a category error. Recorded, not deferred.
 >
-> **The one thing still outstanding is the DATABASE.** Migration
-> `20270129000000_builder_page_published_frame` is authored but NOT applied to local
-> docker, so the generated client knows `published_frame_id` and Postgres does not — any
-> read of a page's chrome will fail at runtime until `prisma migrate dev` runs. On prod it
-> rides the DB Migrate workflow as usual.
+> **The DATABASE is no longer outstanding.** `prisma migrate status` reports all **239** migrations
+> applied, `20270129000000_builder_page_published_frame` among them.
 >
-> **EVERYTHING ELSE IS COMMITTED AND PUSHED — `main` is in sync with `origin/main`.** The
+> **The four claims this roadmap could never verify are now closed by tests, not by eyeballing**
+> (2026-07-30): named-layout persistence round-trips (`site-service.test.ts`, 39), `?page=2` walks a
+> 137-product catalog with no gap or overlap (`list-paging.test.ts`, 20 — the arithmetic moved to
+> `@sparx/builder-schemas` because no app in this repo has a test runner), the `srcset` ladder
+> survives `toHtml` (`responsive-images.test.ts`, 18), and every section is graded against every
+> shipped theme through the REAL linter (`catalog-sweep.test.ts`, 6).
+>
+> **That sweep found two contrast bugs that had shipped.** The product price and buy-box price used
+> `text-primary` as ink, which is **1.5:1 on `salon`, 1.6:1 on `petal`, 2.0:1 on `workshop`** — those
+> themes deliberately carry a bright primary that holds dark ink, so primary is a FILL there and the
+> price was pale-on-pale. And `inclusion_list`'s green tick failed AA on `lodge` / `academy` for a
+> signal carrying no information (every row in an inclusion list is included). Both fixed; the
+> equivalent defect in the two CMS composites was fixed with them.
+>
+> **Everything else is committed and pushed — `main` is in sync with `origin/main`.** The
 > per-slice file inventories that used to live here are retired: they existed to make staging
 > by path possible, and there is nothing left to stage. The slices map to commits as:
 >
@@ -38,10 +49,15 @@ Last Updated: 2026-07-29
 > | §8              | `f180289f` let the engine invert an edit, so undo stops being unfaithful          |
 > | 17 (§5)         | `208382f6` let a page choose its own chrome, or none at all                       |
 >
-> The standing rule still applies to anything NEW: a social agent and a blueprint agent are
-> both working in this checkout, so stage by path, never `git add -A`, and re-check the
-> branch first. Dirty files that are NOT ours right now: `packages/social/*`,
-> `services/social-worker/*`, `terraform/envs/prod/serverless.tf`.
+> The standing rule still applies to anything NEW: other agents are working in this checkout,
+> so stage by path, never `git add -A`, and re-check the branch first. Dirty files that are NOT
+> ours as of 2026-07-30: `.gitignore`, `terraform/envs/prod/automation.tf`,
+> `terraform/modules/cloud-run-worker/main.tf`.
+>
+> **Staging hazard: `packages/site-lint/src/catalog-sweep.test.ts` is UNTRACKED.** Staging by
+> path is what the rule above requires, and a path-by-path `git add` of MODIFIED files silently
+> skips it — which would land the two contrast fixes without the sweep that found them, leaving
+> nothing to catch the third one.
 >
 > **The migration `20270125000000_builder_page_frame` is applied BOTH places.** Locally it
 > was swept in by another agent's `migrate deploy` alongside their
@@ -70,35 +86,95 @@ Last Updated: 2026-07-29
 > **Migration `20270123000000_builder_component_silica_tree`** is applied to local docker
 > and verified there (`silica_tree` present, `tree` nullable, RLS still ENABLED + FORCED,
 > all 6 pre-existing version rows untouched — the additive, no-backfill outcome it
-> claimed). On prod it rides the DB Migrate workflow. **UNVERIFIED at the time of
-> writing:** no db-migrate run appears for `d839df26` itself, and the run for `5f1e1d75`
-> was still in progress. `prisma migrate deploy` is cumulative, so that run should apply
-> it — but confirm with `gh run list --workflow=db-migrate.yml` before assuming prod has
-> the column.
+> claimed).
 >
-> **Gates at the last full pass (on 0.37.0, after the frame picker + named layouts):**
-> workspace `pnpm typecheck` **96/96** and `pnpm lint` **94/94** — the only output is 6
-> pre-existing warnings in `@sparx/web`. Unit tests: **197 silica-catalog** · **263
-> builder-schemas** · **102 site-lint** · **83 builder** (73 before this pass: +5 for the
-> staged chrome pointer, +5 for named layouts, less the deleted inverter's) · 89
-> site-themes · and the **full api-rest suite at 291 across 56 files**. `apps/workbench`
-> has no test script by design (no automated UI specs).
+> **On prod it is now CONFIRMED, not assumed (2026-07-30).** The earlier note here said
+> UNVERIFIED and told the reader to check `gh run list --workflow=db-migrate.yml` before
+> believing prod had the column; that check has been run. The latest successful DB Migrate run
+> is **`30434420770`** at `faa9411b` (2026-07-29 08:09 UTC), and each migration's ADDING commit
+> is an ancestor of it — `20270123000000_builder_component_silica_tree` (`d839df26`),
+> `20270125000000_builder_page_frame` (`208382f6`) and
+> `20270129000000_builder_page_published_frame` (`b53fc940`). That is the whole builder set;
+> `20270129000000_*` is also the newest migration in the tree, so **nothing builder-side is
+> waiting on a deploy**. Verified by ancestry rather than by trusting cumulativeness — a
+> `migrate deploy` only carries what was in the tree at ITS sha, so a migration authored after
+> the last run would sit unapplied while the workflow reported nothing but successes.
 >
-> **Not settled by any of that — only a browser can:** preview-vs-draft (slice 1) · two-tab
-> undo, where `Ctrl+Z` must move only your own node (5) · a saved piece round-tripping and
-> a master edit reaching its instances (7) · the Check panel's **Show me** landing on the
-> right node for all three scopes, and **Open** landing on the right page from the weight
-> list (11, 12) · the Page results table against a site with real traffic, where the
-> collection-template row is the one to look at (22) · **`?page=2` actually rendering the
-> second page, and the pager hiding itself when everything fits** (23) · **a page whose
-> frame is set to `none` actually rendering with no header/footer AND still fully themed**
-> (17 — the theme half is the bug `silicaActive` would have shipped) · **the frame picker
-> round-tripping**: choose "No header or footer", Save, confirm Publish lights up and the
-> live page is UNCHANGED until you press it (17) · **the engine's layout switcher creating
-> a second design that survives a reload**, and a page pointed at it publishing through it
-> (25) · **srcset serving a phone the 400/800 rung rather than the 2000** (20) · **how the
-> 66 new sections look on a real theme** — they pass every structural check there is, and
-> "does it look good" is not one a test can make (19).
+> **Gates at the last full pass (2026-07-30, on 0.41.0):** workspace `pnpm typecheck` **98/98**,
+> `pnpm lint` **96/96 with zero errors**, `pnpm format:check` clean. Unit tests: **609
+> silica-catalog** · **295 builder-schemas** · **109 site-lint** · **88 builder** · 89
+> site-themes. `apps/workbench` has no test script by design (no automated UI specs).
+>
+> After the threshold fix below, the workspace typecheck could NOT be re-run end to end: dev was
+> up, and 17 node processes (including api-rest on 3100) hold the Prisma engine DLL, so
+> `@sparx/db#build` EPERMs. Freeing it means killing the user's dev stack, which is theirs to
+> restart, so the two changed packages were typechecked directly (`tsc --noEmit`, both clean) and
+> linted directly. Re-run `pnpm typecheck` once dev is down before trusting a green workspace.
+>
+> **`themes-ink.test.ts` was red on `main` for five releases, and the themes were never wrong.**
+> An earlier draft of this note blamed five `secondary` values and called nudging them an
+> aesthetic decision for their owner. That was wrong, and measuring it is what showed it: the
+> test carried its own `CSS_THRESHOLD = 0.68` while **silicaui moved the default to 0.57 in
+> 0.36.0** — the very release whose other eleven answers we adopted. Against the real threshold
+> all **320 role slots across 20 themes agree**, none sits in the crossover band, and every
+> derived ink clears AA. Ten failures, zero defects, one stale constant accusing correct work.
+>
+> **The same stale constant was in LIVE code, which is the part that mattered.**
+> `@sparx/site-lint`'s `palette.ts` — the pre-publish contrast check — predicted the ink for
+> every role from `0.68`, so for any color between the two values it measured against WHITE
+> where the site actually paints BLACK. That is a false alarm on a correct theme or a pass on an
+> illegible button, silently, for five releases. Both copies now read
+> `SILICA_CONTENT_THRESHOLD` from `packages/silica-catalog/src/content-ink.ts`.
+>
+> They also **disagreed on the boundary**, in opposite directions: site-lint had
+> `l < t ? light : dark`, the audit had `l > t ? dark : light`, which differ at exactly
+> `l === t`. The CSS settles it (`clamp(0, (t - l) * 1000, 1)` is `0` there, selecting dark
+> ink) — so sharing the _decision_ as `inkForLightness`, not just the number, was the point.
+>
+> **Nothing automated can catch the next upstream change**, and the note in `content-ink.ts` says
+> so plainly rather than implying a guard exists: the ground truth is a string inside the
+> Tailwind plugin, and neither package depends on it (only on `@wizeworks/silicaui-html`).
+> Re-verify by hand on every bump — already the standing rule (doc 139 §9) — with the `grep`
+> recorded in that file. A real guard needs one devDependency and a `pnpm install`.
+>
+> Two test fixtures had quietly stopped testing anything, and both are re-cut: site-lint's
+> "bad" theme pair was only bad BECAUSE of `0.68` (a derived pair can now barely fail at all —
+> the derivation picks between pure white and pure black, one of which always clears ~4.58:1),
+> so it now exercises an AUTHORED ink, which is how a pair realistically fails; and the
+> read-the-token-not-the-round-trip regression case had drifted off the boundary it was written
+> to sit on. The derived branch keeps its coverage via a theme that overrides the threshold
+> itself — which is also the only way that branch is still reachable.
+>
+> **The push guard could not see any of this**: `pnpm test` is not in it, only `format:check` /
+> `lint` / `typecheck`. Suites after the fix: **silica-catalog 609** (from 559 pass / 10 fail —
+> +40 of those are a new assertion that the winning ink clears AA, which agreement alone never
+> proved) and **site-lint 109**.
+>
+> **Not settled by any of that — only a browser can.** The four tests above closed the DATA
+> half of four of these claims; each left a browser half behind, and this list is now those
+> remainders plus what was always browser-only. Do not read a green suite as a verified screen:
+>
+> - preview-vs-draft (1) · two-tab undo, where `Ctrl+Z` must move only your own node (5) · a
+>   saved piece round-tripping and a master edit reaching its instances (7) · the Page results
+>   table against a site with real traffic, where the collection-template row is the one to look
+>   at (22).
+> - **a page whose frame is set to `none` actually rendering with no header/footer AND still
+>   fully themed** (17 — the theme half is the bug `silicaActive` would have shipped), and the
+>   frame picker round-tripping: choose "No header or footer", Save, confirm Publish lights up
+>   and the live page is UNCHANGED until you press it (17).
+> - **the remainders.** `list-paging.test.ts` proves the arithmetic; it does not prove the route
+>   RENDERS page 2 or that the pager hides itself when everything fits (23).
+>   `responsive-images.test.ts` proves the ladder survives `toHtml`; a phone actually selecting
+>   the 400/800 rung is the browser's own `sizes` resolution (20). `site-service.test.ts` proves
+>   a named layout round-trips through the row mapper; the engine's switcher CREATING a second
+>   design that survives a reload, and a page pointed at it publishing through it, is UI (25).
+>   `catalog-sweep.test.ts` grades every section against every theme for structure and contrast;
+>   **"does it look good" is not a judgement a test can make** (19).
+> - **this session's UI work, none of it eyes-verified** (no browser tooling was available):
+>   the status badges sitting in the footer beside "Page" · **Search & sharing** appearing in the
+>   inspector when the Page root is selected in Layers, and NOT drawing an empty titled section
+>   on any other element · Check and History dimming only the editor pane rather than the whole
+>   MDI · a header/footer finding's **Show me** switching to Layout mode with the block selected.
 >
 > **Decisions taken, so they are not re-litigated:**
 >
@@ -265,12 +341,37 @@ nobody in the comparison set does it well — this is where the builder can lead
 
 Upstream. Filed in [doc 139](../139-silicaui-builder-asks.md); [02-silicaui-asks.md](02-silicaui-asks.md) is the bridge from the audit's evidence.
 
-- [ ] **13. Per-breakpoint authoring** + an honest device canvas (iframe, or container-queries-only enforced). — _silicaui-ask · L_
+- [x] **13. Per-breakpoint authoring** + an honest device canvas. — _~~silicaui-ask~~ → shipped in silicaui 0.36.0 (doc 139 §1 + §2); host half adopted · L_
+
+  > **Both halves landed, and the answer was better than the ask.** The Inspector writes CONTAINER
+  > variants (`@md:`), not viewport ones, and the device toggle drives the prefix through
+  > `useBreakpoint` — so "what I am looking at" and "what I am editing" cannot drift, which is what
+  > the iframe alternative was only approximating. The canvas is an element whose width the toggle
+  > sets, so a viewport variant would never reflow with it; that is why the honest device canvas
+  > turned out to be "container-queries-only", not an iframe.
+  >
+  > **And it is ENFORCED on live documents, not just preferred.** `validateResponsiveVocabulary`
+  > ([vocabulary-check.ts](../../packages/silica-catalog/src/vocabulary-check.ts)) rides the host's
+  > `validateClass` seam, so `Editor.setClass` refuses a viewport variant before it commits and the
+  > Classes field names the container class to write instead. §2's point that this belongs in a
+  > liftable POLICY rather than the security-load-bearing floor was correct and is how it shipped.
+
 - [x] **14. Multi-select** and group operations. — _~~silicaui-ask~~ → shipped in silicaui 0.37.0 · L_
 
   > `selectedIds` (ordered, last entry is the primary), `selectMany`, `toggleSelect`, and the batch op API 0.36.0 already carried. **No host work.** The studio touches selection in exactly one place — the Check panel's "Show me" calls `editor.select(nodeId)` to jump to a single finding — which is still the right call, and the canvas gestures are the engine's. `selection` stays the primary id so every existing reader is unchanged.
 
-- [ ] **15. Alignment guides, arrow-key nudge, select-parent, `Cmd+X` / `Cmd+A`.** — _silicaui-ask · M_
+- [x] **15. Alignment guides, arrow-key nudge, select-parent, `Cmd+X` / `Cmd+A`.** — _~~silicaui-ask~~ → the keyboard half shipped in 0.36.0; guides + nudge DECLINED, correctly (doc 139 §4) · M_
+
+  > **Shipped:** `selectParent`, `Cmd+A` and `Cmd+X` are in `useEditorShortcuts` — verified in the
+  > 0.41.0 bundle, not taken from a changelog. Escape now steps UP the tree instead of clearing to
+  > nothing, which was the actual daily friction in the list.
+  >
+  > **Declined, and this was the right call rather than a deferral.** Alignment guides, distribute
+  > and pixel nudge are ABSOLUTE-POSITION concepts. This is a flow + class-only model: there is no
+  > x/y on a node to nudge, and "align these two" is `items-center` on their parent. Building
+  > guides would have meant inventing a geometry layer the document cannot express, so the honest
+  > answer is that the ask was a category error — recorded here rather than left looking unfinished.
+
 - [x] **16. Q22** (`resolveTree` stops resolving children once a node's binding is filled) and **Q26** (editor mode is private state, so a host cannot deep-link). — _~~silicaui-ask~~ → both answered; the host half adopted · S_
 
   > **Q22 was never real, and that is recorded rather than quietly dropped.** `resolveNode`'s value branch recurses — the same finding that made §10's premise wrong. The audit had carried it forward from 119 without re-reading the resolver at 0.35.0.
@@ -408,7 +509,18 @@ Where "no better in the world" is actually won or lost.
   >
   > **Conditional visibility is NOT built — it is filed.** `resolveTree` substitutes and expands; it never drops a node, and a host pre-pass cannot stand in because an item-scoped condition (`show the Sale badge only when there is a compare-at price`) can only be evaluated inside the expansion the engine owns. Doc 139 §10 asks for a `when` on `NodeBase` with a small closed predicate set.
 
-- [ ] **24. Cursors and selection presence**, plus per-node soft locks. — _silicaui-ask · M_
+- [ ] **24. Cursors and selection presence**, plus per-node soft locks. — _silicaui-ask, now FILED as [doc 139 §16](../139-silicaui-builder-asks.md#16--other-editors-selections-and-a-soft-claim-on-a-subtree) · M_
+
+  > **The only open item on this roadmap that is not blueprint authoring, and it was the one ask
+  > never written up.** Filed 2026-07-30. Reframed on the way: the ask is PEER SELECTIONS, not
+  > cursors — a pixel cursor is the wrong primitive for a node tree with no x/y, which is the same
+  > reason §4's nudge was declined. "Ana is in this block" is the fact that matters.
+  >
+  > **Deliberately filed as POLISH, not correctness.** The document is already safe without it —
+  > per-node last-write-wins, the append-only op log, and draft version history — and presence
+  > already answers the coarse question (who is here, on which page). What is missing is
+  > attribution: two authors on ONE page see each other's edits land with nothing on screen
+  > connecting them to a name.
 
 - [x] **25. Named layouts — a second (and third) header/footer design.** — _~~silicaui-ask~~ → shipped in silicaui 0.37.0 + persisted here · M_
 
