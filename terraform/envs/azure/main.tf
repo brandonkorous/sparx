@@ -216,9 +216,23 @@ resource "azurerm_kubernetes_cluster" "main" {
 
     vnet_subnet_id = azurerm_subnet.aks.id
 
-    # ~30 pods today (21 Deployments + CronJob pods + kube-system). 50 leaves
-    # headroom without inflating the subnet's IP reservation.
-    max_pods = 50
+    # Steady state is ~37 (22 Deployment pods incl. 2 cloudflared, Typesense,
+    # and ~14 kube-system). 50 looked like headroom and was not: a deploy SURGES.
+    # Eight app Deployments start a replacement before retiring the old pod, and
+    # while images are still pulling BOTH generations exist — which is how this
+    # cluster reached 51/50 and stayed there. Everything unscheduled then blocked,
+    # including the migration Job, which sat Pending for its entire 15-minute
+    # timeout and reported only "timed out waiting for the condition".
+    #
+    # Raising it costs NOTHING here. The note that used to sit on this line —
+    # about not inflating the subnet's IP reservation — is true for regular Azure
+    # CNI and false for the overlay mode configured below: pod IPs come from
+    # `pod_cidr` (10.244.0.0/16), not from snet-aks, so max_pods does not consume
+    # a single VNet address. The real ceiling is the node's own CPU and memory,
+    # and requests are what enforce that.
+    #
+    # 110 leaves room for the surge, for CronJob pods, and for one-off Jobs.
+    max_pods = 110
 
     upgrade_settings {
       # A single-node pool has nowhere to drain to, so a surge node is required

@@ -60,6 +60,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: email-worker }
   template:
@@ -109,6 +112,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: push-worker }
   template:
@@ -158,6 +164,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: markup-recompute-worker }
   template:
@@ -272,6 +281,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: commerce-indexer }
   template:
@@ -324,6 +336,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: channel-sync-worker }
   template:
@@ -373,6 +388,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: social-worker }
   template:
@@ -432,6 +450,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: legal-seed-worker }
   template:
@@ -481,6 +502,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: platform-crm-worker }
   template:
@@ -530,6 +554,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: domain-worker }
   template:
@@ -579,6 +606,9 @@ metadata:
 spec:
   replicas: 1
   revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
   selector:
     matchLabels: { app: dropship-worker }
   template:

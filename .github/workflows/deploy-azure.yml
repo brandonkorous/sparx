@@ -286,8 +286,7 @@ jobs:
                   - name: sql
                     configMap: { name: db-bootstrap-roles }
           YAML
-          kubectl wait --for=condition=complete job/db-roles -n "$NAMESPACE" --timeout=300s \
-            || { kubectl logs job/db-roles -n "$NAMESPACE" --tail=50; exit 1; }
+          ./.github/scripts/await-job.sh db-roles "$NAMESPACE" 300
 
       - name: Run migrations
         if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_migrations }}
@@ -321,8 +320,7 @@ jobs:
                         valueFrom:
                           secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
           YAML
-          kubectl wait --for=condition=complete job/db-migrate -n "$NAMESPACE" --timeout=900s \
-            || { kubectl logs job/db-migrate -n "$NAMESPACE" --tail=80; exit 1; }
+          ./.github/scripts/await-job.sh db-migrate "$NAMESPACE" 1200
 
       # ---------------------------------------------------------------------
       # Roll out. Pin every image to this SHA — never `latest`, so a rollback is
