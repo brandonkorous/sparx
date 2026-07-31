@@ -14,6 +14,7 @@
 
 import { describe, expect, it } from 'vitest';
 
+import type { BuilderLayout, BuilderPage } from '@sparx/db';
 import { BuilderOpTarget, SiteSyncInput, resolvePageFrame } from '@sparx/builder-schemas';
 
 import {
@@ -368,26 +369,32 @@ describe('framesToDelete — a layout is only removed when it is named', () => {
 // reads as "it never saved", not as a read bug.
 
 /** A `builder_layouts` row, at the width these functions actually touch. Same `as`-cast
- *  idiom as `row()` above: the real model carries thirty columns none of this reads. */
+ *  idiom as `row()` above — the real model carries thirty columns none of this reads —
+ *  but narrowed to the real type rather than `any`, so a field this test invents that the
+ *  model does not have is still a compile error. */
 function layoutRow(over: {
   id: string;
   name?: string;
   isActive?: boolean;
   silicaDraftTree?: unknown;
-}) {
+}): BuilderLayout {
   return {
     name: 'Layout',
     isActive: false,
     silicaDraftTree: DRAFT,
     ...over,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any;
+  } as unknown as BuilderLayout;
 }
 
 /** A page row, ditto — every case here needs at least one so the site is non-empty. */
-function pageRow(id = 'page-1') {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return { id, name: 'Home', slug: '/', silicaDraftTree: DRAFT, frameId: null } as any;
+function pageRow(id = 'page-1'): BuilderPage {
+  return {
+    id,
+    name: 'Home',
+    slug: '/',
+    silicaDraftTree: DRAFT,
+    frameId: null,
+  } as unknown as BuilderPage;
 }
 
 describe('rowsToStoredSite — a named layout survives the reload', () => {
