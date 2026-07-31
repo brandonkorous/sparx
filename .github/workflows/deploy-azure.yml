@@ -68,10 +68,59 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ inputs.sha || github.event.workflow_run.head_sha || github.sha }}
+          # History, not just the tip — "Resolve the images to deploy" below
+          # walks backwards looking for a commit that actually has images.
+          fetch-depth: 50
 
-      - name: Resolve the SHA being deployed
+      # ---------------------------------------------------------------------
+      # TWO different SHAs, and conflating them is a real failure.
+      #
+      #   manifest_sha — the commit whose k8s/ + terraform/ this run deploys.
+      #                  Always HEAD of whatever was checked out.
+      #   image_sha    — the newest ancestor of HEAD that has images in GHCR.
+      #
+      # They differ because the build workflow is PATH-FILTERED to apps/,
+      # services/, packages/ and the lockfiles. That is correct — a manifest or
+      # Terraform edit changes no image, and rebuilding 20 images (each
+      # installing its own workspace closure) to publish identical bytes is
+      # waste. The consequence is that an infra-only commit publishes NOTHING,
+      # so pinning to HEAD would roll out a tag that was never pushed and every
+      # Deployment would sit in ImagePullBackOff — for a commit that touched no
+      # application code at all.
+      #
+      # `docker buildx imagetools inspect` is the existence check: it reads the
+      # manifest from the registry without pulling any layers.
+      # ---------------------------------------------------------------------
+      - name: Resolve the images to deploy
         id: sha
-        run: echo "value=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+        run: |
+          MANIFEST_SHA=$(git rev-parse HEAD)
+          echo "manifest_sha=$MANIFEST_SHA" >> "$GITHUB_OUTPUT"
+
+          echo '${{ secrets.GITHUB_TOKEN }}' \
+            | docker login ghcr.io -u '${{ github.actor }}' --password-stdin
+
+          REPO='ghcr.io/${{ github.repository }}'
+          IMAGE_SHA=''
+          for sha in $(git rev-list -n 50 HEAD); do
+            if docker buildx imagetools inspect "$REPO/api-rest:$sha" >/dev/null 2>&1; then
+              IMAGE_SHA="$sha"
+              break
+            fi
+            echo "no images for $sha"
+          done
+
+          if [ -z "$IMAGE_SHA" ]; then
+            echo "::error::No commit in the last 50 has images in $REPO. Run the build workflow first."
+            exit 1
+          fi
+
+          echo "image_sha=$IMAGE_SHA" >> "$GITHUB_OUTPUT"
+          if [ "$IMAGE_SHA" = "$MANIFEST_SHA" ]; then
+            echo "Deploying $MANIFEST_SHA (manifests and images)."
+          else
+            echo "::notice::Manifests from $MANIFEST_SHA; images from $IMAGE_SHA (no source changed since)."
+          fi
 
       - uses: azure/login@v2
         with:
@@ -138,8 +187,16 @@ jobs:
       # hostnames by Host header — a dashboard-managed tunnel would mean
       # re-entering every one of them and keeping two sources of truth in sync.
       #
-      # The 404 rule is mandatory, not defensive: cloudflared refuses to start
-      # without a terminal catch-all. It is unreachable behind the rule above it.
+      # EXACTLY ONE RULE, and no trailing `http_status:404`. cloudflared requires
+      # the LAST rule to be a catch-all and refuses to start if any EARLIER rule
+      # is one; a hostname-less rule matches everything, so a 404 placed after it
+      # is unreachable and cloudflared rejects the whole config:
+      #     Rule #1 is matching the hostname '', but this will match every
+      #     hostname, meaning the rules which follow it will never be triggered.
+      # The Caddy rule already IS the required terminal catch-all. Adding the
+      # conventional 404 line below it does not make the config more defensive,
+      # it makes it invalid — and a tunnel that will not start means every
+      # hostname stays dark while the pods all look healthy.
       # ---------------------------------------------------------------------
       - name: Configure Cloudflare Tunnel
         env:
@@ -162,7 +219,6 @@ jobs:
           no-autoupdate: true
           ingress:
             - service: http://caddy.$NAMESPACE.svc.cluster.local:80
-            - service: http_status:404
           CFG
           kubectl create configmap cloudflared-config -n "$NAMESPACE"             --from-file=config.yaml=/tmp/cf-config.yaml             --dry-run=client -o yaml | kubectl apply -f -
           rm -f /tmp/cf-config.yaml
@@ -182,8 +238,17 @@ jobs:
       #
       # Idempotent, so it is safe on every deploy.
       # ---------------------------------------------------------------------
+      # `github.event_name != 'workflow_dispatch'` first, and NOT
+      # `inputs.run_migrations != false`. On a workflow_run there are no inputs,
+      # so `inputs.run_migrations` is null — and GitHub compares mismatched types
+      # by casting both to a number, where null and false are both 0. The
+      # expression that reads as "unless explicitly turned off" therefore
+      # evaluates FALSE on exactly the automatic path, and this step plus the
+      # migration below were silently skipped on the first real deploy. The pods
+      # rolled out fine and then crashlooped on `sparx_app` authentication,
+      # because the role the whole platform connects as had never been created.
       - name: Ensure database roles
-        if: ${{ inputs.run_migrations != false }}
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_migrations }}
         run: |
           kubectl create configmap db-bootstrap-roles -n "$NAMESPACE" \
             --from-file=azure-bootstrap.sql=packages/db/sql/azure-bootstrap.sql \
@@ -225,7 +290,7 @@ jobs:
             || { kubectl logs job/db-roles -n "$NAMESPACE" --tail=50; exit 1; }
 
       - name: Run migrations
-        if: ${{ inputs.run_migrations != false }}
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.run_migrations }}
         run: |
           kubectl delete job db-migrate -n "$NAMESPACE" --ignore-not-found
           kubectl apply -n "$NAMESPACE" -f - <<YAML
@@ -243,7 +308,9 @@ jobs:
                 imagePullSecrets: [{ name: ghcr }]
                 containers:
                   - name: migrate
-                    image: ghcr.io/${{ github.repository }}/db:${{ steps.sha.outputs.value }}
+                    # image_sha, not manifest_sha: the migration runner is an
+                    # IMAGE, so it has to be one that was actually published.
+                    image: ghcr.io/${{ github.repository }}/db:${{ steps.sha.outputs.image_sha }}
                     envFrom:
                       - configMapRef: { name: sparx-app-env }
                       - secretRef: { name: sparx-app-secrets }
@@ -263,30 +330,93 @@ jobs:
       # ---------------------------------------------------------------------
       - name: Pin images and apply
         run: |
-          SHA='${{ steps.sha.outputs.value }}'
+          SHA='${{ steps.sha.outputs.image_sha }}'
           REPO='ghcr.io/${{ github.repository }}'
-          cd k8s/azure
 
-          for svc in api-rest api-graphql api-mcp mcp-site workbench web site market \
-                     email-worker push-worker markup-recompute-worker media-worker \
-                     commerce-indexer channel-sync-worker social-worker \
-                     legal-seed-worker platform-crm-worker domain-worker dropship-worker; do
-            kubectl kustomize edit set image "$REPO/$svc=$REPO/$svc:$SHA" 2>/dev/null \
-              || kustomize edit set image "$REPO/$svc=$REPO/$svc:$SHA"
-          done
+          # Rewrite the placeholder tag in place rather than shelling out to
+          # `kustomize edit`. Two reasons, both learned the hard way:
+          #
+          #   1. `kustomize edit set image OLD=NEW:TAG` matches on the name as it
+          #      appears in the MANIFESTS, not the one it rewrites TO. This step
+          #      used to pass the ghcr name, which matched no existing entry, so
+          #      kustomize APPENDED a dead one and left the real mapping on
+          #      `newTag: latest`. Every "pinned" rollout shipped a mutable tag
+          #      and `kubectl rollout undo` had nothing to roll back to. It
+          #      failed silently because appending is a legitimate operation.
+          #   2. `kustomize` is not part of kubectl and is not guaranteed on the
+          #      runner. `kubectl kustomize` BUILDS but has no `edit`, so there
+          #      was no fallback — only an unpinned deploy that exits 0.
+          #
+          # Every entry in k8s/azure/kustomization.yaml carries `newTag: latest`
+          # as its placeholder, so one substitution covers all 19, and the guard
+          # below is what actually enforces the result.
+          sed -i "s|^\( *newTag: \)latest$|\1$SHA|" k8s/azure/kustomization.yaml
 
-          cd ../..
+          # Prove the pin landed before applying. A silent no-op here is
+          # invisible until someone wonders why a rollback did nothing.
+          #
+          # Scoped to OUR images. `caddy:2-alpine` and `cloudflare/cloudflared:
+          # latest` are upstream third-party tags that this overlay does not
+          # rewrite and should not — matching on a bare `:latest` would fail
+          # every deploy on cloudflared.
+          UNPINNED=$(kubectl kustomize k8s/azure \
+            | grep -E "^ *image: ($REPO/|sparx/)" \
+            | grep -vE ":[0-9a-f]{40}$" | sort -u || true)
+          if [ -n "$UNPINNED" ]; then
+            echo "::error::Unpinned sparx image survived the rewrite:"
+            echo "$UNPINNED"
+            exit 1
+          fi
+
           kubectl apply -k k8s/azure
 
       - name: Wait for rollout
         run: |
           # Deployments only — StatefulSets and Jobs have their own lifecycles.
-          # 2 vCPU means a cold start of 20 containers is minutes, not seconds,
-          # which is why the timeout is generous rather than optimistic.
-          kubectl rollout status deployment --all -n "$NAMESPACE" --timeout=15m
+          #
+          # One `rollout status` per Deployment, in PARALLEL. `deployment --all`
+          # is not a thing (`error: unknown flag: --all`), and looping serially
+          # would multiply the timeout by 21 in the worst case even though the
+          # rollouts themselves are concurrent. 2 vCPU means a cold start of 20
+          # containers is minutes, not seconds, so the timeout is generous.
+          mkdir -p /tmp/rollout
+          for d in $(kubectl get deploy -n "$NAMESPACE" -o name); do
+            name="${d#deployment.apps/}"
+            kubectl rollout status "$d" -n "$NAMESPACE" --timeout=15m \
+              > "/tmp/rollout/$name.log" 2>&1 &
+          done
+
+          # `wait -n` reaps whichever finishes first; the exit codes are
+          # collected rather than short-circuited so ONE stuck Deployment does
+          # not hide the state of the other twenty.
+          failed=0
+          for _ in $(kubectl get deploy -n "$NAMESPACE" -o name); do
+            wait -n || failed=1
+          done
+
+          for f in /tmp/rollout/*.log; do
+            printf '%-28s %s\n' "$(basename "$f" .log)" "$(tail -n1 "$f")"
+          done
+
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::One or more Deployments did not roll out."
+            kubectl get pods -n "$NAMESPACE" \
+              --field-selector=status.phase!=Running -o wide || true
+            kubectl get events -n "$NAMESPACE" \
+              --sort-by=.lastTimestamp | tail -30 || true
+            exit 1
+          fi
 
       - name: Report
         if: always()
         run: |
-          echo '### Deployed `${{ steps.sha.outputs.value }}`' >> "$GITHUB_STEP_SUMMARY"
+          {
+            echo '### Deployed'
+            echo ''
+            echo '| | commit |'
+            echo '| --- | --- |'
+            echo '| manifests | `${{ steps.sha.outputs.manifest_sha }}` |'
+            echo '| images | `${{ steps.sha.outputs.image_sha }}` |'
+            echo ''
+          } >> "$GITHUB_STEP_SUMMARY"
           kubectl get pods -n "$NAMESPACE" -o wide >> "$GITHUB_STEP_SUMMARY" 2>&1 || true

@@ -191,6 +191,126 @@ patches:
             imagePullSecrets:
               - name: ghcr
 
+  # --- Requests have to fit ONE 2-vCPU node -----------------------------------
+  # The base numbers are tuned for Autopilot, where every request is billed and
+  # the pool grows to meet them. Here there is one node with 1900m allocatable,
+  # and AKS's own kube-system takes ~610m of it (two metrics-server replicas at
+  # 156m, kube-proxy, two CoreDNS). That leaves roughly 1290m for the whole
+  # platform, and the base's 100m-per-app is most of it before a single CronJob
+  # pod asks for anything.
+  #
+  # `requests` is what the SCHEDULER reserves, not what a process uses. Small
+  # requests let all eight schedule and then grow into whatever they need; the
+  # memory LIMIT is what actually protects the node, by OOMKilling one leaking
+  # Next process instead of letting it take everything down. CPU limits are
+  # dropped — CPU is compressible, so a cap only throttles cold starts.
+  #
+  # Unlike the workers (no resources at all, BestEffort — see
+  # ../self-hosted/workers.yaml), the apps keep an explicit request so they are
+  # Burstable: under pressure the kubelet evicts a worker before it evicts
+  # something serving traffic.
+  #
+  # Per-app rather than one patch, because a strategic-merge patch on
+  # `containers` merges by container NAME.
+  - target: { kind: Deployment, name: api-graphql }
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-graphql
+      spec:
+        template:
+          spec:
+            containers:
+              - name: api-graphql
+                resources:
+                  requests: { cpu: '25m', memory: '96Mi' }
+                  limits: { memory: '768Mi' }
+  - target: { kind: Deployment, name: api-mcp }
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: api-mcp
+      spec:
+        template:
+          spec:
+            containers:
+              - name: api-mcp
+                resources:
+                  requests: { cpu: '25m', memory: '96Mi' }
+                  limits: { memory: '768Mi' }
+  - target: { kind: Deployment, name: mcp-site }
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: mcp-site
+      spec:
+        template:
+          spec:
+            containers:
+              - name: mcp-site
+                resources:
+                  requests: { cpu: '25m', memory: '96Mi' }
+                  limits: { memory: '512Mi' }
+  - target: { kind: Deployment, name: workbench }
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: workbench
+      spec:
+        template:
+          spec:
+            containers:
+              - name: workbench
+                resources:
+                  requests: { cpu: '25m', memory: '96Mi' }
+                  limits: { memory: '640Mi' }
+  - target: { kind: Deployment, name: web }
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: web
+      spec:
+        template:
+          spec:
+            containers:
+              - name: web
+                resources:
+                  requests: { cpu: '25m', memory: '96Mi' }
+                  limits: { memory: '640Mi' }
+  - target: { kind: Deployment, name: site }
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: site
+      spec:
+        template:
+          spec:
+            containers:
+              - name: site
+                resources:
+                  requests: { cpu: '25m', memory: '96Mi' }
+                  limits: { memory: '640Mi' }
+  - target: { kind: Deployment, name: market }
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: market
+      spec:
+        template:
+          spec:
+            containers:
+              - name: market
+                resources:
+                  requests: { cpu: '25m', memory: '96Mi' }
+                  limits: { memory: '640Mi' }
+
   # --- api-rest ---------------------------------------------------------------
   # Larger ceiling than its siblings: it loads a ~50-package workspace through
   # runtime tsx at boot, which is what made 512Mi crashloop on Autopilot and
@@ -232,3 +352,37 @@ patches:
               - name: media
                 persistentVolumeClaim:
                   claimName: sparx-media
+
+  # --- media-worker must land on api-rest's node ------------------------------
+  # Both mount the `sparx-media` PVC, which is a ReadWriteOnce Azure Disk — it
+  # attaches to exactly ONE node at a time. Sharing is deliberate (media-worker
+  # writes the variants api-rest streams; separate volumes would transcode fine
+  # and then 404 forever), and it works only while both pods are co-located.
+  #
+  # node_count is 1, so today that is automatic. It is not guaranteed: an AKS
+  # upgrade adds a surge node and a node-pool change rotates through a temporary
+  # one, and either can place these two on opposite nodes. The loser then sits in
+  # ContainerCreating with `Multi-Attach error for volume` — during an upgrade,
+  # with nothing pointing back at this file.
+  #
+  # `requiredDuringScheduling`, not preferred: a "preference" that silently
+  # yields is exactly the failure being prevented. Better Pending, with a
+  # scheduler message naming the affinity, than a hung mount.
+  - target:
+      kind: Deployment
+      name: media-worker
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: media-worker
+      spec:
+        template:
+          spec:
+            affinity:
+              podAffinity:
+                requiredDuringSchedulingIgnoredDuringExecution:
+                  - labelSelector:
+                      matchLabels:
+                        app: api-rest
+                    topologyKey: kubernetes.io/hostname

@@ -186,13 +186,33 @@ resource "azurerm_kubernetes_cluster" "main" {
     vm_size    = var.node_size
     node_count = 1
 
-    # Ephemeral OS disk: the OS lives on the VM's local 50 GiB temp disk instead
-    # of a billed managed disk. Free, and much faster for container image pulls,
-    # which is what a 20-image cold start is bottlenecked on. Requires the temp
-    # disk to be at least os_disk_size_gb — D2_v3's 50 GiB comfortably covers 30.
-    # A node reimage wipes it, which is fine: nothing stateful lives on the node.
+    # Ephemeral OS disk: the OS lives on the VM's own local NVMe instead of a
+    # billed managed disk. Free, and much faster for container image pulls, which
+    # is what a 20-image cold start is bottlenecked on. A node reimage wipes it,
+    # which is fine — nothing stateful lives on the node.
+    #
+    # SIZED TO THE SKU'S WHOLE LOCAL DISK, ON PURPOSE. D2ads_v7 exposes 110 GiB
+    # (`az vm list-skus --size Standard_D2ads_v7` → NvmeDiskSizeInMiB=112640),
+    # and because ephemeral placement consumes that disk rather than a billed
+    # one, 110 costs exactly what 30 did: nothing. Asking for less does not save
+    # money, it only leaves the rest unusable.
+    #
+    # 30 GiB is what this was, and it is why the first deploy failed. The three
+    # API images are ~820 MB each — they ship the whole pnpm workspace because
+    # api-rest boots through runtime tsx — and the 11 workers are built the same
+    # way. Twenty of those plus the system images overran the disk, the kubelet
+    # raised DiskPressure, and it tainted the only node
+    # `node.kubernetes.io/disk-pressure:NoSchedule`. Every pod not already
+    # placed then stopped scheduling with a message about a taint, which reads
+    # like an affinity bug and is really a full disk. Leave the headroom.
     os_disk_type    = "Ephemeral"
-    os_disk_size_gb = 30
+    os_disk_size_gb = 110
+
+    # Changing os_disk_size_gb (or vm_size) on the DEFAULT pool is ForceNew. Left
+    # to itself the provider would destroy and recreate the whole CLUSTER; with a
+    # rotation name it cycles the node pool in place instead, so the cluster
+    # identity, its kubeconfig and the CSI-provisioned media disk all survive.
+    temporary_name_for_rotation = "systemtmp"
 
     vnet_subnet_id = azurerm_subnet.aks.id
 
@@ -288,4 +308,30 @@ resource "azurerm_postgresql_flexible_server_database" "sparx" {
   lifecycle {
     prevent_destroy = true
   }
+}
+
+# Extensions must be ALLOW-LISTED before anything can create them. This is the
+# sharpest difference from Cloud SQL, where `CREATE EXTENSION` just worked and
+# the migrations were written against that.
+#
+# `azure.extensions` defaults to EMPTY on Flexible Server. Until a name appears
+# here, `CREATE EXTENSION pgcrypto` fails with "extension is not allow-listed",
+# and because it is the migration runner that fails, the symptom is a deploy
+# that has already created the roles and rolled out pods — not an obvious
+# infrastructure error.
+#
+# The two names are the ones the schema actually asks for; grep the migrations
+# before adding more:
+#     grep -rhoiE 'CREATE EXTENSION [^;]+' packages/db/prisma/migrations/
+#
+#   pgcrypto    — gen_random_uuid() and the digest/hmac helpers.
+#   btree_gist  — required by the EXCLUDE constraints that stop overlapping
+#                 bookings and price-list date ranges. A plain btree index
+#                 cannot back an EXCLUDE, so this is not optional.
+#
+# Dynamic (`isDynamicConfig: true`), so applying it does NOT restart the server.
+resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
+  name      = "azure.extensions"
+  server_id = azurerm_postgresql_flexible_server.main.id
+  value     = "PGCRYPTO,BTREE_GIST"
 }

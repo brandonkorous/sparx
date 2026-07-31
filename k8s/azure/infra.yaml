@@ -21,10 +21,19 @@
 # ---------------------------------------------------------------------------
 # Media — the local-disk replacement for the two GCS buckets.
 #
-# ReadWriteOnce is correct despite two consumers: RWO scopes a volume to a NODE,
-# not a pod, and this cluster is single-node. api-rest streams variants out of
-# this volume and media-worker writes them in; two different volumes would
-# transcode successfully and then 404 forever.
+# ReadWriteOnce with TWO consumers. RWO scopes a volume to a NODE, not a pod, so
+# api-rest (which streams variants out) and media-worker (which writes them in)
+# can share it — but only while they are on the SAME node. Two different volumes
+# would transcode successfully and then 404 forever, so sharing is required.
+#
+# "The cluster is single-node" is not a safe thing to rely on, which is why
+# media-worker carries a required podAffinity onto api-rest (see the patch in
+# kustomization.yaml). node_count is 1, but the cluster still reaches two nodes
+# transiently: an AKS upgrade adds a surge node (`max_surge = "1"`), and
+# changing the node pool rotates through a temporary one. If the two pods land
+# on opposite sides of that, the second gets `Multi-Attach error for volume` and
+# hangs in ContainerCreating — a failure that appears during an unrelated
+# upgrade, long after the change that made it possible.
 #
 # NOTE: this couples media durability to the disk. It survives pod restarts and
 # node reimages, but it is not replicated and has no snapshot schedule. Moving to

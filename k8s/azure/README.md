@@ -85,12 +85,28 @@ the difference that it must CREATE the roles as well as grant to them, since
 Azure has no equivalent of `gcloud sql users create`. It is idempotent and runs
 on every deploy.
 
+## The node has one disk, and 20 images have to fit on it
+
+`os_disk_size_gb = 110` in [terraform/envs/azure/main.tf](../../terraform/envs/azure/main.tf)
+is load-bearing, not generous. The three API images are **~820 MB each** — they
+ship the whole pnpm workspace because api-rest boots through runtime `tsx` — and
+the 11 workers are built the same way. The Next.js apps are small (76–121 MB,
+standalone output); the APIs and workers are not.
+
+It was 30 GB, and that is what broke the first deploy. Twenty images overran the
+disk, the kubelet raised `DiskPressure`, and it tainted the only node
+`node.kubernetes.io/disk-pressure:NoSchedule`. Every unplaced pod then failed to
+schedule with **"1 node(s) had untolerated taint(s)"** — which reads like an
+affinity or tolerations bug and is really a full disk. If pods stop scheduling
+for that reason, check `kubectl describe node` for `DiskPressure` before touching
+anything about affinity.
+
+The size is free: ephemeral OS placement consumes the VM's own NVMe (110 GiB on
+`Standard_D2ads_v7`), not a billed managed disk, so asking for 30 saved nothing
+and only left the rest unusable.
+
 ## Still outstanding
 
-- **The Cloudflare Tunnel is not repointed yet.** `cloudflared` will run but has
-  no credentials until the `cloudflared-credentials` secret and
-  `cloudflared-config` ConfigMap exist in this cluster. Until then reach the
-  cluster with `kubectl port-forward svc/caddy 8080:80`.
 - **Media durability.** The media PVC is a single unreplicated Azure Disk with no
   snapshot schedule. Blob Storage would need a third driver in `packages/media`
   (which has exactly two: GCS and local disk) — a deliberate later decision.

@@ -17,6 +17,13 @@
 # (services/*/src/index.ts `createServer`) that handle POST and have no GET
 # health route, so an httpGet probe would fail on a perfectly healthy worker.
 #
+# The `sparx/<name>:local` image names are placeholders that BOTH overlays
+# rewrite (k8s/local to itself, k8s/azure to GHCR). There is deliberately no
+# `imagePullPolicy` here: this file is shared, and `Never` — which is right for
+# a workstation reading Docker Desktop's own image store — makes every pod in a
+# real cluster fail ErrImageNeverPull with nothing to pull from. The workstation
+# case sets it in k8s/local/kustomization.yaml, where it belongs.
+#
 # NO `resources` BLOCK ANYWHERE IN THIS FILE — deliberate, on a 16GB host.
 #
 # `requests` are what the SCHEDULER reserves; the sum of every request on the
@@ -63,7 +70,6 @@ spec:
       containers:
         - name: email-worker
           image: sparx/email-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -113,7 +119,6 @@ spec:
       containers:
         - name: push-worker
           image: sparx/push-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -163,7 +168,6 @@ spec:
       containers:
         - name: markup-recompute-worker
           image: sparx/markup-recompute-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -222,7 +226,6 @@ spec:
       containers:
         - name: media-worker
           image: sparx/media-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -279,7 +282,6 @@ spec:
       containers:
         - name: commerce-indexer
           image: sparx/commerce-indexer:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -332,7 +334,6 @@ spec:
       containers:
         - name: channel-sync-worker
           image: sparx/channel-sync-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -382,7 +383,6 @@ spec:
       containers:
         - name: social-worker
           image: sparx/social-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -442,7 +442,6 @@ spec:
       containers:
         - name: legal-seed-worker
           image: sparx/legal-seed-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -492,7 +491,6 @@ spec:
       containers:
         - name: platform-crm-worker
           image: sparx/platform-crm-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -542,7 +540,6 @@ spec:
       containers:
         - name: domain-worker
           image: sparx/domain-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }
@@ -592,7 +589,6 @@ spec:
       containers:
         - name: dropship-worker
           image: sparx/dropship-worker:local
-          imagePullPolicy: Never
           ports: [{ name: http, containerPort: 8080 }]
           envFrom:
             - configMapRef: { name: sparx-app-env }

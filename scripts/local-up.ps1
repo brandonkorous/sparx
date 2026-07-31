@@ -128,17 +128,21 @@ if (Test-Path $TunnelCredentials) {
         "--from-file=credentials.json=$TunnelCredentials" `
         --dry-run=client -o yaml | kubectl apply -f - | Out-Null
 
-    # One catch-all ingress rule. Caddy already routes by Host header, so
-    # cloudflared stays a dumb pipe — see k8s/self-hosted/cloudflared.yaml.
-    # The 404 rule is required: cloudflared refuses to start without a final
-    # catch-all, and this one is unreachable behind the rule above it.
+    # One catch-all ingress rule, and ONLY one. Caddy already routes by Host
+    # header, so cloudflared stays a dumb pipe — see
+    # k8s/self-hosted/cloudflared.yaml.
+    #
+    # Do not append the conventional `- service: http_status:404`. cloudflared
+    # requires the LAST rule to be a catch-all and rejects any EARLIER one; a
+    # rule with no hostname matches everything, so a 404 after it is unreachable
+    # and the whole config is refused ("Rule #1 is matching the hostname ''...").
+    # The Caddy rule already is the terminal catch-all.
     $cfConfig = @"
 tunnel: $tunnelId
 credentials-file: /etc/cloudflared/creds/credentials.json
 no-autoupdate: true
 ingress:
   - service: http://caddy.$ns.svc.cluster.local:80
-  - service: http_status:404
 "@
     $tmp = Join-Path $env:TEMP 'cloudflared-config.yaml'
     Set-Content -Path $tmp -Value $cfConfig -NoNewline

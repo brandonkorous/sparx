@@ -129,9 +129,16 @@ the one place the local stack is genuinely weaker than GKE, and the thing to fix
 first if it becomes more than a dogfood deployment. Redis is already running and
 BullMQ is already a dependency.
 
-**2. Wildcard tenant sites.** `*.sparx.zone` was grey-cloud DNS-only. A tunnel
-only serves proxied hostnames, and Cloudflare does not proxy wildcard records on
-the free plan. Individual per-tenant CNAMEs work; a wildcard does not.
+**2. Wildcard tenant sites — NOT a gap. This entry was wrong.** `*.sparx.zone`
+was grey-cloud (DNS-only), and a tunnel serves only _proxied_ hostnames, so the
+record does have to change. The claim that followed — that Cloudflare will not
+proxy a wildcard on this plan — was asserted without testing it. It is false.
+A **proxied** `CNAME *.sparx.zone → <UUID>.cfargotunnel.com` is accepted, and
+tenant subdomains resolve automatically exactly as they did on GKE. Nothing has
+to be created per tenant, which matters because nothing in the platform creates
+Cloudflare DNS records: neither `packages/registrar` nor `domain-worker` touches
+the Cloudflare API, so a per-tenant record would have to be added by hand at
+signup. Set the wildcard once and leave it.
 
 **3. Tenant custom domains.** A customer pointing `theirdomain.com` at
 `customers.sparx.zone` cannot reach a tunnel without Cloudflare for SaaS custom

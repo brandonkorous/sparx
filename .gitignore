@@ -91,15 +91,23 @@ k8s/local/secrets.env
 k8s/local/tunnel-credentials.json
 
 # Terraform. Never mattered before — terraform/envs/prod uses a GCS backend, so
-# no state ever landed on disk. terraform/envs/azure uses a LOCAL backend, and
-# its state contains the generated Postgres admin password in plaintext. Local
-# state is also not something to version: it is a lock-managed database, not
-# source, and committing it is how two applies overwrite each other.
+# no state ever landed on disk. terraform/envs/azure now uses an azurerm backend,
+# but a local `terraform.tfstate` still appears from the pre-migration runs, and
+# state contains the generated Postgres admin password in plaintext. State is
+# also not something to version: it is a lock-managed database, not source, and
+# committing it is how two applies overwrite each other.
 **/.terraform/
 *.tfstate
 *.tfstate.*
 *.tfvars
 !*.tfvars.example
+# A saved plan is a binary snapshot of one moment's diff, and it embeds the same
+# secrets state does.
+tfplan
+*.tfplan
+# `terraform apply ... > apply.log` — Terraform writes the exit code nowhere else
+# when its output is piped, so these get kept around during a long apply.
+apply.log
 crash.log
 override.tf
 override_*.tf
