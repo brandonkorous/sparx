@@ -14,14 +14,13 @@ import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
-import { env } from '../../../env.js';
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
   warn: (obj, msg) => console.warn(msg ?? '', obj),
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathOrderId = z.object({ orderId: z.string().uuid() });

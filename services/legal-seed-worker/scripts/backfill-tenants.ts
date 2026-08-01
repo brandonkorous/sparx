@@ -22,7 +22,7 @@ const logger: PublisherLogger = {
 };
 
 async function main(): Promise<void> {
-  const publisher = createPublisher({ projectId: process.env.GCP_PROJECT_ID, logger });
+  const publisher = createPublisher({ logger });
   const tenants = await prisma.tenant.findMany({
     where: { status: 'active', id: { not: SENTINEL_TENANT } },
     select: { id: true, slug: true, name: true },

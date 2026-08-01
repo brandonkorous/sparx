@@ -455,7 +455,6 @@ async function publishMediaUploaded(
   byteSize: number
 ): Promise<void> {
   const publisher = createPublisher({
-    projectId: process.env.GCP_PROJECT_ID,
     logger: publishLogger,
   });
   await publishEvent(
@@ -470,7 +469,6 @@ async function publishMediaUploaded(
 
 async function publishMediaDeleted(ctx: MediaWriteContext, assetId: string): Promise<void> {
   const publisher = createPublisher({
-    projectId: process.env.GCP_PROJECT_ID,
     logger: publishLogger,
   });
   await publishEvent(

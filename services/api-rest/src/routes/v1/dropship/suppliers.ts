@@ -22,14 +22,13 @@ import { createAdapter, VENDOR_CATALOG } from '@sparx/dropship';
 import type { PricingRule, SupplierAdapter, SupplierType } from '@sparx/dropship';
 import { applyPricingRule } from '@sparx/dropship';
 import { requireDropshipModule, toDropshipContext } from '../../../lib/dropship-context.js';
-import { env } from '../../../env.js';
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
   warn: (obj, msg) => console.warn(msg ?? '', obj),
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 const PathId = z.object({ id: z.string().uuid() });
 const PathIdProduct = z.object({ id: z.string().uuid(), productId: z.string().uuid() });

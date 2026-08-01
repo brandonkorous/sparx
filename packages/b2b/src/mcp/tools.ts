@@ -34,7 +34,7 @@ const pubLogger: PublisherLogger = {
 };
 // api-mcp reads GCP_PROJECT_ID from its env; unset in dev → a stdout-logging stub
 // (the same dev parity the REST publisher + api-core stub give).
-const publisher = createPublisher({ projectId: process.env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 async function emit(ctx: B2bMcpCtx, events: PendingEvent[]): Promise<void> {
   for (const e of events) {

@@ -33,7 +33,6 @@ import {
 import { createPublisher, publishEvent } from '@sparx/events';
 import type { Logger } from 'pino';
 
-import { env } from './env.js';
 import { paramsFromMetadata } from './auth.js';
 import { notifyConnectionExpired } from './notify.js';
 
@@ -104,7 +103,7 @@ export async function markConnectionExpired(
   if (!flipped) return false;
 
   logger.warn({ connectionId, code, message }, 'social connection expired — reconnect needed');
-  const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger });
+  const publisher = createPublisher({ logger });
   await publishEvent(
     publisher,
     'social.connection.expired',

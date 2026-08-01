@@ -17,6 +17,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import pino from 'pino';
 import { env } from './env.js';
 import { processAsset } from './processor.js';
+import { startConsumer } from '@sparx/events';
 
 interface MediaUploadedEvent {
   type: 'media.uploaded';
@@ -190,3 +191,54 @@ try {
   logger.fatal({ err }, 'media-worker failed to start');
   process.exit(1);
 }
+
+// ─── Broker subscription ─────────────────────────────────────────────────────
+// Module scope, so the entrypoint above needs no restructuring. Resolves to
+// null unless EVENT_BROKER=nats, leaving the HTTP server as the only delivery
+// path for local dev and for a Pub/Sub push deployment.
+//
+// This is the half that makes delivery lossless: the HTTP path is
+// fire-and-forget from the publisher's side, so an event published while this
+// pod was restarting was simply gone.
+async function handleFromBroker(raw: string): Promise<void> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    logger.error({ err }, 'media-worker: broker message not valid JSON; acking');
+    return;
+  }
+
+  const event = parseEvent(parsed);
+  if (!event) {
+    // Off-schema is permanent — ack rather than burn the retry budget.
+    logger.warn({ raw: parsed }, 'media-worker: broker message did not match schema; acking');
+    return;
+  }
+
+  // processAsset records 'failed' onto the MediaAsset row itself and returns
+  // normally, so a genuine transcode failure ACKS rather than looping forever —
+  // manual re-enqueue is the recovery path, unchanged from the HTTP behaviour.
+  // Only an unexpected throw reaches startConsumer and triggers redelivery.
+  const result = await processAsset(event.data.assetId, event.tenantId, logger, {
+    cropsOnly: event.data.reason === 'recrop',
+  });
+  logger.info({ assetId: event.data.assetId, ...result }, 'message processed (broker)');
+}
+
+void startConsumer({
+  durable: 'media-worker',
+  events: ['media.uploaded'],
+  handle: handleFromBroker,
+  logger,
+})
+  .then((consumer) => {
+    if (!consumer) return;
+    const drain = (): void => void consumer.stop();
+    process.once('SIGTERM', drain);
+    process.once('SIGINT', drain);
+  })
+  .catch((err: unknown) => {
+    logger.fatal({ err }, 'media-worker: broker subscription failed');
+    process.exit(1);
+  });

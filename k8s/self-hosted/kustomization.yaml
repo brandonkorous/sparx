@@ -33,3 +33,7 @@ kind: Kustomization
 resources:
   # The 11 workers that ran on Cloud Run. Plain Deployments, no cloud coupling.
   - workers.yaml
+  # The event broker. Belongs in the shared base for the same reason the workers
+  # do: it is byte-identical on every provider, which is precisely why NATS was
+  # chosen over a managed queue.
+  - nats.yaml

@@ -16,7 +16,6 @@ import { prisma, withTenant } from '@sparx/db';
 import { buildSparxDnsRecords, RegistrarError } from '@sparx/registrar';
 import { getRegistrar } from './registrar.js';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
-import { env } from './env.js';
 
 // Module-level publisher — createPublisher caches via internal singleton so
 // subsequent calls are no-ops. Mirrors the pattern in api-rest/domains.ts.
@@ -25,7 +24,7 @@ const pubLogger: PublisherLogger = {
   warn: (obj, msg) => console.warn(msg ?? '', obj),
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 // Active registrar (GoDaddy today; swappable via env.REGISTRAR). Cached singleton.
 const registrar = getRegistrar();

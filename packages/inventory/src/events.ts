@@ -46,7 +46,6 @@ export interface InventoryEventInput<T = Record<string, unknown>> {
 
 export async function publishInventoryEvent<T>(input: InventoryEventInput<T>): Promise<void> {
   const publisher = createPublisher({
-    projectId: process.env.GCP_PROJECT_ID,
     logger,
   });
   await publishEvent(

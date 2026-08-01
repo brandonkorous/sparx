@@ -19,7 +19,6 @@ import { requireRole } from '@sparx/api-core/auth';
 import { notFound } from '@sparx/api-core/errors';
 import { publishEvent, createPublisher, type PublisherLogger } from '@sparx/events';
 import { requireInventoryModule, toInventoryContext } from '../../../lib/inventory-context.js';
-import { env } from '../../../env.js';
 
 type SourceRecord = Prisma.InventorySourceGetPayload<Record<string, never>>;
 
@@ -59,7 +58,7 @@ const pubLogger: PublisherLogger = {
   warn: (obj, msg) => console.warn(msg ?? '', obj),
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 const PushRow = z.object({
   sku: z.string().min(1).max(255),

@@ -148,7 +148,6 @@ export async function handleSyncStarted(
     });
 
     const publisher = createPublisher({
-      projectId: process.env.GCP_PROJECT_ID ?? '',
       logger: log,
     });
 
@@ -177,7 +176,6 @@ export async function handleSyncStarted(
       });
     });
     const publisher = createPublisher({
-      projectId: process.env.GCP_PROJECT_ID ?? '',
       logger: log,
     });
     await publishEvent(

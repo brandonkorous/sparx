@@ -1,13 +1,21 @@
-// Per-topic Pub/Sub publisher. Topic name == event type — subscribers only
-// receive events they care about, no fan-out filtering inside worker code.
+// The event publisher, and the four transports behind it.
 //
-// In dev (`GCP_PROJECT_ID` unset) the publisher logs to the supplied
-// logger and otherwise no-ops — useful for quick iteration without a
-// Pub/Sub emulator.
+// Topic/subject name == event type, on every transport — subscribers receive
+// only what they asked for, with no fan-out filtering inside worker code.
+//
+// WHICH transport is decided by `EVENT_BROKER` in ./transport.ts, NOT by
+// whether some cloud's project id happens to be set. That distinction is the
+// whole point: the old selector was `GCP_PROJECT_ID`, read directly in nine
+// domain packages, and a migration to Azure unset it and silently swapped
+// production onto a fire-and-forget HTTP path meant for local development.
+// Every publish still reported success. Read the header of ./transport.ts
+// before changing how a transport is chosen.
 
 import type { Topic } from '@google-cloud/pubsub';
 import { PubSub } from '@google-cloud/pubsub';
-import { AUTOMATION_FANIN_TOPIC, teeToFanIn } from './fan-in';
+import { AUTOMATION_FANIN_TOPIC, teeToFanIn, type FanInEnvelope } from './fan-in';
+import { resolveTransport } from './transport';
+import { NatsJetStreamPublisher } from './transports/nats';
 import type { EventType, SparxEvent } from './types';
 
 export interface PublisherLogger {
@@ -171,17 +179,57 @@ export interface CreatePublisherOptions {
 export function createPublisher({ projectId, logger }: CreatePublisherOptions): Publisher {
   if (cached) return cached;
 
-  if (projectId) {
-    const client = new PubSub({ projectId });
-    cached = new CloudPubSubPublisher(client);
-    logger.info({ projectId }, 'pubsub: Google Cloud publisher initialised (per-topic)');
-  } else {
-    // Dev: forward to local workers if configured, else log-and-no-op.
-    cached = localDispatchFromEnv(logger) ?? new LoggingPublisher(logger);
-    if (cached instanceof LoggingPublisher) {
-      logger.info({}, 'pubsub: projectId unset — using logging stub');
-    }
+  // `projectId` is DEPRECATED and deliberately no longer selects anything. It
+  // used to: passing it meant Pub/Sub and omitting it meant a fire-and-forget
+  // HTTP fallback, so nine domain packages each read `process.env.GCP_PROJECT_ID`
+  // to make that decision — and a cloud migration that unset it downgraded
+  // production to a dev transport without a single error. The transport is now
+  // resolved from `EVENT_BROKER` in ./transport.ts, which fails loudly instead.
+  //
+  // Still accepted so a caller passing it is not a type error mid-migration; it
+  // is only a fallback for `EVENT_BROKER_PROJECT` when pubsub is explicitly
+  // selected. Remove the parameter once no call site passes it.
+  const transport = resolveTransport(
+    projectId && !process.env.EVENT_BROKER_PROJECT
+      ? { ...process.env, EVENT_BROKER_PROJECT: projectId }
+      : process.env
+  );
+
+  switch (transport.kind) {
+    case 'nats':
+      cached = new NatsJetStreamPublisher(transport.url, transport.stream, logger);
+      logger.info(
+        { url: transport.url, stream: transport.stream },
+        'events: NATS JetStream transport'
+      );
+      break;
+
+    case 'pubsub':
+      cached = new CloudPubSubPublisher(new PubSub({ projectId: transport.projectId }));
+      logger.info(
+        { projectId: transport.projectId },
+        'events: Google Pub/Sub transport (per-topic)'
+      );
+      break;
+
+    case 'http':
+      // Reachable only outside production — resolveTransport refuses it under
+      // NODE_ENV=production, which is the guard that was missing.
+      cached = new LocalDispatchPublisher(transport.routes, logger);
+      logger.warn(
+        { routes: transport.routes.length },
+        'events: HTTP dev dispatch — NO queue, retry or dead-letter. Events published while a worker is down are lost.'
+      );
+      break;
+
+    case 'log':
+      cached = new LoggingPublisher(logger);
+      logger.info({}, 'events: logging stub — events are DISCARDED');
+      break;
   }
+
+  // The switch above is exhaustive over the Transport union, so `cached` is
+  // always assigned by the time control reaches here.
   return cached;
 }
 
@@ -213,6 +261,28 @@ export async function publishEvent<T>(
   } catch (err) {
     logger.error({ err, event }, 'pubsub: publish failed');
   }
+}
+
+/**
+ * Publish an envelope whose `type` is not (yet) in the canonical `EventType`
+ * union — the CRM bridge's `crm.*` topics and the builder bridge's `builder.*`.
+ *
+ * Exists so those bridges stop carrying their OWN Pub/Sub client. There were
+ * four copies of the publisher in this repo: here, in api-core, in
+ * packages/crm/pubsub-bridge and in packages/builder/pubsub-bridge. Each
+ * constructed `new PubSub({ projectId })` and each returned early when the
+ * project id was absent — so on Azure the CRM and builder bridges did not
+ * degrade, they published NOTHING, and the commerce-indexer never saw a single
+ * bridged event.
+ *
+ * The cast is safe and deliberate: every transport reads only `type`,
+ * `tenantId` and `data` off the envelope. Widening `SparxEvent['type']` to
+ * `string` instead would delete the compile-time checking that keeps ordinary
+ * `publishEvent` callers honest, which is worth far more than avoiding one cast
+ * in the two places that genuinely publish outside the union.
+ */
+export async function publishRaw(publisher: Publisher, envelope: FanInEnvelope): Promise<void> {
+  await publisher.publish(envelope as SparxEvent<unknown>);
 }
 
 /** Test hook — drop the cached publisher between suites. */

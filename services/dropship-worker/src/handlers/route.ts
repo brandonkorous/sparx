@@ -74,7 +74,6 @@ export async function handleOrderRoute(
   };
 
   const publisher = createPublisher({
-    projectId: process.env.GCP_PROJECT_ID ?? '',
     logger: log,
   });
 

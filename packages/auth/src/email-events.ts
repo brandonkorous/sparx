@@ -41,7 +41,6 @@ export interface PublishAuthEmailInput {
 
 export async function publishAuthEmail(input: PublishAuthEmailInput): Promise<void> {
   const publisher = createPublisher({
-    projectId: process.env.GCP_PROJECT_ID,
     logger,
   });
 

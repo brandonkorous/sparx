@@ -22,6 +22,7 @@ import { createServer, type IncomingMessage, type ServerResponse } from 'node:ht
 import pino from 'pino';
 import { getEmailProvider } from '@sparx/email';
 import { env } from './env.js';
+import { startConsumer } from '@sparx/events';
 import { handle, parseEvent } from './handler.js';
 
 const logger = pino({
@@ -140,12 +141,63 @@ async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<vo
   }
 }
 
-function main(): void {
+/**
+ * Broker path. Decodes the raw JetStream payload and runs the SAME `handle()`
+ * the HTTP push path above runs — one implementation of what an `email.send`
+ * DOES, two ways of delivering it to that implementation.
+ *
+ * Throwing is meaningful here: `startConsumer` nak-s the message so the broker
+ * redelivers it. That is the difference this whole change is about — under the
+ * fire-and-forget HTTP transport, a send that failed while the worker was
+ * rolling was simply lost, and the publisher reported success.
+ *
+ * A malformed or off-schema payload is NOT thrown on, for the same reason the
+ * HTTP path acks it with a 204: redelivering something that can never parse
+ * just burns the retry budget and then dead-letters. Only a transient failure
+ * — the provider being down, a timeout — deserves a retry.
+ */
+async function handleFromBroker(raw: string): Promise<void> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    logger.error({ err }, 'broker message not valid JSON; acking');
+    return;
+  }
+
+  const event = parseEvent(parsed);
+  if (!event) {
+    logger.warn({ raw: parsed }, 'broker message did not match email.send schema; acking');
+    return;
+  }
+
+  const outcome = await handle(event, logger);
+  logger.info(
+    {
+      template: 'kind' in event.data ? 'raw' : event.data.template,
+      outcome: outcome.status,
+      providerMessageId: outcome.messageId,
+    },
+    'message processed (broker)'
+  );
+}
+
+async function main(): Promise<void> {
   // Touch the provider at boot so a misconfig (e.g. SPARX_EMAIL_PROVIDER=
   // postal but no API key) crashes the instance immediately instead of
   // failing the first message at 3am.
   const provider = getEmailProvider();
   logger.info({ provider: provider.name }, 'email provider selected');
+
+  // Subscribe to the broker. Returns null when EVENT_BROKER is not `nats`, in
+  // which case the HTTP server below is the only delivery path — which is what
+  // local dev and a Pub/Sub push deployment both want.
+  const consumer = await startConsumer({
+    durable: 'email-worker',
+    events: ['email.send'],
+    handle: handleFromBroker,
+    logger,
+  });
 
   const server = createServer((req, res) => {
     void handlePush(req, res).catch((err: unknown) => {
@@ -163,6 +215,11 @@ function main(): void {
 
   function shutdown(signal: NodeJS.Signals): void {
     logger.info({ signal }, 'shutdown received; draining');
+    // Drain the broker subscription FIRST so in-flight handlers finish and
+    // their acks land before the process goes away. Without this a rolling
+    // restart leaves messages unacknowledged mid-send — they are redelivered
+    // rather than lost, but a redelivered `email.send` is a duplicate email.
+    void consumer?.stop();
     server.close(() => {
       logger.info('server closed; exiting');
       process.exit(0);
@@ -176,9 +233,11 @@ function main(): void {
   process.on('SIGINT', shutdown);
 }
 
-try {
-  main();
-} catch (err) {
+// main() is async now (it awaits the broker subscription), so a try/catch
+// around the call would only catch a SYNCHRONOUS throw and let a failed
+// broker connection become an unhandled rejection — a worker that logs
+// nothing and stays up consuming nothing.
+main().catch((err: unknown) => {
   logger.fatal({ err }, 'email-worker failed to start');
   process.exit(1);
-}
+});

@@ -1,4 +1,4 @@
-// CRM → Google Pub/Sub bridge.
+// CRM → event-broker bridge (transport-agnostic; see @sparx/events).
 //
 // The CRM emits two streams of events that until now stayed in-process:
 //
@@ -27,7 +27,7 @@
 // api-mcp). The dashboard transpiles `@sparx/crm` and writes customers via
 // api-rest, so it must never pull this in.
 
-import { PubSub, type Topic } from '@google-cloud/pubsub';
+import { createPublisher, publishRaw, resolveTransport, type Publisher } from '@sparx/events';
 
 import {
   getPublisher,
@@ -45,6 +45,11 @@ import {
 
 export interface BridgeLogger {
   info(obj: object, msg?: string): void;
+  // `warn` is required by @sparx/events' PublisherLogger, which this bridge now
+  // hands its logger to. Every caller already satisfies it (console, pino) — it
+  // was simply never declared, because the old bridge logged through its own
+  // Pub/Sub client and never crossed the package boundary.
+  warn(obj: object, msg?: string): void;
   error(obj: object, msg?: string): void;
 }
 
@@ -84,53 +89,52 @@ function universalTargetForCrm(
   return typeof recordId === 'string' ? { entityType: map.entityType, recordId } : null;
 }
 
-// docs/82 §3.3 automation fan-in. Mirrors @sparx/events' AUTOMATION_FANIN_TOPIC —
-// kept inline so `@sparx/crm/pubsub` stays free of an @sparx/events dependency (it
-// already owns a PubSub client). This is the known two-bus footgun (docs/82 §3.3):
-// the tee MUST sit where BOTH crm.* and platform order.* events pass, or crm.*
-// triggers silently never reach automations — so it's installed on both wrappers.
-const AUTOMATION_FANIN_TOPIC = 'automation.trigger';
+// The local `AUTOMATION_FANIN_TOPIC = 'automation.trigger'` that used to sit
+// here is GONE. It was a hand-copy of the constant in @sparx/events, justified
+// at the time by "this module already owns a PubSub client so it should not
+// depend on @sparx/events" — reasoning that only held while owning a second
+// client was acceptable. It is not: that client is what made this bridge
+// no-op on every non-GCP deployment.
+//
+// The two-bus footgun it guarded (docs/82 §3.3) is unchanged and still real —
+// the fan-in tee MUST sit where BOTH crm.* and platform order.* events pass, or
+// crm.* triggers never reach automations. It is now handled one layer down, by
+// the shared publisher, which tees every publish regardless of which bus it
+// came from. See TopicPublisher.fanIn below for why this file no longer does it.
 
-// One shared Pub/Sub client + topic cache across both bridges. Topics are
-// created in Terraform; the client only publishes.
+// Publishes through the SHARED transport in @sparx/events.
+//
+// This class used to own `new PubSub({ projectId })` and its own topic cache —
+// a third copy of the publisher (api-core held a second, packages/builder a
+// fourth). Worse than duplication: `installCrmPubSubBridge` returned early when
+// the project id was falsy, so on a non-GCP deployment the bridge did not
+// degrade, it published NOTHING. Every `crm.*` event and every teed `order.*`
+// stopped at the in-process bus, the commerce-indexer never saw a bridged
+// event, and the automation fan-in never fired for a CRM trigger.
+//
+// The name stays `TopicPublisher` because "topic" is still the right word — on
+// NATS the subject IS the event type, exactly as the Pub/Sub topic was.
 class TopicPublisher {
-  private readonly client: PubSub;
-  private readonly cache = new Map<string, Topic>();
+  constructor(private readonly inner: Publisher) {}
 
-  constructor(projectId: string) {
-    this.client = new PubSub({ projectId });
+  async publish(envelope: IndexerEnvelope, _attributes: Record<string, string>): Promise<void> {
+    // Attributes are dropped: they were duplicated metadata for Pub/Sub
+    // log/DLQ inspection, and every field in them (`type`, `tenantId`,
+    // `dedupeKey`) already rides inside the envelope the consumer parses. No
+    // subscriber ever read them off the message.
+    await publishRaw(this.inner, envelope);
   }
 
-  private topicFor(name: string): Topic {
-    let topic = this.cache.get(name);
-    if (!topic) {
-      topic = this.client.topic(name, {
-        batching: { maxMessages: 100, maxMilliseconds: 50 },
-      });
-      this.cache.set(name, topic);
-    }
-    return topic;
-  }
-
-  async publish(envelope: IndexerEnvelope, attributes: Record<string, string>): Promise<void> {
-    const data = Buffer.from(JSON.stringify(envelope));
-    await this.topicFor(envelope.type).publishMessage({ data, attributes });
-  }
-
-  /** Tee one event onto the automation fan-in topic (docs/82 §3.3). The original
-   *  type rides as a `type` attribute; `data.__automationDepth` (if a cascade
-   *  emitter stamped it) is forwarded for the engine's loop-guard, default 0. */
-  async fanIn(envelope: IndexerEnvelope): Promise<void> {
-    const depthRaw = envelope.data.__automationDepth;
-    const depth = typeof depthRaw === 'number' && Number.isFinite(depthRaw) ? depthRaw : 0;
-    await this.topicFor(AUTOMATION_FANIN_TOPIC).publishMessage({
-      data: Buffer.from(JSON.stringify(envelope)),
-      attributes: {
-        type: envelope.type,
-        tenantId: envelope.tenantId,
-        __automationDepth: String(depth),
-      },
-    });
+  /** Tee one event onto the automation fan-in (docs/82 §3.3).
+   *
+   *  A NO-OP now, deliberately: the shared publisher tees EVERY publish to the
+   *  fan-in itself, so doing it here as well would deliver each CRM event to the
+   *  automation engine twice — and the engine's loop-guard counts depth, not
+   *  duplicates, so it would not catch it. Kept as a method rather than deleted
+   *  so the two call sites below still read as "publish, then fan in", which is
+   *  the contract; the fan-in just happens one layer down. */
+  async fanIn(_envelope: IndexerEnvelope): Promise<void> {
+    // Intentionally empty — see above.
   }
 }
 
@@ -277,36 +281,49 @@ const PLATFORM_TEE_TOPICS: ReadonlySet<string> = new Set([
 let installed = false;
 
 export interface InstallOptions {
+  /** DEPRECATED and ignored. The transport is resolved from EVENT_BROKER. */
   projectId?: string;
   logger: BridgeLogger;
 }
 
 /**
- * Install the real Pub/Sub bridges for BOTH the CRM bus and the platform bus.
- * No-op when `projectId` is unset (dev parity with the api-core / events
- * stubs — local dev keeps the LoggingPublisher + in-memory bus). Idempotent.
+ * Install the broker bridges for BOTH the CRM bus and the platform bus.
+ * Idempotent.
+ *
+ * ALWAYS INSTALLS. It used to return early when `projectId` was falsy, which
+ * read as "dev parity with the stubs" and was true only while Google Pub/Sub was
+ * the sole way to deliver an event. On Azure that early return meant the bridge
+ * was permanently off: `crm.*` and teed `order.*` events reached the in-process
+ * bus and stopped there, so the commerce-indexer never re-projected a customer
+ * and no CRM event ever reached the automation fan-in. Silent, and invisible in
+ * any health check.
+ *
+ * There is nothing left to gate on. The underlying transport decides what
+ * happens to a publish — durable on `nats`/`pubsub`, a stdout line on `log` —
+ * and it makes that decision once, in @sparx/events, for every publisher in the
+ * platform.
  *
  * MUST run before `installCrmWebhookFanout()` so the fanout wraps the
- * Pub/Sub-backed inner publisher rather than the other way round — otherwise
- * a later `setPublisher(fanout)` would be wrapping the stub and we'd lose the
+ * broker-backed inner publisher rather than the other way round — otherwise a
+ * later `setPublisher(fanout)` would wrap the un-bridged publisher and lose the
  * tee. (The fanout reads `getPublisher()` and wraps whatever it finds.)
  */
-export function installCrmPubSubBridge({ projectId, logger }: InstallOptions): void {
+export function installCrmPubSubBridge({ logger }: InstallOptions): void {
   if (installed) return;
-  if (!projectId) {
-    logger.info({}, 'crm-pubsub: projectId unset — bridge disabled (dev stub)');
-    return;
-  }
-  const topics = new TopicPublisher(projectId);
 
-  // CRM bus: wrap the active publisher (LoggingPublisher in a fresh process).
+  const topics = new TopicPublisher(createPublisher({ logger }));
+
+  // CRM bus: wrap the active publisher.
   setPublisher(new CrmPubSubPublisher(topics, logger, getPublisher()));
 
-  // Platform bus: wrap the active bus so order.* tees to Pub/Sub.
+  // Platform bus: wrap the active bus so order.* tees to the broker.
   setPlatformBus(new PubSubTeePlatformBus(getPlatformBus(), topics, logger, PLATFORM_TEE_TOPICS));
 
   installed = true;
-  logger.info({ projectId }, 'crm-pubsub: bridges installed (crm.* + order.*)');
+  logger.info(
+    { transport: resolveTransport().kind },
+    'crm-pubsub: bridges installed (crm.* + order.*)'
+  );
 }
 
 /** Test hook — reset the install guard between suites. */

@@ -16,6 +16,7 @@ WORKDIR /app
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
+COPY packages/events ./packages/events
 COPY services/push-worker ./services/push-worker
 
 # Filtered install pulls only @sparx/push-worker + transitive workspace deps;

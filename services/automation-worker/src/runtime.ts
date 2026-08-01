@@ -61,7 +61,7 @@ function ensureEngineInstalled(logger: Logger): void {
 function makeDeps(logger: Logger): EngineDeps {
   ensureEngineInstalled(logger);
   // createPublisher caches internally — projectId unset ⇒ dev logging stub.
-  const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger });
+  const publisher = createPublisher({ logger });
   return { publisher, logger };
 }
 

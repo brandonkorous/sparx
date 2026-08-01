@@ -58,7 +58,7 @@ const pubLogger: PublisherLogger = {
   warn: (obj, msg) => console.warn(msg ?? '', obj),
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 // ─── Convenience fee per TLD (cents) ─────────────────────────────────────────
 // Added to the GoDaddy wholesale price when quoting to the tenant (docs/24 §6).

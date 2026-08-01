@@ -149,6 +149,23 @@ patches:
       spec:
         storageClassName: managed-csi
 
+  # Same for the broker's JetStream volume. k8s/self-hosted/nats.yaml omits the
+  # class so it stays portable; without this patch AKS binds it to the `default`
+  # class, which is Standard HDD — the wrong tier for a write-ahead log that
+  # every publish on the platform blocks on.
+  - target: { kind: StatefulSet, name: nats }
+    patch: |-
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: nats
+      spec:
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+            spec:
+              storageClassName: managed-csi
+
   # --- Same deletions as the local overlay, same reasons ----------------------
   - target:
       kind: HorizontalPodAutoscaler

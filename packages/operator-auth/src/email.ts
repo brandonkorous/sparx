@@ -33,7 +33,7 @@ export interface PublishOperatorEmailInput {
 }
 
 export async function publishOperatorEmail(input: PublishOperatorEmailInput): Promise<void> {
-  const publisher = createPublisher({ projectId: process.env.GCP_PROJECT_ID, logger });
+  const publisher = createPublisher({ logger });
   const payload: EmailSendPayload = {
     to: input.to,
     template: input.template,

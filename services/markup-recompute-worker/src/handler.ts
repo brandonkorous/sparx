@@ -13,7 +13,6 @@ import { withTenant } from '@sparx/db';
 import { createPublisher, publishEvent } from '@sparx/events';
 import type { Logger } from 'pino';
 
-import { env } from './env.js';
 import { recomputeBoundVariant } from './recompute.js';
 
 const VariantCostUpdatedEvent = z.object({
@@ -63,7 +62,7 @@ export async function handle(
     return { outcome: 'skipped', variantId: outcome.variantId, reason: outcome.reason };
   }
 
-  const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger });
+  const publisher = createPublisher({ logger });
 
   if (outcome.kind === 'applied') {
     await publishEvent(

@@ -17,14 +17,13 @@ import { requireRole } from '@sparx/api-core/auth';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
 import { requireB2bModule, toB2bContext } from '../../../lib/b2b-context.js';
 import { resolvePropertyId } from '../../../lib/property.js';
-import { env } from '../../../env.js';
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
   warn: (obj, msg) => console.warn(msg ?? '', obj),
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 async function emit(
   ctx: { tenantId: string; userId: string },

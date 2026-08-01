@@ -5,7 +5,6 @@
 // publishEvent never throws — a Pub/Sub hiccup must not fail the request.
 
 import { createPublisher, publishEvent, type EventType, type PublisherLogger } from '@sparx/events';
-import { env } from '../../env.js';
 
 const logger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
@@ -13,7 +12,7 @@ const logger: PublisherLogger = {
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
 
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger });
+const publisher = createPublisher({ logger });
 
 export async function publishPartnerEvent(
   type: EventType,

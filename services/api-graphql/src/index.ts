@@ -1,7 +1,7 @@
 // Production / dev entrypoint. Boots the Fastify factory and wires up
 // graceful shutdown. Tests import ./app.ts directly and skip listen().
 
-import { configurePubsub } from '@sparx/api-core/pubsub';
+import { resolveTransport } from '@sparx/events';
 import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
@@ -11,7 +11,11 @@ import { env } from './env.js';
 async function main(): Promise<void> {
   // Hand api-core its Pub/Sub config before any resolver can call publish().
   // Unset GCP_PROJECT_ID → stdout-logging stub.
-  configurePubsub({ gcpProjectId: env.GCP_PROJECT_ID });
+  // Resolve the event transport before anything can publish; throws under
+  // NODE_ENV=production when EVENT_BROKER is missing or non-durable, so a pod
+  // that cannot deliver events fails its rollout instead of dropping them
+  // silently the way the old `gcpProjectId`-unset stub did.
+  console.info('events: transport resolved —', resolveTransport().kind);
 
   // Bridge the CRM bus (crm.customer.*) + platform bus (order.*) to real
   // Pub/Sub. MUST run before installCrmWebhookFanout() (it wraps the active

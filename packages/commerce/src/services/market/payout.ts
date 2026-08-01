@@ -140,7 +140,7 @@ async function sendSettlementReport(
     },
   };
 
-  const publisher = createPublisher({ projectId: process.env.GCP_PROJECT_ID, logger: emailLogger });
+  const publisher = createPublisher({ logger: emailLogger });
   await publishEvent(publisher, 'email.send', ctx.tenantId, null, payload, emailLogger);
 }
 

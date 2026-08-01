@@ -1,0 +1,117 @@
+# NATS JetStream — the event broker.
+#
+# In the shared base, not an overlay, because it is identical everywhere. That
+# is the whole reason it was chosen over a managed queue: one StatefulSet runs
+# the same on GKE, AKS, EKS and a laptop, so moving cloud provider is a
+# Terraform change and not an events-layer rewrite. Google Pub/Sub is still
+# available behind the same interface (EVENT_BROKER=pubsub) for a GCP
+# deployment that wants it — it is now A choice rather than THE implementation.
+#
+# WHAT THIS REPLACES. There was no broker in the Azure deployment at all. With
+# `GCP_PROJECT_ID` unset, the publisher fell through to a fire-and-forget HTTP
+# path written for local development: `fetch()` to each worker, not awaited,
+# failures logged at warn and dropped. No queue, no retry, no acknowledgement,
+# no dead-letter. An event published while a worker was rolling was simply gone,
+# and every publish reported success. See packages/events/src/transport.ts.
+#
+# STORAGE. File-backed, so the stream survives a pod restart — an in-memory
+# stream would reproduce the exact failure this exists to fix, just with more
+# machinery. `storageClassName` is deliberately omitted so the claim binds to
+# the cluster's default class, which every provider ships; k8s/azure pins
+# `managed-csi` explicitly.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nats-config
+  namespace: sparx-prod
+data:
+  nats.conf: |
+    # Client + monitoring ports. 8222 backs the health probes below; it exposes
+    # no publish/subscribe surface, only status.
+    port: 4222
+    http: 8222
+
+    jetstream {
+      store_dir: "/data"
+      # Bounded so a runaway producer fills the stream rather than the node's
+      # disk — the volume is 8Gi and the limits sit under it on purpose.
+      max_memory_store: 256MB
+      max_file_store: 6GB
+    }
+
+    # Single server, so no routes/cluster block. Adding a second replica means
+    # adding one here AND raising the stream's replica count; a StatefulSet
+    # scaled without both is N independent servers, not a cluster.
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nats
+  namespace: sparx-prod
+  labels: { app: nats, tier: data }
+spec:
+  type: ClusterIP
+  ports:
+    - { name: client, port: 4222, targetPort: 4222 }
+    - { name: monitor, port: 8222, targetPort: 8222 }
+  selector: { app: nats }
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nats
+  namespace: sparx-prod
+  labels: { app: nats, tier: data }
+spec:
+  serviceName: nats
+  replicas: 1
+  selector:
+    matchLabels: { app: nats }
+  template:
+    metadata:
+      labels: { app: nats, tier: data }
+    spec:
+      enableServiceLinks: false
+      # Publishers block on an unreachable broker, so a slow drain is better
+      # than a fast one: give in-flight publishes time to land.
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: nats
+          image: nats:2.10-alpine
+          args: ['--config', '/etc/nats/nats.conf']
+          ports:
+            - { name: client, containerPort: 4222 }
+            - { name: monitor, containerPort: 8222 }
+          volumeMounts:
+            - { name: config, mountPath: /etc/nats, readOnly: true }
+            - { name: data, mountPath: /data }
+          # A real request, like Typesense and unlike the workers: every write
+          # path in the platform publishes through this, so evicting it to make
+          # room for a worker is exactly backwards.
+          resources:
+            requests: { cpu: '50m', memory: '128Mi' }
+            limits: { memory: '512Mi' }
+          # /healthz reports JetStream readiness, not just "the process is up" —
+          # which is the distinction that matters, since a server whose stream
+          # is unavailable accepts connections and then rejects every publish.
+          readinessProbe:
+            httpGet: { path: /healthz, port: 8222 }
+            periodSeconds: 5
+            failureThreshold: 12
+          livenessProbe:
+            httpGet: { path: /healthz, port: 8222 }
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            failureThreshold: 5
+      volumes:
+        - name: config
+          configMap: { name: nats-config }
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: [ReadWriteOnce]
+        resources:
+          requests:
+            storage: 8Gi

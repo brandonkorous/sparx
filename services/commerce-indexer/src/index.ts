@@ -14,6 +14,7 @@ import { ensureSchemas, ensureSynonyms } from '@sparx/search';
 
 import { env } from './env.js';
 import { handleEvent, type CommerceEventEnvelope } from './handler.js';
+import { startConsumer } from '@sparx/events';
 
 interface PubSubPushEnvelope {
   message: {
@@ -184,3 +185,63 @@ main().catch((err: unknown) => {
   logger.fatal({ err }, 'commerce-indexer failed to start');
   process.exit(1);
 });
+
+// ─── Broker subscription ─────────────────────────────────────────────────────
+// Module scope, so the entrypoint above needs no restructuring. Resolves to
+// null unless EVENT_BROKER=nats, leaving the HTTP server as the only delivery
+// path for local dev and for a Pub/Sub push deployment.
+//
+// This is the half that makes delivery lossless: the HTTP path is
+// fire-and-forget from the publisher's side, so an event published while this
+// pod was restarting was simply gone.
+async function handleFromBroker(raw: string): Promise<void> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    logger.error({ err }, 'commerce-indexer: broker message not valid JSON; acking');
+    return;
+  }
+
+  const event = parseEvent(parsed);
+  if (!event) {
+    // Off-schema is permanent — ack rather than burn the retry budget.
+    logger.warn({ raw: parsed }, 'commerce-indexer: broker message did not match schema; acking');
+    return;
+  }
+
+  // Throwing nak-s the message for redelivery. handleEvent already treats a
+  // Typesense outage as retryable, which is exactly what a broker is for.
+  await handleEvent(event, logger);
+}
+
+void startConsumer({
+  durable: 'commerce-indexer',
+  events: [
+    'product.created',
+    'product.updated',
+    'product.deleted',
+    'variant.created',
+    'variant.updated',
+    'variant.deleted',
+    'inventory.adjusted',
+    'order.cancelled',
+    'order.fulfilled',
+    'order.delivered',
+    'order.refunded',
+    'search.reindex.requested',
+    'search.entity.changed',
+  ],
+  handle: handleFromBroker,
+  logger,
+})
+  .then((consumer) => {
+    if (!consumer) return;
+    const drain = (): void => void consumer.stop();
+    process.once('SIGTERM', drain);
+    process.once('SIGINT', drain);
+  })
+  .catch((err: unknown) => {
+    logger.fatal({ err }, 'commerce-indexer: broker subscription failed');
+    process.exit(1);
+  });

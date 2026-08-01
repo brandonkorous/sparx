@@ -1,6 +1,6 @@
 // Entry point. Boots the Fastify app and listens.
 
-import { configurePubsub } from '@sparx/api-core/pubsub';
+import { resolveTransport } from '@sparx/events';
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
 import { registerCommerceConsumers } from '@sparx/commerce/consumers';
@@ -23,7 +23,11 @@ async function main(): Promise<void> {
   // api-core gap so ALL three paths reach real Pub/Sub. It also enables api-core's
   // webhook-enqueue for these MCP writes — matching api-rest — and the rows drain on
   // api-rest's shared webhook-delivery loop. Unset GCP_PROJECT_ID → stdout stub (dev).
-  configurePubsub({ gcpProjectId: env.GCP_PROJECT_ID });
+  // Resolve the event transport before anything can publish; throws under
+  // NODE_ENV=production when EVENT_BROKER is missing or non-durable, so a pod
+  // that cannot deliver events fails its rollout instead of dropping them
+  // silently the way the old `gcpProjectId`-unset stub did.
+  console.info('events: transport resolved —', resolveTransport().kind);
   // Bridge CRM customer writes made via MCP tools to real Pub/Sub so they
   // reach the search index. MUST run before installCrmWebhookFanout() (it
   // wraps the active publisher). No-op when GCP_PROJECT_ID is unset.

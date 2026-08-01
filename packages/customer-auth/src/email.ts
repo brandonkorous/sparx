@@ -28,7 +28,7 @@ export async function publishCustomerAuthEmail(
   input: PublishCustomerAuthEmailInput
 ): Promise<void> {
   const tenantId = tenantStore.getTenantIdOrThrow();
-  const publisher = createPublisher({ projectId: process.env.GCP_PROJECT_ID, logger });
+  const publisher = createPublisher({ logger });
   const payload: EmailSendPayload = {
     to: input.to,
     template: input.template,

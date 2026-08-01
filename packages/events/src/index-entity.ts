@@ -40,7 +40,7 @@ export interface IndexEntityInput {
 // and the event still flushes on the event loop. This is the event-driven
 // convention: publish-and-forget the side effect, never inline-await it.
 export function indexEntity(input: IndexEntityInput): Promise<void> {
-  const publisher = createPublisher({ projectId: process.env.GCP_PROJECT_ID, logger });
+  const publisher = createPublisher({ logger });
   const payload: SearchEntityChangedPayload = {
     entityType: input.entityType,
     recordId: input.recordId,

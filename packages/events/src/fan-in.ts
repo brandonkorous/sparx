@@ -42,19 +42,38 @@ function readDepth(data: unknown): number {
   return 0;
 }
 
-/**
- * Tee one already-published event onto the automation fan-in. Best-effort by
- * contract: the CALLER swallows errors so a fan-in hiccup never fails the
- * per-type publish that preceded it (events are published post-commit — the
- * originating mutation is already durable).
- */
-export async function teeToFanIn(fanInTopic: Topic, event: FanInEnvelope): Promise<void> {
-  await fanInTopic.publishMessage({
-    data: Buffer.from(JSON.stringify(event)),
+/** A fan-in message, in the shape every transport can carry: an envelope plus
+ *  the string attributes the automation engine routes on. Split out from
+ *  `teeToFanIn` because that function takes a Pub/Sub `Topic` and so could only
+ *  ever serve one broker — the fan-in CONTENT is transport-agnostic and the
+ *  NATS adapter needs exactly this without a Google type in sight. */
+export interface FanInMessage {
+  envelope: FanInEnvelope;
+  attributes: Record<string, string>;
+}
+
+/** Build the fan-in message for an already-published event. Pure. */
+export function buildFanIn(event: FanInEnvelope): FanInMessage {
+  return {
+    envelope: event,
     attributes: {
       type: event.type,
       tenantId: event.tenantId,
       __automationDepth: String(readDepth(event.data)),
     },
+  };
+}
+
+/**
+ * Tee one already-published event onto the automation fan-in, over Pub/Sub.
+ * Best-effort by contract: the CALLER swallows errors so a fan-in hiccup never
+ * fails the per-type publish that preceded it (events are published post-commit
+ * — the originating mutation is already durable).
+ */
+export async function teeToFanIn(fanInTopic: Topic, event: FanInEnvelope): Promise<void> {
+  const { envelope, attributes } = buildFanIn(event);
+  await fanInTopic.publishMessage({
+    data: Buffer.from(JSON.stringify(envelope)),
+    attributes,
   });
 }

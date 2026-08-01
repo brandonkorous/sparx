@@ -40,7 +40,7 @@ resource "cloudflare_record" "sparx_works_root" {
   zone_id         = data.cloudflare_zone.sparx_works[0].id
   name            = "@"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -63,7 +63,7 @@ resource "cloudflare_record" "sparx_works_app" {
   zone_id         = data.cloudflare_zone.sparx_works[0].id
   name            = "app"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -75,7 +75,7 @@ resource "cloudflare_record" "sparx_works_workbench" {
   zone_id         = data.cloudflare_zone.sparx_works[0].id
   name            = "workbench"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -87,7 +87,7 @@ resource "cloudflare_record" "sparx_works_api" {
   zone_id         = data.cloudflare_zone.sparx_works[0].id
   name            = "api"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -98,7 +98,7 @@ resource "cloudflare_record" "sparx_works_mcp" {
   zone_id         = data.cloudflare_zone.sparx_works[0].id
   name            = "mcp"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -109,7 +109,7 @@ resource "cloudflare_record" "sparx_works_graphql" {
   zone_id         = data.cloudflare_zone.sparx_works[0].id
   name            = "graphql"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -130,7 +130,7 @@ resource "cloudflare_record" "sparx_works_media" {
   zone_id         = data.cloudflare_zone.sparx_works[0].id
   name            = "media"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -153,7 +153,7 @@ resource "cloudflare_record" "sparx_works_media_direct" {
   zone_id         = data.cloudflare_zone.sparx_works[0].id
   name            = "media-direct"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = false
   allow_overwrite = true
@@ -235,7 +235,7 @@ resource "cloudflare_record" "sparx_zone_root" {
   zone_id         = data.cloudflare_zone.sparx_zone[0].id
   name            = "@"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -249,7 +249,7 @@ resource "cloudflare_record" "sparx_zone_wildcard" {
   zone_id         = data.cloudflare_zone.sparx_zone[0].id
   name            = "*"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = false
   allow_overwrite = true
@@ -262,7 +262,7 @@ resource "cloudflare_record" "sparx_zone_customers" {
   zone_id         = data.cloudflare_zone.sparx_zone[0].id
   name            = "customers"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = false
   allow_overwrite = true
@@ -277,7 +277,7 @@ resource "cloudflare_record" "sparx_zone_mcp" {
   zone_id         = data.cloudflare_zone.sparx_zone[0].id
   name            = "mcp"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = false
   allow_overwrite = true
@@ -301,7 +301,7 @@ resource "cloudflare_record" "sparx_email_root" {
   zone_id         = data.cloudflare_zone.sparx_email[0].id
   name            = "@"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -315,7 +315,7 @@ resource "cloudflare_record" "sparx_email_postal_admin" {
   zone_id         = data.cloudflare_zone.sparx_email[0].id
   name            = "postal"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -334,7 +334,7 @@ resource "cloudflare_record" "sparx_email_mail_a" {
   zone_id         = data.cloudflare_zone.sparx_email[0].id
   name            = "mail"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = false
   allow_overwrite = true
@@ -483,7 +483,7 @@ resource "cloudflare_record" "marketing_root" {
   zone_id         = data.cloudflare_zone.marketing[each.value].id
   name            = "@"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true
@@ -526,7 +526,7 @@ resource "cloudflare_record" "wize_works_admin" {
   zone_id         = data.cloudflare_zone.wize_works[0].id
   name            = "admin"
   type            = "A"
-  content         = google_compute_address.ingress.address
+  content         = var.ingress_ip
   ttl             = 1
   proxied         = true
   allow_overwrite = true

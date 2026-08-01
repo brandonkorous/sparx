@@ -38,7 +38,6 @@ import type {
 } from '@sparx/operator';
 
 import { CNAME_TARGET, isSubdomainHost, verifyCname, verifyTxtToken } from '../../lib/domain.js';
-import { env } from '../../env.js';
 import { authorizeOperator, badRequest, notFound, operatorIdOf } from './operator-internal.js';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -59,7 +58,7 @@ const pubLogger: PublisherLogger = {
   warn: (obj, msg) => console.warn(msg ?? '', obj),
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 // ── Derivations ───────────────────────────────────────────────────────────────
 

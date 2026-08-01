@@ -19,14 +19,13 @@ import type { FeedRow } from '@sparx/inventory';
 import { publishEvent, createPublisher, type PublisherLogger } from '@sparx/events';
 import { parseCsvInventory } from '../csv.js';
 import { fetchApiRows } from '../adapters/http-api.js';
-import { env } from '../env.js';
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
   warn: (obj, msg) => console.warn(msg ?? '', obj),
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 export interface SyncStartedPayload {
   tenantId: string;

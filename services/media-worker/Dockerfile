@@ -22,6 +22,7 @@ WORKDIR /app
 COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
 COPY tsconfig.base.json ./
 COPY packages/db ./packages/db
+COPY packages/events ./packages/events
 COPY services/media-worker ./services/media-worker
 
 # Filtered install pulls in only @sparx/media-worker + transitive workspace

@@ -21,14 +21,13 @@
 import { z } from 'zod';
 import crypto from 'node:crypto';
 import { createPublisher, publishEvent, type PublisherLogger } from '@sparx/events';
-import { env } from './env.js';
 
 const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
   warn: (obj, msg) => console.warn(msg ?? '', obj),
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+const publisher = createPublisher({ logger: pubLogger });
 
 interface Ctx {
   tenantId: string;

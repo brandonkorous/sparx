@@ -1,5 +1,4 @@
 import { createPublisher, type PublisherLogger } from '@sparx/events';
-import { env } from './env.js';
 
 export const pubLogger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
@@ -7,4 +6,4 @@ export const pubLogger: PublisherLogger = {
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
 
-export const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger: pubLogger });
+export const publisher = createPublisher({ logger: pubLogger });

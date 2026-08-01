@@ -27,7 +27,6 @@ import { getSocialSettings } from '@sparx/social/service';
 import { createPublisher, publishEvent } from '@sparx/events';
 import type { Logger } from 'pino';
 
-import { env } from './env.js';
 import { resolveSocialAuth } from './auth.js';
 import { markConnectionExpired } from './health.js';
 import { notifyPostFailure } from './notify.js';
@@ -384,7 +383,7 @@ export async function drainPost(
 
   const status = await recomputePostStatus(tenantId, postId);
 
-  const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger });
+  const publisher = createPublisher({ logger });
   if (status === 'failed') {
     await publishEvent(publisher, 'social.post.failed', tenantId, null, { postId }, logger);
   } else if (status === 'published' || status === 'partially_published') {

@@ -33,6 +33,7 @@
     "@sparx/commerce-schemas": "workspace:*",
     "@sparx/crm-schemas": "workspace:*",
     "@sparx/db": "workspace:*",
+    "@sparx/events": "workspace:*",
     "@sparx/modules": "workspace:*",
     "zod": "^4.4.3"
   },

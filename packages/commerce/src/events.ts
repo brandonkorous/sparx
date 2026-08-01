@@ -99,7 +99,6 @@ export interface CommerceEventInput<T = Record<string, unknown>> {
  */
 export async function publishCommerceEvent<T>(input: CommerceEventInput<T>): Promise<void> {
   const publisher = createPublisher({
-    projectId: process.env.GCP_PROJECT_ID,
     logger,
   });
   await publishEvent(

@@ -32,6 +32,7 @@
     "@google-cloud/pubsub": "^5.3.0",
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/db": "workspace:*",
+    "@sparx/events": "workspace:*",
     "@sparx/silica-catalog": "workspace:*",
     "@sparx/surface-compile": "workspace:*",
     "@wizeworks/silicaui-html": "catalog:",

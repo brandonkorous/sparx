@@ -1,4 +1,4 @@
-// Builder → Google Pub/Sub bridge (docs/127 §6).
+// Builder → event-broker bridge (docs/127 §6; transport-agnostic, see @sparx/events).
 //
 // `publishBuilderEvent` has always emitted `builder.page.published` /
 // `builder.layout.published` / `builder.layout.activated` / `builder.email.published`,
@@ -20,12 +20,22 @@
 // `@google-cloud/pubsub` gRPC dependency only loads in the backend services that
 // install it — apps/dashboard transpiles `@sparx/builder` and must never pull it in.
 
-import { PubSub, type Topic } from '@google-cloud/pubsub';
+import {
+  createPublisher,
+  publishRaw,
+  resolveTransport,
+  type Publisher as EventPublisher,
+} from '@sparx/events';
 
 import { getPublisher, setPublisher, type BuilderEvent, type Publisher } from './events';
 
 export interface BridgeLogger {
   info(obj: object, msg?: string): void;
+  // `warn` is required by @sparx/events' PublisherLogger, which this bridge now
+  // hands its logger to. Every caller already satisfies it (console, pino) — it
+  // was simply never declared, because the old bridge logged through its own
+  // Pub/Sub client and never crossed the package boundary.
+  warn(obj: object, msg?: string): void;
   error(obj: object, msg?: string): void;
 }
 
@@ -40,30 +50,23 @@ interface EventEnvelope {
   data: Record<string, unknown>;
 }
 
+// Publishes through the SHARED transport in @sparx/events.
+//
+// This owned `new PubSub({ projectId })` — the FOURTH copy of the publisher in
+// the repo (packages/events, packages/api-core, packages/crm being the others).
+// And like the CRM bridge, `installBuilderPubSubBridge` returned early when the
+// project id was falsy, so on a non-GCP deployment no `builder.*` event was
+// published at all. cache-revalidation-worker therefore had nothing to map to
+// the `builder` scope and never purged anything — which is why apps/site still
+// reads builder + silica with `cache: 'no-store'` (docs/127 §6). That workaround
+// exists because of this bug.
 class TopicPublisher {
-  private readonly client: PubSub;
-  private readonly cache = new Map<string, Topic>();
+  constructor(private readonly inner: EventPublisher) {}
 
-  constructor(projectId: string) {
-    this.client = new PubSub({ projectId });
-  }
-
-  private topicFor(name: string): Topic {
-    let topic = this.cache.get(name);
-    if (!topic) {
-      topic = this.client.topic(name, {
-        batching: { maxMessages: 100, maxMilliseconds: 50 },
-      });
-      this.cache.set(name, topic);
-    }
-    return topic;
-  }
-
-  async publish(envelope: EventEnvelope, attributes: Record<string, string>): Promise<void> {
-    await this.topicFor(envelope.type).publishMessage({
-      data: Buffer.from(JSON.stringify(envelope)),
-      attributes,
-    });
+  async publish(envelope: EventEnvelope, _attributes: Record<string, string>): Promise<void> {
+    // Attributes dropped: they duplicated `type`/`tenantId`, both of which the
+    // consumer already reads out of the envelope body.
+    await publishRaw(this.inner, envelope);
   }
 }
 
@@ -107,24 +110,35 @@ class BuilderPubSubPublisher implements Publisher {
 let installed = false;
 
 export interface InstallOptions {
+  /** DEPRECATED and ignored. The transport is resolved from EVENT_BROKER. */
   projectId?: string;
   logger: BridgeLogger;
 }
 
 /**
- * Install the Pub/Sub bridge for builder events. No-op when `projectId` is unset
- * (dev parity with the api-core / events stubs — local dev keeps the
- * LoggingPublisher). Idempotent.
+ * Install the broker bridge for builder events. Idempotent.
+ *
+ * ALWAYS INSTALLS. The old `if (!projectId) return` read as dev parity with the
+ * stubs, but it meant the bridge was permanently disabled on any non-GCP
+ * deployment — builder.* events went to the in-process publisher and stopped,
+ * with no cache purge ever reaching the storefront. There is nothing to gate on
+ * now: the transport in @sparx/events decides what a publish does, once, for
+ * every publisher in the platform.
  */
-export function installBuilderPubSubBridge({ projectId, logger }: InstallOptions): void {
+export function installBuilderPubSubBridge({ logger }: InstallOptions): void {
   if (installed) return;
-  if (!projectId) {
-    logger.info({}, 'builder-pubsub: projectId unset — bridge disabled (dev stub)');
-    return;
-  }
-  setPublisher(new BuilderPubSubPublisher(new TopicPublisher(projectId), logger, getPublisher()));
+  setPublisher(
+    new BuilderPubSubPublisher(
+      new TopicPublisher(createPublisher({ logger })),
+      logger,
+      getPublisher()
+    )
+  );
   installed = true;
-  logger.info({ projectId }, 'builder-pubsub: bridge installed (builder.*)');
+  logger.info(
+    { transport: resolveTransport().kind },
+    'builder-pubsub: bridge installed (builder.*)'
+  );
 }
 
 /** Test hook — reset the install guard between suites. */

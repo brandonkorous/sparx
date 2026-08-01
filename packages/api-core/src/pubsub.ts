@@ -1,127 +1,43 @@
-// Typed event publisher.
+// Event publishing for the API services, plus the internal webhook fan-out that
+// rides alongside it.
 //
-// One Pub/Sub topic per `EventType`. Topic name == event type
-// (`order.created`, `media.uploaded`, ...) so subscribers only receive the
-// events they care about — no fan-out filtering inside worker code, no
-// wasted message deliveries, and per-topic IAM + DLQs are possible.
+// THIS FILE USED TO CONTAIN A SECOND PUBLISHER. `CloudPubSubPublisher`,
+// `LoggingPublisher`, the topic cache, the fan-in tee and the "which transport"
+// decision were all duplicated here, byte-for-byte, from
+// packages/events/src/publisher.ts — two implementations of one behaviour, each
+// with its own env var (`gcpProjectId` here, `GCP_PROJECT_ID` there) selecting
+// between a real broker and a stub. Fixing the silent-event-loss bug in one of
+// them would have left the other still doing it.
 //
-// In dev (`gcpProjectId` not configured) the publisher logs the event to
-// the Fastify logger and otherwise no-ops — useful for quick iteration
-// without standing up a Pub/Sub emulator.
-//
-// Service-agnostic: each consuming API service calls `configurePubsub`
-// once at boot with its env config; route handlers then call `publish` as
-// before.
+// The transport now lives in @sparx/events and is chosen by `EVENT_BROKER`, in
+// exactly one place. What remains here is the thing that is genuinely
+// api-core's: publishing an event AND enqueuing its webhook deliveries as one
+// operation.
 
-import type { Topic } from '@google-cloud/pubsub';
-import { PubSub } from '@google-cloud/pubsub';
 import type { FastifyBaseLogger } from 'fastify';
-import {
-  AUTOMATION_FANIN_TOPIC,
-  teeToFanIn,
-  localDispatchFromEnv,
-  type EventType,
-} from '@sparx/events';
+import { createPublisher, type EventType, type Publisher, type SparxEvent } from '@sparx/events';
 import { withTenant } from '@sparx/db';
 import { enqueueWebhookDeliveries } from './webhook-delivery.js';
 
 // The canonical event registry lives in @sparx/events (docs/82 §3.1 — one source
 // of truth; the two unions had drifted). api-core re-exports it so existing
-// `@sparx/api-core/pubsub` importers are unchanged. Type-only ⇒ no runtime dep,
-// and every service that COPYs api-core already COPYs @sparx/events.
-export type { EventType };
+// `@sparx/api-core/pubsub` importers are unchanged.
+export type { EventType, SparxEvent, Publisher };
 
-export interface SparxEvent<T = unknown> {
-  type: EventType;
-  tenantId: string;
-  actorId: string | null;
-  occurredAt: string; // ISO timestamp
-  data: T;
-}
-
-interface Publisher {
-  publish<T>(event: SparxEvent<T>): Promise<void>;
-}
-
-class CloudPubSubPublisher implements Publisher {
-  private readonly client: PubSub;
-  private readonly topicCache = new Map<string, Topic>();
-
-  constructor(client: PubSub) {
-    this.client = client;
-  }
-
-  private topicFor(type: string): Topic {
-    let topic = this.topicCache.get(type);
-    if (!topic) {
-      topic = this.client.topic(type, {
-        batching: { maxMessages: 100, maxMilliseconds: 50 },
-      });
-      this.topicCache.set(type, topic);
-    }
-    return topic;
-  }
-
-  async publish<T>(event: SparxEvent<T>): Promise<void> {
-    const data = Buffer.from(JSON.stringify(event));
-    await this.topicFor(event.type).publishMessage({
-      data,
-      // `type` attribute kept for parity with logs/dead-letter inspection
-      // even though each subscriber only sees its own topic.
-      attributes: { type: event.type, tenantId: event.tenantId },
-    });
-    // Tee to the automation fan-in (docs/82 §3.3) after the per-type publish.
-    // Best-effort — a fan-in failure must not surface as a publish failure.
-    try {
-      await teeToFanIn(this.topicFor(AUTOMATION_FANIN_TOPIC), event);
-    } catch {
-      // swallow — fan-in is additive; one missed automation trigger is recoverable
-    }
-  }
-}
-
-class LoggingPublisher implements Publisher {
-  constructor(private readonly logger: FastifyBaseLogger) {}
-  publish<T>(event: SparxEvent<T>): Promise<void> {
-    this.logger.info({ event }, '[pubsub:stub] would publish');
-    return Promise.resolve();
-  }
-}
-
-export interface PubsubConfig {
-  // When set we use Google Cloud Pub/Sub; otherwise we fall back to a
-  // stdout-logging stub. Each service reads this from its own env.ts.
-  gcpProjectId?: string;
-}
-
-let config: PubsubConfig = {};
-let publisher: Publisher | null = null;
-
-export function configurePubsub(next: PubsubConfig): void {
-  config = next;
-  publisher = null;
-}
-
+/**
+ * The process-wide publisher.
+ *
+ * No `configurePubsub` any more, and nothing to call at boot. That function
+ * existed to hand this module a GCP project id, which was both the credential
+ * AND the switch deciding whether events went anywhere at all — so a service
+ * that forgot the call, or a deployment that dropped the variable, got a
+ * silently discarding publisher and no indication of it. `@sparx/events` reads
+ * `EVENT_BROKER` itself and throws in production when it is missing.
+ *
+ * Caching lives in `createPublisher`, so repeated calls are free.
+ */
 export function getPublisher(logger: FastifyBaseLogger): Publisher {
-  if (publisher) return publisher;
-
-  if (config.gcpProjectId) {
-    const client = new PubSub({ projectId: config.gcpProjectId });
-    publisher = new CloudPubSubPublisher(client);
-    logger.info(
-      { project: config.gcpProjectId },
-      'pubsub: Google Cloud publisher initialised (per-topic, one topic per EventType)'
-    );
-  } else {
-    // Dev: forward to local workers if SPARX_DEV_WORKER_ROUTES is set, else
-    // stdout-log. localDispatchFromEnv returns a Publisher with the same
-    // structural shape as this module's local interface.
-    publisher = localDispatchFromEnv(logger) ?? new LoggingPublisher(logger);
-    if (publisher instanceof LoggingPublisher) {
-      logger.info('pubsub: gcpProjectId unset — using stdout-logging stub');
-    }
-  }
-  return publisher;
+  return createPublisher({ logger });
 }
 
 export async function publish<T extends Record<string, unknown>>(
@@ -148,14 +64,18 @@ export async function publish<T extends Record<string, unknown>>(
       await enqueueWebhookDeliveries(tx, tenantId, type, data);
     });
   } catch (err) {
-    logger.error({ err, event }, 'pubsub: webhook enqueue failed');
+    logger.error({ err, event }, 'events: webhook enqueue failed');
   }
 
-  // 2. External Pub/Sub fan-out: one topic per EventType.
+  // 2. Broker fan-out: one topic/subject per EventType.
   try {
     await getPublisher(logger).publish(event);
   } catch (err) {
-    // Never fail a mutation because Pub/Sub is down — log and continue.
-    logger.error({ err, event }, 'pubsub: publish failed');
+    // Never fail a mutation because the broker is down — the originating
+    // transaction has already committed, so throwing here would report a
+    // failure for work that actually succeeded. On a durable transport
+    // (nats/pubsub) this is a genuine delivery failure worth alerting on,
+    // which is why it is logged at error rather than swallowed.
+    logger.error({ err, event }, 'events: publish failed');
   }
 }

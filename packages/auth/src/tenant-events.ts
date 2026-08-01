@@ -7,6 +7,7 @@
 import {
   createPublisher,
   publishEvent,
+  resolveTransport,
   type PublisherLogger,
   type TenantCreatedPayload,
 } from '@sparx/events';
@@ -26,20 +27,27 @@ export interface PublishTenantCreatedInput {
 }
 
 export async function publishTenantCreated(input: PublishTenantCreatedInput): Promise<void> {
-  const projectId = process.env.GCP_PROJECT_ID;
-
-  // Dev (no `GCP_PROJECT_ID`) doesn't run the standalone legal-seed-worker, so the
-  // `tenant.created` publish below no-ops — seed the starter legal pages + footer
-  // placements in-process instead, sharing the worker's exact idempotent seeder
-  // (docs/104 §4.3). Prod keeps the async worker path untouched. Swallowed: legal
-  // seeding must never fail an otherwise-successful sign-up (same ethos as below).
+  // When the configured transport DISCARDS events, nothing will ever consume
+  // the `tenant.created` published below — so seed the starter legal pages +
+  // footer placements in-process instead, sharing the worker's exact idempotent
+  // seeder (docs/104 §4.3). Swallowed: legal seeding must never fail an
+  // otherwise-successful sign-up (same ethos as below).
   //
-  // The platform-CRM mirror (docs/140) deliberately does NOT get an in-process
-  // twin here: it reaches the real worker in dev through SPARX_DEV_WORKER_ROUTES
-  // (the publisher's local-dispatch path), which exercises the same HTTP entry
-  // Pub/Sub pushes to. Importing it here would drag the whole CRM service layer
-  // into every app that can sign a tenant up.
-  if (!projectId) {
+  // The predicate is the TRANSPORT, not a cloud's project id. This used to read
+  // `if (!process.env.GCP_PROJECT_ID)`, which conflated "no Google project" with
+  // "no worker will receive this" — a coincidence that held only while GCP was
+  // the only way to deliver an event. On Azure it silently became false while
+  // the worker was in fact unreachable, so neither path ran the seeder.
+  //
+  // `log` is the only transport that drops events on the floor. `http`
+  // dev-dispatch DOES reach legal-seed-worker (it is in SPARX_DEV_WORKER_ROUTES)
+  // and exercises the same HTTP entrypoint a real broker pushes to, so it
+  // correctly takes the async path.
+  //
+  // The platform-CRM mirror (docs/140) deliberately gets no in-process twin:
+  // importing it here would drag the whole CRM service layer into every app
+  // that can sign a tenant up.
+  if (resolveTransport().kind === 'log') {
     try {
       await seedLegalPages(input.tenantId, logger);
     } catch (err) {
@@ -47,7 +55,7 @@ export async function publishTenantCreated(input: PublishTenantCreatedInput): Pr
     }
   }
 
-  const publisher = createPublisher({ projectId, logger });
+  const publisher = createPublisher({ logger });
   const payload: TenantCreatedPayload = { slug: input.slug, name: input.name };
   await publishEvent(publisher, 'tenant.created', input.tenantId, input.actorId, payload, logger);
 }

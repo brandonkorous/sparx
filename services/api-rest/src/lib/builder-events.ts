@@ -18,7 +18,6 @@
 // the revalidate window clears.
 
 import { createPublisher, publishEvent, type EventType, type PublisherLogger } from '@sparx/events';
-import { env } from '../env.js';
 
 const logger: PublisherLogger = {
   info: (obj, msg) => console.info(msg ?? '', obj),
@@ -26,7 +25,7 @@ const logger: PublisherLogger = {
   error: (obj, msg) => console.error(msg ?? '', obj),
 };
 
-const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger });
+const publisher = createPublisher({ logger });
 
 /** What a builder publish/rollback carries. The worker only needs the tenant (it
  *  purges by slug), so the rest is for anything downstream that wants to know WHICH

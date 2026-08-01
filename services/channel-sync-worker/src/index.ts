@@ -8,6 +8,7 @@ import pino from 'pino';
 import { registerBuiltinChannels } from '@sparx/channels/adapters';
 import { env } from './env.js';
 import { handle, parseEvent } from './handler.js';
+import { startConsumer } from '@sparx/events';
 
 const logger = pino({
   level: env.LOG_LEVEL,
@@ -140,3 +141,74 @@ process.on('SIGTERM', () => {
   });
   setTimeout(() => process.exit(1), 25_000).unref();
 });
+
+// ─── Broker subscription ─────────────────────────────────────────────────────
+// Registered at module scope so this stays one self-contained block and the
+// entrypoint above needs no restructuring. Resolves to null unless
+// EVENT_BROKER=nats, in which case the HTTP server remains the only delivery
+// path — which is what local dev and a Pub/Sub push deployment both want.
+//
+// This is the half that makes delivery lossless. The HTTP path it sits beside
+// is fire-and-forget from the publisher's side: an event published while this
+// pod was restarting was simply gone. JetStream holds the message until
+// `handle()` returns, and a throw nak-s it for redelivery.
+async function handleFromBroker(raw: string): Promise<void> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    logger.error({ err }, 'channel-sync-worker: broker message not valid JSON; acking');
+    return;
+  }
+
+  // This worker's `parseEvent` takes the Pub/Sub PUSH MESSAGE (base64 `data`),
+  // not the decoded event — unlike its siblings, which parse the payload
+  // directly. Re-wrap rather than duplicate its validation here: the checks it
+  // performs (`type` and `tenantId` present) are the contract, and a second
+  // copy would drift from it.
+  const event = parseEvent({
+    data: Buffer.from(JSON.stringify(parsed)).toString('base64'),
+    messageId: 'broker',
+    publishTime: new Date().toISOString(),
+  });
+  if (!event) {
+    // Off-schema is permanent, so ack it. Redelivering something that can never
+    // parse only burns the retry budget before dead-lettering it anyway.
+    logger.warn(
+      { raw: parsed },
+      'channel-sync-worker: broker message did not match schema; acking'
+    );
+    return;
+  }
+
+  // Throwing here is deliberate: startConsumer nak-s so the broker redelivers.
+  await handle(event, logger);
+}
+
+void startConsumer({
+  durable: 'channel-sync-worker',
+  events: [
+    'product.created',
+    'product.updated',
+    'product.deleted',
+    'inventory.adjusted',
+    'order.fulfilled',
+  ],
+  handle: handleFromBroker,
+  logger,
+})
+  .then((consumer) => {
+    if (!consumer) return;
+    // Drain on shutdown so in-flight handlers finish and their acks land. An
+    // unacknowledged message is redelivered rather than lost, but a redelivered
+    // side effect is a duplicate one.
+    const drain = (): void => void consumer.stop();
+    process.once('SIGTERM', drain);
+    process.once('SIGINT', drain);
+  })
+  .catch((err: unknown) => {
+    // A worker that cannot subscribe must not stay up looking healthy while
+    // consuming nothing — that is the failure this whole change removes.
+    logger.fatal({ err }, 'channel-sync-worker: broker subscription failed');
+    process.exit(1);
+  });

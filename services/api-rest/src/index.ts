@@ -1,7 +1,7 @@
 // Production / dev entrypoint. Boots the Fastify factory and wires up
 // graceful shutdown. Tests import ./app.ts directly and skip listen().
 
-import { configurePubsub } from '@sparx/api-core/pubsub';
+import { resolveTransport } from '@sparx/events';
 import { startWebhookDeliveryLoop } from '@sparx/api-core/webhook-delivery';
 import { installCrmWebhookFanout, preconnectWebhookFanout, registerCrmConsumers } from '@sparx/crm';
 import { installCrmPubSubBridge } from '@sparx/crm/pubsub';
@@ -31,9 +31,17 @@ import { attachChatWebsocket } from './websocket/index.js';
 import { attachBuilderWebsocket } from './websocket/builder-index.js';
 
 async function main(): Promise<void> {
-  // Hand api-core its Pub/Sub config before any route handler can call
-  // publish(). Unset GCP_PROJECT_ID → stdout-logging stub.
-  configurePubsub({ gcpProjectId: env.GCP_PROJECT_ID });
+  // Resolve the event transport BEFORE anything can publish. This throws on a
+  // missing or unusable `EVENT_BROKER` under NODE_ENV=production, so a pod that
+  // cannot deliver events fails its rollout instead of serving traffic while
+  // dropping them.
+  //
+  // It replaced `configurePubsub({ gcpProjectId: env.GCP_PROJECT_ID })`, which
+  // did the opposite: an unset project id was read as "use the stub", so the
+  // GCP→Azure migration quietly turned every publish into a no-op that reported
+  // success. Nothing here needs a cloud's project id any more — @sparx/events
+  // owns that, and only the pubsub adapter ever sees it.
+  console.info('events: transport resolved —', resolveTransport().kind);
 
   // Bridge the CRM bus (crm.customer.*) + platform bus (order.*) to real
   // Pub/Sub so the commerce-indexer can keep search live. MUST run before

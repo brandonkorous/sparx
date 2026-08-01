@@ -83,7 +83,7 @@ export async function notifyPostFailure(
 
     const succeeded = post.targets.filter((t) => t.status === 'published').map((t) => t.targetName);
 
-    const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger });
+    const publisher = createPublisher({ logger });
     await publishEvent(
       publisher,
       'email.send',
@@ -156,7 +156,7 @@ export async function notifyConnectionExpired(
           );
 
     const descriptor = getSocialDescriptor(connection.platform as SocialPlatform);
-    const publisher = createPublisher({ projectId: env.GCP_PROJECT_ID, logger });
+    const publisher = createPublisher({ logger });
     await publishEvent(
       publisher,
       'email.send',
