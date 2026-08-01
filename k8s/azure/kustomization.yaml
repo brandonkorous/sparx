@@ -178,18 +178,20 @@ patches:
   # class so it stays portable; without this patch AKS binds it to the `default`
   # class, which is Standard HDD — the wrong tier for a write-ahead log that
   # every publish on the platform blocks on.
+  #
+  # A JSON6902 patch, NOT a strategic merge, and that distinction is load-bearing.
+  # `volumeClaimTemplates` carries no `patchMergeKey` in the StatefulSet Go type,
+  # so it is an ATOMIC list: a strategic-merge patch naming only storageClassName
+  # REPLACES the entire template rather than merging into it, and the base's
+  # accessModes + resources.requests.storage vanish. The API server then rejects
+  # the StatefulSet with "at least 1 access mode is required" — at apply time, in
+  # the middle of a rollout, since `kustomize build` renders the broken manifest
+  # perfectly happily. Addressing the field by path leaves the rest untouched.
   - target: { kind: StatefulSet, name: nats }
     patch: |-
-      apiVersion: apps/v1
-      kind: StatefulSet
-      metadata:
-        name: nats
-      spec:
-        volumeClaimTemplates:
-          - metadata:
-              name: data
-            spec:
-              storageClassName: managed-csi
+      - op: add
+        path: /spec/volumeClaimTemplates/0/spec/storageClassName
+        value: managed-csi
 
   # --- Same deletions as the local overlay, same reasons ----------------------
   - target:
