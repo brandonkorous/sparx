@@ -166,9 +166,15 @@ variable "cloudflare_api_token" {
     Cloudflare API token. Needs Zone:DNS:Edit on the platform zones, plus
     Zone:SSL and Certificates:Edit if this env ever issues an Origin CA cert.
     Never committed — pass via TF_VAR_cloudflare_api_token.
+
+    The default is a PLACEHOLDER, not a secret and not a working token. The
+    Cloudflare provider validates a credential at plan time even when
+    cloudflare_enabled counts every DNS resource to zero, and both "" and null
+    fail that check, and so does a short string — the regex pins the 40-character
+    shape of a real token. See providers.tf.
   EOT
   type        = string
-  default     = ""
+  default     = "0000000000000000000000000000000000000000" # 40 chars: the provider enforces LENGTH, not just charset
   sensitive   = true
 }
 

@@ -103,7 +103,13 @@ k8s/local/tunnel-credentials.json
 !*.tfvars.example
 # A saved plan is a binary snapshot of one moment's diff, and it embeds the same
 # secrets state does.
+#
+# All three patterns are needed. `tfplan` matches only that exact name and
+# `*.tfplan` only that suffix, so the natural habit of naming a plan after what
+# it does — `tfplan.ingress`, `tfplan.dns` — slipped through both and left a
+# file containing the Postgres admin password sitting untracked but committable.
 tfplan
+tfplan.*
 *.tfplan
 # `terraform apply ... > apply.log` — Terraform writes the exit code nowhere else
 # when its output is piped, so these get kept around during a long apply.

@@ -245,72 +245,6 @@ jobs:
             --docker-password='${{ secrets.GITHUB_TOKEN }}' \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      # ---------------------------------------------------------------------
-      # Retire the Cloudflare Tunnel, if this cluster still carries one.
-      #
-      # The tunnel used to be how the platform was reachable. It is not an
-      # ingress: it has no inbound path, so Caddy could never complete an ACME
-      # challenge behind it, and every hostname depended instead on Cloudflare's
-      # single Universal SSL wildcard — which matches exactly one label and
-      # therefore left `<property>.<tenant>.sparx.zone` returning a handshake
-      # failure. Ingress is now a `Service type=LoadBalancer` (k8s/ingress), the
-      # one primitive GKE, AKS and EKS all implement identically.
-      #
-      # Idempotent and safe on a cluster that never had a tunnel. cloudflared
-      # itself is no longer part of this overlay, so `kubectl apply -k` will not
-      # recreate it — but a Deployment that was applied by an EARLIER revision of
-      # this workflow is not pruned by apply, so it has to be deleted explicitly
-      # or it keeps holding open a second, now-unrouted path to Caddy.
-      # ---------------------------------------------------------------------
-      - name: Retire the Cloudflare Tunnel
-        run: |
-          for r in deployment/cloudflared configmap/cloudflared-config secret/cloudflared-credentials; do
-            kubectl delete "$r" -n "$NAMESPACE" --ignore-not-found
-          done
-
-      # ---------------------------------------------------------------------
-      # The ingress address.
-      #
-      # AKS provisions a Standard Load Balancer and a public IP from the
-      # `type: LoadBalancer` Service in k8s/ingress and writes the address back
-      # into `status`. Nothing in this repo asks Azure for either — that is the
-      # portability contract, and it is why the same manifests work unchanged on
-      # GKE and EKS.
-      #
-      # Surfaced in the job summary because DNS has to point at it: every
-      # sparx.works / sparx.zone record moves from the tunnel to this address,
-      # and `*.sparx.zone` plus media-direct go DNS-only (grey-cloud) so
-      # on-demand ACME challenges reach the origin.
-      # ---------------------------------------------------------------------
-      - name: Report the ingress address
-        run: |
-          # The Service may not exist yet on a first deploy — the rollout job
-          # applies it. Non-fatal either way: this step only reports.
-          for i in $(seq 1 30); do
-            IP=$(kubectl get svc caddy -n "$NAMESPACE" \
-              -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
-            [ -n "$IP" ] && break
-            sleep 10
-          done
-
-          if [ -z "$IP" ]; then
-            echo "::warning::caddy Service has no LoadBalancer address yet. If this is the first deploy it is still provisioning; check 'kubectl get svc caddy -n $NAMESPACE'."
-            exit 0
-          fi
-
-          echo "INGRESS_IP=$IP" >> "$GITHUB_ENV"
-          {
-            echo "### Ingress"
-            echo ""
-            echo "\`$IP\` — point DNS here."
-            echo ""
-            echo "| Record | Mode | Why |"
-            echo "| --- | --- | --- |"
-            echo "| \`*.sparx.zone\` | DNS-only | on-demand ACME needs the challenge to reach the origin |"
-            echo "| \`media-direct.sparx.works\` | DNS-only | social fetchers must bypass Cloudflare's 206 on Range |"
-            echo "| everything else | proxied | Full (strict) |"
-          } >> "$GITHUB_STEP_SUMMARY"
-
   # The middle of the pipeline, and a WORKFLOW rather than two steps so that
   # `DB Migrate (Azure)` is a real peer of `DB Migrate (GCP)` — dispatchable
   # on its own to re-run a failed migration or bring a restored database
@@ -363,7 +297,7 @@ jobs:
       # ---------------------------------------------------------------------
       - name: Pin images and apply
         run: |
-          SHA='${{ steps.sha.outputs.image_sha }}'
+          SHA='${{ needs.prepare.outputs.image_sha }}'
           REPO='ghcr.io/${{ github.repository }}'
 
           # Rewrite the placeholder tag in place rather than shelling out to
@@ -440,6 +374,83 @@ jobs:
             exit 1
           fi
 
+      # ---------------------------------------------------------------------
+      # The ingress cutover. RUNS LAST, AND ONLY DEMOLISHES WHAT IT HAS ALREADY
+      # REPLACED.
+      #
+      # These two steps used to sit in `prepare`, which was a genuine
+      # foot-gun: `prepare` runs BEFORE the rollout applies the new Service, so
+      # the tunnel — the only thing making the platform reachable — was deleted
+      # before its replacement existed. If the LoadBalancer then failed to get an
+      # address for ANY reason (the reserved public IP not created yet, an Azure
+      # control-plane degradation, a quota refusal), the platform went dark and
+      # stayed dark, with the deploy reporting success.
+      #
+      # Now the tunnel is retired only after `kubectl get svc caddy` reports an
+      # actual address. Every ordering is safe:
+      #
+      #   Terraform not applied yet → Service pending → tunnel KEPT, platform
+      #     stays up on the tunnel, warning in the summary.
+      #   Terraform applied, LB has an address → tunnel retired.
+      #   Cluster never had a tunnel → deletes are no-ops.
+      #
+      # The cost of being wrong in the safe direction is one redundant
+      # cloudflared Deployment until the next deploy. The cost of being wrong in
+      # the other direction is the whole platform.
+      # ---------------------------------------------------------------------
+      - name: Resolve the ingress address
+        id: ingress
+        run: |
+          # AKS provisions a Standard Load Balancer from the `type: LoadBalancer`
+          # Service in k8s/ingress and writes the address into `status`. Nothing
+          # in this repo asks Azure for one — that is the portability contract,
+          # and why the same manifests work unchanged on GKE and EKS.
+          for _ in $(seq 1 30); do
+            IP=$(kubectl get svc caddy -n "$NAMESPACE" \
+              -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
+            [ -n "$IP" ] && break
+            sleep 10
+          done
+
+          if [ -z "$IP" ]; then
+            echo "ip=" >> "$GITHUB_OUTPUT"
+            echo "::warning::caddy has no LoadBalancer address after 5m. The Cloudflare Tunnel is being KEPT so the platform stays reachable. Most likely the reserved public IP does not exist yet — run 'terraform apply' in terraform/envs/azure (creates azurerm_public_ip.ingress), then re-run this deploy."
+            {
+              echo '### Ingress — NOT cut over'
+              echo ''
+              echo 'The `caddy` Service has no LoadBalancer address, so the tunnel was left in place and the platform is still reachable through it.'
+              echo ''
+              echo 'Fix: `terraform apply` in `terraform/envs/azure` to create `azurerm_public_ip.ingress`, then re-run this deploy.'
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+
+          echo "ip=$IP" >> "$GITHUB_OUTPUT"
+          {
+            echo '### Ingress'
+            echo ''
+            echo "\`$IP\` — point DNS here."
+            echo ''
+            echo '| Record | Mode | Why |'
+            echo '| --- | --- | --- |'
+            echo '| `*.sparx.zone` | DNS-only | on-demand ACME needs the challenge to reach the origin |'
+            echo '| `media-direct.sparx.works` | DNS-only | social fetchers reject Cloudflare’s 206 on a Range request |'
+            echo '| everything else | proxied | Full (strict) |'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Only once the replacement is demonstrably serving. cloudflared is no
+      # longer part of this overlay, so `kubectl apply -k` will not recreate it —
+      # but apply does not PRUNE, so a Deployment left by an earlier revision of
+      # this workflow keeps running and holding a second, now-unrouted path to
+      # Caddy until something deletes it explicitly.
+      - name: Retire the Cloudflare Tunnel
+        if: steps.ingress.outputs.ip != ''
+        run: |
+          for r in deployment/cloudflared configmap/cloudflared-config secret/cloudflared-credentials; do
+            kubectl delete "$r" -n "$NAMESPACE" --ignore-not-found
+          done
+          echo "Tunnel retired — ingress is ${{ steps.ingress.outputs.ip }}."
+
       - name: Report
         if: always()
         run: |
@@ -448,8 +459,8 @@ jobs:
             echo ''
             echo '| | commit |'
             echo '| --- | --- |'
-            echo '| manifests | `${{ steps.sha.outputs.manifest_sha }}` |'
-            echo '| images | `${{ steps.sha.outputs.image_sha }}` |'
+            echo '| manifests | `${{ needs.prepare.outputs.manifest_sha }}` |'
+            echo '| images | `${{ needs.prepare.outputs.image_sha }}` |'
             echo ''
           } >> "$GITHUB_STEP_SUMMARY"
           kubectl get pods -n "$NAMESPACE" -o wide >> "$GITHUB_STEP_SUMMARY" 2>&1 || true

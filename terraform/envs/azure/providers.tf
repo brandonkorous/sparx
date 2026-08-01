@@ -60,9 +60,20 @@ provider "azurerm" {
   subscription_id = var.subscription_id
 }
 
-// Configured even when var.cloudflare_enabled is false: the provider must be
-// declarable for the module to load, and with the switch off it creates nothing,
-// so an empty token is harmless.
+// Declared even when var.cloudflare_enabled is false, because Terraform has no
+// conditional provider blocks and module.dns references this provider whether or
+// not it creates anything.
+//
+// The provider insists on a credential at PLAN time regardless of whether it
+// creates anything. An empty string fails its format check, and null fails with
+// "must provide exactly one of api_key, api_token or api_user_service_key" — so
+// a plain `terraform plan` here died before it could show the one resource this
+// env actually needed.
+//
+// With DNS switched off the variable therefore carries a syntactically-valid
+// PLACEHOLDER, which is never sent anywhere because every resource behind this
+// provider is counted to zero. Supply the real token (TF_VAR_cloudflare_api_token)
+// in the same change that flips cloudflare_enabled to true.
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
 }
