@@ -120,14 +120,14 @@ jobs:
             echo "::error::Run 'terraform apply' with cloudflare_origin_ca_key set first (see terraform/envs/prod/origin-ca.tf), then re-run this."
             exit 1
           fi
-          kubectl apply -k k8s/caddy/
+          kubectl apply -k k8s/ingress/
           # Bind the LoadBalancer to the reserved static IP from Terraform.
           # idempotent: if already bound, this is a no-op patch.
           kubectl patch service caddy -n "$NAMESPACE" \
             -p "{\"spec\":{\"loadBalancerIP\":\"$INGRESS_IP\"}}"
           # Caddy reads its Caddyfile only at startup and runs with `admin off`,
           # so there is no hot-reload path. The Caddyfile now ships via a
-          # content-hashed configMapGenerator (k8s/caddy/kustomization.yaml), so
+          # content-hashed configMapGenerator (k8s/ingress/kustomization.yaml), so
           # `kubectl apply -k` above already rolls the pod whenever the Caddyfile
           # changes (the hash renames the ConfigMap → pod template changes). The
           # explicit restart below is belt-and-suspenders: it forces a roll even

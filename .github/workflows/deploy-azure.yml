@@ -208,56 +208,70 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
 
       # ---------------------------------------------------------------------
-      # Cloudflare Tunnel.
+      # Retire the Cloudflare Tunnel, if this cluster still carries one.
       #
-      # This is what makes the platform REACHABLE. Without it cloudflared runs
-      # with no configuration, connects to nothing, and every public hostname
-      # stays dark however healthy the pods look.
+      # The tunnel used to be how the platform was reachable. It is not an
+      # ingress: it has no inbound path, so Caddy could never complete an ACME
+      # challenge behind it, and every hostname depended instead on Cloudflare's
+      # single Universal SSL wildcard — which matches exactly one label and
+      # therefore left `<property>.<tenant>.sparx.zone` returning a handshake
+      # failure. Ingress is now a `Service type=LoadBalancer` (k8s/ingress), the
+      # one primitive GKE, AKS and EKS all implement identically.
       #
-      # A LOCALLY-managed tunnel: the ingress rule lives here, not in the
-      # Cloudflare dashboard. One catch-all to Caddy, which already routes ~20
-      # hostnames by Host header — a dashboard-managed tunnel would mean
-      # re-entering every one of them and keeping two sources of truth in sync.
-      #
-      # EXACTLY ONE RULE, and no trailing `http_status:404`. cloudflared requires
-      # the LAST rule to be a catch-all and refuses to start if any EARLIER rule
-      # is one; a hostname-less rule matches everything, so a 404 placed after it
-      # is unreachable and cloudflared rejects the whole config:
-      #     Rule #1 is matching the hostname '', but this will match every
-      #     hostname, meaning the rules which follow it will never be triggered.
-      # The Caddy rule already IS the required terminal catch-all. Adding the
-      # conventional 404 line below it does not make the config more defensive,
-      # it makes it invalid — and a tunnel that will not start means every
-      # hostname stays dark while the pods all look healthy.
+      # Idempotent and safe on a cluster that never had a tunnel. cloudflared
+      # itself is no longer part of this overlay, so `kubectl apply -k` will not
+      # recreate it — but a Deployment that was applied by an EARLIER revision of
+      # this workflow is not pruned by apply, so it has to be deleted explicitly
+      # or it keeps holding open a second, now-unrouted path to Caddy.
       # ---------------------------------------------------------------------
-      - name: Configure Cloudflare Tunnel
-        env:
-          TUNNEL_CREDENTIALS: ${{ secrets.CLOUDFLARE_TUNNEL_CREDENTIALS }}
+      - name: Retire the Cloudflare Tunnel
         run: |
-          if [ -z "$TUNNEL_CREDENTIALS" ]; then
-            echo "::warning::CLOUDFLARE_TUNNEL_CREDENTIALS is unset — cloudflared will not connect and no public hostname will resolve. Everything else still deploys."
+          for r in deployment/cloudflared configmap/cloudflared-config secret/cloudflared-credentials; do
+            kubectl delete "$r" -n "$NAMESPACE" --ignore-not-found
+          done
+
+      # ---------------------------------------------------------------------
+      # The ingress address.
+      #
+      # AKS provisions a Standard Load Balancer and a public IP from the
+      # `type: LoadBalancer` Service in k8s/ingress and writes the address back
+      # into `status`. Nothing in this repo asks Azure for either — that is the
+      # portability contract, and it is why the same manifests work unchanged on
+      # GKE and EKS.
+      #
+      # Surfaced in the job summary because DNS has to point at it: every
+      # sparx.works / sparx.zone record moves from the tunnel to this address,
+      # and `*.sparx.zone` plus media-direct go DNS-only (grey-cloud) so
+      # on-demand ACME challenges reach the origin.
+      # ---------------------------------------------------------------------
+      - name: Report the ingress address
+        run: |
+          # The Service may not exist yet on a first deploy — the rollout job
+          # applies it. Non-fatal either way: this step only reports.
+          for i in $(seq 1 30); do
+            IP=$(kubectl get svc caddy -n "$NAMESPACE" \
+              -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
+            [ -n "$IP" ] && break
+            sleep 10
+          done
+
+          if [ -z "$IP" ]; then
+            echo "::warning::caddy Service has no LoadBalancer address yet. If this is the first deploy it is still provisioning; check 'kubectl get svc caddy -n $NAMESPACE'."
             exit 0
           fi
 
-          printf '%s' "$TUNNEL_CREDENTIALS" > /tmp/creds.json
-          TUNNEL_ID=$(python3 -c "import json;print(json.load(open('/tmp/creds.json'))['TunnelID'])")
-
-          kubectl create secret generic cloudflared-credentials -n "$NAMESPACE"             --from-file=credentials.json=/tmp/creds.json             --dry-run=client -o yaml | kubectl apply -f -
-          rm -f /tmp/creds.json
-
-          cat > /tmp/cf-config.yaml <<CFG
-          tunnel: $TUNNEL_ID
-          credentials-file: /etc/cloudflared/creds/credentials.json
-          no-autoupdate: true
-          ingress:
-            - service: http://caddy.$NAMESPACE.svc.cluster.local:80
-          CFG
-          kubectl create configmap cloudflared-config -n "$NAMESPACE"             --from-file=config.yaml=/tmp/cf-config.yaml             --dry-run=client -o yaml | kubectl apply -f -
-          rm -f /tmp/cf-config.yaml
-
-          # The pods mount both by fixed name, so a change here needs a restart
-          # to be picked up. Ignored when the Deployment does not exist yet.
-          kubectl rollout restart deployment/cloudflared -n "$NAMESPACE" 2>/dev/null || true
+          echo "INGRESS_IP=$IP" >> "$GITHUB_ENV"
+          {
+            echo "### Ingress"
+            echo ""
+            echo "\`$IP\` — point DNS here."
+            echo ""
+            echo "| Record | Mode | Why |"
+            echo "| --- | --- | --- |"
+            echo "| \`*.sparx.zone\` | DNS-only | on-demand ACME needs the challenge to reach the origin |"
+            echo "| \`media-direct.sparx.works\` | DNS-only | social fetchers must bypass Cloudflare's 206 on Range |"
+            echo "| everything else | proxied | Full (strict) |"
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # The middle of the pipeline, and a WORKFLOW rather than two steps so that
   # `DB Migrate (Azure)` is a real peer of `DB Migrate (GCP)` — dispatchable

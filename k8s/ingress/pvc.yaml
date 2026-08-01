@@ -1,0 +1,20 @@
+# ACME certificate storage. Caddy writes issued certificates, its account key,
+# and the on-demand cache here; losing it means re-issuing every certificate on
+# the next request, which Let's Encrypt rate-limits.
+#
+# NO storageClassName. Omitting it binds to the cluster's DEFAULT StorageClass,
+# which GKE, AKS and EKS all provide — so this file is portable as written. It
+# used to hard-code `standard-rwo`, which is a GCP class name and does not exist
+# on any other provider. An overlay that wants a specific class patches it
+# (k8s/azure pins `managed-csi`).
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: caddy-data
+  namespace: sparx-prod
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi

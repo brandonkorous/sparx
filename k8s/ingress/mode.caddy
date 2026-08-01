@@ -1,0 +1,45 @@
+# TLS policy — the CLOUD copy. Mounted beside the Caddyfile as `mode.caddy`.
+#
+# Every site block in the Caddyfile imports one of these three snippets instead
+# of writing a `tls` directive inline. That indirection is the entire mechanism
+# that lets one routing table serve a cluster with a public IP and a workstation
+# cluster without one: the routing is identical, only this file differs.
+#
+# k8s/local/mode.caddy is the other copy. It is eight lines and defines all
+# three as no-ops.
+
+# The default for sparx-owned hostnames and for the tenant catch-all. Issues a
+# certificate per hostname on first HTTPS request, gated by the ask endpoint in
+# the Caddyfile's global block.
+#
+# Per-hostname issuance is why nested tenant hosts work here and did not behind
+# the tunnel: `site.tenant.sparx.zone` gets its own certificate, so the one-label
+# matching limit of a wildcard certificate (RFC 6125 §6.4.3) never applies.
+(tls_policy) {
+	tls {
+		on_demand
+	}
+}
+
+# For hostnames the ask endpoint does not know — kanninja.com and friends, which
+# are not sparx tenants and would be REJECTED by /internal/domain-check. An
+# empty snippet leaves Caddy's automatic HTTPS in charge, which mints a normal
+# managed Let's Encrypt certificate at startup via HTTP-01 / TLS-ALPN.
+(tls_managed) {
+}
+
+# admin.wize.works only. A Cloudflare Origin CA certificate, mounted from the
+# caddy-admin-origin secret by the bootstrap workflow. Not ACME: Cloudflare
+# Access sits in front of this host and intercepts /.well-known/acme-challenge/*
+# with its own login page, so no ACME challenge can ever complete while the
+# record is proxied.
+(tls_admin_origin) {
+	tls /certs/admin/tls.crt /certs/admin/tls.key
+}
+
+# Plain HTTP is only ever a redirect to HTTPS. Lives here rather than in the
+# Caddyfile because in workstation mode :80 is where the tenant catch-all
+# listens — the two would collide.
+:80 {
+	redir https://{host}{uri} permanent
+}

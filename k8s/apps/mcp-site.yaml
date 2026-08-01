@@ -2,7 +2,7 @@
 # MCP plane. Mirrors api-mcp.yaml; the differences:
 #   - Image tag `mcp-site`, port 3200
 #   - Fronted by the Caddy `/mcp*` carve-out on every site host AND the
-#     canonical `mcp.sparx.zone` block (k8s/caddy/Caddyfile)
+#     canonical `mcp.sparx.zone` block (k8s/ingress/Caddyfile)
 #   - No DB / no module bundling: it is a thin MCP adapter over the public REST
 #     API. It reads only SPARX_API_REST_URL (from sparx-app-env) — the rest of
 #     the shared env is inert here.

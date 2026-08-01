@@ -24,8 +24,20 @@ resources:
   - namespace.yaml
   - ../apps
   - ../cronjobs
-  # Workers, Caddy, cloudflared, the ingress routing table.
+  # The 11 workers. Shared verbatim with the workstation overlay.
   - ../self-hosted
+  # The ingress: Caddy + the ONE routing table + a `type: LoadBalancer` Service.
+  # Identical to what the GCP bootstrap applies — no Azure-specific ingress
+  # config exists, which is the point. AKS provisions a Standard LB and public
+  # IP from that Service exactly as GKE provisions a Network LB.
+  #
+  # This replaced the Cloudflare Tunnel. The tunnel had no inbound path, so
+  # Caddy could not complete an ACME challenge and every hostname depended on
+  # Cloudflare's single one-label-deep wildcard certificate — which is why
+  # `<property>.<tenant>.sparx.zone` returned a handshake failure. On-demand
+  # issuance is per hostname at any depth, so that class of problem is gone
+  # rather than worked around.
+  - ../ingress
   # Typesense + the media volume. NOT Postgres (managed) and NOT Redis.
   - infra.yaml
 
@@ -122,6 +134,21 @@ replicas:
     count: 1
 
 patches:
+  # --- Storage class for the ACME certificate volume --------------------------
+  # k8s/ingress/pvc.yaml deliberately omits storageClassName so it binds to
+  # whatever the cluster's default is — portable, but on AKS the default is
+  # `managed-csi` anyway and being explicit documents the choice. StandardSSD,
+  # not `managed-csi-premium`: this volume stores a few kilobytes of
+  # certificates and its IOPS profile is "written once per issuance".
+  - target: { kind: PersistentVolumeClaim, name: caddy-data }
+    patch: |-
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: caddy-data
+      spec:
+        storageClassName: managed-csi
+
   # --- Same deletions as the local overlay, same reasons ----------------------
   - target:
       kind: HorizontalPodAutoscaler

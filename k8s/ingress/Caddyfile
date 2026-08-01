@@ -1,0 +1,383 @@
+# THE routing table. One copy, every deployment.
+#
+# This file replaced a fork: k8s/caddy/Caddyfile (GKE, 386 lines, TLS) and
+# k8s/self-hosted/Caddyfile (AKS, 197 lines, plain HTTP) were the same routing
+# table maintained twice, and they had already drifted — the AKS copy silently
+# dropped kanninja.com, silicaui.com and admin.wize.works. A platform that forks
+# its ingress config per cloud provider is not portable, and the drift is what
+# proves it. There is now exactly one copy and no provider knows about it.
+#
+# WHAT VARIES BETWEEN DEPLOYMENTS, and it is not the cloud:
+#
+#   Clusters with a public IP (GKE, AKS, EKS — anywhere a
+#   `Service type=LoadBalancer` gets an address) serve HTTPS and mint their own
+#   certificates via ACME. Nothing here is provider-specific: type=LoadBalancer
+#   is implemented identically by all three, and ACME does not know or care
+#   which cloud it is running on.
+#
+#   A workstation cluster has no public IP and no inbound path, so an ACME
+#   challenge can never reach it. It serves plain HTTP behind a Cloudflare
+#   Tunnel, which terminates TLS at the edge.
+#
+# That axis — "is there an inbound path" — is a real topology distinction. "Is
+# this GKE or AKS" is not, and encoding it as one was the original mistake.
+#
+# The difference is carried by two environment variables and one 8-line file:
+#
+#   SX_SCHEME    https (default) | http
+#   SX_CATCHALL  :443  (default) | :80
+#   mode.caddy   defines the (tls_policy) snippet every site block imports, plus
+#                the :80 → :443 redirect that only makes sense with TLS.
+#
+# `{$VAR:default}` is Caddy's env substitution. `{$SX_CATCHALL::443}` reads as
+# {$ + SX_CATCHALL + : + :443 + } — the default just happens to start with a
+# colon. Both defaults are the CLOUD values, so a new cluster is correct with no
+# env set at all and the laptop is the case that opts out.
+{
+	email ops@sparx.works
+	admin off
+
+	# Honour the forwarded client IP when a proxy sits in front (the tunnel, in
+	# the workstation case). With a LoadBalancer + `externalTrafficPolicy: Local`
+	# the client IP arrives directly and is public, so this never matches and
+	# Caddy uses the peer address — correct in both topologies, which is why it
+	# is unconditional.
+	servers {
+		trusted_proxies static private_ranges
+	}
+
+	# On-demand TLS — issues a certificate for a tenant subdomain
+	# (<slug>.sparx.zone, at ANY depth) or a custom domain (shop.merchant.com) on
+	# its first HTTPS request, validated against the API before issuance so the
+	# endpoint cannot be used to mint certificates for arbitrary names.
+	#
+	# This is what makes multi-site work: an ACME certificate is minted per
+	# hostname, so `site.tenant.sparx.zone` gets its own and the one-label limit
+	# of a wildcard certificate never applies. Nothing needs a wildcard, a paid
+	# certificate product, or a flattened hostname scheme.
+	#
+	# Ignored in workstation mode, where no site block imports an on-demand
+	# policy.
+	# NOTE: `interval` and `burst` used to sit here and were REMOVED — current
+	# Caddy rejects them outright ("the on_demand_tls 'interval' option is no
+	# longer supported") and refuses to start. The deployment pulls the floating
+	# `caddy:2-alpine` tag, so the old config was one image refresh away from a
+	# total ingress outage on a cluster nobody had touched. Rate limiting now
+	# lives behind the ask endpoint, which is the right place for it: only
+	# api-rest knows whether a hostname is a real tenant.
+	on_demand_tls {
+		ask http://api-rest.sparx-prod.svc.cluster.local:3000/internal/domain-check
+	}
+}
+
+# Defines (tls_policy) — and, in cloud mode, the :80 → :443 redirect. Kustomize
+# mounts the cloud copy from this directory or the workstation copy from
+# k8s/local. Imported before first use.
+import mode.caddy
+
+# Baseline security headers (docs/50 §4). Conservative on purpose: HSTS
+# (no includeSubDomains/preload, to avoid surprising tenant custom domains),
+# nosniff, clickjacking protection, and a tight referrer policy. Deliberately
+# NO Content-Security-Policy or Permissions-Policy here — those need per-app
+# tuning (Stripe/checkout, PostHog, Satori) and land as a Report-Only pass.
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "SAMEORIGIN"
+		Referrer-Policy "strict-origin-when-cross-origin"
+	}
+}
+
+# ----- Platform hostnames -----
+{$SX_SCHEME:https}://api.sparx.works {
+	import tls_policy
+	import security_headers
+	reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+}
+
+# media.sparx.works — public CDN domain for transcoded media variants.
+# Cloudflare caches everything for a year; the origin only sees a sliver of
+# traffic. The path under it is identical to api.sparx.works so
+# MEDIA_PUBLIC_URL is a single env swap.
+#
+# NOTE: do NOT stamp a blanket `Cache-Control: immutable` here. api-rest owns
+# cache semantics per-path — immutable on variant bytes, 86400 on the resolver
+# redirect, and a deliberate 60s while an image is still transcoding
+# (services/api-rest/src/routes/v1/public/media.ts). A blanket header overrode
+# that 60s window AND — worse — cached 404/422 ERROR responses for a year, so a
+# variant that wasn't ready at first fetch stayed permanently broken at the
+# Cloudflare edge.
+{$SX_SCHEME:https}://media.sparx.works {
+	import tls_policy
+	header {
+		# Strip any cookies merchant proxies might forward — the CDN variants
+		# are pure content.
+		-Set-Cookie
+	}
+	reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+}
+
+# media-direct.sparx.works — the SAME media routes, on a hostname that BYPASSES
+# Cloudflare's proxy. Instagram/Threads/Pinterest publish an image by handing
+# THEIR servers an image_url to fetch; Cloudflare answers any `Range: bytes=0-`
+# on a cacheable media object with a `206 Partial Content`, and those platforms
+# reject a 206 — the image silently drops and the post goes out text-only. The
+# ORIGIN returns a clean 200 to a ranged request (Caddy/api-rest ignore Range),
+# so a host that skips Cloudflare fixes them. Facebook + LinkedIn sidestep this
+# by BYTE-uploading and keep media.sparx.works. The social-worker points
+# MEDIA_DIRECT_BASE_URL here for the URL-fetch platforms only.
+#
+# Grey-cloud (DNS-only) DNS → on-demand cert lands directly on this origin,
+# which is possible again now that there is a public IP to point at.
+# Allow-listed in api-rest /internal/domain-check PLATFORM_HOSTNAMES.
+{$SX_SCHEME:https}://media-direct.sparx.works {
+	import tls_policy
+	header {
+		-Set-Cookie
+	}
+	reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+}
+
+{$SX_SCHEME:https}://graphql.sparx.works {
+	import tls_policy
+	import security_headers
+	reverse_proxy api-graphql.sparx-prod.svc.cluster.local:3200
+}
+
+{$SX_SCHEME:https}://mcp.sparx.works {
+	import tls_policy
+	import security_headers
+	reverse_proxy api-mcp.sparx-prod.svc.cluster.local:3000
+}
+
+# Canonical shopper-facing site MCP host (docs/113). A reserved slug, so no
+# tenant owns it; authorized as a static platform host in
+# /internal/domain-check. The store is named in the path
+# (/s/<tenant>[/<property>]/mcp) since a fixed host can't encode it.
+{$SX_SCHEME:https}://mcp.sparx.zone {
+	import tls_policy
+	import security_headers
+	reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
+}
+
+# The staff app. Served by the workbench (apps/workbench), which replaced the
+# decommissioned dashboard here. app.sparx.works is also the MCP OAuth
+# authorization-server origin (MCP_AUTH_SERVER_URL) and the Better Auth origin —
+# the workbench serves the /.well-known discovery docs + /oauth/consent.
+{$SX_SCHEME:https}://app.sparx.works {
+	import tls_policy
+	import security_headers
+	reverse_proxy workbench.sparx-prod.svc.cluster.local:3000
+}
+
+# Legacy host from when the workbench ran beside the dashboard. It now lives at
+# app.sparx.works (the canonical staff URL), so send this subdomain there — a
+# permanent redirect keeps any old bookmark/link working. Better Auth cookies +
+# the OAuth origin are scoped to app.sparx.works, so this host must NOT serve
+# the app itself.
+{$SX_SCHEME:https}://workbench.sparx.works {
+	import tls_policy
+	import security_headers
+	redir https://app.sparx.works{uri} permanent
+}
+
+{$SX_SCHEME:https}://sparx.works, {$SX_SCHEME:https}://www.sparx.works {
+	import tls_policy
+	import security_headers
+
+	# Social-card images are proxied with response BUFFERING (`flush_interval
+	# -1`) so Caddy emits a real Content-Length instead of streaming them back
+	# chunked. LinkedIn's image fetcher sizes an image from Content-Length before
+	# it will download it; without the header it reports "cannot find an image"
+	# even though the URL returns 200 image/png and the og:image tags are
+	# complete. Browsers, Slack and X all tolerate the chunked response, so this
+	# presented as LinkedIn-only.
+	#
+	# Deliberately scoped to the two Next metadata-image conventions rather than
+	# applied to the whole site: `flush_interval -1` disables streaming, which
+	# would break the Server-Sent Events the chat widget uses.
+	@social path */opengraph-image */twitter-image
+	reverse_proxy @social web.sparx-prod.svc.cluster.local:3000 {
+		flush_interval -1
+	}
+
+	reverse_proxy web.sparx-prod.svc.cluster.local:3000
+}
+
+# ----- kanNINJA (co-tenant in the `kanninja` namespace) -----
+# kanNINJA's workloads live in their own namespace; Caddy reaches them
+# cross-namespace via ClusterIP Services (port 80 → the app's http port).
+#
+# IMPORTANT: these blocks deliberately OMIT the on-demand policy and take a
+# normal Caddy-managed certificate instead. On-demand would call the global ask
+# endpoint (api-rest /internal/domain-check), which only knows sparx tenants and
+# custom domains and would REJECT kanninja.com — no certificate. They import
+# `tls_managed`, which is a no-op in workstation mode for the same reason
+# tls_policy is.
+{$SX_SCHEME:https}://kanninja.com {
+	import tls_managed
+	import security_headers
+	reverse_proxy frontend.kanninja.svc.cluster.local:80
+}
+
+{$SX_SCHEME:https}://www.kanninja.com {
+	import tls_managed
+	import security_headers
+	redir https://kanninja.com{uri} permanent
+}
+
+{$SX_SCHEME:https}://api.kanninja.com {
+	import tls_managed
+	import security_headers
+	reverse_proxy backend.kanninja.svc.cluster.local:80
+}
+
+{$SX_SCHEME:https}://mcp.kanninja.com {
+	import tls_managed
+	import security_headers
+	reverse_proxy mcp.kanninja.svc.cluster.local:80
+}
+
+# ----- SilicaUI marketing + docs site (co-tenant in the `silicaui` namespace) --
+# A static Next.js export served by nginx in its own namespace, reached
+# cross-namespace via its ClusterIP Service.
+#
+# Uses the on-demand policy (like the sparx platform hosts, NOT the
+# kanNINJA-style managed block). silicaui.com/www are allow-listed as static
+# platform hosts in the ask endpoint, so issuance is authorized. On-demand is
+# deliberate: this Caddy is a single replica on a Recreate rollout, so every
+# boot has a ~15-60s window with no registered LB backend, and an explicit
+# managed block fires all its startup issuance attempts inside it — a first
+# certificate can never be obtained at boot (exactly what blocked silicaui's).
+# On-demand defers issuance to the first HTTPS request, which lands on the warm,
+# LB-registered pod, so the ACME challenge succeeds.
+{$SX_SCHEME:https}://silicaui.com {
+	import tls_policy
+	import security_headers
+	reverse_proxy site.silicaui.svc.cluster.local:80
+}
+
+{$SX_SCHEME:https}://www.silicaui.com {
+	import tls_policy
+	import security_headers
+	redir https://silicaui.com{uri} permanent
+}
+
+# ----- WizeWorks operator console (admin.wize.works, wize-admin namespace) -----
+# The Layer-4 operator console (docs/16 §2.4). Access control is enforced IN
+# FRONT by Cloudflare Access, the load-bearing gate until operator MFA ships;
+# Caddy just proxies cross-namespace to the admin Service.
+#
+# TLS is a Cloudflare ORIGIN CA certificate, NOT Let's Encrypt. This host sits
+# behind Cloudflare Access, which intercepts the ACME challenge path
+# (/.well-known/acme-challenge/*) and returns its login page — so Caddy can
+# NEVER obtain an LE certificate while proxied (both tls-alpn-01 and http-01
+# fail). The Origin CA certificate is signed by Cloudflare (trusted by its edge
+# in Full(strict)), valid 15 years, and never renews. Generated + stored by
+# terraform (origin-ca.tf); synced into the caddy-admin-origin secret + mounted
+# at /certs/admin by bootstrap.yml. The record stays proxied — no drift.
+#
+# NOTE: `import tls_admin_origin` makes the whole shared ingress depend on those
+# certificate files existing. The bootstrap caddy step syncs the secret and
+# FAILS before rolling if it can't — do not remove that guard. The snippet is a
+# no-op in workstation mode, where the secret is not mounted.
+{$SX_SCHEME:https}://admin.wize.works {
+	import tls_admin_origin
+	import security_headers
+	reverse_proxy admin.wize-admin.svc.cluster.local:3000
+}
+
+# ----- Module marketing sites -----
+# Each domain serves its own marketing/landing site (a single Next.js app reads
+# the Host header and renders the right module page).
+{$SX_SCHEME:https}://sparxcms.com, {$SX_SCHEME:https}://www.sparxcms.com,
+{$SX_SCHEME:https}://sparxcrm.com, {$SX_SCHEME:https}://www.sparxcrm.com,
+{$SX_SCHEME:https}://sparxemail.com, {$SX_SCHEME:https}://www.sparxemail.com,
+{$SX_SCHEME:https}://sparxb2b.com, {$SX_SCHEME:https}://www.sparxb2b.com,
+{$SX_SCHEME:https}://sparx.email, {$SX_SCHEME:https}://www.sparx.email {
+	import tls_policy
+	import security_headers
+	reverse_proxy web.sparx-prod.svc.cluster.local:3000
+}
+
+# ----- Placeholder domains (301 to the corresponding sparx.works path) -----
+# Replace with real reverse_proxy targets when each product matures.
+{$SX_SCHEME:https}://sparx.host, {$SX_SCHEME:https}://www.sparx.host {
+	import tls_policy
+	redir https://sparx.works/hosting{uri} permanent
+}
+
+{$SX_SCHEME:https}://sparx.software, {$SX_SCHEME:https}://www.sparx.software {
+	import tls_policy
+	redir https://sparx.works/docs{uri} permanent
+}
+
+# sparx.market — the first-party marketplace storefront (docs/106 §4.7), a
+# dedicated Next.js app (apps/market). www → apex.
+{$SX_SCHEME:https}://www.sparx.market {
+	import tls_policy
+	redir https://sparx.market{uri} permanent
+}
+
+{$SX_SCHEME:https}://sparx.market {
+	import tls_policy
+	import security_headers
+	reverse_proxy market.sparx-prod.svc.cluster.local:3000
+}
+
+{$SX_SCHEME:https}://sparx.exchange, {$SX_SCHEME:https}://www.sparx.exchange {
+	import tls_policy
+	redir https://sparx.works{uri} permanent
+}
+
+# sparx.zone apex — redirect to the platform home.
+{$SX_SCHEME:https}://sparx.zone, {$SX_SCHEME:https}://www.sparx.zone {
+	import tls_policy
+	redir https://sparx.works{uri} permanent
+}
+
+# ----- Catch-all: tenant sites -----
+# Matches <tenant>.sparx.zone (wildcard DNS), <property>.<tenant>.sparx.zone,
+# and any custom domain pointing here. The ask endpoint decides whether a
+# certificate is issued, per hostname, at any depth.
+#
+#   /mcp*            → the shopper-facing MCP (docs/113), which resolves the
+#                      site from the Host header. `handle`, not `handle_path`,
+#                      so the /mcp prefix survives to the service that routes on
+#                      it.
+#   protected-resource well-knowns → mcp-site (the RFC 9728 resource server), in
+#                      every discovery shape a client may construct: bare root,
+#                      path-inserted, and the /mcp-suffixed one that already
+#                      rides /mcp*. WITHOUT these they fall through to the site
+#                      app and 404, so a client whose unauthenticated
+#                      `initialize` succeeds (no WWW-Authenticate to read)
+#                      cannot discover the authorization server.
+#   /v1/public/auth* + the AS well-knowns → api-rest, with the Host preserved,
+#                      so the browser keeps its sparx_customer_session cookie
+#                      through authorize → consent on the store's OWN origin.
+#
+# Everything else reaches the site app.
+{$SX_CATCHALL::443} {
+	import tls_policy
+	import security_headers
+
+	handle /mcp* {
+		reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
+	}
+	handle /.well-known/oauth-protected-resource* {
+		reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200
+	}
+	handle /v1/public/auth* {
+		reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+	}
+	handle /.well-known/oauth-authorization-server* {
+		reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+	}
+	handle /.well-known/openid-configuration* {
+		reverse_proxy api-rest.sparx-prod.svc.cluster.local:3000
+	}
+	handle {
+		reverse_proxy site.sparx-prod.svc.cluster.local:3000
+	}
+}

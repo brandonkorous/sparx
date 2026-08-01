@@ -1,0 +1,45 @@
+# The ONE primitive this whole design rests on.
+#
+# `type: LoadBalancer` is implemented identically by GKE, AKS and EKS: the
+# cluster's cloud-controller-manager provisions that provider's L4 load balancer
+# and writes its address back into `status`. That is the portability contract —
+# no annotations, no CRDs, no per-cloud ingress flavour, nothing in this file
+# that names a vendor.
+#
+# A provider-specific hint (a reserved static IP, a resource group, an LB SKU)
+# belongs in that provider's OVERLAY as a patch, never here. The GCP overlay
+# re-adds `cloud.google.com/l4-rbs`; Azure needs nothing at all.
+#
+# THIS IS WHAT THE CLOUDFLARE TUNNEL REPLACED, and replacing it is what broke
+# certificate issuance: a tunnel has no inbound path, and an ACME HTTP-01 or
+# TLS-ALPN challenge needs one. A tunnel is a fine way to reach infrastructure
+# that does not terminate TLS itself. It is not an ingress, and using it as one
+# cost per-hostname certificates, the grey-cloud media bypass, and automatic
+# onboarding for tenant custom domains.
+apiVersion: v1
+kind: Service
+metadata:
+  name: caddy
+  namespace: sparx-prod
+  labels:
+    app: caddy
+    tier: ingress
+spec:
+  type: LoadBalancer
+  # Preserve the client IP. On-demand TLS validates the requested hostname
+  # against api-rest before issuing, and any rate limiting behind that endpoint
+  # is meaningless if every request appears to come from a node. The cost is
+  # that traffic only reaches nodes actually running a Caddy pod — correct here,
+  # since there is one.
+  externalTrafficPolicy: Local
+  ports:
+    - name: http
+      port: 80
+      targetPort: 80
+      protocol: TCP
+    - name: https
+      port: 443
+      targetPort: 443
+      protocol: TCP
+  selector:
+    app: caddy

@@ -1,0 +1,115 @@
+# Caddy — the ingress origin. Identical on every cluster that has a public IP.
+#
+# Nothing here is provider-specific. The only things an overlay changes are the
+# PVC's storage class (k8s/azure) and, for a workstation, the two SX_* env vars
+# plus the mode.caddy override (k8s/local).
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: caddy
+  namespace: sparx-prod
+  labels:
+    app: caddy
+    tier: ingress
+spec:
+  replicas: 1
+  # RWO PVC for certificate storage — Recreate avoids two pods holding the
+  # volume. Multi-replica Caddy needs distributed cert storage
+  # (caddy-storage-redis); that is the change to make when this becomes the
+  # availability bottleneck, and it is tracked as such rather than pretended
+  # away: today a Caddy roll is a brief outage for every hostname.
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: caddy
+  template:
+    metadata:
+      labels:
+        app: caddy
+        tier: ingress
+    spec:
+      # No serviceAccountName. Caddy needs no cloud credentials — it talks to
+      # Let's Encrypt and to in-cluster Services, neither of which is a cloud
+      # API. This used to name a GCP Workload Identity SA, which meant every
+      # non-GCP overlay had to patch it back out.
+      enableServiceLinks: false
+      containers:
+        - name: caddy
+          # PINNED. `caddy:2-alpine` is a floating tag, and floating it is how a
+          # config that had been valid for months became invalid without a
+          # single commit: current Caddy removed `on_demand_tls { interval }`
+          # and refuses to start on a config that still carries it. The ingress
+          # is the one component where an unannounced upgrade takes every
+          # hostname down at once.
+          image: caddy:2.11.4-alpine
+          ports:
+            - name: http
+              containerPort: 80
+            - name: https
+              containerPort: 443
+          env:
+            # Both default to the CLOUD values inside the Caddyfile itself, so
+            # they are declared here only to be explicit about what the two
+            # topologies are. k8s/local patches them to http / :80.
+            - name: SX_SCHEME
+              value: https
+            - name: SX_CATCHALL
+              value: ':443'
+          volumeMounts:
+            - name: config
+              mountPath: /etc/caddy
+              readOnly: true
+            - name: data
+              mountPath: /data
+            - name: caddy-config-dir
+              mountPath: /config
+            # Cloudflare Origin CA cert for admin.wize.works, which sits behind
+            # Cloudflare Access and therefore cannot complete an ACME challenge.
+            # Synced by bootstrap.yml (components=caddy).
+            - name: admin-origin-cert
+              mountPath: /certs/admin
+              readOnly: true
+          # No CPU limit, deliberately: CPU is compressible, so a cap only
+          # throttles the cold start of the one pod every hostname depends on.
+          # The memory limit is what actually protects the node.
+          resources:
+            requests:
+              cpu: '50m'
+              memory: '64Mi'
+            limits:
+              memory: '512Mi'
+          # BOTH probes target :80, which is the one port Caddy listens on in
+          # every topology — the HTTP→HTTPS redirect in cloud mode, the tenant
+          # catch-all in workstation mode. Readiness used to probe :443, which a
+          # workstation deployment never opens.
+          #
+          # TCP rather than HTTP: an HTTP probe is 301-redirected to
+          # https://<podIP>/ and then fails the TLS handshake, because Caddy
+          # cannot mint a certificate for a bare IP. If Caddy is not listening
+          # on 80, the pod is broken — which is all this needs to know.
+          livenessProbe:
+            tcpSocket: { port: 80 }
+            initialDelaySeconds: 10
+            periodSeconds: 30
+          readinessProbe:
+            tcpSocket: { port: 80 }
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: caddy-config
+        - name: caddy-config-dir
+          emptyDir: {}
+        - name: data
+          persistentVolumeClaim:
+            claimName: caddy-data
+        # optional:true so a missing secret doesn't wedge scheduling — but the
+        # Caddyfile's admin block still needs the files present, so the
+        # bootstrap caddy step hard-fails BEFORE rolling if the secret can't be
+        # synced (a cert-less roll would take the whole shared ingress down).
+        - name: admin-origin-cert
+          secret:
+            secretName: caddy-admin-origin
+            optional: true

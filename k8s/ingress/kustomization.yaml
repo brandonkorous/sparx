@@ -1,0 +1,35 @@
+# The ingress layer. Consumed by EVERY deployment overlay — k8s/azure, the GCP
+# bootstrap, k8s/local — with no per-provider copy of anything in it.
+#
+# This directory was `k8s/caddy` and held the GKE-flavoured half of a forked
+# routing table; the other half lived in `k8s/self-hosted`. The fork is gone.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sparx-prod
+
+resources:
+  - pvc.yaml
+  - deployment.yaml
+  - service.yaml
+  - pdb.yaml
+
+# Content-hashed Caddy config. The generator appends a hash suffix derived from
+# the FILES' contents (e.g. caddy-config-abc123) and rewrites the Deployment's
+# volume reference to match. So ANY edit to either file renames the ConfigMap,
+# which changes the pod template, which forces a rollout on plain
+# `kubectl apply -k` — even when applied outside bootstrap.yml.
+#
+# Why this exists: Caddy runs with `admin off` and reads its config only at
+# startup (no hot reload). A statically-named ConfigMap let an edit land in the
+# cluster while the running pod kept serving the OLD config — which routed every
+# tenant site to the pre-rename `storefront` app and caused a 2026-06-06 outage.
+# The hash suffix makes "config changed" and "pod must roll" the same event.
+#
+# mode.caddy is generated from THIS directory's copy (cloud: on-demand ACME +
+# the :80 → :443 redirect). k8s/local overrides it with `behavior: merge` and
+# its own file, which is the entire workstation delta.
+configMapGenerator:
+  - name: caddy-config
+    files:
+      - Caddyfile
+      - mode.caddy

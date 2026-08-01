@@ -20,7 +20,7 @@ Self-hosted SMTP relay for all outbound Sparx email. Sends to recipient MX hosts
 
 ## Why not the Helm chart
 
-Per the project's no-Helm preference. Hand-authored YAML matches the `k8s/redis/`, `k8s/pgbouncer/`, `k8s/caddy/` conventions and is easier to grep / review. The Helm chart's values.yaml indirection obscured the multi-process architecture (web/worker/smtp/cron from a single image with different `postal <cmd>` entrypoints).
+Per the project's no-Helm preference. Hand-authored YAML matches the `k8s/redis/`, `k8s/pgbouncer/`, `k8s/ingress/` conventions and is easier to grep / review. The Helm chart's values.yaml indirection obscured the multi-process architecture (web/worker/smtp/cron from a single image with different `postal <cmd>` entrypoints).
 
 ## Storage choice — `standard-rwo` (pd-balanced)
 
@@ -171,4 +171,6 @@ gh workflow run bootstrap.yml -f components=postal
 - **Brand decision:** Postal on `sparx.email`, not SendGrid/Postmark/SES — see [CLAUDE.md](../../CLAUDE.md) → "Email goes through self-hosted Postal".
 - **Pub/Sub-default email flow:** publishers → `email.send` topic → `email-worker` → Postal HTTP API. Direct `sendTemplate()` from `@sparx/email` is the OTP escape hatch only.
 - **DNS / Cloudflare records:** [terraform/envs/prod/cloudflare.tf](../../terraform/envs/prod/cloudflare.tf) → `sparx_email_*` resources.
-- **Caddy routing:** [k8s/caddy/configmap.yaml](../caddy/configmap.yaml) → `postal.sparx.email` block.
+- **Caddy routing:** the `postal.sparx.email` block was REMOVED from
+  [k8s/ingress/Caddyfile](../ingress/Caddyfile) when Postal was decommissioned in favour of
+  Mailgun. Re-add it there if this stack is ever revived.

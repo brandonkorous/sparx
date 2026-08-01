@@ -1,0 +1,27 @@
+# TLS policy — the WORKSTATION copy. Mounted beside the Caddyfile as
+# `mode.caddy`, replacing k8s/ingress/mode.caddy.
+#
+# A laptop cluster has no public IP and no inbound path, so an ACME challenge
+# can never reach Caddy — issuance could not succeed here even if it were
+# wanted. TLS terminates at Cloudflare's edge and cloudflared carries the
+# request to this origin over a connection it dialled outbound.
+#
+# All three snippets are no-ops, and with SX_SCHEME=http every site block is
+# served as plain HTTP on :80. There is no :80 → :443 redirect, because :80 is
+# where the tenant catch-all listens (SX_CATCHALL=:80).
+#
+# Consequence to be aware of: the hop from Cloudflare to this machine is
+# protected by the tunnel, not by a certificate Caddy holds. Set the zone's
+# SSL/TLS mode to "Full (strict)" — do NOT use Flexible.
+#
+# THIS FILE IS THE ONLY DIFFERENCE between a workstation deployment and a cloud
+# one. The routing table itself (k8s/ingress/Caddyfile) is byte-identical.
+
+(tls_policy) {
+}
+
+(tls_managed) {
+}
+
+(tls_admin_origin) {
+}

@@ -319,7 +319,7 @@ reads (no cross-partner ledger). Bootcamps are host-partner-owned → read-only 
   shared `sparx-app`), own env/secret refs (own `BETTER_AUTH_SECRET`, `OPERATOR_DATABASE_URL`,
   `SPARX_API_REST_URL`, `SPARX_INTERNAL_OPERATOR_TOKEN`). Add to `k8s/apps/kustomization.yaml` + the
   `wize-admin` namespace manifest.
-- **Caddy** (`k8s/caddy/`): route `admin.wize.works` → the `admin` Service (ClusterIP).
+- **Caddy** (`k8s/ingress/`): route `admin.wize.works` → the `admin` Service (ClusterIP).
 - **Cloudflare** (`terraform/envs/prod/cloudflare.tf`, D9): `admin.wize.works` DNS record + a **Cloudflare
   Access** application/policy (same account, existing `wize.works` zone).
 - **Terraform**: the `wize_operator` Postgres role (`NOBYPASSRLS`, rights on `wize_admin` only) + the

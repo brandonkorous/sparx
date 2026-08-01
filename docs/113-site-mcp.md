@@ -149,7 +149,7 @@ authorized by the on-demand-TLS ask (`internal/domain-check.ts`). The store's MC
 at the store's address and is advertised in its own `llms.txt`.
 
 ```
-# k8s/caddy/Caddyfile — inside the catch-all :443 block, BEFORE `reverse_proxy … site`
+# k8s/ingress/Caddyfile — inside the catch-all :443 block, BEFORE `reverse_proxy … site`
 handle_path /mcp* { reverse_proxy mcp-site.sparx-prod.svc.cluster.local:3200 }
 ```
 

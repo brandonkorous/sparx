@@ -35,10 +35,17 @@ resources:
   # http://api-rest.sparx-prod.svc.cluster.local:3000/internal/* — no per-service
   # image to build, and nothing GKE-specific in them.
   - ../cronjobs
-  # Workers, Caddy, cloudflared and the ingress routing table — shared with
-  # k8s/azure so there is exactly ONE copy of each. See that directory's
-  # kustomization for why it is a base rather than duplicated files.
+  # The 11 workers — shared verbatim with k8s/azure.
   - ../self-hosted
+  # Caddy + THE routing table, shared verbatim with every cloud overlay. The
+  # workstation delta is three things and nothing else: mode.caddy below, the
+  # two SX_* env vars, and a ClusterIP Service instead of a LoadBalancer.
+  - ../ingress
+  # The tunnel. This is the ONLY deployment that needs one, because it is the
+  # only one with no public IP for an ACME challenge to arrive on. It used to
+  # live in ../self-hosted, which is how it ended up fronting AKS and taking
+  # per-hostname certificate issuance down with it.
+  - cloudflared.yaml
   # Local stand-ins for the managed dependencies: Postgres, Redis, Typesense and
   # the media volume. This is the main thing that differs from the Azure overlay,
   # which uses a managed Postgres and drops Redis.
@@ -83,6 +90,19 @@ configMapGenerator:
     behavior: create
     envs:
       - app-env-configmap.env
+  # The workstation TLS policy. `behavior: merge` overwrites the `mode.caddy`
+  # KEY inside the ConfigMap ../ingress generated, leaving the Caddyfile key
+  # untouched — so the routing table is shared byte-for-byte and only the
+  # eight-line policy file differs.
+  #
+  # This is the whole reason the Caddyfile has `import mode.caddy` in it instead
+  # of inline `tls` directives: without that indirection, a laptop with no
+  # inbound path needs its own copy of all 390 lines, which is precisely the
+  # fork this replaced.
+  - name: caddy-config
+    behavior: merge
+    files:
+      - mode.caddy
   # NOTE: the `postgres-init` ConfigMap is deliberately NOT generated here.
   # It has to carry packages/db/docker/init/01-roles.sql — the same file the dev
   # compose stack mounts, so local k8s and `pnpm db:up` provision `sparx_app`
@@ -404,3 +424,53 @@ patches:
                     memory: '64Mi'
                   limits:
                     memory: '768Mi'
+
+  # --- Ingress: no public IP here --------------------------------------------
+  # A workstation cluster cannot be given a routable address, so a
+  # `type: LoadBalancer` Service would sit in <pending> forever. cloudflared
+  # reaches Caddy over a ClusterIP instead, and TLS terminates at Cloudflare's
+  # edge.
+  #
+  # This — and mode.caddy above — is the ONLY difference between this ingress
+  # and the one running in AKS. The routing table, the Deployment, the probes
+  # and the PVC are shared verbatim.
+  - target:
+      kind: Service
+      name: caddy
+    patch: |-
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: caddy
+      spec:
+        type: ClusterIP
+        externalTrafficPolicy: null
+        ports:
+          - name: http
+            port: 80
+            targetPort: 80
+            protocol: TCP
+
+  # Plain HTTP on :80, with the tenant catch-all listening there instead of on
+  # :443. Both variables default to the CLOUD values inside the Caddyfile, so a
+  # new managed cluster is correct with nothing set — this is the case that
+  # opts out, which is the right way round.
+  - target:
+      kind: Deployment
+      name: caddy
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: caddy
+      spec:
+        template:
+          spec:
+            containers:
+              - name: caddy
+                imagePullPolicy: IfNotPresent
+                env:
+                  - name: SX_SCHEME
+                    value: http
+                  - name: SX_CATCHALL
+                    value: ':80'
