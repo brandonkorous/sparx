@@ -9,10 +9,39 @@
 name: Deploy (Azure)
 
 on:
+  # Application code → build first, deploy after. The build is path-filtered to
+  # apps/, services/, packages/ and the lockfiles.
   workflow_run:
     workflows: ['Build images (GHCR)']
     types: [completed]
     branches: [main]
+
+  # Deployment-shaping changes that build NO image. Without this trigger a
+  # manifest-only commit was undeployable: it matched none of the build's path
+  # filters, so no build ran, so no `workflow_run` fired, so this workflow never
+  # started — and the change sat on main looking merged while the cluster kept
+  # serving the old manifests. Every path below changes what gets applied
+  # without changing a single byte of any image.
+  #
+  # The `prepare` job already handles this case correctly and always did: it
+  # resolves `image_sha` by walking back to the newest ancestor that actually
+  # has images in GHCR, precisely so an infra-only commit does not roll out a
+  # tag that was never pushed. The logic anticipated the deploy; the trigger to
+  # reach it was missing.
+  #
+  # A commit touching BOTH application code and these paths fires both triggers
+  # and deploys twice. The `deploy-azure` concurrency group serialises them and
+  # the image build's run lands second with the newer images, so it converges —
+  # one redundant rollout is a better failure than a silently undeployed
+  # manifest.
+  push:
+    branches: [main]
+    paths:
+      - 'k8s/**'
+      - '.github/workflows/deploy-azure.yml'
+      - '.github/workflows/db-migrate-azure.yml'
+      - '.github/scripts/**'
+
   workflow_dispatch:
     inputs:
       sha:
@@ -82,10 +111,19 @@ jobs:
     #
     # 2. A failed build must not deploy. workflow_run fires on completion of ANY
     #    conclusion, including failure, so that check is load-bearing.
+    #
+    # The `push` arm is spelled as its own STRING comparison rather than folded
+    # into the conclusion check. On a push event `github.event.workflow_run` does
+    # not exist, so `…conclusion == 'success'` is false and a condition relying
+    # on it alone skips the job silently — which is the same class of bug that
+    # made `inputs.run_migrations != false` skip every migration on a
+    # workflow_run (mismatched types both cast to 0, so `null != false` is
+    # FALSE). Comparing `github.event_name` to a literal has no coercion in it.
     if: >-
       github.event_name == 'workflow_dispatch' ||
       (vars.AZURE_DEPLOY_ENABLED == 'true' &&
-       github.event.workflow_run.conclusion == 'success')
+       (github.event_name == 'push' ||
+        github.event.workflow_run.conclusion == 'success'))
     runs-on: ubuntu-latest
     environment: prod
 
