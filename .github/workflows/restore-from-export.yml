@@ -175,12 +175,22 @@ jobs:
                     command: ['sh', '-euc']
                     args:
                       - |
-                        # pipefail is the load-bearing one. In `curl | gunzip | psql`
-                        # a plain `set -e` only inspects psql, so a download that dies
-                        # halfway can still end on a statement boundary and exit 0 —
-                        # a PARTIAL restore reported as a success. busybox ash
-                        # supports this; the guard keeps a stricter /bin/sh from
-                        # aborting the script on an unknown option.
+                        # pipefail is the load-bearing one. In the curl-gunzip-psql
+                        # pipeline below, a plain "set -e" only inspects psql, so a
+                        # download that dies halfway can still end on a statement
+                        # boundary and exit 0 — a PARTIAL restore reported as a
+                        # success. busybox ash supports this; the guard keeps a
+                        # stricter /bin/sh from aborting on an unknown option.
+                        #
+                        # NO BACKTICKS anywhere in this heredoc. It is unquoted
+                        # (it needs the escaped-dollar form for the container's
+                        # own variables), so bash performs command substitution
+                        # on backticks even inside these comments. This block
+                        # previously wrote two shell fragments in backticks and
+                        # got away with it only because both happened to produce
+                        # empty output; the same mistake in db-migrate-azure.yml
+                        # executed "env", spliced the whole environment into the
+                        # manifest, and broke the deploy.
                         set -o pipefail 2>/dev/null || echo "warning: no pipefail"
 
                         apk add --no-cache curl >/dev/null

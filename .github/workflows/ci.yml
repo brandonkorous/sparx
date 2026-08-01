@@ -76,6 +76,30 @@ jobs:
       - name: Check event/topic parity
         run: node scripts/check-event-topics.mjs
 
+  workflow-heredocs:
+    name: Workflow heredoc safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Guards a failure mode that has already bitten twice in one day. In an
+    # UNQUOTED heredoc (`cmd <<EOF`), bash performs command substitution on
+    # backticks anywhere in the body — including inside YAML and shell COMMENTS.
+    #
+    # db-migrate-azure.yml named two Kubernetes fields in backticks inside a
+    # `kubectl apply -f - <<YAML` body. bash executed `env`, spliced the whole
+    # process environment into the manifest, and the deploy died at the
+    # migration step on a YAML parse error pointing at a line nobody wrote.
+    #
+    # restore-from-export.yml made the identical mistake and PASSED, because its
+    # two fragments happened to produce empty output — it restored production
+    # data while carrying a live footgun. That silence is why this is CI and not
+    # a review checklist. No install needed, so it fails fast beside the heavy
+    # jobs.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Lint workflow heredocs
+        run: bash .github/scripts/lint-workflow-heredocs.sh
+
   terraform:
     name: Terraform fmt + validate
     runs-on: ubuntu-latest

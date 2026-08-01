@@ -52,9 +52,22 @@ on:
         options: [prod]
 
 concurrency:
-  # Shared with deploy-azure.yml — a migration racing a rollout, or two
-  # migrations at once, would interleave DDL against one database.
-  group: deploy-azure
+  # The group DEPENDS ON HOW THIS WAS STARTED, and it has to.
+  #
+  # Dispatched directly, it should hold the same `deploy-azure` group the deploy
+  # uses, so a hand-run migration cannot interleave DDL with a rollout.
+  #
+  # Called via `uses:` from deploy-azure.yml, it must NOT — the caller already
+  # holds `deploy-azure`, so a called workflow asking for it waits on a group its
+  # own parent will not release until the child finishes. That deadlock is why
+  # the first three-job deploy produced a `prepare` job, no `migrate` job at all,
+  # and a skipped `rollout`, with no error anywhere to explain it.
+  #
+  # `github.workflow` resolves to the CALLER's name inside a reusable workflow,
+  # which is what makes the two cases distinguishable. Called, it becomes a group
+  # unique to the run and therefore uncontended; dispatched, it is the shared
+  # one.
+  group: ${{ github.workflow == 'DB Migrate (Azure)' && 'deploy-azure' || format('db-migrate-azure-{0}', github.run_id) }}
   cancel-in-progress: false
 
 permissions:
@@ -172,7 +185,23 @@ jobs:
       - name: Run migrations
         run: |
           kubectl delete job db-migrate -n "$NAMESPACE" --ignore-not-found
-          kubectl apply -n "$NAMESPACE" -f - <<YAML
+          # QUOTED heredoc. Everything below is either literal YAML or a GitHub
+          # expression, and GitHub substitutes those before bash ever sees this
+          # — so nothing here needs shell expansion, and allowing it is pure
+          # downside.
+          #
+          # (Writing the expression delimiters literally in this comment would
+          # itself break the workflow: substitution runs over the whole run
+          # block, comments included, and an empty one is a syntax error.)
+          #
+          # Unquoted, bash performs command substitution on BACKTICKS inside the
+          # body, including ones sitting in YAML comments. The comment below
+          # originally wrote `env` and `envFrom` in backticks to name the
+          # Kubernetes fields; bash executed them, spliced the entire process
+          # environment into the manifest, and kubectl died on
+          # `error converting YAML to JSON: could not find expected ':'` —
+          # pointing at a line the author never wrote.
+          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
           apiVersion: batch/v1
           kind: Job
           metadata:
@@ -194,10 +223,15 @@ jobs:
                     env:
                       # Migrations and the hand-edited RLS SQL run as the OWNER
                       # role, not the RLS-constrained role the apps use. This
-                      # explicit `env` deliberately OVERRIDES the DATABASE_URL
-                      # that `envFrom` pulls in as sparx_app — explicit env wins
-                      # over envFrom in Kubernetes, and that ordering is what
-                      # makes the runner connect with owner rights.
+                      # explicit env entry deliberately OVERRIDES the
+                      # DATABASE_URL that envFrom pulls in as sparx_app —
+                      # explicit env wins over envFrom in Kubernetes, and that
+                      # ordering is what makes the runner connect with owner
+                      # rights.
+                      #
+                      # No backticks in here, deliberately, even though the
+                      # heredoc is quoted now. They are one `<<YAML` away from
+                      # being executed again.
                       - name: DATABASE_URL
                         valueFrom:
                           secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
