@@ -1,8 +1,20 @@
-# Cloudflare DNS for all Sparx-owned zones.
+# Cloudflare DNS for all Sparx-owned zones. PROVIDER-NEUTRAL.
+#
+# This was terraform/envs/prod/cloudflare.tf, where every A record read
+# `google_compute_address.ingress.address` directly. That made the platform's
+# entire public DNS a GCP artefact: pointing it at an AKS or EKS cluster meant
+# rewriting 27 resources or keeping a second copy — the same "one file per
+# cloud" pattern that had already produced two divergent Caddyfiles, and the
+# reason the Azure deployment ended up with hand-made records that drifted from
+# Terraform immediately.
+#
+# The only thing that varies between clouds is now `var.ingress_ip`. Both
+# envs/prod (GCP) and envs/azure (AKS) call this module with their own reserved
+# address and get byte-identical records.
 #
 # Gated by var.cloudflare_enabled. Flip to true once:
 #   1. Zones are added in Cloudflare (data sources look them up by name)
-#   2. var.cloudflare_api_token is set (Zone:DNS:Edit scoped to these zones)
+#   2. the caller's Cloudflare provider has a token (Zone:DNS:Edit on these zones)
 #
 # Proxied vs DNS-only:
 #   - sparx.works (app/api/mcp/marketing) → proxied = true (Cloudflare CDN + WAF)
@@ -241,9 +253,32 @@ resource "cloudflare_record" "sparx_zone_root" {
   allow_overwrite = true
 }
 
-# Wildcard for tenant stores (slug.sparx.zone).
-# Caddy on-demand TLS issues per-slug Let's Encrypt certs — Cloudflare proxy
-# would intercept the TLS handshake, so this MUST be DNS-only.
+# Wildcard for every tenant site — `<tenant>.sparx.zone` AND
+# `<property>.<tenant>.sparx.zone`.
+#
+# MUST be DNS-only. Caddy issues a per-hostname Let's Encrypt certificate on
+# first request, and an ACME challenge cannot reach the origin through
+# Cloudflare's proxy. This is not a preference: proxying this record is what
+# broke nested tenant hostnames during the tunnel period, because a tunnel
+# carries only proxied hostnames, so TLS had to terminate at Cloudflare's edge
+# on a Universal SSL certificate — and a wildcard certificate matches exactly
+# ONE label (RFC 6125 §6.4.3), so every `<property>.<tenant>.sparx.zone`
+# returned a handshake failure while DNS resolved perfectly.
+#
+# WHY DEPTH-2 NAMES RESOLVE FROM A ONE-LABEL WILDCARD. A DNS wildcard matches a
+# single label, but only relative to its CLOSEST ENCLOSER. As long as no node
+# exists at `<tenant>.sparx.zone`, the closest encloser for
+# `site.wizeworks.sparx.zone` is `sparx.zone` and this record synthesises an
+# answer. That holds today because NOTHING creates per-tenant records —
+# verified: no code under services/ or packages/ calls the Cloudflare API, and
+# tenant hostnames are minted only as `domains` rows (api-rest `mintZoneHost`).
+#
+# THE LANDMINE: adding an explicit record for a single tenant — by hand, or by
+# some future per-tenant automation — creates that intermediate node and
+# instantly NXDOMAINs every deeper name under it. One tenant's multi-site setup
+# would break while every other tenant kept working, with nothing in the app
+# changed. If per-tenant records ever become necessary, each one needs its own
+# `*.<tenant>.sparx.zone` wildcard alongside it.
 resource "cloudflare_record" "sparx_zone_wildcard" {
   count           = var.cloudflare_enabled ? 1 : 0
   zone_id         = data.cloudflare_zone.sparx_zone[0].id

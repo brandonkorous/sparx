@@ -134,6 +134,31 @@ replicas:
     count: 1
 
 patches:
+  # --- Pin the ingress to the RESERVED public IP ------------------------------
+  # `azure-pip-name` is the AKS-supported way to attach an existing public IP,
+  # and it is Azure-specific — which is why it lives in this overlay and not in
+  # k8s/ingress/service.yaml. The base Service stays a plain
+  # `type: LoadBalancer` that GKE and EKS accept unchanged; each provider adds
+  # its own hint here.
+  #
+  # Without it the Service takes an EPHEMERAL address, which changes whenever
+  # the Service is recreated — a namespace rebuild, a rename, a bad delete. DNS
+  # then points at an address Azure has reassigned, and nothing in the cluster
+  # reports a fault, because the cluster is healthy. The IP is reserved in
+  # terraform/envs/azure/ingress.tf; `terraform output ingress_pip_name` is the
+  # value below.
+  #
+  # NOT `spec.loadBalancerIP`: deprecated since Kubernetes 1.24 and slated for
+  # removal, and it hard-codes the address where this hard-codes only its name.
+  - target: { kind: Service, name: caddy }
+    patch: |-
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: caddy
+        annotations:
+          service.beta.kubernetes.io/azure-pip-name: pip-ingress-sparx-prod-cus
+
   # --- Storage class for the ACME certificate volume --------------------------
   # k8s/ingress/pvc.yaml deliberately omits storageClassName so it binds to
   # whatever the cluster's default is — portable, but on AKS the default is

@@ -163,6 +163,14 @@ jobs:
         # `init -backend=false` avoids needing GCP creds in CI for validation.
         run: bash "$GITHUB_WORKSPACE/.github/scripts/tf-validate.sh"
 
+      # The Azure env was never validated here, so nothing checked the
+      # environment the platform ACTUALLY RUNS ON — only the GCP fallback. Both
+      # now call the shared modules/dns, and a break in that module would
+      # otherwise surface at apply time against live DNS.
+      - name: Validate envs/azure
+        working-directory: terraform/envs/azure
+        run: bash "$GITHUB_WORKSPACE/.github/scripts/tf-validate.sh"
+
       - name: Validate bootstrap
         working-directory: terraform/bootstrap
         run: bash "$GITHUB_WORKSPACE/.github/scripts/tf-validate.sh"

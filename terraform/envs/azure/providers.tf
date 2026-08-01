@@ -38,6 +38,13 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.6"
     }
+    // DNS. Cloudflare is neither an Azure nor a GCP service, which is exactly
+    // why the records live in a shared module (../../modules/dns) and this env
+    // supplies only the address they point at.
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 4.40"
+    }
   }
 }
 
@@ -51,4 +58,11 @@ provider "azurerm" {
     }
   }
   subscription_id = var.subscription_id
+}
+
+// Configured even when var.cloudflare_enabled is false: the provider must be
+// declarable for the module to load, and with the switch off it creates nothing,
+// so an empty token is harmless.
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }

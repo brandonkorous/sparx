@@ -155,3 +155,47 @@ variable "admin_ip_cidr" {
   type        = string
   default     = ""
 }
+
+# --- Cloudflare / DNS -------------------------------------------------------
+# Consumed by module.dns (ingress.tf). Defaults keep DNS OFF so a plain
+# `terraform apply` here without a token still succeeds — turning it on is a
+# deliberate act, because it repoints the platform's live public DNS.
+
+variable "cloudflare_api_token" {
+  description = <<-EOT
+    Cloudflare API token. Needs Zone:DNS:Edit on the platform zones, plus
+    Zone:SSL and Certificates:Edit if this env ever issues an Origin CA cert.
+    Never committed — pass via TF_VAR_cloudflare_api_token.
+  EOT
+  type        = string
+  default     = ""
+  sensitive   = true
+}
+
+variable "cloudflare_enabled" {
+  description = <<-EOT
+    Master switch for module.dns. Leave FALSE until the AKS ingress is verified
+    serving on azurerm_public_ip.ingress: flipping it true repoints every
+    platform hostname at this cluster.
+  EOT
+  type        = bool
+  default     = false
+}
+
+variable "operator_access_emails" {
+  description = "Emails allowed through Cloudflare Access on admin.wize.works."
+  type        = list(string)
+  default     = []
+}
+
+variable "sparx_email_dkim_selector" {
+  description = "DKIM selector for the sparx.email sending domain."
+  type        = string
+  default     = ""
+}
+
+variable "sparx_email_dkim_value" {
+  description = "DKIM public key TXT value for the sparx.email sending domain."
+  type        = string
+  default     = ""
+}

@@ -40,3 +40,18 @@ output "postgres_admin_password" {
   value       = random_password.postgres_admin.result
   sensitive   = true
 }
+
+output "ingress_ip" {
+  description = <<-EOT
+    The reserved public IP every platform hostname resolves to. Pin the Caddy
+    Service to it with the azure-pip-name annotation (see k8s/azure) — an
+    unpinned Service takes an ephemeral address instead and DNS goes stale the
+    next time it is recreated.
+  EOT
+  value       = azurerm_public_ip.ingress.ip_address
+}
+
+output "ingress_pip_name" {
+  description = "Name for the k8s Service's service.beta.kubernetes.io/azure-pip-name annotation."
+  value       = azurerm_public_ip.ingress.name
+}
