@@ -9,53 +9,82 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+# ONE JOB PER TASK, IN PARALLEL, EACH WITH A WARM TURBO CACHE.
+#
+# This was a single `validate` job running lint → typecheck → test → prettier in
+# sequence, and it took ~24 minutes. The measured split was:
+#
+#     Install    0.7 min
+#     Lint       8.5 min
+#     Typecheck 13.8 min
+#     Test       1.3 min
+#
+# Two things were wrong, and neither was the tests.
+#
+#   1. SEQUENTIAL. Lint and typecheck have nothing to say to each other, so the
+#      job cost their SUM. Split across jobs, wall-clock is the slowest one.
+#   2. NO CACHE. Turbo hashes task inputs and can skip a package whose inputs
+#      have not changed, but the cache lived only inside the runner and died
+#      with it — so all 63 packages re-linted and re-typechecked on every push,
+#      including the many the commit never touched. Persisting `.turbo` means a
+#      typical commit does the work for the handful of packages it actually
+#      changed.
+#
+# --concurrency=2 stays on typecheck and test, and is NOT an artifact of the old
+# layout: the default (~10) spawns enough simultaneous `tsc`/vitest processes
+# across 63 packages to exhaust a hosted runner's RAM. The OOM killer takes one
+# out with exit 137 and the job dies as "operation was canceled" with no TSxxxx
+# error to explain it. A dedicated job does not add memory, so the cap still
+# earns its place. Local/pre-push runs are uncapped — dev machines have the
+# headroom. Call turbo directly: `pnpm typecheck -- --concurrency=2` forwards
+# the flag to tsc ("TS5023: Unknown compiler option"), not to turbo.
 jobs:
-  validate:
-    name: Lint, typecheck, test
+  lint:
+    name: Lint
     runs-on: ubuntu-latest
-    # 30 (not 15) because the typecheck/test steps below run Turbo with a
-    # capped concurrency to stay under the hosted runner's RAM (see those
-    # steps). Fewer parallel tsc/vitest processes ⇒ longer wall-clock, so the
-    # old 15-min ceiling would itself fail the job. cancel-in-progress still
-    # kills superseded runs, so a high ceiling doesn't pile up stale runs.
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
-
-      - uses: pnpm/action-setup@v4
+      - uses: ./.github/actions/setup-workspace
         with:
-          version: 9.15.0
+          turbo-cache-key: lint
+      - run: pnpm lint
 
-      - uses: actions/setup-node@v6
+  typecheck:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    # The long pole. 20 rather than 15 because a cold cache at --concurrency=2
+    # genuinely takes ~14 minutes; cancel-in-progress keeps superseded runs from
+    # piling up behind a generous ceiling.
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
         with:
-          node-version-file: .nvmrc
-          cache: pnpm
+          turbo-cache-key: typecheck
+      - run: pnpm exec turbo run typecheck --concurrency=2
 
-      - name: Install
-        run: pnpm install --frozen-lockfile
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+        with:
+          turbo-cache-key: test
+      - run: pnpm exec turbo run test --concurrency=2
 
-      - name: Lint
-        run: pnpm lint
-
-      # --concurrency=2 caps how many packages typecheck at once. The default
-      # (~10) spawns enough simultaneous `tsc` processes across the 63 workspace
-      # packages to exhaust the hosted runner's RAM; the OOM killer takes one
-      # out with exit 137 and the runner dies ("operation was canceled" with no
-      # actual TSxxxx errors). Two at a time keeps peak memory well under the
-      # ceiling while still using both runner cores. Local/pre-push runs are
-      # uncapped (dev machines have the headroom). Call turbo directly — piping
-      # the flag through `pnpm typecheck -- --concurrency=2` forwards it to tsc
-      # ("TS5023: Unknown compiler option"), not to turbo.
-      - name: Typecheck
-        run: pnpm exec turbo run typecheck --concurrency=2
-
-      # Same memory reasoning as Typecheck — vitest forks workers per package,
-      # so cap how many packages test in parallel.
-      - name: Test
-        run: pnpm exec turbo run test --concurrency=2
-
-      - name: Prettier
-        run: pnpm format:check
+  format:
+    name: Prettier
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-workspace
+        with:
+          turbo-cache-key: format
+      - run: pnpm format:check
 
   event-topics:
     name: Event ↔ topic parity

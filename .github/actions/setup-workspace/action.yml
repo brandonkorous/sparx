@@ -1,0 +1,49 @@
+# Shared setup for the CI jobs: pnpm, Node, install, and a persisted Turbo cache.
+#
+# Exists because splitting `validate` into parallel per-task jobs would otherwise
+# mean four copies of the same five steps, drifting the first time one is
+# updated. A composite action keeps the toolchain in one place.
+name: Setup workspace
+description: Install pnpm + Node, restore the Turbo cache, and install dependencies.
+
+inputs:
+  turbo-cache-key:
+    description: >-
+      Task name this job runs. Turbo caches per task, so a per-task key keeps
+      each job's cache small and avoids four jobs racing to save the same entry
+      (only one wins and the rest log a harmless-but-noisy conflict).
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: pnpm/action-setup@v4
+      with:
+        version: 9.15.0
+
+    - uses: actions/setup-node@v6
+      with:
+        node-version-file: .nvmrc
+        cache: pnpm
+
+    # THE CACHE THAT WAS MISSING. Turbo skips any package whose task inputs
+    # hash to something it has already seen — but the cache lived only in the
+    # runner's filesystem and died with the runner, so every push re-linted and
+    # re-typechecked all 63 packages, including the ones the commit never
+    # touched.
+    #
+    # `key` includes the SHA so each run writes a fresh entry (GitHub caches are
+    # immutable once written); `restore-keys` then falls back to the newest
+    # earlier entry for the same task. Correctness does not depend on the key:
+    # Turbo validates entries by input hash, so a stale restore simply misses
+    # and does the work.
+    - uses: actions/cache@v4
+      with:
+        path: .turbo
+        key: turbo-${{ runner.os }}-${{ inputs.turbo-cache-key }}-${{ github.sha }}
+        restore-keys: |
+          turbo-${{ runner.os }}-${{ inputs.turbo-cache-key }}-
+
+    - name: Install
+      shell: bash
+      run: pnpm install --frozen-lockfile
