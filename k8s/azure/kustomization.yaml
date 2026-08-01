@@ -70,6 +70,9 @@ images:
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/market
     newName: ghcr.io/brandonkorous/sparx/market
     newTag: latest
+  - name: us-central1-docker.pkg.dev/sparxworks/sparx/admin
+    newName: ghcr.io/brandonkorous/sparx/admin
+    newTag: latest
   # The 11 workers carry `sparx/<name>:local` in the shared base, since that base
   # is written for the workstation case. Rewrite them the same way.
   - name: sparx/email-worker
@@ -117,6 +120,8 @@ generatorOptions:
 
 replicas:
   - name: api-rest
+    count: 1
+  - name: admin
     count: 1
   - name: api-graphql
     count: 1

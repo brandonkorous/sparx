@@ -58,6 +58,7 @@ jobs:
           - { name: web, dockerfile: apps/web/Dockerfile }
           - { name: site, dockerfile: apps/site/Dockerfile }
           - { name: market, dockerfile: apps/market/Dockerfile }
+          - { name: admin, dockerfile: apps/admin/Dockerfile }
           # Workers, formerly Cloud Run (k8s/self-hosted/workers.yaml)
           - { name: email-worker, dockerfile: services/email-worker/Dockerfile }
           - { name: push-worker, dockerfile: services/push-worker/Dockerfile }

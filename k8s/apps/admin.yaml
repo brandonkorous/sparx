@@ -1,0 +1,121 @@
+# apps/admin — the WizeWorks staff console. Next.js standalone server on port 3000.
+#
+# Serves admin.wize.works. Caddy reverse-proxies that host here; access control is
+# enforced IN FRONT by Cloudflare Access (docs/16 §2.4), which is the load-bearing
+# gate until operator MFA ships. This pod trusts that gate and does not re-implement
+# it, so it must never be exposed on a host that Access does not cover.
+#
+# WHY THIS FILE DID NOT EXIST UNTIL NOW. On GKE the console ran in its own
+# `wize-admin` namespace, applied out of band, and the Caddyfile still pointed at
+# `admin.wize-admin.svc.cluster.local`. That namespace was never recreated on AKS,
+# so admin.wize.works passed Cloudflare Access and then 502'd at the proxy — the
+# host looked "up" from the edge because Access answered before Caddy did. Moving
+# the console into sparx-prod alongside every other app removes the out-of-band
+# namespace entirely; the Caddyfile upstream moves with it.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  namespace: sparx-prod
+  labels:
+    app: admin
+    tier: web
+spec:
+  # 1 replica: this is a staff console with a handful of operators, not a tenant
+  # surface. It shares one 2-vCPU node with the whole platform, so a second
+  # replica would cost scheduling headroom that serving traffic needs more.
+  replicas: 1
+  revisionHistoryLimit: 5
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  selector:
+    matchLabels:
+      app: admin
+  template:
+    metadata:
+      labels:
+        app: admin
+        tier: web
+    spec:
+      containers:
+        - name: admin
+          image: us-central1-docker.pkg.dev/sparxworks/sparx/admin:latest
+          # Always — `:latest` is mutable; IfNotPresent risks a stale node-cached
+          # image after a bare restart. Full rationale in api-mcp.yaml.
+          imagePullPolicy: Always
+          ports:
+            - name: http
+              containerPort: 3000
+          envFrom:
+            - configMapRef:
+                name: sparx-app-env
+            - secretRef:
+                name: sparx-app-secrets
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: admin
+            - name: PORT
+              value: '3000'
+            - name: HOSTNAME
+              value: 0.0.0.0
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1001
+            runAsGroup: 1001
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: '25m'
+              memory: '96Mi'
+            limits:
+              memory: '640Mi'
+          # Probe /health, never a rendered page: every other route in this app
+          # redirects into an auth flow, so probing `/` would make pod health a
+          # function of the auth stack and let a downstream outage roll a healthy
+          # pod. Tolerances mirror workbench — 5s timeout absorbs event-loop
+          # stalls on the 25m-CPU floor, and a 30s boot delay plus
+          # failureThreshold 5 tolerate a cold Next.js standalone start.
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 30
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 5
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          lifecycle:
+            preStop:
+              exec:
+                command: ['/bin/sh', '-c', 'sleep 10']
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports:
+    - name: http
+      port: 3000
+      targetPort: 3000
+  selector:
+    app: admin

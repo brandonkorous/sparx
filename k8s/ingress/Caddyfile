@@ -264,10 +264,17 @@ import mode.caddy
 	redir https://silicaui.com{uri} permanent
 }
 
-# ----- WizeWorks operator console (admin.wize.works, wize-admin namespace) -----
+# ----- WizeWorks operator console (admin.wize.works, sparx-prod namespace) -----
 # The Layer-4 operator console (docs/16 §2.4). Access control is enforced IN
 # FRONT by Cloudflare Access, the load-bearing gate until operator MFA ships;
-# Caddy just proxies cross-namespace to the admin Service.
+# Caddy just proxies to the admin Service.
+#
+# The console used to live in its own `wize-admin` namespace, applied out of
+# band. That namespace was never recreated on AKS, so this block proxied into
+# nothing and the host 502'd BEHIND Cloudflare Access — which made it look up
+# from outside, because Access answers the first request itself and never
+# reaches the origin. It now ships in sparx-prod like every other app
+# (k8s/apps/admin.yaml), so there is no out-of-band namespace left to forget.
 #
 # TLS is a Cloudflare ORIGIN CA certificate, NOT Let's Encrypt. This host sits
 # behind Cloudflare Access, which intercepts the ACME challenge path
@@ -282,10 +289,23 @@ import mode.caddy
 # certificate files existing. The bootstrap caddy step syncs the secret and
 # FAILS before rolling if it can't — do not remove that guard. The snippet is a
 # no-op in workstation mode, where the secret is not mounted.
+#
+# THAT GUARD DOES NOT EXIST ON AZURE, and its absence caused a total outage on
+# 2026-08-01. Nothing provisions caddy-admin-origin here (there is no Azure
+# equivalent of origin-ca.tf + the bootstrap sync), so Caddy rolled with this
+# `tls` directive pointing at files that were never written. Caddy fails config
+# load as a UNIT — one missing certificate took down all ~40 hostnames, not just
+# this one. The secret currently holds a SELF-SIGNED stopgap so the ingress can
+# boot; because the zone is Full(strict), the edge will reject it once a request
+# actually reaches the origin. Issuing the real Origin CA certificate needs a
+# Cloudflare token carrying the Origin CA permission (the current one returns
+# 1016 "User is not authorized"). Until that lands this host is the ONLY one
+# still degraded — which is the point of the split: no other hostname depends on
+# it any more.
 {$SX_SCHEME:https}://admin.wize.works {
 	import tls_admin_origin
 	import security_headers
-	reverse_proxy admin.wize-admin.svc.cluster.local:3000
+	reverse_proxy admin.sparx-prod.svc.cluster.local:3000
 }
 
 # ----- Module marketing sites -----
