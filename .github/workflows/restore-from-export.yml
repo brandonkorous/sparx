@@ -54,6 +54,11 @@ on:
         required: false
         default: 'media-20260731.tar.gz'
         type: string
+      tables:
+        description: 'Comma-separated tables to load ADDITIVELY (blank = whole-schema restore). e.g. accounts'
+        required: false
+        default: ''
+        type: string
       force:
         description: 'Restore the database even if it already has tables'
         required: false
@@ -195,6 +200,55 @@ jobs:
 
                         apk add --no-cache curl >/dev/null
 
+                        # ---- TABLE-SCOPED MODE -------------------------------
+                        # A whole-schema restore is the wrong tool for "one table
+                        # did not land". This mode exists because exactly that
+                        # happened: the 2026-07-31 migration restored public.users
+                        # (9 rows) but public.accounts came out EMPTY, which in
+                        # Better Auth means the password hashes and OAuth links
+                        # were gone and every staff login failed while the app
+                        # looked healthy. The whole-schema path below could not
+                        # fix it without discarding a day of live tenant data.
+                        #
+                        # It streams the dump and emits ONLY the COPY block for
+                        # each named table, so nothing is dropped and no other
+                        # table is touched. Additive by construction: it is for
+                        # loading into an EMPTY table. If the target already has
+                        # rows the COPY will collide on the primary key and
+                        # ON_ERROR_STOP aborts — deliberately, rather than
+                        # silently duplicating or half-merging.
+                        if [ -n "\$TABLES" ]; then
+                          echo "table-scoped load: \$TABLES"
+                          for t in \$(echo "\$TABLES" | tr ',' ' '); do
+                            n=\$(psql "\$AUTH_DATABASE_URL" -tAc \
+                              "SELECT count(*) FROM public.\$t")
+                            echo "  public.\$t currently holds \$n rows"
+                            if [ "\$n" != "0" ] && [ "\$FORCE" != "true" ]; then
+                              echo "REFUSING: public.\$t is not empty."
+                              echo "This mode loads into empty tables. Re-run with"
+                              echo "force=true only if you intend to risk a collision."
+                              exit 1
+                            fi
+                          done
+
+                          curl -fsSL "\$RESTORE_URL" | gunzip -cf | awk -v want="\$TABLES" '
+                            BEGIN { split(want, a, ","); for (i in a) keep[a[i]] = 1 }
+                            /^COPY public\./ {
+                              tbl = \$2; sub(/^public\./, "", tbl)
+                              if (tbl in keep) { emit = 1; print; next }
+                            }
+                            emit && /^\\\\\.\$/ { print; emit = 0; next }
+                            emit { print }
+                          ' | psql "\$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 --quiet
+
+                          echo "--- verification ---"
+                          for t in \$(echo "\$TABLES" | tr ',' ' '); do
+                            psql "\$AUTH_DATABASE_URL" -tAc \
+                              "SELECT 'public.\$t=' || count(*) FROM public.\$t"
+                          done
+                          exit 0
+                        fi
+
                         EXISTING=\$(psql "\$AUTH_DATABASE_URL" -tAc \
                           "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'")
                         echo "public schema currently holds \$EXISTING tables"
@@ -239,6 +293,8 @@ jobs:
                           secretKeyRef: { name: db-restore-source, key: url }
                       - name: FORCE
                         value: '${{ inputs.force }}'
+                      - name: TABLES
+                        value: '${{ inputs.tables }}'
           YAML
 
           ./.github/scripts/await-job.sh db-restore "$NAMESPACE" 1800
