@@ -115,7 +115,7 @@ export function BulkActionBar({ selected, onClear, actions, className }: BulkAct
         title: action.label,
         description: label,
         confirmLabel: action.label,
-        tone: action.variant === 'destructive' ? 'danger' : 'module',
+        color: action.variant === 'destructive' ? 'danger' : 'module',
       });
       if (!confirmed) return;
     }

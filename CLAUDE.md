@@ -144,7 +144,11 @@ Full palette, the per-element assignment table, the ship gate, and a worked exam
 
 ## Repository status
 
-The repo is **substantially built out**. Alongside the design docs under [docs/](docs/), the platform ships **4 Next.js apps** (`workbench`, `site`, `market`, `web`; `admin` + `b2b-portal` remain empty placeholders — `dashboard` has been **removed**, superseded by `workbench`), **~18 services** (`api-rest`, `api-graphql`, `api-mcp`, `mcp-site`, + a worker fleet), **~60 packages**, and a Prisma schema of **~277 models across 164 migrations**. `@sparx/ui` is a full CVA + Radix + Tailwind v4 component library, not a skeleton.
+The repo is **substantially built out**. Alongside the design docs under [docs/](docs/), the platform ships **5 Next.js apps** (`workbench`, `site`, `market`, `web`, `admin`; only `b2b-portal` is still an empty placeholder — `dashboard` has been **removed**, superseded by `workbench`), **~18 services** (`api-rest`, `api-graphql`, `api-mcp`, `mcp-site`, + a worker fleet), **~60 packages**, and a Prisma schema of **~277 models across 164 migrations**.
+
+`apps/admin` is the **WizeWorks-staff console** (not a tenant surface): ~72 components under `(auth)` + `(console)/sparx/*` covering tenants, users, sites, domains, billing, partners, bootcamps, feedback, support and metrics. It is also **the only remaining consumer of `@sparx/ui`** (71 files; `apps/web` 14, `apps/site` 2). `apps/workbench` — the flagship — depends on `@sparx/ui` **not at all** and imports silicaui directly.
+
+`@sparx/ui` is **not** a general component library and must not be treated as one: it is a small set of sparx-specific compositions over silicaui. Anything silicaui already ships has been deleted from it (see [packages/ui/CLAUDE.md](packages/ui/CLAUDE.md)) — reach for `@wizeworks/silicaui-react` first, always.
 
 > **Start at the knowledge brain — [docs/brain/README.md](docs/brain/README.md).** It is the canonical, grounded, interlinked map of everything below (design, architecture, data, modules, infra, integrations, conventions…) with a task-router that tells you which nodes to read before a given kind of work. This file is the binding summary; the brain is the navigable detail, and its notes hard-link the real source-of-truth files.
 

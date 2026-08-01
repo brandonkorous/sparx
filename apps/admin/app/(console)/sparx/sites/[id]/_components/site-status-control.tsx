@@ -31,7 +31,7 @@ export function SiteStatusControl({
         title,
         description,
         confirmLabel,
-        tone: next === 'active' ? 'module' : 'danger',
+        color: next === 'active' ? 'module' : 'danger',
       });
       if (!ok) return;
       const res = await setSiteStatusAction(siteId, tenantId, next);

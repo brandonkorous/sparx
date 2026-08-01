@@ -57,7 +57,7 @@ export function StorageLimitControl({
       description:
         'Clears this tenant’s storage-cap override. No data is affected; the platform default applies once cap enforcement ships.',
       confirmLabel: 'Remove limit',
-      tone: 'warning',
+      color: 'warning',
     });
     if (!ok) return;
     startTransition(async () => {

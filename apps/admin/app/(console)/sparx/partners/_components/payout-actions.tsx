@@ -22,7 +22,7 @@ export function PayoutActions() {
         description:
           'Promotes every partner commission whose clawback window has passed to “approved”, making it eligible for the next payout run. Safe to run anytime.',
         confirmLabel: 'Approve commissions',
-        tone: 'module',
+        color: 'module',
       });
       if (!ok) return;
       const res = await approveCommissionsAction();
@@ -38,7 +38,7 @@ export function PayoutActions() {
         description:
           'Transfers each active partner’s approved commission balance (at or above their payout threshold) to their connected Stripe account. Partners below threshold or without a connected account are skipped.',
         confirmLabel: 'Run payouts',
-        tone: 'warning',
+        color: 'warning',
       });
       if (!ok) return;
       const res = await runPayoutsAction();

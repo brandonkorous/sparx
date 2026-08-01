@@ -67,7 +67,7 @@ export function ApplicationsTable({
             : willProvision
               ? 'Create account & approve'
               : 'Approve partner',
-        tone: kind === 'approve' ? 'module' : 'warning',
+        color: kind === 'approve' ? 'module' : 'warning',
       });
       if (!ok) return;
       setPending((p) => ({ ...p, [a.id]: true }));

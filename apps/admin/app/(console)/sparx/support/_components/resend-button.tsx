@@ -30,7 +30,7 @@ export function ResendButton({
         ? `The order-confirmation email will be re-sent to ${customerEmail} using the tenant’s own template.`
         : 'This order has no customer email on file, so nothing can be sent.',
       confirmLabel: 'Re-send email',
-      tone: 'module',
+      color: 'module',
     });
     if (!ok) return;
 

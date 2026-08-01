@@ -30,7 +30,7 @@ export function SuspendControl({
         ? `Sets ${tenantName} back to active. It appears in the tenant’s account activity as a WizeWorks-initiated change.`
         : `Marks ${tenantName} suspended and records it in the tenant’s account activity. Note: this is a status change for now — it does not yet block their sign-in, API, or public site. That enforcement is a separate, upcoming step.`,
       confirmLabel: suspended ? 'Reactivate' : 'Suspend',
-      tone: suspended ? 'module' : 'danger',
+      color: suspended ? 'module' : 'danger',
     });
     if (!ok) return;
     startTransition(async () => {

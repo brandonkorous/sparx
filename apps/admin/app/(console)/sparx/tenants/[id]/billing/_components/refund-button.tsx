@@ -26,7 +26,7 @@ export function RefundButton({
       description:
         'This refunds the full charge on the platform Stripe account. Refunds can’t be undone.',
       confirmLabel: 'Issue refund',
-      tone: 'danger',
+      color: 'danger',
     });
     if (!ok) return;
     startTransition(async () => {

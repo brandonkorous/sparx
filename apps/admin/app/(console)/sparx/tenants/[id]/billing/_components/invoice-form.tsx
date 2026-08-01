@@ -83,7 +83,7 @@ export function InvoiceForm({ tenantId }: { tenantId: string }) {
           ? 'The invoice is finalized on Stripe and becomes payable by the tenant immediately.'
           : 'A draft invoice is created on Stripe — you can review and issue it there.',
       confirmLabel: mode === 'issue' ? 'Issue invoice' : 'Create draft',
-      tone: mode === 'issue' ? 'warning' : 'module',
+      color: mode === 'issue' ? 'warning' : 'module',
     });
     if (!ok) return;
 

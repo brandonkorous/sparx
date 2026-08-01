@@ -27,7 +27,7 @@ export function ReverifyButton({
       description:
         'This re-checks the domain’s DNS records now (custom domains) or re-triggers the domain worker to re-check propagation (purchased domains). It never changes billing or DNS.',
       confirmLabel: 'Re-verify',
-      tone: 'module',
+      color: 'module',
     });
     if (!ok) return;
 

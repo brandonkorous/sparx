@@ -16,7 +16,7 @@ export function PromotionCodeDeactivateButton({ id, code }: { id: string; code: 
       title: 'Turn off this code?',
       description: `“${code}” will stop working immediately and can’t be turned back on. Existing redemptions are unaffected.`,
       confirmLabel: 'Turn off code',
-      tone: 'danger',
+      color: 'danger',
     });
     if (!ok) return;
     startTransition(async () => {

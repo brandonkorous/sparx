@@ -2,8 +2,8 @@
 
 import * as React from 'react';
 import { ChevronsLeft, ChevronsRight, Menu, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
+import { Drawer, DrawerContent, DrawerTitle } from '@wizeworks/silicaui-react';
 import { Button } from '../primitives/button';
-import { Drawer, DrawerContent, DrawerTitle } from '../overlay/drawer';
 import { useMediaQuery } from '../../hooks/use-media-query';
 import { cn } from '../../utils/cn';
 
@@ -186,7 +186,7 @@ export function SidebarAppShell({
       </RailExpandedContext.Provider>
 
       <Drawer open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-        <DrawerContent side="left" className="flex w-72 max-w-[85vw] flex-col gap-1 p-3" hideClose>
+        <DrawerContent side="left" className="flex w-72 max-w-[85vw] flex-col gap-1 p-3">
           <DrawerTitle className="sr-only">{mobileNavLabel}</DrawerTitle>
           {mobileNav}
         </DrawerContent>
@@ -253,11 +253,7 @@ export function SidebarAppShell({
             if (!open) onDetailClose?.();
           }}
         >
-          <DrawerContent
-            side="right"
-            className="flex w-full max-w-md flex-col overflow-y-auto"
-            hideClose
-          >
+          <DrawerContent side="right" className="flex w-full max-w-md flex-col overflow-y-auto">
             <DrawerTitle className="sr-only">{detailMobileLabel}</DrawerTitle>
             {detail}
           </DrawerContent>

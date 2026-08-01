@@ -47,7 +47,7 @@ export function PartnerControls({
           ? `Reactivates the partner — they can host bootcamps, earn commissions, and appear in the public directory again.`
           : `Suspends the partner: they stop earning commissions and drop from the public directory and this roster. Their ledger is kept. Reinstate from this page.`,
         confirmLabel: suspended ? 'Reinstate' : 'Suspend',
-        tone: suspended ? 'module' : 'danger',
+        color: suspended ? 'module' : 'danger',
       });
       if (!ok) return;
       const res = await setPartnerStatusAction(tenantId, suspended ? 'active' : 'suspended');

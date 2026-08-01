@@ -1,8 +1,8 @@
 # sparx Platform — Frontend Component Architecture
 
-**Version:** 1.8.0
+**Version:** 1.9.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-31
+**Last Updated:** 2026-08-01
 
 ---
 
@@ -513,22 +513,23 @@ action/status primitives.
 
 ### Primitives
 
-| Component    | Key variants                                         | Notes                                                                                       |
-| ------------ | ---------------------------------------------------- | ------------------------------------------------------------------------------------------- |
-| `Button`     | color × variant (solid soft outline dash ghost link) | Sizes xs–xl; shapes square / circle / block / wide                                          |
-| `Badge`      | color × variant (solid soft outline dash)            | Default `neutral / soft`; status pills via `statusTone()`                                   |
-| `Input`      | silicaui — `color` × `size`                          | Not in `@sparx/ui`. `color` drives border + ring off one `--input-accent`                   |
-| `Textarea`   | silicaui — `color` × `size`                          | Not in `@sparx/ui`                                                                          |
-| `Select`     | silicaui — `color` × `size`                          | Not in `@sparx/ui`. Base UI listbox; `NativeSelect` for a bare platform `<select>`          |
-| `Checkbox`   | silicaui — `color`                                   | Not in `@sparx/ui`                                                                          |
-| `RadioGroup` | silicaui — `color`                                   | Not in `@sparx/ui`                                                                          |
-| `Switch`     | silicaui — `color`                                   | Not in `@sparx/ui`; module-aware via `color="module"`                                       |
-| `Slider`     | silicaui — `color`                                   | Not in `@sparx/ui`                                                                          |
-| `Avatar`     | default, initials                                    | Sizes: sm, md, lg; falls back to initials on image error                                    |
-| `Spinner`    | —                                                    | Sizes: sm, md, lg; inherits current color                                                   |
-| `Skeleton`   | —                                                    | Pulse animation, used for loading states                                                    |
-| `Heading`    | levels 1–6                                           | Visual size via `level`; semantic tag via `as` override (e.g. visually H1, semantically H2) |
-| `Text`       | default, muted, subtle, inverse, danger, success     | Sizes: xs, sm, md, lg; `as` polymorphism for `p` / `span` / `div` / `label`                 |
+| Component     | Key variants                                         | Notes                                                                                       |
+| ------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------- |
+| `Button`      | color × variant (solid soft outline dash ghost link) | Sizes xs–xl; shapes square / circle / block / wide                                          |
+| `Badge`       | color × variant (solid soft outline dash)            | Default `neutral / soft`; status pills via `statusTone()`                                   |
+| `Input`       | silicaui — `color` × `size`                          | Not in `@sparx/ui`. `color` drives border + ring off one `--input-accent`                   |
+| `Textarea`    | silicaui — `color` × `size`                          | Not in `@sparx/ui`                                                                          |
+| `Select`      | silicaui — `color` × `size`                          | Not in `@sparx/ui`. Base UI listbox; `NativeSelect` for a bare platform `<select>`          |
+| `Checkbox`    | silicaui — `color`                                   | Not in `@sparx/ui`                                                                          |
+| `RadioGroup`  | silicaui — `color`                                   | Not in `@sparx/ui`                                                                          |
+| `Switch`      | silicaui — `color`                                   | Not in `@sparx/ui`; module-aware via `color="module"`                                       |
+| `Slider`      | silicaui — `color`                                   | Not in `@sparx/ui`                                                                          |
+| `Avatar`      | silicaui — `color` × `shape` × `size`                | Not in `@sparx/ui`. `AvatarGroup` for stacks; `status` for a presence dot                   |
+| `Skeleton`    | silicaui — `shape`                                   | Not in `@sparx/ui`                                                                          |
+| `ButtonGroup` | silicaui `Join`                                      | Not in `@sparx/ui`. Segments a row of controls into one welded shape                        |
+| `Spinner`     | —                                                    | Sizes: sm, md, lg; inherits current color. silica's equivalent is `Loading`                 |
+| `Heading`     | levels 1–6                                           | Visual size via `level`; semantic tag via `as` override (e.g. visually H1, semantically H2) |
+| `Text`        | default, muted, subtle, inverse, danger, success     | Sizes: xs, sm, md, lg; `as` polymorphism for `p` / `span` / `div` / `label`                 |
 
 ### Layout
 
@@ -540,45 +541,51 @@ action/status primitives.
 | `CardFooter`  | —                                        | Border-top, action area                |
 | `Stack`       | —                                        | Vertical flex with gap prop            |
 | `Grid`        | —                                        | CSS grid with cols + gap props         |
-| `Divider`     | horizontal, vertical                     |                                        |
+| `Divider`     | silicaui — `orientation`                 | Not in `@sparx/ui`                     |
 | `Container`   | sm, md, lg, xl, full                     | Max-width containers                   |
-| `ScrollArea`  | —                                        | Wraps Radix ScrollArea                 |
+| `ScrollArea`  | silicaui — `orientation`                 | Not in `@sparx/ui`                     |
+| `Accordion`   | silicaui                                 | Not in `@sparx/ui`. Also `Collapsible` |
 
 ### Overlay
 
-| Component        | Key variants                   | Notes                                         |
-| ---------------- | ------------------------------ | --------------------------------------------- |
-| `Modal`          | sm, md, lg, xl                 | Wraps Radix Dialog                            |
-| `Drawer`         | left, right                    | Wraps Radix Dialog with slide animation       |
-| `Popover`        | —                              | Wraps Radix Popover                           |
-| `Tooltip`        | —                              | Wraps Radix Tooltip                           |
-| `Toast`          | success, warning, danger, info | Via sonner                                    |
-| `AlertDialog`    | —                              | Wraps Radix AlertDialog — destructive confirm |
-| `DropdownMenu`   | —                              | Wraps Radix DropdownMenu                      |
-| `ContextMenu`    | —                              | Wraps Radix ContextMenu                       |
-| `CommandPalette` | —                              | ⌘K global search — wraps cmdk                 |
+| Component         | Key variants                   | Notes                                           |
+| ----------------- | ------------------------------ | ----------------------------------------------- |
+| `Modal`           | sm, md, lg, xl                 | Wraps silicaui `Dialog`; adds `mobileSheet`     |
+| `Drawer`          | silicaui — `side`              | Not in `@sparx/ui`                              |
+| `Popover`         | silicaui — `side` × `align`    | Not in `@sparx/ui`                              |
+| `Tooltip`         | —                              | Wraps Radix Tooltip                             |
+| `Toast`           | success, warning, danger, info | Via sonner                                      |
+| `AlertDialog`     | silicaui                       | Not in `@sparx/ui` — use `useConfirm` below     |
+| `ConfirmProvider` | —                              | Mounts silica's imperative alert dialog         |
+| `useConfirm`      | `color` (any silica color)     | Async confirm; defaults `danger`, defers a tick |
+| `DropdownMenu`    | —                              | Wraps Radix DropdownMenu                        |
+| `ContextMenu`     | silicaui                       | Not in `@sparx/ui`                              |
+| `CommandPalette`  | silicaui                       | Not in `@sparx/ui`. ⌘K global search            |
 
 ### Navigation
 
-| Component     | Key variants    | Notes                                                 |
-| ------------- | --------------- | ----------------------------------------------------- |
-| `Sidebar`     | —               | Dashboard sidebar shell                               |
-| `SidebarItem` | default, active | Active state uses `text-module` (from ModuleProvider) |
-| `Tabs`        | default, pills  | Wraps Radix Tabs                                      |
-| `Breadcrumb`  | —               |                                                       |
-| `Pagination`  | —               |                                                       |
-| `Stepper`     | —               | Multi-step flows (onboarding)                         |
+| Component         | Key variants                   | Notes                                                                               |
+| ----------------- | ------------------------------ | ----------------------------------------------------------------------------------- |
+| `SidebarAppShell` | —                              | The sparx app chassis — rail + header + detail pane                                 |
+| `Sidebar`         | silicaui                       | Not in `@sparx/ui`. `SidebarProvider` / `useSidebar`                                |
+| `Tabs`            | silicaui — `variant` × `color` | Not in `@sparx/ui`. `variant="pills"` is the filled selection DESIGN.md §5 requires |
+| `Breadcrumb`      | silicaui                       | Not in `@sparx/ui`                                                                  |
+| `Pagination`      | silicaui — `color` × `size`    | Not in `@sparx/ui`                                                                  |
+| `Stepper`         | silicaui `Steps`               | Not in `@sparx/ui`. Note the name change                                            |
+| `NavigationMenu`  | silicaui                       | Not in `@sparx/ui`                                                                  |
 
 ### Data Display
 
-| Component    | Key variants | Notes                          |
-| ------------ | ------------ | ------------------------------ |
-| `Table`      | —            | Wraps TanStack Table           |
-| `Stat`       | —            | Metric card — see spec above   |
-| `Timeline`   | —            | Activity feed, order history   |
-| `EmptyState` | —            | Consistent zero-state UI       |
-| `Code`       | —            | Inline and block code          |
-| `Tag`        | —            | Removable chip/tag for filters |
+| Component    | Key variants                                                                | Notes                                              |
+| ------------ | --------------------------------------------------------------------------- | -------------------------------------------------- |
+| `Table`      | —                                                                           | Wraps TanStack Table                               |
+| `Stat`       | silicaui — `Stat`/`Stats` + `StatTitle`/`StatValue`/`StatDesc`/`StatFigure` | Not in `@sparx/ui`                                 |
+| `Timeline`   | silicaui — `orientation`                                                    | Not in `@sparx/ui`. `TimelineStart`/`Middle`/`End` |
+| `Alert`      | silicaui — `color` × `variant` × `size`                                     | Not in `@sparx/ui`                                 |
+| `Kbd`        | silicaui — `size`                                                           | Not in `@sparx/ui`                                 |
+| `EmptyState` | —                                                                           | Consistent zero-state UI                           |
+| `Code`       | —                                                                           | Inline and block code                              |
+| `Tag`        | —                                                                           | Removable chip/tag for filters                     |
 
 ### Form
 

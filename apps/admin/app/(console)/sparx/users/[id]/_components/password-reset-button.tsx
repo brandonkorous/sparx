@@ -25,7 +25,7 @@ export function PasswordResetButton({
         title: 'Send a password reset?',
         description: `Emails ${email} a secure link to set a new password. Their current password keeps working until they use it.`,
         confirmLabel: 'Send reset email',
-        tone: 'module',
+        color: 'module',
       });
       if (!ok) return;
       const res = await resetPasswordAction(userId, homeTenantId);

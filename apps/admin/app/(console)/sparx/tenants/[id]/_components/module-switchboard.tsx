@@ -84,7 +84,7 @@ export function ModuleSwitchboard({
           }, and activates anything ${label} depends on. It appears in the tenant's account activity as a WizeWorks-initiated change.`
         : `Turns off ${label} for this tenant — its API returns MODULE_DISABLED and its dashboard routes stop. Stored data is kept. It appears in the tenant's account activity as a WizeWorks-initiated change.`,
       confirmLabel: next ? 'Activate module' : 'Deactivate module',
-      tone: next ? 'module' : 'warning',
+      color: next ? 'module' : 'warning',
     });
     if (!ok) return;
 

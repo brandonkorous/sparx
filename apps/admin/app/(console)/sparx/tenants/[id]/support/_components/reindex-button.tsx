@@ -20,7 +20,7 @@ export function ReindexButton({ tenantId }: { tenantId: string }) {
       description:
         'The commerce-indexer will re-project every product, customer, and order from the database into Typesense, dropping any stale documents. This runs in the background and is safe to trigger anytime.',
       confirmLabel: 'Rebuild index',
-      tone: 'module',
+      color: 'module',
     });
     if (!ok) return;
 

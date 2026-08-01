@@ -56,11 +56,6 @@ export {
   type ButtonShape,
 } from './components/primitives/button';
 export {
-  ButtonGroup,
-  buttonGroupVariants,
-  type ButtonGroupProps,
-} from './components/primitives/button-group';
-export {
   Badge,
   statusTone,
   statusLabel,
@@ -69,8 +64,9 @@ export {
   type BadgeSize,
   type StatusTone,
 } from './components/primitives/badge';
-export { Avatar, avatarVariants, type AvatarProps } from './components/primitives/avatar';
-export { Skeleton, type SkeletonProps } from './components/primitives/skeleton';
+// `Avatar` / `Skeleton` / `ButtonGroup` are silicaui's — import `Avatar`,
+// `Skeleton` and `Join` from `@wizeworks/silicaui-react`. Ours were CVA
+// re-skins of controls silica already ships, and nothing consumed them.
 // Switch / Checkbox / RadioGroup / Slider / Progress are NOT re-exported here.
 // silicaui ships all five natively (`switch-<color>`, `checkbox-<color>`, …), so
 // import them straight from `@wizeworks/silicaui-react` — a wrapper here would be
@@ -92,21 +88,13 @@ export {
   cardVariants,
   type CardProps,
 } from './components/layout/card';
-export {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-  type AccordionProps,
-  type AccordionItemProps,
-} from './components/layout/accordion';
-export { Divider, type DividerProps } from './components/layout/divider';
+// `Accordion`, `Divider` and `ScrollArea` are silicaui's — import them from
+// `@wizeworks/silicaui-react`.
 export { Stack, type StackProps } from './components/layout/stack';
 export { Grid, type GridProps } from './components/layout/grid';
 export { Container, containerVariants, type ContainerProps } from './components/layout/container';
 export { PageHeader, type PageHeaderProps } from './components/layout/page-header';
 export { AuthFrame, type AuthFrameProps } from './components/layout/auth-frame';
-export { ScrollArea, ScrollBar } from './components/layout/scroll-area';
 export {
   SidebarAppShell,
   useRailExpanded,
@@ -165,32 +153,10 @@ export {
   modalContentVariants,
   type ModalContentProps,
 } from './components/overlay/modal';
-export {
-  Drawer,
-  DrawerTrigger,
-  DrawerClose,
-  DrawerPortal,
-  DrawerContent,
-  DrawerHeader,
-  DrawerBody,
-  DrawerFooter,
-  DrawerTitle,
-  DrawerDescription,
-  drawerContentVariants,
-  type DrawerContentProps,
-} from './components/overlay/drawer';
-export {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogPortal,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogFooter,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogAction,
-  AlertDialogCancel,
-} from './components/overlay/alert-dialog';
+// `Drawer` and `AlertDialog` are silicaui's — import their parts from
+// `@wizeworks/silicaui-react`. `ConfirmProvider` / `useConfirm` below stay,
+// but are now a thin composition over silica's imperative alert dialog rather
+// than a second dialog implementation.
 export {
   ConfirmProvider,
   useConfirm,
@@ -221,44 +187,12 @@ export {
   DropdownMenuSubContent,
   DropdownMenuRadioGroup,
 } from './components/overlay/dropdown-menu';
-export {
-  ContextMenu,
-  ContextMenuTrigger,
-  ContextMenuContent,
-  ContextMenuItem,
-  ContextMenuCheckboxItem,
-  ContextMenuRadioItem,
-  ContextMenuLabel,
-  ContextMenuSeparator,
-  ContextMenuShortcut,
-  ContextMenuGroup,
-  ContextMenuPortal,
-  ContextMenuSub,
-  ContextMenuSubTrigger,
-  ContextMenuSubContent,
-  ContextMenuRadioGroup,
-} from './components/overlay/context-menu';
-export {
-  Popover,
-  PopoverTrigger,
-  PopoverContent,
-  PopoverAnchor,
-  PopoverClose,
-} from './components/overlay/popover';
+// `ContextMenu`, `Popover` and `CommandPalette` are silicaui's — import them
+// from `@wizeworks/silicaui-react`. Ours were Radix (and cmdk) re-skins that
+// duplicated Base UI components silica already ships, and left the two popup
+// systems unable to coordinate when nested (the same defect documented on
+// `Modal` below). No consumer ever imported them.
 export { Toaster, toast } from './components/overlay/toast';
-export {
-  Command,
-  CommandInput,
-  CommandList,
-  CommandEmpty,
-  CommandGroup,
-  CommandItem,
-  CommandSeparator,
-  CommandShortcut,
-  CommandPalette,
-  CommandPalettePortal,
-  type CommandPaletteProps,
-} from './components/overlay/command-palette';
 
 // ── System / runtime ──────────────────────────────────────
 // ChunkReloadGuard moved to `@sparx/app-kit`. It never belonged here: it has no
@@ -267,38 +201,11 @@ export {
 // depend on @sparx/ui. Import it (and `isChunkLoadError`) from '@sparx/app-kit'.
 
 // ── Navigation ────────────────────────────────────────────
-export {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-  tabsListVariants,
-  type TabsListProps,
-} from './components/navigation/tabs';
-export {
-  Sidebar,
-  SidebarHeader,
-  SidebarNav,
-  SidebarSection,
-  SidebarSectionLabel,
-  SidebarFooter,
-  SidebarItem,
-  sidebarItemVariants,
-  type SidebarItemProps,
-  type SidebarNavProps,
-} from './components/navigation/sidebar';
-export {
-  Breadcrumb,
-  BreadcrumbList,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-  BreadcrumbEllipsis,
-  type BreadcrumbLinkProps,
-} from './components/navigation/breadcrumb';
-export { Pagination, type PaginationProps } from './components/navigation/pagination';
-export { Stepper, type StepperProps, type StepperStep } from './components/navigation/stepper';
+// `Tabs`, `Sidebar`, `Breadcrumb`, `Pagination` and `Stepper` are silicaui's —
+// import `Tabs` / `Sidebar` / `Breadcrumb` / `Pagination` / `Steps` from
+// `@wizeworks/silicaui-react`. Note silica names the stepper `Steps`, and its
+// tabs take `variant="pills"` for the filled selection DESIGN.md §5 requires —
+// our `tabsListVariants` hand-built that from utilities.
 export {
   SurfaceFrame,
   SurfaceStep,
@@ -313,17 +220,7 @@ export {
   type SurfaceVariant,
   type ResponsiveLabel,
 } from './components/navigation/surface-frame';
-export {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuTrigger,
-  NavigationMenuContent,
-  NavigationMenuLink,
-  NavigationMenuViewport,
-  NavigationMenuIndicator,
-  navigationMenuTriggerStyle,
-} from './components/navigation/navigation-menu';
+// `NavigationMenu` is silicaui's too.
 export {
   TopProgress,
   type TopProgressProps,
@@ -341,8 +238,9 @@ export { resolveRouteModule } from './components/navigation/top-progress-nav';
 
 // ── Data display ──────────────────────────────────────────
 export { Code, codeVariants, type CodeProps } from './components/data/code';
-export { Kbd, kbdVariants, type KbdProps } from './components/data/kbd';
-export { Alert, type AlertProps } from './components/data/alert';
+// `Kbd`, `Alert`, `Stat` and `Timeline` are silicaui's — import them from
+// `@wizeworks/silicaui-react`. Apps were already doing exactly that (176 live
+// `<Alert>` call sites resolve to silica's, none to ours).
 export { StatusDot, type StatusDotProps } from './components/data/status-dot';
 export {
   Table,
@@ -355,7 +253,6 @@ export {
   TableCaption,
 } from './components/data/table';
 export { DataTable, type DataTableProps } from './components/data/data-table';
-export { Stat, type StatProps, type StatDelta } from './components/data/stat';
 export {
   ActionTile,
   ActionQueue,
@@ -396,14 +293,6 @@ export {
   type ImportJobStatus,
 } from './components/data/import-dialog';
 export { ExportButton, type ExportButtonProps } from './components/data/export-button';
-export {
-  Timeline,
-  TimelineItem,
-  TimelineTitle,
-  TimelineDescription,
-  TimelineTime,
-  type TimelineItemProps,
-} from './components/data/timeline';
 export {
   LineChart,
   BarChart,

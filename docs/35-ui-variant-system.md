@@ -1,8 +1,8 @@
 # @sparx/ui Variant System (multi-axis)
 
-**Version:** 1.4.0
+**Version:** 1.5.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-31
+**Last Updated:** 2026-08-01
 
 ---
 
@@ -273,13 +273,23 @@ existing call sites are unaffected.
 | **Collapse / Accordion** _(new)_ | Radix Accordion shell; `variant` (bordered/ghost/separated)                                                                                                       |
 | **Kbd** _(new)_                  | keyboard-key chip; `size` only                                                                                                                                    |
 
+> **Superseded for most of Tier C (2026-08-01).** The tables in §5.3–5.4 record the
+> plan as authored; they are no longer the inventory. `Tabs`, `Avatar`, `ButtonGroup`
+> (→ silica `Join`), `Accordion`, `Kbd`, `Skeleton`, `Stat`, `Timeline`, `Divider`,
+> `ScrollArea`, `Breadcrumb`, `Pagination`, `Stepper` (→ silica `Steps`),
+> `NavigationMenu`, `Alert`, `Popover`, `ContextMenu`, `CommandPalette`, `AlertDialog`
+> and `Drawer` are **silicaui's** and are no longer exported from `@sparx/ui` — each
+> already carries these axes natively, so the planned work was overtaken rather than
+> done. Import them from `@wizeworks/silicaui-react` and read their real props with
+> `get_component`. Note `Tabs` takes `variant="pills"` for the filled selection
+> DESIGN.md §5 requires. What remains in `@sparx/ui` is compositions only:
+> [packages/ui/CLAUDE.md](../packages/ui/CLAUDE.md).
+
 ### 5.4 Unchanged (single-axis where `variant` is genuinely not a color)
 
-`Text` (`muted`…), `Heading`, `Code`, `Stack`/`Grid`/`Container`/`Divider`,
-`Skeleton`, `Stat`, `Timeline`, `EmptyState`, `Breadcrumb`, `Pagination`, `Stepper`,
-overlays (`Modal`/`Drawer`/`Popover`/`Tooltip`/menus) keep their current APIs. The
-`color × variant` split applies only to Tier A; we do **not** touch the ~750 non-color
-`variant=` usages.
+`Text` (`muted`…), `Heading`, `Code`, `Stack`/`Grid`/`Container`, `EmptyState`, and
+`Modal`/`Tooltip`/menus keep their current APIs. The `color × variant` split applies
+only to Tier A; we do **not** touch the ~750 non-color `variant=` usages.
 
 ---
 

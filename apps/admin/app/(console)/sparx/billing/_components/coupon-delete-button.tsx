@@ -15,7 +15,7 @@ export function CouponDeleteButton({ couponId, label }: { couponId: string; labe
       title: 'Delete coupon?',
       description: `“${label}” will be removed from Stripe. Existing redemptions are unaffected, but it can no longer be applied.`,
       confirmLabel: 'Delete coupon',
-      tone: 'danger',
+      color: 'danger',
     });
     if (!ok) return;
     startTransition(async () => {
