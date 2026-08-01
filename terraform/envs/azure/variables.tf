@@ -188,6 +188,21 @@ variable "cloudflare_enabled" {
   default     = false
 }
 
+variable "cloudflare_origin_ca_enabled" {
+  description = <<-EOT
+    Create the admin.wize.works Origin CA certificate and write it into the
+    caddy-admin-origin Secret (origin-ca.tf).
+
+    Separate from cloudflare_enabled ON PURPOSE. Signing a certificate needs the
+    token to carry Zone → SSL and Certificates → Edit, which the DNS records do
+    not; keeping them on one switch would mean a token that cannot sign also
+    could not apply DNS. Flip this once the permission is added — the create
+    fails with 1016 "User is not authorized" otherwise.
+  EOT
+  type        = bool
+  default     = false
+}
+
 variable "operator_access_emails" {
   description = "Emails allowed through Cloudflare Access on admin.wize.works."
   type        = list(string)

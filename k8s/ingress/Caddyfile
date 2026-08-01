@@ -296,12 +296,21 @@ import mode.caddy
 # `tls` directive pointing at files that were never written. Caddy fails config
 # load as a UNIT — one missing certificate took down all ~40 hostnames, not just
 # this one. The secret currently holds a SELF-SIGNED stopgap so the ingress can
-# boot; because the zone is Full(strict), the edge will reject it once a request
-# actually reaches the origin. Issuing the real Origin CA certificate needs a
-# Cloudflare token carrying the Origin CA permission (the current one returns
-# 1016 "User is not authorized"). Until that lands this host is the ONLY one
-# still degraded — which is the point of the split: no other hostname depends on
-# it any more.
+# boot, and the host serves correctly on it.
+#
+# It serves because wize.works is on SSL mode `full`, which accepts ANY origin
+# certificate. The claim above that the zone is Full(strict) was wrong — it was
+# carried over unverified and is contradicted by the live zone setting. That
+# distinction matters: under `full` Cloudflare does not authenticate the origin
+# at all, so the hop between the edge and this cluster is encrypted but
+# unverified. The Origin CA certificate is what makes Full(strict) possible, and
+# only then is the self-signed cert actually rejected.
+#
+# Issuing it needs one permission the platform token does not currently carry:
+# Zone → SSL and Certificates → Edit (the legacy account-level "Origin CA Key"
+# is deprecated and deliberately NOT used). Without it the create returns 1016
+# "User is not authorized". This is HARDENING, not an outage — the host serves
+# today. See terraform/envs/azure/origin-ca.tf.
 {$SX_SCHEME:https}://admin.wize.works {
 	import tls_admin_origin
 	import security_headers

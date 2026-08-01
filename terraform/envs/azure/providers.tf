@@ -45,6 +45,20 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 4.40"
     }
+    // Both exist solely for origin-ca.tf: `tls` generates the key + CSR that
+    // Cloudflare signs, and `kubernetes` writes the result straight into the
+    // caddy-admin-origin Secret. Writing it here rather than parking it in a
+    // secret store is deliberate — the GCP copy relies on a separate bootstrap
+    // sync step, and that step having no Azure equivalent is what let Caddy roll
+    // against a certificate nothing had written.
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "~> 2.35"
+    }
   }
 }
 
@@ -76,4 +90,20 @@ provider "azurerm" {
 // in the same change that flips cloudflare_enabled to true.
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
+}
+
+// Credentials come from the cluster resource itself, so there is no kubeconfig
+// on disk to drift or to hand a CI runner. AKS keeps local accounts enabled
+// here, which is what makes kube_config available; if that is ever disabled this
+// block must move to exec-based Entra auth.
+//
+// Only origin-ca.tf uses this. Terraform does not manage workloads — those are
+// kustomize overlays applied by deploy-azure.yml — and it must not start to: the
+// one Secret here exists because it is DERIVED from a Terraform-managed
+// certificate and has no other way to reach the cluster.
+provider "kubernetes" {
+  host                   = azurerm_kubernetes_cluster.main.kube_config[0].host
+  client_certificate     = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_certificate)
+  client_key             = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].client_key)
+  cluster_ca_certificate = base64decode(azurerm_kubernetes_cluster.main.kube_config[0].cluster_ca_certificate)
 }
