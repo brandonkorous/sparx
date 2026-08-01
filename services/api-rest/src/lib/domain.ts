@@ -69,8 +69,26 @@ export function isZoneHost(host: string): boolean {
  *  DNS: needs no per-tenant record. `<tenant>.sparx.zone` is itself only a
  *  `*.sparx.zone` wildcard match (not a real zone node), so by wildcard
  *  closest-encloser synthesis the same wildcard also covers
- *  `<property>.<tenant>.sparx.zone`. Per-host TLS is on-demand. The one rule that
- *  keeps this working: never add an explicit `<tenant>.sparx.zone` DNS node. */
+ *  `<property>.<tenant>.sparx.zone`. The one rule that keeps this working: never
+ *  add an explicit `<tenant>.sparx.zone` DNS node.
+ *
+ *  TLS is per-host and on-demand: Caddy holds the ACME account and issues a
+ *  certificate for each hostname on first request, at ANY depth, so the
+ *  two-label name needs nothing extra.
+ *
+ *  ⚠️ NEVER PUT AN EDGE-TERMINATING PROXY IN FRONT OF THIS. Behind the
+ *  Cloudflare Tunnel, TLS terminated at Cloudflare's edge, Caddy held no
+ *  certificate at all, and every host depended instead on Universal SSL —
+ *  whose SANs are exactly `sparx.zone` and `*.sparx.zone`. A wildcard matches
+ *  ONE label (RFC 6125 §6.4.3), so it covered `<tenant>.sparx.zone` and NOT
+ *  `<property>.<tenant>.sparx.zone`: the edge had no certificate for the longer
+ *  name and answered the ClientHello with handshake_failure (alert 40). Every
+ *  non-primary site of every multi-site tenant was unreachable over HTTPS, and
+ *  it presented as a browser SSL error rather than a 404, which is why it read
+ *  like a certificate problem rather than a routing one. Ingress is a
+ *  `Service type=LoadBalancer` (`k8s/ingress`) precisely so that cannot recur —
+ *  the tunnel had no inbound path, so Caddy could never complete an ACME
+ *  challenge behind it. `*.sparx.zone` must stay DNS-only for the same reason. */
 export function mintZoneHost(tenantSlug: string, propertySlug: string, isPrimary: boolean): string {
   return isPrimary ? `${tenantSlug}${ZONE_SUFFIX}` : `${propertySlug}.${tenantSlug}${ZONE_SUFFIX}`;
 }
