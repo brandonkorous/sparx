@@ -33,4 +33,40 @@ describe('collectClasses', () => {
   it('ignores empty / whitespace-only class strings', () => {
     expect(collectClasses(node({ id: 'a', type: 'Box', class: '   ' }))).toEqual([]);
   });
+
+  // A SILICA tree, which is what the storefront actually renders. Its text leaves are
+  // RAW STRINGS in `children`, not nodes — walking one as a node must neither throw nor
+  // contribute a class. Shaped as the real starter navbar (docs/118), because the live
+  // failure was exactly this pair surviving the harvest half-collected: `.hidden` reached
+  // the tenant sheet and `sm:flex` did not, and since that sheet is injected last it won
+  // the tie and hid the nav links at every width.
+  it('walks a silica tree whose children include raw text leaves', () => {
+    const silica = {
+      kind: 'element',
+      tag: 'nav',
+      class: 'flex px-6 py-4',
+      children: [
+        { kind: 'component', component: 'Wordmark', class: 'wordmark mr-auto', props: {} },
+        {
+          kind: 'element',
+          tag: 'div',
+          class: 'hidden sm:flex',
+          children: [
+            { kind: 'element', tag: 'a', class: 'text-sm', children: ['Shop'] },
+            { kind: 'element', tag: 'a', class: 'text-sm', children: ['About'] },
+          ],
+        },
+      ],
+    } as unknown as BuilderNode;
+    expect(collectClasses(silica)).toEqual([
+      'flex',
+      'hidden',
+      'mr-auto',
+      'px-6',
+      'py-4',
+      'sm:flex',
+      'text-sm',
+      'wordmark',
+    ]);
+  });
 });

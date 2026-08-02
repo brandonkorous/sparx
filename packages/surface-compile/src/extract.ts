@@ -18,13 +18,20 @@ import type { BuilderNode } from '@sparx/builder-schemas';
  */
 export function collectClasses(roots: BuilderNode | BuilderNode[]): string[] {
   const set = new Set<string>();
+  // Walks SILICA trees as well as sparx `BuilderNode` ones — both spell styling as a
+  // `class` string on a node with `children`, which is all this needs. The two guards
+  // are what makes that safe: a silica element's `children` may hold RAW STRINGS (a
+  // text leaf), and `class` is only a class list when it is actually a string. Without
+  // them a text leaf would be walked as if it were a node — harmless today only because
+  // `"text".class` happens to be undefined, which is luck, not a contract.
   const visit = (node: BuilderNode): void => {
-    if (node.class) {
+    if (typeof node !== 'object' || node === null) return;
+    if (typeof node.class === 'string') {
       for (const token of node.class.split(/\s+/)) {
         if (token) set.add(token);
       }
     }
-    if (node.children) {
+    if (Array.isArray(node.children)) {
       for (const child of node.children) visit(child);
     }
   };

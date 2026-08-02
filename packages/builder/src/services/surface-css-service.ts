@@ -112,23 +112,43 @@ function sheetCacheHash(classes: string[], allowlist: AllowlistConfig | undefine
 /** Collect every tenant PUBLISHED tree (pages + active layout chrome). The
  *  `publishedTree != null` filter is done in JS — the JSON column's NULL check
  *  needs a Prisma runtime value, but Prisma is a type-only import here (cf.
- *  pageService.getPublishedBySlug). */
+ *  pageService.getPublishedBySlug).
+ *
+ *  Reads BOTH column families, and that is the point. The storefront renders the
+ *  SILICA trees (`siteService.getPublishedFrame` / `getPublishedPageBySlug` read
+ *  `silicaPublishedTree`), while this harvest only ever read the legacy sparx
+ *  `publishedTree` — so every class authored in the silica editor was missing from
+ *  the compiled sheet. That is not merely "a rule absent": this stylesheet is
+ *  injected LAST in the storefront's `<head>`, so the classes it DOES carry win
+ *  ties against the app bundle. A silica header authored `hidden … sm:flex` got
+ *  `.hidden` from this sheet and `.sm\:flex` only from the bundle, so the nav links
+ *  resolved to `display:none` on every viewport.
+ *
+ *  The legacy trees stay in the harvest because the `[...slug]` legacy content path
+ *  still renders them (docs/builder-audit/01-roadmap.md); a superset of candidates
+ *  only ever costs a few unused rules, while a missing one is an unstyled page. */
 function readPublishedTrees(ctx: PropertyContext): Promise<BuilderNode[]> {
   return withTenant(ctx, async (tx) => {
     const trees: BuilderNode[] = [];
     const pages = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },
-      select: { publishedTree: true },
+      select: { publishedTree: true, silicaPublishedTree: true },
     });
     for (const page of pages) {
       if (page.publishedTree != null) trees.push(page.publishedTree as unknown as BuilderNode);
+      if (page.silicaPublishedTree != null) {
+        trees.push(page.silicaPublishedTree as unknown as BuilderNode);
+      }
     }
     const layout = await tx.builderLayout.findFirst({
       where: { isActive: true, propertyId: ctx.propertyId },
-      select: { publishedTree: true },
+      select: { publishedTree: true, silicaPublishedTree: true },
     });
     if (layout?.publishedTree != null) {
       trees.push(layout.publishedTree as unknown as BuilderNode);
+    }
+    if (layout?.silicaPublishedTree != null) {
+      trees.push(layout.silicaPublishedTree as unknown as BuilderNode);
     }
     return trees;
   });
@@ -171,23 +191,34 @@ export async function getPublishedStylesheet(ctx: PropertyContext): Promise<Publ
 
 /** Collect every tenant DRAFT tree (all page drafts + the active layout's draft
  *  chrome) — the preview counterpart of readPublishedTrees. `draftTree` is
- *  non-nullable, but the guard mirrors the published reader for symmetry. */
+ *  non-nullable, but the guard mirrors the published reader for symmetry.
+ *
+ *  Reads the silica draft columns alongside the legacy ones for the same reason
+ *  the published reader does — see its comment. Preview serves the silica DRAFT
+ *  tree, so without these the preview sheet was missing exactly the classes the
+ *  author had just typed, which is the one case preview exists for. */
 function readDraftTrees(ctx: PropertyContext): Promise<BuilderNode[]> {
   return withTenant(ctx, async (tx) => {
     const trees: BuilderNode[] = [];
     const pages = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },
-      select: { draftTree: true },
+      select: { draftTree: true, silicaDraftTree: true },
     });
     for (const page of pages) {
       if (page.draftTree != null) trees.push(page.draftTree as unknown as BuilderNode);
+      if (page.silicaDraftTree != null) {
+        trees.push(page.silicaDraftTree as unknown as BuilderNode);
+      }
     }
     const layout = await tx.builderLayout.findFirst({
       where: { isActive: true, propertyId: ctx.propertyId },
-      select: { draftTree: true },
+      select: { draftTree: true, silicaDraftTree: true },
     });
     if (layout?.draftTree != null) {
       trees.push(layout.draftTree as unknown as BuilderNode);
+    }
+    if (layout?.silicaDraftTree != null) {
+      trees.push(layout.silicaDraftTree as unknown as BuilderNode);
     }
     return trees;
   });

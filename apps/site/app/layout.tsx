@@ -224,6 +224,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // A FOURTH read — `getPublishedBuilderLayout` — used to sit here. It fed the deleted
   // `<BuilderSiteChrome>` branch and nothing else, so every request on every route paid
   // for an answer that could not change what rendered.
+  //
+  // All three take the preview token, INCLUDING the stylesheet. It was the one read here
+  // that didn't, so preview rendered the DRAFT chrome against the PUBLISHED sheet — the
+  // markup carried a class the author had just typed and no rule existed for it. That is
+  // precisely the case preview exists to show, and it silently showed the old design
+  // instead of the new one. The catch-all route patched this for its own body by
+  // injecting a second <style>; the chrome, and every other route, had no such patch.
   const [snapshot, silicaFrame, surfaceCss] = await Promise.all([
     site ? getPublishedSite(site.slug, sitePreviewToken, activePropertySlug ?? undefined) : null,
     site
@@ -232,7 +239,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           sitePreviewToken ? { previewToken: sitePreviewToken } : {}
         )
       : Promise.resolve<PublishedSilicaFrameDto>({ frame: null, symbols: {}, theme: null }),
-    site ? getPublishedBuilderStyles(site.slug) : '',
+    site
+      ? getPublishedBuilderStyles(
+          site.slug,
+          sitePreviewToken ? { previewToken: sitePreviewToken } : {}
+        )
+      : '',
   ]);
 
   // NOTE — `silicaActive` (`Boolean(frame) || frameless === true`) used to live here,
