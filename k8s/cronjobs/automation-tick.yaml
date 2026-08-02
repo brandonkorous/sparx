@@ -1,0 +1,75 @@
+# The automation engine's heartbeat. Advances due schedules, due automation runs,
+# and due email-sequence enrollments — every minute, exactly as Cloud Scheduler
+# drove it on GCP (`sparx-prod-automation-tick`, `* * * * *`).
+#
+# WHY THIS EXISTS. On GCP the tick came from Cloud Scheduler calling a Cloud Run
+# URL with an OIDC token. Neither survives a move to AKS, so without this file
+# the worker runs and subscribes but nothing ever ticks: scheduled automations,
+# delayed steps and drip sequences all simply stop. That is silent — the pod is
+# healthy, the queue is empty, and the only symptom is work that never happens.
+#
+# Auth is the shared SPARX_INTERNAL_CRON_TOKEN, the same secret every other
+# CronJob here presents, instead of the GCP-only TICK_INVOKER_SA OIDC claim. The
+# worker already accepted this token; it was the local/manual path.
+#
+# Forbid concurrency: a tick that overruns a minute must not have a second one
+# stacked behind it. The engine is idempotent per run, but overlapping ticks
+# contend on the same due-work rows for no throughput gain.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: automation-tick
+  namespace: sparx-prod
+  labels:
+    app: automation-cron
+    job: tick
+spec:
+  schedule: '*/1 * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 60
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: automation-cron
+            job: tick
+        spec:
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 60
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://automation-worker.sparx-prod.svc.cluster.local:8080/internal/cron/tick
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

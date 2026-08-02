@@ -645,3 +645,73 @@ spec:
   type: ClusterIP
   ports: [{ name: http, port: 8080, targetPort: 8080 }]
   selector: { app: dropship-worker }
+---
+# ---------------------------------------------------------------------------
+# automation-worker — automation.trigger (fan-in) + the cron surfaces
+# ---------------------------------------------------------------------------
+# The twelfth worker, and the last one to leave GCP. It ran on Cloud Run rather
+# than GKE, so it was absent from this file entirely and no image was built for
+# it — which meant the Azure cluster ran no automations at all while 230 of them
+# sat in the database.
+#
+# Unlike its eleven siblings this one ALSO serves HTTP, and that is why the gap
+# went unnoticed: it looks like a service, so it was never missed from the worker
+# list. Two distinct intakes, both now provider-neutral:
+#   · automation.trigger over the broker  → consumed in index.ts (startConsumer)
+#   · /internal/cron/tick + reconcile-seeds → driven by the CronJobs in
+#     k8s/cronjobs, replacing Cloud Scheduler, authenticated with the same
+#     SPARX_INTERNAL_CRON_TOKEN every other CronJob already uses.
+#
+# The Service exists for those CronJobs to reach it; the other workers' Services
+# are vestigial, but this one is load-bearing.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: automation-worker
+  namespace: sparx-prod
+  labels: { app: automation-worker, tier: worker }
+spec:
+  # Exactly one. The tick is a cross-pod singleton guarded in the database, but a
+  # second replica would still double every broker subscription's throughput for
+  # no gain and contend on the same due-work rows.
+  replicas: 1
+  revisionHistoryLimit: 3
+  strategy:
+    # maxSurge 0: replace in place, never run two.
+    rollingUpdate: { maxSurge: 0, maxUnavailable: 1 }
+  selector:
+    matchLabels: { app: automation-worker }
+  template:
+    metadata:
+      labels: { app: automation-worker, tier: worker }
+    spec:
+      enableServiceLinks: false
+      containers:
+        - name: automation-worker
+          image: sparx/automation-worker:local
+          ports: [{ name: http, containerPort: 8080 }]
+          envFrom:
+            - configMapRef: { name: sparx-app-env }
+            - secretRef: { name: sparx-app-secrets }
+          env:
+            - { name: NODE_ENV, value: production }
+            - { name: SERVICE_NAME, value: automation-worker }
+            - { name: PORT, value: '8080' }
+          startupProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 5
+            failureThreshold: 60
+          livenessProbe:
+            tcpSocket: { port: 8080 }
+            periodSeconds: 30
+            failureThreshold: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: automation-worker
+  namespace: sparx-prod
+spec:
+  type: ClusterIP
+  ports: [{ name: http, port: 8080, targetPort: 8080 }]
+  selector: { app: automation-worker }

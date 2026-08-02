@@ -75,6 +75,9 @@ images:
     newTag: latest
   # The 11 workers carry `sparx/<name>:local` in the shared base, since that base
   # is written for the workstation case. Rewrite them the same way.
+  - name: sparx/automation-worker
+    newName: ghcr.io/brandonkorous/sparx/automation-worker
+    newTag: latest
   - name: sparx/email-worker
     newName: ghcr.io/brandonkorous/sparx/email-worker
     newTag: latest

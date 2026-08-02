@@ -19,9 +19,11 @@
 // so this stays a lean worker — no React/UI/auth in the image.
 //
 // `installCrmPubSubBridge` swaps @sparx/crm's default LoggingPublisher (which
-// discards) for the real per-topic Pub/Sub publisher, so a crm.* event an
-// executor produces actually reaches the downstream consumers (email-worker,
-// search indexer, webhooks). It no-ops when GCP_PROJECT_ID is unset (dev/test).
+// DISCARDS) for the shared publisher, so a crm.* event an executor produces
+// actually reaches the downstream consumers (email-worker, search indexer,
+// webhooks). It always installs and routes to whichever broker EVENT_BROKER
+// selects; it used to no-op without GCP_PROJECT_ID, which is how those events
+// were silently dropped.
 
 import {
   installModuleActions,
@@ -54,8 +56,10 @@ function ensureEngineInstalled(logger: Logger): void {
   engineInstalled = true;
   installBuiltins();
   installModuleActions();
-  // Real Pub/Sub for crm.* events the executors emit (no-op without projectId).
-  installCrmPubSubBridge({ projectId: env.GCP_PROJECT_ID, logger });
+  // Routes the crm.* events the executors emit onto the shared publisher, so
+  // they reach whichever broker EVENT_BROKER selects. No project id: passing one
+  // is what tied this to Google, and the bridge now always installs regardless.
+  installCrmPubSubBridge({ logger });
 }
 
 function makeDeps(logger: Logger): EngineDeps {

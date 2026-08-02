@@ -3,10 +3,14 @@
 // The worker connects as `sparx_app` via DATABASE_URL — the engine's cross-tenant
 // discovery goes through SECURITY DEFINER helpers (migration 20260731000000), so
 // it needs NO elevated/owner connection. Two trigger surfaces:
-//   - Cloud Scheduler  → POST /internal/cron/tick, guarded by SPARX_INTERNAL_CRON_TOKEN
-//   - Pub/Sub push     → POST /,                   guarded by the PUBSUB_INVOKER_SA OIDC claim
-// GCP_PROJECT_ID switches the engine publisher from the dev logging-stub to real
-// per-topic Pub/Sub (events an action emits, e.g. the loop-guarded cascade).
+//   - CronJob (in-cluster) → POST /internal/cron/tick + /internal/cron/reconcile-seeds,
+//                            guarded by SPARX_INTERNAL_CRON_TOKEN
+//   - Broker subscription  → `automation.trigger`, consumed in index.ts
+//
+// The OIDC vars below are GCP-only leftovers from when this ran on Cloud Run
+// behind Cloud Scheduler and Pub/Sub push. They are optional and unset on AKS,
+// where the CronJobs present the shared cron token and triggers arrive over the
+// broker rather than as an HTTP POST.
 
 import 'dotenv/config';
 import { z } from 'zod';
@@ -19,7 +23,8 @@ const EnvSchema = z.object({
   // sparx_app connection (FORCE RLS-bound). The same string the in-cluster app
   // tier uses — bound from the `database-url` secret in serverless.tf.
   DATABASE_URL: z.string().min(1),
-  // Unset → engine publisher is the dev logging stub; set → real Pub/Sub.
+  // Retained only so a GCP deployment can still set it; the engine publisher is
+  // selected by EVENT_BROKER now, and nothing in this service reads this.
   GCP_PROJECT_ID: z.string().optional(),
   // Shared secret guarding the Cloud Scheduler tick endpoint (docs/16 §2.5).
   // Same secret family as the CRM/commerce CronJobs (sparx-internal-cron-token).

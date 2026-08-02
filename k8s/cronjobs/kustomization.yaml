@@ -12,6 +12,11 @@ resources:
   - invoicing-collected-rollup.yaml
   - dropship-orders-rollup.yaml
   - automation-runs-rollup.yaml
+  # The engine heartbeat + nightly seed reconcile. These replace the Cloud
+  # Scheduler jobs that drove automation-worker on GCP; without them the worker
+  # runs but nothing ever ticks.
+  - automation-tick.yaml
+  - automation-reconcile-seeds.yaml
   - site-analytics-rollup.yaml
   - search-console-sync.yaml
   - inventory-valuation-snapshot.yaml

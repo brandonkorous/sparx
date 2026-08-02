@@ -126,6 +126,37 @@ async function handleReconcileRequest(req: IncomingMessage, res: ServerResponse)
   res.end(JSON.stringify(summary));
 }
 
+/** Broker intake for `automation.trigger` — the path used in-cluster.
+ *
+ *  Shares TriggerEnvelopeSchema and `ingest` with the HTTP push handler below,
+ *  so the two intakes can never drift on what counts as a valid trigger. Only
+ *  the ack semantics differ: push says "acked" with a 204 and "redeliver" with a
+ *  500, whereas here RETURNING acks and THROWING nak-s.
+ *
+ *  Unparseable input returns rather than throws. A message that cannot be parsed
+ *  will not parse on redelivery either, so throwing would just burn the retry
+ *  budget before dead-lettering it — the same call the other workers make.
+ */
+export async function ingestFromBroker(raw: string): Promise<void> {
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch (err) {
+    logger.error({ err }, 'automation-worker: broker message not valid JSON; acking');
+    return;
+  }
+
+  const result = TriggerEnvelopeSchema.safeParse(parsed);
+  if (!result.success) {
+    logger.warn({ raw: parsed }, 'automation-worker: not a trigger envelope; acking');
+    return;
+  }
+
+  // Throwing here is deliberate: startConsumer nak-s so the broker redelivers.
+  await ingest(result.data, logger);
+  logger.info({ type: result.data.type }, 'trigger ingested');
+}
+
 // ── POST / (Pub/Sub push on automation.trigger) ─────────────────────────────
 async function handlePush(req: IncomingMessage, res: ServerResponse): Promise<void> {
   if (env.PUBSUB_INVOKER_SA) {
