@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { nextCookies } from 'better-auth/next-js';
 import { twoFactor } from 'better-auth/plugins';
+import { isNextBuild } from './build-phase';
 import { operatorPool } from './db';
 import { publishOperatorEmail } from './email';
 
@@ -29,10 +30,11 @@ declare global {
 function operatorSecret(): string {
   const explicit = process.env.OPERATOR_AUTH_SECRET;
   if (explicit) return explicit;
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' && !isNextBuild()) {
     // Fail loud in prod — a cross-tenant console must never boot on a default
     // secret. Better Auth would also reject an empty secret, but we surface a
-    // clearer message.
+    // clearer message. Skipped during `next build`, which evaluates this with
+    // NODE_ENV=production but signs nothing; see ./build-phase.
     throw new Error('OPERATOR_AUTH_SECRET is required in production.');
   }
   return 'dev-operator-secret-change-me-000000000000';
@@ -51,7 +53,7 @@ function operatorSecret(): string {
 function operatorBaseUrl(): string {
   const url = process.env.OPERATOR_AUTH_URL;
   if (url) return url;
-  if (process.env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production' && !isNextBuild()) {
     throw new Error(
       'OPERATOR_AUTH_URL is required in production. Better Auth validates ' +
         'request origins against it, so an unset value rejects every sign-in ' +

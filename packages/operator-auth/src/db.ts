@@ -1,5 +1,7 @@
 import { Pool } from 'pg';
 
+import { isNextBuild } from './build-phase';
+
 // The operator instance's ONLY database handle: a pg Pool connected as the
 // dedicated `wize_operator` role with its search_path pinned to the `wize_admin`
 // schema (docs/apps/admin/build-plan.md §2 D3/D6).
@@ -32,7 +34,15 @@ function connectionString(): string {
   // in. Failing at boot turns that into a rollout that visibly does not
   // complete, which is the same call packages/events/src/transport.ts makes for
   // an unset broker and for the same reason.
-  if (process.env.NODE_ENV === 'production') {
+  //
+  // EXCEPT during `next build`. Next runs page-data collection with
+  // NODE_ENV=production inside the image build, where there is no database and
+  // no secrets — so throwing there fails the BUILD rather than a misconfigured
+  // deploy. It did exactly that: `Failed to collect page data for
+  // /api/operator/bootstrap`. The build never opens a connection, so skipping
+  // the guard costs nothing; the check still fires when the container actually
+  // runs, which is the moment that matters.
+  if (process.env.NODE_ENV === 'production' && !isNextBuild()) {
     throw new Error(
       'OPERATOR_DATABASE_URL is not set. The operator console needs its own ' +
         'connection as `wize_operator` to the wize_admin schema; there is no ' +
