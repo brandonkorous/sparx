@@ -399,6 +399,19 @@ patches:
   # It also mounts the media volume, because with GCS_MEDIA_BUCKET unset
   # packages/media resolves to LocalStorage and api-rest STREAMS variants from
   # the same volume media-worker writes them to.
+  #
+  # fsGroup is what makes that volume WRITABLE, and it is not optional here.
+  # Every container in this overlay runs as uid 1000, but the media tarball was
+  # unpacked by restore-from-export.yml with the uid/gid recorded inside it —
+  # 197609, a Windows-side id that exists nowhere in the cluster — at mode 0755.
+  # The result was a production volume the apps could READ and never WRITE: every
+  # upload, every transcoded variant and every marketplace artifact failed with
+  # EACCES, while both pods stayed Running and healthy. fsGroup makes the kubelet
+  # take group ownership of the tree at mount time and add group write, which
+  # fixes the existing files without a one-off root Job; OnRootMismatch skips the
+  # recursive walk once the root already matches, so it costs one pass, not one
+  # per restart. The restore workflow now also chowns on extract, so a future
+  # tarball never re-creates it.
   - target:
       kind: Deployment
       name: api-rest
@@ -413,6 +426,9 @@ patches:
           rollingUpdate: null
         template:
           spec:
+            securityContext:
+              fsGroup: 1000
+              fsGroupChangePolicy: OnRootMismatch
             containers:
               - name: api-rest
                 env:
@@ -458,6 +474,13 @@ patches:
       spec:
         template:
           spec:
+            # Same fsGroup as api-rest, for the same reason — this is the pod
+            # that WRITES the variants, so without it every transcode ends in
+            # EACCES against /media. Both pods must agree on the group or the
+            # one that mounts second re-applies ownership on every start.
+            securityContext:
+              fsGroup: 1000
+              fsGroupChangePolicy: OnRootMismatch
             affinity:
               podAffinity:
                 requiredDuringSchedulingIgnoredDuringExecution:

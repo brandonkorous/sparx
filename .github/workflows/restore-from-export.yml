@@ -399,7 +399,25 @@ jobs:
                         # directory first would delete it. Same-named files are
                         # overwritten, which is correct — variant keys are
                         # content-immutable.
-                        curl -fsSL "\$RESTORE_URL" | tar -xzf - -C /media
+                        #
+                        # --no-same-owner / --no-same-permissions are load-
+                        # bearing. This runs as root, so without them tar
+                        # RESTORES the uid/gid recorded in the archive — and the
+                        # first tarball was rolled up on a Windows workstation,
+                        # so every path landed as 197609:197609 mode 0755. The
+                        # app containers run as uid 1000: they could read that
+                        # tree and never write to it, so uploads, transcodes and
+                        # marketplace artifacts all failed with EACCES while
+                        # api-rest and media-worker stayed Running and healthy.
+                        # The explicit chown then puts the whole volume — the
+                        # extracted files AND anything already there — under the
+                        # uid the pods actually run as.
+                        curl -fsSL "\$RESTORE_URL" \
+                          | tar -xzf - -C /media --no-same-owner --no-same-permissions
+
+                        chown -R 1000:1000 /media
+                        find /media -type d -exec chmod 775 {} +
+                        find /media -type f -exec chmod 664 {} +
 
                         echo "after : \$(find /media -type f | wc -l) files"
                         echo "--- top-level ---"
