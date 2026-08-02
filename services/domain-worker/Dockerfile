@@ -1,31 +1,18 @@
-# domain-worker runtime image. Subscribes to domain.purchased via Pub/Sub push,
-# polls CNAME propagation, marks domains active, and sends renewal reminders.
+# domain-worker runtime image.
 #
-# Cloud Run push endpoint — exposes :8080 (PORT env var). Only needs @sparx/db
-# and @sparx/events from the workspace; no UI, media, or email-render deps.
-
-FROM node:24-alpine
-
-RUN apk add --no-cache dumb-init
-
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-
-WORKDIR /app
-
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY tsconfig.base.json ./
-COPY packages/db ./packages/db
-COPY packages/events ./packages/events
-COPY services/domain-worker ./services/domain-worker
-
-RUN pnpm install --filter @sparx/domain-worker... --frozen-lockfile --prod=false
-
-RUN cd packages/db && pnpm exec prisma generate
+# THREE LINES OF METADATA ON A SHARED BASE. The workspace, its dependency
+# closure and the generated Prisma client all live in Dockerfile.base, which is
+# built once per release and shared by every Node service — so the node stores
+# that tree once instead of once per image. Read Dockerfile.base for why (it is
+# the difference between ~18 GB and well under 1 GB per release generation, and
+# it is what stopped the single node running out of disk mid-rollout).
+#
+# ARG BASE is supplied by the release as the base image built from THIS commit.
+# The default keeps a local `docker build -f services/domain-worker/Dockerfile .` working.
+ARG BASE=sparx-base:local
+FROM ${BASE}
 
 WORKDIR /app/services/domain-worker
-
-RUN chown -R node:node /app
-USER node
 
 EXPOSE 8080
 

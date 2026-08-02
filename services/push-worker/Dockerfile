@@ -1,39 +1,19 @@
-# push-worker runtime image. Same shape as services/email-worker/Dockerfile.
+# push-worker runtime image.
 #
-# Cloud Run Pub/Sub push entrypoint — exposes :8080 (Cloud Run injects PORT;
-# defaults to 8080). Only needs @sparx/db (subscription lookups) + web-push.
-
-FROM node:24-alpine
-
-RUN apk add --no-cache dumb-init
-
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-
-WORKDIR /app
-
-# Workspace context — minimum needed to install push-worker + its workspace
-# deps (@sparx/db for the subscription rows).
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY tsconfig.base.json ./
-COPY packages/db ./packages/db
-COPY packages/events ./packages/events
-COPY services/push-worker ./services/push-worker
-
-# Filtered install pulls only @sparx/push-worker + transitive workspace deps;
-# --prod=false keeps tsx + @types/* available for the runtime entry.
-RUN pnpm install --filter @sparx/push-worker... --frozen-lockfile --prod=false
-
-# Generate Prisma client up front so the first message doesn't pay the cost.
-RUN cd packages/db && pnpm exec prisma generate
+# THREE LINES OF METADATA ON A SHARED BASE. The workspace, its dependency
+# closure and the generated Prisma client all live in Dockerfile.base, which is
+# built once per release and shared by every Node service — so the node stores
+# that tree once instead of once per image. Read Dockerfile.base for why (it is
+# the difference between ~18 GB and well under 1 GB per release generation, and
+# it is what stopped the single node running out of disk mid-rollout).
+#
+# ARG BASE is supplied by the release as the base image built from THIS commit.
+# The default keeps a local `docker build -f services/push-worker/Dockerfile .` working.
+ARG BASE=sparx-base:local
+FROM ${BASE}
 
 WORKDIR /app/services/push-worker
 
-# Run as non-root (GKE Autopilot policy). node:24-alpine ships uid 1000.
-RUN chown -R node:node /app
-USER node
-
 EXPOSE 8080
 
-# dumb-init forwards SIGTERM to the graceful-shutdown hook. Run tsx via node
-# (matches `start`), not `pnpm exec` (which re-invokes corepack at cold start).
 ENTRYPOINT ["dumb-init", "--", "node", "--import", "tsx", "src/index.ts"]

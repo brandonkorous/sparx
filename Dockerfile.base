@@ -1,0 +1,98 @@
+# The shared runtime base for every Node service — the 4 APIs, the 12 workers,
+# and the migration runner. Built once per release; each service image is then
+# three lines of metadata on top of it.
+#
+# ---------------------------------------------------------------------------
+# Why this exists
+# ---------------------------------------------------------------------------
+#
+# Each service used to carry its own `pnpm install --filter <svc>...`, which
+# meant seventeen images each holding a near-identical dependency tree. Nothing
+# deduplicated them: a layer is shared only when its parent chain is identical,
+# and every one of those installs produced a different layer. The API images
+# landed at ~880 MB apiece and a full release generation cost the node ~18 GB.
+#
+# That is not an abstract inefficiency. The cluster is ONE node with a 110 GB
+# ephemeral OS disk, and a rollout necessarily holds TWO generations at once —
+# the pods still serving and the pods coming up. On 2026-08-02 that overran the
+# disk: the kubelet raised DiskPressure, image extraction failed with "no space
+# left on device", and the entire worker fleet sat in ImagePullBackOff while the
+# node had six generations cached and could not reclaim the two that were in
+# use. The alternative on the table was a managed 256 GB OS disk at roughly
+# $38/month, forever, to store the same dependencies seventeen times.
+#
+# With a shared base the node stores that tree ONCE per release. Every service
+# image below resolves to the same layers, so a generation costs what one image
+# costs.
+#
+# ---------------------------------------------------------------------------
+# Two decisions worth keeping
+# ---------------------------------------------------------------------------
+#
+# 1. NO `chown -R` AFTER INSTALLING. `RUN chown -R node:node /app` rewrites every
+#    file it touches, and a rewritten file is a new file in the layer — so the
+#    image carried a SECOND full copy of node_modules. Roughly half of each 880 MB
+#    was that one line. Here /app is created owned by `node` and everything runs
+#    as `node` from the start, so ownership is never rewritten.
+#
+# 2. pnpm INSTALLED GLOBALLY, NOT VIA COREPACK. corepack prepares its cache for
+#    the user that ran it; prepared as root, it is unreadable by the runtime
+#    `node` user, which is why the old images could not use `pnpm exec` at
+#    runtime and re-downloaded pnpm from the registry on a cold start. A global
+#    npm install puts it in /usr/local where every user can read it, which also
+#    lets the install itself run unprivileged.
+FROM node:24-alpine
+
+# dumb-init is the PID-1 reaper the workers use. Installed here rather than in
+# each worker image so the layer is shared with the services that do not need it
+# — one 20 KB binary is cheaper than a second base.
+RUN apk add --no-cache dumb-init \
+    && npm install --global pnpm@9.15.0 \
+    && mkdir -p /app \
+    && chown node:node /app
+
+USER node
+WORKDIR /app
+
+# Workspace manifests first: this layer changes only when a dependency changes,
+# so the expensive install below stays cached across ordinary source edits.
+COPY --chown=node:node pnpm-workspace.yaml pnpm-lock.yaml package.json tsconfig.base.json ./
+
+# The Next.js apps are NOT built from this base — they ship standalone bundles
+# and are already small. Their manifests are still needed, because
+# pnpm-workspace.yaml globs `apps/*` and `--frozen-lockfile` refuses to run when
+# the workspace on disk does not match the importers in the lockfile. Manifests
+# only: no source, and nothing installs for them.
+COPY --chown=node:node apps/admin/package.json ./apps/admin/
+COPY --chown=node:node apps/market/package.json ./apps/market/
+COPY --chown=node:node apps/site/package.json ./apps/site/
+COPY --chown=node:node apps/web/package.json ./apps/web/
+COPY --chown=node:node apps/workbench/package.json ./apps/workbench/
+
+COPY --chown=node:node packages ./packages
+COPY --chown=node:node services ./services
+
+# First-party marketplace bundles (docs/85), read at ingest time by
+# api-rest's src/scripts/marketplace-ingest.ts, which resolves
+# repoRoot/marketplace-catalog → /app/marketplace-catalog. ~6 MB.
+COPY --chown=node:node marketplace-catalog ./marketplace-catalog
+
+# Everything under services/, plus the transitive workspace closure each one
+# needs. `{...}` is pnpm's filter-by-DIRECTORY syntax and the trailing `...` is
+# its dependency-closure suffix, so this is the union of what all seventeen
+# images used to install separately — installed once. Verified to select 77
+# packages including @sparx/db and NONE of the Next.js apps.
+#
+# @sparx/db is named explicitly as well: the migration runner image is built
+# from this base and needs it even though nothing under services/ would be
+# required to depend on it forever.
+RUN pnpm install --filter "{./services/*}..." --filter "@sparx/db..." \
+    --frozen-lockfile --prod=false
+
+# Pre-generate the Prisma client so no service pays for it on first request.
+RUN cd packages/db && pnpm exec prisma generate
+
+# Each service image sets its own WORKDIR, EXPOSE and ENTRYPOINT. Nothing here
+# starts: this image is a base, and running it directly is a mistake worth
+# failing loudly on.
+ENTRYPOINT ["/bin/sh", "-c", "echo 'Dockerfile.base is a base image and has no entrypoint of its own.' >&2; exit 1"]

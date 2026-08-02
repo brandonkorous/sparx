@@ -1,69 +1,19 @@
-# api-graphql runtime image. Same shape as services/api-rest/Dockerfile.
+# api-graphql runtime image.
 #
-# CRM resolvers depend on @sparx/crm → @sparx/auth → @sparx/email +
-# @sparx/events, so all four must be COPY'd into the image even though the
-# GraphQL surface itself doesn't import them directly.
+# THREE LINES OF METADATA ON A SHARED BASE. The workspace, its dependency
+# closure and the generated Prisma client all live in Dockerfile.base, which is
+# built once per release and shared by every Node service — so the node stores
+# that tree once instead of once per image. Read Dockerfile.base for why (it is
+# the difference between ~18 GB and well under 1 GB per release generation, and
+# it is what stopped the single node running out of disk mid-rollout).
 #
-# Built by GitHub Actions, pushed to
-# us-central1-docker.pkg.dev/sparxworks/sparx/api-graphql:<sha>.
-
-FROM node:24-alpine
-
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-
-WORKDIR /app
-
-# Workspace context — minimum needed for @sparx/api-graphql to install.
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY tsconfig.base.json ./
-COPY packages/db ./packages/db
-COPY packages/api-core ./packages/api-core
-COPY packages/cms-schemas ./packages/cms-schemas
-COPY packages/cms ./packages/cms
-COPY packages/events ./packages/events
-COPY packages/email ./packages/email
-# @sparx/email's index re-exports the Builder email renderer, which imports
-# @sparx/cms-editor/serialize (the React-free JSON→HTML path) at module load —
-# so any image that has @sparx/email must also carry cms-editor or it crashes at
-# boot (docs/52 §9). @sparx/ui (cms-editor's only workspace dep) is intentionally
-# NOT copied: the /serialize subpath never loads it, so the symlink stays unused.
-COPY packages/cms-editor ./packages/cms-editor
-COPY packages/auth ./packages/auth
-COPY packages/modules ./packages/modules
-COPY packages/legal ./packages/legal
-# @sparx/auth's index (crm-context.ts imports isModuleEnabled here) statically pulls
-# sign-up.ts → tenant-events.ts → @sparx/legal-seed → @sparx/legal-templates. Under
-# `node --import tsx` the whole graph evaluates at boot, so both must be present or
-# the service crashloops with ERR_MODULE_NOT_FOUND. (legal-templates is dep-free;
-# legal-seed's @sparx/db dep is already above.)
-COPY packages/legal-seed ./packages/legal-seed
-COPY packages/legal-templates ./packages/legal-templates
-COPY packages/crm-schemas ./packages/crm-schemas
-# @sparx/crm now depends on @sparx/commerce-schemas (the pure markup engine) for
-# quote-line markup pricing (docs/48 §5), so it must be present even though the
-# GraphQL surface doesn't import commerce directly.
-COPY packages/commerce-schemas ./packages/commerce-schemas
-COPY packages/crm ./packages/crm
-COPY services/api-graphql ./services/api-graphql
-
-# Install only what api-graphql needs (and transitive workspace deps).
-RUN pnpm install --filter @sparx/api-graphql... --frozen-lockfile --prod=false
-
-# Pre-generate the Prisma client so the first request doesn't pay the cost.
-RUN cd packages/db && pnpm exec prisma generate
+# ARG BASE is supplied by the release as the base image built from THIS commit.
+# The default keeps a local `docker build -f services/api-graphql/Dockerfile .` working.
+ARG BASE=sparx-base:local
+FROM ${BASE}
 
 WORKDIR /app/services/api-graphql
 
-# k8s SecurityContext requires runAsNonRoot. node:24-alpine ships a `node`
-# user (uid 1000) which satisfies the GKE Autopilot policy.
-RUN chown -R node:node /app
-USER node
-
 EXPOSE 3200
 
-# Run tsx directly via node (matches the `start` script), not via `pnpm exec`,
-# which re-invokes corepack at container start and re-downloads pnpm from the
-# npm registry on every cold start (the build-time corepack cache is owned by
-# root, unreadable by the runtime `node` user). Fastify handles SIGTERM via the
-# graceful-shutdown hook in src/index.ts.
 ENTRYPOINT ["node", "--import", "tsx", "src/index.ts"]

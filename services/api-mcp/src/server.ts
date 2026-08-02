@@ -35,10 +35,12 @@ const SERVER_INSTRUCTIONS = [
     'meant a different one.',
   'Site-editing tools echo the resolved `site` ({id, name, isPrimary}) in their result — always confirm it is the ' +
     'site you intended before continuing.',
-  'Builder pages author the page BODY (create_builder_page / update_builder_page); the header/footer/nav is a ' +
-    'separate site LAYOUT (get_builder_layout → update_builder_layout → publish_builder_layout). Set page SEO ' +
-    'inline via the page document’s seoTitle/seoDescription. Give a site its own look with a saved theme ' +
-    '(create_saved_theme → apply_saved_theme) rather than editing a shared preset. Changes are DRAFTs until published.',
+  'Builder pages author the page BODY (create_builder_page / update_builder_page). The header/footer/nav is the ' +
+    'SILICA FRAME, a different system with a different node contract: read `describe_silica_authoring`, then ' +
+    'get_silica_frame → set_silica_frame → publish_silica_site. There is no `update_builder_layout` — it was removed ' +
+    'because it wrote columns the storefront does not render. Set page SEO inline via the page document’s ' +
+    'seoTitle/seoDescription. Give a site its own look with a saved theme (create_saved_theme → apply_saved_theme) ' +
+    'rather than editing a shared preset. Changes are DRAFTs until published.',
 ].join('\n\n');
 
 // Scopes whose tools also require a specific MODULE to be active (beyond the

@@ -1,40 +1,19 @@
-# commerce-indexer runtime image. Same shape as services/email-worker/Dockerfile.
+# commerce-indexer runtime image.
 #
-# Cloud Run Pub/Sub push entrypoint — exposes :8080 (Cloud Run injects
-# PORT; defaults to 8080). No native deps required — projection is pure
-# JS + Prisma, upserts go over HTTP to Typesense.
-
-FROM node:24-alpine
-
-RUN apk add --no-cache dumb-init
-
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-
-WORKDIR /app
-
-# Workspace context — pulls in the workspace files we filter against
-# below. @sparx/commerce drags @sparx/integration-framework + the
-# provider packages through its dep tree even though the indexer doesn't
-# use them at runtime; the cost is in the Docker layer, not runtime.
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY tsconfig.base.json ./
-COPY packages ./packages
-COPY services/commerce-indexer ./services/commerce-indexer
-
-RUN pnpm install --filter @sparx/commerce-indexer... --frozen-lockfile --prod=false
-
-RUN cd packages/db && pnpm exec prisma generate
+# THREE LINES OF METADATA ON A SHARED BASE. The workspace, its dependency
+# closure and the generated Prisma client all live in Dockerfile.base, which is
+# built once per release and shared by every Node service — so the node stores
+# that tree once instead of once per image. Read Dockerfile.base for why (it is
+# the difference between ~18 GB and well under 1 GB per release generation, and
+# it is what stopped the single node running out of disk mid-rollout).
+#
+# ARG BASE is supplied by the release as the base image built from THIS commit.
+# The default keeps a local `docker build -f services/commerce-indexer/Dockerfile .` working.
+ARG BASE=sparx-base:local
+FROM ${BASE}
 
 WORKDIR /app/services/commerce-indexer
 
-RUN chown -R node:node /app
-USER node
-
 EXPOSE 8080
 
-# Run tsx directly via node (matches the `start` script), not `pnpm exec` —
-# pnpm re-invokes corepack at container start, re-downloading pnpm from the npm
-# registry on every cold start (build-time corepack cache is root-owned and
-# unreadable by the runtime `node` user). dumb-init forwards SIGTERM to the
-# graceful-shutdown hook before exiting.
 ENTRYPOINT ["dumb-init", "--", "node", "--import", "tsx", "src/index.ts"]

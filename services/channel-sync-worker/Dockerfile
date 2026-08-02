@@ -1,31 +1,18 @@
 # channel-sync-worker runtime image.
-# Cloud Run Pub/Sub push entrypoint — exposes :8080.
-# Subscribes to product.*, inventory.adjusted, and order.fulfilled and pushes the
-# change out to every connected channel with a registered adapter (docs/106 §4.2).
-
-FROM node:24-alpine
-
-RUN apk add --no-cache dumb-init
-
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-
-WORKDIR /app
-
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY tsconfig.base.json ./
-COPY packages/db ./packages/db
-COPY packages/channels ./packages/channels
-COPY packages/events ./packages/events
-COPY services/channel-sync-worker ./services/channel-sync-worker
-
-RUN pnpm install --filter @sparx/channel-sync-worker... --frozen-lockfile --prod=false
-
-RUN cd packages/db && pnpm exec prisma generate
+#
+# THREE LINES OF METADATA ON A SHARED BASE. The workspace, its dependency
+# closure and the generated Prisma client all live in Dockerfile.base, which is
+# built once per release and shared by every Node service — so the node stores
+# that tree once instead of once per image. Read Dockerfile.base for why (it is
+# the difference between ~18 GB and well under 1 GB per release generation, and
+# it is what stopped the single node running out of disk mid-rollout).
+#
+# ARG BASE is supplied by the release as the base image built from THIS commit.
+# The default keeps a local `docker build -f services/channel-sync-worker/Dockerfile .` working.
+ARG BASE=sparx-base:local
+FROM ${BASE}
 
 WORKDIR /app/services/channel-sync-worker
-
-RUN chown -R node:node /app
-USER node
 
 EXPOSE 8080
 

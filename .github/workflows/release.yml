@@ -206,7 +206,52 @@ jobs:
   # tagged with this commit's SHA, so stages 2 and 3 name a version rather than
   # discovering one.
   # ---------------------------------------------------------------------------
+  # ---------------------------------------------------------------------------
+  # The shared runtime base for every Node service. Built FIRST, because the 17
+  # service images below are three lines of metadata on top of it.
+  #
+  # This is what stops one node from running out of disk. Each service used to
+  # run its own `pnpm install --filter`, so seventeen images each carried a
+  # near-identical dependency tree that nothing deduplicated — ~880 MB apiece,
+  # ~18 GB per release generation. A rollout necessarily holds TWO generations
+  # (the pods still serving and the pods coming up), which overran the 110 GB
+  # disk on 2026-08-02 and left the whole worker fleet in ImagePullBackOff.
+  # Sharing the base means the node stores that tree once per release.
+  #
+  # Read Dockerfile.base for the two decisions inside it that matter.
+  # ---------------------------------------------------------------------------
+  base:
+    runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.ref.outputs.image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Resolve the base reference
+        id: ref
+        run: echo "image=ghcr.io/${{ github.repository }}/base:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push the base
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile.base
+          push: true
+          tags: |
+            ${{ steps.ref.outputs.image }}
+            ghcr.io/${{ github.repository }}/base:latest
+          cache-from: type=gha,scope=base
+          cache-to: type=gha,mode=max,scope=base
+          provenance: false
+
   build:
+    needs: base
     runs-on: ubuntu-latest
     strategy:
       # One failing image must not cancel the other 21 — the failure is almost
@@ -260,20 +305,21 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          # ALWAYS the repo root. Every Dockerfile COPYs from the workspace root
-          # (pnpm-workspace.yaml plus its packages/* closure), so building from
-          # inside a service directory fails on the first COPY.
+          # ALWAYS the repo root. The Next.js app Dockerfiles COPY from the
+          # workspace root, so building from inside an app directory fails on
+          # the first COPY. (The Node services no longer copy anything — they
+          # inherit it all from the base.)
           context: .
           file: ${{ matrix.dockerfile }}
           push: true
+          # Every Node service resolves this to the base built from THIS commit.
+          # The five Next.js apps ignore it: they build standalone bundles, are
+          # already small (76-121 MB), and share nothing with the service tree.
+          build-args: |
+            BASE=${{ needs.base.outputs.image }}
           tags: |
             ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.sha }}
             ghcr.io/${{ github.repository }}/${{ matrix.name }}:latest
-          # Registry-backed cache, keyed per image. Each Dockerfile runs its own
-          # `pnpm install --filter`, so layers are not shared between images and
-          # a per-image cache scope is what actually helps. This is what makes an
-          # unfiltered build of all 22 cheap when nothing under most of them
-          # changed.
           cache-from: type=gha,scope=${{ matrix.name }}
           cache-to: type=gha,mode=max,scope=${{ matrix.name }}
           provenance: false

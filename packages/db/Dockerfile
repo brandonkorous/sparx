@@ -1,58 +1,28 @@
-# Migration runner image. Built by GitHub Actions, pushed to Artifact Registry
-# at us-central1-docker.pkg.dev/sparxworks/sparx/db-migrate:<sha>, and run as
-# the main container of a K8s Job in sparx-prod alongside the Cloud SQL Auth
-# Proxy sidecar.
+# The migration + seed runner.
 #
-# Single-stage build keeps the image self-contained — the runtime needs the
-# Prisma CLI (for `prisma migrate deploy` and `prisma db execute`), the
-# generated client, tsx (for the seed), and the @google-cloud/secret-manager
-# client to fetch DB passwords via Workload Identity.
-
-FROM node:24-alpine
-
-# pnpm via corepack — matches the monorepo's packageManager declaration.
-RUN corepack enable && corepack prepare pnpm@9.15.0 --activate
-
-WORKDIR /app
-
-# Workspace context: copy just enough of the monorepo for `pnpm install
-# --filter @sparx/db` to work without pulling the world. @sparx/db's
-# box→class backfill (scripts/backfill-builder-class.ts) imports
-# @sparx/builder-schemas, and the seed (prisma/seed.ts) imports
-# @sparx/blueprints + @sparx/marketplace-schemas to seed the Sparx-core
-# marketplace catalog (docs/60), and @sparx/legal-templates to backfill starter
-# legal pages for existing tenants (docs/42 Slice 7) — so those workspace packages and their
-# transitive closure (cms-/commerce-/crm-/sitebuilder-schemas) must be present
-# too. `pnpm install --filter @sparx/db...` links them but can't materialize
-# source the image never copied.
-COPY pnpm-workspace.yaml pnpm-lock.yaml package.json ./
-COPY tsconfig.base.json ./
-COPY packages/db ./packages/db
-COPY packages/builder-schemas ./packages/builder-schemas
-COPY packages/cms-schemas ./packages/cms-schemas
-COPY packages/crm-schemas ./packages/crm-schemas
-COPY packages/commerce-schemas ./packages/commerce-schemas
-COPY packages/sitebuilder-schemas ./packages/sitebuilder-schemas
-COPY packages/marketplace-schemas ./packages/marketplace-schemas
-COPY packages/blueprints ./packages/blueprints
-COPY packages/legal-templates ./packages/legal-templates
-
-# Install only @sparx/db deps; --frozen-lockfile fails the build if anyone
-# forgot to commit a lockfile update.
-RUN pnpm install --filter @sparx/db... --frozen-lockfile --prod=false
-
-# Generate the Prisma client so `prisma migrate deploy` and the seed run
-# against the embedded schema.
-RUN cd packages/db && pnpm exec prisma generate
+# THREE LINES OF METADATA ON A SHARED BASE. The workspace, its dependency
+# closure and the generated Prisma client all live in Dockerfile.base, which is
+# built once per release and shared by every Node service — so the node stores
+# that tree once instead of once per image. Read Dockerfile.base for why (it is
+# the difference between ~18 GB and well under 1 GB per release generation, and
+# it is what stopped the single node running out of disk mid-rollout).
+#
+# NOT a Deployment. The release's data stage runs this as a Kubernetes Job:
+# first with the entrypoint below (`prisma migrate deploy`, plus the hand-edited
+# RLS SQL), then again with the command overridden to prisma/seed-platform.ts
+# for the platform rows. Both connect as the OWNER role — see
+# k8s/azure/jobs/db-seed-platform.yaml.
+#
+# `pnpm exec` is safe at runtime here because the base installs pnpm globally
+# into /usr/local rather than preparing a root-owned corepack cache the runtime
+# `node` user cannot read. That was the old failure mode: a cold start
+# re-downloaded pnpm from the registry before it could run anything.
+#
+# ARG BASE is supplied by the release as the base image built from THIS commit.
+# The default keeps a local `docker build -f packages/db/Dockerfile .` working.
+ARG BASE=sparx-base:local
+FROM ${BASE}
 
 WORKDIR /app/packages/db
 
-# Drop to the node:24-alpine image's built-in `node` user (uid 1000) so the
-# K8s pod's runAsNonRoot security context is satisfied. Done AFTER pnpm
-# install + prisma generate which need root to write into /app. chown the
-# tree so the entrypoint can read the generated client + node_modules.
-RUN chown -R node:node /app
-USER node
-
-# tini-style sane signal handling for K8s SIGTERM.
 ENTRYPOINT ["pnpm", "exec", "tsx", "scripts/run-migrations.ts"]
