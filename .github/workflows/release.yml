@@ -1,0 +1,1282 @@
+# THE RELEASE PIPELINE. There is one, and this is it.
+#
+# ---------------------------------------------------------------------------
+# The order, which is the entire design
+# ---------------------------------------------------------------------------
+#
+#   build           the images this release will deploy
+#   1 infrastructure   terraform apply, then the cluster's own resources
+#   2 data             schema, then rows
+#   3 containers       roll the application images
+#   4 cleanup          prune what this release made obsolete
+#
+# Each stage depends on the one above it and nothing else. Read top to bottom
+# and you have read the deployment.
+#
+# WHY DATA COMES BEFORE CONTAINERS. Schema before code is uncontroversial — new
+# code must never meet an old schema. Rows are the same argument and were the
+# same bug: `migrate` moves the schema and nothing ever put a row in it, so the
+# marketplace catalog could be committed, reviewed, merged and deployed while
+# remaining entirely absent from the running platform. `marketplace_themes` held
+# ZERO rows against 20 committed theme bundles and /market/themes served its
+# empty state for a month. Nothing was broken; there was no step that published
+# it. Data is a deploy stage, so it is a stage, and a stage that fails fails the
+# release — which the hand-run predecessor did not, since it logged warnings and
+# let "the pipeline is green" and "the catalog is empty" both be true.
+#
+# Putting it BEFORE the rollout is what makes that guarantee real: if the seed
+# fails, the old containers are still serving and no new code ever meets data
+# that was never written. Running it afterwards means discovering the data is
+# wrong from a release that has already shipped.
+#
+# The data Jobs need a namespace, `sparx-app-env` and the `sparx-media` PVC to
+# exist. Those are infrastructure, so they are applied by stage 1
+# (k8s/azure/infra) rather than riding along with the Deployments — see
+# k8s/azure/infra/kustomization.yaml. That split is what lets this order hold on
+# a cluster that has never been deployed, instead of only on one that already
+# has yesterday's pods on it.
+#
+# ---------------------------------------------------------------------------
+# The destination is a VARIABLE
+# ---------------------------------------------------------------------------
+#
+# A release pipeline describes how to ship, not where. Resource group, cluster
+# and namespace are read from environment variables in the `target` job and
+# threaded downstream; the literals below are defaults so the current
+# deployment keeps working with nothing configured. Adding an environment is
+# setting three variables on it, not forking this file.
+#
+# This replaces a naming convention that had grown to eight files — deploy /
+# db-migrate / build / marketplace-ingest, each doubled per cloud — where the
+# thing that actually varied was three strings.
+#
+# ---------------------------------------------------------------------------
+# ONE COMMIT, ONE RELEASE, ONE SHA
+# ---------------------------------------------------------------------------
+#
+# `build` runs inside this workflow and builds EVERY image, unfiltered, so
+# `github.sha` is the only version this pipeline has. What used to be here
+# instead: a separate path-filtered build workflow, a `workflow_run` trigger to
+# chain off it, a `manifest_sha` and an `image_sha` that were "not always the
+# same", and a loop walking back fifty commits asking GHCR whether each one had
+# images. All of that existed to answer "which images do these manifests go
+# with" — a question this pipeline does not have, because it builds them.
+#
+# The path filter was there to avoid rebuilding 22 images to publish identical
+# bytes. It is not worth its complexity: this repository is PUBLIC, so Actions
+# minutes are free, and every image restores from its own `type=gha` cache scope
+# when nothing under it changed. The cost was never money; it was two SHAs.
+name: Release
+
+on:
+  # Every commit on main is a release. No path filters — a manifest-only commit,
+  # a bundle-only commit and a source commit all take the identical path, which
+  # is precisely the class of "this change was merged but never deployed" bug
+  # that path-filtered triggers kept producing.
+  push:
+    branches: [main]
+
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Where to release'
+        required: false
+        default: prod
+        type: choice
+        options: [prod]
+      # Stage skips, for re-running part of a release. Each defaults to ON, so
+      # a dispatch with nothing touched is a full release.
+      infrastructure:
+        description: 'Stage 1 — apply Terraform + cluster resources'
+        required: false
+        default: true
+        type: boolean
+      data:
+        description: 'Stage 2 — migrate the schema and seed platform data'
+        required: false
+        default: true
+        type: boolean
+      containers:
+        description: 'Stage 3 — roll the application images'
+        required: false
+        default: true
+        type: boolean
+      allow_infrastructure_destroy:
+        description: 'Stage 1 — permit a Terraform plan that DELETES resources'
+        required: false
+        default: false
+        type: boolean
+
+concurrency:
+  # Never two releases at once: the second would fight the first's
+  # `rollout status` and could interleave `kubectl apply` writes.
+  group: release-${{ inputs.environment || 'prod' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # OIDC, to Azure and to Entra. No stored credential.
+  packages: write # build pushes to GHCR; cleanup prunes it
+  actions: write # cleanup deletes obsolete workflow runs
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Where this release is going. Resolved ONCE.
+  #
+  # Every downstream job reads these outputs instead of repeating a literal, so
+  # retargeting is a variable change rather than a find-and-replace across four
+  # jobs. The `environment:` key is what makes environment-scoped variables
+  # resolve, which is the mechanism that makes a second environment possible at
+  # all.
+  # ---------------------------------------------------------------------------
+  target:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'prod' }}
+    outputs:
+      environment: ${{ inputs.environment || 'prod' }}
+      resource_group: ${{ steps.resolve.outputs.resource_group }}
+      cluster: ${{ steps.resolve.outputs.cluster }}
+      namespace: ${{ steps.resolve.outputs.namespace }}
+      terraform_dir: ${{ steps.resolve.outputs.terraform_dir }}
+      overlay: ${{ steps.resolve.outputs.overlay }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Resolve the destination
+        id: resolve
+        env:
+          RESOURCE_GROUP: ${{ vars.AKS_RESOURCE_GROUP || 'rg-sparx-prod-cus' }}
+          CLUSTER: ${{ vars.AKS_CLUSTER || 'aks-sparx-prod-cus' }}
+          NAMESPACE: ${{ vars.K8S_NAMESPACE || 'sparx-prod' }}
+          TERRAFORM_DIR: ${{ vars.TERRAFORM_DIR || 'terraform/envs/azure' }}
+          OVERLAY: ${{ vars.K8S_OVERLAY || 'k8s/azure' }}
+        run: |
+          set -euo pipefail
+
+          # The namespace is named in TWO places that must agree: this variable,
+          # which every `kubectl -n` below uses, and the `namespace:` field of
+          # the kustomize overlays, which stamps it onto every manifest. Reading
+          # one and hoping about the other is how a release applies Deployments
+          # into `sparx-prod` and then waits for a rollout in `sparx-staging`,
+          # succeeding at both and deploying nothing anyone can see.
+          #
+          # Kustomize has no way to take that value from the environment, so the
+          # honest fix is to check rather than to template: a mismatch is a
+          # misconfigured environment and it should say so, once, here — not
+          # twenty minutes later as a timeout.
+          for k in "$OVERLAY/infra" "$OVERLAY/apps"; do
+            declared=$(awk '/^namespace:/ { print $2; exit }' "$k/kustomization.yaml")
+            if [ "$declared" != "$NAMESPACE" ]; then
+              echo "::error::$k/kustomization.yaml declares namespace '$declared' but K8S_NAMESPACE is '$NAMESPACE'."
+              exit 1
+            fi
+          done
+
+          {
+            echo "resource_group=$RESOURCE_GROUP"
+            echo "cluster=$CLUSTER"
+            echo "namespace=$NAMESPACE"
+            echo "terraform_dir=$TERRAFORM_DIR"
+            echo "overlay=$OVERLAY"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Releasing \`${GITHUB_SHA:0:12}\`"
+            echo ''
+            echo '| | |'
+            echo '| --- | --- |'
+            echo "| environment | \`${{ inputs.environment || 'prod' }}\` |"
+            echo "| resource group | \`$RESOURCE_GROUP\` |"
+            echo "| cluster | \`$CLUSTER\` |"
+            echo "| namespace | \`$NAMESPACE\` |"
+            echo "| terraform | \`$TERRAFORM_DIR\` |"
+            echo "| overlay | \`$OVERLAY\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # BUILD — the artifacts this release deploys.
+  #
+  # Not a stage of the deployment; the thing the stages deploy. Every image is
+  # tagged with this commit's SHA, so stages 2 and 3 name a version rather than
+  # discovering one.
+  # ---------------------------------------------------------------------------
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      # One failing image must not cancel the other 21 — the failure is almost
+      # always specific to one Dockerfile, and seeing all of them fail is worth
+      # more than failing fast.
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        include:
+          # Apps + APIs (k8s/apps)
+          - { name: api-rest, dockerfile: services/api-rest/Dockerfile }
+          - { name: api-graphql, dockerfile: services/api-graphql/Dockerfile }
+          - { name: api-mcp, dockerfile: services/api-mcp/Dockerfile }
+          - { name: mcp-site, dockerfile: services/mcp-site/Dockerfile }
+          - { name: workbench, dockerfile: apps/workbench/Dockerfile }
+          - { name: web, dockerfile: apps/web/Dockerfile }
+          - { name: site, dockerfile: apps/site/Dockerfile }
+          - { name: market, dockerfile: apps/market/Dockerfile }
+          - { name: admin, dockerfile: apps/admin/Dockerfile }
+          # Workers (k8s/self-hosted/workers.yaml)
+          - { name: automation-worker, dockerfile: services/automation-worker/Dockerfile }
+          - { name: email-worker, dockerfile: services/email-worker/Dockerfile }
+          - { name: push-worker, dockerfile: services/push-worker/Dockerfile }
+          - {
+              name: markup-recompute-worker,
+              dockerfile: services/markup-recompute-worker/Dockerfile,
+            }
+          - { name: media-worker, dockerfile: services/media-worker/Dockerfile }
+          - { name: commerce-indexer, dockerfile: services/commerce-indexer/Dockerfile }
+          - { name: channel-sync-worker, dockerfile: services/channel-sync-worker/Dockerfile }
+          - { name: social-worker, dockerfile: services/social-worker/Dockerfile }
+          - { name: legal-seed-worker, dockerfile: services/legal-seed-worker/Dockerfile }
+          - { name: platform-crm-worker, dockerfile: services/platform-crm-worker/Dockerfile }
+          - { name: domain-worker, dockerfile: services/domain-worker/Dockerfile }
+          - { name: dropship-worker, dockerfile: services/dropship-worker/Dockerfile }
+          # The migration + seed runner. Not a Deployment — stage 2 runs it as a
+          # Job, which is why it is built alongside the images it never joins.
+          - { name: db, dockerfile: packages/db/Dockerfile }
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          # No stored secret — GITHUB_TOKEN is minted per run and scoped by the
+          # `packages: write` permission above.
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          # ALWAYS the repo root. Every Dockerfile COPYs from the workspace root
+          # (pnpm-workspace.yaml plus its packages/* closure), so building from
+          # inside a service directory fails on the first COPY.
+          context: .
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository }}/${{ matrix.name }}:${{ github.sha }}
+            ghcr.io/${{ github.repository }}/${{ matrix.name }}:latest
+          # Registry-backed cache, keyed per image. Each Dockerfile runs its own
+          # `pnpm install --filter`, so layers are not shared between images and
+          # a per-image cache scope is what actually helps. This is what makes an
+          # unfiltered build of all 22 cheap when nothing under most of them
+          # changed.
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}
+          provenance: false
+
+  # ---------------------------------------------------------------------------
+  # STAGE 1 — INFRASTRUCTURE
+  #
+  # Terraform owns the cloud: the cluster, the managed Postgres, the reserved
+  # public IP, DNS, the origin certificate. Then the cluster's own long-lived
+  # resources — namespace, secrets, config, the media volume, Typesense, the
+  # ingress — are applied from k8s/azure/infra.
+  #
+  # Both halves are "things that exist and converge", as opposed to stage 3,
+  # which is "images that are replaced". That is the line the split follows.
+  #
+  # Until now NOTHING ran Terraform. It was applied by hand from a laptop, which
+  # meant the state of production depended on someone having remembered to, and
+  # a manifest referencing `pip-ingress-sparx-prod-cus` could be deployed
+  # against a subscription where no such address existed. The remote state
+  # backend and the OIDC identity to use it have existed since
+  # terraform/bootstrap-azure; the only missing piece was this job.
+  # ---------------------------------------------------------------------------
+  infrastructure:
+    needs: [target, build]
+    if: ${{ github.event_name != 'workflow_dispatch' || inputs.infrastructure }}
+    runs-on: ubuntu-latest
+    environment: ${{ needs.target.outputs.environment }}
+    env:
+      RESOURCE_GROUP: ${{ needs.target.outputs.resource_group }}
+      CLUSTER: ${{ needs.target.outputs.cluster }}
+      NAMESPACE: ${{ needs.target.outputs.namespace }}
+      TERRAFORM_DIR: ${{ needs.target.outputs.terraform_dir }}
+      OVERLAY: ${{ needs.target.outputs.overlay }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: '1.9.8'
+          # The wrapper rewrites stdout to add its own markers, which breaks
+          # `terraform show -json` being piped into jq below.
+          terraform_wrapper: false
+
+      # -----------------------------------------------------------------------
+      # Terraform runs under the SAME OIDC identity as everything else. The
+      # azurerm backend is configured with `use_azuread_auth`, so the state blob
+      # is read with the run's Entra token and no storage key exists to leak.
+      #
+      # ARM_USE_OIDC + the ARM_* ids are what the provider and the backend both
+      # read; `azure/login` above has already exchanged the GitHub token, but
+      # Terraform does not inherit the CLI's session and needs to be told
+      # directly.
+      # -----------------------------------------------------------------------
+      - name: Terraform init
+        working-directory: ${{ env.TERRAFORM_DIR }}
+        env:
+          ARM_USE_OIDC: 'true'
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform init -input=false
+
+      # -----------------------------------------------------------------------
+      # Plan, then decide. `-detailed-exitcode` gives 0 = no changes, 2 =
+      # changes, 1 = error, which is the difference between "nothing to do" and
+      # "something to do" without parsing prose.
+      #
+      # EVERY input this environment takes is passed explicitly from a variable
+      # or a secret. A variable left unset silently falls back to the default in
+      # variables.tf, and several of those defaults DISABLE things — DNS,
+      # the origin certificate — so an unset variable does not mean "leave it
+      # alone", it means "plan to delete it". That is exactly what the destroy
+      # guard below is for, and why its failure message says to check the
+      # variables first.
+      # -----------------------------------------------------------------------
+      # -----------------------------------------------------------------------
+      # Terraform inputs, resolved in shell rather than in `env:` expressions.
+      #
+      # An unset GitHub secret is an EMPTY STRING, and empty is not the same as
+      # absent: `TF_VAR_cloudflare_api_token=""` OVERRIDES the placeholder
+      # default in variables.tf, and the Cloudflare provider enforces the
+      # token's LENGTH at plan time — so a missing secret would fail the plan
+      # with a format error rather than falling back. Same shape for the two
+      # booleans, where an empty string is not parseable as a bool at all.
+      #
+      # Cloudflare defaults to ON only when a token is actually present. The
+      # alternative — defaulting it on unconditionally — plans real DNS records
+      # against a 40-character placeholder, which fails at APPLY time, halfway
+      # through.
+      # -----------------------------------------------------------------------
+      - name: Resolve Terraform inputs
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ENABLED: ${{ vars.CLOUDFLARE_ENABLED }}
+          CLOUDFLARE_ORIGIN_CA_ENABLED: ${{ vars.CLOUDFLARE_ORIGIN_CA_ENABLED }}
+          OPERATOR_ACCESS_EMAILS: ${{ vars.OPERATOR_ACCESS_EMAILS }}
+          DKIM_SELECTOR: ${{ vars.SPARX_EMAIL_DKIM_SELECTOR }}
+          DKIM_VALUE: ${{ vars.SPARX_EMAIL_DKIM_VALUE }}
+          LOCATION: ${{ vars.AZURE_LOCATION }}
+        run: |
+          set -euo pipefail
+
+          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
+            cf_default=true
+          else
+            # The exact placeholder from variables.tf: 40 characters, because the
+            # provider checks length and rejects both "" and null.
+            CLOUDFLARE_API_TOKEN='0000000000000000000000000000000000000000'
+            cf_default=false
+            echo "::warning::CLOUDFLARE_API_TOKEN is not set — planning with DNS and the origin certificate DISABLED. If they are currently deployed, the plan will show deletions and the release will stop."
+          fi
+
+          {
+            echo "TF_VAR_subscription_id=${{ vars.AZURE_SUBSCRIPTION_ID }}"
+            echo "TF_VAR_environment=${{ needs.target.outputs.environment }}"
+            echo "TF_VAR_location=${LOCATION:-centralus}"
+            echo "TF_VAR_cloudflare_api_token=$CLOUDFLARE_API_TOKEN"
+            echo "TF_VAR_cloudflare_enabled=${CLOUDFLARE_ENABLED:-$cf_default}"
+            echo "TF_VAR_cloudflare_origin_ca_enabled=${CLOUDFLARE_ORIGIN_CA_ENABLED:-$cf_default}"
+            echo "TF_VAR_operator_access_emails=${OPERATOR_ACCESS_EMAILS:-[]}"
+            echo "TF_VAR_sparx_email_dkim_selector=${DKIM_SELECTOR:-}"
+            echo "TF_VAR_sparx_email_dkim_value=${DKIM_VALUE:-}"
+          } >> "$GITHUB_ENV"
+
+      - name: Terraform plan
+        id: plan
+        working-directory: ${{ env.TERRAFORM_DIR }}
+        env:
+          ARM_USE_OIDC: 'true'
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: |
+          set -euo pipefail
+          terraform plan -input=false -lock-timeout=5m -detailed-exitcode -out=tfplan \
+            && code=0 || code=$?
+
+          case "$code" in
+            0) echo 'changes=false' >> "$GITHUB_OUTPUT" ;;
+            2) echo 'changes=true'  >> "$GITHUB_OUTPUT" ;;
+            *) exit "$code" ;;
+          esac
+
+          terraform show -json tfplan > tfplan.json
+
+      # -----------------------------------------------------------------------
+      # THE GUARD. A pipeline that can silently delete the production database
+      # is not automation, it is a loaded weapon on a timer.
+      #
+      # Terraform records an intent per resource as a list of actions. `delete`
+      # alone is a destroy; `["delete","create"]` or `["create","delete"]` is a
+      # REPLACEMENT, which destroys the existing resource and is the more
+      # dangerous of the two precisely because the summary line says "1 to
+      # change" in casual reading. Both are refused.
+      #
+      # Additive plans apply unattended, which is the common case and the whole
+      # point. Anything destructive stops the release with the resources named,
+      # and re-running by hand with `allow_infrastructure_destroy` is a
+      # deliberate act by someone who has read them.
+      # -----------------------------------------------------------------------
+      - name: Refuse a destructive plan
+        if: steps.plan.outputs.changes == 'true'
+        working-directory: ${{ env.TERRAFORM_DIR }}
+        run: |
+          set -euo pipefail
+          DESTRUCTIVE=$(jq -r '
+            [ .resource_changes[]?
+              | select(.change.actions | index("delete"))
+              | "\(.change.actions | join("+"))\t\(.address)" ]
+            | .[]' tfplan.json)
+
+          {
+            echo '### Terraform plan'
+            echo ''
+            terraform show -no-color tfplan | tail -c 60000 | sed 's/^/    /'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if [ -z "$DESTRUCTIVE" ]; then
+            echo 'Plan is additive — applying.'
+            exit 0
+          fi
+
+          echo "$DESTRUCTIVE"
+          if [ '${{ inputs.allow_infrastructure_destroy }}' = 'true' ]; then
+            echo '::warning::Applying a plan that DESTROYS the resources above — allow_infrastructure_destroy was set.'
+            exit 0
+          fi
+
+          {
+            echo ''
+            echo '> [!CAUTION]'
+            echo '> **The release stopped: this plan destroys infrastructure.**'
+            echo ''
+            echo '| action | resource |'
+            echo '| --- | --- |'
+            printf '%s\n' "$DESTRUCTIVE" | awk -F'\t' '{ print "| `" $1 "` | `" $2 "` |" }'
+            echo ''
+            echo 'A `delete` that nobody asked for is almost always a Terraform *variable* that is'
+            echo 'unset in this environment, not a real intent to remove something — an unset'
+            echo 'variable takes the default in `variables.tf`, and several of those defaults turn'
+            echo 'features off. Check those first.'
+            echo ''
+            echo 'If the deletion is genuinely wanted, re-run this workflow manually with'
+            echo '**allow_infrastructure_destroy** ticked.'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo '::error::Terraform plan would DESTROY resources. Stopping the release. See the run summary.'
+          exit 1
+
+      - name: Terraform apply
+        if: steps.plan.outputs.changes == 'true'
+        working-directory: ${{ env.TERRAFORM_DIR }}
+        env:
+          ARM_USE_OIDC: 'true'
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+        run: terraform apply -input=false -lock-timeout=5m -auto-approve tfplan
+
+      - name: Get cluster credentials
+        run: |
+          az aks get-credentials --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" --overwrite-existing
+          kubectl version --client
+
+      # -----------------------------------------------------------------------
+      # Secrets. Recreated every release from repository secrets, so the cluster
+      # never holds a value that has been rotated in GitHub.
+      #
+      # `create --dry-run | apply` is the idempotent form: plain `create` fails
+      # on the second run, and `apply` alone cannot build a Secret from
+      # literals.
+      #
+      # This is stage 1 rather than stage 2 because the migration, the seed and
+      # the ingest all read these — the schema cannot be moved before the
+      # credential to move it with exists.
+      # -----------------------------------------------------------------------
+      - name: Sync secrets
+        env:
+          APP_SECRETS: ${{ secrets.SPARX_APP_SECRETS_ENV }}
+          TYPESENSE_API_KEY: ${{ secrets.TYPESENSE_API_KEY }}
+        run: |
+          set -euo pipefail
+          kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
+
+          if [ -z "$APP_SECRETS" ]; then
+            echo "::error::SPARX_APP_SECRETS_ENV is empty. See k8s/azure/README.md."
+            exit 1
+          fi
+
+          # A dotenv blob, so one repo secret carries the whole bundle rather
+          # than ~30 individually-managed ones.
+          printf '%s' "$APP_SECRETS" > /tmp/app.env
+
+          # KEY_B64=<base64> → KEY=<decoded>, for values a dotenv line cannot
+          # carry safely.
+          #
+          # Not hypothetical: OPERATOR_AUTH_SECRET ends with a CARRIAGE RETURN
+          # (45 bytes, not 44). Better Auth uses the secret's exact bytes as key
+          # material for the encrypted TOTP secrets and backup codes, so that
+          # trailing \r is load-bearing — drop it and every operator's
+          # authenticator AND their backup codes stop verifying. A trailing \r
+          # before a newline is invisible in a browser textarea and does not
+          # survive a copy-paste, so round-tripping the raw value through a repo
+          # secret is a trap that re-arms itself every time the blob is edited.
+          # STRIPE_WEBHOOK_SECRET_SPARX_PAY is the same shape.
+          #
+          # base64 has no such ambiguity. Prefer it for ANY secret with leading
+          # or trailing whitespace rather than trying to preserve the whitespace.
+          # The _B64 keys are NEVER decoded into the env file. They are held back
+          # and written straight into the Secret's `data` field after it is
+          # created, because `data` is itself base64 — so the bytes reach the
+          # kubelet without passing through a single text parser.
+          #
+          # Decoding them here would defeat the point. `--from-env-file` reads
+          # LINES, and a value whose last byte is \r is indistinguishable from a
+          # CRLF line ending to any such parser; trimming it is the reasonable
+          # thing for a text format to do, and it would silently reconstruct the
+          # exact 44-byte secret that broke 2FA in the first place. Shell text
+          # tools do the same: grep and cut both ate the \r while this was being
+          # verified, which is how the bug hid for so long.
+          grep -v '_B64=' /tmp/app.env > /tmp/app.env.plain || true
+          grep '_B64=' /tmp/app.env > /tmp/app.env.b64 || true
+          B64_COUNT=$(wc -l < /tmp/app.env.b64 | tr -d ' ')
+
+          # OPERATOR_DATABASE_URL — derived when absent, never silently omitted.
+          #
+          # apps/admin talks to the wize_admin schema as `wize_operator`, a
+          # different role from the one in DATABASE_URL. When the var is unset,
+          # packages/operator-auth/src/db.ts falls back to a LOCALHOST dev
+          # default — so the admin pod dialled 127.0.0.1:5544 in-cluster and
+          # every sign-in returned 500, while the console looked deployed and
+          # healthy.
+          #
+          # Deriving it is sound rather than a guess: packages/db/sql/azure-bootstrap.sql
+          # sets wize_operator's password from the SAME app_password as
+          # sparx_app, so on this provider the two differ only by role name.
+          # Supplying OPERATOR_DATABASE_URL explicitly in SPARX_APP_SECRETS_ENV
+          # overrides this entirely, which is what to do the moment those
+          # passwords diverge.
+          if ! grep -q '^OPERATOR_DATABASE_URL' /tmp/app.env; then
+            DB_URL=$(grep -m1 '^DATABASE_URL=' /tmp/app.env.plain | cut -d= -f2-)
+            if [ -z "$DB_URL" ]; then
+              echo "::error::DATABASE_URL missing from SPARX_APP_SECRETS_ENV; cannot derive OPERATOR_DATABASE_URL."
+              exit 1
+            fi
+            OP_URL=$(printf '%s' "$DB_URL" | sed 's#://sparx_app:#://wize_operator:#')
+            case "$OP_URL" in
+              *\?*) OP_URL="$OP_URL&schema=wize_admin" ;;
+              *)    OP_URL="$OP_URL?schema=wize_admin" ;;
+            esac
+            printf 'OPERATOR_DATABASE_URL=%s\n' "$OP_URL" >> /tmp/app.env.plain
+            echo "OPERATOR_DATABASE_URL not supplied; derived it from DATABASE_URL as wize_operator."
+          fi
+
+          kubectl create secret generic sparx-app-secrets -n "$NAMESPACE" \
+            --from-env-file=/tmp/app.env.plain \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          # Graft the whitespace-bearing values in as RAW BASE64. A Secret's
+          # `data` field is base64 by definition, so the kubelet writes exactly
+          # the bytes the repo secret carried — no line parsing, no trimming,
+          # nothing left to lose them.
+          if [ "$B64_COUNT" -gt 0 ]; then
+            PATCH='{"data":{'
+            SEP=''
+            while IFS= read -r line; do
+              [ -n "$line" ] || continue
+              key=${line%%=*}
+              PATCH="$PATCH$SEP\"${key%_B64}\":\"${line#*=}\""
+              SEP=','
+            done < /tmp/app.env.b64
+            PATCH="$PATCH}}"
+            printf '%s' "$PATCH" > /tmp/app.b64.patch
+            kubectl patch secret sparx-app-secrets -n "$NAMESPACE" \
+              --type=merge --patch-file=/tmp/app.b64.patch
+            rm -f /tmp/app.b64.patch
+            echo "Applied $B64_COUNT base64 value(s) straight to the Secret's data field."
+          fi
+
+          rm -f /tmp/app.env /tmp/app.env.plain /tmp/app.env.b64
+
+          kubectl create secret generic typesense-secrets -n "$NAMESPACE" \
+            --from-literal=api-key="$TYPESENSE_API_KEY" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          # Pull secret for the GHCR namespace. GITHUB_TOKEN is scoped to this
+          # run, so it is refreshed on every release by construction.
+          kubectl create secret docker-registry ghcr -n "$NAMESPACE" \
+            --docker-server=ghcr.io \
+            --docker-username='${{ github.actor }}' \
+            --docker-password='${{ secrets.GITHUB_TOKEN }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      # -----------------------------------------------------------------------
+      # The cluster's long-lived resources: namespace, `sparx-app-env`, the
+      # media volume, Typesense, and the Caddy ingress.
+      #
+      # This is what the 39 KB `bootstrap.yml` dispatch used to be — fifteen
+      # hand-picked component names someone had to remember to run, on the one
+      # cloud this platform no longer deploys to. It runs on every release now,
+      # because everything in it is idempotent and the distinction it was
+      # drawing ("platform pods are not app rollouts") is expressed by the
+      # overlay split instead of by a human choosing from a dropdown.
+      # -----------------------------------------------------------------------
+      - name: Apply cluster infrastructure
+        run: |
+          set -euo pipefail
+          kubectl apply -k "$OVERLAY/infra"
+          kubectl -n "$NAMESPACE" rollout status deployment/caddy --timeout=10m
+          kubectl -n "$NAMESPACE" rollout status statefulset/typesense --timeout=10m
+
+      # The address the platform answers on. Reported here rather than after the
+      # rollout because it belongs to the infrastructure that owns it, and
+      # because a missing address is a stage-1 fault worth seeing before the
+      # release spends twenty minutes on stages 2 and 3.
+      - name: Report the ingress address
+        run: |
+          set -euo pipefail
+          IP=''
+          for _ in $(seq 1 30); do
+            IP=$(kubectl get svc caddy -n "$NAMESPACE" \
+              -o jsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
+            [ -n "$IP" ] && break
+            sleep 10
+          done
+
+          if [ -z "$IP" ]; then
+            echo "::error::The caddy Service has no LoadBalancer address after 5m. DNS points at nothing."
+            kubectl describe svc caddy -n "$NAMESPACE" || true
+            exit 1
+          fi
+
+          {
+            echo '### Ingress'
+            echo ''
+            echo "\`$IP\` — DNS points here."
+            echo ''
+            echo '| Record | Mode | Why |'
+            echo '| --- | --- | --- |'
+            echo '| `*.sparx.zone` | DNS-only | on-demand ACME needs the challenge to reach the origin |'
+            echo '| `media-direct.sparx.works` | DNS-only | social fetchers reject Cloudflare’s 206 on a Range request |'
+            echo '| everything else | proxied | Full (strict) |'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # STAGE 2 — DATA. Schema, then rows.
+  #
+  # Everything here runs as an in-cluster Job, because psql-sparx-prod-cus has
+  # public access DISABLED and lives in the VNet: the only thing that can reach
+  # it is already inside the cluster.
+  #
+  #   roles    packages/db/sql/azure-bootstrap.sql. `sparx_app` — the
+  #            unprivileged NOBYPASSRLS role every application connection uses —
+  #            comes from a Docker-image entrypoint convention that a MANAGED
+  #            Postgres will never run. Idempotent, so it runs every time.
+  #   schema   `prisma migrate deploy` from the db image.
+  #   rows     prisma/seed-platform.ts, then the marketplace bundle ingest.
+  #
+  # All four connect as the OWNER role, not the RLS-constrained one. The
+  # marketplace tables are FORCE-RLS with a policy that only admits a no-tenant
+  # write, and the app role does not ERROR on those — it is silently filtered,
+  # which is the failure mode that hides itself.
+  #
+  # Every write is an upsert or a version-guarded immutable artifact, which is
+  # what makes running this on every release correct rather than merely
+  # tolerable. A release that changes no data re-upserts a few hundred rows and
+  # exits.
+  # ---------------------------------------------------------------------------
+  data:
+    needs: [target, build, infrastructure]
+    # `always()` with explicit result checks: a SKIPPED infrastructure stage is
+    # a legitimate way to re-run just the data (`infrastructure: false` on a
+    # dispatch), but a FAILED one must not be followed by writes to a database
+    # whose schema pipeline never ran.
+    if: >-
+      always() && needs.build.result == 'success' &&
+      needs.infrastructure.result != 'failure' && needs.infrastructure.result != 'cancelled' &&
+      (github.event_name != 'workflow_dispatch' || inputs.data)
+    runs-on: ubuntu-latest
+    environment: ${{ needs.target.outputs.environment }}
+    env:
+      RESOURCE_GROUP: ${{ needs.target.outputs.resource_group }}
+      CLUSTER: ${{ needs.target.outputs.cluster }}
+      NAMESPACE: ${{ needs.target.outputs.namespace }}
+      OVERLAY: ${{ needs.target.outputs.overlay }}
+      IMAGE_DB: ghcr.io/${{ github.repository }}/db:${{ github.sha }}
+      IMAGE_API: ghcr.io/${{ github.repository }}/api-rest:${{ github.sha }}
+      RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get cluster credentials
+        run: |
+          az aks get-credentials --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" --overwrite-existing
+
+      - name: Ensure database roles
+        run: |
+          set -euo pipefail
+          kubectl create configmap db-bootstrap-roles -n "$NAMESPACE" \
+            --from-file=azure-bootstrap.sql=packages/db/sql/azure-bootstrap.sql \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+          kubectl delete job db-roles -n "$NAMESPACE" --ignore-not-found
+          # QUOTED heredoc. Everything inside is literal YAML or a GitHub
+          # expression, and GitHub substitutes those before bash ever sees this
+          # — so nothing needs shell expansion and allowing it is pure downside.
+          #
+          # Unquoted, bash performs command substitution on BACKTICKS inside the
+          # body, INCLUDING ones sitting in YAML comments. That is not
+          # hypothetical: a comment naming the `env` and `envFrom` fields in
+          # backticks was executed, splicing the entire process environment into
+          # the manifest, and kubectl died on "could not find expected ':'"
+          # pointing at a line nobody wrote.
+          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: db-roles
+          spec:
+            backoffLimit: 1
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                containers:
+                  - name: psql
+                    image: postgres:18-alpine
+                    command: ['sh', '-c']
+                    args:
+                      - psql "$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 -v app_password="$SPARX_APP_PASSWORD" -f /sql/azure-bootstrap.sql
+                    env:
+                      - name: AUTH_DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+                      - name: SPARX_APP_PASSWORD
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: SPARX_APP_PASSWORD }
+                    volumeMounts:
+                      - { name: sql, mountPath: /sql, readOnly: true }
+                volumes:
+                  - name: sql
+                    configMap: { name: db-bootstrap-roles }
+          YAML
+          ./.github/scripts/await-job.sh db-roles "$NAMESPACE" 300
+
+      - name: Migrate the schema
+        run: |
+          set -euo pipefail
+          kubectl delete job db-migrate -n "$NAMESPACE" --ignore-not-found
+          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: db-migrate
+          spec:
+            backoffLimit: 0
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                imagePullSecrets: [{ name: ghcr }]
+                containers:
+                  - name: migrate
+                    image: ghcr.io/${{ github.repository }}/db:${{ github.sha }}
+                    envFrom:
+                      - configMapRef: { name: sparx-app-env }
+                      - secretRef: { name: sparx-app-secrets }
+                    env:
+                      # Migrations and the hand-edited RLS SQL run as the OWNER
+                      # role, not the RLS-constrained role the apps use. This
+                      # explicit env entry deliberately OVERRIDES the
+                      # DATABASE_URL that envFrom pulls in as sparx_app —
+                      # explicit env wins over envFrom in Kubernetes, and that
+                      # ordering is what makes the runner connect with owner
+                      # rights.
+                      #
+                      # No backticks in here, deliberately, even though the
+                      # heredoc is quoted. They are one `<<YAML` away from being
+                      # executed again.
+                      - name: DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+          YAML
+          ./.github/scripts/await-job.sh db-migrate "$NAMESPACE" 1200
+
+      - name: Seed platform data
+        run: |
+          set -euo pipefail
+          IMAGE="$IMAGE_DB" envsubst '$IMAGE $RUN_ID' \
+            < "$OVERLAY/jobs/db-seed-platform.yaml" > /tmp/seed-job.yaml
+          kubectl apply -n "$NAMESPACE" -f /tmp/seed-job.yaml
+          ./.github/scripts/await-job.sh "db-seed-platform-${RUN_ID}" "$NAMESPACE" 900
+          kubectl -n "$NAMESPACE" logs "job/db-seed-platform-${RUN_ID}" -c seed \
+            --tail=-1 --ignore-errors=true || true
+
+      # -----------------------------------------------------------------------
+      # Bundle-backed listings (docs/85): compiles every bundle under
+      # marketplace-catalog/, writes its artifact to storage and upserts a thin
+      # catalog row. It runs the api-rest image because that Dockerfile bakes
+      # marketplace-catalog/ in.
+      #
+      # It MOUNTS the sparx-media PVC. GCS_MEDIA_BUCKET is deliberately unset on
+      # this provider, which selects LocalStorage in packages/media rooted at
+      # that volume; omit the mount and the ingest still reports SUCCESS while
+      # writing every artifact to the container's own filesystem, leaving
+      # catalog rows pointing at keys that resolve to nothing. The failure only
+      # surfaces later, when someone tries to apply a theme.
+      #
+      # The PVC is ReadWriteOnce, so it attaches to one node, and the Job's
+      # podAffinity co-locates it with whichever node api-rest is on. On a
+      # cluster where api-rest does not exist yet — a first release, a rebuilt
+      # namespace — a `requiredDuringScheduling` podAffinity matching zero pods
+      # is UNSATISFIABLE, not vacuous, so the Job would sit Pending forever.
+      # This stage deliberately runs BEFORE the rollout, so that case is normal
+      # rather than exotic: with no holder, the volume is attached nowhere and
+      # any node will do, so the constraint is dropped.
+      # -----------------------------------------------------------------------
+      - name: Ingest marketplace bundles
+        run: |
+          set -euo pipefail
+          IMAGE="$IMAGE_API" envsubst '$IMAGE $RUN_ID' \
+            < "$OVERLAY/jobs/marketplace-ingest.yaml" > /tmp/ingest-job.yaml
+
+          if [ -z "$(kubectl get pods -n "$NAMESPACE" -l app=api-rest \
+                       -o name 2>/dev/null)" ]; then
+            echo "No api-rest pod holds sparx-media yet — dropping the co-location constraint."
+            kubectl patch --local -f /tmp/ingest-job.yaml --type=json \
+              -p '[{"op":"remove","path":"/spec/template/spec/affinity"}]' \
+              -o yaml > /tmp/ingest-job.noaff.yaml
+            mv /tmp/ingest-job.noaff.yaml /tmp/ingest-job.yaml
+          fi
+
+          kubectl apply -n "$NAMESPACE" -f /tmp/ingest-job.yaml
+          ./.github/scripts/await-job.sh "marketplace-ingest-${RUN_ID}" "$NAMESPACE" 1800
+          kubectl -n "$NAMESPACE" logs "job/marketplace-ingest-${RUN_ID}" -c ingest \
+            --tail=-1 --ignore-errors=true || true
+
+      # What actually LANDED, counted from the database rather than inferred
+      # from a green Job. "Ran successfully and wrote nothing" is the failure
+      # this whole stage exists to make impossible to miss again.
+      - name: Report what is published
+        if: always()
+        run: |
+          kubectl -n "$NAMESPACE" delete job catalog-count --ignore-not-found
+          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: catalog-count
+          spec:
+            backoffLimit: 0
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                containers:
+                  - name: psql
+                    image: postgres:18-alpine
+                    command: ['sh', '-c']
+                    args:
+                      - >-
+                        psql "$AUTH_DATABASE_URL" -tA -F' ' -c
+                        "select 'themes', count(*) from marketplace_themes
+                         union all select 'blueprints', count(*) from marketplace_blueprints
+                         union all select 'components', count(*) from marketplace_components
+                         union all select 'integrations', count(*) from marketplace_integrations
+                         union all select 'platform_components', count(*) from platform_components
+                         order by 1"
+                    env:
+                      - name: AUTH_DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+          YAML
+          ./.github/scripts/await-job.sh catalog-count "$NAMESPACE" 300 || true
+          {
+            echo '### Platform data'
+            echo ''
+            echo '| catalog | rows |'
+            echo '| --- | ---: |'
+            kubectl -n "$NAMESPACE" logs job/catalog-count --tail=-1 --ignore-errors=true \
+              | awk 'NF==2 { print "| " $1 " | " $2 " |" }'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # STAGE 3 — CONTAINERS. The only stage that replaces anything.
+  # ---------------------------------------------------------------------------
+  containers:
+    needs: [target, build, infrastructure, data]
+    if: >-
+      always() && needs.build.result == 'success' &&
+      needs.infrastructure.result != 'failure' && needs.infrastructure.result != 'cancelled' &&
+      needs.data.result != 'failure' && needs.data.result != 'cancelled' &&
+      (github.event_name != 'workflow_dispatch' || inputs.containers)
+    runs-on: ubuntu-latest
+    environment: ${{ needs.target.outputs.environment }}
+    env:
+      RESOURCE_GROUP: ${{ needs.target.outputs.resource_group }}
+      CLUSTER: ${{ needs.target.outputs.cluster }}
+      NAMESPACE: ${{ needs.target.outputs.namespace }}
+      OVERLAY: ${{ needs.target.outputs.overlay }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The change check below diffs against the SHA the cluster is running,
+          # which is not reachable from a depth-1 clone.
+          fetch-depth: 0
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get cluster credentials
+        run: |
+          az aks get-credentials --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" --overwrite-existing
+
+      # -----------------------------------------------------------------------
+      # Does anything the CONTAINERS run actually differ from what is deployed?
+      #
+      # Every release retags all 22 images with its own SHA, which is what buys
+      # the one-SHA simplicity. The side effect is that the tag changes even when
+      # the bytes do not, so a docs-only commit would rewrite every pod template
+      # and roll the entire platform — including api-rest, which is `Recreate`
+      # and therefore briefly DOWN. The old path-filtered build avoided that by
+      # accident (it published nothing, so the previous tag was re-applied and
+      # nothing moved); losing it should not mean losing the behaviour.
+      #
+      # The comparison point is the cluster itself — the tag api-rest is running
+      # IS the last released SHA — so this needs no stored state, no marker
+      # branch and no extra API. If that SHA is missing or unreadable (a first
+      # release, a hand-rolled image, a force-push that orphaned it), the answer
+      # is "roll", because rolling unnecessarily costs a minute and skipping
+      # wrongly ships nothing while reporting success.
+      # -----------------------------------------------------------------------
+      - name: Has anything to deploy changed?
+        id: changed
+        run: |
+          set -euo pipefail
+
+          # ONE write to $GITHUB_OUTPUT, at the end. Writing the same key twice
+          # and trusting the later line to win is undocumented behaviour, and
+          # the thing it would silently decide here is whether production rolls.
+          roll=true
+          reason=''
+
+          DEPLOYED=$(kubectl -n "$NAMESPACE" get deploy api-rest \
+            -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null | sed 's/.*://' || true)
+
+          case "$DEPLOYED" in
+            *[!0-9a-f]* | '')
+              reason="api-rest is not running a SHA-tagged image ('$DEPLOYED')" ;;
+            '${{ github.sha }}')
+              reason='already running this commit; rolling anyway to converge manifest drift' ;;
+            *)
+              if ! git cat-file -e "$DEPLOYED^{commit}" 2>/dev/null; then
+                reason="deployed commit $DEPLOYED is not in this history"
+              # Everything that can change what a container IS or how it runs.
+              # NOT a build filter — the images were built regardless; this only
+              # decides whether the CLUSTER needs to move.
+              elif git diff --quiet "$DEPLOYED" '${{ github.sha }}' -- \
+                     apps services packages k8s pnpm-lock.yaml pnpm-workspace.yaml \
+                     marketplace-catalog; then
+                roll=false
+                reason="nothing under apps/ services/ packages/ k8s/ changed since ${DEPLOYED:0:12}"
+              else
+                reason="runtime paths changed since ${DEPLOYED:0:12}"
+              fi ;;
+          esac
+
+          echo "value=$roll" >> "$GITHUB_OUTPUT"
+
+          if [ "$roll" = 'true' ]; then
+            echo "Rolling — $reason."
+          else
+            echo "Skipping the rollout — $reason."
+            {
+              echo '### Containers'
+              echo ''
+              echo "Skipped: $reason. The pods were left alone rather than rolled onto an"
+              echo 'image built from identical sources.'
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Pin images and apply
+        if: steps.changed.outputs.value == 'true'
+        run: |
+          set -euo pipefail
+          SHA='${{ github.sha }}'
+          REPO='ghcr.io/${{ github.repository }}'
+
+          # Rewrite the placeholder tag in place rather than shelling out to
+          # `kustomize edit`. Two reasons, both learned the hard way:
+          #
+          #   1. `kustomize edit set image OLD=NEW:TAG` matches on the name as it
+          #      appears in the MANIFESTS, not the one it rewrites TO. This step
+          #      used to pass the ghcr name, which matched no existing entry, so
+          #      kustomize APPENDED a dead one and left the real mapping on
+          #      `newTag: latest`. Every "pinned" rollout shipped a mutable tag
+          #      and `kubectl rollout undo` had nothing to roll back to. It
+          #      failed silently, because appending is a legitimate operation.
+          #   2. `kustomize` is not part of kubectl and is not guaranteed on the
+          #      runner. `kubectl kustomize` BUILDS but has no `edit`, so there
+          #      was no fallback — only an unpinned deploy that exits 0.
+          sed -i "s|^\( *newTag: \)latest$|\1$SHA|" "$OVERLAY/apps/kustomization.yaml"
+
+          # Prove the pin landed before applying. A silent no-op here is
+          # invisible until someone wonders why a rollback did nothing.
+          #
+          # Scoped to OUR images: `caddy:2-alpine` and `nats:*` are upstream
+          # third-party tags this overlay does not rewrite and should not.
+          UNPINNED=$(kubectl kustomize "$OVERLAY/apps" \
+            | grep -E "^ *image: ($REPO/|sparx/)" \
+            | grep -vE ":[0-9a-f]{40}$" | sort -u || true)
+          if [ -n "$UNPINNED" ]; then
+            echo "::error::Unpinned sparx image survived the rewrite:"
+            echo "$UNPINNED"
+            exit 1
+          fi
+
+          kubectl apply -k "$OVERLAY/apps"
+
+      - name: Wait for rollout
+        if: steps.changed.outputs.value == 'true'
+        run: |
+          # Deployments only — StatefulSets and Jobs have their own lifecycles.
+          #
+          # One `rollout status` per Deployment, in PARALLEL. `deployment --all`
+          # is not a thing (`error: unknown flag: --all`), and looping serially
+          # would multiply the timeout by 21 in the worst case even though the
+          # rollouts themselves are concurrent. 2 vCPU means a cold start of 20
+          # containers is minutes, not seconds, so the timeout is generous.
+          mkdir -p /tmp/rollout
+          for d in $(kubectl get deploy -n "$NAMESPACE" -o name); do
+            name="${d#deployment.apps/}"
+            kubectl rollout status "$d" -n "$NAMESPACE" --timeout=15m \
+              > "/tmp/rollout/$name.log" 2>&1 &
+          done
+
+          # `wait -n` reaps whichever finishes first; the exit codes are
+          # collected rather than short-circuited so ONE stuck Deployment does
+          # not hide the state of the other twenty.
+          failed=0
+          for _ in $(kubectl get deploy -n "$NAMESPACE" -o name); do
+            wait -n || failed=1
+          done
+
+          for f in /tmp/rollout/*.log; do
+            printf '%-28s %s\n' "$(basename "$f" .log)" "$(tail -n1 "$f")"
+          done
+
+          if [ "$failed" -ne 0 ]; then
+            echo "::error::One or more Deployments did not roll out."
+            kubectl get pods -n "$NAMESPACE" \
+              --field-selector=status.phase!=Running -o wide || true
+            kubectl get events -n "$NAMESPACE" \
+              --sort-by=.lastTimestamp | tail -30 || true
+            exit 1
+          fi
+
+      - name: Report
+        if: always() && steps.changed.outputs.value == 'true'
+        run: |
+          {
+            echo '### Containers'
+            echo ''
+            echo 'Every image pinned to `${{ github.sha }}`.'
+            echo ''
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          kubectl get pods -n "$NAMESPACE" -o wide >> "$GITHUB_STEP_SUMMARY" 2>&1 || true
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------------------
+  # STAGE 4 — CLEANUP. History this release made obsolete.
+  #
+  # A stage, not a nightly cron, because it is the release that CREATES the
+  # garbage: 22 images per commit, ~800 MB for each of the API images,
+  # accumulating forever. Pruning belongs to the thing that produced the waste,
+  # where its failure is attached to the release that caused it — a separate
+  # schedule fails silently, and the first symptom is a bill.
+  #
+  # That is not hypothetical either. The Artifact Registry equivalent was a
+  # manual workflow that defaulted to `dry_run: true`, so the rare time anyone
+  # ran it, it deleted nothing. Nobody was watching, and the repository grew to
+  # 2.95 TB — roughly $295/month.
+  #
+  # `if: always()` and never fails the release: a failed prune is a housekeeping
+  # problem, and marking a release red because it could not delete an old image
+  # would teach everyone to ignore a red release.
+  # ---------------------------------------------------------------------------
+  cleanup:
+    needs: [target, containers]
+    if: always() && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      OWNER: ${{ github.repository_owner }}
+      # Enough to roll back through several releases. `kubectl rollout undo`
+      # only needs the previous one; this is the margin for finding out days
+      # later that a release two back was the last good one.
+      KEEP_IMAGES: ${{ vars.KEEP_IMAGE_VERSIONS || '5' }}
+      KEEP_RUNS: ${{ vars.KEEP_WORKFLOW_RUNS || '50' }}
+
+    steps:
+      - name: Prune old image versions
+        run: |
+          set -euo pipefail
+          # Packages are named `sparx/<service>` because the images are pushed
+          # as ghcr.io/<owner>/sparx/<service>. The API wants that slash encoded.
+          PACKAGES=$(gh api --paginate \
+            "/users/$OWNER/packages?package_type=container&per_page=100" \
+            --jq '.[].name' | grep '^sparx/' || true)
+
+          if [ -z "$PACKAGES" ]; then
+            echo "::warning::No sparx/* container packages found for $OWNER."
+            exit 0
+          fi
+
+          {
+            echo "### Cleanup — images (keeping $KEEP_IMAGES per package)"
+            echo ''
+            echo '| package | versions | pruned |'
+            echo '| --- | ---: | ---: |'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          total=0
+          for pkg in $PACKAGES; do
+            enc=$(printf '%s' "$pkg" | sed 's#/#%2F#g')
+
+            # Newest first, so everything past $KEEP_IMAGES is a candidate.
+            ids=$(gh api --paginate \
+              "/users/$OWNER/packages/container/$enc/versions?per_page=100" \
+              --jq 'sort_by(.created_at) | reverse | .[].id')
+            count=$(echo "$ids" | grep -c . || true)
+
+            # `tail -n +N` starts at the Nth line, so +$((KEEP+1)) is
+            # "everything after the newest KEEP".
+            stale=$(echo "$ids" | tail -n +$((KEEP_IMAGES + 1)) || true)
+            n=$(echo "$stale" | grep -c . || true)
+
+            for id in $stale; do
+              # Tolerated: GHCR refuses to delete the last remaining version of
+              # a package, and a version can vanish between listing and delete.
+              # Neither is a reason to abandon the other twenty-one packages.
+              gh api -X DELETE \
+                "/users/$OWNER/packages/container/$enc/versions/$id" \
+                >/dev/null 2>&1 || echo "  skip $pkg#$id"
+            done
+
+            total=$((total + n))
+            printf '| %s | %s | %s |\n' "$pkg" "$count" "$n" >> "$GITHUB_STEP_SUMMARY"
+          done
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "**Pruned $total image versions.**" >> "$GITHUB_STEP_SUMMARY"
+
+      # Workflow-run history. Nine of the twenty workflows this pipeline
+      # replaced no longer exist, and GitHub keeps their runs — and their logs —
+      # indefinitely, so the Actions tab stays a list of things that cannot be
+      # run. Deleting runs for workflows that are GONE is pure subtraction; the
+      # surviving ones are simply trimmed to the newest $KEEP_RUNS.
+      - uses: actions/checkout@v4
+
+      - name: Prune old workflow runs
+        run: |
+          set -euo pipefail
+          REPO='${{ github.repository }}'
+
+          {
+            echo '### Cleanup — workflow runs'
+            echo ''
+            echo '| workflow | kept | deleted |'
+            echo '| --- | ---: | ---: |'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # Every workflow GitHub still knows about, and whether its file is
+          # still in the tree.
+          #
+          # The path is the real test, not `state`. A workflow whose FILE has
+          # been deleted keeps whatever state it last had — `active` — so
+          # GitHub goes on listing it, with all of its runs and all of their
+          # logs, indefinitely. Nine of the twenty workflows this pipeline
+          # replaced are in exactly that position: gone from the tree, still
+          # filling the Actions tab with history for things nobody can run.
+          # Those get pruned to nothing; a live workflow keeps its newest
+          # $KEEP_RUNS.
+          #
+          # Written to a FILE rather than piped into the loop: a pipeline puts
+          # `while` in a subshell, so the totals it accumulates are discarded
+          # when it exits and the summary always reports zero.
+          gh api --paginate "/repos/$REPO/actions/workflows" \
+            --jq '.workflows[] | "\(.id)\t\(.path)\t\(.name)"' > /tmp/workflows.tsv
+
+          total=0
+          while IFS=$'\t' read -r id path name; do
+            [ -n "$id" ] || continue
+            if [ -f "$path" ]; then keep="$KEEP_RUNS"; else keep=0; fi
+
+            ids=$(gh api --paginate \
+              "/repos/$REPO/actions/workflows/$id/runs?per_page=100" \
+              --jq '.workflow_runs | sort_by(.created_at) | reverse | .[].id' 2>/dev/null || true)
+
+            if [ "$keep" -gt 0 ]; then
+              stale=$(echo "$ids" | tail -n +$((keep + 1)) || true)
+            else
+              stale="$ids"
+            fi
+
+            n=$(echo "$stale" | grep -c . || true)
+            [ "$n" -eq 0 ] && continue
+
+            for run in $stale; do
+              # This run is deleting runs, and its own is the newest of them —
+              # but a run that is still in progress cannot be deleted anyway, so
+              # the API refuses and the next release collects it. Tolerated for
+              # the same reason as a version that vanishes mid-prune.
+              gh api -X DELETE "/repos/$REPO/actions/runs/$run" >/dev/null 2>&1 || true
+            done
+
+            total=$((total + n))
+            if [ -f "$path" ]; then
+              printf '| `%s` | %s | %s |\n' "$name" "$keep" "$n" >> "$GITHUB_STEP_SUMMARY"
+            else
+              printf '| `%s` _(file deleted)_ | 0 | %s |\n' "$name" "$n" >> "$GITHUB_STEP_SUMMARY"
+            fi
+          done < /tmp/workflows.tsv
+
+          echo '' >> "$GITHUB_STEP_SUMMARY"
+          echo "**Pruned $total workflow runs.**" >> "$GITHUB_STEP_SUMMARY"

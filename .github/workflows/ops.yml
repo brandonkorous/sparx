@@ -1,0 +1,314 @@
+# One-off operations. NOT part of a release, deliberately and permanently.
+#
+# ---------------------------------------------------------------------------
+# Why these are not in release.yml
+# ---------------------------------------------------------------------------
+#
+# A release pipeline describes how the platform ships. It should read as four
+# stages — infrastructure, data, containers, cleanup — and nothing else. The
+# moment a task name like "purge themes" or "backfill tenant CRM records"
+# appears in it, the pipeline stops being a description of shipping and becomes
+# a list of chores that happen to run in order, and every future chore has an
+# obvious place to be added.
+#
+# This is where those live. It is a SINGLE workflow with a `task` input rather
+# than one file per chore, because the chores are all the same shape — run a
+# script inside the cluster, against the app's own environment, as a Job — and
+# the six files this replaces differed only in an image, a path, and which of
+# them remembered to require a typed confirmation.
+#
+# Adding a chore here is adding a row to the case statement. It never touches
+# the release.
+#
+# ---------------------------------------------------------------------------
+# Why in-cluster
+# ---------------------------------------------------------------------------
+#
+# psql-sparx-prod-cus has public access DISABLED and lives in the VNet, so
+# nothing outside the cluster can reach the database. Every task runs as a Job
+# with the same ConfigMap and Secret the live pods use, which is also what makes
+# a task behave in production the way it behaved locally.
+name: Ops
+
+# MANUAL ONLY. Nothing here is safe to fire on a push, and nothing here is on a
+# schedule — a destructive task on a timer is how you find out about it from the
+# consequences.
+on:
+  workflow_dispatch:
+    inputs:
+      task:
+        description: 'What to run'
+        required: true
+        type: choice
+        options:
+          # Re-publishes the marketplace bundles WITHOUT a release. The release
+          # already does this on every push, so this is for publishing from an
+          # arbitrary ref, or re-running after a failure, not the normal path.
+          - marketplace-ingest
+          # Retract a listing. There is no other way to remove one — the ingest
+          # is an upsert and never deletes.
+          - marketplace-purge-themes
+          - marketplace-purge-blueprints
+          - marketplace-purge-components
+          # Backfills platform CRM records for tenants that predate the worker.
+          - platform-crm-backfill
+      environment:
+        description: 'Where to run it'
+        required: false
+        default: prod
+        type: choice
+        options: [prod]
+      image_sha:
+        description: 'Commit SHA of the image to run (blank = latest released)'
+        required: false
+        type: string
+      apply:
+        description: 'Actually write. Unticked, reversible tasks report what they WOULD do.'
+        required: false
+        default: false
+        type: boolean
+      confirm:
+        description: 'For a purge: type the task name exactly to confirm'
+        required: false
+        type: string
+
+concurrency:
+  # Shares the RELEASE group. A purge interleaved with a seed, or a backfill
+  # running while migrations apply, is a data race with no lock underneath it —
+  # so an ops task and a release simply never run at the same time.
+  group: release-${{ inputs.environment || 'prod' }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write
+  packages: read
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.environment || 'prod' }}
+    timeout-minutes: 60
+    env:
+      RESOURCE_GROUP: ${{ vars.AKS_RESOURCE_GROUP || 'rg-sparx-prod-cus' }}
+      CLUSTER: ${{ vars.AKS_CLUSTER || 'aks-sparx-prod-cus' }}
+      NAMESPACE: ${{ vars.K8S_NAMESPACE || 'sparx-prod' }}
+      OVERLAY: ${{ vars.K8S_OVERLAY || 'k8s/azure' }}
+      TASK: ${{ inputs.task }}
+      RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # ---------------------------------------------------------------------
+      # A typed confirmation, for the tasks that destroy data.
+      #
+      # Checked BEFORE authenticating to anything, so a mistyped purge costs
+      # nothing and touches nothing. `marketplace-ingest` and the backfill are
+      # upserts and are not gated; the three purges delete catalog rows AND the
+      # immutable artifacts behind them, across every version, and nothing
+      # repopulates them but a re-ingest from a ref that still has the bundles.
+      # ---------------------------------------------------------------------
+      - name: Confirm a destructive task
+        run: |
+          set -euo pipefail
+          case "$TASK" in
+            marketplace-purge-*)
+              if [ '${{ inputs.confirm }}' != "$TASK" ]; then
+                echo "::error::$TASK deletes catalog rows and their stored artifacts. Re-run with confirm set to exactly: $TASK"
+                exit 1
+              fi
+              if [ '${{ inputs.apply }}' != 'true' ]; then
+                echo "::error::$TASK has no dry run — it either purges or it does nothing. Tick 'apply' to proceed."
+                exit 1
+              fi
+              echo "Confirmed: $TASK"
+              ;;
+            *)
+              echo "$TASK is idempotent; no confirmation required."
+              ;;
+          esac
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get cluster credentials
+        run: |
+          az aks get-credentials --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" --overwrite-existing
+
+      # ---------------------------------------------------------------------
+      # Which image, and what to run inside it.
+      #
+      # Default to `latest`, which the release moves to whatever it just
+      # deployed — so an ops task run with no arguments runs the code that is
+      # actually live. A SHA pins it to a specific release instead, which is
+      # what you want when re-running a task from a ref that has since been
+      # superseded.
+      # ---------------------------------------------------------------------
+      - name: Resolve the task
+        id: task
+        run: |
+          set -euo pipefail
+          TAG='${{ inputs.image_sha }}'
+          [ -n "$TAG" ] || TAG='latest'
+          REPO='ghcr.io/${{ github.repository }}'
+
+          case "$TASK" in
+            marketplace-ingest)
+              image="$REPO/api-rest:$TAG"
+              # Runs from its own manifest, not the generic Job below: the
+              # ingest MOUNTS the sparx-media PVC. Without the volume it still
+              # reports success while writing every artifact to the container's
+              # own filesystem, leaving catalog rows pointing at keys that
+              # resolve to nothing.
+              manifest='true'
+              command=''
+              ;;
+            marketplace-purge-themes|marketplace-purge-blueprints|marketplace-purge-components)
+              image="$REPO/api-rest:$TAG"
+              manifest='false'
+              # WORKDIR in the image is /app/services/api-rest, so this relative
+              # path resolves.
+              command="[\"node\",\"--import\",\"tsx\",\"src/scripts/$TASK.ts\"]"
+              ;;
+            platform-crm-backfill)
+              image="$REPO/platform-crm-worker:$TAG"
+              manifest='false'
+              # WORKDIR is /app/services/platform-crm-worker. The script reports
+              # what it would change unless --apply is passed, which is why this
+              # task honours the `apply` input and the purges do not.
+              if [ '${{ inputs.apply }}' = 'true' ]; then
+                command='["node","--import","tsx","scripts/backfill-tenants.ts","--apply"]'
+              else
+                command='["node","--import","tsx","scripts/backfill-tenants.ts"]'
+              fi
+              ;;
+            *)
+              echo "::error::Unknown task '$TASK'."
+              exit 1
+              ;;
+          esac
+
+          {
+            echo "image=$image"
+            echo "manifest=$manifest"
+            echo "command=$command"
+          } >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### Ops — \`$TASK\`"
+            echo ''
+            echo '| | |'
+            echo '| --- | --- |'
+            echo "| image | \`$image\` |"
+            echo "| namespace | \`$NAMESPACE\` |"
+            echo "| apply | \`${{ inputs.apply }}\` |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Run the marketplace ingest
+        if: steps.task.outputs.manifest == 'true'
+        env:
+          IMAGE: ${{ steps.task.outputs.image }}
+        run: |
+          set -euo pipefail
+          envsubst '$IMAGE $RUN_ID' \
+            < "$OVERLAY/jobs/marketplace-ingest.yaml" > /tmp/job.yaml
+
+          # Same reasoning as the release: a `requiredDuringScheduling`
+          # podAffinity matching zero pods is unsatisfiable rather than vacuous,
+          # so with no api-rest holding the volume the constraint is dropped
+          # instead of leaving the Job Pending forever.
+          if [ -z "$(kubectl get pods -n "$NAMESPACE" -l app=api-rest -o name 2>/dev/null)" ]; then
+            echo "No api-rest pod holds sparx-media yet — dropping the co-location constraint."
+            kubectl patch --local -f /tmp/job.yaml --type=json \
+              -p '[{"op":"remove","path":"/spec/template/spec/affinity"}]' \
+              -o yaml > /tmp/job.noaff.yaml
+            mv /tmp/job.noaff.yaml /tmp/job.yaml
+          fi
+
+          kubectl apply -n "$NAMESPACE" -f /tmp/job.yaml
+          ./.github/scripts/await-job.sh "marketplace-ingest-${RUN_ID}" "$NAMESPACE" 1800
+          kubectl -n "$NAMESPACE" logs "job/marketplace-ingest-${RUN_ID}" -c ingest \
+            --tail=-1 --ignore-errors=true || true
+
+      # ---------------------------------------------------------------------
+      # The generic case: an image, a command, the app's environment.
+      #
+      # Connects as the OWNER role, like the seed and the migration and for the
+      # same reason: the marketplace tables are FORCE-RLS with a policy that
+      # only admits a no-tenant write, and the app role does not ERROR on those
+      # — it is silently filtered, which is the failure mode that hides itself.
+      #
+      # QUOTED heredoc, so bash performs no expansion inside it. Unquoted, it
+      # would run command substitution on any BACKTICK in the body, including
+      # ones sitting in YAML comments — which has already produced a kubectl
+      # parse error pointing at a line nobody wrote.
+      # ---------------------------------------------------------------------
+      - name: Run the task
+        if: steps.task.outputs.manifest == 'false'
+        env:
+          IMAGE: ${{ steps.task.outputs.image }}
+          COMMAND: ${{ steps.task.outputs.command }}
+        run: |
+          set -euo pipefail
+          JOB="ops-${TASK}-${RUN_ID}"
+          export JOB IMAGE COMMAND
+
+          envsubst '$JOB $IMAGE $COMMAND $TASK' > /tmp/job.yaml <<'YAML'
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: ${JOB}
+            labels:
+              app.kubernetes.io/name: ops
+              app.kubernetes.io/part-of: sparx
+              app.kubernetes.io/component: ${TASK}
+          spec:
+            backoffLimit: 0
+            ttlSecondsAfterFinished: 3600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                imagePullSecrets: [{ name: ghcr }]
+                containers:
+                  - name: task
+                    image: ${IMAGE}
+                    command: ${COMMAND}
+                    envFrom:
+                      - configMapRef: { name: sparx-app-env }
+                      - secretRef: { name: sparx-app-secrets }
+                    env:
+                      - name: NODE_ENV
+                        value: production
+                      - name: SERVICE_NAME
+                        value: ${TASK}
+                      - name: LOG_LEVEL
+                        value: info
+                      - name: DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+                    securityContext:
+                      runAsNonRoot: true
+                      runAsUser: 1000
+                      runAsGroup: 1000
+                      allowPrivilegeEscalation: false
+                      capabilities:
+                        drop: ['ALL']
+                      seccompProfile:
+                        type: RuntimeDefault
+                    resources:
+                      requests: { cpu: '100m', memory: '384Mi' }
+                      limits: { memory: '1Gi' }
+          YAML
+
+          echo '--- Rendered manifest ---'
+          cat /tmp/job.yaml
+          kubectl apply -n "$NAMESPACE" -f /tmp/job.yaml
+          ./.github/scripts/await-job.sh "$JOB" "$NAMESPACE" 1800
+          kubectl -n "$NAMESPACE" logs "job/$JOB" -c task \
+            --tail=-1 --ignore-errors=true || true

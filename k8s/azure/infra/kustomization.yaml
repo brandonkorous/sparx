@@ -1,0 +1,161 @@
+# INFRASTRUCTURE — stage 1 of the release, applied before any data is written
+# and before any application container rolls.
+#
+# WHY THIS IS SEPARATE FROM ../apps, which is the whole point of the split:
+#
+# The release order is infrastructure → data → containers. The data stage runs
+# Jobs in this cluster (roles, `prisma migrate deploy`, the platform seed, the
+# marketplace ingest), and every one of them needs things that are NOT
+# application containers:
+#
+#   - the namespace to run in
+#   - `sparx-app-env`, which every Job pulls via envFrom
+#   - the `sparx-media` PVC, which the ingest MOUNTS to write artifacts to
+#
+# While those lived in one overlay with the Deployments, the only way to have
+# them was to roll the whole platform first — which is exactly why the data
+# stage used to run last, after the containers it is supposed to precede. On a
+# cluster that has never been deployed, that ordering does not merely reorder
+# work; the seed Jobs have nowhere to run at all.
+#
+# The dividing line is REPLACEMENT. Everything here is created once and then
+# converges: a namespace, a config map, a disk, a load balancer, a search
+# engine holding an index. Everything in ../apps is a container image that is
+# thrown away and replaced on every release. They have different lifecycles and
+# different blast radii, so they get applied at different times by different
+# stages.
+#
+# This also retires the GCP `bootstrap.yml` concept rather than porting it. That
+# workflow existed because "add a platform pod" was a different operation from
+# "roll an image" — correct instinct, wrong mechanism: it was a 39 KB dispatch
+# with fifteen hand-picked component names that someone had to remember to run.
+# The distinction it was drawing is this file, and it now runs on every release.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: sparx-prod
+
+resources:
+  - namespace.yaml
+  # Typesense + the sparx-media volume. NOT Postgres (managed, psql-sparx-prod-cus)
+  # and NOT Redis (dropped entirely on this provider).
+  - platform.yaml
+  # Caddy + the ONE routing table + a `type: LoadBalancer` Service. Shared
+  # verbatim with every other overlay — there is no Azure-specific ingress
+  # config, which is the point. AKS provisions a Standard LB and public IP from
+  # that Service exactly as GKE provisions a Network LB.
+  - ../../ingress
+
+# The application environment. It lives in the INFRA overlay, not with the apps,
+# because the data-stage Jobs consume it (`envFrom: configMapRef: sparx-app-env`)
+# and they run before a single Deployment is touched.
+configMapGenerator:
+  - name: sparx-app-env
+    behavior: create
+    envs:
+      - app-env-configmap.env
+
+generatorOptions:
+  disableNameSuffixHash: true
+
+patches:
+  # --- Pin the ingress to the RESERVED public IP ------------------------------
+  # `azure-pip-name` is the AKS-supported way to attach an existing public IP,
+  # and it is Azure-specific — which is why it lives in this overlay and not in
+  # k8s/ingress/service.yaml. The base Service stays a plain
+  # `type: LoadBalancer` that GKE and EKS accept unchanged; each provider adds
+  # its own hint here.
+  #
+  # Without it the Service takes an EPHEMERAL address, which changes whenever
+  # the Service is recreated — a namespace rebuild, a rename, a bad delete. DNS
+  # then points at an address Azure has reassigned, and nothing in the cluster
+  # reports a fault, because the cluster is healthy. The IP is reserved in
+  # terraform/envs/azure/ingress.tf, which the release applies immediately
+  # before this — `terraform output ingress_pip_name` is the value below.
+  #
+  # NOT `spec.loadBalancerIP`: deprecated since Kubernetes 1.24 and slated for
+  # removal, and it hard-codes the address where this hard-codes only its name.
+  - target: { kind: Service, name: caddy }
+    patch: |-
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: caddy
+        annotations:
+          service.beta.kubernetes.io/azure-pip-name: pip-ingress-sparx-prod-cus
+
+  # --- Storage class for the ACME certificate volume --------------------------
+  # k8s/ingress/pvc.yaml deliberately omits storageClassName so it binds to
+  # whatever the cluster's default is — portable, but on AKS the default is
+  # `managed-csi` anyway and being explicit documents the choice. StandardSSD,
+  # not `managed-csi-premium`: this volume stores a few kilobytes of
+  # certificates and its IOPS profile is "written once per issuance".
+  - target: { kind: PersistentVolumeClaim, name: caddy-data }
+    patch: |-
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: caddy-data
+      spec:
+        storageClassName: managed-csi
+
+  # --- Same deletions as every other single-node overlay ----------------------
+  # One node cannot satisfy a PodDisruptionBudget, and there is nothing for an
+  # HPA to scale onto.
+  - target:
+      kind: HorizontalPodAutoscaler
+    patch: |-
+      apiVersion: autoscaling/v2
+      kind: HorizontalPodAutoscaler
+      metadata:
+        name: placeholder
+      $patch: delete
+  - target:
+      kind: PodDisruptionBudget
+    patch: |-
+      apiVersion: policy/v1
+      kind: PodDisruptionBudget
+      metadata:
+        name: placeholder
+      $patch: delete
+
+  # `sparx-app` is annotated for GCP Workload Identity. It is never created on
+  # this provider and nothing here needs GCP credentials, so a pod referencing
+  # it would stay Pending forever.
+  - target:
+      kind: Deployment
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: placeholder
+      spec:
+        template:
+          spec:
+            serviceAccountName: default
+
+  # --- Registry pull -----------------------------------------------------------
+  # Nothing in THIS overlay pulls from a private registry — Caddy is
+  # `caddy:2-alpine` and Typesense is `typesense/typesense`, both public. The
+  # secret is carried anyway because the running cluster already has it on
+  # `caddy`, from the era when one overlay patched every Deployment at once.
+  #
+  # Dropping it would be a spec change, and `caddy` is a SINGLE REPLICA with a
+  # `Recreate` strategy — so the pod would roll and every hostname on the
+  # platform would blip for ~10-30s, to remove a field that is ignored. Keeping
+  # it makes stage 1 a genuine no-op against the live cluster, which is the
+  # property that lets it run unattended on every release.
+  #
+  # It is also not dead weight: the moment anything here is served from a
+  # private image, the pull already works.
+  - target:
+      kind: Deployment
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: placeholder
+      spec:
+        template:
+          spec:
+            imagePullSecrets:
+              - name: ghcr

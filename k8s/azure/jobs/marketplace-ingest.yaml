@@ -1,7 +1,6 @@
-# Marketplace ingest Job — AZURE. Applied by
-# .github/workflows/marketplace-ingest-azure.yml, which substitutes ${IMAGE} and
-# ${RUN_ID} via `envsubst` before apply. The GCP sibling is
-# k8s/sparx-prod/marketplace-ingest-job.yaml.
+# Marketplace ingest Job — the second half of stage 2 (data) of the release,
+# and re-runnable on its own from .github/workflows/ops.yml. Both substitute
+# ${IMAGE} and ${RUN_ID} via `envsubst` before apply.
 #
 # Runs the api-rest image (marketplace-catalog/ is baked in by its Dockerfile)
 # with its entrypoint overridden to the ingest script, hydrated from the same
@@ -36,7 +35,9 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: marketplace-ingest-${RUN_ID}
-  namespace: sparx-prod
+  # No `namespace:` — the release applies this with `-n "$NAMESPACE"`, from the
+  # same variable every other kubectl call uses. Naming it here would be a
+  # second source of truth that silently wins over the flag.
   labels:
     app.kubernetes.io/name: marketplace-ingest
     app.kubernetes.io/part-of: sparx

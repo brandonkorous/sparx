@@ -4,12 +4,27 @@ Scoped guidance for `@sparx/db`. Loads when working in this package. See root [C
 
 ## Migrations go through the pipeline, not your laptop
 
-The Cloud SQL instance is **private-IP only** — the Auth Proxy from a local machine cannot reach it. Workflow:
+The managed Postgres has public access **disabled** and lives in the VNet — nothing outside the cluster can reach it. Workflow:
 
-1. Author migrations locally against docker Postgres: `pnpm db:up` + `prisma migrate dev`.
-2. Push to `main`. On Azure (the live path) [deploy-azure.yml](../../.github/workflows/deploy-azure.yml) calls [db-migrate-azure.yml](../../.github/workflows/db-migrate-azure.yml), which applies a K8s Job in `sparx-prod` running `prisma migrate deploy` as the owner role. The GCP fallback is [db-migrate-gcp.yml](../../.github/workflows/db-migrate-gcp.yml) with a Cloud SQL Auth Proxy sidecar.
+1. Author migrations locally against docker Postgres: `pnpm db:up` + `prisma migrate dev --create-only`, then hand-edit the SQL (RLS is not generated) and **rename the directory** per the rule below.
+2. Push to `main`. The **data** stage of [release.yml](../../.github/workflows/release.yml) runs a roles Job, then a K8s Job running `prisma migrate deploy` as the owner role, then the platform seed and the marketplace ingest — all before the containers roll, so new code never meets an old schema or missing rows.
 
 Full flow in [README.md](./README.md#applying-a-migration).
+
+## Migration names must be MONOTONIC — this is the one that bites
+
+**Prisma orders migrations lexicographically by directory name.** Not by mtime, not by git history. The name IS the order, and it is the primary key recorded in `_prisma_migrations` on every database that has applied it.
+
+The timestamp prefixes in this repo are **hand-authored and run about six months ahead of the real clock**: `20270131000000_silica_class_vocabulary` was committed on 2026-07-31. Internally consistent, and fine — until someone runs plain `prisma migrate dev`, which stamps the REAL clock. Today that produces `20260802…`, which sorts **before all 241 applied migrations**. Prisma then sees a never-applied migration sitting earlier in the order than migrations that have run, and:
+
+- `migrate deploy` **refuses** — mid-release, after the roles Job has already gone.
+- `migrate dev` locally offers to **reset the database** instead.
+
+**The drift cannot be renamed away.** Renaming the 241 existing directories makes Prisma treat every one as brand-new and re-run it against a schema that already has it. The drift is permanent; the only sound response is to keep going forward:
+
+> A new migration's directory name must sort **after** the newest one that already exists. Take the current maximum and pick a bigger number.
+
+Format is `<14 digits>_<lower_snake_case>`. [scripts/check-migration-order.mjs](../../scripts/check-migration-order.mjs) enforces all of this in CI, and also refuses the **deletion** of a migration directory — every database that applied it still records the name, so removing it fails `migrate deploy` on the mismatch. Reverse a migration with a new migration.
 
 ## Two seeds, and only one of them is shippable
 
@@ -20,13 +35,13 @@ coupling is what kept the platform's own catalog out of production entirely.
 | entrypoint                                          | what it writes                                                                                                                      | where it runs                                                  |
 | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
 | `pnpm db:seed` → `prisma/seed.ts`                   | a **demo tenant** (`e2e-staff@sparx.test`) — parts catalog, orders, bookings, a partner payout — then calls the platform data below | laptops + CI only. **Never** production: it invents a business |
-| `pnpm db:seed:platform` → `prisma/seed-platform.ts` | platform data ONLY: sparx-core marketplace catalog, global `platform_components`, starter legal pages                               | the `data` stage of every Azure deploy, as an in-cluster Job   |
+| `pnpm db:seed:platform` → `prisma/seed-platform.ts` | platform data ONLY: sparx-core marketplace catalog, global `platform_components`, starter legal pages                               | stage 2 (data) of every release, as an in-cluster Job          |
 
-Both call `seedPlatformData()` in [prisma/platform-seed.ts](./prisma/platform-seed.ts); the ONLY difference is `tolerateFailures`. Local dev tolerates (a catalog hiccup must not block a developer's demo data); the deploy does not, so a failure fails the rollout. Swallowing errors is precisely how "the seed ran green" and "the catalog is empty" were both true.
+Both call `seedPlatformData()` in [prisma/platform-seed.ts](./prisma/platform-seed.ts); the ONLY difference is `tolerateFailures`. Local dev tolerates (a catalog hiccup must not block a developer's demo data); the release does not, so a failure stops it **before** the containers roll. Swallowing errors is precisely how "the seed ran green" and "the catalog is empty" were both true.
 
-Anything added to `platform-seed.ts` must be **idempotent** (upsert or find-or-create on a stable natural key) and **tenant-safe** (creates no tenants, invents no business data) — it runs on every deploy, unattended.
+Anything added to `platform-seed.ts` must be **idempotent** (upsert or find-or-create on a stable natural key) and **tenant-safe** (creates no tenants, invents no business data) — it runs on every release, unattended.
 
-Bundle-backed marketplace listings (`marketplace-catalog/**`, docs/85) are NOT seeded; they are published by the marketplace ingest, which runs in the same `data` stage from the api-rest image.
+Bundle-backed marketplace listings (`marketplace-catalog/**`, docs/85) are NOT seeded; they are published by the marketplace ingest, which runs in the same `data` stage from the api-rest image. Re-publishing without a release is [ops.yml](../../.github/workflows/ops.yml) `marketplace-ingest`.
 
 ## RLS is hand-edited, not Prisma-generated
 

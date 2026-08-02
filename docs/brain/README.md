@@ -41,7 +41,7 @@ Almost every UI mistake starts by conflating them. Every design/component note d
 - [[activity]] — the awareness layer (product name: **Pulse**): Jobs ("is it running?"), Audit/Activity ("what happened?"), Notifications ("what needs me?"). The four-term taxonomy, built on the event firehose.
 - [[data]] — Prisma schema, RLS mechanics, the customer/contact spine, the migration pipeline.
 - [[api-events]] — our REST surface, the MCP server, the Pub/Sub event catalog, the email pipeline.
-- [[infrastructure]] — GKE, phased infra, deploy/build/db-migrate/auto-tag workflows, Terraform, Caddy, cost.
+- [[infrastructure]] — AKS, phased infra, the four-stage release pipeline, Terraform, Caddy, cost.
 - [[integrations]] — registry of every external service & tool (Stripe, kanNINJA, Mailgun, GCP, …) and the ones we rejected.
 
 **Process & memory**

@@ -1,26 +1,48 @@
 # AKS deployment
 
-**Version:** 1.0
+**Version:** 2.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-31
+**Last Updated:** 2026-08-02
 
 The deployed platform, on `aks-sparx-prod-cus` in centralus. Infrastructure comes
 from [terraform/envs/azure](../../terraform/envs/azure); this is the workload on
 top of it.
 
-**Deployed by CI, not by hand** —
-[deploy-azure.yml](../../.github/workflows/deploy-azure.yml). Running `kubectl
-apply -k` yourself works but skips image pinning, the secret sync and the
-migration Jobs, so treat it as a debugging tool rather than a deploy.
+**Deployed by the release, not by hand** —
+[release.yml](../../.github/workflows/release.yml). Running `kubectl apply -k`
+yourself works but skips image pinning, the secret sync and the data Jobs, so
+treat it as a debugging tool rather than a deploy.
 
-## Structure
+## Two overlays, because the release has stages
 
-| Directory          | Holds                                                                |
-| ------------------ | -------------------------------------------------------------------- |
-| `k8s/apps`         | The 8 app/API manifests — shared with production, consumed verbatim  |
-| `k8s/cronjobs`     | All 15 CronJobs — `curl` containers, no per-service image            |
-| `k8s/self-hosted`  | Workers, Caddy, cloudflared, the Caddyfile — shared with `k8s/local` |
-| `k8s/azure` (here) | Only what is Azure-specific                                          |
+This directory is split, and the split is what makes the release order
+(infrastructure → data → containers) possible on a cluster that has never been
+deployed:
+
+| Path          | Applied by  | Holds                                                            |
+| ------------- | ----------- | ---------------------------------------------------------------- |
+| `azure/infra` | **stage 1** | namespace, `sparx-app-env`, media PVC, Typesense, Caddy ingress  |
+| `azure/jobs`  | **stage 2** | the seed + ingest Job templates (`envsubst`, not kustomize)      |
+| `azure/apps`  | **stage 3** | the 9 apps, 15 CronJobs, 12 workers + NATS — everything replaced |
+
+The dividing line is **replacement**. `infra` is created once and then
+converges: a namespace, a config map, a disk, a load balancer, a search engine
+holding an index. `apps` is container images thrown away on every release.
+
+The data stage runs Jobs that need the namespace, `sparx-app-env` and the
+`sparx-media` PVC to already exist. While those lived in one overlay with the
+Deployments, the only way to have them was to roll the whole platform first —
+which is exactly why the data stage used to run last, after the containers it is
+supposed to precede.
+
+Bases consumed by both, unchanged:
+
+| Directory         | Holds                                                     |
+| ----------------- | --------------------------------------------------------- |
+| `k8s/apps`        | The 9 app/API manifests — consumed verbatim               |
+| `k8s/cronjobs`    | All 15 CronJobs — `curl` containers, no per-service image |
+| `k8s/self-hosted` | The workers + the NATS broker — shared with `k8s/local`   |
+| `k8s/ingress`     | Caddy, the ONE routing table, the LoadBalancer Service    |
 
 ## What differs from `k8s/local`
 
@@ -28,7 +50,7 @@ migration Jobs, so treat it as a debugging tool rather than a deploy.
 | -------- | ----------------------------------------- | --------------------------------------------------------- |
 | Images   | `sparx/*:local`, `imagePullPolicy: Never` | `ghcr.io/brandonkorous/sparx/*`, pinned to the commit SHA |
 | Postgres | in-cluster StatefulSet                    | **managed** `psql-sparx-prod-cus`, VNet-private           |
-| Redis    | in-cluster                                | **dropped** — see `infra.yaml`                            |
+| Redis    | in-cluster                                | **dropped** — see `infra/platform.yaml`                   |
 | Storage  | Docker Desktop default                    | `managed-csi` (Azure StandardSSD)                         |
 
 `managed-csi-premium` would also work — the node supports Premium — but costs
@@ -64,8 +86,8 @@ Three things about that bundle are load-bearing:
 - **`sslmode=require`.** Flexible Server enforces TLS and Prisma will not
   negotiate it implicitly.
 - **`SPARX_APP_PASSWORD` must match the password inside `DATABASE_URL`.** The
-  role-bootstrap Job `ALTER ROLE`s to `SPARX_APP_PASSWORD` on every deploy, so a
-  mismatch locks the apps out of the database at the next deploy, not at the one
+  role-bootstrap Job `ALTER ROLE`s to `SPARX_APP_PASSWORD` on every release, so a
+  mismatch locks the apps out of the database at the next release, not at the one
   that introduced it.
 - **`AUTH_DATABASE_URL` is the admin login.** Migrations and the hand-edited RLS
   SQL run as owner; the apps run as the RLS-constrained `sparx_app`.
@@ -80,10 +102,10 @@ a managed server will never execute. The server is also VNet-private, so it
 cannot be reached from a laptop.
 
 So [packages/db/sql/azure-bootstrap.sql](../../packages/db/sql/azure-bootstrap.sql)
-runs as an in-cluster Job — the Azure sibling of `cloud-sql-bootstrap.sql`, with
-the difference that it must CREATE the roles as well as grant to them, since
-Azure has no equivalent of `gcloud sql users create`. It is idempotent and runs
-on every deploy.
+runs as an in-cluster Job, first thing in the release's data stage. Unlike the
+GCP script it must CREATE the roles as well as grant to them, since Azure has no
+equivalent of `gcloud sql users create`. It is idempotent and runs on every
+release.
 
 ## The node has one disk, and 20 images have to fit on it
 

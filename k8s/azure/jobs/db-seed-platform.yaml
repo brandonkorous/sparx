@@ -1,5 +1,6 @@
-# Platform data seed Job — step 2b of the deploy. Applied by deploy-azure.yml
-# after the rollout; ${IMAGE} and ${RUN_ID} are substituted via `envsubst`.
+# Platform data seed Job — the "rows" half of stage 2 of the release, which
+# runs BEFORE the containers. Applied by .github/workflows/release.yml;
+# ${IMAGE} and ${RUN_ID} are substituted via `envsubst`.
 #
 # Runs the @sparx/db runner image with its migration ENTRYPOINT overridden to
 # packages/db/prisma/seed-platform.ts — the platform-only half of seeding. It is
@@ -24,7 +25,9 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: db-seed-platform-${RUN_ID}
-  namespace: sparx-prod
+  # No `namespace:` — the release applies this with `-n "$NAMESPACE"`, from the
+  # same variable every other kubectl call uses. Naming it here would be a
+  # second source of truth that silently wins over the flag.
   labels:
     app.kubernetes.io/name: db-seed-platform
     app.kubernetes.io/part-of: sparx

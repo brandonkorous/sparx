@@ -105,6 +105,41 @@ jobs:
       - name: Check event/topic parity
         run: node scripts/check-event-topics.mjs
 
+  migration-order:
+    name: Migration ordering
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Prisma orders migrations LEXICOGRAPHICALLY by directory name and records
+    # each applied one by that name. This repository's timestamp prefixes are
+    # hand-authored and run about six months AHEAD of the real clock
+    # (20270131… was committed on 2026-07-31), so `prisma migrate dev` — which
+    # stamps the real clock — produces a name that sorts BEFORE all 241 applied
+    # migrations. `migrate deploy` then refuses the whole release, in the middle
+    # of a release, after the roles Job has already run.
+    #
+    # The drift cannot be renamed away: the directory name is the key in
+    # `_prisma_migrations` on every deployed database, so renaming would make
+    # Prisma re-run 241 migrations against a schema that already has them. It
+    # can only be kept monotonic, which is what this enforces. See
+    # scripts/check-migration-order.mjs.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # The check compares against the base branch, so one commit is not
+          # enough history to find it.
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - name: Check migration ordering
+        run: |
+          BASE='${{ github.event_name == 'pull_request'
+                    && format('origin/{0}', github.event.pull_request.base.ref)
+                    || 'HEAD~1' }}'
+          node scripts/check-migration-order.mjs "$BASE"
+
   workflow-heredocs:
     name: Workflow heredoc safety
     runs-on: ubuntu-latest
@@ -158,17 +193,32 @@ jobs:
       - name: terraform fmt
         run: terraform fmt -check -recursive
 
-      - name: Validate envs/prod
-        working-directory: terraform/envs/prod
-        # `init -backend=false` avoids needing GCP creds in CI for validation.
-        run: bash "$GITHUB_WORKSPACE/.github/scripts/tf-validate.sh"
-
-      # The Azure env was never validated here, so nothing checked the
-      # environment the platform ACTUALLY RUNS ON — only the GCP fallback. Both
-      # now call the shared modules/dns, and a break in that module would
-      # otherwise surface at apply time against live DNS.
+      # envs/azure FIRST, because release.yml applies it. Everything below this
+      # line is validated so it does not rot; this one is validated because a
+      # break in it fails a deployment.
+      #
+      # `init -backend=false` is what lets this run with no cloud credentials —
+      # validation needs the provider schemas, not the state.
       - name: Validate envs/azure
         working-directory: terraform/envs/azure
+        run: bash "$GITHUB_WORKSPACE/.github/scripts/tf-validate.sh"
+
+      # The identity and remote state that let the pipeline run Terraform at
+      # all. Applied by hand exactly once (a CI runner cannot create the backend
+      # it needs to store state in), which is precisely why it needs validating
+      # here — nothing else ever exercises it, and it is discovered to be broken
+      # at the worst possible moment: while rebuilding after losing it.
+      - name: Validate bootstrap-azure
+        working-directory: terraform/bootstrap-azure
+        run: bash "$GITHUB_WORKSPACE/.github/scripts/tf-validate.sh"
+
+      # GCP. No workflow deploys these any more — the fallback set was deleted
+      # when the platform settled on Azure — but the configuration is kept, and
+      # kept COMPILING, because "we still have the GKE definition" is only true
+      # while it is valid HCL. Both envs call the shared modules/dns, so this
+      # also catches a change made for Azure that breaks the other consumer.
+      - name: Validate envs/prod
+        working-directory: terraform/envs/prod
         run: bash "$GITHUB_WORKSPACE/.github/scripts/tf-validate.sh"
 
       - name: Validate bootstrap

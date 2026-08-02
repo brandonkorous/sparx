@@ -1,11 +1,12 @@
-# AKS overlay — the deployed platform, on `aks-sparx-prod-cus` in centralus.
+# CONTAINERS — stage 3 of the release. Everything here is an image that is
+# replaced wholesale on every deploy; nothing here holds state.
 #
-# Same shape as k8s/local and for the same reasons; read that file for the
-# decisions both share (why the namespace stays `sparx-prod`, why HPAs and PDBs
-# are deleted, why the workers are BestEffort). Only the DIFFERENCES are
-# explained here.
+# Read ../infra/kustomization.yaml for why the split exists. The short version:
+# the data stage runs Jobs that need the namespace, `sparx-app-env` and the
+# `sparx-media` PVC to already exist, so those cannot live in the same overlay
+# as the Deployments they are supposed to run BEFORE.
 #
-# What differs from the workstation overlay:
+# What differs from the k8s/local workstation overlay:
 #   1. images     → ghcr.io/brandonkorous/sparx/*, pulled from a registry rather
 #                   than read out of a local Docker daemon
 #   2. Postgres   → MANAGED (psql-sparx-prod-cus). No in-cluster StatefulSet.
@@ -15,36 +16,22 @@
 #                   apps get slightly more headroom than on a 16 GiB laptop that
 #                   is also hosting Postgres
 #
-# Deployed by .github/workflows/deploy-azure.yml, not by hand.
+# Applied by .github/workflows/release.yml, not by hand.
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 namespace: sparx-prod
 
 resources:
-  - namespace.yaml
-  - ../apps
-  - ../cronjobs
-  # The 11 workers. Shared verbatim with the workstation overlay.
-  - ../self-hosted
-  # The ingress: Caddy + the ONE routing table + a `type: LoadBalancer` Service.
-  # Identical to what the GCP bootstrap applies — no Azure-specific ingress
-  # config exists, which is the point. AKS provisions a Standard LB and public
-  # IP from that Service exactly as GKE provisions a Network LB.
-  #
-  # This replaced the Cloudflare Tunnel. The tunnel had no inbound path, so
-  # Caddy could not complete an ACME challenge and every hostname depended on
-  # Cloudflare's single one-label-deep wildcard certificate — which is why
-  # `<property>.<tenant>.sparx.zone` returned a handshake failure. On-demand
-  # issuance is per hostname at any depth, so that class of problem is gone
-  # rather than worked around.
-  - ../ingress
-  # Typesense + the media volume. NOT Postgres (managed) and NOT Redis.
-  - infra.yaml
+  - ../../apps
+  - ../../cronjobs
+  # The 12 workers + the NATS broker. Shared verbatim with the workstation
+  # overlay.
+  - ../../self-hosted
 
-# CI rewrites the tag to the commit SHA before applying
-# (`kustomize edit set image`), so a rollout is always to an immutable digest and
-# `kubectl rollout undo` means something. `latest` here is a placeholder that
-# should never actually be deployed.
+# The release rewrites every tag to its own commit SHA before applying, so a
+# rollout is always to an immutable reference and `kubectl rollout undo` means
+# something. `latest` here is a placeholder that should never actually be
+# deployed — the release FAILS if any of these survives the rewrite.
 images:
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/api-rest
     newName: ghcr.io/brandonkorous/sparx/api-rest
@@ -73,7 +60,7 @@ images:
   - name: us-central1-docker.pkg.dev/sparxworks/sparx/admin
     newName: ghcr.io/brandonkorous/sparx/admin
     newTag: latest
-  # The 11 workers carry `sparx/<name>:local` in the shared base, since that base
+  # The workers carry `sparx/<name>:local` in the shared base, since that base
   # is written for the workstation case. Rewrite them the same way.
   - name: sparx/automation-worker
     newName: ghcr.io/brandonkorous/sparx/automation-worker
@@ -112,15 +99,6 @@ images:
     newName: ghcr.io/brandonkorous/sparx/dropship-worker
     newTag: latest
 
-configMapGenerator:
-  - name: sparx-app-env
-    behavior: create
-    envs:
-      - app-env-configmap.env
-
-generatorOptions:
-  disableNameSuffixHash: true
-
 replicas:
   - name: api-rest
     count: 1
@@ -142,59 +120,21 @@ replicas:
     count: 1
 
 patches:
-  # --- Pin the ingress to the RESERVED public IP ------------------------------
-  # `azure-pip-name` is the AKS-supported way to attach an existing public IP,
-  # and it is Azure-specific — which is why it lives in this overlay and not in
-  # k8s/ingress/service.yaml. The base Service stays a plain
-  # `type: LoadBalancer` that GKE and EKS accept unchanged; each provider adds
-  # its own hint here.
+  # --- The broker's JetStream volume ------------------------------------------
+  # k8s/self-hosted/nats.yaml omits the storage class so it stays portable;
+  # without this patch AKS binds it to the `default` class, which is Standard
+  # HDD — the wrong tier for a write-ahead log that every publish on the
+  # platform blocks on.
   #
-  # Without it the Service takes an EPHEMERAL address, which changes whenever
-  # the Service is recreated — a namespace rebuild, a rename, a bad delete. DNS
-  # then points at an address Azure has reassigned, and nothing in the cluster
-  # reports a fault, because the cluster is healthy. The IP is reserved in
-  # terraform/envs/azure/ingress.tf; `terraform output ingress_pip_name` is the
-  # value below.
-  #
-  # NOT `spec.loadBalancerIP`: deprecated since Kubernetes 1.24 and slated for
-  # removal, and it hard-codes the address where this hard-codes only its name.
-  - target: { kind: Service, name: caddy }
-    patch: |-
-      apiVersion: v1
-      kind: Service
-      metadata:
-        name: caddy
-        annotations:
-          service.beta.kubernetes.io/azure-pip-name: pip-ingress-sparx-prod-cus
-
-  # --- Storage class for the ACME certificate volume --------------------------
-  # k8s/ingress/pvc.yaml deliberately omits storageClassName so it binds to
-  # whatever the cluster's default is — portable, but on AKS the default is
-  # `managed-csi` anyway and being explicit documents the choice. StandardSSD,
-  # not `managed-csi-premium`: this volume stores a few kilobytes of
-  # certificates and its IOPS profile is "written once per issuance".
-  - target: { kind: PersistentVolumeClaim, name: caddy-data }
-    patch: |-
-      apiVersion: v1
-      kind: PersistentVolumeClaim
-      metadata:
-        name: caddy-data
-      spec:
-        storageClassName: managed-csi
-
-  # Same for the broker's JetStream volume. k8s/self-hosted/nats.yaml omits the
-  # class so it stays portable; without this patch AKS binds it to the `default`
-  # class, which is Standard HDD — the wrong tier for a write-ahead log that
-  # every publish on the platform blocks on.
-  #
-  # A JSON6902 patch, NOT a strategic merge, and that distinction is load-bearing.
-  # `volumeClaimTemplates` carries no `patchMergeKey` in the StatefulSet Go type,
-  # so it is an ATOMIC list: a strategic-merge patch naming only storageClassName
-  # REPLACES the entire template rather than merging into it, and the base's
-  # accessModes + resources.requests.storage vanish. The API server then rejects
-  # the StatefulSet with "at least 1 access mode is required" — at apply time, in
-  # the middle of a rollout, since `kustomize build` renders the broken manifest
-  # perfectly happily. Addressing the field by path leaves the rest untouched.
+  # A JSON6902 patch, NOT a strategic merge, and that distinction is
+  # load-bearing. `volumeClaimTemplates` carries no `patchMergeKey` in the
+  # StatefulSet Go type, so it is an ATOMIC list: a strategic-merge patch naming
+  # only storageClassName REPLACES the entire template rather than merging into
+  # it, and the base's accessModes + resources.requests.storage vanish. The API
+  # server then rejects the StatefulSet with "at least 1 access mode is
+  # required" — at apply time, in the middle of a rollout, since
+  # `kustomize build` renders the broken manifest perfectly happily. Addressing
+  # the field by path leaves the rest untouched.
   - target: { kind: StatefulSet, name: nats }
     patch: |-
       - op: add
@@ -249,14 +189,14 @@ patches:
                 serviceAccountName: default
 
   # --- Registry pull ----------------------------------------------------------
-  # The images live in a PRIVATE GHCR namespace, so every pod needs the pull
-  # secret. Created by the deploy workflow from a GitHub token, not committed.
+  # The images live in a GHCR namespace, so every pod carries the pull secret.
+  # Created by the release from the run's GITHUB_TOKEN, not committed.
   #
-  # imagePullPolicy is left at the base's `Always` for the apps: unlike the
-  # workstation overlay (which pins `Never` because images are read straight out
-  # of the local Docker daemon), here the tag is rewritten to an immutable SHA by
-  # CI, so `Always` costs one registry HEAD request and guarantees the node never
-  # serves a stale cached layer.
+  # imagePullPolicy is left at the base's `Always`: unlike the workstation
+  # overlay (which pins `Never` because images are read straight out of the
+  # local Docker daemon), here the tag is rewritten to an immutable SHA by the
+  # release, so `Always` costs one registry HEAD request and guarantees the node
+  # never serves a stale cached layer.
   - target:
       kind: Deployment
     patch: |-
@@ -285,8 +225,8 @@ patches:
   # dropped — CPU is compressible, so a cap only throttles cold starts.
   #
   # Unlike the workers (no resources at all, BestEffort — see
-  # ../self-hosted/workers.yaml), the apps keep an explicit request so they are
-  # Burstable: under pressure the kubelet evicts a worker before it evicts
+  # ../../self-hosted/workers.yaml), the apps keep an explicit request so they
+  # are Burstable: under pressure the kubelet evicts a worker before it evicts
   # something serving traffic.
   #
   # Per-app rather than one patch, because a strategic-merge patch on
@@ -398,20 +338,21 @@ patches:
   #
   # It also mounts the media volume, because with GCS_MEDIA_BUCKET unset
   # packages/media resolves to LocalStorage and api-rest STREAMS variants from
-  # the same volume media-worker writes them to.
+  # the same volume media-worker writes them to. The PVC itself is created by
+  # the INFRA overlay, one stage earlier — the marketplace ingest mounts it
+  # during the data stage, before this pod exists at all.
   #
   # fsGroup is what makes that volume WRITABLE, and it is not optional here.
   # Every container in this overlay runs as uid 1000, but the media tarball was
-  # unpacked by restore-from-export.yml with the uid/gid recorded inside it —
+  # unpacked by the restore workflow with the uid/gid recorded inside it —
   # 197609, a Windows-side id that exists nowhere in the cluster — at mode 0755.
-  # The result was a production volume the apps could READ and never WRITE: every
-  # upload, every transcoded variant and every marketplace artifact failed with
-  # EACCES, while both pods stayed Running and healthy. fsGroup makes the kubelet
-  # take group ownership of the tree at mount time and add group write, which
-  # fixes the existing files without a one-off root Job; OnRootMismatch skips the
-  # recursive walk once the root already matches, so it costs one pass, not one
-  # per restart. The restore workflow now also chowns on extract, so a future
-  # tarball never re-creates it.
+  # The result was a production volume the apps could READ and never WRITE:
+  # every upload, every transcoded variant and every marketplace artifact failed
+  # with EACCES, while both pods stayed Running and healthy. fsGroup makes the
+  # kubelet take group ownership of the tree at mount time and add group write,
+  # which fixes the existing files without a one-off root Job; OnRootMismatch
+  # skips the recursive walk once the root already matches, so it costs one
+  # pass, not one per restart.
   - target:
       kind: Deployment
       name: api-rest
@@ -456,9 +397,9 @@ patches:
   #
   # node_count is 1, so today that is automatic. It is not guaranteed: an AKS
   # upgrade adds a surge node and a node-pool change rotates through a temporary
-  # one, and either can place these two on opposite nodes. The loser then sits in
-  # ContainerCreating with `Multi-Attach error for volume` — during an upgrade,
-  # with nothing pointing back at this file.
+  # one, and either can place these two on opposite nodes. The loser then sits
+  # in ContainerCreating with `Multi-Attach error for volume` — during an
+  # upgrade, with nothing pointing back at this file.
   #
   # `requiredDuringScheduling`, not preferred: a "preference" that silently
   # yields is exactly the failure being prevented. Better Pending, with a

@@ -5,10 +5,19 @@ type: pattern
 status: active
 sources:
   - packages/db/CLAUDE.md
-  - .github/workflows/db-migrate.yml
+  - .github/workflows/release.yml
+  - scripts/check-migration-order.mjs
 ---
 
-Cloud SQL is **private-IP only** — you cannot migrate from a laptop. Author locally against docker Postgres (`pnpm db:up` + `prisma migrate dev`), push to `main`; the **DB Migrate workflow** applies it: WIF auth (no SA key) → build `db-migrate` image → GKE creds via Connect Gateway → a **K8s Job in `sparx-prod`** runs `prisma migrate deploy` through the Cloud SQL Auth Proxy sidecar. RLS / `current_tenant_id()` are **hand-edited SQL**, never Prisma-generated. Re-seed via `-f run_seed=true`; clear a failed migration via `-f resolve_migration=<dir>`.
+The managed Postgres has public access **disabled** and lives in the VNet — you cannot migrate from a laptop. Author locally against docker Postgres (`pnpm db:up` + `prisma migrate dev --create-only`), hand-edit the SQL, push to `main`. **Stage 2 (data) of [[deploy-workflows]]** applies it: OIDC auth (no stored credential) → cluster creds → a roles Job (`sql/azure-bootstrap.sql`, idempotent, CREATEs as well as GRANTs) → a **K8s Job** running `prisma migrate deploy` as the OWNER role → the platform seed → the marketplace ingest. All of it runs **before the containers roll**, so new code never meets an old schema or missing rows.
+
+RLS / `current_tenant_id()` are **hand-edited SQL**, never Prisma-generated.
+
+## ⚠️ Migration names must be MONOTONIC
+
+Prisma orders migrations **lexicographically by directory name**, and that name is the key recorded in `_prisma_migrations`. This repo's prefixes are hand-authored and run ~6 months **ahead** of the real clock (`20270131…` was committed 2026-07-31), so plain `prisma migrate dev` stamps a name that sorts **before** all 241 applied migrations — `migrate deploy` then refuses, mid-release, after the roles Job has run.
+
+The drift **cannot be renamed away**: renaming makes Prisma treat 241 applied migrations as new. A new migration must simply sort after the newest existing one. Deleting a migration directory is equally broken — every database still records the name. [scripts/check-migration-order.mjs](../../../scripts/check-migration-order.mjs) enforces both in CI.
 
 ## ⚠️ The FORCE-RLS backfill footgun (fails only in prod)
 

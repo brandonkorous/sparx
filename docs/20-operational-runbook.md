@@ -1,8 +1,8 @@
 # WizeWorks Platform — Operational Runbook
 
-**Version:** 1.3  
+**Version:** 1.4  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-07-21
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -47,26 +47,34 @@
 
 ### Standard Deploy (Production)
 
-1. Merge PR to `main` → staging auto-deploys
-2. Run E2E critical path against staging (automated in CI)
-3. Create GitHub release with semver tag → triggers prod deploy
-4. Monitor: watch error rate and latency for 15 minutes post-deploy
-5. If degraded: rollback (see below)
+1. Merge PR to `main`. That push IS the release — `release.yml` runs
+   **infrastructure → data → containers → cleanup** against `prod`.
+2. Watch the run summary: it reports the Terraform plan, the ingress address,
+   and a **row count per catalog** so "ran green and wrote nothing" is visible.
+3. `auto-tag.yml` cuts the semver tag from the same push. **The tag dispatches
+   nothing** — it marks the release, it does not trigger it.
+4. Monitor: error rate and latency for 15 minutes post-release.
+5. If degraded: rollback (see below).
+
+There is no staging environment today. `release.yml` takes an `environment`
+input and resolves its destination from environment variables, so adding one is
+setting `AKS_RESOURCE_GROUP` / `AKS_CLUSTER` / `K8S_NAMESPACE` / `K8S_OVERLAY` /
+`TERRAFORM_DIR` on a new GitHub environment — not forking the workflow.
 
 ### Rollback Procedure
 
 ```bash
 # Get previous image tag
-kubectl -n wizeworks-prod rollout history deployment/api-rest
+kubectl -n sparx-prod rollout history deployment/api-rest
 
 # Rollback to previous
-kubectl -n wizeworks-prod rollout undo deployment/api-rest
+kubectl -n sparx-prod rollout undo deployment/api-rest
 
 # Or rollback to specific revision
-kubectl -n wizeworks-prod rollout undo deployment/api-rest --to-revision=42
+kubectl -n sparx-prod rollout undo deployment/api-rest --to-revision=42
 
 # Verify rollback complete
-kubectl -n wizeworks-prod rollout status deployment/api-rest
+kubectl -n sparx-prod rollout status deployment/api-rest
 ```
 
 ### Database Migration Rollback
@@ -95,17 +103,17 @@ Migrations are forward-only. To "rollback" a schema change:
 
 ```bash
 # Check pod CPU/memory
-kubectl -n wizeworks-prod top pods
+kubectl -n sparx-prod top pods
 
 # Check database slow queries
-gcloud sql operations list --instance=wizeworks-prod
+gcloud sql operations list --instance=sparx-prod
 psql $DATABASE_URL -c "SELECT query, mean_exec_time, calls FROM pg_stat_statements ORDER BY mean_exec_time DESC LIMIT 20;"
 
 # Check Redis
 redis-cli --no-auth-warning -u $REDIS_URL INFO stats | grep rejected_connections
 
 # Check recent deploys
-kubectl -n wizeworks-prod rollout history deployment/api-rest
+kubectl -n sparx-prod rollout history deployment/api-rest
 ```
 
 **Common causes:**
@@ -123,7 +131,7 @@ kubectl -n wizeworks-prod rollout history deployment/api-rest
 
 ```bash
 # Check worker logs
-kubectl -n wizeworks-prod logs -l app=email-worker --tail=100
+kubectl -n sparx-prod logs -l app=email-worker --tail=100
 
 # Check BullMQ queue health
 redis-cli -u $REDIS_URL LLEN bull:email:failed
@@ -144,7 +152,7 @@ redis-cli -u $REDIS_URL LLEN bull:email:waiting
 
 ```bash
 # Retry failed jobs
-kubectl exec -n wizeworks-prod deploy/email-worker -- node scripts/retry-failed-jobs.js
+kubectl exec -n sparx-prod deploy/email-worker -- node scripts/retry-failed-jobs.js
 
 # Or via BullMQ dashboard (if enabled)
 ```
@@ -163,7 +171,7 @@ psql $DATABASE_URL -c "SELECT domain, status, failure_reason, created_at FROM do
 dig CNAME their-domain.com
 
 # Check worker logs
-kubectl -n wizeworks-prod logs -l app=domain-worker --tail=100
+kubectl -n sparx-prod logs -l app=domain-worker --tail=100
 ```
 
 **Common causes:**
@@ -181,7 +189,7 @@ kubectl -n wizeworks-prod logs -l app=domain-worker --tail=100
 
 ```bash
 # Check checkout error logs
-kubectl -n wizeworks-prod logs -l app=api-rest --tail=200 | grep 'checkout'
+kubectl -n sparx-prod logs -l app=api-rest --tail=200 | grep 'checkout'
 
 # Check Stripe dashboard for payment intent failures
 # https://dashboard.stripe.com/payments?status=failed
@@ -203,13 +211,13 @@ psql $DATABASE_URL -c "SELECT id, inventory_quantity FROM product_variants WHERE
 
 ```bash
 # Check pod events
-kubectl -n wizeworks-prod describe pod api-rest-xxxx
+kubectl -n sparx-prod describe pod api-rest-xxxx
 
 # Check memory usage history
 # Grafana → Container memory usage dashboard
 
 # Temporary: increase memory limit
-kubectl -n wizeworks-prod set resources deployment/api-rest --limits=memory=2Gi
+kubectl -n sparx-prod set resources deployment/api-rest --limits=memory=2Gi
 
 # Root cause: memory leak
 # Check for unclosed DB connections, event listeners, large payload handling
@@ -239,18 +247,28 @@ All three are declared in `terraform/envs/prod/main.tf` (`module.secrets.secret_
 
 **2 — Populate the secret values (out-of-band; values never live in git):**
 
-```bash
-gcloud secrets versions add google-oauth-client-id     --data-file=- <<< "<client id>"
-gcloud secrets versions add google-oauth-client-secret --data-file=- <<< "<client secret>"
-gcloud secrets versions add search-console-token-key   --data-file=- <<< "$(openssl rand -base64 32)"
+Add three lines to the `SPARX_APP_SECRETS_ENV` repository secret — the single
+dotenv blob that carries the whole `sparx-app-secrets` bundle (one secret rather
+than ~30, because GitHub has no secret grouping and 30 individually-managed
+values drift):
+
+```
+GOOGLE_OAUTH_CLIENT_ID=<client id>
+GOOGLE_OAUTH_CLIENT_SECRET=<client secret>
+SEARCH_CONSOLE_TOKEN_KEY=<openssl rand -base64 32>
 ```
 
-**3 — Apply + sync (drives, does not bypass, the pipeline):**
+If a value has leading or trailing whitespace, add it as `NAME_B64=<base64>`
+instead — the release writes those straight into the Secret's `data` field
+without passing them through a line parser. See `k8s/azure/README.md` for why
+that exists.
+
+**3 — Sync (drives, does not bypass, the pipeline):**
 
 ```bash
-# Create the Secret Manager containers (first time only) via the platform-apply workflow,
-# then hydrate sparx-app-secrets + roll the pods that mount it:
-gh workflow run bootstrap.yml -f components=app-secrets
+# The release's INFRASTRUCTURE stage recreates sparx-app-secrets from the repo
+# secret on every run, and the containers stage rolls the pods that mount it.
+gh workflow run release.yml
 ```
 
 **4 — Local dev:** add the same three to `services/api-rest/.env` (gitignored) and restart `api-rest`.
@@ -271,13 +289,13 @@ gh workflow run bootstrap.yml -f components=app-secrets
 
 ```bash
 # List recent automated backups
-gcloud sql backups list --instance=wizeworks-prod
+gcloud sql backups list --instance=sparx-prod
 
 # Create on-demand backup
-gcloud sql backups create --instance=wizeworks-prod
+gcloud sql backups create --instance=sparx-prod
 
 # Test restore to staging
-gcloud sql instances clone wizeworks-prod wizeworks-restore-test \
+gcloud sql instances clone sparx-prod wizeworks-restore-test \
   --point-in-time="2026-05-27T10:00:00.000Z"
 
 # Verify data integrity on restored instance
@@ -324,10 +342,10 @@ HPA is configured for all stateless services. Manual override if needed:
 
 ```bash
 # Check current HPA status
-kubectl -n wizeworks-prod get hpa
+kubectl -n sparx-prod get hpa
 
 # Manually scale (emergency)
-kubectl -n wizeworks-prod scale deployment/api-rest --replicas=20
+kubectl -n sparx-prod scale deployment/api-rest --replicas=20
 
 # HPA will take over when metric-based scaling catches up
 ```
@@ -338,11 +356,11 @@ Read-heavy endpoints (analytics, search) route to read replica:
 
 ```bash
 # Check replica lag
-gcloud sql instances describe wizeworks-prod-replica | grep replicationLag
+gcloud sql instances describe sparx-prod-replica | grep replicationLag
 
 # If lag > 30s: route all traffic to primary temporarily
 # Set env var READ_REPLICA_URL="" → falls back to primary
-kubectl -n wizeworks-prod set env deployment/api-rest READ_REPLICA_URL=""
+kubectl -n sparx-prod set env deployment/api-rest READ_REPLICA_URL=""
 ```
 
 ---
