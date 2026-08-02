@@ -42,13 +42,41 @@ jobs:
   lint:
     name: Lint
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-workspace
         with:
           turbo-cache-key: lint
-      - run: pnpm lint
+      # -----------------------------------------------------------------------
+      # BOUNDED CONCURRENCY AND A HEAP CEILING, because this job was failing on
+      # memory rather than on lint errors.
+      #
+      # The symptom did not look like it. The step reported `cancelled` and the
+      # job `failure`, with no ESLint output naming a file — which reads as a
+      # timeout or a cancelled run. It was neither: the runs died at 6.5 and 9.9
+      # minutes against a 20-minute limit, and `Typecheck` in the SAME run
+      # carried on happily for another nine minutes afterwards, so nothing was
+      # cancelling the run. What actually happens is V8 aborting inside one of
+      # the workers; the runner loses the process and GitHub records the step as
+      # cancelled.
+      #
+      # It is intermittent by nature, which is why it looked random: the one
+      # green Lint in this window finished in 1m48s off an almost-total turbo
+      # cache hit, having barely linted anything. Cache hit → no OOM → green.
+      #
+      # `--concurrency=2` matches the runner's 2 vCPUs. Turbo otherwise fans out
+      # to the core count with no memory awareness, and several typed-ESLint
+      # processes each holding a TypeScript program is the peak that does not
+      # fit in 7 GB. The heap cap is per worker and deliberately below the box's
+      # RAM, so a runaway worker throws a catchable JS heap error — which names
+      # the package — instead of the kernel taking the runner out silently.
+      #
+      # Same failure the pre-push hook hits locally, where the workaround is
+      # NODE_OPTIONS=--max-old-space-size=8192.
+      - run: pnpm lint -- --concurrency=2
+        env:
+          NODE_OPTIONS: --max-old-space-size=5120
 
   typecheck:
     name: Typecheck

@@ -756,6 +756,28 @@ jobs:
           az aks get-credentials --resource-group "$RESOURCE_GROUP" \
             --name "$CLUSTER" --overwrite-existing
 
+      # -----------------------------------------------------------------------
+      # Refresh the registry pull secret WITH THIS JOB'S TOKEN.
+      #
+      # `GITHUB_TOKEN` expires when the job that minted it finishes. Stage 1
+      # writes this Secret, so by the time stage 2 creates a Job the credential
+      # in the cluster is already dead — the kubelet presents it and GHCR
+      # answers `403 Forbidden` on the token endpoint. The pod then sits in
+      # ImagePullBackOff until await-job.sh gives up twenty minutes later, and
+      # the symptom reads like a slow migration rather than an auth failure.
+      #
+      # The packages are PRIVATE (an anonymous manifest fetch 404s), so this is
+      # not optional. Every job that causes a pull refreshes the secret first;
+      # the token is only ever valid inside the job that asked for it.
+      # -----------------------------------------------------------------------
+      - name: Refresh the registry pull secret
+        run: |
+          kubectl create secret docker-registry ghcr -n "$NAMESPACE" \
+            --docker-server=ghcr.io \
+            --docker-username='${{ github.actor }}' \
+            --docker-password='${{ secrets.GITHUB_TOKEN }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
+
       - name: Ensure database roles
         run: |
           set -euo pipefail
@@ -982,6 +1004,17 @@ jobs:
         run: |
           az aks get-credentials --resource-group "$RESOURCE_GROUP" \
             --name "$CLUSTER" --overwrite-existing
+
+      # Same reason as the data stage: `GITHUB_TOKEN` expires with the job that
+      # minted it, and every pod rolled below pulls a private image. See the
+      # comment there.
+      - name: Refresh the registry pull secret
+        run: |
+          kubectl create secret docker-registry ghcr -n "$NAMESPACE" \
+            --docker-server=ghcr.io \
+            --docker-username='${{ github.actor }}' \
+            --docker-password='${{ secrets.GITHUB_TOKEN }}' \
+            --dry-run=client -o yaml | kubectl apply -f -
 
       # -----------------------------------------------------------------------
       # Does anything the CONTAINERS run actually differ from what is deployed?
