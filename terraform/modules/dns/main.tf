@@ -391,29 +391,70 @@ resource "cloudflare_record" "sparx_email_mx" {
   allow_overwrite = true
 }
 
-# SPF — Mailgun is our sole outbound path. email-worker (Cloud Run) POSTs
-# to Mailgun's HTTP API and Mailgun delivers from its own IPs, so the
-# SPF authorises only Mailgun's range. The exact string must be
-# `v=spf1 include:mailgun.org ~all` — Mailgun's verifier rejects any
-# other shape (extra `a mx` / additional includes fail their check even
-# when SPF is technically correct).
-#
-# ~all is soft-fail (recommended over -all until reputation is established).
-resource "cloudflare_record" "sparx_email_spf" {
-  count           = var.cloudflare_enabled ? 1 : 0
-  zone_id         = data.cloudflare_zone.sparx_email[0].id
-  name            = "@"
-  type            = "TXT"
-  content         = "v=spf1 include:mailgun.org ~all"
-  ttl             = 1
-  proxied         = false
-  allow_overwrite = true
-  comment         = "SPF — Mailgun-only egress (HTTP API direct from email-worker)"
-}
 
 # Mailgun tracking CNAME. Mailgun rewrites links in outgoing mail to
 # go through this hostname so they can record open/click events. Not
 # strictly required for delivery, but expected by their dashboard.
+# ---------------------------------------------------------------------------
+# EMAIL AUTHENTICATION IS NOT MANAGED HERE. SPF, DKIM and DMARC for sparx.email
+# are owned by MAILGUN, which writes them at domain verification.
+#
+# Four records used to be declared here — `sparx_email_spf`, `sparx_email_dkim`,
+# `sparx_email_dmarc` and `sparx_email_mailgun_dkim`. They were Postal-era
+# leftovers (their own comments described pulling a signing key out of the Postal
+# admin UI), and Postal has been decommissioned since 2026-05-29.
+#
+# They never once applied. They were declared for months and appear in NO state
+# file: every apply failed on them with "attempted to override existing record
+# however didn't find an exact match" — Cloudflare refusing because Mailgun had
+# already written the real ones — and the DKIM record additionally failed with
+# "DNS name is invalid (9000)", since its selector variable is empty and the name
+# it built was malformed. A human applying by hand simply ignored the errors; a
+# pipeline that fails the release on a failed apply cannot.
+#
+# Removing them is not a workaround for that failure. Succeeding would have been
+# the worse outcome: a SECOND `v=spf1` record on the same name is an SPF
+# PERMERROR, which fails authentication for every message the platform sends.
+# The one thing worse than "terraform cannot create this record" is "terraform
+# created it".
+#
+# The `removed` blocks below say so to Terraform. `destroy = false` is the
+# load-bearing part: this module is shared with terraform/envs/prod, whose state
+# is not readable from here, so if any state anywhere DOES track one of these,
+# it is forgotten rather than deleted out of Cloudflare. Deleting a live SPF or
+# DKIM record silently breaks mail delivery.
+#
+# Mailgun's TRACKING CNAME below stays — it is ours, it applied cleanly, and it
+# is in state.
+# ---------------------------------------------------------------------------
+removed {
+  from = cloudflare_record.sparx_email_spf
+  lifecycle {
+    destroy = false
+  }
+}
+
+removed {
+  from = cloudflare_record.sparx_email_dkim
+  lifecycle {
+    destroy = false
+  }
+}
+
+removed {
+  from = cloudflare_record.sparx_email_dmarc
+  lifecycle {
+    destroy = false
+  }
+}
+
+removed {
+  from = cloudflare_record.sparx_email_mailgun_dkim
+  lifecycle {
+    destroy = false
+  }
+}
+
 resource "cloudflare_record" "sparx_email_mailgun_tracking" {
   count           = var.cloudflare_enabled ? 1 : 0
   zone_id         = data.cloudflare_zone.sparx_email[0].id
@@ -426,69 +467,8 @@ resource "cloudflare_record" "sparx_email_mailgun_tracking" {
   comment         = "Mailgun open/click tracking CNAME"
 }
 
-# Mailgun DKIM. Mailgun signs outbound mail with this key (selector
-# 'smtp') as it relays. Postal's own DKIM signature also travels
-# through (different selector — see sparx_email_dkim above), so
-# recipients see two valid signatures, either of which passes.
-#
-# Mailgun omits the leading `v=DKIM1;` (which is RFC-optional). To
-# rotate: regenerate in Mailgun dashboard → Sending → Domain settings
-# → DKIM, then paste the new public key here and `terraform apply`.
-resource "cloudflare_record" "sparx_email_mailgun_dkim" {
-  count           = var.cloudflare_enabled ? 1 : 0
-  zone_id         = data.cloudflare_zone.sparx_email[0].id
-  name            = "smtp._domainkey"
-  type            = "TXT"
-  content         = "k=rsa; p=MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDT5lbXUjuFHVevoB0GC2+T9mwVD8j4LT5NUIFe6e4E3mn71EeBrWba8vgRzG7jpXpoGAy/4/MhyNTeEs5WU9LSVXjnfpMfKI5M8oY20Kgvq7SY6P+nsQUDjMhWhraIdGcBOVENmeaYEiCt4i/8HsagVw22Cl77rs03UMktpb+fiQIDAQAB"
-  ttl             = 1
-  proxied         = false
-  allow_overwrite = true
-  comment         = "Mailgun DKIM (selector 'smtp') — relay signing key"
-}
 
-# DKIM placeholder — Postal generates the signing key at first
-# `postal initialize`. After bootstrap, pull the public key out of the
-# Postal admin UI (Organization → Server → DNS Setup) and fill it in
-# below, then `terraform apply` again. Until populated, this resource
-# is intentionally a placeholder string so the apply succeeds.
-#
-# After Postal generates the key:
-#   1. In Postal Admin → DNS → copy the TXT value (full v=DKIM1; ... string)
-#   2. Replace the `content` below with that exact string
-#   3. terraform apply
-resource "cloudflare_record" "sparx_email_dkim" {
-  count           = var.cloudflare_enabled ? 1 : 0
-  zone_id         = data.cloudflare_zone.sparx_email[0].id
-  name            = "${var.sparx_email_dkim_selector}._domainkey"
-  type            = "TXT"
-  content         = var.sparx_email_dkim_value
-  ttl             = 1
-  proxied         = false
-  allow_overwrite = true
-  comment         = "DKIM — per-server selector from Postal admin UI"
-}
 
-# DMARC — start in `none` mode for first 2 weeks of sending so we can
-# see reports without rejecting legitimate mail; bump to quarantine
-# (then reject) once aggregate reports look clean.
-#
-# Report aggregators (rua/ruf):
-#   - bef10f10@dmarc.mailgun.org — Mailgun's DMARC dashboard
-#   - 85c257bc@inbox.ondmarc.com — OnDMARC (Red Sift) analyzer
-#   - dmarc-reports@sparx.email   — our own mailbox (not yet wired,
-#                                   reports will silently drop until
-#                                   we set up an inbox)
-resource "cloudflare_record" "sparx_email_dmarc" {
-  count           = var.cloudflare_enabled ? 1 : 0
-  zone_id         = data.cloudflare_zone.sparx_email[0].id
-  name            = "_dmarc"
-  type            = "TXT"
-  content         = "v=DMARC1; p=none; pct=100; fo=1; ri=3600; adkim=r; aspf=r; rua=mailto:bef10f10@dmarc.mailgun.org,mailto:85c257bc@inbox.ondmarc.com,mailto:dmarc-reports@sparx.email; ruf=mailto:bef10f10@dmarc.mailgun.org,mailto:85c257bc@inbox.ondmarc.com,mailto:dmarc-reports@sparx.email;"
-  ttl             = 1
-  proxied         = false
-  allow_overwrite = true
-  comment         = "DMARC — p=none, reports to Mailgun + OnDMARC + sparx mailbox"
-}
 
 # =========================================================================
 # Module marketing zones — apex + www → ingress (Cloudflare-proxied)
@@ -568,11 +548,36 @@ resource "cloudflare_record" "wize_works_admin" {
   comment         = "WizeWorks operator console (Caddy → admin.wize-admin, behind Access)"
 }
 
-# Cloudflare Access self-hosted application gating admin.wize.works. This is the
-# network boundary that stands in for MFA until the Better Auth twoFactor plugin
-# lands (D8) — no request reaches the console without passing an Access policy.
+# Cloudflare Access self-hosted application gating admin.wize.works. Intended as
+# the network boundary that stands in for MFA until the Better Auth twoFactor
+# plugin lands (D8) — no request reaching the console without passing a policy.
+#
+# ⚠️  IT HAS NEVER BEEN CREATED, AND THEREFORE IS NOT PROTECTING ANYTHING.
+#
+# It appears in no state file. Every apply failed it with "Authentication error
+# (10000)" — the Cloudflare API token carries DNS scopes but not
+# `Account → Access: Apps and Policies → Edit` — and a human applying by hand
+# read past the error. Combined with MFA still being unimplemented, the operator
+# console is currently protected by a password ALONE, while this comment and the
+# security posture around it both assume otherwise. That is the gap; the count
+# below does not create it, it stops the configuration from claiming a boundary
+# that is not there.
+#
+# GATED ON THE OPERATOR LIST, not on cloudflare_enabled. An Access application
+# with no policy admits nobody and is worse than useless — and the policy's own
+# `include.email` cannot be empty. So an empty list means "not configured", and
+# Terraform plans nothing rather than planning something that cannot succeed.
+#
+# TO ACTUALLY TURN IT ON, both are required and neither alone is enough:
+#   1. Set OPERATOR_ACCESS_EMAILS (a JSON list, e.g. ["you@example.com"]).
+#   2. Add `Account → Access: Apps and Policies → Edit` to CLOUDFLARE_API_TOKEN,
+#      or step 1 simply reproduces the 10000 above.
+locals {
+  access_enabled = var.cloudflare_enabled && length(var.operator_access_emails) > 0
+}
+
 resource "cloudflare_access_application" "admin" {
-  count            = var.cloudflare_enabled ? 1 : 0
+  count            = local.access_enabled ? 1 : 0
   zone_id          = data.cloudflare_zone.wize_works[0].id
   name             = "WizeWorks Operator Console"
   domain           = "admin.wize.works"
@@ -583,7 +588,7 @@ resource "cloudflare_access_application" "admin" {
 # Allow only the explicitly-listed operator emails. Default-deny: anyone not on
 # the list is refused at the edge, before Caddy or the app see the request.
 resource "cloudflare_access_policy" "admin_operators" {
-  count          = var.cloudflare_enabled ? 1 : 0
+  count          = local.access_enabled ? 1 : 0
   application_id = cloudflare_access_application.admin[0].id
   zone_id        = data.cloudflare_zone.wize_works[0].id
   name           = "WizeWorks operators"
