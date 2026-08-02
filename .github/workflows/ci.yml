@@ -91,7 +91,14 @@ jobs:
       # can report `Cached: 0 cached, 78 total` and do everything cold. Narrowing
       # each task's `inputs` in turbo.json is the follow-up; sharding is what
       # makes the cold case survivable in the meantime.
-      - run: pnpm lint -- --filter "{${{ matrix.scope }}}" --concurrency=2
+      # `pnpm exec turbo run`, NOT `pnpm lint -- …`. The root `lint` script is
+      # `turbo run lint`, so `pnpm lint -- --filter X` becomes
+      # `turbo run lint -- --filter X` — and everything after turbo's `--` is
+      # forwarded to the TASK, so eslint itself received the flag and died with
+      # `Invalid option '--filter' - perhaps you meant '--parser'?`. Calling
+      # turbo directly keeps the flags on turbo, which is what the Test job
+      # above already does.
+      - run: pnpm exec turbo run lint --filter "{${{ matrix.scope }}}" --concurrency=2
         env:
           NODE_OPTIONS: --max-old-space-size=5120
 
