@@ -57,234 +57,10 @@ export function ownerDatabaseUrl(): string | undefined {
 // The first-party publisher every sparx-core listing belongs to (docs/60 D9).
 const SPARX_PUBLISHER_SLUG = 'sparx';
 
-// The sparx-core THEME catalog (docs/60 §6, Marketplace Themes). Each row's
-// `slug` is the @sparx/site-themes preset key, so the dashboard "Apply" action
-// (PUT /v1/sitebuilder/config/theme { themeKey }) and the storefront token
-// compiler resolve it by slug — the heavy token payload stays in the in-code
-// preset, so `tokens` is left NULL for these sparx-core rows (mirrors blueprints).
-// Curated marketplace copy + facets live here rather than importing the presets,
-// so the catalog row needs no @sparx/site-themes dependency.
-const SPARX_THEMES: {
-  slug: string;
-  name: string;
-  accent: string;
-  mood: string;
-  colorFamily: string;
-  density: string;
-  industry: string;
-  tagline: string;
-  description: string;
-  sortWeight: number;
-}[] = [
-  {
-    slug: 'apex',
-    name: 'Apex',
-    accent: '#6366f1',
-    mood: 'Minimal',
-    colorFamily: 'Indigo',
-    density: 'Standard',
-    industry: 'General',
-    tagline: 'Clean, modern, and versatile — a confident default for any store.',
-    description:
-      'A minimal, content-first theme that gets out of the way of your products. Balanced spacing, crisp type, and a single accent colour make Apex the safe, sharp starting point for almost any catalog.',
-    sortWeight: 60,
-  },
-  {
-    slug: 'industrial',
-    name: 'Industrial',
-    accent: '#475569',
-    mood: 'Bold',
-    colorFamily: 'Slate',
-    density: 'Standard',
-    industry: 'Industrial & B2B',
-    tagline: 'Heavy-duty and utilitarian — built for parts, equipment, and trade.',
-    description:
-      'Squared corners, strong rules, and a no-nonsense palette. Industrial is tuned for parts catalogs, equipment, and wholesale where customers scan specs and SKUs, not lifestyle imagery.',
-    sortWeight: 50,
-  },
-  {
-    slug: 'drift',
-    name: 'Drift',
-    accent: '#78716c',
-    mood: 'Editorial',
-    colorFamily: 'Stone',
-    density: 'Spacious',
-    industry: 'Fashion & Apparel',
-    tagline: 'Editorial and airy — lets big imagery and typography lead.',
-    description:
-      'Generous whitespace, oversized headings, and full-bleed imagery. Drift is an editorial theme for apparel and lifestyle brands that sell on look and feel.',
-    sortWeight: 45,
-  },
-  {
-    slug: 'market',
-    name: 'Market',
-    accent: '#f59e0b',
-    mood: 'Vibrant',
-    colorFamily: 'Amber',
-    density: 'Standard',
-    industry: 'Food & Beverage',
-    tagline: 'Warm and lively — appetizing for food, drink, and local goods.',
-    description:
-      'A warm, energetic palette with rounded shapes and friendly type. Market suits food, beverage, and local makers who want a storefront that feels inviting and fresh.',
-    sortWeight: 40,
-  },
-  {
-    slug: 'fleet',
-    name: 'Fleet',
-    accent: '#1d4ed8',
-    mood: 'Utilitarian',
-    colorFamily: 'Blue',
-    density: 'Wide',
-    industry: 'Fleet & Industrial',
-    tagline: 'Data-dense and professional — a wide layout for fleet B2B.',
-    description:
-      'A wide, information-rich layout built for fleet operators and B2B buyers who work in tables, specs, and bulk orders. Fleet reads like a well-organised dashboard, not a boutique.',
-    sortWeight: 55,
-  },
-  {
-    slug: 'drop',
-    name: 'Drop',
-    accent: '#111827',
-    mood: 'Bold',
-    colorFamily: 'Graphite',
-    density: 'Compact',
-    industry: 'Dropship & DTC',
-    tagline: 'High-contrast and punchy — made for hype drops and DTC.',
-    description:
-      'High-contrast, tight, and bold. Drop is made for single-product launches, hype drops, and direct-to-consumer brands that want one thing front and centre.',
-    sortWeight: 35,
-  },
-  {
-    slug: 'noir',
-    name: 'Noir',
-    accent: '#b08d57',
-    mood: 'Luxe',
-    colorFamily: 'Black',
-    density: 'Spacious',
-    industry: 'Jewelry & Luxury',
-    tagline: 'Dark, high-contrast luxury — restrained type and a single gold accent.',
-    description:
-      'A black-on-black luxury theme with a warm gold accent and elegant serif headings. Noir suits fine jewelry, premium fashion, and brands that sell on restraint and craftsmanship.',
-    sortWeight: 58,
-  },
-  {
-    slug: 'sage',
-    name: 'Sage',
-    accent: '#4d7c5a',
-    mood: 'Calm',
-    colorFamily: 'Green',
-    density: 'Spacious',
-    industry: 'Wellness & Beauty',
-    tagline: 'Calm and botanical — soft greens, warm serif headings, easy spacing.',
-    description:
-      'Soft greens, generous whitespace, and warm serif headings make Sage feel grounded and unhurried — a natural fit for wellness, plants, beauty, and slow-living brands.',
-    sortWeight: 52,
-  },
-  {
-    slug: 'coast',
-    name: 'Coast',
-    accent: '#0e7490',
-    mood: 'Fresh',
-    colorFamily: 'Teal',
-    density: 'Standard',
-    industry: 'Travel & Hospitality',
-    tagline: 'Airy and coastal — teal-blue with a warm sand accent and rounded shapes.',
-    description:
-      'A breezy teal-blue palette with a sand accent and rounded shapes. Coast is built for travel, hospitality, home, and lifestyle brands that want light, open, and inviting.',
-    sortWeight: 48,
-  },
-  {
-    slug: 'ember',
-    name: 'Ember',
-    accent: '#e8590c',
-    mood: 'Vibrant',
-    colorFamily: 'Orange',
-    density: 'Standard',
-    industry: 'Food & Beverage',
-    tagline: 'Warm and energetic — ember orange and raspberry, punchy and appetizing.',
-    description:
-      'A warm, high-energy palette of ember orange and raspberry. Ember is tuned for food, drink, fitness, and events that want appetite, momentum, and a little heat.',
-    sortWeight: 50,
-  },
-  {
-    slug: 'mono',
-    name: 'Mono',
-    accent: '#111111',
-    mood: 'Minimal',
-    colorFamily: 'Mono',
-    density: 'Standard',
-    industry: 'Agency & Portfolio',
-    tagline: 'Strict monochrome — black, white, and grey with square edges.',
-    description:
-      'Black, white, and grey with zero radius and confident type. Mono gets out of the way so content and imagery carry the page — ideal for agencies, portfolios, and photographers.',
-    sortWeight: 46,
-  },
-  {
-    slug: 'bloom',
-    name: 'Bloom',
-    accent: '#db2777',
-    mood: 'Playful',
-    colorFamily: 'Pink',
-    density: 'Standard',
-    industry: 'Crafts & Kids',
-    tagline: 'Playful and soft — pink and violet, generous rounding, friendly type.',
-    description:
-      'Pink and violet over soft surfaces, rounded shapes, and friendly type. Bloom brings warmth and joy to kids, crafts, bakeries, and any brand that wants to feel approachable.',
-    sortWeight: 44,
-  },
-  {
-    slug: 'meridian',
-    name: 'Meridian',
-    accent: '#1e3a8a',
-    mood: 'Professional',
-    colorFamily: 'Blue',
-    density: 'Wide',
-    industry: 'Professional Services',
-    tagline: 'Professional and trustworthy — navy with a sky accent, crisp and wide.',
-    description:
-      'Navy with a sky-blue accent, tight corners, and a wide, structured layout. Meridian reads as competent and trustworthy — made for professional services, SaaS, and B2B.',
-    sortWeight: 54,
-  },
-  {
-    slug: 'terra',
-    name: 'Terra',
-    accent: '#9a3412',
-    mood: 'Earthy',
-    colorFamily: 'Terracotta',
-    density: 'Standard',
-    industry: 'Makers & Home',
-    tagline: 'Earthy and handmade — terracotta and olive over warm sandy neutrals.',
-    description:
-      'Terracotta and olive over warm, sandy neutrals with a serif headline. Terra feels handmade and grounded — a natural fit for makers, pottery, home goods, and roasters.',
-    sortWeight: 42,
-  },
-  {
-    slug: 'pulse',
-    name: 'Pulse',
-    accent: '#6d28d9',
-    mood: 'Bold',
-    colorFamily: 'Violet',
-    density: 'Standard',
-    industry: 'Tech & Electronics',
-    tagline: 'Electric and modern — violet and cyan, glowing over deep ink in dark mode.',
-    description:
-      'Violet and cyan that glow against deep ink, with a technical sans headline. Pulse is built for tech, gaming, electronics, and hype-driven DTC that want a modern, electric edge.',
-    sortWeight: 47,
-  },
-  {
-    slug: 'linen',
-    name: 'Linen',
-    accent: '#a8755a',
-    mood: 'Editorial',
-    colorFamily: 'Stone',
-    density: 'Spacious',
-    industry: 'Apparel & Lifestyle',
-    tagline: 'Soft and editorial — warm charcoal and clay over creamy neutrals.',
-    description:
-      'Warm charcoal and clay over creamy linen neutrals, with classic serif headings. Linen has a quiet editorial polish suited to apparel, lifestyle, and stationery brands.',
-    sortWeight: 49,
-  },
-];
+// The sparx-core THEME catalog that used to live here is GONE, along with the
+// loop that published it. Themes are bundles now: authored in
+// @sparx/silica-catalog, generated into marketplace-catalog/themes/, and
+// published by the ingest. Nothing about a theme belongs in this file.
 
 /** The lightweight "what this creates" counts a blueprint card shows — computed
  *  from the manifest so the catalog row never has to load it again. */
@@ -362,41 +138,25 @@ export async function seedMarketplaceCatalog(prisma: PrismaClient): Promise<void
       });
     }
 
-    // Themes (docs/85 §7). The 6 foundations (apex…drop) are CODE presets resolved
-    // by slug → `tokens` NULL. The 10 marketplace data themes (noir…linen) are
-    // seeded as BUNDLES via the ingest (a storage artifact + thin row), NOT here —
-    // a thin row with no artifact AND no code preset would break Apply — so the
-    // loop filters SPARX_THEMES to the foundations until those bundles land.
-    const FOUNDATION_THEME_SLUGS = new Set([
-      'apex',
-      'industrial',
-      'drift',
-      'market',
-      'fleet',
-      'drop',
-    ]);
-    for (const t of SPARX_THEMES) {
-      if (!FOUNDATION_THEME_SLUGS.has(t.slug)) continue;
-      const shared = {
-        name: t.name,
-        tagline: t.tagline.slice(0, 255),
-        description: t.description,
-        accent: t.accent,
-        mood: t.mood,
-        colorFamily: t.colorFamily,
-        density: t.density,
-        industry: t.industry,
-        sortWeight: t.sortWeight,
-        status: 'published',
-        visibility: 'public',
-        publisherId: publisher.id,
-      };
-      await tx.marketplaceTheme.upsert({
-        where: { slug: t.slug },
-        update: shared,
-        create: { slug: t.slug, publishedAt: new Date(), ...shared },
-      });
-    }
+    // NO THEMES ARE SEEDED HERE. Every theme the marketplace lists is a BUNDLE,
+    // published by the ingest from marketplace-catalog/themes/ — which is
+    // generated from SPARX_THEMES in @sparx/silica-catalog, the single source
+    // for the twenty live themes.
+    //
+    // This block used to also publish six "foundations" (apex, industrial,
+    // drift, market, fleet, drop) from @sparx/site-themes. Those are LEGACY: no
+    // site uses one (every sitebuilder_configs.themeKey is null), nothing in the
+    // workbench imports or fetches them, and the `v2` preset module sitting
+    // beside them has no consumer outside its own package. They also carry no
+    // bundle artifact, so `resolveThemePreset` returns null for them and Apply
+    // falls back to the in-code path — a second, older mechanism kept alive only
+    // by this seed advertising the slugs.
+    //
+    // Publishing them put six dead themes on the public marketplace next to the
+    // twenty real ones, indistinguishable to a visitor. `DEFAULT_THEME_KEY`
+    // ('apex') stays where it is in @sparx/site-themes — it is the compile
+    // fallback for a null themeKey, which is every site today, and that is a
+    // rendering default rather than a catalog entry.
 
     // Integrations — providerSlug maps to a real @sparx/provider-* bundle; the
     // "Connect" CTA hands off to /commerce/providers. configSchema NULL (resolved
