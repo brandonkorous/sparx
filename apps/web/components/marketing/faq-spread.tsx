@@ -37,9 +37,9 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
                 onClick={() => setActive(i)}
                 aria-pressed={on}
                 // Inactive questions are still meant to be READ, so they get a
-                // real ink token (`text-ink-muted`), not a mix into transparent.
-                className={`text-body-sm flex w-full cursor-pointer items-start gap-3 rounded-lg border-none px-3.5 py-3 text-left transition-colors duration-150 ${
-                  on ? 'bg-base-100 font-medium' : 'text-ink-muted bg-transparent'
+                // real ink token (``), not a mix into transparent.
+                className={`text-md flex w-full cursor-pointer items-start gap-3 rounded-lg border-none px-3.5 py-3 text-left transition-colors duration-150 ${
+                  on ? 'bg-base-100 font-medium' : 'bg-transparent'
                 }`}
               >
                 <span
@@ -63,9 +63,7 @@ export function FaqSpread({ items, accent }: { items: FaqItem[]; accent: string 
           {hasMark ? q.slice(0, -1) : q}
           {hasMark ? <span style={{ color: accent }}>?</span> : null}
         </h3>
-        <p className="text-ink-muted text-body-sm mt-[18px] mb-0 whitespace-pre-line">
-          {current.answer}
-        </p>
+        <p className="text-md mt-[18px] mb-0 whitespace-pre-line">{current.answer}</p>
       </div>
     </div>
   );

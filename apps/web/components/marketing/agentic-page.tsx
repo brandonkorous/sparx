@@ -33,8 +33,8 @@ import {
  *
  * Styling contract: silicaui components + Tailwind utilities only (see
  * SILICA-VOCABULARY.md). Type comes from the editorial `text-*` scale registered
- * in app/globals.css; ink from `text-base-content` / `text-ink-muted` /
- * `text-ink-subtle` (all REAL inks that mix into base-100, never transparent).
+ * in app/globals.css; ink from the surface's own `-content` pairing
+ * (`text-base-content` on `bg-base-100`, and so on).
  * The only inline styles left are genuinely dynamic values — a module hue read
  * from `getModuleColor()`.
  */
@@ -83,7 +83,7 @@ function AiHero() {
         </div>
 
         <div className="max-w-content flex flex-col items-start justify-between gap-8 lg:flex-row lg:items-end">
-          <p className="text-lede m-0 max-w-[640px] font-sans">
+          <p className="m-0 max-w-[640px] font-sans text-lg">
             We didn&rsquo;t build you another AI assistant to learn. We opened a direct line so the
             AI you <em>already use</em> &mdash; Claude, ChatGPT, Copilot &mdash; can read and write
             your live business data in plain English, from the same chat you&rsquo;re already in. No
@@ -103,7 +103,7 @@ function AiHero() {
                 </Button>
               </a>
             </div>
-            <span className="text-mini font-mono">Claude · ChatGPT · Copilot · any MCP client</span>
+            <span className="font-mono text-sm">Claude · ChatGPT · Copilot · any MCP client</span>
           </div>
         </div>
       </Container>
@@ -133,8 +133,7 @@ function TheInversion() {
           accent={AI.color}
           headline={
             <>
-              sparx inside your AI &mdash;{' '}
-              <span className="text-ink-muted">not another AI inside sparx</span>
+              sparx inside your AI &mdash; <span>not another AI inside sparx</span>
             </>
           }
           lede={
@@ -181,7 +180,7 @@ function ContrastCard({
             <span className="shrink-0 pt-2">
               <Dot color={accent ? AI.color : 'var(--color-ink-subtle)'} size={7} />
             </span>
-            <span className="text-body-sm text-ink-muted font-sans">{p}</span>
+            <span className="text-md font-sans">{p}</span>
           </li>
         ))}
       </ul>
@@ -230,7 +229,7 @@ function HowItWorks() {
             }`}
           >
             <Heading level={3}>{s.title}</Heading>
-            <p className="text-small text-ink-muted m-0 font-sans">{s.body}</p>
+            <p className="m-0 font-sans text-sm">{s.body}</p>
           </div>
         ))}
       </div>
@@ -247,26 +246,24 @@ function HowItWorks() {
         <div className="flex min-w-0 flex-col gap-2.5">
           {/* A readable label for the value below it, not an uppercase-mono
               eyebrow: sentence case, full ink, at the body-label step. */}
-          <span className="text-mini text-ink-muted font-sans">One endpoint</span>
-          <code className="text-h3 text-base-content font-mono font-medium break-all">
+          <span className="font-sans text-sm">One endpoint</span>
+          <code className="text-base-content font-mono text-2xl font-medium break-all">
             {ENDPOINT}
           </code>
-          <span className="text-mini text-ink-muted font-mono">
-            Authorization: Bearer sk_live_…
-          </span>
+          <span className="font-mono text-sm">Authorization: Bearer sk_live_…</span>
         </div>
         <div className="flex flex-wrap gap-2">
           {['Streamable HTTP', 'scoped key', 'any MCP client'].map((t) => (
             <span
               key={t}
-              className="bg-base-300 text-base-content text-micro rounded-full px-3 py-1 font-mono"
+              className="bg-base-300 text-base-content rounded-full px-3 py-1 font-mono text-sm"
             >
               {t}
             </span>
           ))}
         </div>
       </div>
-      <p className="text-small text-ink-muted mt-4 max-w-[640px] font-sans">
+      <p className="mt-4 max-w-[640px] font-sans text-sm">
         The exact config for each client — Claude, ChatGPT, Copilot — is generated with your real
         key in the dashboard and spelled out step by step in the{' '}
         <a href="/docs" className={`${AI.ink} font-medium`}>
@@ -367,10 +364,10 @@ function ChatWindow({
       <div className="border-base-300 flex items-center justify-between border-b px-4 py-3">
         <span className="inline-flex items-center gap-2.5">
           <Dot color={AI.color} size={8} />
-          <span className="text-caption font-sans font-medium">{client}</span>
+          <span className="font-sans text-sm font-medium">{client}</span>
         </span>
         {/* Decorative "new chat" affordance, not copy — subtle ink is correct. */}
-        <span aria-hidden className="text-body text-ink-subtle font-mono">
+        <span aria-hidden className="text-md font-mono">
           +
         </span>
       </div>
@@ -379,7 +376,7 @@ function ChatWindow({
       <div className="flex flex-1 flex-col gap-4 px-4 py-5">
         {/* user turn — right-aligned bubble + the owner's profile avatar */}
         <div className="flex max-w-[92%] items-start gap-2.5 self-end">
-          <div className="bg-base-100 text-small rounded-[14px_14px_4px_14px] px-3.5 py-2.5 font-sans font-medium">
+          <div className="bg-base-100 rounded-[14px_14px_4px_14px] px-3.5 py-2.5 font-sans text-sm font-medium">
             {ask}
           </div>
           <UserAvatar />
@@ -389,12 +386,12 @@ function ChatWindow({
         <div className="flex items-start gap-2.5">
           <ChatAvatar label="AI" accent />
           <div className="flex min-w-0 flex-col gap-2">
-            <div className="bg-base-200 border-base-300 text-small text-ink-muted rounded-[14px_14px_14px_4px] border px-3.5 py-2.5 font-sans">
+            <div className="bg-base-200 border-base-300 rounded-[14px_14px_14px_4px] border px-3.5 py-2.5 font-sans text-sm">
               {answer}
             </div>
             <span
-              className={`text-mini inline-flex items-center gap-2 pl-0.5 font-sans ${
-                confirm ? AI.ink : 'text-ink-muted'
+              className={`inline-flex items-center gap-2 pl-0.5 font-sans text-sm ${
+                confirm ? AI.ink : ''
               }`}
             >
               <Dot color={AI.color} size={6} />
@@ -407,12 +404,12 @@ function ChatWindow({
       {/* input bar — the detail that makes it read as a real chat window */}
       <div className="border-base-300 flex items-center gap-2.5 border-t px-3.5 py-3">
         {/* Placeholder copy — genuinely not meant to be read. */}
-        <span className="border-base-300 bg-base-100 text-caption text-ink-subtle flex-1 truncate rounded-full border px-3.5 py-2 font-sans">
+        <span className="border-base-300 bg-base-100 flex-1 truncate rounded-full border px-3.5 py-2 font-sans text-sm">
           Message {client}…
         </span>
         <span
           aria-hidden
-          className={`${AI.bg} text-module-ai-content text-body-sm inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-sans`}
+          className={`${AI.bg} text-module-ai-content text-md inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full font-sans`}
         >
           ↑
         </span>
@@ -428,7 +425,7 @@ function UserAvatar() {
   return (
     <span
       aria-hidden
-      className="bg-base-100 border-base-300 text-ink-muted inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border"
+      className="bg-base-100 border-base-300 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full border"
     >
       <svg viewBox="0 0 24 24" width={17} height={17} fill="currentColor">
         <path d="M12 12a5 5 0 1 0 0-10 5 5 0 0 0 0 10Zm0 2.2c-4.5 0-8.2 2.3-8.2 5.1V21h16.4v-1.7c0-2.8-3.7-5.1-8.2-5.1Z" />
@@ -440,10 +437,8 @@ function UserAvatar() {
 function ChatAvatar({ label, accent }: { label: string; accent?: boolean }) {
   return (
     <span
-      className={`text-micro inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-mono font-medium ${
-        accent
-          ? `${AI.bg} text-module-ai-content`
-          : 'bg-base-100 border-base-300 text-ink-muted border'
+      className={`inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg font-mono text-sm font-medium ${
+        accent ? `${AI.bg} text-module-ai-content` : 'bg-base-100 border-base-300 border'
       }`}
     >
       {label}
@@ -534,7 +529,7 @@ function ToolSurface() {
               <Heading level={3} size={5}>
                 {g.label}
               </Heading>
-              <p className="text-caption text-ink-muted m-0 font-sans">{g.actions}</p>
+              <p className="m-0 font-sans text-sm">{g.actions}</p>
             </div>
           );
         })}
@@ -579,7 +574,7 @@ function ScopedAudited() {
           Let AI touch your business — safely
           <Spark color={AI.color} />
         </Display>
-        <p className="text-lede text-ink-muted mt-6 mb-0 max-w-[640px] font-sans">
+        <p className="mt-6 mb-0 max-w-[640px] font-sans text-lg">
           Opening a line to your data is only worth it if you stay in control of it. Access is
           scoped, every action is logged, and you can cut it off in a click.
         </p>
@@ -595,7 +590,7 @@ function ScopedAudited() {
               <Dot color={AI.color} size={8} />
               {it.title}
             </Heading>
-            <p className="text-caption text-ink-muted m-0 font-sans">{it.body}</p>
+            <p className="m-0 font-sans text-sm">{it.body}</p>
           </div>
         ))}
       </div>
@@ -635,7 +630,7 @@ function WorksWithEveryAssistant() {
             <Heading level={3} size={5}>
               {c.name}
             </Heading>
-            <span className="text-mini text-ink-muted font-mono">{c.note}</span>
+            <span className="font-mono text-sm">{c.note}</span>
           </div>
         ))}
       </div>
@@ -655,18 +650,18 @@ function ConciergeCrossLink() {
       >
         <div className="flex-1">
           <Heading level={3}>The agentic line faces your team</Heading>
-          <p className="text-small text-ink-muted mt-1.5 mb-0 font-sans">
+          <p className="mt-1.5 mb-0 font-sans text-sm">
             The AI you already use, pointed at your own live data over MCP.
           </p>
         </div>
 
-        <span aria-hidden className={`${AI.ink} text-h1 leading-none`}>
+        <span aria-hidden className={`${AI.ink} text-3xl leading-none`}>
           →
         </span>
 
         <div className="flex-1">
           <Heading level={3}>The concierge faces your customers</Heading>
-          <p className="text-small text-ink-muted mt-1.5 mb-3.5 font-sans">
+          <p className="mt-1.5 mb-3.5 font-sans text-sm">
             An AI first-responder in your live chat, grounded on your catalog and policies.
           </p>
           <a href="/ai">
@@ -676,9 +671,7 @@ function ConciergeCrossLink() {
           </a>
         </div>
       </div>
-      <p className="text-mini text-ink-muted mt-4 text-center font-mono">
-        Both tools · one $49 AI module
-      </p>
+      <p className="mt-4 text-center font-mono text-sm">Both tools · one $49 AI module</p>
     </Section>
   );
 }
@@ -692,13 +685,13 @@ function AiPricing() {
       >
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
-            <span className="text-ink-muted text-h1 font-sans font-medium">+</span>
+            <span className="font-sans text-3xl font-medium">+</span>
             <Display as="h3" size={56} lineHeight={56}>
               $49
             </Display>
-            <span className="text-body text-ink-muted font-sans">/mo</span>
+            <span className="text-md font-sans">/mo</span>
           </div>
-          <p className="text-small text-ink-muted m-0 max-w-[640px] font-sans">
+          <p className="m-0 max-w-[640px] font-sans text-sm">
             A flat $49/mo. Connect any MCP client and read or write live data across every module
             you run — scoped, audited, revocable, all on one bill.
           </p>
@@ -727,7 +720,7 @@ function AiCta() {
           Your business, in the chat you already use
           <Spark color={AI.color} />
         </Display>
-        <p className="text-lede text-ink-muted m-0 max-w-[640px] font-sans">
+        <p className="m-0 max-w-[640px] font-sans text-lg">
           No new assistant to learn, no migration, no contract. Generate a key, paste it once, and
           ask your own AI anything about your business. Turn it off any time — your data stays.
         </p>

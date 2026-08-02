@@ -99,10 +99,7 @@ export function VideoMontage() {
       <div className="mkt-video-tags">
         <div className="mkt-video-tags-inner">
           {CLIPS.map((c, i) => (
-            <span
-              key={c.label}
-              className={`mkt-video-tag ${i === current ? '' : 'text-ink-subtle'}`}
-            >
+            <span key={c.label} className={`mkt-video-tag ${i === current ? '' : ''}`}>
               {c.label}
             </span>
           ))}

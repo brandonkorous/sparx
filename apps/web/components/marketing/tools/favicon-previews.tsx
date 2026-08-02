@@ -30,9 +30,7 @@ function Preview({ label, children }: { label: string; children: React.ReactNode
   return (
     <Card>
       <CardBody className="gap-2.5">
-        <Text size={13} tone="subtle">
-          {label}
-        </Text>
+        <Text size={13}>{label}</Text>
         {children}
       </CardBody>
     </Card>
@@ -59,36 +57,33 @@ export function FaviconPreviews({
               style={{ borderTop: `2px solid ${themeColor}` }}
             >
               <img src={small} alt="" width={16} height={16} className="flex-shrink-0" />
-              <span className="text-mini min-w-0 truncate font-sans">{name}</span>
-              <span aria-hidden className="text-ink-subtle text-small ml-auto">
+              <span className="min-w-0 truncate font-sans text-sm">{name}</span>
+              <span aria-hidden className="ml-auto text-sm">
                 ×
               </span>
             </div>
           }
         >
           <div className="px-4 py-5">
-            <Text size={13} tone="subtle">
-              {domain}
-            </Text>
+            <Text size={13}>{domain}</Text>
           </div>
         </MockupBrowser>
       </Preview>
 
       <Preview label="Search result">
         <div className="flex items-center gap-2.5">
-          <span className="border-base-300 inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full border bg-white">
+          <span
+            data-theme="light"
+            className="border-base-300 bg-base-100 inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full border"
+          >
             <img src={small} alt="" width={16} height={16} />
           </span>
           <div className="flex min-w-0 flex-col">
-            <Text size={12} tone="default">
-              {name}
-            </Text>
-            <Text size={11} tone="subtle">
-              {domain}
-            </Text>
+            <Text size={12}>{name}</Text>
+            <Text size={11}>{domain}</Text>
           </div>
         </div>
-        <Text size={15} className="text-[#1a0dab]" tone="none">
+        <Text size={15} className="text-[#1a0dab]">
           {name} — official site
         </Text>
       </Preview>
@@ -119,7 +114,7 @@ function HomeScreen({
       <MockupPhone className="mx-auto [&_.mockup-phone-display]:w-40">
         <div className="bg-neutral text-neutral-content flex h-full flex-col items-center justify-center gap-2 p-4">
           <img src={icon} alt="" width={60} height={60} className={`shadow-lg ${iconClassName}`} />
-          <span className="text-micro max-w-[90px] truncate text-center font-sans">{name}</span>
+          <span className="max-w-[90px] truncate text-center font-sans text-sm">{name}</span>
         </div>
       </MockupPhone>
     </Preview>

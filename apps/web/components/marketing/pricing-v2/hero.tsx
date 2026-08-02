@@ -46,17 +46,26 @@ export function PricingV2Hero() {
               Flat pricing, one module at a time. Switch on only the parts you need, get one
               invoice, and change your mind whenever the business does.
             </Text>
+            {/* No `color` on these. They sat on `color="neutral"`, which inside
+                this `data-theme="dark"` island resolved to `--color-neutral`
+                (oklch(32%) — DARK) and painted dark ink on a near-black band:
+                1.68:1, unreadable. Only the nested `text-primary` spans showed.
+                A bare `badge-outline` inherits the island's own `-content` ink
+                instead, which is the whole point of the surface pairing — and it
+                keeps the chips quiet so the $10 / 14-day accents still carry.
+                Neutral is earned by chassis, bare prose, or a dismiss action;
+                four proof points are none of those. */}
             <div className="flex flex-wrap gap-2.5">
-              <Badge color="neutral" variant="outline" size="lg">
+              <Badge variant="outline" size="lg">
                 from&nbsp;<span className="text-primary font-semibold">$10</span>/mo
               </Badge>
-              <Badge color="neutral" variant="outline" size="lg">
+              <Badge variant="outline" size="lg">
                 one invoice
               </Badge>
-              <Badge color="neutral" variant="outline" size="lg">
+              <Badge variant="outline" size="lg">
                 <span className="text-primary font-semibold">14-day</span>&nbsp;free trial
               </Badge>
-              <Badge color="neutral" variant="outline" size="lg">
+              <Badge variant="outline" size="lg">
                 no card to start
               </Badge>
             </div>
@@ -91,7 +100,12 @@ function StarterTag() {
       className="bg-base-100 border-base-300 mx-auto w-full max-w-sm rounded-3xl border p-7 shadow-2xl"
       data-theme="light"
     >
-      <div className="text-base-content font-mono text-xs tracking-[0.14em]">START HERE</div>
+      {/* This was a wide-tracked mono "START HERE" kicker. It is the only
+          title this card has, so it becomes a real heading rather than a
+          label above nothing — scale and weight carry it. */}
+      <Heading level={3} className="text-xl">
+        Start here
+      </Heading>
       <div className="mt-4 flex flex-col">
         {STARTER.map((row) => (
           <div

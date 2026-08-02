@@ -101,7 +101,7 @@ export function FaviconTool() {
               )
             }
           />
-          <Text size={13} tone="subtle">
+          <Text size={13}>
             PNG, SVG, JPG, or WebP. A square image of at least 512×512 looks best. Everything is
             processed in your browser — the file never leaves your device.
           </Text>

@@ -2,12 +2,14 @@
 title: SurfaceFrame — the one form/detail layout
 node: components
 type: rule
-status: active
+status: superseded
 applies-to: [dashboard]
 sources:
   - docs/86-surface-frame-pattern.md
   - .claude/skills/form-surface/SKILL.md
 ---
+
+> **Superseded 2026-08-01.** `applies-to: [dashboard]` — and `apps/dashboard` was deleted in the workbench cutover. `SurfaceFrame` has now been deleted from `@sparx/ui` too (it had 107 consumers at the dashboard's final commit and **zero** after). The rules below are still the right *design*, and `apps/workbench` implements them in its own idiom — but the named component does not exist. For live guidance read [[pane-or-modal]] and `apps/workbench/CLAUDE.md`.
 
 Every create / edit / detail surface uses **one** layout language: `SurfaceFrame` — the **F layout** (form column + optional live summary). Not bespoke full-page forms.
 

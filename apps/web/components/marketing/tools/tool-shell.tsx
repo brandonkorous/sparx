@@ -64,7 +64,7 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
         <section className={`px-page py-section-md ${heroTone(tool.slug)}`}>
           <Container>
             <div className="flex flex-col gap-6">
-              <nav aria-label="Breadcrumb" className="text-small flex items-center gap-2">
+              <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm">
                 <a href="/tools" className="font-sans underline underline-offset-4">
                   Free tools
                 </a>
@@ -89,11 +89,11 @@ export function ToolShell({ tool, children }: { tool: ToolMeta; children: React.
                   <Display as="h1" size={46} color="currentColor">
                     {tool.name}.
                   </Display>
-                  {/* `text-hero-lede` (24px), not `text-lede` (18px): on the
+                  {/* `text-2xl` (24px), not `text-lg` (18px): on the
                       Ember band white measures 4.13:1, so normal-size text
                       misses WCAG AA. 24px clears the large-text bar. See the
                       token's note in globals.css. */}
-                  <p className="text-hero-lede m-0 max-w-[660px] font-sans">{tool.tagline}</p>
+                  <p className="m-0 max-w-[660px] font-sans text-2xl">{tool.tagline}</p>
                   <TrustRow tone="oncolor" />
                 </div>
               </div>

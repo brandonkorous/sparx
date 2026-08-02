@@ -118,7 +118,7 @@ function CrmProof() {
           One customer, one truth, zero glue
           <Spark color={M.color} />
         </Display>
-        <p className="text-ink-muted text-lede mt-[22px] max-w-[640px]">
+        <p className="mt-[22px] max-w-[640px] text-lg">
           Because the CRM reads the same database as orders, content, and email, the numbers
           reconcile by default. There&rsquo;s nothing to sync — so there&rsquo;s nothing to drift,
           dedupe, or argue with.
@@ -130,7 +130,7 @@ function CrmProof() {
             <div className="text-[clamp(36px,5vw,54px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <div className="text-ink-muted text-small mt-3">{s.l}</div>
+            <div className="mt-3 text-sm">{s.l}</div>
           </div>
         ))}
       </div>
@@ -148,9 +148,9 @@ function CrmPricing() {
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
             <span className="text-[56px] font-medium tracking-[-0.025em]">$49</span>
-            <span className="text-ink-subtle text-body">/mo</span>
+            <span className="text-md">/mo</span>
           </div>
-          <p className="text-ink-muted text-small max-w-[640px]">
+          <p className="max-w-[640px] text-sm">
             A flat $49/mo — profiles, activity, segments, pipeline, tasks, and automation, with no
             tiers, no per-seat charge, and no per-contact metering. It sits on the same database as
             your orders and content, so switch it on alongside whatever you already run. Adding CRM
@@ -182,7 +182,7 @@ function CrmCta() {
           Know every customer cold
           <Spark color={M.color} />
         </Display>
-        <p className="text-ink-muted text-lede max-w-[640px]">
+        <p className="max-w-[640px] text-lg">
           Turn CRM on and your customers arrive with their whole history already attached — orders,
           emails, quotes, conversations. No migration weekend, no contract; switch it off the day
           you stop, and your data stays yours.

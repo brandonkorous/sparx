@@ -45,10 +45,10 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
       className={`${M.bg} border-base-300 bg-soft flex h-full flex-col gap-5 rounded-xl border p-6`}
     >
       <div>
-        <Text as="div" size={18} tone="default" weight={500} className="tracking-[-0.01em]">
+        <Text as="div" size={18} weight={500} className="tracking-[-0.01em]">
           {b2b.account}
         </Text>
-        <Text as="div" size={12} mono tone="subtle" className="mt-1">
+        <Text as="div" size={12} mono className="mt-1">
           {b2b.terms} · {b2b.tier}
         </Text>
       </div>
@@ -67,13 +67,13 @@ function CreditCard({ business }: { business: ExampleBusiness }) {
             style={{ width: b2b.creditUsedPct }}
           />
         </span>
-        <Text as="span" size={11} mono tone="subtle">
+        <Text as="span" size={11} mono>
           {b2b.creditUsedPct} of limit used
         </Text>
       </div>
       <div className={`${M.bg} bg-soft mt-auto flex items-center gap-2 rounded-lg px-3.5 py-3`}>
         <Dot color={M.color} size={7} />
-        <Text as="span" size={13} tone="none" className={M.ink}>
+        <Text as="span" size={13} className={M.ink}>
           New PO checks the limit before it’s placed
         </Text>
       </div>
@@ -94,17 +94,17 @@ function AgingLedger() {
   return (
     <div className="bg-base-100 border-base-300 rounded-xl border p-6">
       <div className="flex items-baseline justify-between">
-        <Text as="span" size={15} tone="default" weight={500}>
+        <Text as="span" size={15} weight={500}>
           Accounts receivable
         </Text>
-        <Text as="span" size={11} mono tone="subtle">
+        <Text as="span" size={11} mono>
           outstanding by age
         </Text>
       </div>
-      <Text as="div" size={28} tone="default" weight={500} className="mt-2.5 tracking-[-0.02em]">
+      <Text as="div" size={28} weight={500} className="mt-2.5 tracking-[-0.02em]">
         $52,100
       </Text>
-      <Text as="div" size={13} tone="subtle" className="mb-5">
+      <Text as="div" size={13} className="mb-5">
         across 41 open invoices
       </Text>
       <div className="flex flex-col gap-4">
@@ -114,7 +114,7 @@ function AgingLedger() {
               <Text as="span" size={13}>
                 {r.label}
               </Text>
-              <Text as="span" size={13} tone="default" weight={500}>
+              <Text as="span" size={13} weight={500}>
                 {r.value}
               </Text>
             </div>
@@ -167,7 +167,7 @@ export function B2bBulkPo() {
               <Dot color={M.color} size={9} />
             </span>
             <div>
-              <h3 className="text-body mt-0 mb-1.5 font-sans font-medium tracking-[-0.01em]">
+              <h3 className="text-md mt-0 mb-1.5 font-sans font-medium tracking-[-0.01em]">
                 {r.title}
               </h3>
               <Text size={13} className="m-0">

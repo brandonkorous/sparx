@@ -75,7 +75,7 @@ export function MisuseSection() {
           accent="var(--color-danger)"
           headline={
             <>
-              What not to do <span className="text-ink-subtle">with the mark</span>
+              What not to do <span>with the mark</span>
             </>
           }
           lede="The wordmark earns its clarity from restraint. These are the treatments that break it — each one undoes the single detail the brand is built on."

@@ -56,9 +56,7 @@ export default function Image() {
             style={{
               fontWeight: 500,
               fontSize: 16,
-              letterSpacing: '0.08em',
               color: BRAND.primary,
-              textTransform: 'uppercase',
             }}
           >
             {counts.live} live today
@@ -115,9 +113,7 @@ export default function Image() {
             style={{
               fontWeight: 500,
               fontSize: 14,
-              letterSpacing: '0.08em',
               color: '#52525B',
-              textTransform: 'uppercase',
             }}
           >
             {PAID_MODULES.length} modules

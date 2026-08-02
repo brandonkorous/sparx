@@ -243,7 +243,7 @@ export function CodeBlock({ children, height = 'default', className }: CodeBlock
     <pre
       className={[
         'bg-base-200 border-base-300 m-0 overflow-auto rounded-lg border p-4',
-        'text-mini font-mono whitespace-pre [tab-size:2]',
+        'font-mono text-sm whitespace-pre [tab-size:2]',
         height === 'default' && 'tool-code',
         height === 'short' && 'tool-code tool-code--short',
         className,

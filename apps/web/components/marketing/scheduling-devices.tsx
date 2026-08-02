@@ -98,7 +98,7 @@ function ResourceLane() {
           {/* A panel label a visitor reads → a small full-ink `<Heading>`, not a
               muted caption. Silica `Heading` emits no tone class, so the module
               ink utility has nothing to collide with. */}
-          <Heading level={6} className={`${M.ink} font-mono tracking-[0.05em] uppercase`}>
+          <Heading level={6} className={`${M.ink} font-mono`}>
             resource lane · one exclusive booking
           </Heading>
         </ListTitle>
@@ -156,7 +156,7 @@ function ResourceLane() {
 function RejectedRace() {
   return (
     <div className="flex min-w-0 flex-1 flex-col gap-4">
-      <Heading level={6} className="font-mono tracking-[0.05em] uppercase">
+      <Heading level={6} className="font-mono">
         a second booking races for 1:00 PM
       </Heading>
       <MockupCode>

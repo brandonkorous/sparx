@@ -132,7 +132,7 @@ function CardSample({ name }: { name: string }) {
   return (
     <div className="flex flex-col gap-3 p-5">
       <div className="flex items-center justify-between">
-        <span className="tp-head text-base font-bold tracking-tight">{name}</span>
+        <span className="tp-head text-md font-bold tracking-tight">{name}</span>
         <span className="bg-primary text-primary-content rounded-field px-2.5 py-1 text-xs font-semibold">
           Shop
         </span>

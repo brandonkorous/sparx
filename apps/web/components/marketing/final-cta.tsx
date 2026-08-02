@@ -52,7 +52,7 @@ export function FinalCta() {
             >
               Book a 20-min call
             </a>
-            <span className="text-base-content text-mini pt-2 font-mono">
+            <span className="text-base-content pt-2 font-mono text-sm">
               $0 to start · cancel any time ·{' '}
               <a href={EARLY_HREF} className="text-primary no-underline">
                 not ready? join early access →

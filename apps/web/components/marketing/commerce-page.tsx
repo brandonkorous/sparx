@@ -125,7 +125,7 @@ function CommerceHero() {
               Sell, ship, get paid
               <Spark color={C.color} />
             </Display>
-            <p className="text-ink-muted mt-7 max-w-[560px] font-sans text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
+            <p className="mt-7 max-w-[560px] font-sans text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
               {lede}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -145,7 +145,7 @@ function CommerceHero() {
                   className="border-base-300 bg-base-100 inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
                 >
                   <Dot color={C.color} size={6} />
-                  <span className="text-ink-muted text-mini font-mono">{c}</span>
+                  <span className="font-mono text-sm">{c}</span>
                 </li>
               ))}
             </ul>
@@ -185,13 +185,13 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
         <span className="flex items-center gap-2.5">
           <Dot color={C.color} size={9} />
           <span>
-            <span className="text-small font-sans font-medium">{order.number}</span>
+            <span className="font-sans text-sm font-medium">{order.number}</span>
             <br />
-            <span className="text-ink-subtle text-mini font-sans">{customer.name} · just now</span>
+            <span className="font-sans text-sm">{customer.name} · just now</span>
           </span>
         </span>
         <span
-          className={`${C.bg} bg-soft ${C.ink} text-mini inline-flex items-center gap-[7px] rounded-full px-3 py-1 font-sans font-medium`}
+          className={`${C.bg} bg-soft ${C.ink} inline-flex items-center gap-[7px] rounded-full px-3 py-1 font-sans text-sm font-medium`}
         >
           <Check size={13} color={C.color} /> Paid
         </span>
@@ -200,13 +200,13 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
         <div key={it.sku} className="border-base-200 flex items-center gap-3 border-b px-5 py-3">
           <span className="bg-base-200 border-base-300 size-[38px] shrink-0 rounded-lg border" />
           <span>
-            <span className="text-small font-sans font-medium">{it.name}</span>
+            <span className="font-sans text-sm font-medium">{it.name}</span>
             <br />
-            <span className="text-ink-subtle text-mini font-sans">
+            <span className="font-sans text-sm">
               {it.sku} · qty {it.qty}
             </span>
           </span>
-          <span className="text-ink-muted text-small ml-auto font-sans">{it.price}</span>
+          <span className="ml-auto font-sans text-sm">{it.price}</span>
         </div>
       ))}
       <div className="px-5 py-3.5">
@@ -215,19 +215,19 @@ function ReceiptCard({ business }: { business: ExampleBusiness }) {
           [order.shipping.label, order.shipping.value],
           [order.tax.label, order.tax.value],
         ].map(([l, v]) => (
-          <div key={l} className="text-ink-muted text-caption flex justify-between py-1 font-sans">
+          <div key={l} className="flex justify-between py-1 font-sans text-sm">
             <span>{l}</span>
             <span>{v}</span>
           </div>
         ))}
         <div className="border-base-300 mt-2 flex items-baseline justify-between border-t pt-3">
-          <span className="text-small font-sans font-medium">Total</span>
-          <span className="text-h3 font-sans font-medium tracking-[-0.02em]">{order.total}</span>
+          <span className="font-sans text-sm font-medium">Total</span>
+          <span className="font-sans text-2xl font-medium tracking-[-0.02em]">{order.total}</span>
         </div>
       </div>
       <div className="border-base-300 bg-base-200 flex items-center gap-2 border-t px-5 py-3">
         <Dot color={C.color} size={6} />
-        <span className="text-ink-subtle text-mini font-mono">
+        <span className="font-mono text-sm">
           paid with {order.paidWith} · inventory decremented
         </span>
       </div>
@@ -263,12 +263,12 @@ function PaymentsRail() {
             >
               <Dot color={C.color} size={9} />
             </span>
-            <span className="text-body font-sans font-medium tracking-[-0.01em]">{m.nm}</span>
-            <span className="text-ink-muted text-caption font-sans">{m.ds}</span>
+            <span className="text-md font-sans font-medium tracking-[-0.01em]">{m.nm}</span>
+            <span className="font-sans text-sm">{m.ds}</span>
           </div>
         ))}
       </div>
-      <p className="text-ink-subtle text-small mt-4 max-w-[720px] font-sans">
+      <p className="mt-4 max-w-[720px] font-sans text-sm">
         Test mode runs against staging, payment intents confirm on submit, and refunds return to the
         original method. Need net terms or a PO at checkout instead?{' '}
         <a href="/b2b" className={`${C.ink} font-medium`}>
@@ -324,9 +324,7 @@ function FeeLadder() {
             key={r.when}
             className="border-base-300 bg-base-100 flex flex-col gap-3.5 rounded-xl border px-6 pt-6 pb-7"
           >
-            <span className="text-ink-subtle text-mini font-mono tracking-[0.04em] uppercase">
-              {r.when}
-            </span>
+            <span className="font-mono text-sm">{r.when}</span>
             <span
               className="font-sans leading-none font-medium tracking-[-0.03em]"
               // Per-rung display size + hue are data-driven, so the computed
@@ -340,11 +338,11 @@ function FeeLadder() {
               // Bar width + fill encode the rung's value — dynamic by definition.
               style={{ width: r.barW, backgroundColor: r.barColor }}
             />
-            <p className="text-ink-muted text-caption font-sans">{r.body}</p>
+            <p className="font-sans text-sm">{r.body}</p>
           </div>
         ))}
       </div>
-      <p className="text-ink-subtle text-small mt-5 max-w-[680px] font-sans">
+      <p className="mt-5 max-w-[680px] font-sans text-sm">
         The fee is taken through Stripe Connect and is separate from Stripe&rsquo;s own processing
         rate. No per-seat charges, no per-product metering — see{' '}
         <a href="/pricing" className={`${C.ink} font-medium`}>
@@ -400,8 +398,8 @@ function Operations() {
             <span className={`${C.bg} bg-soft flex size-8 items-center justify-center rounded-lg`}>
               <Dot color={C.color} size={9} />
             </span>
-            <h3 className="text-body-lg m-0 font-sans font-medium tracking-[-0.01em]">{o.title}</h3>
-            <p className="text-ink-muted text-caption m-0 font-sans">{o.body}</p>
+            <h3 className="m-0 font-sans text-lg font-medium tracking-[-0.01em]">{o.title}</h3>
+            <p className="m-0 font-sans text-sm">{o.body}</p>
           </div>
         ))}
       </div>
@@ -459,19 +457,19 @@ function HeadlessOrHosted() {
               i === 0 ? `${C.bg} bg-soft` : 'bg-base-100'
             } border-base-300 flex flex-col gap-4 rounded-xl border p-8`}
           >
-            <h3 className="text-h2 m-0 font-sans font-medium tracking-[-0.02em]">{w.title}</h3>
-            <p className="text-ink-muted text-body-sm m-0 font-sans">{w.body}</p>
+            <h3 className="m-0 font-sans text-2xl font-medium tracking-[-0.02em]">{w.title}</h3>
+            <p className="text-md m-0 font-sans">{w.body}</p>
             <ul className="m-0 grid list-none gap-3 p-0">
               {w.points.map((p) => (
                 <li key={p} className="flex items-start gap-3">
                   <span className="shrink-0 pt-[7px]">
                     <Dot color={w.dot} size={7} />
                   </span>
-                  <span className="text-ink-muted text-small font-sans">{p}</span>
+                  <span className="font-sans text-sm">{p}</span>
                 </li>
               ))}
             </ul>
-            <span className="text-ink-subtle text-mini mt-auto pt-1 font-mono">{w.runs}</span>
+            <span className="mt-auto pt-1 font-mono text-sm">{w.runs}</span>
           </div>
         ))}
       </div>
@@ -499,7 +497,7 @@ function CommerceProof() {
           See the whole funnel, on the same data
           <Spark color={C.color} />
         </Display>
-        <p className="text-ink-muted text-lede mt-5 max-w-[640px] font-sans">
+        <p className="mt-5 max-w-[640px] font-sans text-lg">
           Because orders, customers, and content share one database, the numbers reconcile by
           default — no exports, no two systems disagreeing about what happened.
         </p>
@@ -510,7 +508,7 @@ function CommerceProof() {
             <div className="font-sans text-[clamp(40px,5vw,56px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <div className="text-ink-muted text-small mt-3 font-sans">{s.l}</div>
+            <div className="mt-3 font-sans text-sm">{s.l}</div>
           </div>
         ))}
       </div>
@@ -528,9 +526,9 @@ function CommercePricing() {
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
             <span className="font-sans text-[56px] font-medium tracking-[-0.025em]">$49</span>
-            <span className="text-ink-subtle text-body font-sans">/mo</span>
+            <span className="text-md font-sans">/mo</span>
           </div>
-          <p className="text-ink-muted text-small m-0 max-w-[640px] font-sans">
+          <p className="m-0 max-w-[640px] font-sans text-sm">
             A flat $49/mo — the transactional core, with Invoicing and Inventory bundled in free. No
             tiers, no per-seat charge, no per-product metering. Pair it with Builder for a hosted
             storefront or run it headless against the API. Start free for 14 days; no card to begin.
@@ -563,7 +561,7 @@ function CommerceCta() {
           Start selling this afternoon
           <Spark color={C.color} />
         </Display>
-        <p className="text-ink-muted text-lede m-0 max-w-[640px] font-sans">
+        <p className="m-0 max-w-[640px] font-sans text-lg">
           Add products, connect Stripe, and take your first order — no contract, no migration
           weekend. Turn Commerce off the day you stop selling; your data stays, and you keep your
           processor relationships.

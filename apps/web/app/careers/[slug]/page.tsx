@@ -35,7 +35,7 @@ function BulletList({ items }: { items: string[] }) {
           <span className="relative top-[7px] shrink-0">
             <Dot color={EMBER} />
           </span>
-          <span className="text-body text-ink-muted">{item}</span>
+          <span className="text-md">{item}</span>
         </li>
       ))}
     </ul>
@@ -45,7 +45,7 @@ function BulletList({ items }: { items: string[] }) {
 function RoleColumn({ heading, items }: { heading: string; items: string[] }) {
   return (
     <div className="flex flex-col gap-5">
-      <h2 className="text-h3 m-0 font-medium tracking-[-0.01em]">{heading}</h2>
+      <h2 className="m-0 text-2xl font-medium tracking-[-0.01em]">{heading}</h2>
       <BulletList items={items} />
     </div>
   );
@@ -54,7 +54,7 @@ function RoleColumn({ heading, items }: { heading: string; items: string[] }) {
 function RoleHeader({ role }: { role: Role }) {
   return (
     <div className="flex max-w-[820px] flex-col gap-[22px]">
-      <Link href="/careers" className="text-small text-ink-muted no-underline">
+      <Link href="/careers" className="text-sm no-underline">
         ← All roles
       </Link>
       <Display as="h1" size={60} lineHeight={60}>
@@ -74,11 +74,11 @@ function RoleHeader({ role }: { role: Role }) {
       </div>
       <Card className="bg-base-200 max-w-[720px] rounded-lg">
         <CardBody className="gap-2 px-5 py-[18px]">
-          <span className="text-body-sm inline-flex items-center gap-2 font-medium tracking-[0.01em]">
+          <span className="text-md inline-flex items-center gap-2 font-medium tracking-[0.01em]">
             <Dot color={EMBER} />
             The honest deal
           </span>
-          <p className="text-body-sm text-ink-muted m-0">{role.compensation}</p>
+          <p className="text-md m-0">{role.compensation}</p>
         </CardBody>
       </Card>
     </div>
@@ -99,7 +99,7 @@ export default async function RoleDetailPage({ params }: { params: Promise<{ slu
       <Section surface="surface" padding="lg">
         <div className="flex max-w-[720px] flex-col gap-[18px]">
           {role.aboutRole.map((p) => (
-            <p key={p} className="text-body-lg text-ink-muted m-0">
+            <p key={p} className="m-0 text-lg">
               {p}
             </p>
           ))}

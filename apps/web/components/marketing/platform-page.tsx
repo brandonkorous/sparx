@@ -71,7 +71,7 @@ const MODS = {
 function Tag({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <span
-      className={`bg-base-200 border-base-300 text-ink-muted text-mini rounded-full border px-2.5 py-1 font-mono${
+      className={`bg-base-200 border-base-300 rounded-full border px-2.5 py-1 text-sm font-mono${
         className ? ` ${className}` : ''
       }`}
     >
@@ -96,7 +96,7 @@ function PlatformHero() {
         <div className="max-w-[1100px]">
           <Display as="h1" size={104} lineHeight={96}>
             One platform for{' '}
-            <span className="text-ink-subtle">
+            <span>
               content and commerce
               <Spark />
             </span>
@@ -104,7 +104,7 @@ function PlatformHero() {
         </div>
 
         <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
-          <Text variant="lead" className="text-ink-muted max-w-[600px]">
+          <Text variant="lead" className="max-w-[600px]">
             sparx is a modular operating system for the web. Builder, Commerce, CMS, CRM, Invoicing,
             Email, B2B, Dropship, Inventory, Live Chat, Scheduling, and AI — plus Social, SEO, and
             Automations free with any of them — running on one shared data layer, behind one
@@ -121,23 +121,21 @@ function PlatformHero() {
                 Talk to sales
               </Button>
             </div>
-            <Text className="text-mini text-ink-subtle font-mono">
-              No credit card · Live in five minutes
-            </Text>
+            <Text className="font-mono text-sm">No credit card · Live in five minutes</Text>
           </div>
         </div>
 
         <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-x-14 gap-y-8 border-t pt-8">
           {metrics.map((m) => (
             <div key={m.s} className="flex flex-col gap-1">
-              <span className="text-h1 font-medium tracking-[-0.02em]">
+              <span className="text-3xl font-medium tracking-[-0.02em]">
                 {m.v}
                 {'suffix' in m && m.suffix ? (
-                  <span className="text-ink-subtle text-body font-normal">{m.suffix}</span>
+                  <span className="text-md font-normal">{m.suffix}</span>
                 ) : null}
                 {'spark' in m && m.spark ? <Spark /> : null}
               </span>
-              <Text className="text-caption text-ink-muted">{m.s}</Text>
+              <Text className="text-sm">{m.s}</Text>
             </div>
           ))}
         </div>
@@ -184,7 +182,7 @@ function OneSystem() {
           {chips.map((c) => (
             <span
               key={c.label}
-              className="bg-base-200 border-base-300 text-caption inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium"
+              className="bg-base-200 border-base-300 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium"
             >
               <Dot color={getModuleColor(c.module).color} size={8} />
               {c.label}
@@ -236,7 +234,7 @@ function OneSystem() {
             <Heading level={3} size={5}>
               One data layer
             </Heading>
-            <Text className="text-caption text-ink-muted mt-1">
+            <Text className="mt-1 text-sm">
               Postgres with row-level security per tenant. Customers, orders, content, and contacts
               are the same records everywhere.
             </Text>
@@ -254,7 +252,7 @@ function OneSystem() {
             <Heading level={3} size={5}>
               One surface — API-first &amp; MCP-native
             </Heading>
-            <Text className="text-caption text-ink-muted mt-1">
+            <Text className="mt-1 text-sm">
               Every feature is an API endpoint first. The dashboard, your site, and your AI are all
               just clients of the same API.
             </Text>
@@ -266,7 +264,7 @@ function OneSystem() {
           </div>
         </div>
 
-        <Text className="text-body-sm text-ink-muted mt-9 max-w-[620px] text-center">
+        <Text className="text-md mt-9 max-w-[620px] text-center">
           <b className="font-medium">Turn a module off and it stops billing</b> — no migration, no
           exports, no goodbyes. The data stays where it was; it just goes quiet.
         </Text>
@@ -337,16 +335,14 @@ function OneRecord() {
       <div className="bg-base-100 border-base-300 mt-14 max-w-[760px] overflow-hidden rounded-2xl border shadow-lg">
         {/* head */}
         <div className="border-base-300 flex items-center gap-4 border-b px-6 py-5">
-          <span className="bg-primary text-primary-content text-body inline-flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full font-medium">
+          <span className="bg-primary text-primary-content text-md inline-flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full font-medium">
             RT
           </span>
           <div className="flex-1">
             <Heading level={3} size={5}>
               Ranchero Trucking Co.
             </Heading>
-            <Text className="text-mini text-ink-subtle mt-0.5 font-mono">
-              orders@rancherotrucking.com
-            </Text>
+            <Text className="mt-0.5 font-mono text-sm">orders@rancherotrucking.com</Text>
           </div>
           <Tag className="whitespace-nowrap">customer · one record</Tag>
         </div>
@@ -360,12 +356,12 @@ function OneRecord() {
             >
               <div className="mb-2 flex items-center gap-2">
                 <Dot color={MODS[f.module].color} size={8} />
-                <Text as="span" className="text-caption text-ink-muted font-medium">
+                <Text as="span" className="text-sm font-medium">
                   {f.label}
                 </Text>
               </div>
-              <Text className="text-body-sm">{f.val}</Text>
-              <Text className="text-caption text-ink-subtle mt-1">{f.sub}</Text>
+              <Text className="text-md">{f.val}</Text>
+              <Text className="mt-1 text-sm">{f.sub}</Text>
             </div>
           ))}
         </div>
@@ -373,7 +369,7 @@ function OneRecord() {
         {/* foot */}
         <div className="flex items-center gap-2.5 px-6 py-4">
           <Dot color="var(--color-success)" size={7} />
-          <Text className="text-caption text-ink-muted">
+          <Text className="text-sm">
             One profile, written by four modules — no integration, no copy, no drift.
           </Text>
         </div>
@@ -424,7 +420,7 @@ function FourCommitments() {
             <Heading level={3} size={4}>
               {it.title}
             </Heading>
-            <Text className="text-small text-ink-muted">{it.body}</Text>
+            <Text className="text-sm">{it.body}</Text>
           </div>
         ))}
       </div>
@@ -483,14 +479,14 @@ function GrowsWithYou() {
             <Heading level={3} size={5}>
               {s.title}
             </Heading>
-            <Text className="text-small text-ink-muted mt-2">
+            <Text className="mt-2 text-sm">
               {s.when} — {s.body}
             </Text>
             <div className="mt-3.5 flex flex-wrap gap-1.5">
               {s.tags.map((t) => (
                 <span
                   key={t.label}
-                  className="bg-base-100 border-base-300 text-mini inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 font-medium"
+                  className="bg-base-100 border-base-300 inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-sm font-medium"
                 >
                   <Dot color={MODS[t.module].color} size={6} />
                   {t.label}
@@ -605,7 +601,7 @@ function ModulesStrip() {
         accent="var(--color-primary)"
         headline={
           <>
-            Twelve modules. <span className="text-ink-subtle">Mix any combination</span>
+            Twelve modules. <span>Mix any combination</span>
           </>
         }
       />
@@ -627,19 +623,19 @@ function ModulesStrip() {
                     {m.label}
                   </Heading>
                 </span>
-                <Text as="span" className="text-mini text-ink-subtle font-mono">
+                <Text as="span" className="font-mono text-sm">
                   {m.price}
                 </Text>
               </div>
-              <Text className="text-small">{m.title}</Text>
-              <Text className="text-caption text-ink-muted">{m.body}</Text>
+              <Text className="text-sm">{m.title}</Text>
+              <Text className="text-sm">{m.body}</Text>
             </a>
           );
         })}
       </div>
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-        <Text className="text-small text-ink-muted max-w-[520px]">
+        <Text className="max-w-[520px] text-sm">
           Content-only, commerce-only, or the whole platform — every combination shares the same
           dashboard, the same data, and the same bill.
         </Text>
@@ -673,7 +669,7 @@ function ApiSurface() {
           Everything is an API. Even the AI
           <Spark color={MODS.ai.color} />
         </Display>
-        <Text variant="lead" className="text-ink-muted mt-6 max-w-[640px]">
+        <Text variant="lead" className="mt-6 max-w-[640px]">
           Every feature ships as an endpoint before it ships a screen. The dashboard, your site,
           your integrations, and your AI assistant are all clients of the same API — nothing is
           trapped inside the UI.
@@ -689,13 +685,13 @@ function ApiSurface() {
               className="bg-base-200 border-base-300 flex items-center gap-3.5 rounded-lg border px-4 py-3.5"
             >
               <span
-                className={`${c.bg} soft text-mini inline-flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md font-mono font-medium`}
+                className={`${c.bg} soft inline-flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-md font-mono text-sm font-medium`}
               >
                 {c.ci}
               </span>
               <div>
-                <Text className="text-small font-medium">{c.name}</Text>
-                <Text className="text-mini text-ink-muted">{c.desc}</Text>
+                <Text className="text-sm font-medium">{c.name}</Text>
+                <Text className="text-sm">{c.desc}</Text>
               </div>
             </div>
           ))}
@@ -703,12 +699,12 @@ function ApiSurface() {
 
         {/* code card */}
         <div className="bg-base-200 border-base-300 border-t-primary min-w-[320px] flex-1 self-start overflow-hidden rounded-xl border border-t-[3px]">
-          <div className="border-base-300 text-mini text-ink-muted flex items-center gap-2 border-b px-4 py-3.5 font-mono">
+          <div className="border-base-300 flex items-center gap-2 border-b px-4 py-3.5 font-mono text-sm">
             <span className="text-success font-medium">GET</span>
             /v1/customers/cus_4471
           </div>
-          <div className="text-mini overflow-x-auto px-5 py-4 font-mono leading-[22px] whitespace-pre">
-            <div className="text-ink-subtle">{'// the same record the four modules wrote'}</div>
+          <div className="overflow-x-auto px-5 py-4 font-mono text-sm leading-[22px] whitespace-pre">
+            <div>{'// the same record the four modules wrote'}</div>
             <div>{'{'}</div>
             <div>
               {'  '}
@@ -746,7 +742,7 @@ function ApiSurface() {
         </div>
       </div>
 
-      <Text variant="lead" className="text-ink-muted mt-9 max-w-[640px]">
+      <Text variant="lead" className="mt-9 max-w-[640px]">
         Connect Claude, ChatGPT, or Copilot through the first-class MCP server.{' '}
         <a href="/agentic" className="text-primary font-medium">
           See it answer questions about your business →
@@ -809,7 +805,7 @@ function Foundations() {
               <Dot color="var(--color-primary)" size={9} />
               {it.title}
             </Heading>
-            <Text className="text-body-sm text-ink-muted mt-2 ml-5">{it.body}</Text>
+            <Text className="text-md mt-2 ml-5">{it.body}</Text>
           </div>
         ))}
       </div>
@@ -833,7 +829,7 @@ function PricingTeaser() {
             Pay only for what you use
             <Spark />
           </Display>
-          <Text variant="lead" className="text-ink-muted mt-4 max-w-[460px]">
+          <Text variant="lead" className="mt-4 max-w-[460px]">
             Start with one module from $10/mo. Add the next when you need it. No bundles, no seat
             tax, no &ldquo;contact us for content.&rdquo; Turn anything off and it stops billing the
             same day.
@@ -853,12 +849,12 @@ function PricingTeaser() {
                 t.highlight ? 'border-primary' : 'border-base-300'
               }`}
             >
-              <Text className="text-caption text-ink-muted">{t.name}</Text>
+              <Text className="text-sm">{t.name}</Text>
               <Heading level={3} size={1} className="mt-2">
                 {t.price}
-                <span className="text-ink-subtle text-body-sm font-normal">/mo</span>
+                <span className="text-md font-normal">/mo</span>
               </Heading>
-              <Text className="text-mini text-ink-subtle mt-1.5">{t.note}</Text>
+              <Text className="mt-1.5 text-sm">{t.note}</Text>
             </div>
           ))}
         </div>
@@ -876,7 +872,7 @@ function PlatformCta() {
           Put your whole business on one platform
           <Spark />
         </Display>
-        <Text variant="lead" className="text-ink-muted mt-6 mb-9 max-w-[560px]">
+        <Text variant="lead" className="mt-6 mb-9 max-w-[560px]">
           Content, commerce, or both. Start with one module and a live site in five minutes — add
           the rest whenever you&apos;re ready.
         </Text>
@@ -888,7 +884,7 @@ function PlatformCta() {
             Talk to sales
           </Button>
         </div>
-        <Text className="text-mini text-ink-subtle mt-6 font-mono">
+        <Text className="mt-6 font-mono text-sm">
           No credit card · Cancel anytime · Your data, always exportable
         </Text>
       </div>

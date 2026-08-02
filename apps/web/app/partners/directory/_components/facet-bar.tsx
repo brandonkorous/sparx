@@ -68,9 +68,7 @@ function Chip({
       })}
     >
       {label}
-      {typeof count === 'number' ? (
-        <span className="text-ink-subtle font-normal">{count}</span>
-      ) : null}
+      {typeof count === 'number' ? <span className="font-normal">{count}</span> : null}
       {on ? <span aria-hidden>×</span> : null}
     </a>
   );
@@ -165,7 +163,7 @@ export function PartnerFacetBar({
       </Row>
 
       {anySelected ? (
-        <a href={BASE} className="text-caption text-ink-subtle self-start underline">
+        <a href={BASE} className="self-start text-sm underline">
           Clear all filters
         </a>
       ) : null}

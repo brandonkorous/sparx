@@ -141,7 +141,7 @@ function TheArc() {
             key={c.title}
             className={`${i === 0 ? `${B.bg} bg-soft` : 'bg-base-200'} border-base-300 flex flex-col gap-4.5 rounded-xl border p-8`}
           >
-            <Text as="h3" size={24} tone="default" weight={500} className="tracking-[-0.02em]">
+            <Text as="h3" size={24} weight={500} className="tracking-[-0.02em]">
               {c.title}
             </Text>
             <Text size={15}>{c.body}</Text>
@@ -198,7 +198,7 @@ function HowItWorks() {
             key={s.title}
             className={`${i === 0 ? `${B.bg} bg-soft` : 'bg-base-100'} border-base-300 flex min-h-[210px] flex-col gap-3.5 rounded-xl border px-6 pt-7 pb-8`}
           >
-            <Text as="h3" size={20} tone="default" weight={500} className="tracking-[-0.02em]">
+            <Text as="h3" size={20} weight={500} className="tracking-[-0.02em]">
               {s.title}
             </Text>
             <Text size={14}>{s.body}</Text>
@@ -255,7 +255,7 @@ function Capabilities() {
             >
               <Dot color={B.color} size={9} />
             </span>
-            <Text as="h3" size={18} tone="default" weight={500} className="tracking-[-0.01em]">
+            <Text as="h3" size={18} weight={500} className="tracking-[-0.01em]">
               {c.title}
             </Text>
             <Text size={14}>{c.body}</Text>
@@ -305,13 +305,13 @@ function CodeOptional() {
             key={r.title}
             className={`${i === 0 ? `${B.bg} bg-soft` : 'bg-base-100'} border-base-300 flex min-h-[200px] flex-col gap-3 rounded-xl border px-6 py-7`}
           >
-            <Text as="h3" size={18} tone="default" weight={500} className="tracking-[-0.01em]">
+            <Text as="h3" size={18} weight={500} className="tracking-[-0.01em]">
               {r.title}
             </Text>
             <Text size={14} className="flex-1">
               {r.body}
             </Text>
-            <Text as="span" size={12} mono tone="none" className={B.ink}>
+            <Text as="span" size={12} mono className={B.ink}>
               {r.level}
             </Text>
           </div>
@@ -371,7 +371,6 @@ function BuiltToLast() {
             <Text
               as="h3"
               size={16}
-              tone="default"
               weight={500}
               className="flex items-center gap-2.5 tracking-[-0.01em]"
             >
@@ -433,7 +432,7 @@ function WhatYouCanBuild() {
             key={u.title}
             className={`${i === 0 ? `${B.bg} bg-soft` : 'bg-base-200'} border-base-300 flex min-h-[200px] flex-col gap-3 rounded-xl border p-7`}
           >
-            <Text as="h3" size={17} tone="default" weight={500} className="tracking-[-0.01em]">
+            <Text as="h3" size={17} weight={500} className="tracking-[-0.01em]">
               {u.title}
             </Text>
             <Text size={14} className="flex-1">

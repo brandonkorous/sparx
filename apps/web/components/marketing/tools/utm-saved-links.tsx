@@ -40,8 +40,8 @@ export function SavedLinks({ links, onRemove, onClear }: SavedLinksProps) {
         {links.map((link) => (
           <ListRow key={link.url}>
             <ListColGrow>
-              <div className="text-body font-medium">{link.campaign}</div>
-              <div className="text-caption text-ink-muted truncate font-mono">{link.url}</div>
+              <div className="text-md font-medium">{link.campaign}</div>
+              <div className="truncate font-mono text-sm">{link.url}</div>
             </ListColGrow>
             <CopyButton
               value={link.url}

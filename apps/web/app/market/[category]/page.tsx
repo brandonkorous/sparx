@@ -110,7 +110,7 @@ export default async function CategoryBrowsePage({
         {cat.id === 'components' ? <ComponentPreviewStyles /> : null}
         {/* Header */}
         <div className="flex flex-col gap-5">
-          <a href="/market" className="text-ink-muted text-caption no-underline">
+          <a href="/market" className="text-sm no-underline">
             ← Marketplace
           </a>
           <SectionHeader
@@ -152,7 +152,7 @@ export default async function CategoryBrowsePage({
 
         {/* Result count + sort */}
         <div className="border-base-300 flex flex-wrap items-center justify-between gap-4 border-t pt-5">
-          <span className="text-ink-muted text-small">
+          <span className="text-sm">
             {page.total} {page.total === 1 ? cat.singular : cat.label.toLowerCase()}
           </span>
           <div className="flex flex-wrap items-center gap-3.5">
@@ -162,7 +162,7 @@ export default async function CategoryBrowsePage({
                 <a
                   key={s.key}
                   href={sortHref(cat, current, s.key)}
-                  className={`text-caption no-underline ${isOn ? 'font-medium' : 'text-ink-muted'}`}
+                  className={`text-sm no-underline ${isOn ? 'font-medium' : ''}`}
                 >
                   {s.label}
                 </a>
@@ -194,7 +194,7 @@ export default async function CategoryBrowsePage({
 function EmptyState({ cat, filtered }: { cat: MarketplaceCategory; filtered: boolean }) {
   return (
     <div className="flex flex-col items-center gap-4 py-16 text-center">
-      <p className="text-ink-muted text-body m-0">
+      <p className="text-md m-0">
         {filtered
           ? `No ${cat.label.toLowerCase()} match these filters yet.`
           : `No ${cat.label.toLowerCase()} published yet — check back soon.`}
@@ -212,7 +212,7 @@ function ComingSoonCategory({ cat }: { cat: MarketplaceCategory }) {
   return (
     <Section surface="page" padding="xl">
       <div className="flex flex-col items-start gap-7">
-        <a href="/market" className="text-ink-muted text-caption no-underline">
+        <a href="/market" className="text-sm no-underline">
           ← Marketplace
         </a>
         {/* RULE #2: the uppercase "Coming soon" kicker that sat above this
@@ -221,7 +221,7 @@ function ComingSoonCategory({ cat }: { cat: MarketplaceCategory }) {
           {cat.label}
           <Spark color={cat.accent} />
         </Display>
-        <p className="text-ink-muted text-lede m-0 max-w-[560px]">
+        <p className="m-0 max-w-[560px] text-lg">
           {cat.tagline} This category is landing next — start with a blueprint today and add{' '}
           {cat.label.toLowerCase()} when they go live.
         </p>

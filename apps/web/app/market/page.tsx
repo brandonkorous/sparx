@@ -53,7 +53,7 @@ export default async function MarketplaceHomePage() {
             headlineSize={88}
             headline={
               <>
-                Everything to launch <span className="text-ink-muted">in one place</span>
+                Everything to launch <span>in one place</span>
               </>
             }
             lede={
@@ -100,7 +100,7 @@ export default async function MarketplaceHomePage() {
               </Display>
               <a
                 href="/market/blueprints"
-                className="text-primary text-small font-medium no-underline"
+                className="text-primary text-sm font-medium no-underline"
               >
                 See all {featured.total} →
               </a>

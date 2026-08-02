@@ -31,7 +31,7 @@ export function WordmarkSection() {
           accent="var(--color-primary)"
           headline={
             <>
-              The wordmark. <span className="text-ink-subtle">The “x” always sparks</span>
+              The wordmark. <span>The “x” always sparks</span>
             </>
           }
           lede="Lowercase sparx, with one detail doing the work: the “x” carries sparx Ember — the instant of ignition the brand is named for. The vector lockup is the canonical artwork, and the live UI renders the very same paths."
@@ -75,7 +75,7 @@ function ConstructionPanel() {
               {row.copy ? (
                 <CopyValue value={row.value} tone="strong" />
               ) : (
-                <Text as="span" size={14} weight={500} tone="default">
+                <Text as="span" size={14} weight={500}>
                   {row.value}
                 </Text>
               )}
@@ -135,7 +135,7 @@ function SizeLadder() {
         {LADDER.map((h) => (
           <div key={h} className="flex flex-col items-start gap-3">
             <OfficialWordmark style={{ height: `${h}px`, width: 'auto' }} />
-            <Text as="span" mono size={11} tone="subtle">
+            <Text as="span" mono size={11}>
               {h}px tall
             </Text>
           </div>
@@ -164,7 +164,7 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   return (
     <Card>
       <CardBody className="flex flex-col gap-5">
-        <Text as="h3" size={15} weight={500} tone="default">
+        <Text as="h3" size={15} weight={500}>
           {title}
         </Text>
         {children}

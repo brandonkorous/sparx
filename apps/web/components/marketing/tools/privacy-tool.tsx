@@ -85,7 +85,7 @@ export function PrivacyTool() {
           <div className="flex flex-col gap-2.5">
             {TOGGLES.map((t) => (
               <div key={t.key} className="flex items-center justify-between gap-3">
-                <span className="text-body">{t.label}</span>
+                <span className="text-md">{t.label}</span>
                 <Switch
                   checked={data[t.key] as boolean}
                   onCheckedChange={(c) => set({ [t.key]: c })}

@@ -98,22 +98,26 @@ export function CrmTimeline() {
                   className="bg-base-300 absolute top-6 bottom-0 left-2.5 w-[1.5px]"
                 />
               ) : null}
+              {/* The fill and its ink are ONE decision: `bg-module-x` does not
+                  bring its `-content` along, so both classes ship together.
+                  This used to be an inline `backgroundColor` plus a hardcoded
+                  `text-white`, which is the exact pairing failure documented on
+                  MODULE_COLORS in primitives.tsx. */}
               <span
                 aria-hidden
-                className="absolute top-0.5 left-0 flex size-[22px] items-center justify-center rounded-full text-white"
-                style={{ backgroundColor: getModuleColor(e.module).color }}
+                className={`absolute top-0.5 left-0 flex size-[22px] items-center justify-center rounded-full ${getModuleColor(e.module).bg} ${getModuleColor(e.module).content}`}
               >
                 <EventIcon kind={e.icon} />
               </span>
-              <div className="text-small flex flex-wrap items-center gap-2 font-medium">
+              <div className="flex flex-wrap items-center gap-2 text-sm font-medium">
                 {e.title}
                 {/* Actor tag — feed-row chrome mirroring the dashboard timeline. */}
-                <span className="text-ink-subtle text-micro border-base-300 rounded-full border px-[7px] py-0.5 font-mono">
+                <span className="border-base-300 rounded-full border px-[7px] py-0.5 font-mono text-sm">
                   {e.actor}
                 </span>
               </div>
-              <p className="text-ink-muted text-caption mt-1">{e.desc}</p>
-              <div className="text-ink-subtle text-micro mt-1 font-mono">{e.time}</div>
+              <p className="mt-1 text-sm">{e.desc}</p>
+              <div className="mt-1 font-mono text-sm">{e.time}</div>
             </li>
           ))}
         </ol>
@@ -123,8 +127,8 @@ export function CrmTimeline() {
               key={p.title}
               className="bg-base-200 border-base-300 border-l-module-crm mb-3.5 rounded-xl border-y border-r border-l-[3px] px-[18px] py-4"
             >
-              <h4 className="text-small mb-1 font-medium">{p.title}</h4>
-              <p className="text-ink-muted text-caption">{p.body}</p>
+              <h4 className="mb-1 text-sm font-medium">{p.title}</h4>
+              <p className="text-sm">{p.body}</p>
             </div>
           ))}
         </div>

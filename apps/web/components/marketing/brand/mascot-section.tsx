@@ -53,10 +53,10 @@ export function MascotSection() {
           <Card>
             <CardBody className="flex flex-col gap-5">
               <div className="flex flex-col gap-1.5">
-                <Text as="h3" size={15} weight={500} tone="default">
+                <Text as="h3" size={15} weight={500}>
                   Try his faces
                 </Text>
-                <Text size={13.5} tone="default">
+                <Text size={13.5}>
                   Pick an expression to pin it, or let him cycle. He blinks and bobs on his own —
                   motion honours reduced-motion.
                 </Text>
@@ -74,7 +74,7 @@ export function MascotSection() {
               </div>
 
               <div className="mt-auto flex flex-col gap-2.5">
-                <Text as="span" mono size={11} tone="default" className="tracking-[0.02em]">
+                <Text as="span" mono size={11} className="tracking-[0.02em]">
                   Two tones — the face flips so it stays legible.
                 </Text>
                 <div className="flex flex-wrap items-center gap-3">
@@ -138,7 +138,7 @@ function TonePlate({
       >
         <SparkMascot expression="happy" size={56} tone={tone} bob={false} />
       </div>
-      <Text as="span" size={12} tone="default">
+      <Text as="span" size={12}>
         {label}
       </Text>
     </div>

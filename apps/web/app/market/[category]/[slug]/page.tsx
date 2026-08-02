@@ -144,7 +144,7 @@ export default async function ListingDetailPage({
   return (
     <Section surface="page" padding="lg">
       <div className="flex flex-col gap-8">
-        <a href={`/market/${cat.id}`} className="text-ink-muted text-caption no-underline">
+        <a href={`/market/${cat.id}`} className="text-sm no-underline">
           ← {cat.label}
         </a>
 
@@ -188,9 +188,7 @@ export default async function ListingDetailPage({
               </div>
             ) : null}
 
-            {item.description ? (
-              <p className="text-ink-muted text-body m-0 pt-2">{item.description}</p>
-            ) : null}
+            {item.description ? <p className="text-md m-0 pt-2">{item.description}</p> : null}
           </div>
 
           {/* Action panel */}
@@ -204,7 +202,7 @@ export default async function ListingDetailPage({
           >
             {tag ? (
               <span
-                className="text-micro self-start rounded-full px-2.5 py-1 font-medium"
+                className="self-start rounded-full px-2.5 py-1 text-sm font-medium"
                 style={{
                   backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)`,
                   color: accent,
@@ -215,16 +213,14 @@ export default async function ListingDetailPage({
             ) : null}
 
             <div>
-              <h1 className="text-h1 m-0 font-medium tracking-[-0.02em]">{item.name}</h1>
-              {item.tagline ? (
-                <p className="text-ink-muted text-small m-0 pt-2">{item.tagline}</p>
-              ) : null}
+              <h1 className="m-0 text-3xl font-medium tracking-[-0.02em]">{item.name}</h1>
+              {item.tagline ? <p className="m-0 pt-2 text-sm">{item.tagline}</p> : null}
             </div>
 
             <div className="flex items-baseline gap-3">
-              <span className="text-h4 font-medium">{priceLabel(item.price)}</span>
+              <span className="text-xl font-medium">{priceLabel(item.price)}</span>
               {item.installCount > 0 ? (
-                <span className="text-ink-muted text-caption">{item.installCount} installs</span>
+                <span className="text-sm">{item.installCount} installs</span>
               ) : null}
             </div>
 
@@ -295,12 +291,12 @@ function Detail({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="border-base-300 flex flex-col gap-2 border-t pt-4">
       {/* A spec-group label, meant to be read — full ink, not a faded caption. */}
-      <span className="text-small font-medium">{label}</span>
+      <span className="text-sm font-medium">{label}</span>
       {children}
     </div>
   );
 }
 
 function Row({ children }: { children: ReactNode }) {
-  return <span className="text-ink-muted text-small">{children}</span>;
+  return <span className="text-sm">{children}</span>;
 }

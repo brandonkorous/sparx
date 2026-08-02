@@ -9,7 +9,7 @@ import { Container, Display, Section, SectionHeader, Spark } from './primitives'
  * in partners-page.tsx assembles all of them. Platform Ember is the through-line.
  *
  * Class-based per SILICA-VOCABULARY.md: the Ember tint is silica's own
- * `bg-primary bg-soft` treatment, ink comes from `text-ink-muted`/`text-primary`,
+ * `bg-primary bg-soft` treatment, ink comes from ``/`text-primary`,
  * and the dark final CTA is a `<Section surface="dark">` island rather than a
  * hand-painted near-black with hand-picked white/grey partners.
  */
@@ -34,7 +34,7 @@ export function PartnersHero() {
             <Spark />
           </Display>
         </div>
-        <p className="text-ink-muted max-w-[620px] text-[clamp(17px,1.7vw,20px)] leading-[1.55]">
+        <p className="max-w-[620px] text-[clamp(17px,1.7vw,20px)] leading-[1.55]">
           Help businesses replace their site, CRM, and email stack with one platform &mdash; and get
           paid every time one goes live. No reseller contract. No minimums.
         </p>
@@ -48,7 +48,7 @@ export function PartnersHero() {
             </Button>
           </a>
         </div>
-        <div className="text-primary text-mini mt-3 flex flex-wrap gap-x-[26px] gap-y-2.5 font-mono">
+        <div className="text-primary mt-3 flex flex-wrap gap-x-[26px] gap-y-2.5 font-mono text-sm">
           {earn.map((e) => (
             <span key={e} className="inline-flex items-center gap-2">
               <span className="bg-primary size-[7px] shrink-0 rounded-full" />
@@ -91,7 +91,7 @@ export function PartnersProof({ partnerCount }: { partnerCount?: number }) {
                   c.num
                 )}
               </div>
-              <div className="text-ink-muted text-small mt-2 max-w-[300px]">{c.lab}</div>
+              <div className="mt-2 max-w-[300px] text-sm">{c.lab}</div>
             </div>
           ))}
         </div>
@@ -130,7 +130,7 @@ export function PartnersOpportunity() {
         {rows.map((r) => (
           <div key={r.token} className="mkt-opp-row">
             <p className="m-0 max-w-[720px] text-[clamp(19px,2.2vw,25px)] leading-[1.35] font-medium tracking-[-0.02em]">
-              {r.claim} <span className="text-ink-muted font-normal">{r.thin}</span>
+              {r.claim} <span className="font-normal">{r.thin}</span>
             </p>
             <span className="text-primary text-[clamp(19px,2.3vw,28px)] font-medium tracking-[-0.02em] whitespace-nowrap">
               {r.token}
@@ -172,15 +172,15 @@ export function PartnersSteps() {
       <div className="mkt-steprail mt-14">
         {steps.map((s) => (
           <div key={s.t} className="mkt-step">
-            <span className="mkt-step-arrow text-ink-subtle text-h4" aria-hidden>
+            <span className="mkt-step-arrow text-xl" aria-hidden>
               →
             </span>
             {/* The rail's column marker: the 2px Ember rule delineates each step's
                 track. The old `01`/`02` numerals above the heading were step
                 markers — an eyebrow by another name — and are gone. */}
             <span className="border-primary block w-10 border-t-2" aria-hidden />
-            <h3 className="text-h4 mt-3.5 font-medium tracking-[-0.02em]">{s.t}</h3>
-            <p className="text-ink-muted text-small mt-2.5">{s.d}</p>
+            <h3 className="mt-3.5 text-xl font-medium tracking-[-0.02em]">{s.t}</h3>
+            <p className="mt-2.5 text-sm">{s.d}</p>
           </div>
         ))}
       </div>
@@ -202,7 +202,7 @@ export function PartnersDirectoryCta() {
           <h3 className="text-[clamp(24px,3vw,34px)] leading-[1.1] font-medium tracking-[-0.025em]">
             Looking for a partner, not a program?
           </h3>
-          <p className="text-ink-muted text-body mt-4 max-w-[460px]">
+          <p className="text-md mt-4 max-w-[460px]">
             If you&rsquo;re a business that wants help getting set up on sparx, browse certified
             partners by location and specialty and reach out directly.
           </p>
@@ -218,8 +218,8 @@ export function PartnersDirectoryCta() {
               key={i}
               className="border-base-300 bg-base-100 flex items-center justify-between gap-3.5 rounded-xl border px-[18px] py-3.5"
             >
-              <span className="text-body-sm">{p.name}</span>
-              <span className="text-ink-subtle text-caption">{p.loc}</span>
+              <span className="text-md">{p.name}</span>
+              <span className="text-sm">{p.loc}</span>
             </div>
           ))}
         </div>
@@ -252,7 +252,7 @@ export function PartnersFinalCta() {
           Start earning on sparx
           <Spark color={EMBER} />
         </Display>
-        <p className="text-ink-muted text-lede max-w-[560px]">
+        <p className="max-w-[560px] text-lg">
           Apply in two minutes. Refer your first client this week. Get paid when they go live.
         </p>
         <div className="mt-2.5 flex flex-wrap items-center gap-3">

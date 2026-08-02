@@ -236,10 +236,13 @@ export function SignatureTool() {
         <Panel title="Preview">
           {/* The signature itself is inline-styled table markup — that is a hard
               requirement of email clients, not a style choice, so it is rendered
-              verbatim. The white plate is deliberate: it simulates the email
-              client's canvas, so the preview must NOT follow the site theme. */}
+              verbatim. The plate simulates the email client's canvas, so it must
+              NOT follow the site theme — `data-theme="light"` pins this subtree
+              to the sparx light palette, which is how that is said in tokens
+              rather than with Tailwind's own `bg-white`. */}
           <div
-            className="border-base-300 overflow-x-auto rounded-lg border bg-white p-6"
+            data-theme="light"
+            className="border-base-300 bg-base-100 text-base-content overflow-x-auto rounded-lg border p-6"
             dangerouslySetInnerHTML={{ __html: html }}
           />
           <div className="flex flex-wrap items-center gap-2.5">
@@ -249,7 +252,7 @@ export function SignatureTool() {
             </Button>
             <CopyButton value={html} label="Copy HTML" toastLabel="HTML source copied" />
           </div>
-          <Text variant="caption" className="text-ink-muted m-0">
+          <Text variant="caption" className="m-0">
             “Copy signature” puts formatted HTML on your clipboard — paste it straight into Gmail,
             Outlook, or Apple Mail signature settings. Your details are saved on this device only.
           </Text>

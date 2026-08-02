@@ -48,7 +48,7 @@ function TaglineBand() {
           Everything, ignited
           <Spark />
         </Display>
-        <Text size={17} tone="muted" className="max-w-[640px]">
+        <Text size={17} className="max-w-[640px]">
           The hero rotates the leading noun through the offerings — each landing on{' '}
           <em className="not-italic">ignited.</em> with the Ember spark. Static form for titles, OG,
           and social: <strong className="font-medium">Everything, ignited.</strong>
@@ -73,15 +73,10 @@ function VoiceTable() {
           key={row.says}
           className={`border-base-300 grid grid-cols-1 gap-6 border-b py-5 md:grid-cols-2 ${i === 0 ? 'border-t' : ''}`}
         >
-          <Text
-            as="span"
-            size={15}
-            tone="subtle"
-            className="decoration-base-content/30 line-through"
-          >
+          <Text as="span" size={15} className="decoration-base-content/30 line-through">
             {row.instead}
           </Text>
-          <Text as="span" size={15} weight={500} tone="default">
+          <Text as="span" size={15} weight={500}>
             {row.says}
           </Text>
         </div>
@@ -114,7 +109,7 @@ function PermanenceBand() {
             </Text>
           ))}
         </ul>
-        <Text as="span" size={12} mono tone="subtle">
+        <Text as="span" size={12} mono>
           Use one supporting line at a time, never stacked.
         </Text>
       </CardBody>

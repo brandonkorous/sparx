@@ -90,7 +90,7 @@ export function WhoeverVideo() {
       <div className="absolute inset-0 bg-black/60" />
 
       <div className="absolute inset-x-0 bottom-0 bg-black/50 px-6 py-4 sm:px-8">
-        <div className="mx-auto flex max-w-7xl flex-wrap gap-x-6 gap-y-2 text-xs tracking-wide uppercase">
+        <div className="mx-auto flex max-w-7xl flex-wrap gap-x-6 gap-y-2 text-xs">
           {/* The playing clip is marked by COLOR AND WEIGHT, not by fading the
               others out. Both branches of this used to be `text-base-content`,
               so the active label was never marked at all. */}

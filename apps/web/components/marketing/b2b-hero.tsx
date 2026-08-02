@@ -93,15 +93,15 @@ function AccountHeader({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
         <Dot color={M.color} size={9} />
       </span>
       <span className="min-w-0">
-        <Text as="span" size={16} tone="default" weight={500} className="block">
+        <Text as="span" size={16} weight={500} className="block">
           {b2b.account}
         </Text>
-        <Text as="span" size={12} mono tone="subtle">
+        <Text as="span" size={12} mono>
           B2B account · {b2b.terms}
         </Text>
       </span>
       <span
-        className={`${M.bg} ${M.ink} text-mini bg-soft ml-auto inline-flex shrink-0 items-center rounded-full px-2.5 py-1 font-sans font-medium`}
+        className={`${M.bg} ${M.ink} bg-soft ml-auto inline-flex shrink-0 items-center rounded-full px-2.5 py-1 font-sans text-sm font-medium`}
       >
         {b2b.tier}
       </span>
@@ -119,10 +119,10 @@ function AccountStats({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
     <div className="border-base-300 grid grid-cols-3 border-b">
       {cells.map(([v, l], i) => (
         <div key={l} className={i === 0 ? 'px-4 py-3.5' : 'border-base-200 border-l px-4 py-3.5'}>
-          <Text as="div" size={17} tone="default" weight={500} className="tracking-[-0.01em]">
+          <Text as="div" size={17} weight={500} className="tracking-[-0.01em]">
             {v}
           </Text>
-          <Text as="div" size={11} mono tone="subtle" className="mt-0.5">
+          <Text as="div" size={11} mono className="mt-0.5">
             {l}
           </Text>
         </div>
@@ -135,11 +135,14 @@ function AccountCredit({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
   return (
     <div className="flex flex-col gap-3 px-5 py-4">
       <div className="flex items-center justify-between">
-        {/* Field label inside the device mockup — UI mimicry, not an eyebrow. */}
-        <Text as="span" size={11} mono tone="subtle" className="tracking-[0.06em] uppercase">
+        {/* Field label inside the device mockup. Sentence case, no letterspacing —
+            the uppercase micro-cap treatment is gone brand-wide, mimicry or not:
+            real product UI does not use it either, so imitating it made the
+            mockup look less like the product, not more. */}
+        <Text as="span" size={11} mono>
           credit · {b2b.creditUsed} of {b2b.creditLimit}
         </Text>
-        <Text as="span" size={11} mono tone="none" className={M.ink}>
+        <Text as="span" size={11} mono className={M.ink}>
           {b2b.creditUsedPct}
         </Text>
       </div>
@@ -150,14 +153,14 @@ function AccountCredit({ b2b }: { b2b: ExampleBusiness['b2b'] }) {
         />
       </span>
       <div className="bg-base-200 border-base-300 mt-1 flex items-center gap-2.5 rounded-lg border px-3.5 py-3">
-        <Text as="span" size={12} mono tone="none" className={`${M.ink} shrink-0`}>
+        <Text as="span" size={12} mono className={`${M.ink} shrink-0`}>
           {b2b.quote.number}
         </Text>
         <Text as="span" size={13}>
           {b2b.quote.lines} lines · {b2b.quote.total}
         </Text>
         <span
-          className={`${M.bg} ${M.ink} text-mini bg-soft ml-auto shrink-0 rounded-full px-2.5 py-[3px] font-sans font-medium`}
+          className={`${M.bg} ${M.ink} bg-soft ml-auto shrink-0 rounded-full px-2.5 py-[3px] font-sans text-sm font-medium`}
         >
           {b2b.quote.status}
         </span>

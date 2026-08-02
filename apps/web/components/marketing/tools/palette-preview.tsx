@@ -17,9 +17,11 @@ import { buildPalette, readableTextOn, type PaletteColor } from './lib/color';
  * computed from it. That is data, not styling, so it cannot become a utility.
  * The surrounding chrome (canvas, chart track, neutral ink) is deliberately
  * FIXED — the whole point is that the swatches read true no matter which theme
- * the visitor is browsing in — so it uses static Tailwind palette utilities
- * (`bg-white`, `text-zinc-*`) rather than theme tokens that would flip. Layout,
- * spacing, radius and type are all utilities now.
+ * the visitor is browsing in. That is expressed as `data-theme="light"` on the
+ * root, which pins this subtree to the sparx light palette so `bg-base-100` /
+ * `text-base-content` cannot flip underneath the swatches. It used to be spelled
+ * with Tailwind's own palette (`bg-white`, `text-zinc-*`) — a third color
+ * vocabulary alongside silica's. Layout, spacing, radius and type are utilities.
  */
 interface PreviewTheme {
   primary: string;
@@ -34,7 +36,7 @@ function stepHex(hex: string, step: number): string {
 }
 
 /** Group label for a row of swatches — a functional legend, not an eyebrow. */
-const LABEL = 'text-[11px] font-semibold tracking-[0.04em] uppercase text-zinc-500';
+const LABEL = 'text-sm font-semibold';
 
 export function PalettePreview({ colors }: { colors: PaletteColor[] }) {
   const primary = colors[0] ?? { role: 'Primary', hex: '#6366F1' };
@@ -47,7 +49,10 @@ export function PalettePreview({ colors }: { colors: PaletteColor[] }) {
   };
 
   return (
-    <div className="flex flex-col gap-[18px] rounded-lg border border-zinc-200 bg-white p-5 shadow-sm">
+    <div
+      data-theme="light"
+      className="border-base-300 text-base-content bg-base-100 flex flex-col gap-[18px] rounded-lg border p-5"
+    >
       <PreviewHeader theme={theme} />
       <PreviewStat theme={theme} colors={colors} />
       <PreviewBadges colors={colors} />
@@ -61,7 +66,7 @@ export function PalettePreview({ colors }: { colors: PaletteColor[] }) {
 function PreviewHeader({ theme }: { theme: PreviewTheme }) {
   return (
     <div className="flex items-start justify-between gap-3">
-      <span className="text-[15px] font-semibold text-zinc-900">Your palette in context</span>
+      <span className="text-base-content text-[15px] font-semibold">Your palette in context</span>
       <div className="flex shrink-0 gap-2">
         <Btn bg={theme.softBg} fg={theme.softText}>
           Charts
@@ -82,8 +87,8 @@ function PreviewStat({ theme, colors }: { theme: PreviewTheme; colors: PaletteCo
       <div className="flex items-start justify-between gap-3">
         <div className="flex flex-col gap-0.5">
           <span className={LABEL}>Page score</span>
-          <span className="text-[26px] leading-none font-bold text-zinc-900">
-            91<span className="text-sm font-medium text-zinc-400">/100</span>
+          <span className="text-base-content text-[26px] leading-none font-bold">
+            91<span className="text-base-content text-sm font-medium">/100</span>
           </span>
         </div>
         <span
@@ -139,7 +144,7 @@ function PreviewAlert({ theme }: { theme: PreviewTheme }) {
         <span className="text-sm font-semibold" style={{ color: theme.softText }}>
           Verification complete
         </span>
-        <span className="text-xs text-zinc-500">Your brand colors are ready to ship.</span>
+        <span className="text-base-content text-xs">Your brand colors are ready to ship.</span>
       </div>
     </div>
   );
@@ -158,8 +163,8 @@ function PreviewProgress({ colors, primary }: { colors: PaletteColor[]; primary:
         const c = colors[i % colors.length]?.hex ?? primary;
         return (
           <div key={row.label} className="flex items-center gap-2.5">
-            <span className="w-12 shrink-0 text-xs text-zinc-600">{row.label}</span>
-            <div className="h-2 flex-1 overflow-hidden rounded-full bg-zinc-100">
+            <span className="text-base-content w-12 shrink-0 text-xs">{row.label}</span>
+            <div className="bg-base-200 h-2 flex-1 overflow-hidden rounded-full">
               <div
                 className="h-full rounded-full"
                 style={{ width: row.width, backgroundColor: c }}
@@ -196,7 +201,7 @@ function PreviewButtons({ theme, colors }: { theme: PreviewTheme; colors: Palett
           className="inline-flex h-[22px] w-[38px] items-center justify-end rounded-full p-0.5"
           style={{ backgroundColor: theme.primary }}
         >
-          <span className="h-[18px] w-[18px] rounded-full bg-white" />
+          <span className="bg-base-100 h-[18px] w-[18px] rounded-full" />
         </span>
       </div>
     </div>

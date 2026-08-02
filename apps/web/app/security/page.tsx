@@ -18,7 +18,7 @@ export default function SecurityPage() {
             Security
             <Spark />
           </Display>
-          <p className="text-lede text-ink-muted m-0 max-w-[640px] pt-2">
+          <p className="m-0 max-w-[640px] pt-2 text-lg">
             Security is built into sparx&rsquo;s architecture, not bolted on. Here is how we protect
             your data and your customers&rsquo;.
           </p>

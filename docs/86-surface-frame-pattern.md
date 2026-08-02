@@ -1,3 +1,13 @@
+> **SUPERSEDED (2026-08-01).** This document describes `apps/dashboard`, which was
+> **deleted** in the workbench cutover (`b86797b0`), and the `SurfaceFrame` primitive it
+> specifies has now been deleted from `@sparx/ui` along with the rest of the dashboard-era
+> composition set. Nothing in this file describes shipping code. It is kept as the design
+> rationale for the F layout — identity once, lifecycle in the frame header, Cancel leftmost,
+> explicit-save-only — which `apps/workbench` re-implements in its own idiom. For the
+> workbench pattern read [docs/123-workbench.md](123-workbench.md) and
+> [apps/workbench/CLAUDE.md](../apps/workbench/CLAUDE.md); for what `@sparx/ui` still
+> contains read [packages/ui/CLAUDE.md](../packages/ui/CLAUDE.md).
+
 # sparx Platform — Form Surface Layout Pattern (`SurfaceFrame`)
 
 **Version:** 3.8

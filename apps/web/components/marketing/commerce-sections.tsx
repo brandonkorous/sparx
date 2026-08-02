@@ -57,14 +57,12 @@ export function CommerceJourney() {
             key={s.surface}
             className="mkt-pipe-cell relative flex min-h-[184px] flex-col gap-3 px-6 pt-6 pb-7"
           >
-            <h3 className="text-lede m-0 flex items-center gap-2 font-sans font-medium tracking-[-0.01em]">
+            <h3 className="m-0 flex items-center gap-2 font-sans text-lg font-medium tracking-[-0.01em]">
               <Dot color={C.color} size={8} />
               {s.title}
             </h3>
-            <p className="text-ink-muted text-caption m-0 font-sans">{s.body}</p>
-            <span className="text-ink-subtle text-micro mt-auto pt-2 font-mono tracking-[0.06em] uppercase">
-              {s.surface}
-            </span>
+            <p className="m-0 font-sans text-sm">{s.body}</p>
+            <span className="mt-auto pt-2 font-mono text-sm">{s.surface}</span>
             {i < stages.length - 1 ? (
               <span
                 className="mkt-hide-on-tablet border-base-300 bg-base-100 absolute top-[38px] -right-[11px] z-2 flex size-[22px] items-center justify-center rounded-full border"
@@ -129,10 +127,10 @@ export function CommerceCheckout() {
             >
               {/* A/B/C/D is an annotation KEY, not a step marker — the same
                   letters mark the matching spots in the checkout frame. */}
-              <span className={`${C.ink} text-mini shrink-0 pt-px font-mono`}>{p.n}</span>
+              <span className={`${C.ink} shrink-0 pt-px font-mono text-sm`}>{p.n}</span>
               <div>
-                <h4 className="text-small mt-0 mb-1 font-sans font-medium">{p.title}</h4>
-                <p className="text-ink-muted text-caption m-0 font-sans">{p.body}</p>
+                <h4 className="mt-0 mb-1 font-sans text-sm font-medium">{p.title}</h4>
+                <p className="m-0 font-sans text-sm">{p.body}</p>
               </div>
             </div>
           ))}
@@ -151,7 +149,7 @@ function CheckoutBrowser({ business }: { business: ExampleBusiness }) {
             <span key={d} className="bg-base-300 size-2.5 rounded-full" />
           ))}
         </span>
-        <span className="text-ink-subtle text-mini border-base-300 bg-base-100 ml-2 flex-1 rounded-md border px-3 py-1 font-mono">
+        <span className="border-base-300 bg-base-100 ml-2 flex-1 rounded-md border px-3 py-1 font-mono text-sm">
           {business.domain}/checkout
         </span>
       </div>
@@ -167,16 +165,15 @@ function CheckoutForm({ business }: { business: ExampleBusiness }) {
   const field = (children: ReactNode, key?: string) => (
     <div
       key={key}
-      className="border-base-300 bg-base-100 text-caption flex items-center justify-between rounded-lg border px-3 py-2.5 font-sans"
+      className="border-base-300 bg-base-100 flex items-center justify-between rounded-lg border px-3 py-2.5 font-sans text-sm"
     >
       {children}
     </div>
   );
-  // Section labels INSIDE the mockup — legitimate checkout-UI mimicry, not a
-  // marketing eyebrow (RULE #2 governs headings on the page, not the device).
-  const step = (label: string) => (
-    <span className={`${C.ink} text-micro font-mono tracking-[0.05em] uppercase`}>{label}</span>
-  );
+  // Step labels INSIDE the checkout mockup. They keep their slot (they name
+  // the step below them) but not the micro-cap treatment — that is banned as a
+  // LOOK, not only as a slot, so the device drops it too.
+  const step = (label: string) => <span className={`${C.ink} font-mono text-sm`}>{label}</span>;
   return (
     <div className="flex flex-col gap-4 px-7 py-6">
       {step('Contact & shipping')}
@@ -185,21 +182,21 @@ function CheckoutForm({ business }: { business: ExampleBusiness }) {
         <>
           <span>
             {business.customer.address}
-            <span className="text-ink-subtle"> · suggested</span>
+            <span> · suggested</span>
           </span>
           <Dot color={C.color} size={7} />
         </>
       )}
       <div className="grid grid-cols-2 gap-2.5">
-        {field(<span className="text-ink-subtle">City</span>, 'city')}
-        {field(<span className="text-ink-subtle">ZIP</span>, 'zip')}
+        {field(<span>City</span>, 'city')}
+        {field(<span>ZIP</span>, 'zip')}
       </div>
       {step('Payment')}
       <div className="grid grid-cols-2 gap-2.5">
         {['Apple Pay', 'Link'].map((w) => (
           <span
             key={w}
-            className="border-base-300 bg-base-100 text-ink-muted text-caption rounded-lg border p-3 text-center font-sans font-medium"
+            className="border-base-300 bg-base-100 rounded-lg border p-3 text-center font-sans text-sm font-medium"
           >
             {w}
           </span>
@@ -207,14 +204,14 @@ function CheckoutForm({ business }: { business: ExampleBusiness }) {
       </div>
       {field(
         <>
-          <span className="text-ink-subtle">Card ending 4242</span>
-          <span className="text-ink-subtle text-micro font-mono">saved</span>
+          <span>Card ending 4242</span>
+          <span className="font-mono text-sm">saved</span>
         </>
       )}
       {/* The mockup's pay button: silica's solid module fill supplies its own
           paired ink, so there is no hand-picked white on the orange. */}
       <span
-        className={`${C.bg} text-module-commerce-content text-body-sm flex items-center justify-center gap-2 rounded-[10px] p-3.5 font-sans font-medium`}
+        className={`${C.bg} text-module-commerce-content text-md flex items-center justify-center gap-2 rounded-[10px] p-3.5 font-sans font-medium`}
       >
         Pay {business.order.total}
         <Check size={15} color="currentColor" />
@@ -230,25 +227,25 @@ function CheckoutSummary({ business }: { business: ExampleBusiness }) {
   ]);
   return (
     <div className="bg-base-200 border-base-300 flex flex-col gap-3.5 border-l px-6 py-6">
-      <span className="text-ink-muted text-caption font-sans font-medium">Order summary</span>
+      <span className="font-sans text-sm font-medium">Order summary</span>
       {items.map(([t, amt]) => (
-        <div key={t} className="text-ink-muted text-caption flex items-center gap-3 font-sans">
+        <div key={t} className="flex items-center gap-3 font-sans text-sm">
           <span className="bg-base-300 size-8 shrink-0 rounded-md" />
           <span>{t}</span>
           <span className="ml-auto">{amt}</span>
         </div>
       ))}
-      <div className="border-base-300 text-ink-muted text-caption flex justify-between border-t pt-3 font-sans">
+      <div className="border-base-300 flex justify-between border-t pt-3 font-sans text-sm">
         <span>Shipping</span>
         <span>{business.order.shipping.value}</span>
       </div>
-      <div className="text-ink-muted text-caption flex justify-between font-sans">
+      <div className="flex justify-between font-sans text-sm">
         <span>Tax</span>
         <span>{business.order.tax.value}</span>
       </div>
       <div className="border-base-300 flex items-baseline justify-between border-t pt-3 font-sans font-medium">
         <span>Total</span>
-        <span className="text-h4 tracking-[-0.02em]">{business.order.total}</span>
+        <span className="text-xl tracking-[-0.02em]">{business.order.total}</span>
       </div>
     </div>
   );

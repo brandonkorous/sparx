@@ -38,7 +38,7 @@ export function ComingSoon({
           <Spark />
         </Display>
 
-        <p className="text-ink-muted text-lede m-0 max-w-[640px]">{description}</p>
+        <p className="m-0 max-w-[640px] text-lg">{description}</p>
 
         <div className="flex flex-wrap items-center gap-3 pt-2">
           <a href="/">
@@ -47,10 +47,7 @@ export function ComingSoon({
             </Button>
           </a>
           {contact ? (
-            <a
-              href={`mailto:${contact}`}
-              className="text-ink-subtle text-caption py-3 font-mono no-underline"
-            >
+            <a href={`mailto:${contact}`} className="py-3 font-mono text-sm no-underline">
               Or email {contact}
             </a>
           ) : null}

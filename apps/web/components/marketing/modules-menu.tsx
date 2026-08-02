@@ -115,7 +115,10 @@ export function ModulesMegaContent() {
                       </Badge>
                     ) : null}
                   </span>
-                  <Text className="text-xs leading-snug">{m.desc}</Text>
+                  {/* Supporting blurb in a mega-menu row — scanned, not read through,
+                      so `text-xs` + `text-soft` is the deliberate de-emphasis
+                      RULE #3 reserves for exactly this, not a default. */}
+                  <Text className="text-soft text-xs leading-snug">{m.desc}</Text>
                 </span>
               </NavigationMenuLink>
             ))}

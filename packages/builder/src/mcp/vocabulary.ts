@@ -252,98 +252,27 @@ export const BUILDER_STYLE_GUIDE = {
       'p-6 @3xl:p-16  — tighter padding on small containers',
     ],
     headerFooter:
-      'The site-layout header & footer are the #1 failure points — give them extra care. HEADER: author it as an inline app-bar ' +
-      '(`flex flex-row items-center justify-between`, NOT a stacking row) — a `row` NavMenu automatically collapses its links ' +
-      'into a hamburger + drawer on phones (docs/62), so the bar stays a clean logo · nav · CTA at every width. Keep the link ' +
-      'set short and avoid fixed-width children (no `min-w-[…]` / `w-[200px]` on the CTA) so nothing overflows. FOOTER: put link ' +
-      'groups in a Grid (it collapses N→2→1 by container width), never a single fixed row that runs off a phone. Verify both at ~375px.',
+      'Header & footer are NOT authored here — they are the silica FRAME (see `siteChrome` below). The guidance moved with ' +
+      'them; `describe_silica_authoring` carries the responsive rules that apply to the frame’s own vocabulary.',
   },
 
-  siteLayout: {
+  siteChrome: {
     description:
-      'The site LAYOUT is the chrome shell — header · content · footer — that wraps EVERY page. It is a SEPARATE document ' +
-      'from pages (type:"layout"), with its own draft/publish lifecycle, authored via the layout tools ' +
-      '(list_builder_layouts, get_builder_layout, update_builder_layout, publish_builder_layout, set_active_layout). A ' +
-      'site keeps a catalog of layouts; exactly one is ACTIVE — the live chrome the storefront serves.',
-    outlet:
-      'The layout tree MUST contain exactly one Outlet node — it marks where the routed page renders between your header ' +
-      'and footer. A layout with no Outlet renders chrome with no page body.',
-    identity:
-      'Bind the brand mark to the platform-owned site data: Wordmark/Logo → `site.identity` (name + logo), SocialLinks → ' +
-      '`site.social`. Navigation is Builder-owned — put links directly on the NavMenu node’s props.links, not a binding.',
+      'The header/footer/nav that wraps EVERY page is the silica FRAME, and it is NOT authored with these tools. This ' +
+      'guide covers the page BODY only.',
+    wrongPath:
+      'There used to be a parallel "site layout" document here (list_builder_layouts, get_builder_layout, ' +
+      'update_builder_layout, publish_builder_layout, set_active_layout). Those tools are REMOVED. They wrote the legacy ' +
+      '`builder_layouts.draft_tree`/`.published_tree` columns, and the storefront’s only chrome tier reads the silica ' +
+      'frame — so a header authored that way returned `published: true` and never appeared. If you are working from an ' +
+      'older transcript or doc that names them, that instruction is stale.',
     workflow:
-      'To change the header/footer: get_builder_layout (omit layoutId → the ACTIVE layout + its tree), edit the tree, ' +
-      'update_builder_layout, then publish_builder_layout (the active layout publishes straight to live). A brand-new ' +
-      'layout also needs set_active_layout after publishing.',
-    document: {
-      format: 'sparx.builder/v1',
-      type: 'layout',
-      name: 'Site chrome',
-      tree: {
-        type: 'Stack',
-        class: 'flex flex-col min-h-screen',
-        props: {},
-        children: [
-          {
-            type: 'Section',
-            class: 'w-full border-b border-border bg-base-100',
-            props: {},
-            children: [
-              {
-                type: 'Section',
-                class:
-                  'mx-auto w-full max-w-site flex flex-row items-center justify-between gap-4 px-6 py-4',
-                props: {},
-                children: [
-                  {
-                    type: 'Wordmark',
-                    props: { collapse: 'name' },
-                    binding: { path: 'site.identity' },
-                  },
-                  {
-                    type: 'NavMenu',
-                    class: 'flex flex-row',
-                    props: {
-                      links: [
-                        { label: 'About', href: '/about' },
-                        { label: 'Products', href: '/products' },
-                        { label: 'Contact', href: '/contact' },
-                      ],
-                    },
-                  },
-                  {
-                    type: 'Button',
-                    props: { label: 'Get in touch', style: 'primary', href: '/contact' },
-                  },
-                ],
-              },
-            ],
-          },
-          { type: 'Outlet', props: {} },
-          {
-            type: 'Section',
-            class: 'w-full border-t border-border bg-base-200',
-            props: {},
-            children: [
-              {
-                type: 'Section',
-                class: 'mx-auto w-full max-w-site flex flex-col gap-4 px-6 py-10',
-                props: {},
-                children: [
-                  {
-                    type: 'Wordmark',
-                    props: { collapse: 'name' },
-                    binding: { path: 'site.identity' },
-                  },
-                  { type: 'SocialLinks', props: {}, binding: { path: 'site.social' } },
-                  { type: 'Text', props: { variant: 'meta', text: '© Your Company' } },
-                ],
-              },
-            ],
-          },
-        ],
-      },
-    },
+      'To change the header/footer: `describe_silica_authoring` (its node contract differs from this one — read it ' +
+      'first), then `get_silica_frame` → `set_silica_frame` → `publish_silica_site`. The frame needs at least one silica ' +
+      'page to attach to, so `upsert_silica_page` the home page first if the site has none.',
+    identity:
+      'Use the sparx `siteNavbar` / `siteFooter` composites rather than silica’s native navbar/footer blocks — the ' +
+      'natives carry hardcoded demo branding, the composites bind `site.identity` and `site.social` to the tenant’s own.',
   },
 
   binding: {
@@ -474,8 +403,7 @@ export const BUILDER_STYLE_GUIDE = {
     'get_builder_page to read an existing tree. (3) create_builder_page or update_builder_page with your document ' +
     '(saves a DRAFT) — set page SEO inline via the envelope’s seoTitle/seoDescription, or set_page_seo to change just ' +
     'the SEO of an existing page without resending its tree. (4) publish_builder_page to take it live ' +
-    '(confirmation-gated). The site header/footer is authored SEPARATELY with the layout tools — see ' +
-    '`siteLayout` (get_builder_layout → update_builder_layout → publish_builder_layout).',
+    '(confirmation-gated). The site header/footer is NOT authored here — it is the silica frame; see `siteChrome`.',
 } as const;
 
 export type BuilderStyleGuide = typeof BUILDER_STYLE_GUIDE;

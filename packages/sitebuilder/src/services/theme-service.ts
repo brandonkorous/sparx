@@ -13,6 +13,7 @@ import { writeAuditLog } from '../audit';
 import { publishSitebuilderEvent } from '../events';
 import { SitebuilderNotFoundError, type PropertyContext } from '../errors';
 import { getOrCreateConfig } from './_config';
+import { readDraftThemeSlices, syncSilicaDraftTheme } from './silica-theme-sync';
 
 // ── Static catalog (no tenant) ──────────────────────────────────────────────
 
@@ -73,6 +74,16 @@ export async function selectTheme(
     const next = await tx.siteConfig.update({
       where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
       data: { themeKey: slug, draftSettings: draftSettings as Prisma.InputJsonValue },
+    });
+    // Write the pick THROUGH to the silica theme. Without this, selecting a theme
+    // recoloured the builder canvas (which derives its preview from these very
+    // columns) and left the live site on the platform base — see silica-theme-sync.
+    // `themePreset` is passed so a MARKETPLACE data theme compiles from the artifact
+    // it carries; its slug is not in the code registry and would otherwise miss.
+    await syncSilicaDraftTheme(tx, ctx.tenantId, ctx.propertyId, {
+      themeKey: slug,
+      presentation: readDraftThemeSlices(draftSettings).presentation,
+      themePreset: draftSettings.themePreset,
     });
     await writeAuditLog({
       tx,
@@ -136,7 +147,7 @@ export async function updateSettings(ctx: PropertyContext, rawInput: unknown): P
       }
       return next;
     })();
-    return tx.siteConfig.update({
+    const next = await tx.siteConfig.update({
       where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
       data: {
         ...(merged !== undefined ? { draftSettings: merged as Prisma.InputJsonValue } : {}),
@@ -145,6 +156,19 @@ export async function updateSettings(ctx: PropertyContext, rawInput: unknown): P
           : {}),
       },
     });
+    // A settings change that touched the LOOK has to reach the silica theme too, or
+    // the presentation overlay edited here only ever moves the builder's preview.
+    // Skipped when the caller sent no settings (an appearance-policy-only call changes
+    // which palette is offered, not what either palette contains).
+    if (merged !== undefined) {
+      const slices = readDraftThemeSlices(merged);
+      await syncSilicaDraftTheme(tx, ctx.tenantId, ctx.propertyId, {
+        themeKey: next.themeKey,
+        presentation: slices.presentation,
+        themePreset: slices.themePreset,
+      });
+    }
+    return next;
   });
 }
 

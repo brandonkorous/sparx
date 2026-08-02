@@ -108,6 +108,24 @@ export function readPropertyBrandOverride(tenantId: string, propertyId: string) 
   });
 }
 
+/** Reads the site's DRAFT silica theme — the token bag the STOREFRONT renders from
+ *  (`apps/site/app/layout.tsx` reads the published copy of this and nothing else).
+ *  Tenant-scoped for FORCE RLS. */
+export function readSilicaDraftTheme(tenantId: string, propertyId: string) {
+  return prisma.$transaction(async (tx) => {
+    await tx.$executeRawUnsafe(`SET LOCAL app.tenant_id = '${tenantId}'`);
+    const row = await tx.builderSite.findUnique({
+      where: { propertyId },
+      select: { silicaDraftTheme: true },
+    });
+    return (row?.silicaDraftTheme ?? null) as {
+      name?: string;
+      tokens?: Record<string, string>;
+      dark?: Record<string, string>;
+    } | null;
+  });
+}
+
 /** Seeds an additional NON-primary property (a second site) and returns a service
  *  context scoped to it — for exercising the per-site brand-override path. */
 export async function addSecondaryProperty(

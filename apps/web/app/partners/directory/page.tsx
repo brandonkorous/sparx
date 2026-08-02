@@ -49,7 +49,7 @@ export default async function PartnerDirectoryPage({
     <Section padding="lg">
       <div className="flex flex-col gap-10">
         <div className="flex flex-col gap-5">
-          <a href="/partners" className="text-caption text-ink-subtle no-underline">
+          <a href="/partners" className="text-sm no-underline">
             ← Partner program
           </a>
           <SectionHeader
@@ -90,7 +90,7 @@ export default async function PartnerDirectoryPage({
 
         <PartnerFacetBar facets={page.facets} current={current} />
 
-        <Text className="border-base-300 text-small text-ink-muted border-t pt-5">
+        <Text className="border-base-300 border-t pt-5 text-sm">
           {showing > 0
             ? `${showing}${page.next_cursor ? '+' : ''} partner${showing === 1 ? '' : 's'}`
             : 'No partners yet'}
@@ -118,7 +118,7 @@ export default async function PartnerDirectoryPage({
 function EmptyState({ filtered }: { filtered: boolean }) {
   return (
     <div className="flex flex-col items-center gap-[18px] py-16 text-center">
-      <Text className="text-body-lg text-ink-muted max-w-[420px]">
+      <Text className="max-w-[420px] text-lg">
         {filtered
           ? 'No partners match these filters yet. Try widening your search — or be the first here.'
           : 'No partners in your area yet. Want to be the first?'}

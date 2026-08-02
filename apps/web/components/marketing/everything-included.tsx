@@ -51,8 +51,7 @@ export function EverythingIncluded() {
           accent="var(--color-primary)"
           headline={
             <>
-              The tiles are the labels.{' '}
-              <span className="text-ink-subtle">Look what&apos;s under them</span>
+              The tiles are the labels. <span>Look what&apos;s under them</span>
             </>
           }
           lede={
@@ -71,7 +70,7 @@ export function EverythingIncluded() {
               {counts.live}
               <span className="text-primary">+</span>
             </Display>
-            <p className="text-ink-muted text-body mt-3.5 mb-0">
+            <p className="text-md mt-3.5 mb-0">
               shipped capabilities across {counts.modules} modules and the shared platform — one
               data layer, one dashboard, one bill.
             </p>
@@ -82,7 +81,7 @@ export function EverythingIncluded() {
                 </Button>
               </a>
             </div>
-            <span className="text-ink-subtle text-mini mt-3.5 block font-mono">
+            <span className="mt-3.5 block font-mono text-sm">
               {counts.live} live · {counts.building} in build · {counts.planned} planned
             </span>
           </div>
@@ -92,7 +91,7 @@ export function EverythingIncluded() {
             {SAMPLE.map((cap) => (
               <span
                 key={cap.name}
-                className="border-base-300 bg-base-100 text-caption inline-flex items-center gap-2 rounded-full border px-3.5 py-2"
+                className="border-base-300 bg-base-100 inline-flex items-center gap-2 rounded-full border px-3.5 py-2 text-sm"
               >
                 <Status color={cap.color} size="sm" />
                 {cap.name}
@@ -100,7 +99,7 @@ export function EverythingIncluded() {
             ))}
             <a
               href="/features"
-              className="border-base-300 text-primary text-caption inline-flex items-center gap-1.5 rounded-full border border-dashed bg-transparent px-3.5 py-2 font-medium no-underline"
+              className="border-base-300 text-primary inline-flex items-center gap-1.5 rounded-full border border-dashed bg-transparent px-3.5 py-2 text-sm font-medium no-underline"
             >
               + {remaining} more →
             </a>

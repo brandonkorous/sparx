@@ -46,7 +46,7 @@ export function CrmHero() {
               One customer, every signal
               <Spark color={M.color} />
             </Display>
-            <p className="text-ink-muted mt-7 max-w-[560px] text-[clamp(16px,1.6vw,20px)] leading-[1.55]">
+            <p className="mt-7 max-w-[560px] text-[clamp(16px,1.6vw,20px)] leading-[1.55]">
               {lede}
             </p>
             <div className="mt-[34px] flex flex-wrap items-center gap-3">
@@ -66,7 +66,7 @@ export function CrmHero() {
                   className="bg-base-100 border-base-300 inline-flex items-center gap-2 rounded-full border px-[13px] py-[7px]"
                 >
                   <Dot color={M.color} size={6} />
-                  <span className="text-ink-muted text-mini font-mono">{c}</span>
+                  <span className="font-mono text-sm">{c}</span>
                 </li>
               ))}
             </ul>
@@ -93,16 +93,14 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
     <div className="bg-base-100 border-base-300 overflow-hidden rounded-2xl border shadow-lg">
       <div className="border-base-300 flex items-center gap-[13px] border-b px-5 py-[18px]">
         <span
-          className={`${M.bg} bg-soft ${M.ink} border-module-crm text-body-sm flex size-[42px] shrink-0 items-center justify-center rounded-full border-[1.5px] font-medium`}
+          className={`${M.bg} bg-soft ${M.ink} border-module-crm text-md flex size-[42px] shrink-0 items-center justify-center rounded-full border-[1.5px] font-medium`}
         >
           {crm.initials}
         </span>
         <span className="min-w-0">
-          <span className="text-body block font-medium">{customer.name}</span>
+          <span className="text-md block font-medium">{customer.name}</span>
           {/* Record chrome inside the mimicked CRM surface. */}
-          <span className="text-ink-subtle text-mini font-mono">
-            {crm.type} · one record · 5 live signals
-          </span>
+          <span className="font-mono text-sm">{crm.type} · one record · 5 live signals</span>
         </span>
         <Dot color={M.color} size={9} />
       </div>
@@ -113,26 +111,24 @@ function RecordCard({ business }: { business: ExampleBusiness }) {
           [crm.avgOrder, 'avg order'],
         ].map(([v, l], i) => (
           <div key={l} className={`px-[18px] py-3.5 ${i === 0 ? '' : 'border-base-200 border-l'}`}>
-            <div className="text-lede font-medium tracking-[-0.01em]">{v}</div>
-            <div className="text-ink-subtle text-micro mt-0.5 font-mono">{l}</div>
+            <div className="text-lg font-medium tracking-[-0.01em]">{v}</div>
+            <div className="mt-0.5 font-mono text-sm">{l}</div>
           </div>
         ))}
       </div>
       <div className="px-5 pt-1.5 pb-3.5">
-        {/* Panel label inside the record UI — device chrome, not an eyebrow. */}
-        <div className="text-ink-subtle text-micro pt-3 pb-1 font-mono tracking-[0.06em] uppercase">
-          activity · from every module
-        </div>
+        {/* Panel label inside the record UI — device chrome, sentence case. */}
+        <div className="pt-3 pb-1 font-mono text-sm">activity · from every module</div>
         {crm.signals.map((s, i) => (
           <div
             key={s.label}
-            className={`text-small flex items-center gap-[11px] py-2.5 ${
+            className={`flex items-center gap-[11px] py-2.5 text-sm ${
               i === 0 ? '' : 'border-base-200 border-t'
             }`}
           >
             <Dot color={sourceColor(s.module)} size={8} />
             <span className="min-w-0">{s.label}</span>
-            <span className="text-ink-subtle text-micro border-base-300 ml-auto shrink-0 rounded-full border px-2 py-[3px] font-mono">
+            <span className="border-base-300 ml-auto shrink-0 rounded-full border px-2 py-[3px] font-mono text-sm">
               {s.module === 'ai' ? 'mcp' : s.module}
             </span>
           </div>

@@ -5,13 +5,20 @@ import { computeTotals, formatMoney, type InvoiceData } from './lib/invoice';
 /**
  * Live, on-paper preview that mirrors the generated PDF.
  *
- * NOTE ON COLOR: this is a DOCUMENT mockup, not site chrome. The sheet is white
- * and its ink is fixed because the PDF it mirrors is white with fixed ink — it
- * must NOT flip with the visitor's light/dark theme, or the preview stops
- * previewing. Those fidelity colors are therefore static Tailwind palette
- * utilities (`bg-white`, `text-zinc-900`, `text-zinc-500`), never theme tokens
- * and never inline hexes. Only the surrounding frame border/radius uses site
- * tokens. `data.accent` stays inline: it is user-chosen data.
+ * NOTE ON COLOR: this is a DOCUMENT mockup, not site chrome. The sheet must NOT
+ * flip with the visitor's light/dark theme, or the preview stops previewing —
+ * the PDF it mirrors is always ink-on-paper.
+ *
+ * That is a THEME-PINNING problem, not a reason to leave the token system. The
+ * root carries `data-theme="light"`, which pins this subtree to the sparx light
+ * palette in `@sparx/brand/theme.css`; `bg-base-100` / `text-base-content` /
+ * `border-base-300` then resolve to paper and ink and STAY there whatever the
+ * page around them is doing. It used to spell the same intent with Tailwind's
+ * own palette (`bg-white`, `text-base-content`, `text-base-content`) — a third color
+ * vocabulary alongside silica's, which is what this pass removed.
+ *
+ * Label/value hierarchy rides weight and size, which the markup already has —
+ * not a faded ink. `data.accent` stays inline: it is user-chosen data.
  */
 export function InvoicePreview({
   data,
@@ -27,7 +34,10 @@ export function InvoicePreview({
   const fromLines = [data.businessAddress, data.businessEmail].filter(Boolean).join('\n');
 
   return (
-    <div className="border-base-300 overflow-x-auto rounded-lg border bg-white p-7 font-[Arial,Helvetica,sans-serif] text-zinc-900">
+    <div
+      data-theme="light"
+      className="border-base-300 text-base-content bg-base-100 overflow-x-auto rounded-lg border p-7 font-[Arial,Helvetica,sans-serif]"
+    >
       <div className="flex items-start justify-between gap-4">
         <div>
           {data.logo ? (
@@ -40,7 +50,7 @@ export function InvoicePreview({
           <div className="text-[22px] font-bold tracking-[0.02em]" style={{ color: data.accent }}>
             {title}
           </div>
-          <div className="text-xs text-zinc-500"># {data.invoiceNumber || '0001'}</div>
+          <div className="text-base-content text-xs"># {data.invoiceNumber || '0001'}</div>
         </div>
       </div>
 
@@ -51,7 +61,7 @@ export function InvoicePreview({
         <Block label="BILL TO" name={data.clientName} body={data.clientAddress} />
       </div>
 
-      <div className="mt-3.5 flex gap-6 text-xs text-zinc-500">
+      <div className="text-base-content mt-3.5 flex gap-6 text-xs">
         <span>Issued: {data.issueDate || '—'}</span>
         <span>
           {dateLabel}: {data.dueDate || '—'}
@@ -61,7 +71,7 @@ export function InvoicePreview({
       <table className="mt-5 w-full border-collapse text-[13px]">
         <thead>
           {/* Uppercase column headers are invoice-document mimicry, not eyebrows. */}
-          <tr className="bg-zinc-100 text-[10px] tracking-[0.04em] text-zinc-500">
+          <tr className="bg-base-200 text-base-content text-[10px] tracking-[0.04em]">
             <th className="px-2 py-[7px] text-left">DESCRIPTION</th>
             <th className="w-[52px] px-2 py-[7px] text-right">QTY</th>
             <th className="w-[90px] px-2 py-[7px] text-right">UNIT</th>
@@ -70,7 +80,7 @@ export function InvoicePreview({
         </thead>
         <tbody>
           {data.items.map((item) => (
-            <tr key={item.id} className="border-b border-zinc-200">
+            <tr key={item.id} className="border-base-300 border-b">
               <td className="p-2 align-top">{item.description || '—'}</td>
               <td className="p-2 text-right">{item.quantity}</td>
               <td className="p-2 text-right">{money(Number(item.unitPrice) || 0)}</td>
@@ -92,7 +102,7 @@ export function InvoicePreview({
             <Row label={`Tax (${data.taxRate}%)`} value={money(totals.taxAmount)} />
           ) : null}
           {/* The totals rule is document structure, not decoration. */}
-          <div className="mt-1.5 border-t border-zinc-300 pt-2">
+          <div className="border-base-300 mt-1.5 border-t pt-2">
             <Row label="Total" value={money(totals.total)} bold accent={data.accent} />
           </div>
         </div>
@@ -100,8 +110,8 @@ export function InvoicePreview({
 
       {data.notes.trim() ? (
         <div className="mt-5">
-          <div className="text-[10px] font-bold tracking-[0.04em] text-zinc-500">NOTES</div>
-          <p className="mt-1.5 text-xs whitespace-pre-wrap text-zinc-500">{data.notes}</p>
+          <div className="text-base-content text-[10px] font-bold tracking-[0.04em]">NOTES</div>
+          <p className="text-base-content mt-1.5 text-xs whitespace-pre-wrap">{data.notes}</p>
         </div>
       ) : null}
     </div>
@@ -112,10 +122,10 @@ function Block({ label, name, body }: { label: string; name: string; body: strin
   return (
     <div className="min-w-[160px]">
       {/* Field label — invoice-document mimicry. */}
-      <div className="text-[10px] font-bold tracking-[0.04em] text-zinc-500">{label}</div>
+      <div className="text-base-content text-[10px] font-bold tracking-[0.04em]">{label}</div>
       {name ? <div className="mt-1 text-[13px] font-bold">{name}</div> : null}
       {body ? (
-        <div className="mt-0.5 text-xs leading-normal whitespace-pre-wrap text-zinc-500">
+        <div className="text-base-content mt-0.5 text-xs leading-normal whitespace-pre-wrap">
           {body}
         </div>
       ) : null}
@@ -137,9 +147,9 @@ function Row({
   const cell = bold ? 'text-[15px] font-bold' : 'text-[13px] font-normal';
   return (
     <div className="flex justify-between py-[3px]">
-      <span className={`${cell} ${bold ? 'text-zinc-900' : 'text-zinc-500'}`}>{label}</span>
+      <span className={`${cell} ${bold ? 'text-base-content' : 'text-base-content'}`}>{label}</span>
       <span
-        className={`${cell} ${accent ? '' : 'text-zinc-900'}`}
+        className={`${cell} ${accent ? '' : 'text-base-content'}`}
         style={accent ? { color: accent } : undefined}
       >
         {value}

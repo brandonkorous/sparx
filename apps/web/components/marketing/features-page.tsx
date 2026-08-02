@@ -41,8 +41,7 @@ export function FeaturesPage() {
           accent="var(--color-primary)"
           headline={
             <>
-              {counts.modules} modules.{' '}
-              <span className="text-ink-subtle">Activate any combination</span>
+              {counts.modules} modules. <span>Activate any combination</span>
             </>
           }
           lede={
@@ -64,8 +63,7 @@ export function FeaturesPage() {
           accent="var(--color-primary)"
           headline={
             <>
-              The platform underneath.{' '}
-              <span className="text-ink-subtle">Included with every plan</span>
+              The platform underneath. <span>Included with every plan</span>
             </>
           }
           lede={
@@ -103,7 +101,7 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
         <div className="max-w-[1100px]">
           <Display as="h1" size={96} lineHeight={90}>
             You don&apos;t buy modules.{' '}
-            <span className="text-ink-subtle">
+            <span>
               You get everything inside them
               <Spark />
             </span>
@@ -111,7 +109,7 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
         </div>
 
         <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
-          <Text variant="lead" className="text-ink-muted max-w-[620px]">
+          <Text variant="lead" className="max-w-[620px]">
             The pricing page lists modules. This is what&apos;s actually inside them — {counts.live}{' '}
             shipped capabilities, {counts.building} more in build, and {counts.planned} on the
             roadmap. One platform replaces a stack of six or eight separate tools, and every piece
@@ -127,9 +125,7 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
                 See pricing
               </a>
             </div>
-            <Text className="text-mini text-ink-subtle font-mono">
-              No credit card · Live in five minutes
-            </Text>
+            <Text className="font-mono text-sm">No credit card · Live in five minutes</Text>
           </div>
         </div>
 
@@ -137,14 +133,14 @@ function FeaturesHero({ counts }: { counts: ReturnType<typeof capabilityCounts> 
         <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-x-14 gap-y-8 border-t pt-8">
           {metrics.map((m) => (
             <div key={m.s} className="flex flex-col gap-1">
-              <span className="text-h1 font-medium tracking-[-0.02em]">
+              <span className="text-3xl font-medium tracking-[-0.02em]">
                 {m.v}
                 {'suffix' in m && m.suffix ? (
-                  <span className="text-ink-subtle text-body font-normal">{m.suffix}</span>
+                  <span className="text-md font-normal">{m.suffix}</span>
                 ) : null}
                 {'spark' in m && m.spark ? <Spark /> : null}
               </span>
-              <Text className="text-caption text-ink-muted">{m.s}</Text>
+              <Text className="text-sm">{m.s}</Text>
             </div>
           ))}
         </div>
@@ -166,7 +162,7 @@ function StatusLegend() {
       {order.map((s) => (
         <span key={s} className="inline-flex items-center gap-2">
           <Status color={STATUS_META[s].color} size="sm" label={STATUS_META[s].label} />
-          <Text as="span" className="text-caption text-ink-muted">
+          <Text as="span" className="text-sm">
             {STATUS_META[s].label}
           </Text>
         </span>
@@ -201,8 +197,8 @@ function AreaBlock({ area }: { area: CapabilityArea }) {
               {area.name}
             </Heading>
           </div>
-          <Text className="text-small text-ink-muted mt-3">{area.summary}</Text>
-          <div className="text-mini mt-4 inline-flex items-baseline gap-1.5 font-mono">
+          <Text className="mt-3 text-sm">{area.summary}</Text>
+          <div className="mt-4 inline-flex items-baseline gap-1.5 font-mono text-sm">
             <span className="font-medium">{total}</span>
             capabilities
             <span>· {liveN} live</span>
@@ -229,7 +225,7 @@ function CapabilityChip({ cap }: { cap: Capability }) {
   const meta = STATUS_META[cap.status];
   return (
     <span
-      className="border-base-300 bg-base-200 text-caption inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
+      className="border-base-300 bg-base-200 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-sm"
       title={meta.label}
     >
       <Status color={meta.color} size="sm" label={meta.label} />
@@ -247,7 +243,7 @@ function FeaturesCta(): ReactNode {
           Start with one. The rest is already built
           <Spark />
         </Display>
-        <Text variant="lead" className="text-ink-muted mt-6 mb-9 max-w-[580px]">
+        <Text variant="lead" className="mt-6 mb-9 max-w-[580px]">
           Switch on a single module from $10/mo and get a live site in five minutes. Everything on
           this page is waiting the moment you need it — no migration, no replatform, no goodbyes.
         </Text>
@@ -259,7 +255,7 @@ function FeaturesCta(): ReactNode {
             How it works
           </a>
         </div>
-        <Text className="text-mini text-ink-subtle mt-6 font-mono">
+        <Text className="mt-6 font-mono text-sm">
           No credit card · Cancel anytime · Your data, always exportable
         </Text>
       </div>

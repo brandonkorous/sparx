@@ -42,10 +42,10 @@ export function ToolCard({
           >
             <Icon size={22} strokeWidth={1.6} />
           </span>
-          <ArrowUpRight className="tool-card__arrow text-ink-subtle" size={18} />
+          <ArrowUpRight className="tool-card__arrow" size={18} />
         </span>
-        <Heading className="text-body m-0 font-medium tracking-tight">{tool.name}</Heading>
-        <p className="text-body-sm text-ink-muted tool-card__desc m-0">{tool.tagline}</p>
+        <Heading className="text-md m-0 font-medium tracking-tight">{tool.name}</Heading>
+        <p className="text-md tool-card__desc m-0">{tool.tagline}</p>
         <span
           className={cx(
             badgeClasses({ color: `module-${tool.module}`, variant: 'soft', size: 'sm' }),

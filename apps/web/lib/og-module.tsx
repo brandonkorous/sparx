@@ -73,9 +73,7 @@ export function renderModuleOgImage(meta: ModuleOgMeta) {
             style={{
               fontWeight: 500,
               fontSize: 16,
-              letterSpacing: '0.08em',
               color: color.color,
-              textTransform: 'uppercase',
             }}
           >
             {meta.label}
@@ -138,9 +136,7 @@ export function renderModuleOgImage(meta: ModuleOgMeta) {
             style={{
               fontWeight: 500,
               fontSize: 14,
-              letterSpacing: '0.08em',
               color: '#52525B',
-              textTransform: 'uppercase',
             }}
           >
             From

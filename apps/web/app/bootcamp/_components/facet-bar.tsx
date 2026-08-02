@@ -53,9 +53,7 @@ function Chip({
       })}
     >
       {label}
-      {typeof count === 'number' ? (
-        <span className="text-ink-subtle font-normal">{count}</span>
-      ) : null}
+      {typeof count === 'number' ? <span className="font-normal">{count}</span> : null}
       {on ? <span aria-hidden>×</span> : null}
     </a>
   );
@@ -64,7 +62,7 @@ function Chip({
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-mini text-ink-subtle w-21 font-medium">{label}</span>
+      <span className="w-21 text-sm font-medium">{label}</span>
       {children}
     </div>
   );
@@ -160,7 +158,7 @@ export function BootcampFacetBar({
       ) : null}
 
       {anySelected ? (
-        <a href={`${BASE}#directory`} className="text-caption text-ink-subtle self-start underline">
+        <a href={`${BASE}#directory`} className="self-start text-sm underline">
           Clear all filters
         </a>
       ) : null}

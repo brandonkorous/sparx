@@ -155,7 +155,8 @@ export function SiteHeader({ signInHref = '/sign-in', signUpHref = '/sign-up' }:
                         </span>
                         <span className="flex flex-col gap-0.5">
                           <span className="text-sm font-medium">{m.label}</span>
-                          <span className="text-xs">{m.desc}</span>
+                          {/* Same as the desktop mega menu: scanned, not read through. */}
+                          <span className="text-soft text-xs">{m.desc}</span>
                         </span>
                       </a>
                     </DrawerClose>

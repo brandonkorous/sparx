@@ -33,7 +33,7 @@ export function PricingV1AlwaysIncluded() {
                   <span className="bg-primary bg-soft flex size-11 items-center justify-center rounded-xl">
                     <Icon size={20} strokeWidth={2} className="text-primary" aria-hidden />
                   </span>
-                  <CardTitle className="text-base">{it.title}</CardTitle>
+                  <CardTitle className="text-md">{it.title}</CardTitle>
                   <Text className="text-sm">{it.body}</Text>
                 </CardBody>
               </Card>

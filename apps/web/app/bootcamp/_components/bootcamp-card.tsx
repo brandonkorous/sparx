@@ -30,22 +30,20 @@ export function BootcampDirectoryCard({ bootcamp }: { bootcamp: Card }) {
           {FORMAT_LABEL[bootcamp.format]}
         </Badge>
         {seats ? (
-          <span className={seats.full ? 'text-mini text-warning' : 'text-mini text-ink-subtle'}>
-            {seats.text}
-          </span>
+          <span className={seats.full ? 'text-warning text-sm' : 'text-sm'}>{seats.text}</span>
         ) : (
-          <span className="text-mini text-ink-subtle">{price}</span>
+          <span className="text-sm">{price}</span>
         )}
       </div>
 
-      <h3 className="text-lede-lg m-0 font-medium tracking-[-0.015em]">{bootcamp.title}</h3>
+      <h3 className="m-0 text-lg font-medium tracking-[-0.015em]">{bootcamp.title}</h3>
 
-      <div className="text-caption text-ink-muted flex flex-col gap-[5px]">
+      <div className="flex flex-col gap-[5px] text-sm">
         <span>{bootcampDates(bootcamp)}</span>
         <span>{bootcampLocation(bootcamp)}</span>
       </div>
 
-      <div className="border-base-300 text-caption text-ink-muted mt-auto flex items-center gap-2 border-t pt-3.5">
+      <div className="border-base-300 mt-auto flex items-center gap-2 border-t pt-3.5 text-sm">
         <Badge color={tier.color} variant="soft" size="sm">
           {tier.label}
         </Badge>

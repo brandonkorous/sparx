@@ -5,6 +5,13 @@ description: Evaluate a dashboard surface (a detail/edit/create page or overlay)
 The point: a UI rubric catches "is it on-system and well-composed"; the UX heuristics catch "does this surface actually serve the user's job" — related data loaded, each concern in one home, cross-module wayfinding by color, no dead ends. A bare 1–10 is noise; the value is the deductions, because they ARE the worklist.
 ---
 
+> **SUPERSEDED (2026-08-01).** This skill wires a form in `apps/dashboard`, which no longer
+> exists, using `SurfaceFrame` / the detail-view registries, which have been deleted from
+> `@sparx/ui`. Do not follow the procedure below. Building a surface in the flagship app is
+> the `workbench-surface` agent + [docs/123-workbench.md](<../../../docs/123-workbench.md>);
+> its pane-vs-modal rule replaces the drawer/modal/full-page choice described here. The
+> three-registries footgun is retained only as a lesson about keeping wiring in one place.
+
 # Surface review — score a page on UI + UX, then fix what the score exposes
 
 Companion to the `form-surface` skill: that one is *how to build/wire* a surface; this one is *how to judge whether it's any good* and turn the judgment into focused work. Design spec for the UI side is [docs/86](<../../../docs/86-surface-frame-pattern.md>); the census + per-page log live in [docs/105](<../../../docs/105-form-modal-surface-inventory.md>).

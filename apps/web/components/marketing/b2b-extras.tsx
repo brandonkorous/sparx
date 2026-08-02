@@ -56,7 +56,7 @@ export function B2bFleet() {
             <span className={`${M.bg} bg-soft flex size-8 items-center justify-center rounded-lg`}>
               <Dot color={M.color} size={9} />
             </span>
-            <h3 className="text-body-lg m-0 font-sans font-medium tracking-[-0.01em]">{p.title}</h3>
+            <h3 className="m-0 font-sans text-lg font-medium tracking-[-0.01em]">{p.title}</h3>
             <Text size={13} className="m-0">
               {p.body}
             </Text>
@@ -110,7 +110,7 @@ export function B2bSameEngine() {
           <EngineColumn key={c.title} col={c} />
         ))}
       </div>
-      <Text size={14} tone="subtle" className="mt-5 max-w-[700px]">
+      <Text size={14} className="mt-5 max-w-[700px]">
         B2B requires Commerce — it’s wholesale on top of the commerce engine, so they run as one and
         bill as one. See{' '}
         <a href="/commerce" className={`${M.ink} font-medium`}>
@@ -128,7 +128,7 @@ function EngineColumn({ col }: { col: EngineCol }) {
     <div
       className={`${accent.bg} border-base-300 bg-soft flex flex-col gap-4 rounded-xl border p-8`}
     >
-      <h3 className="text-h2 m-0 font-sans font-medium tracking-[-0.02em]">{col.title}</h3>
+      <h3 className="m-0 font-sans text-2xl font-medium tracking-[-0.02em]">{col.title}</h3>
       <Text size={15} className="m-0">
         {col.body}
       </Text>

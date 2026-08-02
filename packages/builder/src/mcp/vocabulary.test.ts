@@ -6,7 +6,7 @@
 // an agent to emit a tree the service will reject.
 
 import { describe, expect, it } from 'vitest';
-import { parseLayoutImport, parsePageImport } from '@sparx/builder-schemas';
+import { parsePageImport } from '@sparx/builder-schemas';
 import { validateClasses } from '@sparx/surface-compile';
 
 import { builderMcpTools } from './index';
@@ -23,13 +23,18 @@ describe('BUILDER_STYLE_GUIDE', () => {
     }
   });
 
-  it('teaches a site-layout example that validates (and contains an Outlet)', () => {
-    const parsed = parseLayoutImport(BUILDER_STYLE_GUIDE.siteLayout.document);
-    expect(parsed.ok).toBe(true);
-    const hasOutlet = (node: { type: string; children?: unknown[] }): boolean =>
-      node.type === 'Outlet' ||
-      (node.children ?? []).some((c) => hasOutlet(c as { type: string; children?: unknown[] }));
-    if (parsed.ok) expect(hasOutlet(parsed.tree)).toBe(true);
+  // The guide used to ship a `siteLayout` section with a full example chrome tree, and
+  // this test proved the tree PARSED — which it did, right up until it was published to
+  // columns the storefront does not read. Validity was never the question. What the
+  // guide has to get right is WHICH SYSTEM owns the chrome, so that is what is pinned.
+  it('sends chrome authoring to the silica frame, not the removed layout tools', () => {
+    const chrome = BUILDER_STYLE_GUIDE.siteChrome;
+    expect(chrome.workflow).toMatch(/set_silica_frame/);
+    expect(chrome.workflow).toMatch(/publish_silica_site/);
+    // The dead names may appear ONLY in the note explaining they are gone.
+    expect(chrome.description).not.toMatch(/update_builder_layout/);
+    expect(chrome.workflow).not.toMatch(/update_builder_layout/);
+    expect(BUILDER_STYLE_GUIDE.workflow).not.toMatch(/builder_layout/);
   });
 
   it('teaches recipe trees that all validate as bare node trees', () => {
@@ -93,28 +98,15 @@ describe('builderMcpTools', () => {
     }
   });
 
-  it('exposes the site-layout (chrome) authoring surface', () => {
-    const names = builderMcpTools.map((t) => t.name);
-    expect(names).toEqual(
-      expect.arrayContaining([
-        'list_builder_layouts',
-        'get_builder_layout',
-        'create_builder_layout',
-        'update_builder_layout',
-        'publish_builder_layout',
-        'set_active_layout',
-        'delete_builder_layout',
-      ])
-    );
-  });
-
-  it('gates layout go-live + delete behind confirmation, leaves layout authoring un-gated', () => {
-    const byName = new Map(builderMcpTools.map((t) => [t.name, t]));
-    expect(byName.get('publish_builder_layout')?.confirmation).toBe(true);
-    expect(byName.get('set_active_layout')?.confirmation).toBe(true);
-    expect(byName.get('delete_builder_layout')?.confirmation).toBe(true);
-    expect(byName.get('create_builder_layout')?.confirmation).toBe(false);
-    expect(byName.get('update_builder_layout')?.confirmation).toBe(false);
+  // These tools are GONE, and their absence is the fix — so it is asserted rather than
+  // left to whoever notices. They read and wrote `builder_layouts.draft_tree` /
+  // `.published_tree`, the legacy `.bx-*` columns; the storefront's only chrome tier
+  // reads `.silica_published_tree`. Every one of them therefore reported success and
+  // changed nothing a visitor could see. Re-adding a `*_builder_layout` tool without
+  // first giving it a render path puts that failure straight back.
+  it('exposes NO site-layout tools — chrome is the silica frame', () => {
+    const layoutTools = builderMcpTools.filter((t) => /layout/i.test(t.name));
+    expect(layoutTools.map((t) => t.name)).toEqual([]);
   });
 
   it('describe_builder_styling returns the guide without a service call', async () => {

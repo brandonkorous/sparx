@@ -57,7 +57,7 @@ export function BrandHero() {
             Download brand assets
           </a>
           <a href="mailto:brand@sparx.works">
-            <Text as="span" mono size={13} tone="subtle" className="py-3 no-underline">
+            <Text as="span" mono size={13} className="py-3 no-underline">
               Press kit → brand@sparx.works
             </Text>
           </a>
@@ -68,7 +68,7 @@ export function BrandHero() {
         <SectionIndex />
 
         <div className="flex flex-wrap items-center gap-2.5 pt-1">
-          <Text as="span" size={13} tone="subtle">
+          <Text as="span" size={13}>
             Tap any swatch, hex, or token to copy it.
           </Text>
           <CopyValue value="#e04631" label="Copy the sparx Ember hex" />
@@ -83,10 +83,10 @@ function IdentityList() {
     <dl className="border-base-300 mt-2 grid grid-cols-1 gap-5 border-t pt-2 sm:grid-cols-2 lg:grid-cols-4">
       {IDENTITY.map((row) => (
         <div key={row.label} className="flex flex-col gap-1.5 pt-6">
-          <Text as="dt" size={12.5} tone="subtle">
+          <Text as="dt" size={12.5}>
             {row.label}
           </Text>
-          <Text as="dd" size={15} weight={500} tone="default">
+          <Text as="dd" size={15} weight={500}>
             {row.value}
           </Text>
         </div>

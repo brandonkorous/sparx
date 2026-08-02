@@ -50,15 +50,13 @@ export function CrmOneRecord() {
             {before.map((row, i) => (
               <div
                 key={row.label}
-                className={`text-ink-muted text-small flex items-center gap-[11px] px-5 py-[13px] ${
+                className={`flex items-center gap-[11px] px-5 py-[13px] text-sm ${
                   i === 0 ? '' : 'border-base-200 border-t'
                 }`}
               >
                 <Dot color={row.module === 'warn' ? WARNING : hue(row.module)} size={8} />
                 <span className="min-w-0">{row.label}</span>
-                <span className="text-warning text-micro ml-auto shrink-0 font-mono">
-                  {row.tag}
-                </span>
+                <span className="text-warning ml-auto shrink-0 font-mono text-sm">{row.tag}</span>
               </div>
             ))}
           </Panel>
@@ -83,21 +81,21 @@ export function CrmOneRecord() {
             <div className="px-5 pt-4 pb-[18px]">
               <div className="flex items-center gap-[11px] pb-1">
                 <span
-                  className={`${M.bg} bg-soft ${M.ink} border-module-crm text-micro flex size-[30px] shrink-0 items-center justify-center rounded-full border-[1.5px] font-medium`}
+                  className={`${M.bg} bg-soft ${M.ink} border-module-crm flex size-[30px] shrink-0 items-center justify-center rounded-full border-[1.5px] text-sm font-medium`}
                 >
                   DR
                 </span>
-                <span className="text-small font-medium">one customer, one row</span>
+                <span className="text-sm font-medium">one customer, one row</span>
               </div>
               {after.map((row) => (
                 <div
                   key={row.label}
-                  className="border-base-200 text-small flex items-center gap-[11px] border-t py-2.5"
+                  className="border-base-200 flex items-center gap-[11px] border-t py-2.5 text-sm"
                 >
                   <Dot color={hue(row.module)} size={8} />
                   <span>{row.label}</span>
                   <span
-                    className={`${M.bg} bg-soft ${M.ink} text-micro ml-auto rounded-full px-2 py-[3px] font-mono`}
+                    className={`${M.bg} bg-soft ${M.ink} ml-auto rounded-full px-2 py-[3px] font-mono text-sm`}
                   >
                     live
                   </span>
@@ -129,7 +127,7 @@ function Panel({
       }`}
     >
       {/* Panel caption — device chrome naming the two stacks being compared. */}
-      <div className="border-base-300 text-ink-subtle text-micro flex items-center gap-[9px] border-b px-5 py-[15px] font-mono tracking-[0.05em] uppercase">
+      <div className="border-base-300 flex items-center gap-[9px] border-b px-5 py-[15px] font-mono text-sm">
         <Dot color={headerDot} size={8} />
         {header}
       </div>

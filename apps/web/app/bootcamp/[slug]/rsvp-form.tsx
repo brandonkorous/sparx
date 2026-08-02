@@ -20,7 +20,7 @@ import { registerForBootcamp, type RsvpState } from './actions';
 
 const INITIAL: RsvpState = { status: 'idle' };
 
-const LABEL_CLASS = 'text-caption font-medium';
+const LABEL_CLASS = 'text-sm font-medium';
 
 export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
   const [state, action, pending] = useActionState(registerForBootcamp, INITIAL);
@@ -112,7 +112,7 @@ export function RsvpForm({ slug, full }: { slug: string; full: boolean }) {
       ) : null}
 
       <SubmitButton full={full} pending={pending} />
-      <p className="text-mini text-ink-subtle m-0">
+      <p className="m-0 text-sm">
         Your details go to the hosting partner, who follows up with the specifics.
       </p>
     </form>
@@ -132,15 +132,15 @@ function Confirmation({ waitlisted }: { waitlisted: boolean }) {
     <div role="status" className="flex flex-col items-start gap-3.5">
       <span
         aria-hidden
-        className="bg-primary bg-soft text-primary text-h3 inline-flex h-11 w-11 items-center justify-center rounded-full"
+        className="bg-primary bg-soft text-primary inline-flex h-11 w-11 items-center justify-center rounded-full text-2xl"
       >
         ✓
       </span>
-      <span className="text-h3 font-medium tracking-[-0.02em]">
+      <span className="text-2xl font-medium tracking-[-0.02em]">
         {waitlisted ? 'You’re on the waitlist' : 'Your seat is reserved'}
         <span className="text-primary">.</span>
       </span>
-      <p className="text-body-sm text-ink-muted m-0 max-w-[320px]">
+      <p className="text-md m-0 max-w-[320px]">
         {waitlisted
           ? 'This bootcamp is full — we’ll let you know the moment a seat opens up.'
           : 'The hosting partner has your details and will be in touch with everything you need.'}

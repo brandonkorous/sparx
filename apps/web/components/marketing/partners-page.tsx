@@ -93,12 +93,12 @@ function PartnersApply() {
               <div key={w.n} className="flex items-start gap-3.5">
                 {/* A leading list marker beside the item — not a step eyebrow
                     above a heading (the item title is a sibling, not a child). */}
-                <span className="bg-primary bg-soft text-primary text-mini flex size-7 shrink-0 items-center justify-center rounded-lg font-mono">
+                <span className="bg-primary bg-soft text-primary flex size-7 shrink-0 items-center justify-center rounded-lg font-mono text-sm">
                   {w.n}
                 </span>
                 <div>
-                  <div className="text-body-sm font-medium">{w.t}</div>
-                  <div className="text-ink-muted text-small mt-[3px]">{w.d}</div>
+                  <div className="text-md font-medium">{w.t}</div>
+                  <div className="mt-[3px] text-sm">{w.d}</div>
                 </div>
               </div>
             ))}

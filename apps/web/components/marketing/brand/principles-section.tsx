@@ -48,15 +48,13 @@ export function PrinciplesSection() {
           {PRINCIPLES.map((p) => (
             <Card key={p.n} className="bg-base-200">
               <CardBody className="flex flex-col gap-3.5">
-                <Text as="span" size={12} mono tone="subtle">
+                <Text as="span" size={12} mono>
                   {p.n}
                 </Text>
-                <Text as="h3" size={18} weight={500} tone="default" className="tracking-[-0.01em]">
+                <Text as="h3" size={18} weight={500} className="tracking-[-0.01em]">
                   {p.title}
                 </Text>
-                <Text size={14} tone="muted">
-                  {p.body}
-                </Text>
+                <Text size={14}>{p.body}</Text>
               </CardBody>
             </Card>
           ))}

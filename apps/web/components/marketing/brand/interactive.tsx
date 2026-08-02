@@ -155,7 +155,7 @@ export function Swatch({ name, value, hex, token, note, height = 88, theme }: Sw
         style={{ height, backgroundColor: value }}
       />
       <div className="flex flex-col gap-2">
-        <Text as="span" size={14} weight={500} tone="default">
+        <Text as="span" size={14} weight={500}>
           {name}
         </Text>
         <div className="flex flex-wrap gap-1.5">
@@ -163,7 +163,7 @@ export function Swatch({ name, value, hex, token, note, height = 88, theme }: Sw
           {token ? <CopyValue value={token} /> : null}
         </div>
         {note ? (
-          <Text as="span" size={12.5} tone="muted">
+          <Text as="span" size={12.5}>
             {note}
           </Text>
         ) : null}

@@ -47,9 +47,7 @@ export function CrmSegments() {
           {/* Device chrome: the segment's name rail inside the mimicked builder. */}
           <div className="border-base-300 flex items-center gap-[9px] border-b px-5 py-3.5">
             <Dot color={M.color} size={8} />
-            <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
-              segment · win-back at-risk
-            </span>
+            <span className={`${M.ink} font-mono text-sm`}>segment · win-back at-risk</span>
           </div>
           {preds.map((p) => (
             <div
@@ -58,18 +56,18 @@ export function CrmSegments() {
             >
               {p.join ? (
                 <span
-                  className={`${M.bg} bg-soft ${M.ink} text-micro rounded-md px-[9px] py-[3px] font-mono`}
+                  className={`${M.bg} bg-soft ${M.ink} rounded-md px-[9px] py-[3px] font-mono text-sm`}
                 >
                   {p.join}
                 </span>
               ) : null}
-              <span className="border-base-300 bg-base-200 text-small rounded-[7px] border px-2.5 py-[5px]">
+              <span className="border-base-300 bg-base-200 rounded-[7px] border px-2.5 py-[5px] text-sm">
                 <span className="font-medium">{p.field}</span>{' '}
-                <span className="text-ink-subtle text-mini font-mono">{p.op}</span> {p.value}
+                <span className="font-mono text-sm">{p.op}</span> {p.value}
               </span>
             </div>
           ))}
-          <div className="bg-base-200 border-base-300 text-ink-subtle text-mini mt-auto flex items-center gap-[9px] border-t px-5 py-3.5 font-mono">
+          <div className="bg-base-200 border-base-300 mt-auto flex items-center gap-[9px] border-t px-5 py-3.5 font-mono text-sm">
             <Dot color={M.color} size={6} />
             recomputed live · synced to Email
           </div>
@@ -79,7 +77,7 @@ export function CrmSegments() {
             <div className={`${M.ink} text-[52px] leading-none font-medium tracking-[-0.03em]`}>
               218
             </div>
-            <p className="text-ink-muted text-caption mt-2">
+            <p className="mt-2 text-sm">
               customers match right now — auto-added the moment they cross the line, removed when
               they reorder.
             </p>
@@ -91,10 +89,10 @@ export function CrmSegments() {
             >
               <span className="bg-base-200 size-7 shrink-0 rounded-full" />
               <span className="min-w-0">
-                <span className="text-small block font-medium">{c.name}</span>
-                <span className="text-ink-subtle text-mini">{c.meta}</span>
+                <span className="block text-sm font-medium">{c.name}</span>
+                <span className="text-sm">{c.meta}</span>
               </span>
-              <span className="text-ink-muted text-caption ml-auto font-mono">{c.amt}</span>
+              <span className="ml-auto font-mono text-sm">{c.amt}</span>
             </div>
           ))}
         </div>
@@ -167,7 +165,7 @@ export function CrmPipeline() {
           >
             <div className="flex items-center justify-between">
               {/* Stage header — kanban column chrome, kept as-is. */}
-              <span className="text-caption flex items-center gap-[7px] font-medium">
+              <span className="flex items-center gap-[7px] text-sm font-medium">
                 {s.won ? (
                   <svg
                     width="13"
@@ -190,7 +188,7 @@ export function CrmPipeline() {
                 )}
                 {s.name}
               </span>
-              <span className="text-ink-subtle text-micro font-mono">{s.n}</span>
+              <span className="font-mono text-sm">{s.n}</span>
             </div>
             {s.deals.map((d) => (
               <div
@@ -199,8 +197,8 @@ export function CrmPipeline() {
                   d.p === 'won' ? 'border-module-crm' : 'border-base-300'
                 }`}
               >
-                <div className="text-caption leading-[1.3] font-medium">{d.t}</div>
-                <div className="text-ink-muted text-micro mt-1.5 flex justify-between font-mono">
+                <div className="text-sm leading-[1.3] font-medium">{d.t}</div>
+                <div className="mt-1.5 flex justify-between font-mono text-sm">
                   <span>{d.v}</span>
                   <span className={M.ink}>{d.p}</span>
                 </div>
@@ -212,8 +210,8 @@ export function CrmPipeline() {
       <div className="bg-base-100 border-base-300 mt-[22px] flex flex-wrap items-center gap-8 rounded-xl border px-[22px] py-[18px]">
         {forecast.map(([n, l]) => (
           <div key={l}>
-            <div className="text-h3 font-medium tracking-[-0.02em]">{n}</div>
-            <div className="text-ink-subtle text-mini mt-0.5">{l}</div>
+            <div className="text-2xl font-medium tracking-[-0.02em]">{n}</div>
+            <div className="mt-0.5 text-sm">{l}</div>
           </div>
         ))}
       </div>

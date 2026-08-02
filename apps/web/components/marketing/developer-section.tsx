@@ -20,8 +20,8 @@ const SYN = {
   ident: 'text-module-crm',
   number: 'text-module-commerce',
   method: 'text-module-builder',
-  property: 'text-ink-muted',
-  comment: 'text-ink-subtle',
+  property: '',
+  comment: '',
 } as const;
 
 const FEATURES = [
@@ -101,9 +101,9 @@ export function DeveloperSection() {
               >
                 <div className="flex items-center gap-2.5">
                   {f.icon}
-                  <span className="text-body-sm font-sans font-medium">{f.title}</span>
+                  <span className="text-md font-sans font-medium">{f.title}</span>
                 </div>
-                <span className="text-caption font-sans">{f.body}</span>
+                <span className="font-sans text-sm">{f.body}</span>
               </div>
             ))}
           </div>
@@ -130,17 +130,17 @@ function CodeCard() {
 function CodeTabs() {
   return (
     <div className="bg-base-200 border-base-300 flex items-center border-b px-4">
-      <span className="border-b-primary text-mini border-b px-4 py-3.5 font-mono font-medium">
+      <span className="border-b-primary border-b px-4 py-3.5 font-mono text-sm font-medium">
         create-order.ts
       </span>
       {['curl', 'graphql.gql', 'webhook.json'].map((t) => (
-        <span key={t} className="text-ink-subtle text-mini px-4 py-3.5 font-mono">
+        <span key={t} className="px-4 py-3.5 font-mono text-sm">
           {t}
         </span>
       ))}
       <div className="ml-auto flex items-center gap-1.5">
         <span className="bg-success size-1.5 rounded-full" />
-        <span className="text-ink-muted text-micro font-mono">200 OK · 41ms</span>
+        <span className="font-mono text-sm">200 OK · 41ms</span>
       </div>
     </div>
   );
@@ -221,12 +221,12 @@ const CODE: React.ReactNode[] = [
 function CodeBody() {
   return (
     <div className="bg-base-100 flex overflow-x-auto py-6">
-      <div className="border-base-300 text-ink-subtle text-mini flex flex-col gap-2 border-r px-4 font-mono leading-5">
+      <div className="border-base-300 flex flex-col gap-2 border-r px-4 font-mono text-sm leading-5">
         {LINES.map((n) => (
           <span key={n}>{n}</span>
         ))}
       </div>
-      <div className="text-mini flex flex-col gap-2 px-5 font-mono leading-5">
+      <div className="flex flex-col gap-2 px-5 font-mono text-sm leading-5">
         {CODE.map((line, i) => (
           <span key={i}>{line}</span>
         ))}

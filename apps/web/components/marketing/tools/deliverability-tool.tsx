@@ -52,9 +52,9 @@ function ResultRow({ label, full, result }: { label: string; full: string; resul
   return (
     <ListRow className="items-start px-0">
       <ListColGrow className="flex flex-col gap-2">
-        <span className="text-body font-medium">{full}</span>
+        <span className="text-md font-medium">{full}</span>
         {result.record ? (
-          <code className="text-caption text-ink-muted font-mono break-all">{result.record}</code>
+          <code className="font-mono text-sm break-all">{result.record}</code>
         ) : null}
         {result.status === 'missing' ? (
           <Alert color="danger" variant="soft" size="sm">
@@ -236,7 +236,7 @@ function EmptyResults() {
 function RecordOut({ host, record }: { host: string; record: string }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-caption text-ink-muted">
+      <span className="text-sm">
         Add a TXT record — host <code className="font-mono">{host}</code>:
       </span>
       <CodeBlock height="none">{record}</CodeBlock>

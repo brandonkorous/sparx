@@ -119,7 +119,7 @@ function EmailProof() {
           Your domain, your list, your data
           <Spark color={E.color} />
         </Display>
-        <Text variant="lead" className="text-ink-muted mt-6 max-w-[640px]">
+        <Text variant="lead" className="mt-6 max-w-[640px]">
           Email runs on the same database as your customers and orders, so every open feeds the CRM
           and every segment is current. Send from your own domain, keep your own reputation, and pay
           one flat price no matter the volume.
@@ -131,7 +131,7 @@ function EmailProof() {
             <div className="font-sans text-[clamp(36px,5vw,54px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <Text className="text-small text-ink-muted mt-3">{s.l}</Text>
+            <Text className="mt-3 text-sm">{s.l}</Text>
           </div>
         ))}
       </div>
@@ -149,11 +149,11 @@ function EmailPricing() {
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
             <span className="font-sans text-[56px] font-medium tracking-[-0.025em]">$29</span>
-            <Text as="span" className="text-body text-ink-subtle">
+            <Text as="span" className="text-md">
               /mo
             </Text>
           </div>
-          <Text className="text-small text-ink-muted m-0 max-w-[640px]">
+          <Text className="m-0 max-w-[640px] text-sm">
             A flat $29/mo — transactional and marketing email, automations, templates, and
             broadcasts. No per-email fees and no contact-tier surcharges; send 10K or 1M a month for
             the same price. Switch it on alongside whatever modules you run. Start free for 14 days;
@@ -184,7 +184,7 @@ function EmailCta() {
           Send your first email today
           <Spark color={E.color} />
         </Display>
-        <Text variant="lead" className="text-ink-muted m-0 max-w-[640px]">
+        <Text variant="lead" className="m-0 max-w-[640px]">
           Turn Email on, add your domain, and transactional mail starts flowing immediately — the
           marketing tools are there when you want them. No migration weekend, no contract; turn it
           off the day you stop, and your data stays yours.

@@ -57,7 +57,7 @@ export function InvoiceItems({
                 </Field>
               </div>
               <div className="min-w-[80px] flex-1 text-right">
-                <span className="text-caption font-mono">
+                <span className="font-mono text-sm">
                   {formatMoney(
                     (Number(item.quantity) || 0) * (Number(item.unitPrice) || 0),
                     currency

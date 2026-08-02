@@ -72,7 +72,7 @@ export function MonogramSection() {
               {SIZES.map((s) => (
                 <div key={s} className="flex flex-col items-center gap-2">
                   <AppIcon size={s} />
-                  <Text as="span" mono size={11} tone="subtle">
+                  <Text as="span" mono size={11}>
                     {s}px
                   </Text>
                 </div>
@@ -105,7 +105,7 @@ function Tile({
           {children}
         </CardBody>
       </Card>
-      <Text as="span" size={13} tone="subtle">
+      <Text as="span" size={13}>
         {label}
       </Text>
     </div>
@@ -115,7 +115,7 @@ function Tile({
 function UseList({ title, items }: { title: string; items: readonly string[] }) {
   return (
     <div className="flex flex-col gap-3">
-      <Text as="h4" size={14} weight={500} tone="default">
+      <Text as="h4" size={14} weight={500}>
         {title}
       </Text>
       <ul className="m-0 flex list-none flex-col gap-[11px] p-0">
@@ -136,7 +136,7 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
   return (
     <Card>
       <CardBody className="flex flex-col gap-5">
-        <Text as="h3" size={15} weight={500} tone="default">
+        <Text as="h3" size={15} weight={500}>
           {title}
         </Text>
         {children}

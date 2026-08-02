@@ -42,7 +42,7 @@ export function EmailBroadcast() {
                 className="bg-base-100 border-base-300 inline-flex items-center gap-2 rounded-full border px-3 py-[7px]"
               >
                 <Dot color={E.color} size={6} />
-                <Text as="span" className="text-mini text-ink-muted font-mono">
+                <Text as="span" className="font-mono text-sm">
                   {c}
                 </Text>
               </li>
@@ -74,21 +74,21 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
       <div className="border-base-300 flex items-center gap-3 border-b px-[22px] py-5">
         <Dot color={E.color} size={9} />
         <span className="min-w-0">
-          <Text as="span" className="text-body-sm block font-medium">
+          <Text as="span" className="text-md block font-medium">
             {email.broadcastSubject}
           </Text>
-          <Text as="span" className="text-mini text-ink-subtle font-mono">
+          <Text as="span" className="font-mono text-sm">
             from {email.sender} · sent · just now
           </Text>
         </span>
         <Text
           as="span"
-          className={`${E.bg} bg-soft ${E.ink} text-micro ml-auto shrink-0 rounded-full px-2.5 py-[3px] font-mono`}
+          className={`${E.bg} bg-soft ${E.ink} ml-auto shrink-0 rounded-full px-2.5 py-[3px] font-mono text-sm`}
         >
           Sent
         </Text>
       </div>
-      <div className="bg-base-200 border-base-300 text-caption text-ink-muted flex items-center gap-2 border-b px-[22px] py-3.5">
+      <div className="bg-base-200 border-base-300 flex items-center gap-2 border-b px-[22px] py-3.5 text-sm">
         <Dot color={CRM.color} size={7} />
         Segment: <strong className="font-medium">{email.segment}</strong> · {email.recipients}{' '}
         recipients
@@ -96,8 +96,8 @@ function BroadcastCard({ business }: { business: ExampleBusiness }) {
       <div className="mkt-bstats">
         {stats.map(([v, l]) => (
           <div key={l} className="mkt-bstat p-5">
-            <div className="text-h2 font-sans font-medium tracking-[-0.02em]">{v}</div>
-            <Text className="text-micro text-ink-subtle mt-[3px] font-mono">{l}</Text>
+            <div className="font-sans text-2xl font-medium tracking-[-0.02em]">{v}</div>
+            <Text className="mt-[3px] font-mono text-sm">{l}</Text>
           </div>
         ))}
       </div>
@@ -143,17 +143,17 @@ export function EmailAutomations() {
       <div className="bg-base-300 border-base-300 mt-13 flex flex-col gap-px overflow-hidden rounded-[14px] border">
         {rows.map((r) => (
           <div key={r.title} className="mkt-auto-grid">
-            <span className={`text-mini font-mono ${E.ink}`}>{r.when}</span>
+            <span className={`font-mono text-sm ${E.ink}`}>{r.when}</span>
             <span className="mkt-auto-chev" aria-hidden>
               →
             </span>
-            <span className="text-small">
+            <span className="text-sm">
               {r.title}
-              <small className="text-mini text-ink-muted mt-[3px] block">{r.hint}</small>
+              <small className="mt-[3px] block text-sm">{r.hint}</small>
             </span>
             <span
-              className={`mkt-auto-badge text-micro justify-self-end rounded-full px-3 py-1 font-mono ${
-                r.on ? `${E.bg} bg-soft ${E.ink}` : 'bg-base-200 text-ink-subtle'
+              className={`mkt-auto-badge justify-self-end rounded-full px-3 py-1 font-mono text-sm ${
+                r.on ? `${E.bg} bg-soft ${E.ink}` : 'bg-base-200'
               }`}
             >
               {r.on ? 'Active' : 'Optional'}
@@ -209,8 +209,8 @@ export function EmailCapabilities() {
             <span className={`${E.bg} bg-soft flex h-8 w-8 items-center justify-center rounded-lg`}>
               <Dot color={E.color} size={9} />
             </span>
-            <h3 className="text-body-lg m-0 font-sans font-medium tracking-[-0.01em]">{c.title}</h3>
-            <Text className="text-caption text-ink-muted m-0">{c.body}</Text>
+            <h3 className="m-0 font-sans text-lg font-medium tracking-[-0.01em]">{c.title}</h3>
+            <Text className="m-0 text-sm">{c.body}</Text>
           </div>
         ))}
       </div>

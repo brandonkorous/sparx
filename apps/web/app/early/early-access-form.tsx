@@ -20,8 +20,8 @@ import { joinWaitlist, type WaitlistState } from './actions';
 
 const INITIAL: WaitlistState = { status: 'idle' };
 
-const LABEL_CLASS = 'text-caption font-medium';
-const OPTIONAL_CLASS = 'text-ink-subtle font-normal';
+const LABEL_CLASS = 'text-sm font-medium';
+const OPTIONAL_CLASS = 'font-normal';
 
 export function EarlyAccessForm() {
   const [state, action, pending] = useActionState(joinWaitlist, INITIAL);
@@ -96,7 +96,7 @@ export function EarlyAccessForm() {
 
       <SubmitButton pending={pending} />
 
-      <p className="text-mini text-ink-subtle m-0">
+      <p className="m-0 text-sm">
         No spam. One email when your invite is ready — and the occasional note on what shipped.
       </p>
     </form>
@@ -116,15 +116,15 @@ function Confirmation({ email }: { email?: string }) {
     <div role="status" className="flex flex-col items-start gap-3.5 py-2">
       <span
         aria-hidden
-        className="bg-primary bg-soft text-primary text-h3 inline-flex h-11 w-11 items-center justify-center rounded-full"
+        className="bg-primary bg-soft text-primary inline-flex h-11 w-11 items-center justify-center rounded-full text-2xl"
       >
         ✓
       </span>
-      <span className="text-h2 font-medium tracking-[-0.02em]">
+      <span className="text-2xl font-medium tracking-[-0.02em]">
         You&rsquo;re on the list
         <Spark />
       </span>
-      <p className="text-body-sm text-ink-muted m-0 max-w-[380px]">
+      <p className="text-md m-0 max-w-[380px]">
         {email ? (
           <>
             We&rsquo;ve got <strong>{email}</strong>. We&rsquo;ll reach out the moment your invite

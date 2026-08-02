@@ -151,10 +151,10 @@ export function DownloadsSection() {
                 </div>
                 <div className="flex items-center justify-between gap-3 px-5 py-4">
                   <span className="flex flex-col gap-0.5">
-                    <Text as="span" size={14} weight={500} tone="default">
+                    <Text as="span" size={14} weight={500}>
                       {a.name}
                     </Text>
-                    <Text as="span" mono size={11} tone="subtle">
+                    <Text as="span" mono size={11}>
                       {a.format}
                     </Text>
                   </span>
@@ -171,14 +171,14 @@ export function DownloadsSection() {
 
         <div className="border-base-300 flex flex-wrap items-center justify-between gap-6 border-t pt-8">
           <div className="flex flex-col gap-1">
-            <Text as="span" size={13} tone="subtle">
+            <Text as="span" size={13}>
               © 2026 WizeWorks LLC · sparx is a registered trademark of WizeWorks.
             </Text>
             {/* The system underneath. Every sparx interface — this page included —
                 is composed on silicaui, WizeWorks' open design system. An
                 ingredient-brand credit, not a headline: it names the foundation for
                 anyone who wants it and stays out of the way for everyone else. */}
-            <Text as="span" size={13} tone="subtle">
+            <Text as="span" size={13}>
               Interfaces built on{' '}
               <a href="https://silicaui.com" className="text-base-content">
                 silicaui
@@ -187,7 +187,7 @@ export function DownloadsSection() {
             </Text>
           </div>
           <a href="mailto:brand@sparx.works">
-            <Text as="span" mono size={12} tone="muted" className="no-underline">
+            <Text as="span" mono size={12} className="no-underline">
               brand@sparx.works
             </Text>
           </a>

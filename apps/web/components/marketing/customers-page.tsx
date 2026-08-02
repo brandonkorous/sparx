@@ -104,7 +104,6 @@ export function CustomersPage() {
                   as="span"
                   size={17}
                   weight={500}
-                  tone="default"
                   className="flex items-center gap-2.5 tracking-[-0.01em]"
                 >
                   <Dot color={s.color} size={9} />
@@ -113,7 +112,7 @@ export function CustomersPage() {
                 <Text size={14} className="flex-1">
                   {s.blurb}
                 </Text>
-                <Text as="span" mono size={12} tone="subtle">
+                <Text as="span" mono size={12}>
                   {s.runs}
                 </Text>
               </div>

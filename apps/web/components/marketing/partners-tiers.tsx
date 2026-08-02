@@ -13,11 +13,11 @@ import type { PartnerTier } from '@/lib/partners';
  * Class-based: the Ember column tint is silica's own `bg-primary bg-soft`
  * treatment and every ink is a real token utility — including the non-strong
  * cells, which used to be a 70%-into-transparent color-mix (faded readable text,
- * banned by RULE #3) and are now `text-ink-muted`.
+ * banned by RULE #3) and are now ``.
  */
 
 /** The "/ first payment" · "/ ongoing" qualifier next to each commission figure. */
-const SMALL = 'text-body-sm text-ink-muted font-normal';
+const SMALL = 'text-md font-normal';
 
 type Cell = { text: string; strong?: boolean } | 'dash';
 
@@ -117,8 +117,8 @@ function Commission({ children }: { children: ReactNode }) {
 }
 
 function cellContent(cell: Cell): ReactNode {
-  if (cell === 'dash') return <span className="text-ink-subtle">—</span>;
-  return <span className={cell.strong ? 'text-primary' : 'text-ink-muted'}>{cell.text}</span>;
+  if (cell === 'dash') return <span>—</span>;
+  return <span className={cell.strong ? 'text-primary' : ''}>{cell.text}</span>;
 }
 
 export function PartnerTiers() {
@@ -157,7 +157,7 @@ export function PartnerTiers() {
 function SpineHeadCell() {
   return (
     <div className="flex items-end px-[26px] py-[30px]">
-      <span className="text-ink-subtle text-caption">What each tier unlocks</span>
+      <span className="text-sm">What each tier unlocks</span>
     </div>
   );
 }
@@ -170,7 +170,7 @@ function HeadCell({ head }: { head: TierHead }) {
     >
       <TierBadge tier={head.tier} />
       <Commission>{head.commission}</Commission>
-      <p className="text-ink-muted text-caption mt-1.5">{head.note}</p>
+      <p className="mt-1.5 text-sm">{head.note}</p>
     </div>
   );
 }
@@ -187,7 +187,7 @@ function BodyCell({
   return (
     <div
       className={[
-        'text-small flex items-center px-[26px] py-[18px]',
+        'flex items-center px-[26px] py-[18px] text-sm',
         spine ? 'font-medium' : 'border-base-300 border-l',
         certified ? 'bg-primary/5' : '',
       ]
@@ -209,14 +209,14 @@ function TierPanel({ head, tierIndex }: { head: TierHead; tierIndex: number }) {
       <div className={`border-base-300 border-b p-6 ${certified ? 'bg-primary bg-soft' : ''}`}>
         <TierBadge tier={head.tier} />
         <Commission>{head.commission}</Commission>
-        <p className="text-ink-muted text-caption mt-1.5">{head.note}</p>
+        <p className="mt-1.5 text-sm">{head.note}</p>
       </div>
       <ul className="flex list-none flex-col gap-3 px-6 py-5">
         {unlocks.map((r) => {
           const cell = r.cells[tierIndex];
           const detail = cell && cell !== 'dash' ? cell.text : '';
           return (
-            <li key={r.label} className="text-ink-muted text-small flex gap-2.5">
+            <li key={r.label} className="flex gap-2.5 text-sm">
               <span className="text-primary shrink-0">✓</span>
               <span>
                 <span>{r.label}</span>

@@ -11,7 +11,7 @@
           "attrs": {
             "aria-label": "Primary"
           },
-          "class": "flex items-center justify-between gap-6 border-b border-base-300 bg-base-100 px-6 py-4",
+          "class": "@container flex items-center justify-between gap-6 border-b border-base-300 bg-base-100 px-6 py-4",
           "children": [
             {
               "kind": "host",
@@ -24,12 +24,12 @@
             {
               "tag": "div",
               "kind": "element",
-              "class": "flex items-center gap-3 sm:gap-6",
+              "class": "flex items-center gap-3 @sm:gap-6",
               "children": [
                 {
                   "tag": "div",
                   "kind": "element",
-                  "class": "hidden items-center gap-6 sm:flex",
+                  "class": "hidden items-center gap-6 @sm:flex",
                   "children": [
                     {
                       "tag": "a",
@@ -81,7 +81,7 @@
                 {
                   "tag": "details",
                   "kind": "element",
-                  "class": "relative sm:hidden",
+                  "class": "relative @sm:hidden",
                   "children": [
                     {
                       "tag": "summary",
@@ -208,12 +208,12 @@
         {
           "tag": "footer",
           "kind": "element",
-          "class": "border-t border-base-300 bg-base-200 px-6 py-12",
+          "class": "@container border-t border-base-300 bg-base-200 px-6 py-12",
           "children": [
             {
               "tag": "div",
               "kind": "element",
-              "class": "mx-auto grid max-w-6xl gap-10 sm:grid-cols-2 lg:grid-cols-4",
+              "class": "mx-auto grid max-w-6xl gap-10 @sm:grid-cols-2 @lg:grid-cols-4",
               "children": [
                 {
                   "tag": "div",
@@ -616,7 +616,12 @@
                               }
                             ]
                           }
-                        ]
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        }
                       }
                     ]
                   },
@@ -766,7 +771,12 @@
                             "class": "text-base text-base-content",
                             "children": ["The short summary of this post, written in the CMS."]
                           }
-                        ]
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        }
                       }
                     ]
                   },
@@ -1267,7 +1277,7 @@
             "ord": "a0",
             "tag": "section",
             "kind": "element",
-            "class": "bg-base-100 px-6 pt-12 pb-2",
+            "class": "@container bg-base-100 px-6 pt-12 pb-2",
             "children": [
               {
                 "id": "e1a110c9-4583-4324-bd08-be785e7706c7",
@@ -1281,7 +1291,7 @@
                     "ord": "a0",
                     "tag": "h1",
                     "kind": "element",
-                    "class": "text-4xl font-bold tracking-tight text-base-content sm:text-5xl",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @sm:text-5xl",
                     "children": ["Shop"]
                   },
                   {
@@ -1316,7 +1326,8 @@
           }
         ]
       },
-      "seoTitle": "Shop"
+      "seoTitle": "Shop",
+      "seoDescription": "Browse everything we offer, see prices and options at a glance, and order online whenever it suits you."
     },
     {
       "name": "About",
@@ -1334,21 +1345,21 @@
             "ord": "a0",
             "tag": "section",
             "kind": "element",
-            "class": "w-full bg-base-200 text-base-content",
+            "class": "@container w-full bg-base-200 text-base-content",
             "children": [
               {
                 "id": "64a91621-0dbd-441b-9ec6-86d4ebdeee25",
                 "ord": "a0",
                 "tag": "div",
                 "kind": "element",
-                "class": "mx-auto w-full max-w-5xl px-6 py-16 sm:py-20",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16 @sm:py-20",
                 "children": [
                   {
                     "id": "a3dfe0bc-0035-4a73-86df-f1f3a3392f97",
                     "ord": "a0",
                     "tag": "h1",
                     "kind": "element",
-                    "class": "text-4xl font-bold tracking-tight text-base-content sm:text-5xl",
+                    "class": "text-4xl font-bold tracking-tight text-base-content @sm:text-5xl",
                     "children": ["About us"]
                   },
                   {
@@ -1606,7 +1617,8 @@
           }
         ]
       },
-      "seoTitle": "About"
+      "seoTitle": "About",
+      "seoDescription": "Who we are, how we started and what we care about — the people behind the work, and why we do it this way."
     },
     {
       "name": "Journal",
@@ -1758,7 +1770,12 @@
                               }
                             ]
                           }
-                        ]
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        }
                       }
                     ]
                   }
@@ -1768,7 +1785,8 @@
           }
         ]
       },
-      "seoTitle": "Journal"
+      "seoTitle": "Journal",
+      "seoDescription": "News, updates and stories from us: what we have been working on, what is new, and things worth sharing."
     },
     {
       "name": "Contact",
@@ -2063,7 +2081,8 @@
           }
         ]
       },
-      "seoTitle": "Contact"
+      "seoTitle": "Contact",
+      "seoDescription": "Get in touch by message, phone or email, find out where to reach us, and see when we are open."
     },
     {
       "name": "Book",
@@ -2492,7 +2511,8 @@
           }
         ]
       },
-      "seoTitle": "Book with us"
+      "seoTitle": "Book with us",
+      "seoDescription": "Choose what you need, pick a time that works for you, and book it in — no phone calls, no waiting for a reply."
     },
     {
       "name": "Wholesale",
@@ -2767,7 +2787,8 @@
           }
         ]
       },
-      "seoTitle": "Wholesale & trade"
+      "seoTitle": "Wholesale & trade",
+      "seoDescription": "Open a trade account for your own pricing, payment terms that fit how you buy, and one-click reordering."
     }
   ],
   "theme": {

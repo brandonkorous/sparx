@@ -53,11 +53,11 @@ export function DropshipRouting() {
             key={s.title}
             className="mkt-pipe-cell relative flex min-h-[188px] flex-col gap-3 px-6 pt-6 pb-7"
           >
-            <h3 className="text-body-lg m-0 flex items-center gap-2.5 font-sans font-medium tracking-[-0.01em]">
+            <h3 className="m-0 flex items-center gap-2.5 font-sans text-lg font-medium tracking-[-0.01em]">
               <Dot color={M.color} size={8} />
               {s.title}
             </h3>
-            <Text className="text-caption text-ink-muted m-0">{s.body}</Text>
+            <Text className="m-0 text-sm">{s.body}</Text>
             {i < stages.length - 1 ? (
               <span
                 className={`mkt-hide-on-tablet bg-base-100 border-base-300 ${M.ink} absolute top-[38px] -right-[11px] z-2 flex h-[22px] w-[22px] items-center justify-center rounded-full border`}
@@ -110,8 +110,8 @@ export function DropshipInventory() {
             <span className={`${M.bg} bg-soft flex h-8 w-8 items-center justify-center rounded-lg`}>
               <Dot color={M.color} size={9} />
             </span>
-            <h3 className="text-body-lg m-0 font-sans font-medium tracking-[-0.01em]">{c.title}</h3>
-            <Text className="text-caption text-ink-muted m-0">{c.body}</Text>
+            <h3 className="m-0 font-sans text-lg font-medium tracking-[-0.01em]">{c.title}</h3>
+            <Text className="m-0 text-sm">{c.body}</Text>
           </div>
         ))}
       </div>
@@ -160,10 +160,10 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
       className={`${M.bg} bg-soft border-base-300 flex h-full flex-col gap-[18px] rounded-[14px] border p-6`}
     >
       <div>
-        <Text as="span" className="text-body font-medium">
+        <Text as="span" className="text-md font-medium">
           {d.routed.number}
         </Text>
-        <Text as="span" className="text-mini text-ink-subtle mt-1 block font-mono">
+        <Text as="span" className="mt-1 block font-mono text-sm">
           routed to {d.supplier} · {d.routed.carrier}
         </Text>
       </div>
@@ -181,14 +181,14 @@ function TrackingTimeline({ business }: { business: ExampleBusiness }) {
               </span>
               <Text
                 as="span"
-                className={`text-small ${done ? '' : 'text-ink-subtle'} ${
+                className={`text-sm ${done ? '' : ''} ${
                   i === activeIdx ? 'font-medium' : 'font-normal'
                 }`}
               >
                 {s}
               </Text>
               {i === activeIdx ? (
-                <Text as="span" className={`text-micro ml-auto font-mono ${M.ink}`}>
+                <Text as="span" className={`ml-auto font-mono text-sm ${M.ink}`}>
                   current
                 </Text>
               ) : null}
@@ -208,38 +208,36 @@ function ShippingEmail({ business }: { business: ExampleBusiness }) {
       {/* Inbox chrome — device mimicry, kept verbatim. */}
       <div className="border-base-300 bg-base-200 flex items-center gap-2.5 border-b px-5 py-3.5">
         <Dot color={M.color} size={8} />
-        <Text as="span" className="text-mini text-ink-subtle font-mono">
+        <Text as="span" className="font-mono text-sm">
           from {email.sender}
         </Text>
       </div>
       <div className="p-[22px]">
-        <div className="text-body font-medium tracking-[-0.01em]">
-          Your {name} order has shipped
-        </div>
-        <Text className="text-caption text-ink-muted mt-3">
+        <div className="text-md font-medium tracking-[-0.01em]">Your {name} order has shipped</div>
+        <Text className="mt-3 text-sm">
           Hi {customer.name.split(' ')[0]} — {d.routed.number} is on its way via {d.routed.carrier}.
           Track it any time with the number below.
         </Text>
         <div className="bg-base-200 border-base-300 mt-4 flex items-center gap-3 rounded-[10px] border px-4 py-3.5">
           <TruckGlyph size={16} color={M.color} />
           <span className="min-w-0">
-            <Text as="span" className="text-mini block font-medium">
+            <Text as="span" className="block text-sm font-medium">
               {d.routed.carrier}
             </Text>
-            <Text as="span" className="text-micro text-ink-subtle font-mono">
+            <Text as="span" className="font-mono text-sm">
               {d.routed.tracking}
             </Text>
           </span>
           <Text
             as="span"
-            className={`${M.bg} bg-soft ${M.ink} text-mini ml-auto shrink-0 rounded-full px-3 py-1.5 font-medium`}
+            className={`${M.bg} bg-soft ${M.ink} ml-auto shrink-0 rounded-full px-3 py-1.5 text-sm font-medium`}
           >
             Track order
           </Text>
         </div>
         <div className="mt-4 flex items-center gap-2.5">
           <Dot color={M.color} size={6} />
-          <Text as="span" className="text-micro text-ink-subtle font-mono">
+          <Text as="span" className="font-mono text-sm">
             sent via sparx Email · {d.supplier} never named
           </Text>
         </div>

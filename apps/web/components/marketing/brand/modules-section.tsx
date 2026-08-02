@@ -137,7 +137,7 @@ export function ModulesSection() {
           accent="var(--color-module-commerce)"
           headline={
             <>
-              Fourteen modules. <span className="text-ink-subtle">One color each</span>
+              Fourteen modules. <span>One color each</span>
             </>
           }
           lede="Every module owns a single hue, and it surfaces identically in three places: the module’s marketing site, its nav item in the dashboard, and a soft color-mix wash on its cards. One softly-tinted card per module tells a tenant where they are — quiet wayfinding, no loud stripe and no label required."
@@ -154,7 +154,7 @@ export function ModulesSection() {
               <CardBody className="flex flex-col gap-4">
                 <div className={`h-14 rounded-md ${m.bg}`} />
                 <div className="flex flex-col gap-2">
-                  <Text as="span" size={15} weight={500} tone="default">
+                  <Text as="span" size={15} weight={500}>
                     {m.module}
                   </Text>
                   <Badge variant="soft" size="sm" className="self-start font-sans">
@@ -211,7 +211,7 @@ function Callout({
   return (
     <Card className={`${bg} bg-soft`}>
       <CardBody className="flex flex-col gap-3">
-        <Text as="h3" size={16} weight={500} tone="default">
+        <Text as="h3" size={16} weight={500}>
           {title}
         </Text>
         <Text size={14}>{children}</Text>

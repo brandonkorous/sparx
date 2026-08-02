@@ -21,6 +21,7 @@ import { writeAuditLog } from '../audit';
 import type { PropertyContext, ServiceContext } from '../errors';
 import { SitebuilderNotFoundError } from '../errors';
 import { getOrCreateConfig } from './_config';
+import { syncSilicaDraftTheme } from './silica-theme-sync';
 
 export interface SavedThemeView {
   id: string;
@@ -127,8 +128,8 @@ export async function applyThemeBrandToSiteOverrideWithinTx(
   tx: TxClient,
   propertyId: string,
   brand: SavedThemeBrand | null | undefined
-): Promise<void> {
-  if (!brand) return;
+): Promise<Record<string, unknown> | null> {
+  if (!brand) return null;
   const row = await tx.property.findUnique({
     where: { id: propertyId },
     select: { brandOverride: true },
@@ -157,6 +158,11 @@ export async function applyThemeBrandToSiteOverrideWithinTx(
     where: { id: propertyId },
     data: { brandOverride: next as Prisma.InputJsonValue },
   });
+  // The MERGED override — returned rather than discarded so `apply` can compile the
+  // same effective brand it just stored into the silica theme, in one transaction.
+  // Re-reading the row would work too, but it would be a second source for a value
+  // that is already computed here, and the two could drift.
+  return next;
 }
 
 export async function remove(ctx: ServiceContext, id: string): Promise<{ id: string }> {
@@ -192,7 +198,7 @@ export async function remove(ctx: ServiceContext, id: string): Promise<{ id: str
 export async function apply(
   ctx: PropertyContext,
   id: string
-): Promise<{ ok: true; themeKey: string }> {
+): Promise<{ ok: true; themeKey: string; silicaTheme: boolean }> {
   return withTenant(ctx, async (tx) => {
     const theme = await tx.siteTheme.findUnique({ where: { id } });
     if (!theme) throw new SitebuilderNotFoundError('SiteTheme', id);
@@ -228,7 +234,16 @@ export async function apply(
     // dashboard's client does this itself) without touching any sibling site. A
     // legacy theme with no snapshot (brand == null) leaves the brand untouched.
     const brand = (theme.brand ?? null) as SavedThemeBrand | null;
-    if (brand) await applyThemeBrandToSiteOverrideWithinTx(tx, ctx.propertyId, brand);
+    const mergedOverride = brand
+      ? await applyThemeBrandToSiteOverrideWithinTx(tx, ctx.propertyId, brand)
+      : null;
+    // …and THROUGH to the silica theme, which is what the storefront actually renders.
+    // Without this everything above is editor-only — see silica-theme-sync's own note.
+    const themedSilica = await syncSilicaDraftTheme(tx, ctx.tenantId, ctx.propertyId, {
+      themeKey: theme.basePresetKey,
+      presentation: theme.presentation,
+      brandOverride: mergedOverride,
+    });
     await writeAuditLog({
       tx,
       tenantId: ctx.tenantId,
@@ -237,8 +252,11 @@ export async function apply(
       action: 'sitebuilder.theme.applied',
       entityType: 'SiteTheme',
       entityId: theme.id,
-      diff: { after: { themeKey: theme.basePresetKey } },
+      diff: { after: { themeKey: theme.basePresetKey, silicaTheme: themedSilica } },
     });
-    return { ok: true, themeKey: theme.basePresetKey };
+    // `silicaTheme: false` means the compile failed and the site kept its previous
+    // look — surfaced in the result rather than swallowed, so a headless caller (MCP,
+    // the blueprint installer) can tell "applied" from "applied everywhere".
+    return { ok: true, themeKey: theme.basePresetKey, silicaTheme: themedSilica };
   });
 }

@@ -80,11 +80,20 @@
    design change is a single edit here — not a hunt through stamped inline styles.
 
    • spacing  → `px-page`, `py-section-lg`, `gap-…`      (clamp()-fluid)
-   • text     → `text-body`, `text-lede`, `text-caption` (size + paired leading)
-   • color    → `text-ink-muted` / `text-ink-subtle`     (mix into base-100, NOT
-     transparent — the no-faded-text rule holds by construction, and both flip
-     with `data-theme="dark"` because they resolve from --color-base-*)
-   • width    → `max-w-container` (the 1280px content cap)                       */
+   • text     → `text-md`, `text-lg`, `text-sm` (size + paired leading)
+   • width    → `max-w-container` (the 1280px content cap)
+
+   There is deliberately NO ink entry here. Ink is not a marketing-local axis —
+   it is silica's `<surface>` → `<surface>-content` pairing, so `bg-base-100`
+   carries `text-base-content` and `bg-primary` carries `text-primary-content`,
+   and both re-resolve inside a `data-theme="dark"` island on their own. This
+   block used to define `--color-ink-muted` / `--color-ink-subtle` as 70% / 50%
+   mixes toward `--color-base-100`, with a comment claiming the no-faded-text
+   rule "holds by construction" because the mix was opaque rather than
+   transparent. It did not: an opaque 50% ink is still text faded toward its
+   background, and it was a SECOND ink vocabulary competing with `-content` —
+   the one thing a design system cannot have two of. Both are deleted. Hierarchy
+   comes from scale, weight and color.                                          */
 @theme {
   --spacing-page: var(--gutter-page);
   --spacing-section-md: var(--section-py-md);
@@ -93,52 +102,19 @@
 
   --container-content: var(--container-max);
 
-  --text-micro: 11px;
-  --text-micro--line-height: 16px;
-  --text-mini: 12px;
-  --text-mini--line-height: 18px;
-  --text-caption: 13px;
-  --text-caption--line-height: 20px;
-  --text-small: 14px;
-  --text-small--line-height: 22px;
-  --text-body-sm: 15px;
-  --text-body-sm--line-height: 24px;
-  --text-body: 16px;
-  --text-body--line-height: 26px;
-  --text-body-lg: 17px;
-  --text-body-lg--line-height: 28px;
-  --text-lede: 18px;
-  --text-lede--line-height: 30px;
-  --text-lede-lg: 19px;
-  --text-lede-lg--line-height: 31px;
+  /* NO type scale is defined here. silicaui already ships one — text-sm 14 /
+     text-md (== text-base) 16 / text-lg 18 / text-xl 20 / text-2xl 24 /
+     text-3xl 30 — and it is REM-based, anchored on a 100% root font size, so it
+     scales with the reader's own font-size preference. This block used to
+     redefine the same ladder in PX with 1px-granular steps (micro 11, mini 12,
+     caption 13, small 14, body-sm 15, body 16, body-lg 17, lede 18, lede-lg 19,
+     h4 20, h3 22, h2 24, h1 28). That was a second type vocabulary competing
+     with silica's — the same mistake as the deleted `--color-ink-*` — and being
+     px-based it could not respond to a browser font-size setting at all.
 
-  /* Lede size for text sitting on a SATURATED BRAND FILL (the /tools hero
-     bands). Not a stylistic choice — an accessibility floor. sparx Ember
-     (`--color-primary`, #e04631) against white measures 4.13:1, under WCAG AA's
-     4.5:1 for normal-size text, and swapping to the dark ink is no better
-     (4.37:1). The band color itself is the constraint, so the type has to clear
-     the LARGE-text bar instead (24px regular, or 18.66px bold) where AA drops to
-     3:1. 24px regular keeps the lede readable at a normal weight rather than
-     forcing every colored-band lede to bold. Body copy on a NEUTRAL surface
-     should still use `text-lede`. */
-  --text-hero-lede: 24px;
-  --text-hero-lede--line-height: 34px;
-
-  /* Section-heading steps. Without these the scale stopped at 19px and every
-     20–27px heading SILENTLY rendered at 19 — `<Text size={24}>` looked correct
-     in source and shrank in the browser. Above 28px use `<Display>`, which is
-     fluid-clamped. */
-  --text-h4: 20px;
-  --text-h4--line-height: 28px;
-  --text-h3: 22px;
-  --text-h3--line-height: 30px;
-  --text-h2: 24px;
-  --text-h2--line-height: 32px;
-  --text-h1: 28px;
-  --text-h1--line-height: 36px;
-
-  --color-ink-muted: color-mix(in oklab, var(--color-base-content) 70%, var(--color-base-100));
-  --color-ink-subtle: color-mix(in oklab, var(--color-base-content) 50%, var(--color-base-100));
+     `text-md` (or no size class) is the default. `text-sm` is the caption step.
+     `text-xs` is reserved for text nobody is meant to READ. Above 30px use
+     `<Display>`, which is fluid-clamped. */
 }
 
 html {

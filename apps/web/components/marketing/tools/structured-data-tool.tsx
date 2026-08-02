@@ -132,7 +132,7 @@ export function StructuredDataTool() {
           }
         >
           <CodeBlock>{snippet}</CodeBlock>
-          <Text className="text-ink-muted m-0">
+          <Text className="m-0">
             Paste this into your page&apos;s HTML, then verify it with Google&apos;s Rich Results
             Test.
           </Text>

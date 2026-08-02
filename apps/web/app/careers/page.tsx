@@ -27,15 +27,15 @@ function RoleCard({ role }: { role: Role }) {
         <CardBody className="p-8">
           <div className="mkt-role-row">
             <div className="flex min-w-0 flex-col gap-2.5">
-              <h3 className="text-h4 m-0 font-medium tracking-[-0.01em]">{role.title}</h3>
-              <div className="text-caption text-ink-subtle flex flex-wrap items-center gap-x-3 gap-y-2">
+              <h3 className="m-0 text-xl font-medium tracking-[-0.01em]">{role.title}</h3>
+              <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-sm">
                 <span>{role.team}</span>
                 <Dot color={META_DOT} size={3} />
                 <span>{role.location}</span>
                 <Dot color={META_DOT} size={3} />
                 <span>{role.commitment}</span>
               </div>
-              <p className="text-body text-ink-muted mt-1 mb-0 max-w-[620px]">{role.summary}</p>
+              <p className="text-md mt-1 mb-0 max-w-[620px]">{role.summary}</p>
             </div>
             <span className="mkt-role-arrow">
               View role <span aria-hidden>→</span>
@@ -50,10 +50,10 @@ function RoleCard({ role }: { role: Role }) {
 function StepRow({ index, text }: { index: number; text: string }) {
   return (
     <li className="mkt-step-row">
-      <span className="text-small text-primary w-7 shrink-0 font-mono font-medium">
+      <span className="text-primary w-7 shrink-0 font-mono text-sm font-medium">
         {String(index).padStart(2, '0')}
       </span>
-      <span className="text-body-lg text-ink-muted">{text}</span>
+      <span className="text-lg">{text}</span>
     </li>
   );
 }
@@ -67,7 +67,7 @@ export default function CareersPage() {
             {CAREERS_COPY.title}
             <Spark />
           </Display>
-          <p className="text-lede-lg text-ink-muted m-0 max-w-[620px]">{CAREERS_COPY.subtitle}</p>
+          <p className="m-0 max-w-[620px] text-lg">{CAREERS_COPY.subtitle}</p>
         </div>
       </Section>
 
@@ -81,7 +81,7 @@ export default function CareersPage() {
           </div>
           <div className="flex flex-col gap-5">
             {CAREERS_COPY.pitch.map((p) => (
-              <p key={p} className="text-body-lg text-ink-muted m-0">
+              <p key={p} className="m-0 text-lg">
                 {p}
               </p>
             ))}
@@ -109,7 +109,7 @@ export default function CareersPage() {
             Don&rsquo;t see your role
             <Spark />
           </Display>
-          <p className="text-lede text-ink-muted m-0 max-w-[580px]">{OPEN_APPLICATION.summary}</p>
+          <p className="m-0 max-w-[580px] text-lg">{OPEN_APPLICATION.summary}</p>
           <div className="pt-1">
             <Link
               href={`/careers/${OPEN_APPLICATION.slug}`}
@@ -136,7 +136,7 @@ export default function CareersPage() {
       </Section>
 
       <Section surface="page" padding="md">
-        <p className="text-small text-ink-subtle m-0 max-w-[760px]">{CAREERS_COPY.entityNote}</p>
+        <p className="m-0 max-w-[760px] text-sm">{CAREERS_COPY.entityNote}</p>
       </Section>
     </>
   );

@@ -240,9 +240,7 @@ export function renderStoryOg({
             style={{
               fontWeight: 500,
               fontSize: 14,
-              letterSpacing: '0.08em',
               color: '#5a628a',
-              textTransform: 'uppercase',
             }}
           >
             {PAID_MODULES.length} modules

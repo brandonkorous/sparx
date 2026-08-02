@@ -79,7 +79,7 @@ export function PaletteSection() {
 function Group({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="flex flex-col gap-6">
-      <Text as="h3" size={15} weight={500} tone="default">
+      <Text as="h3" size={15} weight={500}>
         {title}
       </Text>
       {children}

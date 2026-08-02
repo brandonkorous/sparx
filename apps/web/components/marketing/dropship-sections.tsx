@@ -58,9 +58,7 @@ function VendorPicker() {
     <div className={`${M.bg} bg-soft border-base-300 overflow-hidden rounded-[14px] border`}>
       {/* Panel chrome inside a device mockup — a picker's column header, not an
           eyebrow introducing a marketing heading. */}
-      <div
-        className={`${M.ink} border-base-300 text-micro border-b px-5 py-4 font-mono tracking-[0.05em] uppercase`}
-      >
+      <div className={`${M.ink} border-base-300 border-b px-5 py-4 font-mono text-sm`}>
         choose a supplier
       </div>
       {VENDORS.map((v, i) => (
@@ -78,18 +76,16 @@ function VendorPicker() {
             <Dot color={i === 0 ? M.color : 'var(--color-ink-subtle)'} size={8} />
           </span>
           <span className="min-w-0">
-            <Text as="span" className="text-small block font-medium">
+            <Text as="span" className="block text-sm font-medium">
               {v.name}
             </Text>
-            <Text as="span" className="text-micro text-ink-subtle font-mono">
+            <Text as="span" className="font-mono text-sm">
               {v.tag}
             </Text>
           </span>
           <Text
             as="span"
-            className={`text-micro ml-auto shrink-0 font-mono tracking-[0.04em] uppercase ${
-              v.mode === 'API' ? M.ink : 'text-ink-subtle'
-            }`}
+            className={`ml-auto shrink-0 font-mono text-sm ${v.mode === 'API' ? M.ink : ''}`}
           >
             {v.mode}
           </Text>
@@ -114,15 +110,15 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
       <div className="border-base-300 flex items-center gap-3 border-b px-[22px] py-[18px]">
         <span className="bg-base-200 border-base-300 h-10 w-10 shrink-0 rounded-[9px] border" />
         <span className="min-w-0">
-          <Text as="span" className="text-body block font-medium">
+          <Text as="span" className="text-md block font-medium">
             {d.pricing.item}
           </Text>
-          <Text as="span" className="text-mini text-ink-subtle font-mono">
+          <Text as="span" className="font-mono text-sm">
             {d.pricing.sku} · imported draft
           </Text>
         </span>
         <span
-          className={`${M.bg} bg-soft ${M.ink} text-mini ml-auto inline-flex shrink-0 items-center rounded-full px-3 py-[5px] font-medium`}
+          className={`${M.bg} bg-soft ${M.ink} ml-auto inline-flex shrink-0 items-center rounded-full px-3 py-[5px] text-sm font-medium`}
         >
           synced
         </span>
@@ -131,15 +127,15 @@ function SyncedProductPanel({ business }: { business: ExampleBusiness }) {
         {rows.map(([l, v]) => (
           <div
             key={l}
-            className="border-base-200 text-caption flex items-center justify-between border-b py-3"
+            className="border-base-200 flex items-center justify-between border-b py-3 text-sm"
           >
-            <span className="text-ink-muted">{l}</span>
+            <span>{l}</span>
             <span className="font-medium">{v}</span>
           </div>
         ))}
         <div className="flex items-center gap-2.5 pt-3.5">
           <Dot color={M.color} size={6} />
-          <Text as="span" className="text-mini text-ink-subtle font-mono">
+          <Text as="span" className="font-mono text-sm">
             review &amp; publish — price tracks the supplier&rsquo;s cost
           </Text>
         </div>
@@ -158,13 +154,10 @@ export function DropshipMargin() {
         lede="Set a pricing rule per supplier — a percentage markup, a multiplier, a flat markup, or a target margin — and every imported product prices itself off the supplier cost. When the supplier raises a cost on sync, your sell price and margin recompute. The dashboard reports profit and margin per product, per supplier, and per order."
       />
       <div className="bg-base-100 border-base-300 mt-13 overflow-hidden rounded-[14px] border">
-        {/* Ledger column headers — table chrome, not an eyebrow. */}
+        {/* Ledger column headers — table chrome, sentence case. */}
         <div className="mkt-margin-head border-base-300 bg-base-200 border-b">
           {['Imported product', 'Pricing rule', 'Your price', 'Margin'].map((h) => (
-            <span
-              key={h}
-              className="text-micro text-ink-subtle font-mono tracking-[0.05em] uppercase"
-            >
+            <span key={h} className="font-mono text-sm">
               {h}
             </span>
           ))}
@@ -186,19 +179,19 @@ function MarginRow({ business }: { business: ExampleBusiness }) {
       <span className="mkt-margin-item flex items-center gap-3">
         <span className="bg-base-200 border-base-300 h-[34px] w-[34px] shrink-0 rounded-lg border" />
         <span className="min-w-0">
-          <Text as="span" className="text-small block font-medium">
+          <Text as="span" className="block text-sm font-medium">
             {d.pricing.item}
           </Text>
-          <Text as="span" className="text-micro text-ink-subtle font-mono">
+          <Text as="span" className="font-mono text-sm">
             {d.supplier} · cost {d.pricing.cost}
           </Text>
         </span>
       </span>
-      <span className="mkt-margin-cell text-caption text-ink-muted">{d.rule}</span>
-      <span className="mkt-margin-cell text-body-sm font-medium">{d.pricing.sell}</span>
+      <span className="mkt-margin-cell text-sm">{d.rule}</span>
+      <span className="mkt-margin-cell text-md font-medium">{d.pricing.sell}</span>
       <span className="mkt-margin-cell">
-        <span className={`text-small font-medium ${M.ink}`}>{d.pricing.margin}</span>
-        <span className="text-micro text-ink-subtle ml-2 font-mono">{d.pricing.marginPct}</span>
+        <span className={`text-sm font-medium ${M.ink}`}>{d.pricing.margin}</span>
+        <span className="ml-2 font-mono text-sm">{d.pricing.marginPct}</span>
       </span>
     </div>
   );

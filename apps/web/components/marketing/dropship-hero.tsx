@@ -33,7 +33,7 @@ export function DropshipHero() {
               Sell it, never stock it
               <Spark color={M.color} />
             </Display>
-            <Text className="text-ink-muted mt-7 max-w-[580px] text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
+            <Text className="mt-7 max-w-[580px] text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
               {lede}
             </Text>
             <div className="mt-[34px] flex flex-wrap items-center gap-3">
@@ -53,7 +53,7 @@ export function DropshipHero() {
                   className="bg-base-100 border-base-300 inline-flex items-center gap-2 rounded-full border px-3 py-[7px]"
                 >
                   <Dot color={M.color} size={6} />
-                  <Text as="span" className="text-mini text-ink-muted font-mono">
+                  <Text as="span" className="font-mono text-sm">
                     {c}
                   </Text>
                 </li>
@@ -94,17 +94,17 @@ function RoutedHeader({ d, customerName }: { d: D; customerName: string }) {
       <span className="flex items-center gap-2.5">
         <Dot color={M.color} size={9} />
         <span>
-          <Text as="span" className="text-small font-medium">
+          <Text as="span" className="text-sm font-medium">
             {d.routed.number}
           </Text>
           <br />
-          <Text as="span" className="text-mini text-ink-subtle">
+          <Text as="span" className="text-sm">
             {customerName} · routed to {d.supplier}
           </Text>
         </span>
       </span>
       <span
-        className={`${M.bg} bg-soft ${M.ink} text-mini inline-flex shrink-0 items-center gap-[7px] rounded-full px-3 py-[5px] font-medium`}
+        className={`${M.bg} bg-soft ${M.ink} inline-flex shrink-0 items-center gap-[7px] rounded-full px-3 py-[5px] text-sm font-medium`}
       >
         <Dot color={M.color} size={6} /> {d.routed.status}
       </span>
@@ -125,10 +125,10 @@ function RoutedProfit({ d }: { d: D }) {
           key={l}
           className={`px-4 py-3.5 ${i === 0 ? '' : 'border-base-200 border-l'}`.trimEnd()}
         >
-          <div className={`text-body-lg font-medium tracking-[-0.01em] ${i === 2 ? M.ink : ''}`}>
+          <div className={`text-lg font-medium tracking-[-0.01em] ${i === 2 ? M.ink : ''}`}>
             {v}
           </div>
-          <Text className="text-micro text-ink-subtle mt-0.5 font-mono">{l}</Text>
+          <Text className="mt-0.5 font-mono text-sm">{l}</Text>
         </div>
       ))}
     </div>
@@ -141,20 +141,20 @@ function RoutedTracking({ d }: { d: D }) {
       <div className="bg-base-200 border-base-300 flex items-center gap-2.5 rounded-[10px] border px-3.5 py-3">
         <TruckIcon size={16} color={M.color} />
         <span className="min-w-0">
-          <Text as="span" className="text-caption block font-medium">
+          <Text as="span" className="block text-sm font-medium">
             {d.routed.carrier}
           </Text>
-          <Text as="span" className="text-micro text-ink-subtle font-mono">
+          <Text as="span" className="font-mono text-sm">
             {d.routed.tracking}
           </Text>
         </span>
-        <Text as="span" className={`text-mini ml-auto shrink-0 font-medium ${M.ink}`}>
+        <Text as="span" className={`ml-auto shrink-0 text-sm font-medium ${M.ink}`}>
           sent to customer
         </Text>
       </div>
       <div className="flex items-center gap-2.5">
         <Dot color={M.color} size={6} />
-        <Text as="span" className="text-mini text-ink-subtle font-mono">
+        <Text as="span" className="font-mono text-sm">
           {d.connection} · {d.rule} · no inventory held
         </Text>
       </div>

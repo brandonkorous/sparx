@@ -54,15 +54,15 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
     <div
       className={`${M.bg} border-base-300 bg-soft flex h-full flex-col gap-4 rounded-xl border p-6`}
     >
-      {/* Field label inside the device card — UI mimicry, not an eyebrow. */}
-      <Text as="span" size={11} mono tone="none" className={`${M.ink} tracking-[0.05em] uppercase`}>
+      {/* Field label inside the device card — sentence case, like the product. */}
+      <Text as="span" size={11} mono className={`${M.ink}`}>
         logged-in account
       </Text>
       <div>
-        <Text as="div" size={20} tone="default" weight={500} className="tracking-[-0.01em]">
+        <Text as="div" size={20} weight={500} className="tracking-[-0.01em]">
           {b2b.account}
         </Text>
-        <Text as="div" size={13} tone="subtle" className="mt-1">
+        <Text as="div" size={13} className="mt-1">
           {b2b.buyer}
         </Text>
       </div>
@@ -70,16 +70,16 @@ function PriceTierCard({ business }: { business: ExampleBusiness }) {
         {rows.map(([l, v]) => (
           <div
             key={l}
-            className="border-base-200 text-caption flex items-center justify-between border-b pb-2.5 font-sans"
+            className="border-base-200 flex items-center justify-between border-b pb-2.5 font-sans text-sm"
           >
-            <span className="text-ink-muted">{l}</span>
+            <span>{l}</span>
             <span className="font-medium">{v}</span>
           </div>
         ))}
       </div>
       <div className="mt-auto flex items-center gap-2">
         <Dot color={M.color} size={7} />
-        <Text as="span" size={12} mono tone="subtle">
+        <Text as="span" size={12} mono>
           resolves automatically at checkout
         </Text>
       </div>
@@ -94,16 +94,9 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
   return (
     <div className="bg-base-100 border-base-300 overflow-hidden rounded-xl border">
       <div className="mkt-pricerow-head border-base-300 bg-base-200 border-b">
-        {/* Table column headers inside the device — UI mimicry, not eyebrows. */}
+        {/* Table column headers inside the device — sentence case, like the product. */}
         {['Catalog item', 'List price', `${b2b.tier} price`, 'You save'].map((h) => (
-          <Text
-            key={h}
-            as="span"
-            size={11}
-            mono
-            tone="subtle"
-            className="tracking-[0.05em] uppercase"
-          >
+          <Text key={h} as="span" size={11} mono>
             {h}
           </Text>
         ))}
@@ -112,27 +105,27 @@ function PriceListPanel({ business }: { business: ExampleBusiness }) {
         <span className="mkt-pricerow-item flex items-center gap-3">
           <span className="bg-base-200 border-base-300 size-[34px] shrink-0 rounded-lg border" />
           <span className="min-w-0">
-            <Text as="span" size={14} tone="default" weight={500} className="block">
+            <Text as="span" size={14} weight={500} className="block">
               {b2b.priceList.item}
             </Text>
-            <Text as="span" size={11} mono tone="subtle">
+            <Text as="span" size={11} mono>
               {b2b.priceList.sku}
             </Text>
           </span>
         </span>
-        <Text as="span" size={14} tone="subtle" className="mkt-pricerow-cell line-through">
+        <Text as="span" size={14} className="mkt-pricerow-cell line-through">
           {b2b.priceList.list}
         </Text>
-        <Text as="span" size={15} tone="default" weight={500} className="mkt-pricerow-cell">
+        <Text as="span" size={15} weight={500} className="mkt-pricerow-cell">
           {b2b.priceList.account}
         </Text>
-        <Text as="span" size={13} tone="none" weight={500} className={`mkt-pricerow-cell ${M.ink}`}>
+        <Text as="span" size={13} weight={500} className={`mkt-pricerow-cell ${M.ink}`}>
           {save}
         </Text>
       </div>
       <div className="bg-base-200 flex items-center gap-2 px-6 py-3.5">
         <Dot color={M.color} size={6} />
-        <Text as="span" size={12} mono tone="subtle">
+        <Text as="span" size={12} mono>
           same SKU as retail · account override + tier resolve the price
         </Text>
       </div>
@@ -173,7 +166,7 @@ export function B2bRfq() {
             key={s.title}
             className="mkt-pipe-cell relative flex min-h-[196px] flex-col gap-3 px-6 pt-6 pb-7"
           >
-            <h3 className="text-lede m-0 flex items-center gap-2 font-sans font-medium tracking-[-0.01em]">
+            <h3 className="m-0 flex items-center gap-2 font-sans text-lg font-medium tracking-[-0.01em]">
               <Dot color={M.color} size={8} />
               {s.title}
             </h3>

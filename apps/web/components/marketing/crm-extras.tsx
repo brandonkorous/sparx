@@ -95,10 +95,8 @@ function AutoCell({
   return (
     <div className={`px-6 py-5 ${then ? 'mkt-auto-then bg-base-200' : 'bg-base-100'}`}>
       {/* "when" / "then" are field labels on the rule row — device chrome. */}
-      <div className="text-ink-subtle text-micro font-mono tracking-[0.05em] uppercase">
-        {label}
-      </div>
-      <div className="text-small mt-[7px] flex items-center gap-[9px] font-medium">
+      <div className="font-mono text-sm">{label}</div>
+      <div className="mt-[7px] flex items-center gap-[9px] text-sm font-medium">
         <Dot color={getModuleColor(module).color} size={8} />
         {text}
       </div>
@@ -155,8 +153,8 @@ export function CrmCapabilities() {
               >
                 <Dot color={hue.color} size={9} />
               </span>
-              <h3 className="text-body-lg font-medium tracking-[-0.01em]">{c.title}</h3>
-              <p className="text-ink-muted text-small">{c.body}</p>
+              <h3 className="text-lg font-medium tracking-[-0.01em]">{c.title}</h3>
+              <p className="text-sm">{c.body}</p>
             </div>
           );
         })}

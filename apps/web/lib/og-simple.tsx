@@ -61,9 +61,7 @@ export function renderSimpleOg(opts: {
             style={{
               fontWeight: 500,
               fontSize: 16,
-              letterSpacing: '0.08em',
               color: accent,
-              textTransform: 'uppercase',
             }}
           >
             {tag}

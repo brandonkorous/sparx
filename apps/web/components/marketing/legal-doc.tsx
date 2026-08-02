@@ -9,7 +9,7 @@
  * (`LegalSection` / `LegalP` / `LegalList` / `LegalSubhead`) so every doc
  * shares one typographic register. Appearance is the marketing utility
  * vocabulary registered in app/globals.css — the editorial `text-*` scale and
- * the real-ink `text-ink-*` colors — never inline style.
+ * silica's own `-content` ink — never inline style.
  */
 import type { ReactNode } from 'react';
 import { Heading } from '@wizeworks/silicaui-react';
@@ -42,10 +42,10 @@ export function LegalDoc({
             <Spark />
           </Display>
           <div className="flex flex-wrap gap-5">
-            <Text as="span" mono size={13} tone="subtle">
+            <Text as="span" mono size={13}>
               Version {version}
             </Text>
-            <Text as="span" mono size={13} tone="subtle">
+            <Text as="span" mono size={13}>
               Effective {effectiveDate}
             </Text>
           </div>
@@ -100,7 +100,7 @@ export function LegalP({ children }: { children: ReactNode }) {
 
 export function LegalList({ items }: { items: ReactNode[] }) {
   return (
-    <ul className="text-body text-ink-muted flex list-disc flex-col gap-2 pl-5 font-sans">
+    <ul className="text-md flex list-disc flex-col gap-2 pl-5 font-sans">
       {items.map((item, i) => (
         <li key={i}>{item}</li>
       ))}

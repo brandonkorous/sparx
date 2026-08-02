@@ -10,7 +10,7 @@ const clip = (s: string, n: number) => (s.length > n ? `${s.slice(0, n - 1).trim
 
 function counter(len: number, max: number): React.ReactNode {
   return (
-    <span className={len > max ? 'text-danger' : 'text-ink-subtle'}>
+    <span className={len > max ? 'text-danger' : ''}>
       {len}/{max}
     </span>
   );
@@ -120,18 +120,14 @@ export function MetaTool() {
               className="bg-base-200 flex aspect-[1200/630] items-center justify-center bg-cover bg-center"
               style={image ? { backgroundImage: `url("${image}")` } : undefined}
             >
-              {!image ? (
-                <span className="text-ink-subtle text-[13px]">og:image preview</span>
-              ) : null}
+              {!image ? <span className="text-[13px]">og:image preview</span> : null}
             </div>
             <div className="bg-base-100 px-3.5 py-3">
-              <div className="text-ink-subtle text-[11px] uppercase">{host}</div>
+              <div className="text-[11px]">{host}</div>
               <div className="text-[15px] font-semibold">
                 {clip(title || 'Your page title', 70)}
               </div>
-              <div className="text-ink-muted text-[13px]">
-                {clip(description || 'Your description.', 120)}
-              </div>
+              <div className="text-[13px]">{clip(description || 'Your description.', 120)}</div>
             </div>
           </div>
         </Panel>

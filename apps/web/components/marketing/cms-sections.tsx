@@ -44,7 +44,7 @@ export function CmsHero() {
               Write it. Publish it. Own it
               <Spark color={M.color} />
             </Display>
-            <p className="text-ink-muted mt-7 max-w-[560px] font-sans text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
+            <p className="mt-7 max-w-[560px] font-sans text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
               {lede}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
@@ -64,7 +64,7 @@ export function CmsHero() {
                   className="border-base-300 bg-base-100 inline-flex items-center gap-2 rounded-full border px-3 py-1.5"
                 >
                   <Dot color={M.color} size={6} />
-                  <span className="text-ink-muted text-mini font-mono">{c}</span>
+                  <span className="font-mono text-sm">{c}</span>
                 </li>
               ))}
             </ul>
@@ -91,13 +91,13 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
       <div className="border-base-300 flex items-center justify-between gap-3 border-b px-4 py-3.5">
         <span className="flex min-w-0 items-center gap-2.5">
           <span
-            className={`${M.bg} bg-soft ${M.ink} text-mini inline-flex items-center gap-[7px] rounded-full px-3 py-1 font-sans font-medium`}
+            className={`${M.bg} bg-soft ${M.ink} inline-flex items-center gap-[7px] rounded-full px-3 py-1 font-sans text-sm font-medium`}
           >
             <Dot color={M.color} size={7} /> Draft
           </span>
-          <span className="text-ink-subtle text-micro font-mono">autosaved 12s ago · v7</span>
+          <span className="font-mono text-sm">autosaved 12s ago · v7</span>
         </span>
-        <span className="mkt-hide-on-mobile text-ink-subtle text-micro font-mono">{domain}</span>
+        <span className="mkt-hide-on-mobile font-mono text-sm">{domain}</span>
       </div>
       {/* Editor toolbar — mockup UI mimicry, so the mono glyph chips stay. */}
       <div className="border-base-200 bg-base-200 flex flex-wrap items-center gap-1.5 border-b px-4 py-2">
@@ -105,24 +105,24 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
           <span
             key={t}
             className={`${
-              i === 1
-                ? `${M.bg} bg-soft ${M.ink} border-module-cms`
-                : 'bg-base-100 text-ink-muted border-base-300'
-            } text-mini rounded-md border px-2 py-0.5 font-mono`}
+              i === 1 ? `${M.bg} bg-soft ${M.ink} border-module-cms` : 'bg-base-100 border-base-300'
+            } rounded-md border px-2 py-0.5 font-mono text-sm`}
           >
             {t}
           </span>
         ))}
       </div>
       <div className="px-5.5 pt-5.5 pb-2">
-        <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
-          {article.category}
-        </span>
-        <h2 className="text-h3 mt-2.5 mb-3 font-sans font-medium tracking-[-0.02em]">
+        {/* The category used to sit ABOVE the title as its own line — the eyebrow
+            slot, and no amount of restyling fixes a slot. It is article
+            metadata, so it belongs on the metadata line with the byline, where
+            it reads as information rather than as a kicker. */}
+        <h2 className="mt-0 mb-3 font-sans text-2xl font-medium tracking-[-0.02em]">
           {article.title}
         </h2>
-        <p className="text-ink-subtle text-caption mt-0 mb-4 font-sans">
-          by {article.author} · {article.readTime}
+        <p className="mt-0 mb-4 font-sans text-sm">
+          <span className={M.ink}>{article.category}</span> · by {article.author} ·{' '}
+          {article.readTime}
         </p>
         {['100%', '94%', '76%', '100%', '88%'].map((w, i) => (
           <span
@@ -134,9 +134,9 @@ function EditorCard({ business }: { business: ExampleBusiness }) {
         ))}
       </div>
       <div className="border-base-300 bg-base-200 flex items-center justify-between gap-3 border-t px-4 py-3.5">
-        <span className="text-ink-muted text-mini inline-flex items-center gap-2">
+        <span className="inline-flex items-center gap-2 text-sm">
           <span
-            className={`${M.bg} bg-soft ${M.ink} border-module-cms text-mini inline-flex size-[30px] items-center justify-center rounded-full border font-sans font-medium`}
+            className={`${M.bg} bg-soft ${M.ink} border-module-cms inline-flex size-[30px] items-center justify-center rounded-full border font-sans text-sm font-medium`}
           >
             {article.seoScore}
           </span>
@@ -183,11 +183,11 @@ export function CmsLifecycle() {
             key={s.title}
             className="mkt-pipe-cell relative flex min-h-[188px] flex-col gap-3 px-6 pt-6 pb-7"
           >
-            <h3 className="text-lede m-0 flex items-center gap-2 font-sans font-medium tracking-[-0.01em]">
+            <h3 className="m-0 flex items-center gap-2 font-sans text-lg font-medium tracking-[-0.01em]">
               <Dot color={M.color} size={8} />
               {s.title}
             </h3>
-            <p className="text-ink-muted text-caption m-0 font-sans">{s.body}</p>
+            <p className="m-0 font-sans text-sm">{s.body}</p>
             {i < stages.length - 1 ? (
               <span
                 className="mkt-hide-on-tablet border-base-300 bg-base-100 absolute top-[38px] -right-[11px] z-2 flex size-[22px] items-center justify-center rounded-full border"
@@ -234,13 +234,11 @@ function SchemaPanel({ fields }: { fields: [string, string][] }) {
     <div
       className={`${M.bg} bg-soft border-base-300 flex flex-col overflow-hidden rounded-xl border`}
     >
-      {/* Panel chrome label — this names the mockup's own header bar, not a
-          marketing heading below it. */}
+      {/* Panel chrome label — names the mockup's own header bar; nothing below it
+          is a heading, so this is a title bar rather than a kicker. */}
       <div className="border-base-300 flex items-center gap-2 border-b px-5 py-3.5">
         <Dot color={M.color} size={8} />
-        <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
-          content type · case study
-        </span>
+        <span className={`${M.ink} font-mono text-sm`}>content type · case study</span>
       </div>
       {fields.map(([label, type], i) => (
         <div
@@ -249,8 +247,8 @@ function SchemaPanel({ fields }: { fields: [string, string][] }) {
             i < fields.length - 1 ? 'border-base-200 border-b' : ''
           }`}
         >
-          <span className="text-small font-sans font-medium">{label}</span>
-          <span className="text-ink-subtle text-mini border-base-300 rounded-full border px-2 py-0.5 font-mono">
+          <span className="font-sans text-sm font-medium">{label}</span>
+          <span className="border-base-300 rounded-full border px-2 py-0.5 font-mono text-sm">
             {type}
           </span>
         </div>
@@ -273,11 +271,9 @@ function ResponsePanel() {
     <div className="border-base-300 bg-base-100 flex flex-col overflow-hidden rounded-xl border">
       <div className="border-base-300 flex items-center gap-2 border-b px-5 py-3.5">
         <Dot color={M.color} size={8} />
-        <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
-          GET /v1/case-studies/atlas-supply
-        </span>
+        <span className={`${M.ink} font-mono text-sm`}>GET /v1/case-studies/atlas-supply</span>
       </div>
-      <pre className="text-ink-muted text-mini m-0 flex-1 overflow-auto px-5.5 py-5 font-mono leading-[1.75] whitespace-pre">
+      <pre className="m-0 flex-1 overflow-auto px-5.5 py-5 font-mono text-sm leading-[1.75] whitespace-pre">
         {json}
       </pre>
     </div>
@@ -336,10 +332,10 @@ export function CmsEditor() {
             >
               {/* p.n is the annotation KEY, tied to the matching <Pin n> inside
                   the EditorFrame — never a decorative step marker. */}
-              <span className={`${M.ink} text-mini shrink-0 pt-px font-mono`}>{p.n}</span>
+              <span className={`${M.ink} shrink-0 pt-px font-mono text-sm`}>{p.n}</span>
               <div>
-                <h4 className="text-small mt-0 mb-1 font-sans font-medium">{p.title}</h4>
-                <p className="text-ink-muted text-caption m-0 font-sans">{p.body}</p>
+                <h4 className="mt-0 mb-1 font-sans text-sm font-medium">{p.title}</h4>
+                <p className="m-0 font-sans text-sm">{p.body}</p>
               </div>
             </div>
           ))}
@@ -359,18 +355,16 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
             <span key={d} className="bg-base-300 size-2.5 rounded-full" />
           ))}
         </span>
-        <span className="text-ink-subtle text-mini border-base-300 bg-base-100 ml-2 min-w-0 flex-1 overflow-hidden rounded-md border px-3 py-1 font-mono text-ellipsis whitespace-nowrap">
+        <span className="border-base-300 bg-base-100 ml-2 min-w-0 flex-1 overflow-hidden rounded-md border px-3 py-1 font-mono text-sm text-ellipsis whitespace-nowrap">
           app.sparx.works/cms/{article.slug}
         </span>
       </div>
       <div className="px-7.5 pt-6 pb-7.5">
-        <span className={`${M.ink} text-micro font-mono tracking-[0.05em] uppercase`}>
-          {article.category}
-        </span>
-        <h3 className="text-h2 mt-2.5 mb-1.5 font-sans font-medium tracking-[-0.02em]">
+        <span className={`${M.ink} font-mono text-sm`}>{article.category}</span>
+        <h3 className="mt-2.5 mb-1.5 font-sans text-2xl font-medium tracking-[-0.02em]">
           {article.title}
         </h3>
-        <p className="text-ink-subtle text-caption mt-0 mb-4 font-sans">
+        <p className="mt-0 mb-4 font-sans text-sm">
           by {article.author} · {article.readTime} · v12 <Pin n="D" />
         </p>
         {['100%', '94%', '100%'].map((w, i) => (
@@ -381,7 +375,7 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
             style={{ width: w }}
           />
         ))}
-        <div className="bg-base-200 text-ink-subtle text-mini my-4 flex h-30 items-center justify-center gap-2 rounded-[10px] font-mono">
+        <div className="bg-base-200 my-4 flex h-30 items-center justify-center gap-2 rounded-[10px] font-mono text-sm">
           <Pin n="B" /> embedded video · from media library
         </div>
         {['94%', '76%'].map((w) => (
@@ -391,7 +385,7 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
             style={{ width: w }}
           />
         ))}
-        <p className="text-ink-subtle text-mini mt-3.5 mb-0 font-sans">
+        <p className="mt-3.5 mb-0 font-sans text-sm">
           <Pin n="A" /> blocks &nbsp; <Pin n="C" /> internal links
         </p>
       </div>
@@ -406,7 +400,7 @@ function EditorFrame({ business }: { business: ExampleBusiness }) {
 function Pin({ n }: { n: string }) {
   return (
     <span
-      className={`${M.bg} text-module-cms-content text-micro inline-flex size-[19px] items-center justify-center rounded-full align-middle font-mono font-medium`}
+      className={`${M.bg} text-module-cms-content inline-flex size-[19px] items-center justify-center rounded-full align-middle font-mono text-sm font-medium`}
     >
       {n}
     </span>
@@ -438,9 +432,9 @@ export function CmsSeoAudit() {
             className={`${M.ink} font-sans text-[64px] leading-none font-medium tracking-[-0.03em]`}
           >
             98
-            <span className="text-ink-subtle text-h3">/100</span>
+            <span className="text-2xl">/100</span>
           </span>
-          <span className="text-ink-muted text-small font-sans">
+          <span className="font-sans text-sm">
             Live SEO score on &ldquo;Pour-over basics.&rdquo; Fix the one warning and it&rsquo;s a
             clean 100 — all before this post ever goes live.
           </span>
@@ -460,8 +454,8 @@ export function CmsSeoAudit() {
               >
                 {c.warn ? <Bang size={12} /> : <Check size={12} color="currentColor" />}
               </span>
-              <span className="text-small font-sans font-medium">{c.label}</span>
-              <span className="text-ink-subtle text-mini ml-auto font-mono">{c.meta}</span>
+              <span className="font-sans text-sm font-medium">{c.label}</span>
+              <span className="ml-auto font-mono text-sm">{c.meta}</span>
             </div>
           ))}
         </div>

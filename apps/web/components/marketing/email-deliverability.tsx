@@ -46,8 +46,8 @@ export function EmailKinds() {
             key={p.title}
             className={`${i === 0 ? `${E.bg} bg-soft` : 'bg-base-100'} border-base-300 flex flex-col gap-4 rounded-[14px] border p-[30px]`}
           >
-            <h3 className="text-h3 m-0 font-sans font-medium tracking-[-0.02em]">{p.title}</h3>
-            <Text className="text-small text-ink-muted m-0">{p.body}</Text>
+            <h3 className="m-0 font-sans text-2xl font-medium tracking-[-0.02em]">{p.title}</h3>
+            <Text className="m-0 text-sm">{p.body}</Text>
             <FlowLine steps={p.flow} />
           </div>
         ))}
@@ -60,14 +60,14 @@ export function EmailKinds() {
  *  as the sparx step. Wraps gracefully on narrow panels. */
 function FlowLine({ steps }: { steps: [string, string, string] }) {
   return (
-    <div className="bg-base-200 border-base-300 text-mini text-ink-muted mt-auto flex flex-wrap items-center gap-2 rounded-[10px] border px-4 py-3 font-mono">
+    <div className="bg-base-200 border-base-300 mt-auto flex flex-wrap items-center gap-2 rounded-[10px] border px-4 py-3 font-mono text-sm">
       {steps.map((s, i) => (
         <span key={s} className="inline-flex items-center gap-2">
           <span
             className={`rounded-md border px-2.5 py-1 whitespace-nowrap ${
               i === 1
                 ? `${E.bg} bg-soft ${E.ink} border-module-email`
-                : 'bg-base-100 border-base-300 text-ink-muted'
+                : 'bg-base-100 border-base-300'
             }`}
           >
             {s}
@@ -105,7 +105,7 @@ function SenderHealth() {
   return (
     <div className="bg-base-100 border-base-300 overflow-hidden rounded-[14px] border">
       <div className="border-base-300 bg-base-200 flex items-center justify-between border-b px-5 py-4">
-        <span className="text-body-sm flex items-center gap-2.5 font-medium">
+        <span className="text-md flex items-center gap-2.5 font-medium">
           <span className={`${E.bg} h-[9px] w-[9px] rounded-full`} /> Sender health
         </span>
         <Pill label="Verified" tone="email" />
@@ -135,12 +135,12 @@ function HealthRow({
 }) {
   return (
     <div
-      className={`text-small flex items-center gap-3 px-5 py-3.5 ${
+      className={`flex items-center gap-3 px-5 py-3.5 text-sm ${
         first ? '' : 'border-base-200 border-t'
       }`.trimEnd()}
     >
       <span
-        className={`${E.bg} bg-soft ${E.ink} text-mini flex h-5 w-5 shrink-0 items-center justify-center rounded-full`}
+        className={`${E.bg} bg-soft ${E.ink} flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-sm`}
         aria-hidden
       >
         ✓
@@ -154,8 +154,8 @@ function HealthRow({
 function Pill({ label, tone }: { label: string; tone: 'email' | 'muted' }) {
   return (
     <span
-      className={`text-micro rounded-full px-2.5 py-[3px] font-mono ${
-        tone === 'email' ? `${E.bg} bg-soft ${E.ink}` : 'bg-base-200 text-ink-muted'
+      className={`rounded-full px-2.5 py-[3px] font-mono text-sm ${
+        tone === 'email' ? `${E.bg} bg-soft ${E.ink}` : 'bg-base-200'
       }`}
     >
       {label}
@@ -174,21 +174,19 @@ function DnsPanel() {
   ];
   return (
     <div data-theme="dark" className="bg-base-100 rounded-[14px] p-6">
-      {/* Panel chrome inside a device mockup — not an eyebrow. */}
-      <span className="text-micro text-ink-subtle font-mono tracking-[0.05em] uppercase">
-        Auto-configured DNS · added for you
-      </span>
+      {/* Panel chrome inside a device mockup — sentence case. */}
+      <span className="font-mono text-sm">Auto-configured DNS · added for you</span>
       {records.map((r, i) => (
         <div
           key={r.name}
-          className={`text-mini font-mono leading-[1.7] ${
+          className={`font-mono text-sm leading-[1.7] ${
             i === 0 ? 'mt-3.5' : 'border-base-300 mt-4 border-t pt-4'
           }`}
         >
           <span className={E.ink}>{r.type}</span>{' '}
           <span className="text-base-content">{r.name}</span>
           <br />
-          <span className="text-ink-muted break-all">{r.value}</span>
+          <span className="break-all">{r.value}</span>
         </div>
       ))}
     </div>

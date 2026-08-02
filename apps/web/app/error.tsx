@@ -25,20 +25,20 @@ export default function Error({
         <div className="mb-5 flex justify-center">
           <SparkMascot expression="sad" tone="light" size={104} bob={false} />
         </div>
-        <h1 className="text-h1 m-0 mb-2.5 font-semibold">This page hit an error</h1>
-        <p className="text-body-sm text-ink-muted m-0 mb-6">
+        <h1 className="m-0 mb-2.5 text-3xl font-semibold">This page hit an error</h1>
+        <p className="text-md m-0 mb-6">
           Something unexpected happened. Try again, or head back to the homepage.
         </p>
         <div className="flex items-center justify-center gap-3.5">
           <Button type="button" color="primary" onClick={reset}>
             Try again
           </Button>
-          <Link href="/" color="primary" className="text-small">
+          <Link href="/" color="primary" className="text-sm">
             Back to sparx
           </Link>
         </div>
         {error.digest ? (
-          <p className="text-micro text-ink-subtle m-0 mt-6 font-mono">Reference: {error.digest}</p>
+          <p className="m-0 mt-6 font-mono text-sm">Reference: {error.digest}</p>
         ) : null}
       </div>
     </main>

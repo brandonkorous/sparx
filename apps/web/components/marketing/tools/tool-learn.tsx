@@ -37,7 +37,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
           {content.points.map((point) => (
             <Card key={point.title}>
               <CardBody className="gap-2">
-                <Text as="h3" size={16} weight={500} tone="default">
+                <Text as="h3" size={16} weight={500}>
                   {point.title}
                 </Text>
                 <Text size={15}>{point.body}</Text>
@@ -49,7 +49,7 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
         {seo?.howTo ? <HowTo name={seo.howTo.name} steps={seo.howTo.steps} color={color} /> : null}
 
         <div className="flex flex-col gap-3">
-          <Text as="h3" size={18} weight={500} tone="default">
+          <Text as="h3" size={18} weight={500}>
             Frequently asked
           </Text>
           <Accordion className="max-w-3xl">
@@ -80,7 +80,7 @@ function HowTo({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <Text as="h3" size={18} weight={500} tone="default">
+      <Text as="h3" size={18} weight={500}>
         {name}
       </Text>
       <ol className="m-0 flex list-none flex-col gap-3 p-0">
@@ -88,7 +88,7 @@ function HowTo({
           <li key={step.name} className="flex items-start gap-3.5">
             <span
               aria-hidden
-              className={`${color.bg} bg-soft ${color.ink} text-caption inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full font-sans font-semibold`}
+              className={`${color.bg} bg-soft ${color.ink} inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full font-sans text-sm font-semibold`}
             >
               {i + 1}
             </span>

@@ -15,35 +15,35 @@ const MOMENTS = [
     title: 'An order lands before you open.',
     body: 'Inventory updates, payment clears, the customer record updates, and a pickup message is scheduled — automatically, with no integration to configure.',
     result: 'Order handled',
-    color: 'var(--color-module-commerce)',
+    fill: 'bg-module-commerce text-module-commerce-content',
   },
   {
     time: '10:40 AM',
     title: 'A wholesale buyer asks for pricing.',
     body: 'sparx recognizes the company, applies their price list and net terms, and drafts a quote from the same product catalog you already sell from.',
     result: 'Quote ready',
-    color: 'var(--color-module-b2b)',
+    fill: 'bg-module-b2b text-module-b2b-content',
   },
   {
     time: '1:15 PM',
     title: "This week's post becomes an email, in one click.",
     body: 'Write it once in the CMS. Send it as a newsletter to your subscribers without re-typing a word or opening a second tool.',
     result: 'Newsletter sent',
-    color: 'var(--color-module-cms)',
+    fill: 'bg-module-cms text-module-cms-content',
   },
   {
     time: '4:50 PM',
     title: 'You ask your AI what changed today.',
     body: 'Because sparx exposes live business data through MCP, your assistant answers with real orders, customers and inventory — not a stale export.',
     result: 'Answer grounded',
-    color: 'var(--color-module-ai)',
+    fill: 'bg-module-ai text-module-ai-content',
   },
   {
     time: '6:18 PM',
     title: 'You go home without doing software chores.',
     body: "Reports already agree. The customer list is current. Tomorrow's reminders are queued. The business closes; the system keeps working.",
     result: 'Evening reclaimed',
-    color: 'var(--color-primary)',
+    fill: 'bg-primary text-primary-content',
   },
 ];
 
@@ -96,9 +96,12 @@ export function LandingV2Timeline() {
 function Moment({ moment: m, index }: { moment: (typeof MOMENTS)[number]; index: number }) {
   return (
     <article className="flex items-start gap-5">
+      {/* Fill + ink as ONE class pair. `bg-*` does not carry its `-content`
+          along, so a solid fill that only sets the background inherits whatever
+          ink surrounded it — which is why this was an inline `backgroundColor`
+          plus a hardcoded `text-white`. */}
       <span
-        className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-[15px] font-bold text-white"
-        style={{ backgroundColor: m.color }}
+        className={`relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl text-[15px] font-bold ${m.fill}`}
       >
         {String(index + 1).padStart(2, '0')}
       </span>

@@ -21,7 +21,7 @@ import { contrastRatio, rateContrast } from './lib/color';
 function Verdict({ label, pass }: { label: string; pass: boolean }) {
   return (
     <ListRow>
-      <ListColGrow className="text-body-sm">{label}</ListColGrow>
+      <ListColGrow className="text-md">{label}</ListColGrow>
       <Badge color={pass ? 'success' : 'danger'} variant="soft" size="sm">
         {pass ? <Check className="h-3.5 w-3.5" /> : <X className="h-3.5 w-3.5" />}
         {pass ? 'Pass' : 'Fail'}
@@ -95,10 +95,10 @@ export function ContrastTool() {
             className="border-base-300 flex flex-col gap-3 rounded-lg border p-7"
             style={{ backgroundColor: bg }}
           >
-            <span className="text-body" style={{ color: fg }}>
+            <span className="text-md" style={{ color: fg }}>
               Normal text — the quick brown fox jumps over the lazy dog.
             </span>
-            <span className="text-h2 font-bold" style={{ color: fg }}>
+            <span className="text-2xl font-bold" style={{ color: fg }}>
               Large text — Aa Bb Cc
             </span>
           </div>
@@ -122,7 +122,7 @@ export function ContrastTool() {
             <Verdict label="Large text — AAA (4.5:1)" pass={rating.largeAAA} />
           </List>
 
-          <p className="text-body-sm text-ink-muted m-0">
+          <p className="text-md m-0">
             Large text is 24px+, or 18.66px and bold. AA is the common legal and procurement bar;
             AAA is the stricter target for body text.
           </p>

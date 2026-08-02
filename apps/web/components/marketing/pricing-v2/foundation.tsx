@@ -47,7 +47,7 @@ export function PricingV2Foundation() {
                 <span className="bg-neutral-content/15 text-neutral-content flex h-11 w-11 items-center justify-center rounded-xl">
                   <Icon size={20} strokeWidth={2} aria-hidden />
                 </span>
-                <div className="text-base font-medium">{it.title}</div>
+                <div className="text-md font-medium">{it.title}</div>
                 <Text className="text-neutral-content/75 text-sm">{it.body}</Text>
               </div>
             );

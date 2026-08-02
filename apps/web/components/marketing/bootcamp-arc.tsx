@@ -59,13 +59,7 @@ export function BootcampArc() {
           {WAYPOINTS.map((w) => (
             <div key={w.tag} className="mkt-arc-wp">
               <Dot color={w.color} />
-              <Text
-                as="h3"
-                size={16}
-                weight={500}
-                tone="default"
-                className="mt-2.5 tracking-[-0.01em]"
-              >
+              <Text as="h3" size={16} weight={500} className="mt-2.5 tracking-[-0.01em]">
                 {w.title}
               </Text>
               <Text size={14} className="mt-[7px]">
@@ -79,13 +73,7 @@ export function BootcampArc() {
               className="mkt-arc-dot bg-primary border-base-100 ring-primary/15 block size-7 rounded-full border-[3px] ring-6"
               aria-hidden
             />
-            <Text
-              as="h3"
-              size={16}
-              weight={500}
-              tone="none"
-              className="text-primary mt-2.5 tracking-[-0.01em]"
-            >
+            <Text as="h3" size={16} weight={500} className="text-primary mt-2.5 tracking-[-0.01em]">
               Publish
               <Spark color={PRIMARY} />
             </Text>
@@ -99,7 +87,6 @@ export function BootcampArc() {
           as="div"
           size={15}
           weight={500}
-          tone="none"
           className="bg-primary text-primary bg-soft mt-11 inline-flex items-center gap-3 rounded-full px-5 py-3"
         >
           <span aria-hidden className="bg-primary size-2 rounded-full" />

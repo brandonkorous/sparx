@@ -3,10 +3,10 @@
  *
  * apps/web is CLASS-BASED: these primitives emit `className` built from the
  * marketing utility vocabulary registered in app/globals.css (`@theme`) — the
- * editorial type scale (`text-body`/`text-lede`/`text-caption`…), the section
- * rhythm + page gutter (`py-section-lg`/`px-page`), the real-ink secondary
- * colors (`text-ink-muted`/`text-ink-subtle`), and silica's color utilities
- * (`text-base-content`/`bg-base-200`/`text-primary`). Appearance lives in CSS,
+ * editorial type scale (`text-md`/`text-lg`/`text-sm`…), the section
+ * rhythm + page gutter (`py-section-lg`/`px-page`), and silica's own color
+ * utilities (`text-base-content`/`bg-base-200`/`text-primary`). Ink is ALWAYS
+ * the surface's paired `-content` — there is no marketing-local ink vocabulary. Appearance lives in CSS,
  * so a design change is one edit there — NOT a hunt through stamped inline
  * styles. The only inline `style` left is genuinely per-instance dynamic values
  * (a Display headline's fluid clamp, a Dot's size, a module-specific tint).
@@ -45,6 +45,8 @@ function cx(...parts: (string | false | null | undefined)[]): string {
  *   bg   → `bg-module-crm`                 solid fill — FILL ONLY, see below
  *   bg + `bg-soft` → the tinted card wash  (silica's own 15% color-mix)
  *   ink  → `text-module-crm`               the hue as text/icon ink
+ *   content → `text-module-crm-content`    the legible ink ON that fill — pair
+ *           it with `bg` ALWAYS (see below); never `text-white`
  *   color → `var(--color-module-crm)`      the token, for the few places that
  *           need a VALUE (an SVG `stroke`, a canvas fill) rather than a class
  *
@@ -75,46 +77,88 @@ const MODULE_COLORS = {
     color: 'var(--color-module-builder)',
     bg: 'bg-module-builder',
     ink: 'text-module-builder',
+    content: 'text-module-builder-content',
   },
   commerce: {
     color: 'var(--color-module-commerce)',
     bg: 'bg-module-commerce',
     ink: 'text-module-commerce',
+    content: 'text-module-commerce-content',
   },
-  cms: { color: 'var(--color-module-cms)', bg: 'bg-module-cms', ink: 'text-module-cms' },
-  crm: { color: 'var(--color-module-crm)', bg: 'bg-module-crm', ink: 'text-module-crm' },
+  cms: {
+    color: 'var(--color-module-cms)',
+    bg: 'bg-module-cms',
+    ink: 'text-module-cms',
+    content: 'text-module-cms-content',
+  },
+  crm: {
+    color: 'var(--color-module-crm)',
+    bg: 'bg-module-crm',
+    ink: 'text-module-crm',
+    content: 'text-module-crm-content',
+  },
   invoicing: {
     color: 'var(--color-module-invoicing)',
     bg: 'bg-module-invoicing',
     ink: 'text-module-invoicing',
+    content: 'text-module-invoicing-content',
   },
-  email: { color: 'var(--color-module-email)', bg: 'bg-module-email', ink: 'text-module-email' },
-  b2b: { color: 'var(--color-module-b2b)', bg: 'bg-module-b2b', ink: 'text-module-b2b' },
+  email: {
+    color: 'var(--color-module-email)',
+    bg: 'bg-module-email',
+    ink: 'text-module-email',
+    content: 'text-module-email-content',
+  },
+  b2b: {
+    color: 'var(--color-module-b2b)',
+    bg: 'bg-module-b2b',
+    ink: 'text-module-b2b',
+    content: 'text-module-b2b-content',
+  },
   dropship: {
     color: 'var(--color-module-dropship)',
     bg: 'bg-module-dropship',
     ink: 'text-module-dropship',
+    content: 'text-module-dropship-content',
   },
   inventory: {
     color: 'var(--color-module-inventory)',
     bg: 'bg-module-inventory',
     ink: 'text-module-inventory',
+    content: 'text-module-inventory-content',
   },
-  chat: { color: 'var(--color-module-chat)', bg: 'bg-module-chat', ink: 'text-module-chat' },
+  chat: {
+    color: 'var(--color-module-chat)',
+    bg: 'bg-module-chat',
+    ink: 'text-module-chat',
+    content: 'text-module-chat-content',
+  },
   scheduling: {
     color: 'var(--color-module-scheduling)',
     bg: 'bg-module-scheduling',
     ink: 'text-module-scheduling',
+    content: 'text-module-scheduling-content',
   },
-  ai: { color: 'var(--color-module-ai)', bg: 'bg-module-ai', ink: 'text-module-ai' },
+  ai: {
+    color: 'var(--color-module-ai)',
+    bg: 'bg-module-ai',
+    ink: 'text-module-ai',
+    content: 'text-module-ai-content',
+  },
   // Free platform capabilities, not billable modules — no manifest and not in
   // ModuleSlug. SEO is always present; Automations unlocks with any one module.
   // They carry module hues because they ARE module-shaped to a visitor.
-  seo: { color: 'var(--color-module-seo)', bg: 'bg-module-seo', ink: 'text-module-seo' },
+  seo: {
+    color: 'var(--color-module-seo)',
+    bg: 'bg-module-seo',
+    ink: 'text-module-seo',
+    content: 'text-module-seo-content',
+  },
   automations: {
     color: 'var(--color-module-automations)',
     bg: 'bg-module-automations',
     ink: 'text-module-automations',
+    content: 'text-module-automations-content',
   },
   // A real, independently-gated module (docs/133) that is simply priced at $0 —
   // unlike SEO/Automations above, which are platform capabilities, not ModuleSlugs.
@@ -122,6 +166,7 @@ const MODULE_COLORS = {
     color: 'var(--color-module-social)',
     bg: 'bg-module-social',
     ink: 'text-module-social',
+    content: 'text-module-social-content',
   },
 } as const;
 
@@ -132,72 +177,51 @@ export function getModuleColor(module: MarketingModule) {
 }
 
 // ── Text scale mapping ───────────────────────────────────────────────────────
-// A numeric px `size` maps to one of the editorial `text-*` utilities registered
-// in globals.css (each carries its own paired line-height). Half-sizes round to
-// the nearest step. Kept as a switch of LITERAL class names so Tailwind's scanner
+// A numeric px `size` maps onto SILICA's own rem ladder. There is no marketing
+// type scale any more: silica ships text-sm 14 / text-md 16 / text-lg 18 /
+// text-xl 20 / text-2xl 24 / text-3xl 30, rem-based so it scales with the
+// reader's font-size preference. The app used to redefine the same ladder in px
+// with 1px steps, which is a second vocabulary AND cannot scale.
+//
+// `text-md` is the default. `text-sm` is the caption step. Nothing here emits
+// `text-xs` — that is reserved for text nobody is meant to read, which is not
+// what this primitive is for. Kept as literal class names so Tailwind's scanner
 // emits every one.
 function textSizeClass(size: number): string {
-  if (size < 11.5) return 'text-micro';
-  if (size < 12.75) return 'text-mini';
-  if (size < 13.75) return 'text-caption';
-  if (size < 14.75) return 'text-small';
-  if (size < 15.75) return 'text-body-sm';
-  if (size < 16.75) return 'text-body';
-  if (size < 17.75) return 'text-body-lg';
-  if (size < 18.75) return 'text-lede';
-  if (size < 19.75) return 'text-lede-lg';
-  // Heading steps. Before these existed the ladder ended at `text-lede-lg`, so
-  // ANY size ≥ 18.75 collapsed to 19px — `<Text as="h3" size={24}>` read as
-  // correct in source and silently shrank in the browser. Past 26px hand back
-  // to <Display>, which is fluid-clamped and owns the big end.
-  if (size < 21) return 'text-h4';
-  if (size < 23) return 'text-h3';
-  if (size < 26) return 'text-h2';
-  return 'text-h1';
+  if (size < 15) return 'text-sm'; // 14 — captions and labels, the floor
+  if (size < 17) return 'text-md'; // 16 — body, the default
+  if (size < 19) return 'text-lg'; // 18 — lede
+  if (size < 22) return 'text-xl'; // 20
+  if (size < 27) return 'text-2xl'; // 24
+  // Past 30px hand back to <Display>, which is fluid-clamped and owns the big end.
+  return 'text-3xl'; // 30
 }
 
-/**
- * The ink axis. `none` emits NO color class at all — use it when the CALLER
- * supplies the color as a utility (a module ink, `text-warning`, …):
- *
- *   <Text tone="none" className={M.ink} mono size={11}>
- *
- * Without it, `<Text>` always stamped a tone class, so adding `M.ink` via
- * `className` put two same-specificity color utilities on one element — and CSS
- * resolves that by stylesheet order, not className order, so the module hue
- * could lose non-deterministically. That gap was pushing callers back to raw
- * hand-styled `<span>`s, which is exactly what these primitives exist to stop.
- */
-type TextTone = 'default' | 'muted' | 'subtle' | 'none';
-
-const TONE_CLASS: Record<TextTone, string | null> = {
-  default: 'text-base-content',
-  muted: 'text-ink-muted',
-  subtle: 'text-ink-subtle',
-  none: null,
-};
+// There is no ink prop. `<Text>` emits NO color class at all, so it inherits
+// whatever ink its surface pairs with — `text-base-content` under `bg-base-100`,
+// `text-primary-content` under `bg-primary`, and both re-resolve inside a
+// `data-theme="dark"` island by themselves. A caller who wants a specific hue
+// passes it as a utility (`className={M.ink}`) and it simply applies.
+//
+// This replaced a `tone` axis of `default | muted | subtle | none`. Two of those
+// (`muted`, `subtle`) were a parallel `--color-ink-*` vocabulary competing with
+// silica's `-content` contract. The other two were the bug: because `<Text>`
+// ALWAYS stamped a color class, adding `M.ink` via `className` put two
+// same-specificity color utilities on one element, and CSS resolves that by
+// STYLESHEET order rather than className order — so the module hue won or lost
+// non-deterministically. `` existed only to opt out of that. Emitting
+// no color removes the axis and the race together.
 
 function weightClass(weight: 400 | 500 | 600): string {
   return weight === 600 ? 'font-semibold' : weight === 500 ? 'font-medium' : 'font-normal';
 }
 
-/**
- * Editorial eyebrow label — small uppercase tag. (Deprecated brand-wide; kept
- * for the handful of un-migrated callers.)
- */
-export function Eyebrow({ children, color }: { children: React.ReactNode; color?: string }) {
-  return (
-    <span
-      className={cx(
-        'text-micro font-sans font-medium tracking-[0.08em] uppercase',
-        color ? null : 'text-ink-muted'
-      )}
-      style={color ? { color } : undefined}
-    >
-      {children}
-    </span>
-  );
-}
+// There is no `Eyebrow` and no `EyebrowBadge`. Nothing sits above a heading to
+// introduce it — no kicker, no category chip, no `01 / 02 / 03` marker, and no
+// <Badge> used as one either; the ban is on the SLOT, not the markup. Both
+// components lived here with zero call sites, which is worse than a violation:
+// a loaded gun the next person picks up in good faith. Hierarchy is scale,
+// weight and color. The heading carries itself.
 
 /**
  * Marketing display heading — sizes well past silica's Heading variants.
@@ -241,16 +265,15 @@ export function Display({
 /**
  * Marketing body-copy primitive — the one place running text, labels, and
  * captions resolve their type + ink. `size` (px) maps to an editorial `text-*`
- * utility; `tone` maps to a real-ink color utility. Both are DRIFT-PROOF: the
- * ink tones mix into `--color-base-100` (never `transparent`), so the no-faded-
- * text rule holds, and they flip inside a `data-theme="dark"` island on their
- * own — there is deliberately no "invert" tone. The 16px body floor lives in the
- * scale (`text-body` = 16); smaller steps are for genuine captions/labels.
+ * utility. It sets NO ink: color comes from the surface's own `-content`
+ * pairing, so it flips inside a `data-theme="dark"` island by itself and a
+ * caller-supplied hue never fights it. The 16px body floor lives in the scale
+ * (`text-md` = 16); `text-sm` (14) is the ONLY step below it, for genuine
+ * captions and labels.
  */
 export function Text({
   children,
   size = 16,
-  tone = 'muted',
   weight = 400,
   mono = false,
   color,
@@ -261,13 +284,11 @@ export function Text({
   children: React.ReactNode;
   /** Font size in px → nearest editorial `text-*` utility. Defaults to 16 (body floor). */
   size?: number;
-  /** Ink axis — every value resolves to real ink, never transparent. */
-  tone?: TextTone;
   weight?: 400 | 500 | 600;
   /** Render in the mono face (hex/token/caption chips). */
   mono?: boolean;
   /** Escape hatch for a one-off ink expressed as a TOKEN (e.g. `var(--color-primary)`),
-   *  not a literal hex. Wins over `tone`; emitted as an inline color only. */
+   *  not a literal hex. Emitted as an inline color only. */
   color?: string;
   as?: 'p' | 'span' | 'div' | 'li' | 'dt' | 'dd' | 'figcaption' | 'label' | 'small' | 'h3' | 'h4';
   className?: string;
@@ -279,7 +300,6 @@ export function Text({
         mono ? 'font-mono' : 'font-sans',
         textSizeClass(size),
         weightClass(weight),
-        color ? null : TONE_CLASS[tone],
         className
       )}
       style={color ? { color, ...style } : style}
@@ -295,7 +315,7 @@ export function Text({
  */
 export function Code({ children }: { children: React.ReactNode }) {
   return (
-    <code className="text-mini text-base-content bg-base-200 rounded-sm px-[5px] py-px font-mono">
+    <code className="text-base-content bg-base-200 rounded-sm px-[5px] py-px font-mono text-sm">
       {children}
     </code>
   );
@@ -431,10 +451,6 @@ export function SectionHeader({
   accent,
   ledeColor,
 }: {
-  /** @deprecated Eyebrows are removed brand-wide; value ignored. Use `accent`. */
-  eyebrow?: React.ReactNode;
-  /** @deprecated see `eyebrow`. */
-  eyebrowColor?: string;
   headline: React.ReactNode;
   lede?: React.ReactNode;
   /** @deprecated Dark sections are `data-theme="dark"` islands now; value ignored. */
@@ -471,38 +487,6 @@ export function SectionHeader({
         </SilicaText>
       ) : null}
     </div>
-  );
-}
-
-/**
- * Colored eyebrow chip — dot + uppercase label inside a tinted pill. The pill
- * fill + label ink are module-specific (dynamic), so they stay inline; structure
- * is utilities.
- */
-export function EyebrowBadge({
-  children,
-  color,
-  background,
-  text,
-}: {
-  children: React.ReactNode;
-  color: string;
-  background: string;
-  text: string;
-}) {
-  return (
-    <span
-      className="inline-flex w-fit items-center gap-2 rounded-full px-3 py-[5px]"
-      style={{ backgroundColor: background }}
-    >
-      <Dot color={color} />
-      <span
-        className="text-micro font-sans font-medium tracking-[0.05em] uppercase"
-        style={{ color: text }}
-      >
-        {children}
-      </span>
-    </span>
   );
 }
 

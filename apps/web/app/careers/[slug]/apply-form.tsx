@@ -22,8 +22,8 @@ import { submitApplication, type ApplicationState } from '../actions';
 
 const INITIAL: ApplicationState = { status: 'idle' };
 
-const LABEL_CLASS = 'text-caption font-medium';
-const OPTIONAL_CLASS = 'text-ink-subtle font-normal';
+const LABEL_CLASS = 'text-sm font-medium';
+const OPTIONAL_CLASS = 'font-normal';
 
 export interface ApplyFormRole {
   slug: string;
@@ -195,7 +195,7 @@ export function ApplyForm({ role }: { role: ApplyFormRole }) {
 
       <SubmitButton pending={pending} />
 
-      <p className="text-mini text-ink-subtle m-0">
+      <p className="m-0 text-sm">
         A real person — usually the founder — reads every application. No black hole, no bot screen.
       </p>
     </form>
@@ -239,15 +239,15 @@ function Confirmation() {
     <div role="status" className="flex flex-col items-start gap-3.5 py-2">
       <span
         aria-hidden
-        className="bg-primary bg-soft text-primary text-h3 inline-flex h-11 w-11 items-center justify-center rounded-full"
+        className="bg-primary bg-soft text-primary inline-flex h-11 w-11 items-center justify-center rounded-full text-2xl"
       >
         ✓
       </span>
-      <span className="text-h2 font-medium tracking-[-0.02em]">
+      <span className="text-2xl font-medium tracking-[-0.02em]">
         Application received
         <Spark />
       </span>
-      <p className="text-body-sm text-ink-muted m-0 max-w-[380px]">
+      <p className="text-md m-0 max-w-[380px]">
         Thank you — we&rsquo;ll be in touch. A real person reads every application, so give us a
         little time to do it justice.
       </p>

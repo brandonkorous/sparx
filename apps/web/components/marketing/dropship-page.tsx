@@ -157,15 +157,15 @@ function DropshipWithCommerce() {
             key={p.title}
             className={`${p.bg} bg-soft border-base-300 flex flex-col gap-4 rounded-[14px] border p-8`}
           >
-            <h3 className="text-h2 m-0 font-sans font-medium tracking-[-0.02em]">{p.title}</h3>
-            <Text className="text-body-sm text-ink-muted m-0">{p.body}</Text>
+            <h3 className="m-0 font-sans text-2xl font-medium tracking-[-0.02em]">{p.title}</h3>
+            <Text className="text-md m-0">{p.body}</Text>
             <ul className="m-0 grid list-none gap-3 p-0">
               {p.points.map((pt) => (
                 <li key={pt} className="flex items-start gap-3">
                   <span className="shrink-0 pt-[7px]">
                     <Dot color={p.dot} size={7} />
                   </span>
-                  <Text as="span" className="text-small text-ink-muted">
+                  <Text as="span" className="text-sm">
                     {pt}
                   </Text>
                 </li>
@@ -196,7 +196,7 @@ function DropshipProof() {
           A supply chain you don&rsquo;t have to run
           <Spark color={M.color} />
         </Display>
-        <Text variant="lead" className="text-ink-muted mt-6 max-w-[640px]">
+        <Text variant="lead" className="mt-6 max-w-[640px]">
           No warehouse, no packing, no buying stock on a bet. Connect the suppliers, set your
           margins, and let orders route themselves — while the platform keeps the catalog, the
           customer, and the profit math all in one place.
@@ -208,7 +208,7 @@ function DropshipProof() {
             <div className="font-sans text-[clamp(34px,5vw,52px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <Text className="text-small text-ink-muted mt-3">{s.l}</Text>
+            <Text className="mt-3 text-sm">{s.l}</Text>
           </div>
         ))}
       </div>
@@ -226,11 +226,11 @@ function DropshipPricing() {
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
             <span className="font-sans text-[56px] font-medium tracking-[-0.025em]">$29</span>
-            <Text as="span" className="text-body text-ink-subtle">
+            <Text as="span" className="text-md">
               /mo
             </Text>
           </div>
-          <Text className="text-small text-ink-muted m-0 max-w-[660px]">
+          <Text className="m-0 max-w-[660px] text-sm">
             A flat $29/mo — supplier connectors, catalog and inventory sync, markup rules, automated
             order routing, and tracking sync. No per-order dropship fee and no reseller cut; you
             connect to your own supplier accounts directly. Works alongside Commerce, which runs
@@ -261,7 +261,7 @@ function DropshipCta() {
           Start selling without the warehouse
           <Spark color={M.color} />
         </Display>
-        <Text variant="lead" className="text-ink-muted m-0 max-w-[640px]">
+        <Text variant="lead" className="m-0 max-w-[640px]">
           Connect a supplier, import a few products, set a markup rule, and take your first order —
           routed and tracked for you. No stock to buy, no boxes to pack, no migration weekend. Turn
           Dropship off the day you stop, and your products and orders stay yours.

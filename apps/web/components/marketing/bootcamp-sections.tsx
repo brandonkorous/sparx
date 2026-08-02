@@ -54,7 +54,6 @@ export function BootcampHero() {
               as="span"
               mono
               size={12}
-              tone="none"
               className="text-primary inline-flex items-center gap-2"
             >
               <span aria-hidden className="bg-primary size-[7px] rounded-full" />
@@ -93,7 +92,7 @@ export function BootcampWhoFor() {
       <div className="mt-13 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {who.map((w) => (
           <div key={w.t}>
-            <Text as="h3" size={20} weight={500} tone="default" className="tracking-[-0.02em]">
+            <Text as="h3" size={20} weight={500} className="tracking-[-0.02em]">
               {w.t}
             </Text>
             <Text size={15} className="mt-3">
@@ -127,7 +126,7 @@ export function BootcampFormats() {
       <div className="mkt-formats mt-13">
         {formats.map((f) => (
           <div key={f.nm} className="px-6 py-7">
-            <Text as="div" size={17} weight={500} tone="default" className="tracking-[-0.01em]">
+            <Text as="div" size={17} weight={500} className="tracking-[-0.01em]">
               {f.nm}
             </Text>
             <Text as="div" size={14} className="mt-2">
@@ -167,7 +166,7 @@ export function BootcampHostCta() {
             </Button>
           </a>
         </div>
-        <Text as="span" mono size={12} tone="subtle" className="mt-6">
+        <Text as="span" mono size={12} className="mt-6">
           Powered by{' '}
           <Text as="span" mono size={12} weight={500}>
             sparx

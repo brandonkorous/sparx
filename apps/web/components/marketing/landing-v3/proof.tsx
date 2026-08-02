@@ -103,7 +103,7 @@ export function LandingV3Proof() {
                   <span className="tabular-nums">{fmt(r.price)}</span>
                 </div>
               ))}
-              <div className="flex items-center justify-between gap-4 pt-4 text-base font-bold">
+              <div className="text-md flex items-center justify-between gap-4 pt-4 font-bold">
                 <span>TOTAL</span>
                 <span className="tabular-nums">{fmt(TOTAL)}/mo</span>
               </div>

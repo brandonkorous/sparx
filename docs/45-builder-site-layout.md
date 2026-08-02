@@ -1,8 +1,19 @@
 # 45 — Builder: The Site Layout Editor
 
-Version: 1.3
+Version: 1.4
 Author: Brandon Korous
-Last Updated: 2026-06-17
+Last Updated: 2026-08-02
+
+> **SUPERSEDED for the storefront render path (2026-08-02).** The chrome a visitor sees is the
+> **silica frame** (`builder_layouts.silica_published_tree`), read by `apps/site/app/layout.tsx`.
+> The sparx-Builder chrome renderer described below was deleted with `<SiteHeader>`/`<SiteFooter>`,
+> so the `draft_tree` / `published_tree` columns this doc specifies no longer reach a page. The MCP
+> tools that wrote them (`list` / `get` / `create` / `update` / `publish_builder_layout`,
+> `set_active_layout`, `delete_builder_layout`) are **removed** — they returned `published: true`
+> and changed nothing on the live site. Author chrome with `set_silica_frame` → `publish_silica_site`
+> (contract: `describe_silica_authoring`). What survives here and is still current: the **catalog +
+> active-layout model** (one live layout per site, `builder_layouts.is_active`, per-page `frame_id`),
+> which the silica frame reuses row-for-row. The tree format and the editing workflow do not.
 
 > The Builder ([40](40-sitebuilder-composition-model.md)) models a website as a
 > **tree of nested layouts**: a layout owns **zones**, one of which — the content

@@ -89,10 +89,10 @@ export function FaviconOutput({ result, appName, domain, themeColor }: FaviconOu
                     ) : null}
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col">
-                    <Text as="span" size={12} mono tone="default" className="truncate">
+                    <Text as="span" size={12} mono className="truncate">
                       {asset.name}
                     </Text>
-                    <Text as="span" size={11} tone="subtle">
+                    <Text as="span" size={11}>
                       {asset.label}
                     </Text>
                   </span>

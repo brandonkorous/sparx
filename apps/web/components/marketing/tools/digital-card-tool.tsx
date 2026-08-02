@@ -116,10 +116,10 @@ export function DigitalCardTool() {
               converted to a silica Card nested inside this Panel. */}
           <div className="border-base-300 bg-base-100 flex flex-col gap-1 rounded-lg border p-[22px]">
             <span className="text-[18px] font-semibold">{full}</span>
-            <span className="text-ink-muted text-[13px]">
+            <span className="text-[13px]">
               {[data.title, data.company].filter(Boolean).join(' · ')}
             </span>
-            <div className="text-ink-muted mt-2 flex flex-col gap-0.5 text-[13px]">
+            <div className="mt-2 flex flex-col gap-0.5 text-[13px]">
               {data.phone ? <span>{data.phone}</span> : null}
               {data.email ? <span>{data.email}</span> : null}
               {data.website ? <span>{data.website}</span> : null}
@@ -143,7 +143,7 @@ export function DigitalCardTool() {
             </Button>
             <CopyButton value={vcard} label="Copy vCard" toastLabel="vCard copied" />
           </div>
-          <Text className="text-ink-muted m-0">
+          <Text className="m-0">
             Scan the QR to save the contact, or share the .vcf file. Saved on this device only.
           </Text>
         </Panel>

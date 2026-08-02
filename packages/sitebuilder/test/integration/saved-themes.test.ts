@@ -17,6 +17,7 @@ import {
   disposeTestContext,
   makeTestContext,
   readPropertyBrandOverride,
+  readSilicaDraftTheme,
   readTenantBrand,
   type TestContext,
 } from '../helpers.js';
@@ -75,7 +76,7 @@ describe('sitebuilder saved themes', () => {
 
   it('apply — loads the saved theme into the working draft (theme + presentation + brand), no publish', async () => {
     const result = await savedThemeService.apply(test.ctx, summerId);
-    expect(result).toEqual({ ok: true, themeKey: 'apex' });
+    expect(result).toEqual({ ok: true, themeKey: 'apex', silicaTheme: true });
 
     const config = await themeService.getConfig(test.ctx);
     expect(config.themeKey).toBe('apex');
@@ -98,6 +99,28 @@ describe('sitebuilder saved themes', () => {
     expect(base?.colorPrimary ?? null).toBeNull();
     // Not published — apply only stages the draft.
     expect(config.publishedVersionId).toBeNull();
+  });
+
+  // THE regression test for "the tenant picked a theme and the live site ignored it".
+  // Everything asserted above (theme_key, presentation, brand_override) feeds the
+  // BUILDER's preview, which derives a theme from the brand columns. The storefront
+  // derives nothing — it renders `silica theme ?? BASE_SILICA_THEME`. So every
+  // assertion above passed for months while the visitor saw the platform default.
+  // Assert the column the storefront actually reads, and assert the VALUE, because a
+  // theme row that exists but carries the wrong primary fails in exactly the same way
+  // to the only person who matters.
+  it('apply — writes the look through to the silica theme the storefront renders', async () => {
+    const theme = await readSilicaDraftTheme(test.tenant.tenantId, test.ctx.propertyId);
+    expect(theme).not.toBeNull();
+    // The saved theme's captured primary (#2f7d32, set by the `update` test above) —
+    // not the preset's, and not sparx Ember. This is the whole point of applying it.
+    expect(theme?.tokens?.['--color-primary']).toBe('#2f7d32');
+    // A `-content` ink is measured for it, so text on a primary fill stays readable
+    // instead of inheriting whatever the base theme happened to pair with Ember.
+    expect(theme?.tokens?.['--color-primary-content']).toBeTruthy();
+    // Both palettes, so a site with the `toggle` appearance policy is themed in dark
+    // too rather than falling back to base for half its visitors.
+    expect(theme?.dark?.['--color-primary']).toBeTruthy();
   });
 
   it('scheduled publish — applies the schedule’s theme before snapshotting', async () => {
@@ -173,7 +196,7 @@ describe('sitebuilder saved theme apply — brand scope (docs/49)', () => {
 
     const secondary = await addSecondaryProperty(test);
     const result = await savedThemeService.apply(secondary.ctx, theme.id);
-    expect(result).toEqual({ ok: true, themeKey: 'drift' });
+    expect(result).toEqual({ ok: true, themeKey: 'drift', silicaTheme: true });
 
     // The site's OWN override carries the theme brand (recolours only this site)…
     const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);

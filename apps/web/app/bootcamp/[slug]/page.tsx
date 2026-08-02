@@ -117,7 +117,7 @@ export default async function BootcampDetailPage({
       {/* Header band — orange-tinted, mirroring the bootcamp hero identity. */}
       <section className="bg-primary bg-soft px-page py-[clamp(40px,6vw,72px)]">
         <Container className="flex flex-col gap-5">
-          <a href="/bootcamp" className="text-caption text-ink-muted no-underline">
+          <a href="/bootcamp" className="text-sm no-underline">
             ← All bootcamps
           </a>
           <div className="max-w-[760px]">
@@ -128,7 +128,7 @@ export default async function BootcampDetailPage({
           </div>
           {/* Format moved out of the pre-heading eyebrow slot and into the meta row
               (RULE #2: nothing sits above a heading purely to introduce it). */}
-          <div className="text-body-sm text-ink-muted flex flex-wrap items-center gap-x-5 gap-y-2.5">
+          <div className="text-md flex flex-wrap items-center gap-x-5 gap-y-2.5">
             <span className="inline-flex items-center gap-2">
               <Badge color={tier.color} variant="soft" size="sm">
                 {tier.label}
@@ -184,11 +184,11 @@ function RegistrationCard({ b }: { b: BootcampDetail }) {
               key={r.k}
               className={
                 i === 0
-                  ? 'text-small flex items-center justify-between gap-4 py-3'
-                  : 'border-base-300 text-small flex items-center justify-between gap-4 border-t py-3'
+                  ? 'flex items-center justify-between gap-4 py-3 text-sm'
+                  : 'border-base-300 flex items-center justify-between gap-4 border-t py-3 text-sm'
               }
             >
-              <span className="text-ink-subtle">{r.k}</span>
+              <span>{r.k}</span>
               <span className="text-right font-medium">{r.v}</span>
             </div>
           ))}
@@ -204,9 +204,7 @@ function RegistrationCard({ b }: { b: BootcampDetail }) {
             >
               Register ↗
             </a>
-            <p className="text-mini text-ink-subtle m-0">
-              Registration is handled on the host&rsquo;s own page.
-            </p>
+            <p className="m-0 text-sm">Registration is handled on the host&rsquo;s own page.</p>
           </div>
         ) : (
           <RsvpForm slug={b.slug} full={Boolean(seats?.full)} />

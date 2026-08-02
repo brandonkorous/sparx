@@ -126,7 +126,7 @@ export function DocumentTool({ config }: { config: DocConfig }) {
           }
         >
           <InvoicePreview data={data} title={config.docTitle} dateLabel={config.pdfDateLabel} />
-          <p className="text-caption text-ink-subtle m-0 font-sans">
+          <p className="m-0 font-sans text-sm">
             Your details are saved on this device only, ready for the next one. The PDF is built
             entirely in your browser.
           </p>

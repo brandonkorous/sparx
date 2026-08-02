@@ -73,7 +73,7 @@ function Ledger() {
                 className="h-2.5 w-2.5 shrink-0 rounded-full"
                 style={{ backgroundColor: MODULE_HEX[row.key as MarketingModule] }}
               />
-              <span className="text-base font-medium">{row.name}</span>
+              <span className="text-md font-medium">{row.name}</span>
               <Badge color="primary" variant="soft">
                 {row.price}
               </Badge>

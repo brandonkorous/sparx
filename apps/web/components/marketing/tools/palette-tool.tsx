@@ -172,7 +172,7 @@ export function PaletteTool() {
           <Panel
             title="Palette"
             action={
-              <span className="text-caption text-ink-muted font-mono">
+              <span className="font-mono text-sm">
                 {p.colors.length} {p.colors.length === 1 ? 'color' : 'colors'}
               </span>
             }
@@ -181,7 +181,7 @@ export function PaletteTool() {
               <Button type="button" color="module" variant="solid" size="sm" onClick={shuffle}>
                 <Shuffle className="h-4 w-4" /> Shuffle
               </Button>
-              <span className="text-body-sm text-ink-muted">
+              <span className="text-md">
                 or press <Kbd size="sm">Space</Kbd> — lock the colors you want to keep
               </span>
             </div>
@@ -192,7 +192,7 @@ export function PaletteTool() {
               onSelect={p.setSelected}
               onToggleLock={p.toggleLock}
             />
-            <p className="text-body-sm text-ink-muted m-0">
+            <p className="text-md m-0">
               Click a bar to preview its full scale below; lock it to keep it through shuffles.
             </p>
           </Panel>
@@ -208,7 +208,7 @@ export function PaletteTool() {
             }
           >
             <ScaleSwatches hex={active.hex} />
-            <p className="text-body-sm text-ink-muted m-0">
+            <p className="text-md m-0">
               Click any step to copy its hex. 50 is the lightest tint, 950 the darkest shade.
             </p>
           </Panel>
@@ -260,10 +260,8 @@ function PaletteSwatches({
                 className="flex h-auto w-full min-w-0 flex-col items-center justify-end gap-0.5 rounded-none px-2 py-3.5 inset-ring-current data-[pressed]:shadow-none data-[pressed]:inset-ring-4"
                 style={{ backgroundColor: c.hex, color: text }}
               >
-                <span className="text-micro w-full truncate text-center font-semibold tracking-wide uppercase">
-                  {c.role}
-                </span>
-                <span className="text-caption w-full truncate text-center font-mono font-semibold">
+                <span className="w-full truncate text-center text-sm font-semibold">{c.role}</span>
+                <span className="w-full truncate text-center font-mono text-sm font-semibold">
                   {c.hex}
                 </span>
               </ToggleGroupItem>
@@ -339,7 +337,7 @@ function ScaleSwatches({ hex }: { hex: string }) {
           type="button"
           variant="ghost"
           onClick={() => copy(swatch.hex, `${swatch.hex} copied`)}
-          className="text-caption flex h-auto w-full items-center justify-between rounded-none px-4 py-3 font-mono font-normal"
+          className="flex h-auto w-full items-center justify-between rounded-none px-4 py-3 font-mono text-sm font-normal"
           style={{ backgroundColor: swatch.hex, color: readableTextOn(swatch.hex) }}
         >
           <span className="font-semibold">{swatch.step}</span>
@@ -365,12 +363,12 @@ function ExportBlock({
 }) {
   return (
     <div className="flex flex-col gap-2">
-      <span className="text-body-sm font-medium">{title}</span>
+      <span className="text-md font-medium">{title}</span>
       <CodeBlock height="short">{code}</CodeBlock>
       <div>
         <CopyButton value={code} label={copyLabel} toastLabel={toast} />
       </div>
-      {hint ? <p className="text-body-sm text-ink-muted m-0">{hint}</p> : null}
+      {hint ? <p className="text-md m-0">{hint}</p> : null}
     </div>
   );
 }

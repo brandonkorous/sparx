@@ -96,7 +96,7 @@ export function MarginTool() {
             />
           </Field>
           <div className="flex items-center justify-between gap-3">
-            <Text as="span" className="text-ink-muted">
+            <Text as="span">
               Charge <strong>{money(priceForTarget)}</strong>
             </Text>
             <Button
@@ -133,7 +133,7 @@ export function MarginTool() {
             <Metric label="Profit per unit" value={money(profit)} />
             <Metric label="Break-even units" value={breakEven !== null ? String(breakEven) : '—'} />
           </Stats>
-          <Text className="text-ink-muted m-0">
+          <Text className="m-0">
             Margin is profit as a share of price; markup is profit as a share of cost.{' '}
             {breakEven !== null
               ? `At ${money(profit)} profit per unit, you cover ${money(fixed)} of fixed costs after ${breakEven} units.`

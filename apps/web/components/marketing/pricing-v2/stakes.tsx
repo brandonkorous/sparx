@@ -107,9 +107,12 @@ function BigNumerals() {
 function OldWayReceipt() {
   return (
     <div className="bg-neutral text-neutral-content flex flex-col overflow-hidden rounded-3xl px-8 pt-9 pb-10 lg:min-h-[560px]">
-      <div className="text-neutral-content/55 font-mono text-xs tracking-[0.18em]">THE OLD WAY</div>
-      <Heading level={3} className="mt-2.5 mb-7 text-3xl tracking-tight text-white">
-        Twelve tools. Twelve bills.
+      {/* "THE OLD WAY" used to sit above this heading as a wide-tracked mono
+          kicker in a 55%-faded ink — an eyebrow twice over. It carried real
+          meaning (this is the BEFORE card), so it folds into the heading rather
+          than being deleted: the sentence now says it, and says it louder. */}
+      <Heading level={3} className="mt-2.5 mb-7 text-3xl tracking-tight">
+        The old way: twelve tools, twelve bills.
       </Heading>
 
       <div
@@ -157,7 +160,7 @@ function SparxAnswer() {
   if (!growing || !full) return null;
   return (
     <div className="bg-secondary text-secondary-content flex flex-col justify-center gap-2 rounded-3xl px-9 py-12 lg:min-h-[560px]">
-      <Text className="text-secondary-content/75 text-base">
+      <Text className="text-secondary-content/75 text-md">
         The same twelve capabilities, on sparx
       </Text>
       <span className="text-8xl leading-[0.82] font-semibold tracking-[-0.05em] lg:text-9xl">

@@ -15,8 +15,8 @@ export default function NotFound() {
         <div className="mb-6 flex justify-center">
           <SparkMascot expression="surprised" tone="light" size={120} bob={false} />
         </div>
-        <h1 className="text-h1 m-0 mb-2.5 font-semibold">This page wandered off</h1>
-        <p className="text-body-sm text-ink-muted m-0 mb-6">
+        <h1 className="m-0 mb-2.5 text-3xl font-semibold">This page wandered off</h1>
+        <p className="text-md m-0 mb-6">
           We couldn&apos;t find what you were looking for. It may have moved, or never existed.
         </p>
         <a href="/" className={buttonClasses({ color: 'primary' })}>

@@ -34,7 +34,7 @@ const ROLES: Role[] = [
   {
     role: 'Body',
     specimen: (
-      <span className="text-ink-muted font-sans text-[17px] leading-[1.6] font-normal">
+      <span className="font-sans text-[17px] leading-[1.6] font-normal">
         sparx lets typography do the heavy lifting — no decorative elements, no gradients. White
         space is intentional, and every element has a reason to exist.
       </span>
@@ -44,13 +44,12 @@ const ROLES: Role[] = [
   },
   {
     role: 'Label',
-    specimen: (
-      <span className="text-ink-muted font-sans text-[11px] font-medium tracking-[0.08em] uppercase">
-        Badge · metadata
-      </span>
-    ),
-    specs: ['Geist', '500', '0.08em', 'uppercase'],
-    use: 'Badges and metadata — not section kickers.',
+    specimen: <span className="font-sans text-sm font-medium">Badge · metadata</span>,
+    // This row used to specify 11px + 0.08em + uppercase — the micro-cap
+    // treatment. It is gone brand-wide, so the specimen no longer teaches it:
+    // a label is sentence case at the caption size, and weight carries it.
+    specs: ['Geist', '500', 'sentence case'],
+    use: 'Badges and metadata. Never above a heading.',
   },
 ];
 
@@ -71,7 +70,7 @@ export function TypeSection() {
               className={`flex items-baseline justify-between gap-6 py-7 max-lg:flex-col ${i === 0 ? '' : 'border-base-300 border-t'}`}
             >
               <div className="flex min-w-0 flex-1 flex-col gap-3.5">
-                <Text as="span" size={13} tone="subtle">
+                <Text as="span" size={13}>
                   {r.role}
                 </Text>
                 {r.specimen}
@@ -84,7 +83,7 @@ export function TypeSection() {
                     </Badge>
                   ))}
                 </div>
-                <Text as="span" size={13} tone="subtle">
+                <Text as="span" size={13}>
                   {r.use}
                 </Text>
               </div>
@@ -114,7 +113,7 @@ function Note({ title, children }: { title: string; children: React.ReactNode })
   return (
     <Card>
       <CardBody className="flex flex-col gap-3">
-        <Text as="h3" size={15} weight={500} tone="default">
+        <Text as="h3" size={15} weight={500}>
           {title}
         </Text>
         <Text as="div" size={14}>

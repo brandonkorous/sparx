@@ -40,20 +40,20 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
             // whole silicaui-react barrel is `'use client'`).
             <div key={feature.number} className="card">
               <div className="card-body gap-2.5">
-                <span className={cx('text-mini font-mono font-medium', color.ink)}>
+                <span className={cx('font-mono text-sm font-medium', color.ink)}>
                   {feature.number}
                 </span>
-                <h3 className="text-body-lg m-0 font-sans font-medium tracking-tight">
+                <h3 className="m-0 font-sans text-lg font-medium tracking-tight">
                   {feature.title}
                 </h3>
-                <p className="text-body text-ink-muted m-0 font-sans">{feature.body}</p>
+                <p className="text-md m-0 font-sans">{feature.body}</p>
               </div>
             </div>
           ))}
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-4">
-          <p className="text-body text-ink-muted m-0 max-w-[560px] font-sans">
+          <p className="text-md m-0 max-w-[560px] font-sans">
             {shortLabel} is one module on the sparx platform — activate it alongside storefront,
             CRM, CMS, email, and B2B on one data layer and one bill. Only pay for what you run.
           </p>

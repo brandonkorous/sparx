@@ -1,7 +1,12 @@
-// Content for the /pricing/v1 experiment page. This is a straight port of the
-// facts/numbers/copy from the production pricing-page.tsx — the redesign changes
-// the visual layer only, never the data. Editorial data-as-code: exempt from the
-// file/function size rule. Module dot colors reuse MODULE_HEX (modules-catalog)
+// The pricing facts — the single source for every pricing surface. It began as a
+// straight port of the numbers/copy out of the original `pricing-page.tsx`, whose
+// data and rendering were one 918-line file. That file is now DELETED: the v2
+// composition became `/pricing`, so nothing rendered it any more, and every
+// dataset it held (INCLUDED, STATS, LEDGER, SCENARIOS, FEATURES, PRINCIPLES,
+// ENTERPRISE_FEATS, the FAQ) already lived here as an export. Both `/pricing` and
+// the `/pricing/v1` experiment read from this module, which is the point — a
+// redesign changes the visual layer, never the facts. Editorial data-as-code:
+// exempt from the file/function size rule. Module dot colors reuse MODULE_HEX (modules-catalog)
 // so a module's hue never drifts between the switchboard, the ledger, and the
 // feature table.
 

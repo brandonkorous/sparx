@@ -37,7 +37,7 @@ export function PartnerDirectoryCard({ partner }: { partner: PartnerCardData }) 
             {tier.label}
           </Badge>
           {location ? (
-            <Text as="span" className="text-caption text-ink-subtle">
+            <Text as="span" className="text-sm">
               {location}
             </Text>
           ) : null}
@@ -47,9 +47,7 @@ export function PartnerDirectoryCard({ partner }: { partner: PartnerCardData }) 
           {partner.displayName}
         </Heading>
 
-        {partner.bio ? (
-          <Text className="text-small text-ink-muted line-clamp-2">{partner.bio}</Text>
-        ) : null}
+        {partner.bio ? <Text className="line-clamp-2 text-sm">{partner.bio}</Text> : null}
 
         {tags.length > 0 ? (
           <div className="flex flex-wrap gap-1.5">
@@ -66,7 +64,7 @@ export function PartnerDirectoryCard({ partner }: { partner: PartnerCardData }) 
             href={partner.websiteUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-small text-primary mt-auto pt-2 font-medium no-underline"
+            className="text-primary mt-auto pt-2 text-sm font-medium no-underline"
           >
             Contact / learn more ↗
           </a>

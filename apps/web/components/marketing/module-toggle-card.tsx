@@ -51,7 +51,7 @@ export function ModuleToggleCard({
         </div>
 
         <div className="flex flex-col gap-1">
-          <CardTitle className="text-base">{label}</CardTitle>
+          <CardTitle className="text-md">{label}</CardTitle>
           <Text variant="caption">{title}</Text>
           {reason ? (
             <Text variant="caption" className="text-base-content">

@@ -50,7 +50,7 @@ export function PricingV2Features() {
                   <AccordionItem key={m.key} value={m.key}>
                     <AccordionTrigger>
                       <span className="flex flex-1 flex-wrap items-center gap-x-4 gap-y-2 pr-3">
-                        <span className="flex w-[150px] items-center gap-2.5 text-base font-medium">
+                        <span className="text-md flex w-[150px] items-center gap-2.5 font-medium">
                           <span
                             className="h-2.5 w-2.5 shrink-0 rounded-full"
                             style={{ backgroundColor: hex }}
@@ -67,7 +67,7 @@ export function PricingV2Features() {
                     <AccordionPanel>
                       <div className="grid grid-cols-1 gap-x-8 gap-y-2.5 pt-1 pl-[22px] sm:grid-cols-2">
                         {m.feats.map((f) => (
-                          <span key={f} className="flex items-center gap-2.5 text-base">
+                          <span key={f} className="text-md flex items-center gap-2.5">
                             <span
                               className="h-1.5 w-1.5 shrink-0 rounded-full"
                               style={{ backgroundColor: hex }}

@@ -85,7 +85,7 @@ export function PartnersApplyForm() {
 
       <Field>
         <FieldLabel>
-          Website or LinkedIn <span className="text-ink-subtle font-normal">(optional)</span>
+          Website or LinkedIn <span className="font-normal">(optional)</span>
         </FieldLabel>
         <FieldControl
           name="websiteUrl"
@@ -119,7 +119,7 @@ export function PartnersApplyForm() {
       </Field>
 
       <div className="flex flex-col gap-[7px]">
-        <Text as="span" size={13} weight={500} tone="default">
+        <Text as="span" size={13} weight={500}>
           Tier you&rsquo;re applying for
         </Text>
         <input type="hidden" name="requestedTier" value={tier} />
@@ -142,7 +142,7 @@ export function PartnersApplyForm() {
             );
           })}
         </div>
-        <Text as="span" size={12} tone="subtle">
+        <Text as="span" size={12}>
           {tier === 'informal'
             ? 'Approved instantly — activate right after you apply.'
             : 'Reviewed within 3 business days.'}
@@ -185,7 +185,7 @@ function Confirmation() {
     <div role="status" className="flex flex-col items-start gap-4">
       <span
         aria-hidden
-        className="bg-primary text-primary text-h3 bg-soft inline-flex size-11 items-center justify-center rounded-full"
+        className="bg-primary text-primary bg-soft inline-flex size-11 items-center justify-center rounded-full text-2xl"
       >
         ✓
       </span>

@@ -39,13 +39,7 @@ export function PricingV1Enterprise() {
 
             <div className="mt-7 grid max-w-xl grid-cols-1 gap-x-7 gap-y-3.5 sm:grid-cols-2">
               {ENTERPRISE_FEATS.map((f) => (
-                <Text
-                  as="span"
-                  key={f}
-                  size={15}
-                  tone="default"
-                  className="flex items-center gap-2.5"
-                >
+                <Text as="span" key={f} size={15} className="flex items-center gap-2.5">
                   <Check
                     size={16}
                     strokeWidth={2.4}

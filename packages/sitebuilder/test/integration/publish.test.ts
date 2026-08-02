@@ -19,6 +19,7 @@ import {
   disposeTestContext,
   makeTestContext,
   readCommerceSiteTheme,
+  readSilicaDraftTheme,
   type TestContext,
 } from '../helpers.js';
 
@@ -69,6 +70,21 @@ describe('sitebuilder publish lifecycle', () => {
     const theme = await readCommerceSiteTheme(test.tenant.tenantId, test.tenant.propertyId);
     expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground);
     expect(theme?.radiusBase).toBe(snap?.compiledTokens.light.radiusBase);
+
+    // …and the SILICA theme, which is the one the storefront renders. Every other
+    // assertion in this test passes against columns only the builder + the legacy
+    // commerce mirror read, which is how `select_theme` shipped for months looking
+    // fully wired while a visitor saw the platform base. Industrial's red, not Ember.
+    const silica = await readSilicaDraftTheme(test.tenant.tenantId, test.tenant.propertyId);
+    expect(silica?.name).toBe('industrial');
+    expect(silica?.tokens?.['--color-primary']).toBe('#cc1010');
+    // Dark is asserted as "present and not the platform base", not as an exact hex.
+    // The v1 snapshot above says `#ef4444` and the v2 compile here says `#dc2626` —
+    // the two models derive their dark ramps differently, and v1's number is not the
+    // authority on v2's. What this test is for is that the site stopped rendering
+    // sparx Ember, so that is what it checks.
+    expect(silica?.dark?.['--color-primary']).toBeTruthy();
+    expect(silica?.dark?.['--color-primary']).not.toBe('#f2604b');
   });
 
   it('rollback — restores a prior version and republishes as a new version', async () => {

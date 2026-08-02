@@ -55,7 +55,7 @@ export function EmailHero() {
               Email on your own domain
               <Spark color={E.color} />
             </Display>
-            <Text className="text-ink-muted mt-7 max-w-[560px] text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
+            <Text className="mt-7 max-w-[560px] text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
               {lede}
             </Text>
             <div className="mt-[34px] flex flex-wrap items-center gap-3">
@@ -75,7 +75,7 @@ export function EmailHero() {
                   className="bg-base-100 border-base-300 inline-flex items-center gap-2 rounded-full border px-3 py-[7px]"
                 >
                   <Dot color={E.color} size={6} />
-                  <Text as="span" className="text-mini text-ink-muted font-mono">
+                  <Text as="span" className="font-mono text-sm">
                     {c}
                   </Text>
                 </li>
@@ -116,21 +116,21 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
         {[0, 1, 2].map((i) => (
           <span key={i} className="bg-base-300 h-2.5 w-2.5 rounded-full" />
         ))}
-        <Text as="span" className="text-mini text-ink-subtle ml-2 font-mono">
+        <Text as="span" className="ml-2 font-mono text-sm">
           inbox · {name}
         </Text>
       </div>
       <div className="border-base-300 flex items-center gap-3 border-b px-[22px] py-[18px]">
         <span
-          className={`${E.bg} bg-soft ${E.ink} border-module-email text-small flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-[1.5px] font-medium`}
+          className={`${E.bg} bg-soft ${E.ink} border-module-email flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-[1.5px] text-sm font-medium`}
         >
           {initials}
         </span>
         <span className="min-w-0">
-          <Text as="span" className="text-small block font-medium">
+          <Text as="span" className="block text-sm font-medium">
             {email.transactional.subject}
           </Text>
-          <Text as="span" className="text-mini text-ink-subtle font-mono">
+          <Text as="span" className="font-mono text-sm">
             {email.sender} · to you · just now
           </Text>
         </span>
@@ -140,16 +140,16 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
           <span
             className={`${E.bg} bg-soft border-module-email h-[26px] w-[26px] rounded-[7px] border`}
           />
-          <Text as="span" className="text-small font-medium">
+          <Text as="span" className="text-sm font-medium">
             {name}
           </Text>
         </div>
-        <Text className="text-small text-ink-muted mt-4">{email.previewLine}</Text>
-        <Text className="text-small text-ink-muted mt-2.5">
+        <Text className="mt-4 text-sm">{email.previewLine}</Text>
+        <Text className="mt-2.5 text-sm">
           Tap below for the details — questions? Just reply to this email.
         </Text>
         <span
-          className={`${E.bg} text-caption mt-4 inline-block rounded-lg px-[18px] py-2.5 font-medium`}
+          className={`${E.bg} mt-4 inline-block rounded-lg px-[18px] py-2.5 text-sm font-medium`}
         >
           View the details
         </span>
@@ -164,10 +164,10 @@ function EmailPreviewCard({ business }: { business: ExampleBusiness }) {
             key={l}
             className={`px-[18px] py-3.5 ${i === 0 ? '' : 'border-base-200 border-l'}`.trimEnd()}
           >
-            <div className={`text-body-lg font-medium tracking-[-0.01em] ${i === 2 ? E.ink : ''}`}>
+            <div className={`text-lg font-medium tracking-[-0.01em] ${i === 2 ? E.ink : ''}`}>
               {v}
             </div>
-            <Text className="text-micro text-ink-subtle mt-0.5 font-mono">{l}</Text>
+            <Text className="mt-0.5 font-mono text-sm">{l}</Text>
           </div>
         ))}
       </div>
@@ -205,8 +205,8 @@ export function EmailPipeline() {
       <div className="mkt-pipeline bg-base-100 mt-13">
         {stages.map((s) => (
           <div key={s.title} className="mkt-pipe-cell px-6 py-7">
-            <h3 className="text-body-lg m-0 font-sans font-medium tracking-[-0.01em]">{s.title}</h3>
-            <Text className="text-caption text-ink-muted mt-2">{s.body}</Text>
+            <h3 className="m-0 font-sans text-lg font-medium tracking-[-0.01em]">{s.title}</h3>
+            <Text className="mt-2 text-sm">{s.body}</Text>
           </div>
         ))}
       </div>

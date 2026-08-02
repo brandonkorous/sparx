@@ -20,7 +20,7 @@ import { BusinessDemoCard } from './hero-device';
 // `.mkt-brand` only zeroes the radius (it sets no background), so flipping the
 // whole --color-base-* ramp is safe here and gives every descendant on-brand
 // surface + ink for free. The old rgba(255,255,255,.78/.5) inks are now
-// `text-ink-muted` / `text-ink-subtle`, which are real ink (they mix into
+// the surface's own `-content` ink (they resolve from
 // base-100, never transparent) and so satisfy the no-faded-text rule.
 
 // Sticky header (components/marketing/site-header.tsx) is in normal flow
@@ -55,7 +55,7 @@ export function LandingV2Hero() {
                 Not the software.
               </Display>
             </div>
-            <p className="text-ink-muted m-0 max-w-[560px] text-[clamp(18px,1.9vw,23px)] leading-[1.6]">
+            <p className="m-0 max-w-[560px] text-[clamp(18px,1.9vw,23px)] leading-[1.6]">
               You started a business to make, sell, serve, teach, or finally work for yourself.
               Sparx brings your website, customers, sales, email and AI into one place that grows
               with you.
@@ -76,7 +76,7 @@ export function LandingV2Hero() {
                 See a day on sparx &darr;
               </a>
             </div>
-            <span className="text-ink-subtle text-caption">
+            <span className="text-sm">
               No credit card &middot; Live in minutes &middot; Start with only what you need
             </span>
           </div>

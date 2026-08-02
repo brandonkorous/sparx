@@ -176,7 +176,7 @@ function SchedulingStandalone() {
         {panels.map((p) => (
           <Card key={p.title} className="bg-base-100">
             <CardBody className="flex flex-col gap-4">
-              <Heading level={6} className={`${M.ink} font-mono tracking-[0.05em] uppercase`}>
+              <Heading level={6} className={`${M.ink} font-mono`}>
                 {p.tag}
               </Heading>
               <Heading level={3}>{p.title}</Heading>

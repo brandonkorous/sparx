@@ -67,7 +67,7 @@ function SocialHero() {
         <div className="max-w-[1000px]">
           <Display as="h1" size={100} lineHeight={94}>
             One post,{' '}
-            <span className="text-ink-subtle">
+            <span>
               every network
               <Spark color={S.color} />
             </span>
@@ -75,7 +75,7 @@ function SocialHero() {
         </div>
 
         <div className="flex flex-col items-start justify-between gap-9 lg:flex-row lg:items-end">
-          <Text variant="lead" className="text-ink-muted max-w-[620px]">
+          <Text variant="lead" className="max-w-[620px]">
             Compose a post once, drop in your photos, and send it to Facebook, Instagram, and
             Pinterest at the time you choose. sparx crops each image to the shape every platform
             wants, keeps your products and media one click away, and holds each post for approval
@@ -95,27 +95,25 @@ function SocialHero() {
                 </Button>
               </a>
             </div>
-            <Text className="text-mini text-ink-subtle font-mono">
-              Free with sparx · Connect your own accounts
-            </Text>
+            <Text className="font-mono text-sm">Free with sparx · Connect your own accounts</Text>
           </div>
         </div>
 
         {/* the three networks, as neutral chips with the module dot */}
         <div className="border-base-300 flex flex-wrap items-center gap-2.5 border-t pt-8">
-          <Text as="span" className="text-caption text-ink-muted mr-1 font-medium">
+          <Text as="span" className="mr-1 text-sm font-medium">
             Posts to
           </Text>
           {NETWORKS.map((n) => (
             <span
               key={n.name}
-              className="bg-base-200 border-base-300 text-caption inline-flex items-center gap-2 rounded-full border px-4 py-2 font-medium"
+              className="bg-base-200 border-base-300 inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium"
             >
               <Dot color={S.color} size={8} />
               {n.name}
             </span>
           ))}
-          <span className="text-ink-subtle text-caption font-mono">— more on the way</span>
+          <span className="font-mono text-sm">— more on the way</span>
         </div>
       </div>
     </Section>
@@ -145,12 +143,12 @@ function SocialFanOut() {
         <div className="bg-base-100 border-base-300 flex w-full shrink-0 flex-col gap-4 rounded-2xl border p-6 lg:w-[360px]">
           <div className="flex items-center gap-2">
             <Dot color={S.color} size={8} />
-            <Text as="span" className="text-caption text-ink-muted font-medium">
+            <Text as="span" className="text-sm font-medium">
               One composer
             </Text>
           </div>
           <div className="bg-base-200 border-base-300 rounded-xl border p-4">
-            <Text className="text-body-sm">
+            <Text className="text-md">
               New arrivals just dropped — the whole spring set is live now. Which one’s yours?
             </Text>
           </div>
@@ -158,10 +156,10 @@ function SocialFanOut() {
           <div className="border-base-300 flex items-center gap-3 rounded-xl border p-3">
             <span className={`${S.bg} bg-soft h-12 w-12 shrink-0 rounded-lg`} aria-hidden />
             <div className="flex flex-col">
-              <Text as="span" className="text-caption font-medium">
+              <Text as="span" className="text-sm font-medium">
                 spring-set.jpg
               </Text>
-              <Text as="span" className="text-mini text-ink-subtle font-mono">
+              <Text as="span" className="font-mono text-sm">
                 one upload · from your library
               </Text>
             </div>
@@ -171,7 +169,7 @@ function SocialFanOut() {
         {/* connector — a labelled rule that reads "fans out to" */}
         <div className="flex shrink-0 items-center justify-center py-2 lg:flex-col lg:py-0 lg:pt-16">
           <span className="bg-base-300 h-px w-16 lg:h-16 lg:w-px" aria-hidden />
-          <Text as="span" className="text-mini text-ink-subtle px-3 font-mono whitespace-nowrap">
+          <Text as="span" className="px-3 font-mono text-sm whitespace-nowrap">
             fans out to
           </Text>
           <span className="bg-base-300 h-px w-16 lg:h-16 lg:w-px" aria-hidden />
@@ -185,10 +183,10 @@ function SocialFanOut() {
               className="bg-base-100 border-base-300 flex flex-col gap-3 rounded-2xl border p-4"
             >
               <div className="flex items-center justify-between gap-2">
-                <Text as="span" className="text-caption font-medium">
+                <Text as="span" className="text-sm font-medium">
                   {n.name}
                 </Text>
-                <Text as="span" className="text-mini text-ink-subtle font-mono">
+                <Text as="span" className="font-mono text-sm">
                   {n.label}
                 </Text>
               </div>
@@ -247,7 +245,7 @@ function SocialCapabilities() {
             <Heading level={3} size={4}>
               {it.title}
             </Heading>
-            <Text className="text-small text-ink-muted">{it.body}</Text>
+            <Text className="text-sm">{it.body}</Text>
           </div>
         ))}
       </div>
@@ -276,7 +274,7 @@ function SocialProof() {
           Your accounts, your audience, your posts
           <Spark color={S.color} />
         </Display>
-        <Text variant="lead" className="text-ink-muted mt-6 max-w-[640px]">
+        <Text variant="lead" className="mt-6 max-w-[640px]">
           Social runs on the same media library and catalog as the rest of sparx, so the photo you
           just cropped and the product you’re selling are already here. Connect your own accounts,
           keep your own reach, and post to every network from one place — free.
@@ -288,7 +286,7 @@ function SocialProof() {
             <div className="font-sans text-[clamp(36px,5vw,54px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <Text className="text-small text-ink-muted mt-3">{s.l}</Text>
+            <Text className="mt-3 text-sm">{s.l}</Text>
           </div>
         ))}
       </div>
@@ -306,11 +304,11 @@ function SocialPricing() {
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
             <span className="font-sans text-[56px] font-medium tracking-[-0.025em]">Free</span>
-            <Text as="span" className="text-body text-ink-subtle">
+            <Text as="span" className="text-md">
               with sparx
             </Text>
           </div>
-          <Text className="text-small text-ink-muted m-0 max-w-[640px]">
+          <Text className="m-0 max-w-[640px] text-sm">
             Organic posting to Facebook, Instagram, and Pinterest is free for every tenant — no
             per-post fee, no per-account fee, no add-on charge. Switch it on alongside whatever
             modules you run and it lands on the same one bill. Paid social ads are a separate module
@@ -343,7 +341,7 @@ function SocialCta() {
           Post to every network today
           <Spark color={S.color} />
         </Display>
-        <Text variant="lead" className="text-ink-muted m-0 max-w-[640px]">
+        <Text variant="lead" className="m-0 max-w-[640px]">
           Turn Social on, connect your accounts, and your next post goes to Facebook, Instagram, and
           Pinterest at once — each in the right shape, on the schedule you set. It’s free, it reads
           from the catalog and media you already have, and your accounts stay yours.

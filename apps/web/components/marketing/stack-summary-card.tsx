@@ -47,9 +47,7 @@ export function StackSummaryCard({
     <Card className={className}>
       <CardBody className="flex h-full flex-col gap-4">
         <div>
-          <Text variant="caption" className="tracking-[0.08em] uppercase">
-            Your stack
-          </Text>
+          <Text variant="caption">Your stack</Text>
           <div className="mt-1 text-2xl font-medium tracking-[-0.02em]">
             {activeCount} of {totalModules} on
           </div>
@@ -91,7 +89,7 @@ export function StackSummaryCard({
               </Text>
               <span className="text-4xl font-semibold tracking-[-0.02em]">
                 ${total}
-                <span className="text-base font-normal">/mo</span>
+                <span className="text-md font-normal">/mo</span>
               </span>
             </div>
 
@@ -100,7 +98,7 @@ export function StackSummaryCard({
                 <Text as="span" className="text-sm">
                   Same stack, stitched together
                 </Text>
-                <Text as="span" className="text-base line-through">
+                <Text as="span" className="text-md line-through">
                   ${elsewhereTotal}/mo
                 </Text>
               </div>
@@ -111,7 +109,7 @@ export function StackSummaryCard({
                 color="success"
                 variant="soft"
                 role="status"
-                className="items-center text-base font-semibold"
+                className="text-md items-center font-semibold"
               >
                 <CheckIcon />
                 You save ${save}/mo with only one bill

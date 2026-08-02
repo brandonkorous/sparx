@@ -104,4 +104,47 @@ describe('the shipped blueprints', () => {
     const found = slugs().flatMap((slug) => lines(slug, grade(slug), 'link-no-destination'));
     expect(found).toEqual([]);
   });
+
+  it('sizes itself against its own block, not the browser window', () => {
+    // A `sm:`/`lg:` variant is measured against the VIEWPORT, so the editor's phone and
+    // tablet previews — which resize the block, not the window — show no change and the
+    // author cannot check the design before publishing. The header's phone/desktop nav
+    // swap was expressed this way, which is the worst case: the one piece of responsive
+    // behaviour on the page, invisible in the preview built to check it.
+    const found = slugs().flatMap((slug) => lines(slug, grade(slug), 'class-preview-blind'));
+    expect(found).toEqual([]);
+  });
+
+  it('gives every card in a repeater somewhere to go', () => {
+    // The product and post cards sit inside `kind: "collection"` repeaters, so each one
+    // renders per RECORD and its `href` has to be BOUND (`{kind:'value', ref:'url',
+    // attr:'href'}`) rather than authored. The capture that produced these bundles lost
+    // the binding, which is invisible in the JSON — an `<a>` with no href reads the same
+    // whether it is bound or forgotten — and shipped a featured-products grid where none
+    // of the real products could be clicked.
+    const found = slugs().flatMap((slug) => lines(slug, grade(slug), 'button-does-nothing'));
+    expect(found).toEqual([]);
+  });
+
+  it('gives every page a search description', () => {
+    // Without one, the search result and the link preview are filled with whatever text
+    // happens to sit near the top of the page. The starter copy is written to be true for
+    // any trade, so an owner who never touches it still has a usable result.
+    const found = slugs().flatMap((slug) => lines(slug, grade(slug), 'seo-description-missing'));
+    expect(found).toEqual([]);
+  });
+
+  it('has nothing left but the one accepted exception', () => {
+    // The catch-all, so a NEW rule or a new bundle cannot land findings quietly. The
+    // sparx ember (`--color-primary` #e04631) sits at 4.1:1 on white and 3.2:1 in dark
+    // against its own `-content` pair — short of the 4.5:1 the rule wants. That is the
+    // BRAND, accepted as-is by Brandon on 2026-07-31; it is a theme-token decision, not
+    // an authoring defect, and it is the only thing this sweep tolerates.
+    const remaining = slugs().flatMap((slug) =>
+      grade(slug)
+        .findings.filter((f) => !(f.rule === 'contrast-low' && f.location.scope === 'site'))
+        .map((f) => `${slug} · ${f.location.ownerName} · ${f.rule} — ${f.evidence ?? f.title}`)
+    );
+    expect(remaining).toEqual([]);
+  });
 });

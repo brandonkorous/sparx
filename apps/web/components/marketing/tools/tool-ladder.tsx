@@ -33,13 +33,13 @@ export function ToolLadder({ tool }: { tool: ToolMeta }) {
         style={{ borderColor: color.color }}
       >
         <div className="flex max-w-[620px] flex-col gap-3">
-          <span className={`text-small font-sans font-medium ${color.ink}`}>
+          <span className={`font-sans text-sm font-medium ${color.ink}`}>
             {mod?.label ?? tool.module}
           </span>
           <Display as="h2" size={28} color="var(--color-base-content)">
             {tool.ladder.headline}
           </Display>
-          <p className="text-body-lg text-ink-muted m-0 font-sans">{tool.ladder.body}</p>
+          <p className="m-0 font-sans text-lg">{tool.ladder.body}</p>
         </div>
         <a
           href={href}

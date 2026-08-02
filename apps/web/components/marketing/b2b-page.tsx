@@ -162,7 +162,7 @@ function B2bPricing() {
             <span className="font-sans text-[56px] leading-none font-medium tracking-[-0.025em]">
               $99
             </span>
-            <Text as="span" size={16} tone="subtle">
+            <Text as="span" size={16}>
               /mo + Commerce
             </Text>
           </div>

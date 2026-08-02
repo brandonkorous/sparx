@@ -79,7 +79,7 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
       <div className="flex flex-1 flex-col p-5">
         {tag ? (
           <span
-            className="text-micro mb-3 inline-flex items-center gap-1.5 self-start rounded-full px-2.5 py-[3px] font-medium tracking-[0.02em]"
+            className="mb-3 inline-flex items-center gap-1.5 self-start rounded-full px-2.5 py-[3px] text-sm font-medium tracking-[0.02em]"
             style={{
               backgroundColor: `color-mix(in srgb, ${accent} 12%, transparent)`,
               color: accent,
@@ -89,20 +89,18 @@ export function ListingCard({ item }: { item: MarketplaceListing }) {
           </span>
         ) : null}
 
-        <h3 className="text-lede m-0 font-medium tracking-[-0.015em]">{item.name}</h3>
+        <h3 className="m-0 text-lg font-medium tracking-[-0.015em]">{item.name}</h3>
 
-        {item.tagline ? (
-          <p className="text-ink-muted text-small m-0 pt-1.5">{item.tagline}</p>
-        ) : null}
+        {item.tagline ? <p className="m-0 pt-1.5 text-sm">{item.tagline}</p> : null}
 
-        {hint ? <p className="text-ink-subtle text-mini m-0 pt-3 font-mono">{hint}</p> : null}
+        {hint ? <p className="m-0 pt-3 font-mono text-sm">{hint}</p> : null}
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-5">
-          <span className="text-ink-subtle text-caption inline-flex items-center gap-1.5">
+          <span className="inline-flex items-center gap-1.5 text-sm">
             {item.publisher.displayName}
             {item.publisher.verified ? <span style={{ color: accent }}>✓</span> : null}
           </span>
-          <span className="text-caption font-medium">{priceLabel(item.price)}</span>
+          <span className="text-sm font-medium">{priceLabel(item.price)}</span>
         </div>
       </div>
       {/* Stretched overlay link — the whole card navigates to the detail page. It's a

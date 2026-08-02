@@ -150,7 +150,7 @@ const RAIL: { icon: LucideIcon; tone: string; label: string }[] = [
 export function WorkbenchFrame({ bleed = false }: { bleed?: boolean } = {}) {
   return (
     <>
-      <span className="mkt-tablet-down-only text-ink-subtle text-mini -mt-10 font-mono">
+      <span className="mkt-tablet-down-only -mt-10 font-mono text-sm">
         Swipe to explore the workbench →
       </span>
 
@@ -183,8 +183,8 @@ function BrowserChrome() {
         <span className="bg-success size-[11px] rounded-full" />
       </div>
       <div className="bg-base-100 border-base-300 ml-6 flex max-w-[480px] flex-1 items-center gap-2 rounded-md border px-3.5 py-1.5">
-        <Shield size={12} strokeWidth={2} className="text-ink-subtle shrink-0" />
-        <span className="text-ink-muted text-mini font-mono">app.sparx.works</span>
+        <Shield size={12} strokeWidth={2} className="shrink-0" />
+        <span className="font-mono text-sm">app.sparx.works</span>
       </div>
     </div>
   );
@@ -194,19 +194,19 @@ function Toolbar() {
   return (
     <div className="bg-base-100 border-base-300 flex items-center gap-2 border-b py-2 pr-3 pl-2.5">
       <Wordmark size={22} className="mx-1" />
-      <span className="text-small font-medium">{TENANT}</span>
+      <span className="text-sm font-medium">{TENANT}</span>
       <span className="text-base-300 select-none">/</span>
-      <span className="text-ink-muted text-small inline-flex items-center gap-1.5 rounded-lg px-2 py-1">
+      <span className="inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-sm">
         <Globe size={14} strokeWidth={1.8} />
         Main site
         <ChevronDown size={13} strokeWidth={1.8} />
       </span>
 
       {/* The window search — centered, the workbench's ⌘K front door. */}
-      <span className="bg-base-100 border-base-300 text-ink-subtle text-small mx-auto flex w-[280px] max-w-[30%] items-center gap-2 rounded-lg border px-2.5 py-1.5">
+      <span className="bg-base-100 border-base-300 mx-auto flex w-[280px] max-w-[30%] items-center gap-2 rounded-lg border px-2.5 py-1.5 text-sm">
         <Search size={14} strokeWidth={1.8} />
         <span className="flex-1 truncate">Search everything</span>
-        <span className="bg-base-200 border-base-300 text-ink-subtle text-mini rounded border px-1.5 py-px font-mono">
+        <span className="bg-base-200 border-base-300 rounded border px-1.5 py-px font-mono text-sm">
           ⌘K
         </span>
       </span>
@@ -216,7 +216,7 @@ function Toolbar() {
         <ToolIcon icon={Bell} label="Notifications" />
         <ToolIcon icon={MessageSquarePlus} label="Feedback" />
         <ToolIcon icon={Moon} label="Dark theme" />
-        <span className="bg-base-300 text-ink-muted ml-1 inline-flex size-7 items-center justify-center rounded-full text-[11px] font-medium">
+        <span className="bg-base-300 ml-1 inline-flex size-7 items-center justify-center rounded-full text-[11px] font-medium">
           AR
         </span>
       </div>
@@ -229,7 +229,7 @@ function ToolIcon({ icon: Icon, label }: { icon: LucideIcon; label: string }) {
     <span
       title={label}
       aria-hidden
-      className="text-ink-muted inline-flex size-7 items-center justify-center rounded-lg"
+      className="inline-flex size-7 items-center justify-center rounded-lg"
     >
       <Icon size={16} strokeWidth={1.8} />
     </span>
@@ -258,14 +258,14 @@ function Rail() {
         <span
           aria-hidden
           title="Workspaces"
-          className="text-ink-subtle flex size-[34px] items-center justify-center rounded-lg"
+          className="flex size-[34px] items-center justify-center rounded-lg"
         >
           <LayoutGrid size={19} strokeWidth={1.8} />
         </span>
         <span
           aria-hidden
           title="Collapse"
-          className="text-ink-subtle flex size-[34px] items-center justify-center rounded-lg"
+          className="flex size-[34px] items-center justify-center rounded-lg"
         >
           <PanelLeft size={19} strokeWidth={1.8} />
         </span>
@@ -365,7 +365,7 @@ function TabStrip({ tabs }: { tabs: Tab[] }) {
             key={tab.label}
             className={cx(
               'border-module flex min-w-0 items-center gap-2 rounded-t-lg border-t-2 px-3 py-1.5 text-[13px] whitespace-nowrap',
-              tab.active ? 'bg-module text-module-content' : 'text-ink-muted bg-module bg-soft'
+              tab.active ? 'bg-module text-module-content' : 'bg-module bg-soft'
             )}
           >
             <Icon
@@ -384,7 +384,7 @@ function TabStrip({ tabs }: { tabs: Tab[] }) {
               <span
                 className={cx(
                   'inline-flex size-4 items-center justify-center rounded',
-                  tab.active ? 'text-module-content' : 'text-ink-subtle'
+                  tab.active ? 'text-module-content' : ''
                 )}
                 aria-hidden
               >
@@ -428,28 +428,28 @@ function ListPane({
           </span>
           <div>
             <h3 className="m-0 text-[16px] font-medium tracking-[-0.01em]">{title}</h3>
-            <p className="text-ink-subtle m-0 mt-px text-[11px]">{sub}</p>
+            <p className="m-0 mt-px text-[11px]">{sub}</p>
           </div>
         </div>
         {action ? (
-          <span className="text-mini bg-module text-module-content inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 font-medium whitespace-nowrap">
+          <span className="bg-module text-module-content inline-flex items-center gap-1 rounded-lg px-2.5 py-1.5 text-sm font-medium whitespace-nowrap">
             <Plus size={13} strokeWidth={2.2} />
             {action}
           </span>
         ) : count ? (
-          <span className="text-mini bg-module bg-soft text-module rounded-full px-2.5 py-0.5 font-medium whitespace-nowrap">
+          <span className="bg-module bg-soft text-module rounded-full px-2.5 py-0.5 text-sm font-medium whitespace-nowrap">
             {count}
           </span>
         ) : null}
       </div>
 
       <div className="flex items-center gap-1.5 px-3.5 pt-0.5 pb-2.5">
-        <span className="bg-base-100 border-base-300 text-ink-subtle text-mini flex min-w-0 flex-1 items-center gap-1.5 rounded-lg border px-2.5 py-1.5">
+        <span className="bg-base-100 border-base-300 flex min-w-0 flex-1 items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-sm">
           <Search size={13} strokeWidth={1.8} className="shrink-0" />
           Search…
         </span>
         {filter ? (
-          <span className="border-base-300 text-ink-muted text-mini inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 whitespace-nowrap">
+          <span className="border-base-300 inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-sm whitespace-nowrap">
             Status
             <ChevronDown size={11} className="opacity-60" />
           </span>
@@ -464,7 +464,7 @@ function ListPane({
                 <th
                   key={c}
                   className={cx(
-                    'border-base-300 text-ink-subtle text-micro border-b px-3.5 py-2 font-medium tracking-[0.06em] whitespace-nowrap uppercase',
+                    'border-base-300 border-b px-3.5 py-2 text-sm font-medium whitespace-nowrap',
                     i === columns.length - 1 ? 'text-right' : 'text-left'
                   )}
                 >
@@ -485,7 +485,7 @@ function ListPane({
                     )}
                   >
                     <div className="font-medium">{row.main}</div>
-                    <div className="text-ink-subtle text-mini">{row.sub}</div>
+                    <div className="text-sm">{row.sub}</div>
                   </td>
                   <td
                     className={cx(
@@ -524,7 +524,7 @@ function ChatPane() {
         </span>
         <div>
           <h3 className="m-0 text-[16px] font-medium tracking-[-0.01em]">Dana Whitfield</h3>
-          <p className="text-ink-subtle m-0 mt-px flex items-center gap-1.5 text-[11px]">
+          <p className="m-0 mt-px flex items-center gap-1.5 text-[11px]">
             <span className="bg-success inline-block size-1.5 rounded-full" />
             Online now
           </p>
@@ -532,9 +532,7 @@ function ChatPane() {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col gap-2.5 overflow-hidden px-3.5 pt-1.5 pb-3">
-        <p className="text-ink-subtle text-micro m-0 text-center tracking-[0.04em] uppercase">
-          Today
-        </p>
+        <p className="m-0 text-center text-sm">Today</p>
         {CHAT.map((msg, i) => (
           <div
             key={i}
@@ -548,8 +546,8 @@ function ChatPane() {
             {msg.body}
             <span
               className={cx(
-                'text-micro mt-1 block',
-                msg.from === 'in' ? 'text-ink-subtle' : 'text-module-content text-right'
+                'mt-1 block text-sm',
+                msg.from === 'in' ? '' : 'text-module-content text-right'
               )}
             >
               {msg.time}
@@ -559,7 +557,7 @@ function ChatPane() {
       </div>
 
       <div className="border-base-300 flex items-center gap-2 border-t px-3 py-2.5">
-        <span className="bg-base-100 border-base-300 text-ink-subtle flex-1 rounded-full border px-3.5 py-1.5 text-[13px]">
+        <span className="bg-base-100 border-base-300 flex-1 rounded-full border px-3.5 py-1.5 text-[13px]">
           Message Dana…
         </span>
         <span className="bg-module text-module-content inline-flex size-8 shrink-0 items-center justify-center rounded-full">
@@ -574,17 +572,17 @@ function ChatPane() {
 
 function StatusBar() {
   return (
-    <div className="bg-base-100 border-base-300 text-ink-muted flex h-8 items-center gap-3.5 border-t px-3.5 text-[13px]">
+    <div className="bg-base-100 border-base-300 flex h-8 items-center gap-3.5 border-t px-3.5 text-[13px]">
       <span className="flex items-center gap-1.5">
         <span className="bg-success size-1.5 rounded-full" />
         Saved 2m ago
       </span>
       <span className="flex-1" />
-      <span className="text-ink-muted text-mini inline-flex items-center gap-1.5 whitespace-nowrap">
+      <span className="inline-flex items-center gap-1.5 text-sm whitespace-nowrap">
         <ShoppingBag size={13} strokeWidth={1.8} className="text-success" />
         New order — #1043 · 2m ago
       </span>
-      <span className="text-ink-muted text-mini inline-flex items-center gap-1.5 whitespace-nowrap">
+      <span className="inline-flex items-center gap-1.5 text-sm whitespace-nowrap">
         <AppWindow size={13} strokeWidth={1.8} />1 window
       </span>
       <span className={badgeClasses({ color: 'warning', variant: 'soft', size: 'sm' })}>

@@ -149,8 +149,8 @@ function CmsCapabilities() {
             <span className={`${M.bg} bg-soft flex size-8 items-center justify-center rounded-lg`}>
               <Dot color={M.color} size={9} />
             </span>
-            <h3 className="text-body-lg font-medium tracking-[-0.01em]">{c.title}</h3>
-            <p className="text-ink-muted text-small">{c.body}</p>
+            <h3 className="text-lg font-medium tracking-[-0.01em]">{c.title}</h3>
+            <p className="text-sm">{c.body}</p>
           </div>
         ))}
       </div>
@@ -207,19 +207,19 @@ function CmsStandalone() {
             key={w.title}
             className={`${w.dot === M.color ? M.bg : BUILDER.bg} bg-soft border-base-300 flex flex-col gap-4 rounded-[14px] border p-8`}
           >
-            <h3 className="text-h2 font-medium tracking-[-0.02em]">{w.title}</h3>
-            <p className="text-ink-muted text-body-sm">{w.body}</p>
+            <h3 className="text-2xl font-medium tracking-[-0.02em]">{w.title}</h3>
+            <p className="text-md">{w.body}</p>
             <ul className="grid list-none gap-3">
               {w.points.map((p) => (
                 <li key={p} className="flex items-start gap-[11px]">
                   <span className="shrink-0 pt-[7px]">
                     <Dot color={w.dot} size={7} />
                   </span>
-                  <span className="text-ink-muted text-small">{p}</span>
+                  <span className="text-sm">{p}</span>
                 </li>
               ))}
             </ul>
-            <span className="text-ink-subtle text-mini mt-auto pt-1 font-mono">{w.runs}</span>
+            <span className="mt-auto pt-1 font-mono text-sm">{w.runs}</span>
           </div>
         ))}
       </div>
@@ -245,7 +245,7 @@ function CmsProof() {
           Your words, your structure, your data
           <Spark color={M.color} />
         </Display>
-        <p className="text-ink-muted text-lede mt-[22px] max-w-[640px]">
+        <p className="mt-[22px] max-w-[640px] text-lg">
           Content lives in the same database as everything else on sparx — no separate CMS to sync,
           no plugin sprawl, no platform that holds your archive hostage. Export the whole thing
           whenever you want.
@@ -257,7 +257,7 @@ function CmsProof() {
             <div className="text-[clamp(36px,5vw,54px)] leading-none font-medium tracking-[-0.03em]">
               {s.n}
             </div>
-            <div className="text-ink-muted text-small mt-3">{s.l}</div>
+            <div className="mt-3 text-sm">{s.l}</div>
           </div>
         ))}
       </div>
@@ -275,9 +275,9 @@ function CmsPricing() {
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
             <span className="text-[56px] font-medium tracking-[-0.025em]">$49</span>
-            <span className="text-ink-subtle text-body">/mo</span>
+            <span className="text-md">/mo</span>
           </div>
-          <p className="text-ink-muted text-small max-w-[640px]">
+          <p className="max-w-[640px] text-sm">
             A flat $49/mo, standalone — no Builder required, no tiers, no per-seat or per-record
             metering. Run it headless against the API, or add Builder when you want it rendered on a
             hosted sparx site. One bill with everything else; start free for 14 days, no card to
@@ -308,7 +308,7 @@ function CmsCta() {
           Start publishing today
           <Spark color={M.color} />
         </Display>
-        <p className="text-ink-muted text-lede max-w-[640px]">
+        <p className="max-w-[640px] text-lg">
           Open the editor, write your first post, and publish to your own domain — or pull it
           straight into your own frontend over the API. No migration weekend, no contract; turn it
           off the day you stop, and your content stays yours.

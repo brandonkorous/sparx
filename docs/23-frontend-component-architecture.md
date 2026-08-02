@@ -1,6 +1,6 @@
 # sparx Platform — Frontend Component Architecture
 
-**Version:** 1.9.0
+**Version:** 2.0.0
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-01
 
@@ -15,10 +15,10 @@ The themed styling system — color/surface fills, borders, radii, shadows, and 
 states — is emitted by **silicaui's Tailwind plugin** (`@wizeworks/silicaui`) as component
 classes (`btn-*`, `badge-*`, `alert-*`, `bg-<color>`, `bg-soft`, …) and consumed through the
 `@wizeworks/silicaui-react` primitives (Button/Badge/Card/Input/…). Feature code imports those
-primitives directly; `@sparx/ui` survives as the home of the ~25 sparx **compositions**
-(`ModuleProvider`, `SurfaceFrame`, the shell, `ListToolbar`, `statusTone`, `cn`, …), rebuilt on
-silica primitives. Either way feature code consumes semantic component APIs, never raw fills.
-That is how drift is prevented.
+primitives directly; `@sparx/ui` survives as a **22-module set of sparx compositions**
+(`ModuleProvider`, `SidebarAppShell`, `PageHeader`, `useConfirm`, `toast`, `statusTone`, `cn`, …)
+rebuilt on silica primitives. Either way feature code consumes semantic component APIs, never
+raw fills. That is how drift is prevented.
 
 Tailwind utilities are **not** banned from feature code, though. Layout, positioning,
 spacing, sizing, and one-off chrome (an absolutely-positioned indicator, a flex row, a
@@ -44,25 +44,25 @@ must use the component instead. See §15 for the exact rule the linter enforces.
 
 ## 2. Stack
 
-| Layer                   | Technology                                 | Role                                                                                              |
-| ----------------------- | ------------------------------------------ | ------------------------------------------------------------------------------------------------- |
-| Color token authority   | `@sparx/brand/theme.css` (CSS vars)        | Sole source of truth for all colors — semantic palette + `--color-base-*` + modules               |
-| Non-color tokens        | `packages/ui/src/tokens.css`               | Type / space / radius / shadow / motion + the `--chart-*` palette                                 |
-| Component classes       | `@wizeworks/silicaui` (Tailwind v4 plugin) | Statically emits every color + component utility (`btn-*`, `badge-*`, `bg-<color>`, `bg-soft`, …) |
-| React primitives        | `@wizeworks/silicaui-react`                | Button/Badge/Card/Input/Select/Table/Tabs/Dialog/Alert/… imported directly by feature code        |
-| Compositions            | `@sparx/ui`                                | The ~25 sparx compositions (shell, SurfaceFrame, ModuleProvider, toolbars) on silica primitives   |
-| Primitive accessibility | Radix UI                                   | ARIA, keyboard nav, focus — still underlies the few interactive controls `@sparx/ui` keeps        |
-| Style composition       | `cn()` (clsx + tailwind-merge)             | Class dedup + conditional logic; `extendTailwindMerge` keeps `bg-<color> bg-soft` intact          |
-| Module theming          | `ModuleProvider`                           | Sets `--color-module` on its subtree per active module                                            |
-| Icons                   | Lucide React                               | Consistent, tree-shakeable, outline style                                                         |
+| Layer                   | Technology                                 | Role                                                                                               |
+| ----------------------- | ------------------------------------------ | -------------------------------------------------------------------------------------------------- |
+| Color token authority   | `@sparx/brand/theme.css` (CSS vars)        | Sole source of truth for all colors — semantic palette + `--color-base-*` + modules                |
+| Non-color tokens        | `packages/ui/src/tokens.css`               | Type / space / radius / shadow / motion + the `--chart-*` palette                                  |
+| Component classes       | `@wizeworks/silicaui` (Tailwind v4 plugin) | Statically emits every color + component utility (`btn-*`, `badge-*`, `bg-<color>`, `bg-soft`, …)  |
+| React primitives        | `@wizeworks/silicaui-react`                | Button/Badge/Card/Input/Select/Table/Tabs/Dialog/Alert/… imported directly by feature code         |
+| Compositions            | `@sparx/ui`                                | 22 modules: shell, ModuleProvider, PageHeader, useConfirm, toast, TopProgress, Table, 5 primitives |
+| Primitive accessibility | Base UI (via silicaui)                     | ARIA, keyboard nav, focus. Radix survives only in `@sparx/ui`'s `Tooltip` + `Button`'s `Slot`      |
+| Style composition       | `cn()` (clsx + tailwind-merge)             | Class dedup + conditional logic; `extendTailwindMerge` keeps `bg-<color> bg-soft` intact           |
+| Module theming          | `ModuleProvider`                           | Sets `--color-module` on its subtree per active module                                             |
+| Icons                   | Lucide React                               | Consistent, tree-shakeable, outline style                                                          |
 
 ---
 
 ## 3. Package Structure
 
 Styled primitives no longer live in `@sparx/ui` — they are imported from
-`@wizeworks/silicaui-react`. `@sparx/ui` keeps only the sparx **compositions** (the ~25 things
-silica does not provide), the non-color token file, and the shared helpers.
+`@wizeworks/silicaui-react`. This is the package in full, as of 2026-08-01: **22 source modules,
+a 32-name export surface.** It is not a component library and must not be grown back into one.
 
 ```
 packages/
@@ -72,34 +72,33 @@ packages/
 │
 └── ui/
     ├── package.json           # name: "@sparx/ui"
-    ├── index.ts               # barrel export — compositions + re-exports
-    ├── tokens.css             # NON-color tokens only: type / space / radius / shadow / motion
-    │                          #   + the --chart-* palette + a little component CSS
+    ├── src/index.ts           # the barrel — 32 names
+    ├── src/shell/             # types.ts — ModuleManifest & friends (imported by 4 packages)
+    ├── src/tokens.css         # NON-color tokens only: type / space / radius / shadow / motion
     │
-    ├── compositions/          # ModuleProvider, SurfaceFrame/SurfaceStep/SurfaceSummary,
-    │                          #   SidebarAppShell/BrandRail, ListToolbar/FilterBar/BulkActionBar,
-    │                          #   SelectionList, ConfirmProvider, Wordmark, toast/Toaster,
-    │                          #   PageHeader, Stat, ActionTile, chart wrappers
+    ├── src/components/
+    │   ├── _recipes/variants.ts        # COLOR_KEYS / ColorKey vocabulary (no CSS)
+    │   ├── brand/                      # Wordmark, SparxMark/Spark/AppIcon, MadeWithSparx
+    │   ├── primitives/                 # Button, Badge, Heading, Text, Spinner
+    │   ├── layout/                     # Card, Stack, PageHeader, SidebarAppShell
+    │   ├── navigation/                 # TopProgress (+ controller, nav)
+    │   ├── overlay/                    # Tooltip, ConfirmProvider/useConfirm, toast/Toaster
+    │   └── data/                       # Table
     │
-    ├── hooks/
-    │   ├── use-module.ts      # reads current module context
-    │   ├── use-debounce.ts
-    │   ├── use-clipboard.ts
-    │   └── use-media-query.ts
-    │
-    ├── providers/
-    │   └── module-provider.tsx  # ModuleProvider + useModule (sets --color-module)
-    │
-    └── utils/
-        ├── cn.ts              # clsx + extendTailwindMerge (registers the `soft` class family)
-        ├── pluginColor.ts     # slot name -> silicaui plugin color name (commerce -> module-commerce)
-        ├── statusTone.ts      # statusTone / statusLabel resolvers
-        └── format.ts          # formatCurrency, formatDate, formatRelative
+    ├── src/hooks/             # use-theme, use-media-query
+    ├── src/providers/         # module-provider (sets --color-module)
+    └── src/utils/             # cn (clsx + extendTailwindMerge), cva
 ```
 
-> A dozen primitives kept their `@sparx/ui` import path for API reasons — those were rewritten to
-> emit silicaui classes with zero call-site churn. The other ~60 styled primitives were deleted;
-> import Button/Badge/Card/Input/… from `@wizeworks/silicaui-react`.
+> Everything silicaui ships was deleted from here. So was the entire `apps/dashboard` composition
+> set — `SurfaceFrame`, `ListToolbar`, `ListPageShell`, `SelectionList`, `BulkActionBar`,
+> `FilterBar`, `ActionTile`, `DataTable`, `Modal`, `DropdownMenu`, `EmptyState`, `Grid`,
+> `Container`, `Code`, `Tag`, `StatusDot`, `BarList`, `Pager`, `ImportDialog`, `ExportButton`,
+> `AuthFrame`, `BrandRail`, `ProductTour`, `RichTextEditor`, `FormActionBar`,
+> `SchemaFieldRenderer` and the chart wrappers. Those were load-bearing in the dashboard
+> (`SurfaceFrame` alone had 107 consumers at its final commit) and were orphaned wholesale by the
+> workbench cutover; `apps/workbench` rebuilt each concept in its own idiom rather than porting
+> them. Do not resurrect them here.
 
 ---
 
@@ -540,9 +539,9 @@ action/status primitives.
 | `CardContent` | —                                        |                                        |
 | `CardFooter`  | —                                        | Border-top, action area                |
 | `Stack`       | —                                        | Vertical flex with gap prop            |
-| `Grid`        | —                                        | CSS grid with cols + gap props         |
+| `Grid`        | silicaui — or a Tailwind `grid` utility  | Not in `@sparx/ui`                     |
 | `Divider`     | silicaui — `orientation`                 | Not in `@sparx/ui`                     |
-| `Container`   | sm, md, lg, xl, full                     | Max-width containers                   |
+| `Container`   | a `max-w-* mx-auto` utility pair         | Not in `@sparx/ui`                     |
 | `ScrollArea`  | silicaui — `orientation`                 | Not in `@sparx/ui`                     |
 | `Accordion`   | silicaui                                 | Not in `@sparx/ui`. Also `Collapsible` |
 
@@ -550,7 +549,7 @@ action/status primitives.
 
 | Component         | Key variants                   | Notes                                           |
 | ----------------- | ------------------------------ | ----------------------------------------------- |
-| `Modal`           | sm, md, lg, xl                 | Wraps silicaui `Dialog`; adds `mobileSheet`     |
+| `Modal`           | silicaui `Dialog`              | Not in `@sparx/ui`                              |
 | `Drawer`          | silicaui — `side`              | Not in `@sparx/ui`                              |
 | `Popover`         | silicaui — `side` × `align`    | Not in `@sparx/ui`                              |
 | `Tooltip`         | —                              | Wraps Radix Tooltip                             |
@@ -558,7 +557,7 @@ action/status primitives.
 | `AlertDialog`     | silicaui                       | Not in `@sparx/ui` — use `useConfirm` below     |
 | `ConfirmProvider` | —                              | Mounts silica's imperative alert dialog         |
 | `useConfirm`      | `color` (any silica color)     | Async confirm; defaults `danger`, defers a tick |
-| `DropdownMenu`    | —                              | Wraps Radix DropdownMenu                        |
+| `DropdownMenu`    | silicaui — `side` × `align`    | Not in `@sparx/ui`                              |
 | `ContextMenu`     | silicaui                       | Not in `@sparx/ui`                              |
 | `CommandPalette`  | silicaui                       | Not in `@sparx/ui`. ⌘K global search            |
 
@@ -578,14 +577,15 @@ action/status primitives.
 
 | Component    | Key variants                                                                | Notes                                              |
 | ------------ | --------------------------------------------------------------------------- | -------------------------------------------------- |
-| `Table`      | —                                                                           | Wraps TanStack Table                               |
+| `Table`      | —                                                                           | The one data-display primitive `@sparx/ui` keeps   |
 | `Stat`       | silicaui — `Stat`/`Stats` + `StatTitle`/`StatValue`/`StatDesc`/`StatFigure` | Not in `@sparx/ui`                                 |
 | `Timeline`   | silicaui — `orientation`                                                    | Not in `@sparx/ui`. `TimelineStart`/`Middle`/`End` |
 | `Alert`      | silicaui — `color` × `variant` × `size`                                     | Not in `@sparx/ui`                                 |
 | `Kbd`        | silicaui — `size`                                                           | Not in `@sparx/ui`                                 |
-| `EmptyState` | —                                                                           | Consistent zero-state UI                           |
-| `Code`       | —                                                                           | Inline and block code                              |
-| `Tag`        | —                                                                           | Removable chip/tag for filters                     |
+| `EmptyState` | silicaui — `size`                                                           | Not in `@sparx/ui`                                 |
+| `Code`       | silicaui `MockupCode`, or a `<code>` + utilities                            | Not in `@sparx/ui`                                 |
+| `Tag`        | silicaui `Badge` / `TagInput`                                               | Not in `@sparx/ui`                                 |
+| `DataTable`  | silicaui `Table` + your own state                                           | Not in `@sparx/ui`. The TanStack wrapper is gone   |
 
 ### Form
 

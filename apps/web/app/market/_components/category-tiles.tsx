@@ -32,19 +32,19 @@ export function CategoryTiles({ counts }: { counts: Record<string, number> }) {
                 <Icon size={20} strokeWidth={2} />
               </span>
               {live ? (
-                <span className="text-ink-subtle text-mini font-mono">
+                <span className="font-mono text-sm">
                   {count} {count === 1 ? cat.singular : cat.label.toLowerCase()}
                 </span>
               ) : (
-                <span className="text-ink-subtle text-mini font-medium">Coming soon</span>
+                <span className="text-sm font-medium">Coming soon</span>
               )}
             </div>
 
-            <h3 className="text-h4 m-0 pt-7 font-medium tracking-[-0.015em]">{cat.label}</h3>
-            <p className="text-ink-muted text-small m-0 pt-2">{cat.tagline}</p>
+            <h3 className="m-0 pt-7 text-xl font-medium tracking-[-0.015em]">{cat.label}</h3>
+            <p className="m-0 pt-2 text-sm">{cat.tagline}</p>
 
             {live ? (
-              <span className="text-caption mt-auto pt-6 font-medium" style={{ color: cat.accent }}>
+              <span className="mt-auto pt-6 text-sm font-medium" style={{ color: cat.accent }}>
                 Browse {cat.label.toLowerCase()} →
               </span>
             ) : null}

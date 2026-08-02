@@ -55,7 +55,7 @@ export function BootcampDirectory({
 
           <BootcampFacetBar facets={page.facets} current={current} datePresets={datePresets} />
 
-          <div className="border-base-300 text-small text-ink-muted border-t pt-5">
+          <div className="border-base-300 border-t pt-5 text-sm">
             {showing > 0
               ? `${showing}${page.next_cursor ? '+' : ''} bootcamp${showing === 1 ? '' : 's'}`
               : 'No bootcamps yet'}
@@ -84,7 +84,7 @@ export function BootcampDirectory({
 function EmptyState({ filtered }: { filtered: boolean }) {
   return (
     <div className="flex flex-col items-center gap-[18px] py-14 text-center">
-      <p className="text-body-lg text-ink-muted m-0 max-w-[440px]">
+      <p className="m-0 max-w-[440px] text-lg">
         {filtered
           ? 'No bootcamps match these filters yet. Try clearing them — new sessions are added all the time.'
           : 'No bootcamps in your area yet. Check back soon — or ask your sparx partner about hosting one.'}

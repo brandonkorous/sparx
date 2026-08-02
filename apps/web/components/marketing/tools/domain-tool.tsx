@@ -124,7 +124,7 @@ export function DomainTool() {
                 const r = results[domain];
                 return (
                   <ListRow key={domain}>
-                    <ListColGrow className="text-body truncate font-mono">{domain}</ListColGrow>
+                    <ListColGrow className="text-md truncate font-mono">{domain}</ListColGrow>
                     {!r ? (
                       <Loading className="h-4 w-4" />
                     ) : r.available === true ? (

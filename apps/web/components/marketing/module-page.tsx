@@ -46,7 +46,7 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
         </div>
 
         <div className="max-w-content flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
-          <p className="text-ink-muted m-0 max-w-[640px] text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
+          <p className="m-0 max-w-[640px] text-[clamp(16px,1.6vw,20px)] leading-[1.55] font-normal">
             {meta.lede}
           </p>
 
@@ -59,7 +59,7 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
                 See pricing
               </Button>
             </div>
-            <span className="text-ink-subtle text-mini font-mono">
+            <span className="font-mono text-sm">
               {meta.marketingDomain ? `${meta.marketingDomain} · ` : ''}
               No credit card · Cancel anytime
             </span>
@@ -97,8 +97,8 @@ function ModuleFeatures({ meta, color }: { meta: ModuleMeta; color: ModuleColor 
               >
                 <Dot color={color.color} size={8} />
               </span>
-              <h3 className="text-h4 m-0 pt-2 font-medium tracking-[-0.02em]">{f.title}</h3>
-              <p className="text-ink-muted text-small m-0">{f.body}</p>
+              <h3 className="m-0 pt-2 text-xl font-medium tracking-[-0.02em]">{f.title}</h3>
+              <p className="m-0 text-sm">{f.body}</p>
             </div>
           ))}
         </div>
@@ -116,16 +116,16 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
         <div className="flex flex-1 flex-col gap-3">
           <div className="flex items-baseline gap-1.5">
             {meta.pricing.modifier ? (
-              <span className="text-ink-subtle text-[40px] font-medium tracking-[-0.02em]">
+              <span className="text-[40px] font-medium tracking-[-0.02em]">
                 {meta.pricing.modifier}
               </span>
             ) : null}
             <span className="text-[56px] font-medium tracking-[-0.025em]">
               {meta.pricing.price}
             </span>
-            <span className="text-ink-subtle text-body">{meta.pricing.period}</span>
+            <span className="text-md">{meta.pricing.period}</span>
           </div>
-          <p className="text-ink-muted text-small m-0 max-w-[640px]">{meta.pricing.bundleNote}</p>
+          <p className="m-0 max-w-[640px] text-sm">{meta.pricing.bundleNote}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <a href="/pricing">
@@ -152,7 +152,7 @@ function ModuleCta({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
           Ready to go
           <Spark color={color.color} />
         </Display>
-        <p className="text-ink-muted text-lede m-0 max-w-[640px]">
+        <p className="m-0 max-w-[640px] text-lg">
           Activate {shortLabel(meta.label)} in one click. No migration, no consultant, no contract.
           Turn it back off any time — your data stays.
         </p>

@@ -35,10 +35,10 @@ export function NotSection() {
                 ✕
               </Badge>
               <div className="flex flex-col gap-1">
-                <Text as="span" weight={500} tone="default">
+                <Text as="span" weight={500}>
                   {n.not}
                 </Text>
-                <Text as="span" size={14} tone="muted">
+                <Text as="span" size={14}>
                   {n.because}
                 </Text>
               </div>

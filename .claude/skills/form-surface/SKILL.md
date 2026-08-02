@@ -5,6 +5,13 @@ description: Build or convert a dashboard form (create or edit) so it renders th
 The killer footgun: a create overlay is wired in THREE places that must stay in sync (`createComponents` in detail-slot, the `*_CREATE_TYPES` sets in detail-registry, the manifest `entityTypes` entry). Miss one and the "New" button silently hard-navigates to `/new` instead of opening the overlay, or the modal opens empty, or the maximize/title chrome is wrong — all with a green typecheck.
 ---
 
+> **SUPERSEDED (2026-08-01).** This skill wires a form in `apps/dashboard`, which no longer
+> exists, using `SurfaceFrame` / the detail-view registries, which have been deleted from
+> `@sparx/ui`. Do not follow the procedure below. Building a surface in the flagship app is
+> the `workbench-surface` agent + [docs/123-workbench.md](<../../../docs/123-workbench.md>);
+> its pane-vs-modal rule replaces the drawer/modal/full-page choice described here. The
+> three-registries footgun is retained only as a lesson about keeping wiring in one place.
+
 # Wire a form into the drawer / modal / full-page surface
 
 Design spec: [docs/86](<../../../docs/86-surface-frame-pattern.md>) (the F layout). This skill is the **procedure**; docs/86 is the **why**. Apply both.

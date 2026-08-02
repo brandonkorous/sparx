@@ -36,10 +36,10 @@ export function ToolsIndex() {
             <Display as="h1" size={60} color="currentColor">
               Free tools for people who build things.
             </Display>
-            {/* `text-hero-lede` (24px), not `text-lede-lg` (19px): white on the
+            {/* `text-2xl` (24px), not `text-lg` (19px): white on the
                 Ember band is 4.13:1, under WCAG AA for normal-size text. 24px
                 clears the large-text bar. See the token's note in globals.css. */}
-            <p className="text-hero-lede m-0 max-w-[760px] font-sans">
+            <p className="m-0 max-w-[760px] font-sans text-2xl">
               Favicons, QR codes, campaign links, social cards, email signatures, invoices, and a
               dozen more — the small jobs that eat an afternoon. Built for founders, makers, and
               small teams who&rsquo;d rather get it done and move on. Open one and start; your work
@@ -69,7 +69,7 @@ export function ToolsIndex() {
               <Display as="h2" size={30}>
                 Same platform. From a free favicon to your whole business
               </Display>
-              <p className="text-body text-ink-muted m-0 font-sans">
+              <p className="text-md m-0 font-sans">
                 sparx is the modular content and commerce OS — your website, CMS, CRM, email,
                 commerce, B2B, and AI, each switched on when you need it, all on one data layer and
                 one bill. These tools handle a single job for free. sparx handles the rest, for

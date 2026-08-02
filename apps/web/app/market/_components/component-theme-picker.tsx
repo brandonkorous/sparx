@@ -52,7 +52,7 @@ export function ComponentThemePicker({ groups }: { groups: PreviewThemeGroup[] }
 
   return (
     <div className="border-base-300 flex flex-wrap items-center gap-2.5 rounded-lg border px-3 py-2">
-      <span className="text-ink-muted text-caption">Preview in</span>
+      <span className="text-sm">Preview in</span>
       <select
         className="select select-sm"
         value={tk}

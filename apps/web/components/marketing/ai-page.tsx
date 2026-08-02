@@ -40,8 +40,8 @@ import { Faq, type FaqItem } from './faq';
  *
  * Styling contract: silicaui components + Tailwind utilities only (see
  * SILICA-VOCABULARY.md). Type comes from the editorial `text-*` scale registered
- * in app/globals.css; ink from `text-base-content` / `text-ink-muted` /
- * `text-ink-subtle` (all REAL inks that mix into base-100, never transparent).
+ * in app/globals.css; ink from `text-base-content` / `` /
+ * `` (all REAL inks that mix into base-100, never transparent).
  * The only inline styles left are genuinely dynamic values — a module hue read
  * from `getModuleColor()`.
  */
@@ -151,7 +151,7 @@ function ConciergeHero() {
                 <Spark color={AI.color} />
               </Display>
             </div>
-            <p className="text-lede text-ink-muted m-0 max-w-[560px] font-sans">
+            <p className="m-0 max-w-[560px] font-sans text-lg">
               Your customers arrive with a question. Your concierge greets them, answers from your
               real catalog and published pages, and hands off to a person the second it&rsquo;s
               unsure. Instant help at your front door, running on your own AI, never ours.
@@ -166,7 +166,7 @@ function ConciergeHero() {
                 </Button>
               </a>
             </div>
-            <span className="text-mini text-ink-muted font-mono">
+            <span className="font-mono text-sm">
               Your key · your model · your customers&rsquo; questions
             </span>
           </div>
@@ -212,7 +212,7 @@ function ConciergeWidget({ business }: { business: ExampleBusiness }) {
         {[0, 1, 2].map((i) => (
           <span key={i} aria-hidden className="bg-base-300 h-3 w-3 rounded-full" />
         ))}
-        <span className="text-mini text-ink-muted ml-2 font-mono">{business.domain}</span>
+        <span className="ml-2 font-mono text-sm">{business.domain}</span>
       </div>
 
       {/* the widget sitting on the page, bottom-right like a real launcher */}
@@ -232,12 +232,12 @@ function ConciergeWidget({ business }: { business: ExampleBusiness }) {
           {/* input bar */}
           <div className="border-base-300 bg-base-100 flex items-center gap-2 border-t px-3 py-2.5">
             {/* Placeholder copy — genuinely not meant to be read, so subtle ink. */}
-            <span className="border-base-300 text-mini text-ink-subtle flex-1 rounded-full border px-3 py-2 font-sans">
+            <span className="border-base-300 flex-1 rounded-full border px-3 py-2 font-sans text-sm">
               Type a message…
             </span>
             <span
               aria-hidden
-              className={`${AI.bg} text-module-ai-content text-body-sm grid h-8 w-8 place-items-center rounded-full`}
+              className={`${AI.bg} text-module-ai-content text-md grid h-8 w-8 place-items-center rounded-full`}
             >
               ↑
             </span>
@@ -255,13 +255,13 @@ function WidgetHead({ title }: { title: string }) {
     <div className={`${AI.bg} text-module-ai-content flex items-center gap-2.5 px-4 py-3`}>
       <span
         aria-hidden
-        className="text-body-sm grid h-8 w-8 place-items-center rounded-full bg-current/20"
+        className="text-md grid h-8 w-8 place-items-center rounded-full bg-current/20"
       >
         ✦
       </span>
       <span className="flex flex-col">
-        <span className="text-small font-medium">{title}</span>
-        <span className="text-mini">Ask us anything</span>
+        <span className="text-sm font-medium">{title}</span>
+        <span className="text-sm">Ask us anything</span>
       </span>
     </div>
   );
@@ -271,7 +271,7 @@ function Bubble({ who, children }: { who: 'user' | 'ai'; children: ReactNode }) 
   const user = who === 'user';
   return (
     <span
-      className={`text-caption max-w-[90%] px-3 py-2.5 font-sans ${
+      className={`max-w-[90%] px-3 py-2.5 font-sans text-sm ${
         user
           ? 'bg-neutral text-neutral-content self-end rounded-[14px_14px_4px_14px] font-medium'
           : 'bg-base-100 border-base-300 self-start rounded-[14px_14px_14px_4px] border'
@@ -284,7 +284,7 @@ function Bubble({ who, children }: { who: 'user' | 'ai'; children: ReactNode }) 
 
 function Receipt({ children, dotColor }: { children: ReactNode; dotColor: string }) {
   return (
-    <span className="text-micro text-ink-muted inline-flex items-center gap-2 pl-0.5 font-sans">
+    <span className="inline-flex items-center gap-2 pl-0.5 font-sans text-sm">
       <Dot color={dotColor} size={6} />
       {children}
     </span>
@@ -328,7 +328,7 @@ function AnswerLifecycle() {
           >
             <Dot color={AI.color} size={9} />
             <Heading level={3}>{s.title}</Heading>
-            <p className="text-small text-ink-muted m-0 font-sans">{s.body}</p>
+            <p className="m-0 font-sans text-sm">{s.body}</p>
           </div>
         ))}
       </div>
@@ -370,7 +370,7 @@ function ForkCard({
           a kicker here (span OR Badge) is the banned eyebrow slot either way;
           the tint is what separates the branches. */}
       <Heading level={3}>{title}</Heading>
-      <p className="text-small text-ink-muted m-0 font-sans">{body}</p>
+      <p className="m-0 font-sans text-sm">{body}</p>
     </div>
   );
 }
@@ -413,7 +413,7 @@ function GroundedInData() {
       <div className="mt-14 grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
         <div className="bg-base-100 border-base-300 rounded-xl border p-7">
           <Receipt dotColor="var(--color-neutral)">A customer asks</Receipt>
-          <p className="text-h3 mt-3.5 mb-0 font-sans font-medium tracking-[-0.01em]">
+          <p className="mt-3.5 mb-0 font-sans text-2xl font-medium tracking-[-0.01em]">
             &ldquo;Is the pour-over kit back in stock, and what&rsquo;s your return window?&rdquo;
           </p>
         </div>
@@ -430,9 +430,9 @@ function GroundedInData() {
               <div className="min-w-0">
                 {/* A record label, not an eyebrow: full ink, sentence case, no
                     uppercase-mono micro-caps introducing the value below it. */}
-                <div className="text-mini text-ink-muted font-sans">{r.label}</div>
-                <div className="text-body-sm mt-0.5 font-sans font-medium">{r.value}</div>
-                <div className="text-caption text-ink-muted mt-0.5 font-sans">{r.sub}</div>
+                <div className="font-sans text-sm">{r.label}</div>
+                <div className="text-md mt-0.5 font-sans font-medium">{r.value}</div>
+                <div className="mt-0.5 font-sans text-sm">{r.sub}</div>
               </div>
             </div>
           ))}
@@ -465,7 +465,7 @@ function RunsOnYourKey() {
           It runs on your AI. Never ours
           <Spark color={AI.color} />
         </Display>
-        <p className="text-lede text-ink-muted mt-6 mb-0 max-w-[660px] font-sans">
+        <p className="mt-6 mb-0 max-w-[660px] font-sans text-lg">
           sparx doesn&rsquo;t sell you intelligence. You connect your own provider key, encrypted,
           and yours to revoke. Every conversation runs on your model, on your terms. This is the
           floor, not a setting: sparx never answers your customers on a credential of its own.
@@ -482,7 +482,7 @@ function RunsOnYourKey() {
               <Dot color={AI.color} size={8} />
               {it.title}
             </Heading>
-            <p className="text-caption text-ink-muted m-0 font-sans">{it.body}</p>
+            <p className="m-0 font-sans text-sm">{it.body}</p>
           </div>
         ))}
       </div>
@@ -521,7 +521,7 @@ function KnowsWhenToEscalate() {
         />
       </div>
 
-      <p className="text-small text-ink-muted mt-5 max-w-[660px] font-sans">
+      <p className="mt-5 max-w-[660px] font-sans text-sm">
         You set your operating hours and your away message. The confidence bar is built in and set
         high, so anything the concierge can&rsquo;t answer with certainty becomes a conversation
         waiting in your staff inbox.
@@ -581,14 +581,14 @@ function ShapeItYourself() {
         <div className="bg-base-100 border-base-300 rounded-2xl border p-6 shadow-xl">
           {fields.map((f) => (
             <div key={f.label} className="mb-4">
-              <span className="text-mini text-ink-muted mb-1.5 block font-sans">{f.label}</span>
-              <div className="border-base-300 text-small rounded-lg border px-3 py-2.5 font-sans">
+              <span className="mb-1.5 block font-sans text-sm">{f.label}</span>
+              <div className="border-base-300 rounded-lg border px-3 py-2.5 font-sans text-sm">
                 {f.value}
               </div>
             </div>
           ))}
           <div>
-            <span className="text-mini text-ink-muted mb-2 block font-sans">Accent color</span>
+            <span className="mb-2 block font-sans text-sm">Accent color</span>
             <div className="flex gap-2">
               {swatches.map((m, i) => (
                 <span
@@ -630,18 +630,18 @@ function AgenticCrossLink() {
       >
         <div className="flex-1">
           <Heading level={3}>The concierge faces your customers</Heading>
-          <p className="text-small text-ink-muted mt-1.5 mb-0 font-sans">
+          <p className="mt-1.5 mb-0 font-sans text-sm">
             Answers your website visitors, grounded on your live data.
           </p>
         </div>
 
-        <span aria-hidden className={`${AI.ink} text-h1 leading-none`}>
+        <span aria-hidden className={`${AI.ink} text-3xl leading-none`}>
           →
         </span>
 
         <div className="flex-1">
           <Heading level={3}>The agentic line faces your team</Heading>
-          <p className="text-small text-ink-muted mt-1.5 mb-3.5 font-sans">
+          <p className="mt-1.5 mb-3.5 font-sans text-sm">
             Point the AI you already use at your own data over MCP.
           </p>
           <a href="/agentic">
@@ -651,9 +651,7 @@ function AgenticCrossLink() {
           </a>
         </div>
       </div>
-      <p className="text-mini text-ink-muted mt-4 text-center font-mono">
-        Both tools · one $49 AI module
-      </p>
+      <p className="mt-4 text-center font-mono text-sm">Both tools · one $49 AI module</p>
     </Section>
   );
 }
@@ -670,9 +668,9 @@ function ConciergePricing() {
             <Display as="h3" size={56} lineHeight={56}>
               $49
             </Display>
-            <span className="text-body text-ink-muted font-sans">/mo</span>
+            <span className="text-md font-sans">/mo</span>
           </div>
-          <p className="text-small text-ink-muted m-0 max-w-[620px] font-sans">
+          <p className="m-0 max-w-[620px] font-sans text-sm">
             One AI module, both tools: the customer-facing concierge on this page and the agentic
             MCP line for your own team. Bring your own key and pay your provider for usage. Flat, on
             one bill, no tiers.
@@ -689,7 +687,7 @@ function ConciergePricing() {
           </Button>
         </div>
       </div>
-      <p className="text-caption text-ink-muted mt-3.5 font-sans">
+      <p className="mt-3.5 font-sans text-sm">
         The concierge needs the Live Chat module too ($19/mo) — that&rsquo;s the chat widget on your
         site and the staff inbox your team answers from. $68/mo for both, on one bill.
       </p>
@@ -706,7 +704,7 @@ function ConciergeCta() {
           Put a concierge at your front door
           <Spark color={AI.color} />
         </Display>
-        <p className="text-lede text-ink-muted m-0 max-w-[640px] font-sans">
+        <p className="m-0 max-w-[640px] font-sans text-lg">
           Connect your key, write a greeting, and your customers get straight answers from your real
           catalog in seconds, with a person always one step away. Turn it off any time. Your data
           stays.
