@@ -20,10 +20,11 @@ build            22 images → ghcr.io/<repo>/<image>:<sha>
 4 cleanup        prune old image versions + obsolete workflow-run history
 ```
 
-Five workflows total, each a different KIND of thing: `ci.yml` (is the change
+Four workflows total, each a different KIND of thing: `ci.yml` (is the change
 valid), `release.yml` (the pipeline), `ops.yml` (manual chores),
-`restore-from-export.yml` (disaster recovery), `auto-tag.yml` (SemVer tag,
-dispatches nothing — [[releases-are-automated]]).
+`restore-from-export.yml` (disaster recovery). The SemVer tag is cut by
+`release.yml`'s own `tag` job, LAST and only if the release shipped —
+[[releases-are-automated]].
 
 ## Data comes before containers
 

@@ -4,7 +4,7 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-02
 
-There are five, and each is a different KIND of thing:
+There are four, and each is a different KIND of thing:
 
 | File                                               | Trigger              | What it is                                                       |
 | -------------------------------------------------- | -------------------- | ---------------------------------------------------------------- |
@@ -12,7 +12,6 @@ There are five, and each is a different KIND of thing:
 | [release.yml](release.yml)                         | every push to `main` | **The pipeline.** Infrastructure → data → containers → cleanup.  |
 | [ops.yml](ops.yml)                                 | manual               | One-off chores that are deliberately NOT part of a release.      |
 | [restore-from-export.yml](restore-from-export.yml) | manual               | Disaster recovery. Restores the Postgres dump and media tarball. |
-| [auto-tag.yml](auto-tag.yml)                       | push to `main`       | Cuts a `v*` tag from conventional commits. Dispatches nothing.   |
 
 ## The release
 
@@ -22,6 +21,7 @@ push to main
   1 infrastructure terraform apply, then namespace + secrets + k8s/azure/infra
   2 data           roles → migrate → seed platform rows → ingest bundles
   3 containers     pin every image to <sha>, apply k8s/azure/apps, wait
+    tag            cut the v* tag — only if the release actually shipped
   4 cleanup        prune old image versions + obsolete workflow-run history
 ```
 
@@ -138,6 +138,27 @@ and waiting for a rollout in another.
 This replaces a naming convention that had grown to eight files (deploy /
 db-migrate / build / marketplace-ingest, each doubled per cloud) where the thing
 that actually varied was three strings.
+
+## The tag is cut last, and only if the release shipped
+
+`auto-tag.yml` used to be its own workflow on the same push trigger, with no
+`needs` and no `workflow_run`. So a tag asserted _"someone pushed a `feat:`
+commit"_ while everyone reads it as _"this version shipped"_.
+
+The gap was not theoretical: **`v1.195.0` sits on `87dfe7f8`, a commit whose
+image build and deploy both failed.** That version never ran anywhere.
+
+Tagging is now the `tag` job, behind the stages, skipped if any of them failed —
+so `git tag --points-at` is a truthful answer to "what is deployed". A skipped
+stage still counts as shipped (`containers` skips itself when nothing changed).
+
+`contents: write` is scoped to that one job. That is the only real argument for
+keeping tagging separate — the release otherwise runs on `contents: read` while
+holding cloud OIDC and package write, and should not also be able to write the
+repository. Job-level permissions settle it without a second file.
+
+Force a bump with the `bump` input (`patch`/`minor`/`major`), or suppress one
+with `none` when re-running part of a release.
 
 ## Ops is not the release
 

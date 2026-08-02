@@ -16,7 +16,7 @@ How we work — the process commitments. Mostly these **index** the binding rule
 ## Shipping
 
 - [[conventional-commits]] — commit messages drive the release bump.
-- [[releases-are-automated]] — tags, not PRs; `auto-tag.yml` does the rest.
+- [[releases-are-automated]] — tags, not PRs; release.yml's `tag` job cuts it LAST, only if the release shipped.
 - [[pre-push-guard]] — the local check that must be green before every push.
 
 ## Writing
@@ -25,6 +25,6 @@ How we work — the process commitments. Mostly these **index** the binding rule
 
 ## Sources of truth
 
-Root `CLAUDE.md` · `.githooks/pre-push` · `.github/workflows/auto-tag.yml` · `eslint.config.js`.
+Root `CLAUDE.md` · `.githooks/pre-push` · `.github/workflows/release.yml` · `eslint.config.js`.
 
 _Note: operator **session** preferences (who runs commits, dev-lifecycle ownership) live in `.claude` memory, not here — this node is repo-durable process only._

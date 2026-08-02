@@ -11,7 +11,7 @@ GKE Autopilot on GCP (project `sparxworks`, us-central1). **Terraform owns the p
 ## Notes
 
 - [[topology]] — the cluster, in-cluster pods (Redis / PgBouncer / Caddy / Typesense), Cloud SQL, Pub/Sub, Cloud Run, DNS.
-- [[deploy-workflows]] — the ONE release pipeline: infrastructure → data → containers → cleanup (+ ci, ops, restore, auto-tag).
+- [[deploy-workflows]] — the ONE release pipeline: infrastructure → data → containers → cleanup, tag last (+ ci, ops, restore).
 - [[terraform]] — TF layout + modules + the no-drift rule.
 - [[phased-infra]] — the Phase-1 substitutions + the live-Typesense deviation + upgrade triggers.
 - [[cost-and-ops-guardrails]] — verify cost before raising spend; cluster mutations go through workflows only.

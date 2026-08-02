@@ -51,8 +51,8 @@
    **infrastructure → data → containers → cleanup** against `prod`.
 2. Watch the run summary: it reports the Terraform plan, the ingress address,
    and a **row count per catalog** so "ran green and wrote nothing" is visible.
-3. `auto-tag.yml` cuts the semver tag from the same push. **The tag dispatches
-   nothing** — it marks the release, it does not trigger it.
+3. The release's own `tag` job cuts the semver tag **last**, and only if the
+   stages succeeded — so a `v*` tag means the version actually shipped.
 4. Monitor: error rate and latency for 15 minutes post-release.
 5. If degraded: rollback (see below).
 

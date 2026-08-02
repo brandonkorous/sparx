@@ -106,6 +106,12 @@ on:
         required: false
         default: false
         type: boolean
+      bump:
+        description: 'Version bump (auto = read the conventional commits)'
+        required: false
+        default: 'auto'
+        type: choice
+        options: ['auto', 'patch', 'minor', 'major', 'none']
 
 concurrency:
   # Never two releases at once: the second would fight the first's
@@ -351,19 +357,30 @@ jobs:
       # variables first.
       # -----------------------------------------------------------------------
       # -----------------------------------------------------------------------
-      # Terraform inputs, resolved in shell rather than in `env:` expressions.
+      # Terraform inputs. UNSET MEANS OMITTED, NEVER INVENTED.
       #
-      # An unset GitHub secret is an EMPTY STRING, and empty is not the same as
-      # absent: `TF_VAR_cloudflare_api_token=""` OVERRIDES the placeholder
-      # default in variables.tf, and the Cloudflare provider enforces the
-      # token's LENGTH at plan time — so a missing secret would fail the plan
-      # with a format error rather than falling back. Same shape for the two
-      # booleans, where an empty string is not parseable as a bool at all.
+      # An unset GitHub secret or variable is an EMPTY STRING, and empty is not
+      # the same as absent: `TF_VAR_x=""` OVERRIDES the default in variables.tf.
+      # For a bool that is not even parseable; for the Cloudflare token, whose
+      # LENGTH the provider validates at plan time, it fails the plan outright.
       #
-      # Cloudflare defaults to ON only when a token is actually present. The
-      # alternative — defaulting it on unconditionally — plans real DNS records
-      # against a 40-character placeholder, which fails at APPLY time, halfway
-      # through.
+      # So every input below is written only when it actually has a value, and
+      # anything missing falls through to variables.tf — which is the only
+      # source that knows what this environment was applied with.
+      #
+      # THIS IS NOT A STYLE CHOICE. The first run of this pipeline defaulted the
+      # two Cloudflare booleans to "true whenever a token exists", reasoning that
+      # a token implies intent. It does not. `cloudflare_origin_ca_enabled` is
+      # deliberately a SEPARATE variable from `cloudflare_enabled` precisely so
+      # DNS stays appliable with a token that cannot sign certificates
+      # (origin-ca.tf, and the 1016 it names). Forcing it on planned ten
+      # additive resources — an origin certificate, an Access application and
+      # policy, and four sparx.email records — and Cloudflare refused six of
+      # them, failing the release at `apply` with two orphaned TLS resources
+      # left in state.
+      #
+      # A default guessed here silently overrides a decision someone made
+      # deliberately over there. Guess nothing.
       # -----------------------------------------------------------------------
       - name: Resolve Terraform inputs
         env:
@@ -374,30 +391,30 @@ jobs:
           DKIM_SELECTOR: ${{ vars.SPARX_EMAIL_DKIM_SELECTOR }}
           DKIM_VALUE: ${{ vars.SPARX_EMAIL_DKIM_VALUE }}
           LOCATION: ${{ vars.AZURE_LOCATION }}
+          SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+          ENVIRONMENT: ${{ needs.target.outputs.environment }}
         run: |
           set -euo pipefail
 
-          if [ -n "$CLOUDFLARE_API_TOKEN" ]; then
-            cf_default=true
-          else
-            # The exact placeholder from variables.tf: 40 characters, because the
-            # provider checks length and rejects both "" and null.
-            CLOUDFLARE_API_TOKEN='0000000000000000000000000000000000000000'
-            cf_default=false
-            echo "::warning::CLOUDFLARE_API_TOKEN is not set — planning with DNS and the origin certificate DISABLED. If they are currently deployed, the plan will show deletions and the release will stop."
-          fi
+          # $1 = terraform variable name, $2 = value. Empty $2 writes nothing.
+          put() {
+            [ -n "$2" ] || { echo "  (omitted) $1 — variables.tf default applies"; return 0; }
+            echo "TF_VAR_$1=$2" >> "$GITHUB_ENV"
+            case "$1" in
+              *token*|*key*|*password*) echo "  set $1" ;;
+              *) echo "  set $1=$2" ;;
+            esac
+          }
 
-          {
-            echo "TF_VAR_subscription_id=${{ vars.AZURE_SUBSCRIPTION_ID }}"
-            echo "TF_VAR_environment=${{ needs.target.outputs.environment }}"
-            echo "TF_VAR_location=${LOCATION:-centralus}"
-            echo "TF_VAR_cloudflare_api_token=$CLOUDFLARE_API_TOKEN"
-            echo "TF_VAR_cloudflare_enabled=${CLOUDFLARE_ENABLED:-$cf_default}"
-            echo "TF_VAR_cloudflare_origin_ca_enabled=${CLOUDFLARE_ORIGIN_CA_ENABLED:-$cf_default}"
-            echo "TF_VAR_operator_access_emails=${OPERATOR_ACCESS_EMAILS:-[]}"
-            echo "TF_VAR_sparx_email_dkim_selector=${DKIM_SELECTOR:-}"
-            echo "TF_VAR_sparx_email_dkim_value=${DKIM_VALUE:-}"
-          } >> "$GITHUB_ENV"
+          put subscription_id             "$SUBSCRIPTION_ID"
+          put environment                 "$ENVIRONMENT"
+          put location                    "$LOCATION"
+          put cloudflare_api_token        "$CLOUDFLARE_API_TOKEN"
+          put cloudflare_enabled          "$CLOUDFLARE_ENABLED"
+          put cloudflare_origin_ca_enabled "$CLOUDFLARE_ORIGIN_CA_ENABLED"
+          put operator_access_emails      "$OPERATOR_ACCESS_EMAILS"
+          put sparx_email_dkim_selector   "$DKIM_SELECTOR"
+          put sparx_email_dkim_value      "$DKIM_VALUE"
 
       - name: Terraform plan
         id: plan
@@ -1123,6 +1140,83 @@ jobs:
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
   # ---------------------------------------------------------------------------
+  # THE TAG. Cut last, and only when the release actually shipped.
+  #
+  # This was `auto-tag.yml`, a separate workflow triggered by the same push. It
+  # had no `needs` and no `workflow_run`, so it tagged whatever was pushed —
+  # which meant a tag asserted "someone pushed a feat: commit", while everyone
+  # reads it as "this version shipped".
+  #
+  # Those are not the same thing, and the gap is not theoretical: v1.195.0 sits
+  # on 87dfe7f8, a commit whose image build AND deploy both failed. The version
+  # never ran anywhere. Cutting the tag here, behind the stages, makes it mean
+  # what it is read to mean — and makes `git tag --points-at` a truthful answer
+  # to "what is deployed".
+  #
+  # `contents: write` is scoped to THIS JOB rather than the workflow. That is
+  # the one real argument for keeping tagging separate — the release otherwise
+  # runs on `contents: read` while holding cloud OIDC and package write, and it
+  # should not also be able to write the repository. Job-level permissions
+  # settle it without a second file.
+  #
+  # A GITHUB_TOKEN-pushed tag does not trigger workflows, which is what we want:
+  # the tag marks the release, it does not start another one.
+  # ---------------------------------------------------------------------------
+  tag:
+    needs: [target, infrastructure, data, containers]
+    # Any stage that FAILED means this version did not ship, so it does not get
+    # a tag. A SKIPPED stage is fine — `containers` skips itself when nothing
+    # runtime-affecting changed, and that is still a completed release.
+    #
+    # `bump: none` is the opt-out for a dispatch that is re-running part of a
+    # release and should not mint a version for it.
+    if: >-
+      always() &&
+      needs.infrastructure.result != 'failure' && needs.infrastructure.result != 'cancelled' &&
+      needs.data.result != 'failure' && needs.data.result != 'cancelled' &&
+      needs.containers.result != 'failure' && needs.containers.result != 'cancelled' &&
+      (github.event_name != 'workflow_dispatch' || inputs.bump != 'none')
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write # push the tag. Deliberately not granted workflow-wide.
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # conventional-commit analysis needs the whole history
+
+      # Bump rules (mathieudutour/github-tag-action defaults):
+      #   feat:                           → minor
+      #   fix: / perf:                    → patch
+      #   feat!: / BREAKING CHANGE footer → major
+      #   chore/docs/refactor/ci/build/test/style → no bump
+      #
+      # `default_bump: false` means a push with no releasable commits cuts no
+      # tag at all, rather than silently minting a patch for a docs change.
+      - name: Tag the release
+        id: tag
+        uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          default_bump: ${{ (github.event_name == 'workflow_dispatch' && inputs.bump != 'auto') && inputs.bump || false }}
+          tag_prefix: v
+          release_branches: main
+          fetch_all_tags: true
+
+      - name: Report
+        run: |
+          if [ -n '${{ steps.tag.outputs.new_tag }}' ]; then
+            {
+              echo '### Released'
+              echo ''
+              echo '`${{ steps.tag.outputs.new_tag }}` — cut after the release succeeded, so it'
+              echo 'marks a version that actually shipped.'
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo '::notice::No releasable commits since the last tag — no tag cut.'
+          fi
+
+  # ---------------------------------------------------------------------------
   # STAGE 4 — CLEANUP. History this release made obsolete.
   #
   # A stage, not a nightly cron, because it is the release that CREATES the
@@ -1154,6 +1248,8 @@ jobs:
       # later that a release two back was the last good one.
       KEEP_IMAGES: ${{ vars.KEEP_IMAGE_VERSIONS || '5' }}
       KEEP_RUNS: ${{ vars.KEEP_WORKFLOW_RUNS || '50' }}
+      # Deletes spent per release. Bounded on purpose — see the prune step.
+      MAX_DELETES: ${{ vars.MAX_RUN_DELETES || '300' }}
 
     steps:
       - name: Prune old image versions
@@ -1244,7 +1340,20 @@ jobs:
           gh api --paginate "/repos/$REPO/actions/workflows" \
             --jq '.workflows[] | "\(.id)\t\(.path)\t\(.name)"' > /tmp/workflows.tsv
 
+          # A BUDGET, because there is no bulk-delete API and each run is one
+          # HTTP round trip. Fifteen workflows were deleted in one change, and
+          # their accumulated history is thousands of runs — the first version of
+          # this step tried to delete all of them in one pass and was still
+          # grinding after seven minutes, holding the release open for pure
+          # housekeeping.
+          #
+          # Retention does not need to converge in a single release; it needs to
+          # converge. Each release spends a bounded number of deletes and says
+          # what is left, so the backlog drains over the next few pushes instead
+          # of turning one release into a maintenance window.
+          budget=${MAX_DELETES:-300}
           total=0
+          remaining=0
           while IFS=$'\t' read -r id path name; do
             [ -n "$id" ] || continue
             if [ -f "$path" ]; then keep="$KEEP_RUNS"; else keep=0; fi
@@ -1262,21 +1371,30 @@ jobs:
             n=$(echo "$stale" | grep -c . || true)
             [ "$n" -eq 0 ] && continue
 
+            deleted=0
             for run in $stale; do
+              if [ "$budget" -le 0 ]; then break; fi
               # This run is deleting runs, and its own is the newest of them —
               # but a run that is still in progress cannot be deleted anyway, so
               # the API refuses and the next release collects it. Tolerated for
               # the same reason as a version that vanishes mid-prune.
               gh api -X DELETE "/repos/$REPO/actions/runs/$run" >/dev/null 2>&1 || true
+              deleted=$((deleted + 1))
+              budget=$((budget - 1))
             done
 
-            total=$((total + n))
+            total=$((total + deleted))
+            remaining=$((remaining + n - deleted))
             if [ -f "$path" ]; then
-              printf '| `%s` | %s | %s |\n' "$name" "$keep" "$n" >> "$GITHUB_STEP_SUMMARY"
+              printf '| `%s` | %s | %s |\n' "$name" "$keep" "$deleted" >> "$GITHUB_STEP_SUMMARY"
             else
-              printf '| `%s` _(file deleted)_ | 0 | %s |\n' "$name" "$n" >> "$GITHUB_STEP_SUMMARY"
+              printf '| `%s` _(file deleted)_ | 0 | %s |\n' "$name" "$deleted" >> "$GITHUB_STEP_SUMMARY"
             fi
           done < /tmp/workflows.tsv
 
           echo '' >> "$GITHUB_STEP_SUMMARY"
-          echo "**Pruned $total workflow runs.**" >> "$GITHUB_STEP_SUMMARY"
+          if [ "$remaining" -gt 0 ]; then
+            echo "**Pruned $total workflow runs; $remaining still queued for a later release** (budget ${MAX_DELETES:-300}/run)." >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "**Pruned $total workflow runs.** Nothing left to collect." >> "$GITHUB_STEP_SUMMARY"
+          fi
