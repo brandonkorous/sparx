@@ -48,7 +48,7 @@ export function CmsHero() {
               {lede}
             </p>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button color="neutral" size="lg">
+              <Button color="primary" size="lg">
                 Start publishing →
               </Button>
               <a href="#editor">

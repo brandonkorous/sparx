@@ -35,7 +35,6 @@ export function SocialPage() {
       <Faq
         items={SOCIAL_FAQ}
         id="faq"
-        accent={S.color}
         heading={
           <>
             Social questions
@@ -126,7 +125,6 @@ function SocialFanOut() {
     <Section id="fan-out" surface="surface" padding="lg">
       <div className="max-w-[720px]">
         <SectionHeader
-          accent={S.color}
           headline={<>Compose once. It lands everywhere, in the right shape</>}
           lede={
             <>
@@ -231,10 +229,7 @@ function SocialCapabilities() {
 
   return (
     <Section padding="lg">
-      <SectionHeader
-        accent={S.color}
-        headline={<>Everything the post needs, nothing it doesn’t</>}
-      />
+      <SectionHeader headline={<>Everything the post needs, nothing it doesn’t</>} />
       <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {items.map((it) => (
           <div

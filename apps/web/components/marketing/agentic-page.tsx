@@ -92,7 +92,7 @@ function AiHero() {
 
           <div className="flex flex-col items-start gap-3.5">
             <div className="flex flex-wrap items-center gap-4">
-              <Button color="neutral" size="lg">
+              <Button color="primary" size="lg">
                 Connect your AI →
               </Button>
               <a href="#how">
@@ -702,7 +702,7 @@ function AiPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="neutral" size="lg">
+          <Button color="primary" size="lg">
             Activate AI
           </Button>
         </div>

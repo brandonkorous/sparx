@@ -25,6 +25,7 @@ import {
 import { env } from '../../env.js';
 import { publishPartnerEvent } from './events.js';
 import { provisionPartnerAccount, ProvisionAccountError } from './provision-account.js';
+import { uniqueSlug } from './slug.js';
 
 export interface PartnerContext {
   tenantId: string;
@@ -98,6 +99,15 @@ async function uniqueReferralCode(tx: TxClient): Promise<string> {
   return mintReferralCode() + mintReferralCode().slice(0, 4);
 }
 
+/** The partner's public profile slug (sparx.works/partners/<slug>), minted from
+ *  the display name at provisioning. Shape shared with bootcamps in ./slug.ts.
+ *  Minted ONCE — see the note on updateProfile about why it never moves. */
+function partnerSlug(tx: TxClient, displayName: string): Promise<string> {
+  return uniqueSlug(displayName, 'partner', async (slug) =>
+    Boolean(await tx.partner.findUnique({ where: { slug }, select: { id: true } }))
+  );
+}
+
 // ── The partner capability row ───────────────────────────────────────────────
 
 export const partnerService = {
@@ -154,6 +164,11 @@ export const partnerService = {
     return row ?? null;
   },
 
+  /** Edit the public profile. A rename does NOT move `slug`: the slug is the
+   *  partner's public URL, and a URL that follows the display name breaks every
+   *  inbound link, every share card, and every referral already pasted into an
+   *  email. `UpdatePartnerProfileInput` has no `slug` key, so the passthrough
+   *  below cannot reach it even by accident. */
   async updateProfile(ctx: PartnerContext, raw: unknown) {
     const input = UpdatePartnerProfileInput.parse(raw);
     return run(ctx, async (tx) => {
@@ -395,6 +410,7 @@ export const partnerService = {
           displayName: input.displayName,
           kind: input.kind,
           websiteUrl: input.websiteUrl ?? null,
+          slug: await partnerSlug(tx, input.displayName),
           referralCode: await uniqueReferralCode(tx),
           appliedAt: now,
           approvedAt: now,

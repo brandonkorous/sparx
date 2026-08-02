@@ -65,9 +65,9 @@ export function InvoiceItems({
                 </span>
               </div>
               <Button
+                color="error"
                 type="button"
                 variant="ghost"
-                color="neutral"
                 size="sm"
                 shape="square"
                 aria-label="Remove item"
@@ -82,9 +82,9 @@ export function InvoiceItems({
       ))}
       <div>
         <Button
+          color="success"
           type="button"
           variant="outline"
-          color="neutral"
           size="sm"
           onClick={() => onChange([...items, newLineItem()])}
         >

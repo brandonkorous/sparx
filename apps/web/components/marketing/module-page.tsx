@@ -52,7 +52,7 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
 
           <div className="flex flex-col items-start gap-3.5 lg:items-end">
             <div className="flex flex-wrap items-center gap-3">
-              <Button color="neutral" size="lg">
+              <Button color="primary" size="lg">
                 Start free
               </Button>
               <Button size="lg" variant="outline">
@@ -133,7 +133,7 @@ function ModulePricingStrip({ meta, color }: { meta: ModuleMeta; color: ModuleCo
               See all plans →
             </Button>
           </a>
-          <Button color="neutral" size="lg">
+          <Button color="primary" size="lg">
             Activate {shortLabel(meta.label)}
           </Button>
         </div>

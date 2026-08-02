@@ -3,14 +3,22 @@
 // SSR facets (tier / specialty / Remote) + a search-within (name/bio + location),
 // certified-first result grid, and a cursor Load-more island. Degrades to a
 // helpful empty state while the endpoint stands up.
+//
+// Rebuilt onto `<Band>` alongside the rest of the marketing site. What was here
+// opened with a 14px back-link and a `SectionHeader`, stacked its filters into
+// three labelled rows, then ended — no close, no route back into the program.
+// The grid was `lg:grid-cols-3`, which with the handful of partners the
+// directory actually holds rendered one narrow card marooned in two empty
+// columns; two is the honest maximum until the list is long enough to need three.
 
 import type { Metadata } from 'next';
-import { Button, Input, Text } from '@wizeworks/silicaui-react';
+import { Button, Heading, Input, Text } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { Section, SectionHeader } from '@/components/marketing/primitives';
+import { Band } from '@/components/marketing/band';
 import { fetchPartners } from '@/lib/partners';
 import { PartnerDirectoryCard } from './_components/partner-card';
 import { PartnerFacetBar, type DirectoryParams } from './_components/facet-bar';
+import { DirectoryHero } from './_components/hero';
 import { LoadMorePartners } from './_components/load-more';
 
 export const revalidate = 300;
@@ -20,8 +28,15 @@ type SearchParams = Record<string, string | string[] | undefined>;
 export const metadata: Metadata = {
   title: 'Find a sparx partner — partner directory',
   description:
-    'Browse certified sparx partners by tier, specialty, and location. Consultants, agencies, and developers who build and manage businesses on sparx.',
+    'Browse sparx partners by the work you need doing, by tier, and by location. Consultants, agencies and developers who set businesses up on sparx and keep them running — contact them directly, with no introduction fee.',
   alternates: { canonical: '/partners/directory' },
+  openGraph: {
+    title: 'Find someone to build it with you',
+    description:
+      'Consultants, agencies and developers who build and run businesses on sparx. Filter by specialty and location, then contact them directly.',
+    url: 'https://sparx.works/partners/directory',
+    type: 'website',
+  },
 };
 
 function normalize(sp: SearchParams): DirectoryParams {
@@ -46,86 +61,107 @@ export default async function PartnerDirectoryPage({
   const filtered = Object.keys(current).length > 0;
 
   return (
-    <Section padding="lg">
-      <div className="flex flex-col gap-10">
-        <div className="flex flex-col gap-5">
-          <a href="/partners" className="text-sm no-underline">
-            ← Partner program
-          </a>
-          <SectionHeader
-            accent="var(--color-primary)"
-            headlineSize={56}
-            headline="Find a sparx partner"
-            lede="Consultants, agencies, and developers who build and manage businesses on sparx. Certified partners first."
-          />
-          <form
-            method="get"
-            action="/partners/directory"
-            className="flex flex-wrap items-center gap-2"
-          >
-            {current.tier ? <input type="hidden" name="tier" value={current.tier} /> : null}
-            {current.specialty ? (
-              <input type="hidden" name="specialty" value={current.specialty} />
-            ) : null}
-            {current.remote ? <input type="hidden" name="remote" value={current.remote} /> : null}
-            <Input
-              type="search"
-              name="q"
-              defaultValue={current.q ?? ''}
-              placeholder="Search partners…"
-              className="max-w-[260px]"
-            />
-            <Input
-              type="text"
-              name="location"
-              defaultValue={current.location ?? ''}
-              placeholder="City or state"
-              className="max-w-[200px]"
-            />
-            <Button type="submit" variant="outline">
-              Search
-            </Button>
-          </form>
-        </div>
+    <main>
+      <DirectoryHero tierFacets={page.facets.tier} specialtyCount={page.facets.specialty.length} />
 
-        <PartnerFacetBar facets={page.facets} current={current} />
+      <Band id="results" tone="page">
+        <div className="flex flex-col gap-8">
+          {/* Search and facets are ONE control block. They were separated by a
+              200px stack of labelled filter rows, so the two halves of "narrow
+              this down" did not read as belonging to each other. */}
+          <div className="flex flex-col gap-5">
+            <form
+              method="get"
+              action="/partners/directory"
+              className="flex flex-wrap items-center gap-2.5"
+            >
+              {current.tier ? <input type="hidden" name="tier" value={current.tier} /> : null}
+              {current.specialty ? (
+                <input type="hidden" name="specialty" value={current.specialty} />
+              ) : null}
+              {current.remote ? <input type="hidden" name="remote" value={current.remote} /> : null}
+              <Input
+                type="search"
+                name="q"
+                size="lg"
+                defaultValue={current.q ?? ''}
+                aria-label="Search partners by name or description"
+                placeholder="Search by name or what they do…"
+                className="w-full max-w-sm"
+              />
+              <Input
+                type="text"
+                name="location"
+                size="lg"
+                defaultValue={current.location ?? ''}
+                aria-label="City or state"
+                placeholder="City or state"
+                className="w-full max-w-[13rem]"
+              />
+              {/* The form's own action, solid. It was `variant="outline"` — the
+                  one button on the page whose entire job is to be pressed. */}
+              <Button type="submit" size="lg" color="primary">
+                Search
+              </Button>
+            </form>
 
-        <Text className="border-base-300 border-t pt-5 text-sm">
-          {showing > 0
-            ? `${showing}${page.next_cursor ? '+' : ''} partner${showing === 1 ? '' : 's'}`
-            : 'No partners yet'}
-        </Text>
-
-        {showing > 0 ? (
-          <div className="flex flex-col gap-6">
-            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {page.items.map((p) => (
-                <PartnerDirectoryCard key={p.id} partner={p} />
-              ))}
-            </div>
-            {page.next_cursor ? (
-              <LoadMorePartners query={current} initialCursor={page.next_cursor} />
-            ) : null}
+            <PartnerFacetBar facets={page.facets} current={current} />
           </div>
-        ) : (
-          <EmptyState filtered={filtered} />
-        )}
-      </div>
-    </Section>
+
+          <div className="border-base-300 border-t pt-6">
+            <Text className="text-lg">
+              {showing > 0
+                ? `${showing}${page.next_cursor ? '+' : ''} ${showing === 1 ? 'partner' : 'partners'}${
+                    filtered ? ' match what you asked for.' : ' listed.'
+                  }`
+                : 'Nothing here yet.'}
+            </Text>
+          </div>
+
+          {showing > 0 ? (
+            <div className="flex flex-col gap-6">
+              <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
+                {page.items.map((p) => (
+                  <PartnerDirectoryCard key={p.id} partner={p} />
+                ))}
+              </div>
+              {page.next_cursor ? (
+                <LoadMorePartners query={current} initialCursor={page.next_cursor} />
+              ) : null}
+            </div>
+          ) : (
+            <EmptyState filtered={filtered} />
+          )}
+        </div>
+      </Band>
+
+      <ClosingBand />
+    </main>
   );
 }
 
+/**
+ * The empty state. Left-aligned and at real size — it was centred 14px prose,
+ * which is how a page apologises. There is nothing to apologise for: an empty
+ * directory on a program that is opening is an invitation, and it says so.
+ */
 function EmptyState({ filtered }: { filtered: boolean }) {
   return (
-    <div className="flex flex-col items-center gap-[18px] py-16 text-center">
-      <Text className="max-w-[420px] text-lg">
+    <div className="border-base-300 bg-base-100 flex flex-col items-start gap-5 rounded-4xl border p-10">
+      <Heading level={2} size={3} className="tracking-tight">
+        {filtered ? 'Nothing matches that yet' : 'No partners listed here yet'}
+      </Heading>
+      <Text variant="lead" className="max-w-2xl">
         {filtered
-          ? 'No partners match these filters yet. Try widening your search — or be the first here.'
-          : 'No partners in your area yet. Want to be the first?'}
+          ? 'Try dropping a filter — the directory is young, so a narrow search often comes back empty where a wider one would not.'
+          : 'The program is opening now. If you build sites for other businesses, this is a good moment to be the first name on the page.'}
       </Text>
-      <div className="flex flex-wrap items-center justify-center gap-3">
-        <a href="/partners#apply" className={buttonClasses({ size: 'lg' })}>
-          Apply to become a partner →
+      <div className="flex flex-wrap gap-3">
+        <a
+          href="/partners#apply"
+          className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
+        >
+          Become a partner &rarr;
         </a>
         {filtered ? (
           <a
@@ -137,5 +173,45 @@ function EmptyState({ filtered }: { filtered: boolean }) {
         ) : null}
       </div>
     </div>
+  );
+}
+
+/** The close the page never had — it simply stopped after the last card. */
+function ClosingBand() {
+  return (
+    <Band tone="dark">
+      <div className="flex flex-col gap-10 lg:flex-row lg:items-end lg:justify-between">
+        <div className="flex max-w-3xl flex-col gap-6">
+          <Heading
+            level={2}
+            size="display"
+            className="text-5xl leading-[0.95] tracking-tight sm:text-6xl"
+          >
+            Do this for a living
+            <span className="text-primary">?</span>
+          </Heading>
+          <Text variant="lead" className="text-base-content max-w-xl">
+            Everyone on this page earns on the clients they bring over and keeps the fee they charge
+            for the work itself. Listing is free and there is no quota.
+          </Text>
+        </div>
+        <div className="flex flex-col items-start gap-3.5">
+          <a
+            href="/partners#apply"
+            aria-label="Become a partner"
+            className={buttonClasses({ size: 'xl', color: 'primary', variant: 'solid' })}
+          >
+            Become a partner &rarr;
+          </a>
+          <a
+            href="/partners#earnings"
+            aria-label="See what it pays"
+            className={buttonClasses({ size: 'xl', variant: 'outline' })}
+          >
+            See what it pays
+          </a>
+        </div>
+      </div>
+    </Band>
   );
 }

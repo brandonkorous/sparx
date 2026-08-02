@@ -115,9 +115,9 @@ export function PrivacyTool() {
               variant="solid"
             />
             <Button
+              color="neutral"
               type="button"
               variant="outline"
-              color="neutral"
               size="sm"
               onClick={() => downloadText(text, filename, 'text/markdown;charset=utf-8')}
             >

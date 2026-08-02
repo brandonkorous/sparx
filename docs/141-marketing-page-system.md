@@ -1,6 +1,6 @@
 # The marketing page system — extracted from the landing page
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
 **Last Updated:** 2026-08-02
 
@@ -96,6 +96,43 @@ is the direction that matters — an inverse surface on an already-dark page has
 ---
 
 ## 2. Voice
+
+### Who is reading, and the words that follow from it
+
+**Every marketing page is written for a non-technical business owner** — a florist, a
+publisher, a parts distributor — not for an engineer. Assume **zero** technical vocabulary.
+The only exemption is a page that is explicitly for developers (`/docs`, the API reference);
+`/platform`, `/pricing`, `/features` and every module page are **not** exempt, however
+architectural their subject.
+
+This is the rule the rest of §2 assumes, and the one most easily lost — because the
+underlying system genuinely is a row-level-secured Postgres schema behind an event bus, and
+the words for that arrive first when you are close to the code. `/platform` shipped with
+"Postgres with row-level security per tenant", chips reading `RLS-enforced` / `event-driven`
+/ `webhooks`, and a headline of "Everything is an API. Even the AI." Every one of those is
+true. None of them is written for the person buying.
+
+**Translate the mechanism into the consequence.** The reader does not want to know what the
+system is; they want to know what it means for them:
+
+| Never write                             | Write                                                      |
+| --------------------------------------- | ---------------------------------------------------------- |
+| Postgres with row-level security        | Your data is fenced off from every other business          |
+| Event-driven by design                  | Follow-on work happens in the background, so nothing waits |
+| Every feature ships as an API endpoint  | Everything sparx can do, your other tools can do too       |
+| Tenant-scoped table carries a tenant ID | Another business cannot see your customers, ever           |
+| Headless API access, no lock-in         | Take everything with you whenever you want                 |
+| No replatform                           | Without starting over                                      |
+| A shared data layer                     | One set of records, not copies kept in step                |
+
+Two terms survive translation because they are proper nouns the reader may already be
+carrying: **the names of AI assistants** ("Claude, ChatGPT or Copilot") and **the module
+names** themselves. Everything else earns its place or goes. If a term is genuinely
+unavoidable, define it inline in the same sentence — never in a later paragraph and never
+in a chip on its own.
+
+The test: **read the sentence aloud to someone who has never configured anything.** If they
+would have to ask what a word meant, it is the wrong word, no matter how precise it is.
 
 ### The headline formula
 

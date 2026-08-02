@@ -105,11 +105,33 @@ export function fetchBootcamp(slug: string): Promise<BootcampDetail | null> {
   return getPublic<BootcampDetail>(`/v1/public/bootcamps/${encodeURIComponent(slug)}`);
 }
 
-/** Published slugs for the sitemap. Pulls one wide page; returns [] on error so
- *  the sitemap never throws when the endpoint is down. */
+/** The directory's own cap on `limit` (BootcampDirectoryQuery). Anything larger
+ *  is a 422, and `getPublic` turns a non-2xx into an empty page — so `limit=200`
+ *  did not return a wide page, it returned NOTHING, and every published bootcamp
+ *  has been silently absent from the sitemap. Found 2026-08-02 while adding the
+ *  identical enumeration for partners. Page through the cursor instead. */
+const DIRECTORY_PAGE_SIZE = 48;
+/** 48 × 40 = 1,920 bootcamps before the sitemap reports a bound. */
+const MAX_SLUG_PAGES = 40;
+
+/** Published slugs for the sitemap. Degrades to whatever it has when the API
+ *  errors — a down endpoint narrows coverage, it never fails the sitemap route —
+ *  and a hit cap is logged rather than silent (docs/50 §6). */
 export async function fetchPublishedBootcampSlugs(): Promise<string[]> {
-  const page = await fetchBootcamps({ limit: '200' });
-  return page.items.map((b) => b.slug);
+  const slugs: string[] = [];
+  let cursor: string | null = null;
+  for (let page = 0; page < MAX_SLUG_PAGES; page++) {
+    const query: Record<string, string> = { limit: String(DIRECTORY_PAGE_SIZE) };
+    if (cursor) query.cursor = cursor;
+    const result = await fetchBootcamps(query);
+    slugs.push(...result.items.map((b) => b.slug).filter(Boolean));
+    if (!result.next_cursor) return slugs;
+    cursor = result.next_cursor;
+  }
+  console.warn(
+    `[sitemap] bootcamp enumeration hit its cap; coverage is bounded at ${slugs.length} bootcamps.`
+  );
+  return slugs;
 }
 
 export const FORMAT_LABEL: Record<BootcampFormat, string> = {

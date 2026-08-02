@@ -35,7 +35,7 @@ export function B2bHero() {
               {lede}
             </Text>
             <div className="mt-8 flex flex-wrap items-center gap-3">
-              <Button color="neutral" size="lg">
+              <Button color="primary" size="lg">
                 Activate B2B →
               </Button>
               <a href="#price-list">

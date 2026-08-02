@@ -98,8 +98,8 @@ export function FaviconOutput({ result, appName, domain, themeColor }: FaviconOu
                   </span>
                   <Button
                     type="button"
-                    variant="ghost"
                     color="neutral"
+                    variant="ghost"
                     size="sm"
                     shape="square"
                     aria-label={`Download ${asset.name}`}
@@ -113,9 +113,9 @@ export function FaviconOutput({ result, appName, domain, themeColor }: FaviconOu
           ))}
         </ul>
         <Button
+          color="neutral"
           type="button"
           variant="outline"
-          color="neutral"
           size="sm"
           onClick={() =>
             downloadText(result.manifest, 'site.webmanifest', 'application/manifest+json')

@@ -31,7 +31,7 @@ export function SavedLinks({ links, onRemove, onClear }: SavedLinksProps) {
     <Panel
       title="Saved links"
       action={
-        <Button type="button" variant="ghost" color="neutral" size="sm" onClick={onClear}>
+        <Button color="error" type="button" variant="ghost" size="sm" onClick={onClear}>
           Clear all
         </Button>
       }
@@ -52,8 +52,8 @@ export function SavedLinks({ links, onRemove, onClear }: SavedLinksProps) {
             />
             <Button
               type="button"
+              color="error"
               variant="ghost"
-              color="neutral"
               size="sm"
               shape="square"
               aria-label="Remove link"

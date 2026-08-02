@@ -14,7 +14,7 @@ export default function EnterprisePage() {
     <ComingSoon
       eyebrow="Platform"
       title="Enterprise"
-      description="Custom storefronts, dedicated support, security review assistance, 99.99% SLA with credits, and contract terms tailored to your security and procurement process. Gillett Diesel was our first Enterprise customer — yours could be next."
+      description="Custom storefronts, dedicated support, security review assistance, 99.99% SLA with credits, and contract terms tailored to your security and procurement process."
       contact="enterprise@sparx.works"
     />
   );

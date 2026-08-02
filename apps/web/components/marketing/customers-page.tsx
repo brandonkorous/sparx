@@ -1,182 +1,354 @@
-import { Button } from '@wizeworks/silicaui-react';
-import { Section, SectionHeader, Display, Spark, Text, Dot } from './primitives';
+import { Badge, Card, CardBody, Heading, Text } from '@wizeworks/silicaui-react';
+import { buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Band } from './band';
+import { Faq } from './faq';
+import { MODULES } from './modules-catalog';
+import type { MarketingModule } from './primitives';
+import { signupHref, SALES_HREF } from './cta';
+import { VERTICALS } from './verticals/registry';
+import { VerticalCard } from './verticals/vertical-card';
 
 /**
- * The /customers page. Leads with *who* sparx is for — organized by user-type,
- * not by a single "we sell stores" assumption — then the flagship enterprise
- * story (Gillett Diesel) and an invitation. Intentionally not a megamenu: one
- * page, segmented by operator type; it can graduate to a menu once individual
- * segments earn their own landing pages.
+ * `/customers` — the "is this for me?" page, and the hub for the industry
+ * landing pages at /for/<industry>.
  *
- * Honest framing: no invented quotes or metrics. Gillett is described by what
- * they actually run on the platform.
+ * ## What was wrong with the page this replaces
+ *
+ * It was titled "Who runs on sparx" and named exactly one business — a
+ * flagship client write-up that took a third of the page. A customers page
+ * whose customer list is one entry has a structural problem no restyling can
+ * fix: it promises social proof and then does not have any. Removing that
+ * section is not a subtraction, it is the correction; what a pre-launch
+ * platform can honestly tell a visitor is *what it does for a business like
+ * theirs and what it costs*, so that is what this page now does. There are no
+ * logos, no invented quotes and no "trusted by" counts anywhere on it, and
+ * there will not be until there are real ones to show.
+ *
+ * It also spent its middle on six cards that each wore a module-tinted `bg-soft`
+ * wash — six competing washes, which is the exact pattern DESIGN.md calls out
+ * (tint the one card that earns it, not all of them), and `soft` applied
+ * everywhere drains the emphasis it exists to carry (RULE #3).
+ *
+ * ## What it is now
+ *
+ * A hub with a job: hand a visitor to the page written for their trade, or —
+ * if their trade is not one of the six yet — show them the SHAPE of business
+ * they are, which is the honest general answer. The six industry cards lead
+ * with a real monthly price computed from that industry's stack, so the grid
+ * says six different things instead of six versions of "a complete platform
+ * for your business".
  */
 
-// `color` is the token VALUE (the inline dot needs a value, not a class); `bg`
-// is the literal silica class the card wash is built from — Tailwind's scanner
-// can only see class names spelled out in full, never `bg-module-${key}`.
-const SEGMENTS: { name: string; color: string; bg: string; blurb: string; runs: string }[] = [
+/** The shapes a business takes, for a visitor whose trade is not one of the six
+ *  yet. Each names the module that leads it, which is also what colors it —
+ *  the hue identifies a function rather than decorating a card. */
+const SHAPES: { module: MarketingModule; name: string; blurb: string; runs: string[] }[] = [
   {
-    name: 'Publishers & creators',
-    color: 'var(--color-module-cms)',
-    bg: 'bg-module-cms',
+    module: 'cms',
+    name: 'You publish',
     blurb:
-      'Words, media, and SEO with no cart in sight. Publish on your own domain, send the newsletter, own the audience — selling stays optional.',
-    runs: 'Builder · CMS · Email',
+      'Words, pictures and an audience, with no cart anywhere in sight. Publish on your own domain, send the newsletter, and keep the list. Selling is a thing you can add later, not a thing you have to accept now.',
+    runs: ['Builder', 'CMS', 'Email'],
   },
   {
-    name: 'Online retailers',
-    color: 'var(--color-module-commerce)',
-    bg: 'bg-module-commerce',
+    module: 'commerce',
+    name: 'You sell things',
     blurb:
-      'Products, fast checkout, and one customer record that ties every order to email and support. One system, one bill, nothing taped together in the middle.',
-    runs: 'Builder · Commerce · CRM · Email',
+      'Products, a checkout that does not lose people, and one customer record that ties every order to the emails they opened and the question they asked. One system rather than four with a spreadsheet taped across the middle.',
+    runs: ['Builder', 'Commerce', 'CRM', 'Email'],
   },
   {
-    name: 'B2B & wholesale',
-    color: 'var(--color-module-b2b)',
-    bg: 'bg-module-b2b',
+    module: 'scheduling',
+    name: 'You book time',
     blurb:
-      'Account pricing, net terms, purchase orders, and RFQ — wholesale the way it actually works. Native to the platform, not a four-figure bolt-on.',
-    runs: 'Builder · Commerce · B2B · CRM',
+      'Your day is a calendar, not a catalog. Appointments, classes, tables, rooms or vans — booked by the customer, held with a deposit if you want one, and never double-booked.',
+    runs: ['Builder', 'Scheduling', 'CRM'],
   },
   {
-    name: 'Service & fleet',
-    color: 'var(--color-module-crm)',
-    bg: 'bg-module-crm',
+    module: 'b2b',
+    name: 'You supply the trade',
     blurb:
-      'Fleet vehicles tracked by VIN and cost center, bookable service bays, and net-30 invoicing for the accounts you serve. Built for how industrial actually runs.',
-    runs: 'Commerce · B2B · CRM',
+      'Agreed prices per account, purchase orders, payment on terms and requests for quote — wholesale the way it actually works, built into the platform rather than sold as a five-figure upgrade.',
+    runs: ['Commerce', 'B2B', 'CRM', 'Invoicing'],
   },
   {
-    name: 'Agencies & multi-brand',
-    color: 'var(--color-module-builder)',
-    bg: 'bg-module-builder',
+    module: 'builder',
+    name: 'You run several businesses',
     blurb:
-      'Run many themed sites under one tenant. Hand each client a finished site, and manage the whole portfolio from one dashboard.',
-    runs: 'Builder · CMS · multi-site',
+      'More than one storefront, brand or client site, each with its own name, look, domain and content — managed from one place and billed on one invoice, without a separate account per site.',
+    runs: ['Builder', 'CMS', 'multiple sites'],
   },
   {
-    name: 'AI-first & headless',
-    color: 'var(--color-module-ai)',
-    bg: 'bg-module-ai',
+    module: 'ai',
+    name: 'You want to build on it',
     blurb:
-      'Drive everything from the API or a native MCP server. Build your own frontend, and let agents read and write live data with scoped, audited keys.',
-    runs: 'AI · MCP · Builder (headless)',
+      'Everything is an interface first, so you can drive the whole platform from your own code — or point your own AI assistant at your live business data with a key you issue and can revoke.',
+    runs: ['AI', 'the API', 'headless Builder'],
   },
 ];
 
-const GILLETT_RUNS = ['Commerce', 'B2B · Fleet', 'CRM', 'AI', 'Managed hosting'];
+/** The industries the blueprint catalog already covers beyond the six that have
+ *  their own page. Mirrors marketplace-catalog/blueprints — each of these is a
+ *  real, installable starting site, not a coming-soon. */
+const MORE_INDUSTRIES = [
+  'Schools & tutoring',
+  'Clinics & wellness',
+  'Hotels & short stays',
+  'Accountants & law',
+  'Publishers & newsletters',
+  'Photography & design studios',
+  'Music, theatre & ticketed events',
+  'Florists, weddings & events',
+  'Wine, beer & spirits',
+  'Farming & landscaping',
+  'Freight, trucking & equipment rental',
+  'Consulting & B2B agencies',
+  'Fabrication, carpentry & trade',
+  'Artists, makers & portfolios',
+];
+
+const FAQ = [
+  {
+    id: 'customers-not-a-shop',
+    question: 'I don’t sell anything. Is this still for me?',
+    answer:
+      'Yes, and it is not an afterthought. Selling is one capability out of twelve, and plenty of businesses here never turn it on — a publisher runs the site, the writing and the newsletter; a consultant runs the site, the calendar and the invoices. You pay for the parts you switch on and nothing else, so a business that does not sell is never subsidising a checkout it does not use.',
+  },
+  {
+    id: 'customers-not-listed',
+    question: 'My trade isn’t one of the six. What then?',
+    answer:
+      'The six pages exist because those trades ask the most specific questions, not because the platform only fits them. The blueprint catalog already covers twenty industries with a complete starting site each, and the modules underneath are the same whatever you do — a calendar is a calendar whether it holds appointments, deliveries or fittings. If you tell us what you run, we will map it out with you.',
+  },
+  {
+    id: 'customers-more-than-one',
+    question: 'Can I run more than one business on one account?',
+    answer:
+      'Yes. One account can hold several sites, each with its own name, domain, look, content and customers — which is how agencies run client work and how one owner runs two unrelated shops. They stay properly separate from each other; only the bill is shared.',
+  },
+  {
+    id: 'customers-outgrow',
+    question: 'What if I start small and grow?',
+    answer:
+      'You switch modules on as you need them and the data you already have stays where it is. A salon that adds retail, a shop that starts supplying the trade, a publisher that starts selling a course — none of those are migrations, they are a switch. Nothing has to be rebuilt and nothing has to be exported and re-imported.',
+  },
+];
 
 export function CustomersPage() {
   return (
-    <>
+    <main>
       {/* Hero */}
-      <Section surface="page" padding="lg">
-        <div className="flex max-w-[820px] flex-col gap-6">
-          <Display as="h1" size={64}>
-            Who runs on sparx
-            <Spark />
-          </Display>
-          <Text size={18} className="max-w-[640px]">
-            Publishers, retailers, distributors, agencies, AI-first teams. sparx isn&apos;t a store
-            with extras bolted on. Each one turns on the modules they need, and pays for nothing
-            they don&apos;t.
-          </Text>
-        </div>
-      </Section>
-
-      {/* User-type segments */}
-      <Section surface="surface" padding="xl">
+      <Band tone="dark" flush>
         <div className="flex flex-col gap-12">
-          <SectionHeader
-            headline="However you operate"
-            accent="var(--color-primary)"
-            lede="A CMS-only publisher, a CRM-only team, a B2B distributor — all first-class. Here's the shape it usually takes."
-          />
-          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {SEGMENTS.map((s) => (
-              <div
-                key={s.name}
-                className={`${s.bg} border-base-300 bg-soft flex min-h-[230px] flex-col gap-3 rounded-xl border px-[26px] py-7`}
+          <div className="flex max-w-4xl flex-col gap-6">
+            <Heading
+              level={1}
+              size="display"
+              className="text-5xl leading-[0.98] tracking-tight sm:text-6xl"
+            >
+              Whatever it is you run
+              <span className="text-primary">.</span>
+            </Heading>
+            <Text variant="lead" className="text-base-content max-w-3xl text-xl">
+              A salon, a garage, a bakery, a bookstore, a magazine, a plumbing round. sparx is not a
+              shop with extras bolted on — it is twelve separate parts, and you switch on the ones
+              your week actually needs. Here is what that looks like for a business like yours.
+            </Text>
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href={signupHref('customers')}
+                className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
               >
-                <Text
-                  as="span"
-                  size={17}
-                  weight={500}
-                  className="flex items-center gap-2.5 tracking-[-0.01em]"
-                >
-                  <Dot color={s.color} size={9} />
-                  {s.name}
-                </Text>
-                <Text size={14} className="flex-1">
-                  {s.blurb}
-                </Text>
-                <Text as="span" mono size={12}>
-                  {s.runs}
-                </Text>
+                Start free &rarr;
+              </a>
+              <a href="/pricing" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
+                See every price
+              </a>
+            </div>
+          </div>
+
+          {/* The four assumptions a small business arrives with, answered before
+              anything else is claimed. */}
+          <div className="border-base-300 grid grid-cols-2 gap-8 border-t pt-10 lg:grid-cols-4">
+            {[
+              { value: '12', label: 'Separate parts. Turn on what you need, ignore the rest.' },
+              { value: '$0', label: 'Per person. Put the whole team on it at no extra cost.' },
+              {
+                value: '0%',
+                label: 'Taken from what you sell. Your card fee is the only other cost.',
+              },
+              {
+                value: 'Any month',
+                label: 'Switch something off. There is no contract to escape.',
+              },
+            ].map((fact) => (
+              <div key={fact.label} className="flex flex-col gap-2">
+                <span className="text-3xl font-semibold tracking-tight tabular-nums sm:text-4xl">
+                  {fact.value}
+                </span>
+                <Text className="text-md">{fact.label}</Text>
               </div>
             ))}
           </div>
         </div>
-      </Section>
+      </Band>
 
-      {/* Flagship: Gillett Diesel */}
-      <Section surface="page" padding="xl">
-        {/* RULE #2: the uppercase mono "First enterprise client" pill that used to
-            sit directly above this headline was an eyebrow badge — removed. */}
-        <div className="bg-module-b2b border-base-300 bg-soft flex flex-col gap-7 rounded-2xl border p-[clamp(32px,5vw,56px)]">
-          <Display as="h2" size={40}>
-            Gillett Diesel Service
-            <Spark color="var(--color-module-b2b)" />
-          </Display>
+      {/* The six industries with their own page */}
+      <Band tone="page">
+        <div className="flex flex-col gap-12">
+          <div className="flex max-w-3xl flex-col gap-5">
+            <Heading level={2} size="display" className="text-5xl tracking-tight sm:text-6xl">
+              Written for your trade
+              <span className="text-primary">.</span>
+            </Heading>
+            <Text variant="lead" className="text-xl">
+              Six pages, each one about a single kind of business — what it needs done, what that
+              adds up to every month, and what the same tools cost bought separately. No jargon and
+              no starting-from figures.
+            </Text>
+          </div>
 
-          <Text size={17} className="max-w-[720px]">
-            A diesel service and parts operation running the full industrial playbook on sparx:
-            wholesale accounts with net terms and PO checkout, a fleet module tracking vehicles by
-            VIN and cost center, bookable service bays, and a native MCP server so the team can ask
-            about parts and orders in plain language. It runs on a custom frontend with managed
-            hosting on the Enterprise plan — the requirements that shaped sparx&apos;s first B2B and
-            fleet features.
-          </Text>
-
-          <div className="flex flex-wrap gap-2">
-            {GILLETT_RUNS.map((r) => (
-              <Text
-                key={r}
-                as="span"
-                size={13}
-                className="bg-base-200 border-base-300 rounded-full border px-3 py-1.5"
-              >
-                {r}
-              </Text>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {VERTICALS.map((vertical) => (
+              <VerticalCard key={vertical.slug} vertical={vertical} />
             ))}
           </div>
         </div>
-      </Section>
+      </Band>
 
-      {/* CTA */}
-      <Section surface="surface" padding="xl">
-        <div className="flex max-w-[720px] flex-col gap-6">
-          <SectionHeader
-            headline="Your story goes here"
-            accent="var(--color-primary)"
-            lede="Running something that doesn't fit a template? That's the point. Tell us what you operate and we'll map it onto sparx."
-          />
-          <div className="flex flex-wrap gap-3">
-            <a href="/contact">
-              <Button color="neutral" size="lg">
-                Talk to us →
-              </Button>
+      {/* The general answer, for a trade that has no page yet */}
+      <Band tone="surface">
+        <div className="flex flex-col gap-12">
+          <div className="flex max-w-3xl flex-col gap-5">
+            <Heading level={2} size="display" className="text-5xl tracking-tight sm:text-6xl">
+              However you operate
+              <span className="text-primary">.</span>
+            </Heading>
+            <Text variant="lead" className="text-xl">
+              Underneath the trade names, most businesses are one of a handful of shapes. Find yours
+              and you can see which parts you would switch on, whatever it is you happen to sell,
+              publish or book.
+            </Text>
+          </div>
+
+          <div className="columns-1 gap-5 lg:columns-2">
+            {SHAPES.map((shape) => (
+              <Card
+                key={shape.name}
+                className="border-base-300 bg-base-200 mb-5 w-full break-inside-avoid border shadow-none"
+              >
+                <CardBody className="flex flex-col items-start gap-4">
+                  <Heading level={3} size={3} className="tracking-tight">
+                    {shape.name}
+                  </Heading>
+                  <Text className="text-lg">{shape.blurb}</Text>
+                  <div className="flex flex-wrap gap-2">
+                    {shape.runs.map((run) => {
+                      // A run entry is either a module (badge it in that
+                      // module's own hue) or a plain phrase like "the API",
+                      // which stays neutral — an untyped value, which is what
+                      // RULE #4 reserves neutral for.
+                      const entry = MODULES.find((m) => m.label === run);
+                      return (
+                        <Badge
+                          key={run}
+                          color={entry ? `module-${entry.id}` : undefined}
+                          variant={entry ? 'solid' : 'outline'}
+                          size="md"
+                        >
+                          {run}
+                        </Badge>
+                      );
+                    })}
+                  </div>
+                </CardBody>
+              </Card>
+            ))}
+          </div>
+        </div>
+      </Band>
+
+      <Faq
+        id="faq"
+        items={FAQ}
+        heading={
+          <>
+            Before you decide
+            <span className="text-primary">.</span>
+          </>
+        }
+        lede="The four things people ask when they are working out whether a platform built for everyone is built for them."
+      />
+
+      {/* Beyond the six. `surface`, and it sits AFTER the FAQ deliberately —
+          the FAQ is a shared section whose tone is fixed at `page`, so the bands
+          either side of it must not be, and "not one of the six? here are twenty
+          more" is the right last thing to say before the close. It was a
+          `neutral` band: painted tones are not theme scopes, so the outline
+          badges in here inked themselves from the LIGHT theme's near-black and
+          landed on dark navy at 1.29:1. See the BandTone doc in ../band. */}
+      <Band tone="surface">
+        <div className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1fr] lg:gap-16">
+          <div className="flex flex-col gap-6">
+            <Heading level={2} size="display" className="text-5xl tracking-tight sm:text-6xl">
+              Twenty more, already built
+            </Heading>
+            <Text variant="lead" className="max-w-2xl text-xl">
+              A blueprint is a finished site for a particular kind of business — the pages, a
+              starter catalog, a few articles, a welcome email sequence and a matching look — and
+              installing one takes a click. These do not have a page of their own yet; they have
+              something better, which is a working site waiting for your words.
+            </Text>
+            <div className="flex flex-wrap items-center gap-3">
+              <a
+                href="/market/blueprints"
+                className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
+              >
+                Browse the blueprints
+              </a>
+              <a href={SALES_HREF} className={buttonClasses({ size: 'lg', variant: 'outline' })}>
+                Tell us what you run
+              </a>
+            </div>
+          </div>
+
+          <ul className="flex flex-wrap content-start gap-2 lg:pt-2">
+            {MORE_INDUSTRIES.map((industry) => (
+              <li key={industry}>
+                <Badge variant="outline" size="lg">
+                  {industry}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </Band>
+
+      {/* Close */}
+      <Band tone="dark">
+        <div className="flex max-w-3xl flex-col gap-6">
+          <Heading level={2} size="display" className="text-5xl tracking-tight sm:text-6xl">
+            Yours goes here
+            <span className="text-primary">.</span>
+          </Heading>
+          <Text variant="lead" className="text-xl">
+            Open an account and try it on the business you actually run. Nothing is charged until
+            you decide to keep it, no card is needed to find out, and if what you do does not fit
+            any of the shapes above, that is the interesting conversation — tell us about it.
+          </Text>
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href={signupHref('customers-final')}
+              className={buttonClasses({ size: 'lg', color: 'primary', variant: 'solid' })}
+            >
+              Start free &rarr;
             </a>
-            <a href="/platform">
-              <Button size="lg" variant="outline">
-                See the platform
-              </Button>
+            <a href="/contact" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
+              Talk to a person
             </a>
           </div>
         </div>
-      </Section>
-    </>
+      </Band>
+    </main>
   );
 }

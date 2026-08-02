@@ -19,6 +19,11 @@ model Partner {
 
   // Public directory identity (the partner's practice, not the legal tenant name).
   displayName String  @map("display_name") @db.VarChar(255)
+  // The public profile URL (sparx.works/partners/<slug>). Minted from
+  // displayName at provisioning and IMMUTABLE after that — a rename is a label
+  // change, not a new identity, and a URL that moves breaks every inbound link
+  // and share card. Not in UpdatePartnerProfileInput, deliberately.
+  slug        String  @db.VarChar(160)
   bio         String? @db.VarChar(2000)
   websiteUrl  String? @map("website_url") @db.VarChar(500)
   // What best describes the partner (application field): freelance | agency | developer | other.
@@ -60,6 +65,7 @@ model Partner {
   payoutRuns  PartnerPayoutRun[]
 
   @@unique([tenantId], map: "partners_tenant_unique")
+  @@unique([slug], map: "partners_slug_unique")
   @@unique([referralCode], map: "partners_referral_code_unique")
   @@index([status, tier])
   @@index([directoryVisible, status])

@@ -70,9 +70,9 @@ export function ContrastTool() {
           title="Colors"
           action={
             <Button
+              color="neutral"
               type="button"
               variant="ghost"
-              color="neutral"
               size="sm"
               onClick={() => {
                 setFg(bg);

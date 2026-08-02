@@ -62,9 +62,9 @@ export function DocumentFields({
           <Field label="Logo">
             {data.logo ? (
               <Button
+                color="error"
                 type="button"
                 variant="outline"
-                color="neutral"
                 size="sm"
                 onClick={() => set({ logo: null })}
               >

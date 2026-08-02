@@ -37,6 +37,9 @@ const STATUS_MAP = {
   found: { color: 'success', icon: <Check className="h-3.5 w-3.5" />, text: 'Found' },
   missing: { color: 'danger', icon: <X className="h-3.5 w-3.5" />, text: 'Missing' },
   error: { color: 'warning', icon: <AlertTriangle className="h-3.5 w-3.5" />, text: 'Error' },
+  // `neutral`, and it is earned: "not checked" is the absence of a result, not
+  // a result — a genuinely untyped value, which is the one thing RULE #4 keeps
+  // neutral for. The other three are real outcomes and wear real semantics.
   skip: { color: 'neutral', icon: null, text: 'Not checked' },
 } as const;
 

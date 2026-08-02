@@ -17,6 +17,9 @@ export type PartnerKind = 'freelance' | 'agency' | 'developer' | 'other';
 
 export interface PartnerCard {
   id: string;
+  /** The public profile URL segment — `/partners/<slug>`. Minted from the
+   *  display name when the partner is approved, and never moved after that. */
+  slug: string;
   displayName: string;
   tier: PartnerTier;
   /** The application "what describes you" value — one of PartnerKind, but typed
@@ -103,9 +106,40 @@ export async function fetchPartners(
   };
 }
 
-/** One public partner profile by id, or null if not listable. */
-export function fetchPartner(id: string): Promise<PartnerProfile | null> {
-  return getPublic<PartnerProfile>(`/v1/public/partners/${encodeURIComponent(id)}`);
+/** One public partner profile by its URL slug, or null when there is no listable
+ *  partner behind it — a 404, a suspended partner, an opt-out, or a down API all
+ *  arrive here as null so the page can call `notFound()` itself rather than
+ *  rendering a half-empty profile. */
+export function fetchPartner(slug: string): Promise<PartnerProfile | null> {
+  return getPublic<PartnerProfile>(`/v1/public/partners/slug/${encodeURIComponent(slug)}`);
+}
+
+/** The directory's own cap on `limit` (PartnerDirectoryQuery). Anything larger
+ *  is a 422, and `getPublic` turns a non-2xx into an empty page — so asking for
+ *  one oversized page yields ZERO coverage rather than a truncated list, and
+ *  does it silently. Page through the cursor instead. */
+const DIRECTORY_PAGE_SIZE = 48;
+/** 48 × 40 = 1,920 partners before the sitemap reports a bound. */
+const MAX_SLUG_PAGES = 40;
+
+/** Every listable partner's slug, for the sitemap. Degrades to whatever it has
+ *  when the API errors — a down endpoint narrows coverage, it never fails the
+ *  sitemap route — and a hit cap is logged rather than silent (docs/50 §6). */
+export async function fetchPartnerSlugs(): Promise<string[]> {
+  const slugs: string[] = [];
+  let cursor: string | null = null;
+  for (let page = 0; page < MAX_SLUG_PAGES; page++) {
+    const query: Record<string, string> = { limit: String(DIRECTORY_PAGE_SIZE) };
+    if (cursor) query.cursor = cursor;
+    const result = await fetchPartners(query);
+    slugs.push(...result.items.map((p) => p.slug).filter(Boolean));
+    if (!result.next_cursor) return slugs;
+    cursor = result.next_cursor;
+  }
+  console.warn(
+    `[sitemap] partner enumeration hit its cap; coverage is bounded at ${slugs.length} partners.`
+  );
+  return slugs;
 }
 
 /** Tier display metadata — label + the @sparx/ui Badge color slot. Certified

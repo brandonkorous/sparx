@@ -2,6 +2,7 @@ import { Badge, Footer as SilicaFooter, FooterTitle, Link, Text } from '@wizewor
 import { Wordmark } from '@sparx/ui';
 import type { MarketingModule } from './primitives';
 import { MODULES, MODULE_HEX } from './modules-catalog';
+import { VERTICALS } from './verticals/registry';
 import { ConsentPreferencesLink } from './consent-preferences-link';
 
 // Search-intent label widening for the footer only. "B2B" is the product name,
@@ -83,6 +84,17 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
     ],
   },
   {
+    // Derived from VERTICALS so the footer can never list an industry page that
+    // does not exist, or miss one that does. On every page of the site, this is
+    // what turns six ad-landing pages into a crawlable cluster rather than six
+    // orphans reachable only from the hub.
+    title: 'By industry',
+    links: [
+      ...VERTICALS.map((v) => ({ label: v.label, href: `/for/${v.slug}` })),
+      { label: 'Every kind of business', href: '/customers' },
+    ],
+  },
+  {
     title: 'Developers',
     // Docs are first-class on sparx.works/docs (the canonical developer home) —
     // sparx.software 301s here. Only live routes are linked; the rest of the IA
@@ -112,8 +124,10 @@ const COLUMNS: { title: string; links: FooterLink[] }[] = [
   {
     title: 'Company',
     links: [
+      // /customers is not listed twice — the "By industry" column above ends on
+      // it as "Every kind of business", which is where someone looking for it
+      // will actually be looking.
       { label: 'About WizeWorks', href: '/about' },
-      { label: 'Customers', href: '/customers' },
       { label: 'Brand', href: '/brand' },
       { label: 'Press', href: '/press' },
       { label: 'Careers', href: '/careers' },
@@ -160,8 +174,13 @@ export function Footer() {
             Modular content and commerce OS by WizeWorks. Built in Visalia, California. Operating
             worldwide.
           </Text>
-          <Badge color="success" variant="soft" className="w-fit gap-1.5">
-            <span className="bg-success h-1.5 w-1.5 rounded-full" />
+          {/* `solid`, not `soft`. A soft badge paints its label in the RAW
+              accent over a 15% tint of the same accent — measured 3.79:1 here,
+              on every page of the site (docs/silicaui/02-core-asks.md §2). The
+              dot keeps `bg-success` because a fill is exactly what that hue is
+              good for. */}
+          <Badge color="success" variant="solid" className="w-fit gap-1.5">
+            <span className="bg-success-content h-1.5 w-1.5 rounded-full" />
             All systems operational
           </Badge>
           <Text variant="caption">status.sparx.works</Text>

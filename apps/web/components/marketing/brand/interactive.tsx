@@ -57,10 +57,14 @@ export interface CopyValueProps {
 export function CopyValue({ value, label, tone = 'subtle' }: CopyValueProps) {
   const { copied, copy } = useCopy();
   return (
+    // Deliberately COLORLESS. This chip lands on surfaces of unknown lightness
+    // — several of them are live color swatches — so no fixed color can be right
+    // for all of them. `color="neutral"` inked it near-black and measured 3.30:1
+    // over a mid-tone swatch, which is the "never neutral on a dark fill" rule
+    // (DESIGN.md §3.0). Colorless, it inherits whatever surface it lands on.
     <Button
       type="button"
       size="sm"
-      color="neutral"
       variant={tone === 'strong' ? 'outline' : 'ghost'}
       onClick={() => copy(value)}
       aria-label={label ?? `Copy ${value}`}

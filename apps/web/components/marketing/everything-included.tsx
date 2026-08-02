@@ -76,7 +76,7 @@ export function EverythingIncluded() {
             </p>
             <div className="mt-[26px]">
               <a href="/features">
-                <Button color="neutral" size="lg">
+                <Button color="primary" size="lg">
                   See everything →
                 </Button>
               </a>

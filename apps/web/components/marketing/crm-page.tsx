@@ -24,8 +24,13 @@ import { Faq, type FaqItem } from './faq';
  * Facts are grounded in docs/11 (CRM PRD) + docs/17 (billing) + the real
  * dashboard CRM surfaces. The record stats (total spent, orders, AOV), the
  * activity vocabulary, the segment rule fields, and the pipeline stages mirror
- * what ships. Flat $49/mo, no tiers, 14-day trial; adding CRM steps the Commerce
- * transaction fee to 0.3% (docs/17 §2).
+ * what ships. Flat $49/mo, no tiers, 14-day trial.
+ *
+ * This page used to claim that adding CRM stepped the Commerce transaction fee
+ * to 0.3% (citing docs/17 §2) and sold CRM partly on that basis. It does not.
+ * That tiered-fee model was removed on 2026-07-22 and never shipped — the fee
+ * rule is docs/94 §8 (sparx Pay 0.5%, every other gateway $0) and nothing about
+ * it varies with which modules you run. Corrected 2026-08-02.
  */
 export function CrmPage() {
   return (
@@ -42,7 +47,6 @@ export function CrmPage() {
       <Faq
         items={CRM_FAQ}
         id="faq"
-        accent={M.color}
         heading={
           <>
             CRM questions
@@ -78,7 +82,7 @@ const CRM_FAQ: FaqItem[] = [
     id: 'crm-needs-commerce',
     question: 'Do I need Commerce to use CRM?',
     answer:
-      'No. CRM runs on its own — a sales team or a service business can manage contacts, activity, segments, and a pipeline with no store at all. If you do run Commerce, the two share one customer record, and adding CRM steps your Commerce per-transaction fee down from 0.5% to 0.3%.',
+      'No. CRM runs on its own — a sales team or a service business can manage contacts, activity, segments, and a pipeline with no store at all. If you do run Commerce, the two share one customer record, so what someone bought and every conversation you have had with them sit on the same page.',
   },
   {
     id: 'crm-segments',
@@ -108,7 +112,13 @@ function CrmProof() {
       l: 'database under customers, orders, and email — nothing to sync',
     },
     { n: '0', l: 'webhooks to babysit · no Zapier between you and your data' },
-    { n: '0.3%', l: 'Commerce transaction fee once CRM is on — it pays for itself' },
+    // Replaces a "0.3% Commerce transaction fee once CRM is on — it pays for
+    // itself" stat, which was false: no fee anywhere on the platform changes
+    // because you turned CRM on. The replacement is the real pricing claim,
+    // stated elsewhere on this page and in the module catalog — and it is not a
+    // second "1", which is what a "one record per customer" line would have made
+    // this row, next to the "1 database" stat it opens with.
+    { n: '∞', l: 'contacts, activities and deals — nothing metered, no charge per seat' },
     { n: '$0', l: 'to export — full JSON or SQL from the dashboard, no ticket' },
   ];
   return (
@@ -150,12 +160,11 @@ function CrmPricing() {
             <span className="text-[56px] font-medium tracking-[-0.025em]">$49</span>
             <span className="text-md">/mo</span>
           </div>
-          <p className="max-w-[640px] text-sm">
+          <p className="text-md max-w-[640px]">
             A flat $49/mo — profiles, activity, segments, pipeline, tasks, and automation, with no
-            tiers, no per-seat charge, and no per-contact metering. It sits on the same database as
-            your orders and content, so switch it on alongside whatever you already run. Adding CRM
-            also steps your Commerce transaction fee down to 0.3%. Start free for 14 days; no card
-            to begin.
+            tiers, nothing extra when you hire someone, and nothing extra as your contact list
+            grows. It sits alongside your orders and content, so switch it on next to whatever you
+            already run. Free for 14 days, and we don&rsquo;t ask for a card to start.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
@@ -164,7 +173,7 @@ function CrmPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="neutral" size="lg">
+          <Button color="primary" size="lg">
             Activate CRM
           </Button>
         </div>

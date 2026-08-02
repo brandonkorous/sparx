@@ -60,7 +60,7 @@ export function SchedulingHero() {
               {lede}
             </Text>
             <div className="mt-[34px] flex flex-wrap items-center gap-3">
-              <Button size="lg" color="neutral">
+              <Button size="lg" color="primary">
                 Activate Scheduling →
               </Button>
               <a href="#shapes" className={buttonClasses({ size: 'lg', variant: 'outline' })}>

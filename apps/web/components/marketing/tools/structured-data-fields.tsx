@@ -177,8 +177,8 @@ export function FaqFields({ faq, setFaq }: FaqFieldsProps) {
               />
               <Button
                 type="button"
+                color="error"
                 variant="ghost"
-                color="neutral"
                 size="sm"
                 shape="square"
                 aria-label="Remove"
@@ -193,9 +193,9 @@ export function FaqFields({ faq, setFaq }: FaqFieldsProps) {
       ))}
       <div>
         <Button
+          color="success"
           type="button"
           variant="outline"
-          color="neutral"
           size="sm"
           onClick={() => setFaq((p) => [...p, { q: '', a: '' }])}
         >

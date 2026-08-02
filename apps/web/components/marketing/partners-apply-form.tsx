@@ -17,9 +17,9 @@ import {
   Textarea,
 } from '@wizeworks/silicaui-react';
 import { rule, rules, useFieldValidation } from '@sparx/forms';
+import { Heading, Text } from '@wizeworks/silicaui-react';
 import { type PartnerTier } from '@/lib/partners';
 import { applyToPartnerProgram, type ApplyState } from '@/app/partners/actions';
-import { Display, Spark, Text } from './primitives';
 
 const INITIAL: ApplyState = { status: 'idle' };
 
@@ -118,13 +118,14 @@ export function PartnersApplyForm() {
         />
       </Field>
 
-      <div className="flex flex-col gap-[7px]">
-        <Text as="span" size={13} weight={500}>
+      <div className="flex flex-col gap-2">
+        <Text as="span" className="text-md font-medium">
           Tier you&rsquo;re applying for
         </Text>
         <input type="hidden" name="requestedTier" value={tier} />
-        {/* A real silica toggle group: the selected tier is a `soft` primary
-            Button, the rest are `outline`. No hand-rolled fill/ink pair. */}
+        {/* Selection is the FILLED shape. This had it backwards — the chosen tier
+            rendered `soft` (a pale tint) while the two you had NOT chosen were
+            `outline`, so the strongest-looking buttons were the inactive ones. */}
         <div className="grid grid-cols-3 gap-2">
           {TIERS.map((t) => {
             const on = tier === t.value;
@@ -133,8 +134,9 @@ export function PartnersApplyForm() {
                 key={t.value}
                 type="button"
                 aria-pressed={on}
-                color={on ? 'primary' : 'neutral'}
-                variant={on ? 'soft' : 'outline'}
+                {...(on
+                  ? { color: 'primary' as const, variant: 'solid' as const }
+                  : { variant: 'outline' as const })}
                 onClick={() => setTier(t.value)}
               >
                 {t.label}
@@ -142,10 +144,12 @@ export function PartnersApplyForm() {
             );
           })}
         </div>
-        <Text as="span" size={12}>
-          {tier === 'informal'
-            ? 'Approved instantly — activate right after you apply.'
-            : 'Reviewed within 3 business days.'}
+        {/* Was: "Approved instantly — activate right after you apply" for
+            Informal, which contradicted this very form's own confirmation screen
+            ("EVERY application is reviewed … no tier activates automatically").
+            The confirmation is the one that matches the server action. */}
+        <Text as="span" className="text-md">
+          Reviewed by a person within 3 business days &mdash; every tier.
         </Text>
       </div>
 
@@ -174,7 +178,7 @@ export function PartnersApplyForm() {
 
 function SubmitButton({ pending }: { pending: boolean }) {
   return (
-    <Button type="submit" size="lg" disabled={pending} className="w-full">
+    <Button type="submit" size="lg" color="primary" disabled={pending} className="w-full">
       {pending ? 'Submitting…' : 'Submit application →'}
     </Button>
   );
@@ -183,18 +187,22 @@ function SubmitButton({ pending }: { pending: boolean }) {
 function Confirmation() {
   return (
     <div role="status" className="flex flex-col items-start gap-4">
+      {/* Fill + its PAIRED ink. This was `bg-primary text-primary bg-soft` —
+          Ember ink on a 15% Ember tint of itself, which is the `soft` foreground
+          problem filed as §2 in docs/silicaui/02-core-asks.md. A solid fill uses
+          the designed `-content` ink and is legible by construction. */}
       <span
         aria-hidden
-        className="bg-primary text-primary bg-soft inline-flex size-11 items-center justify-center rounded-full text-2xl"
+        className="bg-primary text-primary-content inline-flex size-11 items-center justify-center rounded-full text-2xl"
       >
         ✓
       </span>
-      <Display as="h3" size={24} lineHeight={30}>
+      <Heading level={3} size={3} className="tracking-tight">
         Application received
-        <Spark />
-      </Display>
-      <Text size={15} className="max-w-[380px]">
-        Every application is reviewed by the Sparx team — we’ll be in touch within 3 business days.
+        <span className="text-primary">.</span>
+      </Heading>
+      <Text className="max-w-sm text-lg">
+        Every application is read by a person — we’ll be in touch within 3 business days.
       </Text>
     </div>
   );

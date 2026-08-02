@@ -65,7 +65,7 @@ export default async function MarketplaceHomePage() {
           />
           <div className="flex flex-wrap items-center gap-3">
             <a href={signUpHref()}>
-              <Button color="neutral" size="lg">
+              <Button color="primary" size="lg">
                 Start free
               </Button>
             </a>
@@ -129,7 +129,7 @@ export default async function MarketplaceHomePage() {
             lede="Sign up, install, and your themed site, products, content, and emails are waiting as drafts. Review, customize, publish."
           />
           <a href={signUpHref()}>
-            <Button color="neutral" size="lg">
+            <Button color="primary" size="lg">
               Start free
             </Button>
           </a>

@@ -133,7 +133,10 @@ export function DomainTool() {
                         Available
                       </Badge>
                     ) : r.available === false ? (
-                      <Badge color="neutral" variant="soft" size="sm">
+                      // `error`, not a grey pill: Available / Taken / Unknown is
+                      // a three-state answer and each state has its own semantic
+                      // — success, error, warning — so the color IS the answer.
+                      <Badge color="error" variant="soft" size="sm">
                         <X className="h-3.5 w-3.5" />
                         Taken
                       </Badge>

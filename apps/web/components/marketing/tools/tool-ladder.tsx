@@ -1,11 +1,12 @@
 import { ArrowRight } from 'lucide-react';
+import { Heading, Text } from '@wizeworks/silicaui-react';
 // `buttonClasses` from the `/server` subpath — NOT `<Button render={<a/>}>`.
 // This is a Server Component: an element passed as silica's `render` prop
 // arrives at the RSC boundary as a lazy client reference whose `.type` is
 // undefined, and silica's unconditional `cloneElement(render, …)` then throws
 // "Element type is invalid … got: undefined" during prerender.
-import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import { Section, Display, getModuleColor } from '../primitives';
+import { badgeClasses, buttonClasses } from '@wizeworks/silicaui-react/server';
+import { Band } from '../band';
 import { getModule } from '@/lib/modules';
 import type { ToolMeta } from './registry';
 
@@ -14,42 +15,60 @@ import type { ToolMeta } from './registry';
  * This is what turns the tools hub from a utility drawer into a funnel: every
  * tool ends with a tasteful hand-off to the module that does the real version.
  *
- * The module name above the headline used to be an uppercase mono kicker; it is
- * now sentence case in the module's own ink, carrying hierarchy with weight +
- * color instead of letterspaced caps.
+ * Three things were wrong with how it looked.
+ *
+ * The module name sat ABOVE the headline as a small coloured label. A previous
+ * pass had already de-uppercased it, which treated the styling and missed the
+ * problem: RULE #2 bans the SLOT, not the letterspacing — anything introducing a
+ * heading from above is an eyebrow. It is a badge beside the CTA now, which is
+ * where a reader looks for "which module is this" anyway.
+ *
+ * The panel was `${color.bg} bg-soft` with `style={{ borderColor: color.color }}`
+ * — a soft wash plus a literal inline style, which is the one thing feature code
+ * may never do. The panel is neutral now; the module hue rides the badge and the
+ * solid CTA, both of which are fills and therefore legible.
+ *
+ * And that label measured 2.43:1 — `text-module-*` on a 15% tint of the same
+ * hue. Module colours are FILLS.
  */
 export function ToolLadder({ tool }: { tool: ToolMeta }) {
-  const color = getModuleColor(tool.module);
   const mod = getModule(tool.module);
   const href = `/${tool.module}`;
 
   return (
-    <Section surface="page" padding="md">
-      <div
-        className={`flex flex-col items-center justify-between gap-7 rounded-xl border p-9 lg:flex-row ${color.bg} bg-soft`}
-        // The panel hairline is this tool's module hue — a per-module value, so
-        // it cannot be a static utility class (Tailwind can't see an
-        // interpolated `border-module-${key}`).
-        style={{ borderColor: color.color }}
-      >
-        <div className="flex max-w-[620px] flex-col gap-3">
-          <span className={`font-sans text-sm font-medium ${color.ink}`}>
-            {mod?.label ?? tool.module}
-          </span>
-          <Display as="h2" size={28} color="var(--color-base-content)">
+    <Band tone="page">
+      <div className="border-base-300 bg-base-100 flex flex-col items-start justify-between gap-8 rounded-4xl border p-8 sm:p-10 lg:flex-row lg:items-center">
+        <div className="flex max-w-2xl flex-col gap-4">
+          <Heading level={2} size={3} className="tracking-tight">
             {tool.ladder.headline}
-          </Display>
-          <p className="m-0 font-sans text-lg">{tool.ladder.body}</p>
+            {/* `text-primary`, not the module ink: these headings sit on a
+                LIGHT band, where a module hue is a ~2.4:1 fill pretending to
+                be ink. The module hue belongs on the dark hero and on fills. */}
+            <span className="text-primary">.</span>
+          </Heading>
+          <Text className="text-lg">{tool.ladder.body}</Text>
         </div>
-        <a
-          href={href}
-          aria-label={tool.ladder.cta}
-          className={`${buttonClasses({ color: tool.module, variant: 'solid', size: 'lg' })} shrink-0`}
-        >
-          {tool.ladder.cta}
-          <ArrowRight className="h-4 w-4" />
-        </a>
+
+        <div className="flex shrink-0 flex-col items-start gap-3">
+          <a
+            href={href}
+            aria-label={tool.ladder.cta}
+            className={buttonClasses({ color: tool.module, variant: 'solid', size: 'lg' })}
+          >
+            {tool.ladder.cta}
+            <ArrowRight className="h-4 w-4" />
+          </a>
+          <span
+            className={badgeClasses({
+              color: `module-${tool.module}`,
+              variant: 'solid',
+              size: 'sm',
+            })}
+          >
+            {`Part of ${mod?.label ?? tool.module}`}
+          </span>
+        </div>
       </div>
-    </Section>
+    </Band>
   );
 }

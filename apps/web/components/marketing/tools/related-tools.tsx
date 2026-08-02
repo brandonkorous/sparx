@@ -1,4 +1,5 @@
-import { Section, SectionHeader, getModuleColor } from '../primitives';
+import { Heading, Text } from '@wizeworks/silicaui-react';
+import { Band } from '../band';
 import { relatedTools } from './registry';
 import { ToolCard } from './tool-card';
 
@@ -8,20 +9,23 @@ export function RelatedTools({ currentSlug }: { currentSlug: string }) {
   if (tools.length === 0) return null;
 
   return (
-    <Section surface="surface" padding="lg">
+    <Band tone="page">
       <div className="flex flex-col gap-8">
-        <SectionHeader
-          headline="More free tools"
-          accent={getModuleColor('builder').color}
-          lede="Every sparx tool runs entirely in your browser — free, no account, nothing uploaded."
-          headlineSize={32}
-        />
+        <div className="flex flex-col gap-4">
+          <Heading level={2} size="display" className="text-4xl tracking-tight sm:text-5xl">
+            More free tools
+            <span className="text-primary">.</span>
+          </Heading>
+          <Text variant="lead" className="max-w-3xl">
+            Every one of them runs entirely in your browser — free, no account, nothing uploaded.
+          </Text>
+        </div>
         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {tools.map((tool) => (
             <ToolCard key={tool.slug} tool={tool} />
           ))}
         </div>
       </div>
-    </Section>
+    </Band>
   );
 }

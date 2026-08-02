@@ -1,17 +1,45 @@
 import type { ReactNode } from 'react';
 import { Button, Heading, Text } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
-import {
-  Container,
-  Display,
-  Dot,
-  getModuleColor,
-  type MarketingModule,
-  Section,
-  SectionHeader,
-  Spark,
-} from './primitives';
+import { Dot, getModuleColor, type MarketingModule, Spark } from './primitives';
+import { Band } from './band';
 import { MODULE_ORDER } from '@/lib/modules';
+
+/**
+ * A section's headline + lede. Replaces `<SectionHeader>`, whose `accent` prop
+ * every one of this page's six calls passed the same `var(--color-primary)`
+ * to — six sections, one hue, applied as a decorative full stop. The accent is
+ * now a real per-section ink class, so a section that belongs to a module can
+ * say so (RULE #4: if it distinguishes A from B, its color carries the
+ * distinction).
+ */
+function BandHeader({
+  headline,
+  lede,
+  accent = 'text-primary',
+}: {
+  headline: ReactNode;
+  lede?: ReactNode;
+  accent?: string;
+}) {
+  return (
+    <div className="max-w-3xl">
+      <Heading
+        level={2}
+        size="display"
+        className="text-5xl leading-[0.98] tracking-tight sm:text-6xl"
+      >
+        {headline}
+        <span className={accent}>.</span>
+      </Heading>
+      {lede ? (
+        <Text variant="lead" className="mt-5 max-w-2xl text-xl">
+          {lede}
+        </Text>
+      ) : null}
+    </div>
+  );
+}
 
 // Modules with a dedicated marketing page (MODULE_ORDER). Tiles for modules
 // without one (Invoicing, Inventory, Live Chat) point at /pricing instead of a
@@ -25,11 +53,10 @@ const HAS_PAGE = new Set<string>(MODULE_ORDER);
  * the permanence promise); this page explains how the system actually works.
  * No section is lifted from the home page's sections.
  *
- * Ported from mockups/platform.html. Built on the marketing primitives + silicaui
- * typography, per SILICA-VOCABULARY.md: every static value is a utility class and
- * the dark bands are `data-theme` islands (`<Section surface="dark">` / the inline
- * data-layer bar), so no literal hex is painted anywhere. The only inline `style`
- * left is a genuinely per-instance module hue.
+ * Built on silicaui + Tailwind utilities via the shared `<Band>` shell — no
+ * `primitives.tsx` layout components, no `px-page` / `py-section-*` vars, no
+ * inline `style` and no literal hex. Dark bands are real `data-theme` islands,
+ * so everything inside resolves its own ink rather than being painted.
  */
 export function PlatformPage() {
   return (
@@ -84,40 +111,49 @@ function Tag({ children, className }: { children: ReactNode; className?: string 
 function PlatformHero() {
   const metrics = [
     { v: '12', s: 'modules, one platform' },
-    { v: '1', s: 'shared data layer' },
+    { v: '1', s: 'place your whole business lives' },
     { v: '$10', suffix: '/mo', s: 'starting price' },
-    { v: 'MCP', spark: true, s: 'native AI access' },
-    { v: '100%', s: 'API-first, your data' },
+    { v: 'AI', spark: true, s: 'that works from your real data' },
+    { v: '100%', s: 'yours — export it any time' },
   ] as const;
 
   return (
-    <section className="bg-base-200 px-page pb-section-lg pt-[clamp(56px,9vw,96px)]">
-      <Container className="flex flex-col gap-10">
-        <div className="max-w-[1100px]">
-          <Display as="h1" size={104} lineHeight={96}>
+    <Band className="pt-16 lg:pt-20">
+      <div className="flex flex-col gap-14">
+        {/* One left column, headline → lede → action. It used to be a two-column
+            row with the lede on the left and the buttons bottom-aligned on the
+            right, which left the whole right half of the fold empty and floated
+            the CTA at mid-height, detached from the sentence it answers. */}
+        <div className="flex max-w-4xl flex-col gap-8">
+          <Heading
+            level={1}
+            size="display"
+            className="text-7xl leading-[0.94] tracking-tight sm:text-8xl"
+          >
             One platform for{' '}
             <span>
               content and commerce
               <Spark />
             </span>
-          </Display>
-        </div>
+          </Heading>
 
-        <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
-          <Text variant="lead" className="max-w-[600px]">
-            sparx is a modular operating system for the web. Builder, Commerce, CMS, CRM, Invoicing,
-            Email, B2B, Dropship, Inventory, Live Chat, Scheduling, and AI — plus Social, SEO, and
-            Automations free with any of them — running on one shared data layer, behind one
-            dashboard, on one bill. A publisher, a shop, a wholesale distributor, and a CRM-only
-            team are all equally first-class. Selling is one capability, never the assumption.
+          <Text variant="lead" className="max-w-2xl text-xl">
+            Run your whole business from one place. Builder, Commerce, CMS, CRM, Invoicing, Email,
+            B2B, Dropship, Inventory, Live Chat, Scheduling and AI — plus Social, SEO and
+            Automations free with any of them. Everything you switch on shares the same customers
+            and the same records, behind one login, on one bill. A publisher, a shop, a wholesale
+            distributor and a team that only wants a customer list are all equally at home here.
+            Selling is one thing sparx can do, never the assumption.
           </Text>
 
-          <div className="flex flex-col items-start gap-3 lg:items-end">
+          <div className="flex flex-col items-start gap-3">
             <div className="flex flex-wrap items-center gap-3">
-              <Button color="neutral" size="lg">
+              {/* Was `` — the page's single most important action,
+                  rendered in the one color RULE #4 says has to be earned. */}
+              <Button color="primary" size="xl">
                 Start free →
               </Button>
-              <Button size="lg" variant="outline">
+              <Button size="xl" variant="outline">
                 Talk to sales
               </Button>
             </div>
@@ -128,7 +164,7 @@ function PlatformHero() {
         <div className="border-base-300 mt-2 flex flex-wrap items-center justify-between gap-x-14 gap-y-8 border-t pt-8">
           {metrics.map((m) => (
             <div key={m.s} className="flex flex-col gap-1">
-              <span className="text-3xl font-medium tracking-[-0.02em]">
+              <span className="text-4xl font-medium tracking-[-0.02em] sm:text-5xl">
                 {m.v}
                 {'suffix' in m && m.suffix ? (
                   <span className="text-md font-normal">{m.suffix}</span>
@@ -139,8 +175,8 @@ function PlatformHero() {
             </div>
           ))}
         </div>
-      </Container>
-    </section>
+      </div>
+    </Band>
   );
 }
 
@@ -160,10 +196,9 @@ function OneSystem() {
   ];
 
   return (
-    <Section surface="surface" padding="lg">
+    <Band tone="surface">
       <div className="max-w-[720px]">
-        <SectionHeader
-          accent="var(--color-primary)"
+        <BandHeader
           headline={<>Not integrations. One system</>}
           lede={
             <>
@@ -225,22 +260,23 @@ function OneSystem() {
           </svg>
         </div>
 
-        {/* data layer bar — a dark theme island, so every token below it flips */}
+        {/* the records bar — a dark theme island, so every token below it flips */}
         <div
           data-theme="dark"
           className="bg-base-100 border-t-primary flex w-full max-w-[880px] flex-wrap items-center justify-between gap-4 rounded-2xl border-t-[3px] px-7 py-6"
         >
           <div className="max-w-[420px]">
             <Heading level={3} size={5}>
-              One data layer
+              One set of records
             </Heading>
-            <Text className="mt-1 text-sm">
-              Postgres with row-level security per tenant. Customers, orders, content, and contacts
-              are the same records everywhere.
+            <Text className="mt-1">
+              Your customers, orders, content and contacts are one set of records that every part
+              reads — not copies being kept in step. And your business is fenced off from every
+              other business on sparx, by the database itself.
             </Text>
           </div>
           <div className="flex flex-wrap gap-2">
-            {['tenant-isolated', 'RLS-enforced', 'event-driven'].map((t) => (
+            {['one copy', 'always current', 'fenced off'].map((t) => (
               <Tag key={t}>{t}</Tag>
             ))}
           </div>
@@ -250,15 +286,15 @@ function OneSystem() {
         <div className="bg-base-100 border-base-300 mt-3.5 flex w-full max-w-[880px] flex-wrap items-center justify-between gap-4 rounded-2xl border px-7 py-6">
           <div className="max-w-[440px]">
             <Heading level={3} size={5}>
-              One surface — API-first &amp; MCP-native
+              One source everything reads from
             </Heading>
-            <Text className="mt-1 text-sm">
-              Every feature is an API endpoint first. The dashboard, your site, and your AI are all
-              just clients of the same API.
+            <Text className="mt-1">
+              Your dashboard, your website and any AI assistant you connect all read the same live
+              information. Nothing is stuck inside a screen.
             </Text>
           </div>
           <div className="flex flex-wrap gap-2">
-            {['REST + GraphQL', 'MCP server', 'webhooks'].map((t) => (
+            {['open to your tools', 'works with AI', 'keeps apps in step'].map((t) => (
               <Tag key={t}>{t}</Tag>
             ))}
           </div>
@@ -269,7 +305,7 @@ function OneSystem() {
           exports, no goodbyes. The data stays where it was; it just goes quiet.
         </Text>
       </div>
-    </Section>
+    </Band>
   );
 }
 
@@ -319,9 +355,8 @@ function OneRecord() {
   ];
 
   return (
-    <Section padding="lg">
-      <SectionHeader
-        accent="var(--color-primary)"
+    <Band>
+      <BandHeader
         headline={<>A customer is one customer</>}
         lede={
           <>
@@ -332,7 +367,7 @@ function OneRecord() {
         }
       />
 
-      <div className="bg-base-100 border-base-300 mt-14 max-w-[760px] overflow-hidden rounded-2xl border shadow-lg">
+      <div className="bg-base-100 border-base-300 mt-14 max-w-[760px] overflow-hidden rounded-2xl border">
         {/* head */}
         <div className="border-base-300 flex items-center gap-4 border-b px-6 py-5">
           <span className="bg-primary text-primary-content text-md inline-flex h-[46px] w-[46px] shrink-0 items-center justify-center rounded-full font-medium">
@@ -361,7 +396,7 @@ function OneRecord() {
                 </Text>
               </div>
               <Text className="text-md">{f.val}</Text>
-              <Text className="mt-1 text-sm">{f.sub}</Text>
+              <Text className="mt-1">{f.sub}</Text>
             </div>
           ))}
         </div>
@@ -369,12 +404,10 @@ function OneRecord() {
         {/* foot */}
         <div className="flex items-center gap-2.5 px-6 py-4">
           <Dot color="var(--color-success)" size={7} />
-          <Text className="text-sm">
-            One profile, written by four modules — no integration, no copy, no drift.
-          </Text>
+          <Text>One profile, written by four modules — no integration, no copy, no drift.</Text>
         </div>
       </div>
-    </Section>
+    </Band>
   );
 }
 
@@ -382,49 +415,40 @@ function OneRecord() {
 function FourCommitments() {
   const items = [
     {
-      accent: MODS.builder.color,
       title: 'Modular',
-      body: 'Activate only what you need. A disabled module runs no workers, stores no rows, and costs nothing. Add the next one when you’re ready — no replatform.',
+      body: 'Switch on only what you need. Anything switched off does nothing and costs nothing. Add the next part when you’re ready — without starting over.',
     },
     {
-      accent: MODS.crm.color,
-      title: 'One data layer',
+      title: 'One set of records',
       body: 'Modules share records, not syncs. A customer is one customer across Commerce, CRM, and Email. Reporting is unified because the data was never split.',
     },
     {
-      accent: MODS.ai.color,
-      title: 'API-first & MCP-native',
-      body: 'Every feature ships as an API endpoint before it gets a screen. A first-class MCP server lets your AI read and write live business data — natively, not via export.',
+      title: 'Open, never locked in',
+      body: 'Everything sparx can do, your other tools can do too — including an AI assistant you connect yourself, working from your live business information rather than a stale export.',
     },
     {
-      accent: 'var(--color-success)',
       title: 'Permanent',
       body: 'You own the data and the site. Export anytime, edit anything no-code, drop to full code when you want. AI can build it — sparx is what keeps it.',
     },
   ];
 
   return (
-    <Section surface="surface" padding="lg">
-      <SectionHeader
-        accent="var(--color-primary)"
-        headline={<>Four commitments that hold across every module</>}
-      />
+    <Band tone="surface">
+      <BandHeader headline={<>Four commitments that hold across every module</>} />
       <div className="mt-14 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((it) => (
           <div
             key={it.title}
             className="bg-base-200 border-base-300 flex min-h-[240px] flex-col gap-3 rounded-xl border px-6 pt-7 pb-8"
           >
-            {/* The commitment's identity hue — a per-item runtime value. */}
-            <span className="h-[3px] w-7 rounded-full" style={{ backgroundColor: it.accent }} />
             <Heading level={3} size={4}>
               {it.title}
             </Heading>
-            <Text className="text-sm">{it.body}</Text>
+            <Text>{it.body}</Text>
           </div>
         ))}
       </div>
-    </Section>
+    </Band>
   );
 }
 
@@ -461,10 +485,9 @@ function GrowsWithYou() {
   ];
 
   return (
-    <Section padding="lg">
-      <SectionHeader
-        accent="var(--color-primary)"
-        headline={<>Start with one. Add the rest, no replatform</>}
+    <Band>
+      <BandHeader
+        headline={<>Start with one. Add the rest without starting over</>}
         lede={
           <>
             Most platforms make you migrate to grow. sparx doesn&apos;t. Switch on a module and it
@@ -479,7 +502,7 @@ function GrowsWithYou() {
             <Heading level={3} size={5}>
               {s.title}
             </Heading>
-            <Text className="mt-2 text-sm">
+            <Text className="mt-2">
               {s.when} — {s.body}
             </Text>
             <div className="mt-3.5 flex flex-wrap gap-1.5">
@@ -496,7 +519,7 @@ function GrowsWithYou() {
           </div>
         ))}
       </div>
-    </Section>
+    </Band>
   );
 }
 
@@ -556,7 +579,7 @@ function ModulesStrip() {
       label: 'AI',
       price: '+$49/mo',
       title: 'AI that knows your data',
-      body: 'A first-class MCP server for every record.',
+      body: 'An AI assistant that works from your real data.',
     },
     {
       module: 'dropship',
@@ -596,9 +619,8 @@ function ModulesStrip() {
   ];
 
   return (
-    <Section id="modules" surface="surface" padding="lg">
-      <SectionHeader
-        accent="var(--color-primary)"
+    <Band id="modules" tone="surface">
+      <BandHeader
         headline={
           <>
             Twelve modules. <span>Mix any combination</span>
@@ -627,15 +649,15 @@ function ModulesStrip() {
                   {m.price}
                 </Text>
               </div>
-              <Text className="text-sm">{m.title}</Text>
-              <Text className="text-sm">{m.body}</Text>
+              <Text>{m.title}</Text>
+              <Text>{m.body}</Text>
             </a>
           );
         })}
       </div>
 
       <div className="mt-8 flex flex-wrap items-center justify-between gap-4">
-        <Text className="max-w-[520px] text-sm">
+        <Text className="max-w-[520px]">
           Content-only, commerce-only, or the whole platform — every combination shares the same
           dashboard, the same data, and the same bill.
         </Text>
@@ -643,7 +665,7 @@ function ModulesStrip() {
           Explore all modules →
         </a>
       </div>
-    </Section>
+    </Band>
   );
 }
 
@@ -651,28 +673,37 @@ function ModulesStrip() {
 function ApiSurface() {
   const clients = [
     { ci: 'D', bg: MODS.builder.bg, name: 'Dashboard', desc: 'The admin UI is just a client' },
-    { ci: 'S', bg: MODS.commerce.bg, name: 'Your site', desc: 'Site and pages read the same API' },
-    { ci: 'AI', bg: MODS.ai.bg, name: 'MCP / AI', desc: 'Claude, ChatGPT, Copilot — natively' },
+    {
+      ci: 'S',
+      bg: MODS.commerce.bg,
+      name: 'Your site',
+      desc: 'Your pages read the same live information',
+    },
+    { ci: 'AI', bg: MODS.ai.bg, name: 'Your AI', desc: 'Claude, ChatGPT or Copilot, on your data' },
     { ci: '↯', bg: MODS.cms.bg, name: 'Webhooks', desc: 'Events push to your own systems' },
     {
       ci: '</>',
       bg: MODS.b2b.bg,
       name: 'Your code',
-      desc: 'Build anything on the headless API + SDK',
+      desc: 'Build anything you like on top of it',
     },
   ];
 
   return (
-    <Section surface="dark" padding="lg">
+    <Band tone="dark">
       <div className="max-w-[720px]">
-        <Display size={56} lineHeight={60}>
-          Everything is an API. Even the AI
+        <Heading
+          level={2}
+          size="display"
+          className="text-5xl leading-[0.98] tracking-tight sm:text-6xl"
+        >
+          Nothing is locked in. Not even to us
           <Spark color={MODS.ai.color} />
-        </Display>
+        </Heading>
         <Text variant="lead" className="mt-6 max-w-[640px]">
-          Every feature ships as an endpoint before it ships a screen. The dashboard, your site,
-          your integrations, and your AI assistant are all clients of the same API — nothing is
-          trapped inside the UI.
+          Everything sparx can do is open to your other tools, not just to the screens we built.
+          Your dashboard, your website, whatever you connect, and any AI assistant you bring are all
+          reading the same live information.
         </Text>
       </div>
 
@@ -690,8 +721,8 @@ function ApiSurface() {
                 {c.ci}
               </span>
               <div>
-                <Text className="text-sm font-medium">{c.name}</Text>
-                <Text className="text-sm">{c.desc}</Text>
+                <Text className="font-medium">{c.name}</Text>
+                <Text>{c.desc}</Text>
               </div>
             </div>
           ))}
@@ -704,7 +735,7 @@ function ApiSurface() {
             /v1/customers/cus_4471
           </div>
           <div className="overflow-x-auto px-5 py-4 font-mono text-sm leading-[22px] whitespace-pre">
-            <div>{'// the same record the four modules wrote'}</div>
+            <div>{'// one customer, as four parts of sparx know them'}</div>
             <div>{'{'}</div>
             <div>
               {'  '}
@@ -739,16 +770,23 @@ function ApiSurface() {
             </div>
             <div>{'}'}</div>
           </div>
+          {/* The code sample stays — it is EVIDENCE, not instruction. A reader
+              who cannot parse it should still get the point from this caption,
+              which is the inline definition the audience rule asks for. */}
+          <Text className="border-base-300 border-t px-5 py-4">
+            One customer, asked for directly. Everything Commerce, CRM, Email and B2B know about
+            them comes back together — because it was never four separate records.
+          </Text>
         </div>
       </div>
 
       <Text variant="lead" className="mt-9 max-w-[640px]">
-        Connect Claude, ChatGPT, or Copilot through the first-class MCP server.{' '}
+        Connect Claude, ChatGPT or Copilot and let it work with your real business information.{' '}
         <a href="/agentic" className="text-primary font-medium">
           See it answer questions about your business →
         </a>
       </Text>
-    </Section>
+    </Band>
   );
 }
 
@@ -768,15 +806,15 @@ function Foundations() {
   const items = [
     {
       title: 'Tenant isolation at the database',
-      body: 'Every tenant-scoped table carries a tenant ID, with PostgreSQL row-level security as the backstop against application bugs — not application-tier filtering alone.',
+      body: 'Every record is tagged to your business, and the database itself enforces the boundary rather than the software on top of it. Another business cannot see your customers even if something goes wrong in the app.',
     },
     {
       title: 'Self-hosted email',
       body: 'Transactional and marketing email send from your own domain and reputation on sparx.email — no third-party markup, no shared-IP deliverability roulette.',
     },
     {
-      title: 'Event-driven by design',
-      body: 'Business events publish to a queue and are consumed by workers. Side effects never block a request — and new automations subscribe without touching the core.',
+      title: 'Nothing keeps you waiting',
+      body: 'When something happens — an order lands, a form comes in — the follow-on work runs in the background instead of holding up the page. New automations slot in without disturbing anything already running.',
     },
     {
       title: 'One dashboard, module-aware',
@@ -784,20 +822,17 @@ function Foundations() {
     },
     {
       title: 'Multi-property, multi-brand',
-      body: 'Run many sites under one tenant — separate domains, themes, and catalogs — sharing the same customers, content, and bill where you want them to.',
+      body: 'Run several sites under one account — separate addresses, looks and catalogs — sharing the same customers, content and bill wherever you want them to.',
     },
     {
       title: 'Own it, export it, leave anytime',
-      body: 'Your data is yours. Full export, headless API access, and no lock-in. Turn a module off and it simply stops — your records stay intact.',
+      body: 'Your data is yours. Take all of it with you whenever you want, and open it to your own tools meanwhile. Turn something off and it simply stops — your records stay exactly as they were.',
     },
   ];
 
   return (
-    <Section padding="lg">
-      <SectionHeader
-        accent="var(--color-primary)"
-        headline={<>Enterprise foundations, on by default</>}
-      />
+    <Band>
+      <BandHeader headline={<>Enterprise foundations, on by default</>} />
       <div className="mt-13 grid grid-cols-1 gap-x-14 gap-y-8 md:grid-cols-2">
         {items.map((it) => (
           <div key={it.title}>
@@ -809,7 +844,7 @@ function Foundations() {
           </div>
         ))}
       </div>
-    </Section>
+    </Band>
   );
 }
 
@@ -822,19 +857,28 @@ function PricingTeaser() {
   ];
 
   return (
-    <Section id="pricing" surface="surface" padding="lg">
+    <Band id="pricing" tone="primary">
       <div className="flex flex-col items-center justify-between gap-10 lg:flex-row">
         <div className="flex-1">
-          <Display size={44} lineHeight={46}>
-            Pay only for what you use
-            <Spark />
-          </Display>
+          <Heading
+            level={2}
+            size="display"
+            className="text-4xl leading-[1] tracking-tight sm:text-5xl"
+          >
+            {/* No <Spark/> here — it paints the closing period `text-primary`,
+                which is this band's own fill. The band IS the accent. */}
+            Pay only for what you use.
+          </Heading>
           <Text variant="lead" className="mt-4 max-w-[460px]">
             Start with one module from $10/mo. Add the next when you need it. No bundles, no seat
             tax, no &ldquo;contact us for content.&rdquo; Turn anything off and it stops billing the
             same day.
           </Text>
           <div className="mt-7">
+            {/* `neutral` on the Ember band, and it belongs there: near-black on
+                Ember is a contrasting solid, not black-on-black. Neutral is a
+                real member of the palette — the only thing it must never do is
+                sit on a dark fill. */}
             <a href="/pricing" className={buttonClasses({ color: 'neutral', size: 'lg' })}>
               See full pricing →
             </a>
@@ -845,39 +889,46 @@ function PricingTeaser() {
           {tiers.map((t) => (
             <div
               key={t.name}
-              className={`bg-base-200 min-w-[150px] rounded-xl border px-6 py-5 ${
-                t.highlight ? 'border-primary' : 'border-base-300'
+              // `bg-base-100 text-base-content` — the fill AND its paired ink.
+              // Carrying only the fill left these inheriting the band's
+              // `text-primary-content`, i.e. white type on a light card.
+              className={`bg-base-100 text-base-content min-w-[150px] rounded-xl border px-6 py-5 ${
+                t.highlight ? 'border-primary border-2' : 'border-base-300'
               }`}
             >
-              <Text className="text-sm">{t.name}</Text>
+              <Text>{t.name}</Text>
               <Heading level={3} size={1} className="mt-2">
                 {t.price}
                 <span className="text-md font-normal">/mo</span>
               </Heading>
-              <Text className="mt-1.5 text-sm">{t.note}</Text>
+              <Text className="mt-1.5">{t.note}</Text>
             </div>
           ))}
         </div>
       </div>
-    </Section>
+    </Band>
   );
 }
 
 // ── FINAL CTA ──────────────────────────────────────────────────────────────
 function PlatformCta() {
   return (
-    <Section padding="xl" className="border-base-300 border-t text-center">
+    <Band tone="dark" className="text-center">
       <div className="flex flex-col items-center">
-        <Display size={64} lineHeight={64}>
+        <Heading
+          level={2}
+          size="display"
+          className="text-6xl leading-[0.95] tracking-tight sm:text-7xl"
+        >
           Put your whole business on one platform
           <Spark />
-        </Display>
+        </Heading>
         <Text variant="lead" className="mt-6 mb-9 max-w-[560px]">
           Content, commerce, or both. Start with one module and a live site in five minutes — add
           the rest whenever you&apos;re ready.
         </Text>
         <div className="flex flex-wrap items-center justify-center gap-3.5">
-          <Button color="neutral" size="xl">
+          <Button color="primary" size="xl">
             Start free
           </Button>
           <Button size="xl" variant="outline">
@@ -888,6 +939,6 @@ function PlatformCta() {
           No credit card · Cancel anytime · Your data, always exportable
         </Text>
       </div>
-    </Section>
+    </Band>
   );
 }

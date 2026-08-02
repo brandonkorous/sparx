@@ -137,7 +137,7 @@ export function DigitalCardTool() {
               <Download className="h-4 w-4" />
               Download .vcf
             </Button>
-            <Button type="button" color="neutral" variant="outline" size="sm" onClick={downloadQr}>
+            <Button color="neutral" type="button" variant="outline" size="sm" onClick={downloadQr}>
               <Download className="h-4 w-4" />
               QR PNG
             </Button>

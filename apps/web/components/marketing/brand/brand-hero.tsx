@@ -53,7 +53,7 @@ export function BrandHero() {
         </div>
 
         <div className="flex flex-wrap items-center gap-3">
-          <a href="#downloads" className={buttonClasses({ color: 'neutral', size: 'lg' })}>
+          <a href="#downloads" className={buttonClasses({ color: 'primary', size: 'lg' })}>
             Download brand assets
           </a>
           <a href="mailto:brand@sparx.works">

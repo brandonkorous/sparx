@@ -279,7 +279,7 @@ function WaitlistRow({
   // State is its own color axis — the label is a semantic `<Badge>`, never a
   // hand-inked span.
   const byState: Record<typeof state, { label: string; color: BadgeColor; strike: boolean }> = {
-    cancelled: { label: 'cancelled', color: 'neutral', strike: true },
+    cancelled: { label: 'cancelled', color: 'error', strike: true },
     offered: { label: 'offered → promoted', color: 'success', strike: false },
     waiting: { label: 'waiting', color: 'warning', strike: false },
   };

@@ -59,7 +59,7 @@ export function EmailHero() {
               {lede}
             </Text>
             <div className="mt-[34px] flex flex-wrap items-center gap-3">
-              <Button color="neutral" size="lg">
+              <Button color="primary" size="lg">
                 Activate Email →
               </Button>
               <a href="#pipeline">

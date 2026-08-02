@@ -1,6 +1,8 @@
 import { Layers, Database, ToggleRight, Sparkles } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { Section, SectionHeader, getModuleColor } from '../primitives';
+import { Heading, Text } from '@wizeworks/silicaui-react';
+import { Band } from '../band';
+import { getModuleColor } from '../primitives';
 import type { MarketingModule } from '../primitives';
 
 /**
@@ -46,14 +48,20 @@ const PILLARS: Pillar[] = [
 
 export function ToolsValue() {
   return (
-    <Section surface="page" padding="lg">
+    <Band tone="surface">
       <div className="flex flex-col gap-10">
-        <SectionHeader
-          headline="The tools are free. The platform behind them runs the whole business"
-          lede="Every tool here is built on sparx — one platform for your website, your content, and, when you sell, your commerce. Activate the modules you need, on one login, one bill, and one data layer. Publish a content site with no checkout, run a CRM on its own, or sell to the world. It's all first-class."
-          accent={getModuleColor('builder').color}
-          headlineSize={38}
-        />
+        <div className="flex flex-col gap-4">
+          <Heading level={2} size="display" className="text-4xl tracking-tight sm:text-5xl">
+            The tools are free. The platform behind them runs the whole business
+            <span className="text-primary">.</span>
+          </Heading>
+          {/* Was one 65-word paragraph. A lede is the sentence that earns the
+              next scroll, not a summary of the product. */}
+          <Text variant="lead" className="max-w-3xl">
+            Every tool here is built on sparx — one platform for your site, your content and, when
+            you sell, your orders. Turn on the parts you need and leave the rest off.
+          </Text>
+        </div>
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {PILLARS.map((pillar) => {
             const color = getModuleColor(pillar.module);
@@ -65,7 +73,9 @@ export function ToolsValue() {
                 <div className="card-body flex-row items-start gap-4">
                   <span
                     aria-hidden
-                    className={`ring-base-300 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg ring-1 ring-inset ${color.bg} bg-soft ${color.ink}`}
+                    // Solid fill + paired ink, not `bg-soft` + the hue as ink —
+                    // that pairing measures ~2:1 across these modules.
+                    className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${color.bg} ${color.content}`}
                   >
                     <pillar.icon size={22} strokeWidth={1.6} />
                   </span>
@@ -81,6 +91,6 @@ export function ToolsValue() {
           })}
         </div>
       </div>
-    </Section>
+    </Band>
   );
 }

@@ -70,7 +70,6 @@ export function SchedulingPage() {
       <Faq
         items={SCHEDULING_FAQ}
         id="faq"
-        accent={M.color}
         heading={
           <>
             Scheduling questions
@@ -168,7 +167,6 @@ function SchedulingStandalone() {
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
-        accent={M.color}
         headline="Complete on its own, better with the rest"
         lede="Scheduling is never bundled and never required by another module — it stands fully on its own. But it lives on the same platform as your customers, your money, and your messaging, so connecting them turns booking into a loop instead of an island."
       />
@@ -264,7 +262,7 @@ function SchedulingPricing() {
             <a href="/pricing" className={buttonClasses({ size: 'lg', variant: 'outline' })}>
               See all plans →
             </a>
-            <Button size="lg" color="neutral">
+            <Button size="lg" color="primary">
               Activate Scheduling
             </Button>
           </div>

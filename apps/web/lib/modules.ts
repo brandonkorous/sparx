@@ -132,7 +132,7 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
       {
         number: '03',
         title: 'Stripe payments.',
-        body: 'Stripe as the primary processor, connected through Stripe Connect — you keep your own account. A small per-transaction fee that steps down to 0% as you grow.',
+        body: 'Take cards through sparx Pay for a flat 0.5%, or connect your own Stripe, PayPal, or Square account and pay sparx nothing on the payment at all.',
       },
       {
         number: '04',
@@ -155,7 +155,7 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
       period: '/mo',
       modifier: '',
       bundleNote:
-        'A flat $49/mo with Invoicing and Inventory bundled in free. Pair it with Builder for a hosted storefront or run it headless against the API — one toggle on one bill, off the moment you stop selling. A small per-transaction fee on Commerce steps down to 0% as your active modules grow.',
+        'A flat $49/mo with Invoicing and Inventory bundled in free. Pair it with Builder for a hosted storefront or run it headless against the API — one toggle on one bill, off the moment you stop selling. The only payment fee is 0.5% on sparx Pay; bring your own card processor and there is none.',
     },
   },
   cms: {

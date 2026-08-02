@@ -128,11 +128,11 @@ export function UtmTool() {
           <div className="flex flex-wrap items-center gap-2">
             {PRESETS.map((preset) => (
               <Button
+                color="neutral"
                 key={preset.label}
                 type="button"
                 size="sm"
                 variant="outline"
-                color="neutral"
                 onClick={() =>
                   setP((prev) => ({ ...prev, source: preset.source, medium: preset.medium }))
                 }
@@ -204,7 +204,7 @@ export function UtmTool() {
                   color="module"
                   variant="solid"
                 />
-                <Button type="button" variant="outline" color="neutral" size="sm" onClick={save}>
+                <Button color="success" type="button" variant="outline" size="sm" onClick={save}>
                   <Bookmark className="h-4 w-4" />
                   Save
                 </Button>
@@ -224,8 +224,8 @@ export function UtmTool() {
                   PNG
                 </Button>
                 <Button
-                  type="button"
                   color="neutral"
+                  type="button"
                   variant="outline"
                   size="sm"
                   onClick={downloadSvg}

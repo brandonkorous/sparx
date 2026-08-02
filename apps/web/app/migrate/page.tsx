@@ -4,7 +4,7 @@ import { ComingSoon } from '@/components/marketing/coming-soon';
 export const metadata: Metadata = {
   title: 'Migration tools — sparx',
   description:
-    'Native importers for Shopify, HubSpot, Mailchimp, and WordPress. The Gillett Diesel migration ran in 14 days end-to-end including custom checkout work.',
+    'Native importers for Shopify, HubSpot, Mailchimp, and WordPress. Most small-business migrations finish in under a week; a complex B2B move with custom checkout work runs about two.',
   alternates: { canonical: '/migrate' },
   robots: { index: false },
 };

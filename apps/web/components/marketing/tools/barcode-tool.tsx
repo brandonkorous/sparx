@@ -126,8 +126,8 @@ export function BarcodeTool() {
                 PNG
               </Button>
               <Button
-                type="button"
                 color="neutral"
+                type="button"
                 variant="outline"
                 size="sm"
                 onClick={downloadSvg}

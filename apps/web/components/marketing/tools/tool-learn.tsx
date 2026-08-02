@@ -5,8 +5,11 @@ import {
   AccordionTrigger,
   Card,
   CardBody,
+  Heading,
+  Text,
 } from '@wizeworks/silicaui-react';
-import { Section, SectionHeader, Text, getModuleColor } from '../primitives';
+import { Band } from '../band';
+import { getModuleColor } from '../primitives';
 import { getToolContent } from './tool-content';
 import { getToolSeo } from './tool-seo';
 import type { ToolMeta } from './registry';
@@ -24,23 +27,31 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
   const color = getModuleColor(tool.module);
 
   return (
-    <Section surface="page" padding="lg">
+    <Band tone="surface">
       <div className="flex flex-col gap-10">
-        <SectionHeader
-          headline={content.heading ?? 'Good to know'}
-          lede={seo?.answer}
-          accent={color.color}
-          headlineSize={32}
-        />
+        <div className="flex flex-col gap-4">
+          <Heading level={2} size="display" className="text-4xl tracking-tight sm:text-5xl">
+            {content.heading ?? 'Good to know'}
+            {/* `text-primary`, not the module ink: these headings sit on a
+                LIGHT band, where a module hue is a ~2.4:1 fill pretending to
+                be ink. The module hue belongs on the dark hero and on fills. */}
+            <span className="text-primary">.</span>
+          </Heading>
+          {seo?.answer ? (
+            <Text variant="lead" className="max-w-3xl">
+              {seo.answer}
+            </Text>
+          ) : null}
+        </div>
 
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {content.points.map((point) => (
-            <Card key={point.title}>
+            <Card key={point.title} className="bg-base-200">
               <CardBody className="gap-2">
-                <Text as="h3" size={16} weight={500}>
+                <Heading level={3} size={5} className="tracking-tight">
                   {point.title}
-                </Text>
-                <Text size={15}>{point.body}</Text>
+                </Heading>
+                <Text className="text-md">{point.body}</Text>
               </CardBody>
             </Card>
           ))}
@@ -49,22 +60,22 @@ export function ToolLearn({ tool }: { tool: ToolMeta }) {
         {seo?.howTo ? <HowTo name={seo.howTo.name} steps={seo.howTo.steps} color={color} /> : null}
 
         <div className="flex flex-col gap-3">
-          <Text as="h3" size={18} weight={500}>
+          <Heading level={3} size={4} className="tracking-tight">
             Frequently asked
-          </Text>
+          </Heading>
           <Accordion className="max-w-3xl">
             {content.faq.map((item) => (
               <AccordionItem key={item.q} value={item.q}>
                 <AccordionTrigger>{item.q}</AccordionTrigger>
                 <AccordionPanel>
-                  <Text size={15}>{item.a}</Text>
+                  <Text className="text-md">{item.a}</Text>
                 </AccordionPanel>
               </AccordionItem>
             ))}
           </Accordion>
         </div>
       </div>
-    </Section>
+    </Band>
   );
 }
 
@@ -80,20 +91,24 @@ function HowTo({
 }) {
   return (
     <div className="flex flex-col gap-4">
-      <Text as="h3" size={18} weight={500}>
+      <Heading level={3} size={4} className="tracking-tight">
         {name}
-      </Text>
+      </Heading>
       <ol className="m-0 flex list-none flex-col gap-3 p-0">
         {steps.map((step, i) => (
           <li key={step.name} className="flex items-start gap-3.5">
             <span
               aria-hidden
-              className={`${color.bg} bg-soft ${color.ink} inline-flex h-[26px] w-[26px] flex-shrink-0 items-center justify-center rounded-full font-sans text-sm font-semibold`}
+              // Solid fill + its PAIRED ink. This was `${color.bg} bg-soft
+              // ${color.ink}` — the hue as text over a 15% tint of itself, which
+              // measured 2.43:1 here. A step number nobody can read is not a step
+              // number.
+              className={`${color.bg} ${color.content} text-md inline-flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full font-semibold`}
             >
               {i + 1}
             </span>
-            <Text size={15}>
-              <strong className="font-medium">{step.name}.</strong> {step.text}
+            <Text className="text-md">
+              <strong className="font-medium">{`${step.name}.`}</strong> {step.text}
             </Text>
           </li>
         ))}

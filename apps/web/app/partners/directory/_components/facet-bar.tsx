@@ -1,12 +1,27 @@
-// Partner-directory facet controls (docs/114 §B.6). Pure SSR: each facet value is
-// a toggle LINK carrying its count, so filtering is a navigation (indexable,
+// Partner-directory facet controls (docs/114 §B.6). Pure SSR: each facet value
+// is a toggle LINK carrying its count, so filtering is a navigation (indexable,
 // shareable URL) — no client state. Tier is single-select (a partner has one
 // tier); specialty is multi-select (OR within the key); Remote is a boolean
 // toggle. Location is a free field handled by the search form on the page.
+//
+// Rebuilt for three reasons.
+//
+// 1. It shipped "Certified1", "B2B1", "E-commerce1", "SEO1" and "All tiers×".
+//    `{label}{<span>{count}</span>}` are two adjacent JSX expressions with
+//    nothing between them, so the count fused to the word on every chip on the
+//    page. Each chip's text is one interpolated string now.
+// 2. Selection was inverted. `variant={on ? 'soft' : 'outline'}` made the ACTIVE
+//    filter the palest thing in the row while the untouched ones were outlined —
+//    the same bug the partner apply form had. Selection is the filled shape
+//    (RULE #4), and `soft` measures ~2:1 on these hues regardless.
+// 3. Three labelled rows stacked vertically spent ~200px of page on seven chips,
+//    sitting above a result grid that is currently shorter than its own
+//    controls. It is one wrapping row now, with the group names inline.
 
-import { Heading } from '@wizeworks/silicaui-react';
+import { Text } from '@wizeworks/silicaui-react';
 import { buttonClasses } from '@wizeworks/silicaui-react/server';
 import type { FacetCount, PartnerTier } from '@/lib/partners';
+import { specialty } from './specialties';
 
 export type DirectoryParams = Record<string, string>;
 
@@ -19,19 +34,6 @@ const TIER_LABEL: Record<string, string> = {
 };
 // Certified first, then registered, then informal — the directory's own order.
 const TIER_ORDER: PartnerTier[] = ['certified', 'registered', 'informal'];
-
-const SPECIALTY_LABEL: Record<string, string> = {
-  ecommerce: 'E-commerce',
-  commerce: 'Commerce',
-  b2b: 'B2B',
-  crm: 'CRM',
-  email: 'Email',
-  cms: 'CMS',
-  seo: 'SEO',
-  design: 'Design',
-  migration: 'Migration',
-  ai: 'AI',
-};
 
 function parseList(value: string | undefined): string[] {
   return value ? value.split(',').filter(Boolean) : [];
@@ -49,40 +51,54 @@ function Chip({
   label,
   count,
   on,
+  color,
   target,
+  dismissible = true,
 }: {
   label: string;
   count?: number;
   on: boolean;
+  /** The hue this value carries when SELECTED. Unselected chips stay outlined. */
+  color?: string;
   target: string;
+  /** False for a chip that CLEARS rather than adds — "All" is the absence of a
+   *  tier filter, so an × on it offered to remove something that is not there. */
+  dismissible?: boolean;
 }) {
+  // One string, so a count can never fuse to its label again.
+  const text = typeof count === 'number' ? `${label} · ${count}` : label;
   return (
     <a
       href={target}
+      // `aria-current`, not `aria-pressed`: these are LINKS (each filter is a
+      // navigation to a shareable URL), and `aria-pressed` is only valid on
+      // something with the button role.
+      aria-current={on ? true : undefined}
       className={buttonClasses({
         size: 'sm',
-        color: on ? 'primary' : 'neutral',
-        variant: on ? 'soft' : 'outline',
-        active: on,
+        ...(on
+          ? { color: color ?? 'primary', variant: 'solid' as const }
+          : { variant: 'outline' as const }),
         className: 'rounded-full no-underline',
       })}
     >
-      {label}
-      {typeof count === 'number' ? <span className="font-normal">{count}</span> : null}
-      {on ? <span aria-hidden>×</span> : null}
+      {on && dismissible ? `${text} ×` : text}
     </a>
   );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function GroupLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col gap-2">
-      <Heading level={3} size={6}>
-        {label}
-      </Heading>
-      <div className="flex flex-wrap items-center gap-2">{children}</div>
-    </div>
+    <Text as="span" className="text-md mr-1 font-medium">
+      {children}
+    </Text>
   );
+}
+
+/** A rule between two filter axes on one row — structural, not decoration: it is
+ *  the only thing telling "Certified" apart from "E-commerce". */
+function Divider() {
+  return <span aria-hidden className="bg-base-300 mx-1 hidden h-6 w-px sm:block" />;
 }
 
 export function PartnerFacetBar({
@@ -111,35 +127,43 @@ export function PartnerFacetBar({
     .sort((a, b) => b.count - a.count || a.value.localeCompare(b.value));
 
   return (
-    <div className="flex flex-col gap-[18px]">
-      <Row label="Tier">
-        <Chip label="All tiers" on={!activeTier} target={href(current, (n) => delete n.tier)} />
-        {tierValues.map((t) => (
-          <Chip
-            key={t}
-            label={TIER_LABEL[t] ?? t}
-            count={tierCount(t)}
-            on={activeTier === t}
-            target={href(current, (n) => {
-              if (activeTier === t) delete n.tier;
-              else n.tier = t;
-            })}
-          />
-        ))}
-      </Row>
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-2.5">
+      <GroupLabel>Tier</GroupLabel>
+      <Chip
+        label="All"
+        on={!activeTier}
+        dismissible={false}
+        target={href(current, (n) => delete n.tier)}
+      />
+      {tierValues.map((t) => (
+        <Chip
+          key={t}
+          label={TIER_LABEL[t] ?? t}
+          count={tierCount(t)}
+          on={activeTier === t}
+          target={href(current, (n) => {
+            if (activeTier === t) delete n.tier;
+            else n.tier = t;
+          })}
+        />
+      ))}
 
       {specValues.length > 0 ? (
-        <Row label="Specialty">
+        <>
+          <Divider />
+          <GroupLabel>Does</GroupLabel>
           {specValues.map((f) => {
             const on = selectedSpec.includes(f.value);
+            const s = specialty(f.value);
             const nextList = on
               ? selectedSpec.filter((v) => v !== f.value)
               : [...selectedSpec, f.value];
             return (
               <Chip
                 key={f.value}
-                label={SPECIALTY_LABEL[f.value] ?? f.value}
+                label={s.label}
                 count={f.count}
+                color={s.color}
                 on={on}
                 target={href(current, (n) => {
                   if (nextList.length) n.specialty = nextList.join(',');
@@ -148,23 +172,22 @@ export function PartnerFacetBar({
               />
             );
           })}
-        </Row>
+        </>
       ) : null}
 
-      <Row label="Location">
-        <Chip
-          label="Remote"
-          on={remoteOn}
-          target={href(current, (n) => {
-            if (remoteOn) delete n.remote;
-            else n.remote = 'true';
-          })}
-        />
-      </Row>
+      <Divider />
+      <Chip
+        label="Works remotely"
+        on={remoteOn}
+        target={href(current, (n) => {
+          if (remoteOn) delete n.remote;
+          else n.remote = 'true';
+        })}
+      />
 
       {anySelected ? (
-        <a href={BASE} className="self-start text-sm underline">
-          Clear all filters
+        <a href={BASE} className="text-md text-primary ml-1 font-medium no-underline">
+          Clear all
         </a>
       ) : null}
     </div>

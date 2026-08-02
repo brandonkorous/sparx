@@ -116,9 +116,9 @@ export function OgTool() {
               <div className="flex items-center gap-3">
                 <img src={logo} alt="" height={36} className="max-h-9 w-auto object-contain" />
                 <Button
+                  color="error"
                   type="button"
                   variant="outline"
-                  color="neutral"
                   size="sm"
                   onClick={() => setLogo(null)}
                 >

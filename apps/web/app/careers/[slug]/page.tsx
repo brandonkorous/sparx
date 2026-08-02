@@ -65,6 +65,9 @@ function RoleHeader({ role }: { role: Role }) {
         <Badge color="primary" variant="soft" size="lg">
           {role.team}
         </Badge>
+        {/* `neutral` beside a primary team badge and an info commitment badge:
+            a location is a genuinely untyped value, which is exactly what
+            RULE #4 reserves neutral for. It is on a light page, so it reads. */}
         <Badge color="neutral" variant="outline" size="lg">
           {role.location}
         </Badge>

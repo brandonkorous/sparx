@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
-import { FeaturesPage } from '@/components/marketing/features-page';
+import { FeaturesFinalCta } from '@/components/marketing/features/final-cta';
+import { FeaturesHero } from '@/components/marketing/features/hero';
+import { FeaturesIndexBand } from '@/components/marketing/features/index-band';
 import { capabilityCounts } from '@/lib/capabilities';
 
 const counts = capabilityCounts();
@@ -40,6 +42,21 @@ export const metadata: Metadata = {
   },
 };
 
+// Composed here the way /pricing is — one file per beat under
+// components/marketing/features/, in the order below.
+//
+// The arc is deliberately short, because the page's substance is the index and
+// everything else is scaffolding around it: state the breadth as a number (dark
+// hero) → hand over the searchable catalog (page band, sticky finder) → close on
+// the offer (dark band). The previous version had no finder, so its 300-odd
+// capabilities were 6,700px of unsearchable pastel rows in which nothing could
+// be found and nothing outranked anything else.
 export default function Features() {
-  return <FeaturesPage />;
+  return (
+    <main>
+      <FeaturesHero />
+      <FeaturesIndexBand />
+      <FeaturesFinalCta />
+    </main>
+  );
 }

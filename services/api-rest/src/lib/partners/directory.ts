@@ -11,6 +11,8 @@ const TIER_ORDER: Record<string, number> = { certified: 0, registered: 1, inform
 
 export interface PartnerCard {
   id: string;
+  /** The public profile URL segment — sparx.works/partners/<slug>. */
+  slug: string;
   displayName: string;
   tier: string;
   kind: string;
@@ -21,6 +23,11 @@ export interface PartnerCard {
   specialties: string[];
   websiteUrl: string | null;
   photoUrl: string | null;
+}
+
+/** The card, plus the fields only the full profile page needs. */
+export interface PartnerProfile extends PartnerCard {
+  locationCountry: string | null;
 }
 
 export interface BootcampCard {
@@ -115,6 +122,19 @@ export const directoryService = {
     return row ? toPartnerCard(row) : null;
   },
 
+  /** One public profile by its URL slug — what sparx.works/partners/<slug>
+   *  renders. Identical listability guard to getPartner: a suspended partner, a
+   *  soft-deleted one, or one that opted out of the directory is a 404 here too,
+   *  so a shared link cannot outlive the listing it came from. */
+  async getPartnerBySlug(slug: string): Promise<PartnerProfile | null> {
+    const row = await withSystem((tx) =>
+      tx.partner.findFirst({
+        where: { slug, status: 'active', directoryVisible: true, deletedAt: null },
+      })
+    );
+    return row ? { ...toPartnerCard(row), locationCountry: row.locationCountry } : null;
+  },
+
   async listBootcamps(raw: Record<string, unknown>) {
     const q = BootcampDirectoryQuery.parse(raw);
     const now = new Date();
@@ -190,6 +210,7 @@ export const directoryService = {
 
 function toPartnerCard(p: {
   id: string;
+  slug: string;
   displayName: string;
   tier: string;
   kind: string;
@@ -203,6 +224,7 @@ function toPartnerCard(p: {
 }): PartnerCard {
   return {
     id: p.id,
+    slug: p.slug,
     displayName: p.displayName,
     tier: p.tier,
     kind: p.kind,

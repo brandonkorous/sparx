@@ -140,7 +140,14 @@ Never a hex. Never `rgba()`. Never a hand-rolled `color-mix()`.
   The tinted wash is **`${M.bg} bg-soft`** — silica's own treatment. `M.color` is
   only for places needing a _value_ (an SVG `stroke`, a canvas fill).
 - Status: the semantic colors (`success`/`warning`/`error`/`info`/`danger`).
-- Near-black CTA: `<Button color="neutral">`. **Not** `style={{backgroundColor:'#0A0A0A'}}`.
+- The full working set is `primary` `secondary` `accent` `success` `info` `warning` `error`
+  `neutral` — **use all of it.** Pick by what the control MEANS: remove/delete → `error`,
+  add/save → `success`, download an artifact → `info`, the surface's own action → `primary`.
+- `neutral` is a real color, for a genuinely untyped value or the dismiss half of a pair —
+  **but never on a dark fill.** Near-black on `bg-neutral` or inside `data-theme="dark"` is
+  dark-on-dark (1.68:1). There, the untyped control is a COLORLESS `outline`/`ghost`, which
+  inherits that surface's `-content` ink. This used to read "near-black CTA:
+  `<Button color="neutral">`" and that line is how the pattern spread. See DESIGN.md §3.0.
 - Dark bands: `<Section surface="dark">` or `data-theme="dark"`, which flips the
   whole `--color-base-*` ramp. Never paint `#0A0A0A` and then hand-pick `#FFFFFF`
   and `#A1A1AA` to sit on it.

@@ -225,7 +225,7 @@ export default async function ListingDetailPage({
             </div>
 
             <a href={ctaHref} className="block">
-              <Button color="neutral" size="lg" className="w-full">
+              <Button color="primary" size="lg" className="w-full">
                 {ctaLabel}
               </Button>
             </a>

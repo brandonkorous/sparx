@@ -65,7 +65,7 @@ const FEATURES = [
       </svg>
     ),
     title: 'Self-host or managed',
-    body: 'Run sparx on your own GKE cluster, or let WizeWorks operate it ($750/mo, includes Gillett-tier support).',
+    body: 'Run sparx on your own Kubernetes cluster, or let WizeWorks operate it ($750/mo, on-call support included).',
   },
 ] as const;
 

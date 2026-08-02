@@ -30,6 +30,17 @@ export interface ExampleProduct {
   qty: number;
   /** formatted USD line total, e.g. '$432.00'. */
   price: string;
+  /**
+   * Product thumbnail for the storefront MOCKUPS — the `/commerce` order
+   * receipt and the checkout summary in the annotated checkout frame. Fills the
+   * slot that used to be a grey `bg-base-300` square, which is what made those
+   * frames read as wireframes rather than shops.
+   *
+   * Path under `apps/web/public/products/`, licence and per-file provenance in
+   * that directory's README. Required, not optional: a fixture set where some
+   * products have a photo and some do not is worse than one where none do.
+   */
+  image: string;
 }
 
 /**
@@ -262,8 +273,20 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     order: {
       number: 'Order #1042',
       products: [
-        { name: 'Linen Bedding Set', sku: 'SKU LBS-2', qty: 2, price: '$432.00' },
-        { name: 'Down Pillow', sku: 'SKU DP-1', qty: 1, price: '$54.00' },
+        {
+          name: 'Linen Bedding Set',
+          sku: 'SKU LBS-2',
+          qty: 2,
+          price: '$432.00',
+          image: '/products/linen-bedding.jpg',
+        },
+        {
+          name: 'Down Pillow',
+          sku: 'SKU DP-1',
+          qty: 1,
+          price: '$54.00',
+          image: '/products/down-pillow.jpg',
+        },
       ],
       subtotal: '$486.00',
       shipping: { label: 'Shipping · UPS Ground', value: '$14.50' },
@@ -363,8 +386,20 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     order: {
       number: 'Order #1043',
       products: [
-        { name: 'Organic Strawberries', sku: 'SKU STR-FL', qty: 4, price: '$72.00' },
-        { name: 'Raw Honey, 16oz', sku: 'SKU HNY-16', qty: 2, price: '$28.00' },
+        {
+          name: 'Organic Strawberries',
+          sku: 'SKU STR-FL',
+          qty: 4,
+          price: '$72.00',
+          image: '/products/strawberries.jpg',
+        },
+        {
+          name: 'Raw Honey, 16oz',
+          sku: 'SKU HNY-16',
+          qty: 2,
+          price: '$28.00',
+          image: '/products/raw-honey.jpg',
+        },
       ],
       subtotal: '$100.00',
       shipping: { label: 'Shipping · Local pickup', value: '$0.00' },
@@ -464,8 +499,20 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     order: {
       number: 'Order #1044',
       products: [
-        { name: 'Leather Dog Collar', sku: 'SKU DOG-CLR', qty: 1, price: '$38.00' },
-        { name: 'Engraved Name Tag', sku: 'SKU TAG-EN', qty: 1, price: '$14.00' },
+        {
+          name: 'Leather Dog Collar',
+          sku: 'SKU DOG-CLR',
+          qty: 1,
+          price: '$38.00',
+          image: '/products/dog-collar.jpg',
+        },
+        {
+          name: 'Engraved Name Tag',
+          sku: 'SKU TAG-EN',
+          qty: 1,
+          price: '$14.00',
+          image: '/products/name-tag.jpg',
+        },
       ],
       subtotal: '$52.00',
       shipping: { label: 'Shipping · USPS First Class', value: '$4.95' },
@@ -570,8 +617,20 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     order: {
       number: 'Order #1045',
       products: [
-        { name: 'Whole-Bean Sampler', sku: 'SKU WBS-3', qty: 3, price: '$54.00' },
-        { name: 'Pour-Over Kit', sku: 'SKU POK-1', qty: 1, price: '$42.00' },
+        {
+          name: 'Whole-Bean Sampler',
+          sku: 'SKU WBS-3',
+          qty: 3,
+          price: '$54.00',
+          image: '/products/coffee-beans.jpg',
+        },
+        {
+          name: 'Pour-Over Kit',
+          sku: 'SKU POK-1',
+          qty: 1,
+          price: '$42.00',
+          image: '/products/pour-over-kit.jpg',
+        },
       ],
       subtotal: '$96.00',
       shipping: { label: 'Shipping · USPS Priority', value: '$8.75' },
@@ -680,8 +739,20 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     order: {
       number: 'Order #1046',
       products: [
-        { name: 'Hydraulic Hose Kit', sku: 'SKU HHK-08', qty: 6, price: '$390.00' },
-        { name: 'Bearing Set', sku: 'SKU BRG-32', qty: 4, price: '$120.00' },
+        {
+          name: 'Hydraulic Hose Kit',
+          sku: 'SKU HHK-08',
+          qty: 6,
+          price: '$390.00',
+          image: '/products/hydraulic-hose.jpg',
+        },
+        {
+          name: 'Bearing Set',
+          sku: 'SKU BRG-32',
+          qty: 4,
+          price: '$120.00',
+          image: '/products/bearing-set.jpg',
+        },
       ],
       subtotal: '$510.00',
       shipping: { label: 'Shipping · Freight (LTL)', value: '$48.00' },

@@ -128,7 +128,7 @@ function ImageField({
   return (
     <Field label={label} hint={hint}>
       {value ? (
-        <Button type="button" variant="outline" color="neutral" size="sm" onClick={onClear}>
+        <Button color="error" type="button" variant="outline" size="sm" onClick={onClear}>
           <Trash2 className="h-4 w-4" /> {clearLabel}
         </Button>
       ) : (

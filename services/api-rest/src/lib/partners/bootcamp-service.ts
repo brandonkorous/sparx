@@ -3,8 +3,6 @@
 // drafts), and the public on-platform RSVP that drops a lead into the host
 // partner's CRM. Reads for the public directory live in directory.ts.
 
-import { randomBytes } from 'node:crypto';
-
 import { withSystem, withTenant, type TxClient } from '@sparx/db';
 import { badRequest, forbidden, notFound } from '@sparx/api-core/errors';
 import {
@@ -16,26 +14,14 @@ import {
 
 import { publishPartnerEvent } from './events.js';
 import type { PartnerContext } from './service.js';
+import { uniqueSlug } from './slug.js';
 
-function slugify(title: string): string {
-  return (
-    title
-      .toLowerCase()
-      .normalize('NFKD')
-      .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
-      .replace(/^-+|-+$/g, '')
-      .slice(0, 120) || 'bootcamp'
+/** A free bootcamp slug from its title. The shape lives in ./slug.ts, shared
+ *  with partner profiles; only the table probed differs. */
+function bootcampSlug(tx: TxClient, title: string): Promise<string> {
+  return uniqueSlug(title, 'bootcamp', async (slug) =>
+    Boolean(await tx.bootcamp.findUnique({ where: { slug }, select: { id: true } }))
   );
-}
-
-async function uniqueSlug(tx: TxClient, title: string): Promise<string> {
-  const base = slugify(title);
-  for (let i = 0; i < 6; i++) {
-    const slug = i === 0 ? base : `${base}-${randomBytes(2).toString('hex')}`;
-    const existing = await tx.bootcamp.findUnique({ where: { slug }, select: { id: true } });
-    if (!existing) return slug;
-  }
-  return `${base}-${randomBytes(4).toString('hex')}`;
 }
 
 async function requireActivePartner(tx: TxClient, tenantId: string) {
@@ -80,7 +66,7 @@ export const bootcampService = {
           tenantId: ctx.tenantId,
           partnerId: partner.id,
           title: input.title,
-          slug: await uniqueSlug(tx, input.title),
+          slug: await bootcampSlug(tx, input.title),
           description: input.description,
           format: input.format,
           locationCity: input.locationCity ?? null,

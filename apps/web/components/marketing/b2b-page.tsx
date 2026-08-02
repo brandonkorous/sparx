@@ -43,7 +43,6 @@ export function B2bPage() {
       <Faq
         items={B2B_FAQ}
         id="faq"
-        accent={M.color}
         heading={
           <>
             B2B questions
@@ -180,7 +179,7 @@ function B2bPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="neutral" size="lg">
+          <Button color="primary" size="lg">
             Activate B2B
           </Button>
         </div>

@@ -372,29 +372,6 @@
     transform: rotate(45deg);
   }
 
-  /* FAQ "index + spread" — a question rail drives one answer panel; stacks the
-   rail above the panel on tablet/mobile. (faq-spread.tsx) */
-  .mkt-faq-spread {
-    display: flex;
-    gap: 40px;
-    align-items: flex-start;
-  }
-  @media (max-width: 1024px) {
-    .mkt-faq-spread {
-      flex-direction: column;
-      gap: 24px;
-    }
-  }
-  .mkt-faq-rail {
-    width: 340px;
-    flex-shrink: 0;
-  }
-  @media (max-width: 1024px) {
-    .mkt-faq-rail {
-      width: 100%;
-    }
-  }
-
   /* ── COMMERCE: order pipeline + annotated checkout frame ─────────
    Structural devices for the /commerce page. The pipeline is a 4-stage
    rail (catalog → cart → checkout → fulfilled) that collapses 4→2→1; the
@@ -1056,24 +1033,10 @@
    all come from silica's clickable `Card` (`clickableCardClasses()`); these
    rules only lay out the card's contents and add the arrow's nudge-on-hover,
    which is the one bit of motion `Card` doesn't own. */
-  .tool-card {
-    text-decoration: none;
-  }
-  .tool-card__body {
-    gap: 12px;
-  }
-  .tool-card__top {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .tool-card__icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-  }
+  /* The hub card's arrow nudges on hover. This stays in CSS because it is a
+   `:hover` on a DESCENDANT of the hovered element — there is no utility form of
+   "when the ancestor anchor is hovered, move this child". Everything else the
+   card used (flex rows, a fixed 44px box, a 3-line clamp) is a utility now. */
   .tool-card__arrow {
     transition:
       transform 0.15s ease,
@@ -1082,18 +1045,6 @@
   .tool-card:hover .tool-card__arrow {
     color: var(--color-base-content);
     transform: translate(2px, -2px);
-  }
-  /* Three-line clamp so a long tagline can't make one grid cell taller. */
-  .tool-card__desc {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .tool-card__tag {
-    align-self: flex-start;
-    margin-top: 2px;
   }
   @media (prefers-reduced-motion: reduce) {
     .tool-card__arrow {
@@ -1397,100 +1348,6 @@
    surface/colour comes from inline CSS-var styles in the section components;
    these only change structure across breakpoints. */
 
-  /* Social-proof stat strip — 3 hairline-divided cells → stack on mobile. */
-  .mkt-proof-3 {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-  }
-  .mkt-proof-3 > * {
-    border-left: 1px solid var(--color-base-300);
-  }
-  .mkt-proof-3 > *:first-child {
-    border-left: none;
-  }
-  @media (max-width: 768px) {
-    .mkt-proof-3 {
-      grid-template-columns: 1fr;
-    }
-    .mkt-proof-3 > * {
-      border-left: none;
-      border-top: 1px solid var(--color-base-300);
-    }
-    .mkt-proof-3 > *:first-child {
-      border-top: none;
-    }
-  }
-
-  /* Opportunity "argument ledger" row — claim left, proof token right; stacks the
-   token under the claim on mobile. */
-  .mkt-opp-row {
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 32px;
-    align-items: center;
-    padding: 32px 0;
-    border-top: 1px solid var(--color-base-300);
-  }
-  .mkt-opp-row:last-child {
-    border-bottom: 1px solid var(--color-base-300);
-  }
-  @media (max-width: 640px) {
-    .mkt-opp-row {
-      grid-template-columns: 1fr;
-      gap: 14px;
-    }
-  }
-
-  /* Numbered step rail — four steps flow horizontally with a "→" connector,
-   collapse 4→2→1. Plain numbers, no boxes. The connector hides at the end of
-   each visible row. */
-  .mkt-steprail {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 0;
-  }
-  .mkt-steprail > .mkt-step {
-    position: relative;
-    padding-right: 34px;
-  }
-  .mkt-steprail > .mkt-step .mkt-step-arrow {
-    position: absolute;
-    right: 12px;
-    top: 0;
-  }
-  .mkt-steprail > .mkt-step:last-child .mkt-step-arrow {
-    display: none;
-  }
-  @media (max-width: 1024px) {
-    .mkt-steprail {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 40px 0;
-    }
-    .mkt-steprail > .mkt-step:nth-child(2n) .mkt-step-arrow {
-      display: none;
-    }
-  }
-  @media (max-width: 640px) {
-    .mkt-steprail {
-      grid-template-columns: 1fr;
-      gap: 32px;
-    }
-    .mkt-steprail > .mkt-step {
-      padding-right: 0;
-    }
-    .mkt-steprail > .mkt-step .mkt-step-arrow {
-      display: none;
-    }
-  }
-
-  /* Tier comparison matrix — attribute spine + 3 tier columns. Header row and each
-   body row share the same 4-column grid. Hidden ≤1024 (the stacked tier cards
-   take over via .mkt-tablet-down-only-flex). */
-  .mkt-tier-cols {
-    display: grid;
-    grid-template-columns: 1.15fr 1fr 1fr 1fr;
-  }
-
   /* Free-to-build arc — a horizontal build track (4 waypoints + a publish
    terminus) on desktop; a vertical timeline (dot rail on the left) on tablet
    down. The connector line/fill live behind the waypoints. */
@@ -1566,34 +1423,6 @@
     }
     .mkt-formats > *:first-child {
       border-top: none;
-    }
-  }
-
-  /* Apply split — pitch column + fixed-width form card → stacks on tablet down. */
-  .mkt-apply-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 460px;
-    gap: clamp(40px, 6vw, 80px);
-    align-items: start;
-  }
-  @media (max-width: 1024px) {
-    .mkt-apply-grid {
-      grid-template-columns: 1fr;
-      gap: 40px;
-    }
-  }
-
-  /* Directory CTA split — pitch + a small preview stack → stacks on tablet down. */
-  .mkt-dircta {
-    display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 48px;
-    align-items: center;
-  }
-  @media (max-width: 1024px) {
-    .mkt-dircta {
-      grid-template-columns: 1fr;
-      gap: 28px;
     }
   }
 

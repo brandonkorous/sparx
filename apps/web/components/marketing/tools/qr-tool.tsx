@@ -137,8 +137,8 @@ export function QrTool() {
                 />
                 <Button
                   type="button"
+                  color="error"
                   variant="outline"
-                  color="neutral"
                   size="sm"
                   onClick={() => setLogo(null)}
                 >
@@ -184,8 +184,8 @@ export function QrTool() {
                 PNG
               </Button>
               <Button
-                type="button"
                 color="neutral"
+                type="button"
                 variant="outline"
                 size="sm"
                 onClick={downloadSvg}

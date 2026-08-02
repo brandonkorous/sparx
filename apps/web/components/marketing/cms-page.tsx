@@ -40,7 +40,6 @@ export function CmsPage() {
       <Faq
         items={CMS_FAQ}
         id="faq"
-        accent={M.color}
         heading={
           <>
             CMS questions
@@ -136,7 +135,6 @@ function CmsCapabilities() {
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
-        accent={M.color}
         headline="Everything a publishing team needs"
         lede="The CMS isn’t just an editor — it’s the whole content layer, with the parts most tools charge extra for already in the box."
       />
@@ -197,7 +195,6 @@ function CmsStandalone() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent={M.color}
         headline="No shop required — ever"
         lede="CMS is its own module. A publisher, a docs site, or a content team can run entirely on sparx without a cart in sight — and pull it any way they like."
       />
@@ -290,7 +287,7 @@ function CmsPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="neutral" size="lg">
+          <Button color="primary" size="lg">
             Activate CMS
           </Button>
         </div>

@@ -1,6 +1,14 @@
 import type { ReactNode } from 'react';
-import { Section, SectionHeader, Spark } from './primitives';
-import { FaqSpread } from './faq-spread';
+import {
+  Accordion,
+  AccordionItem,
+  AccordionPanel,
+  AccordionTrigger,
+  Card,
+  Heading,
+  Text,
+} from '@wizeworks/silicaui-react';
+import { Reveal } from './reveal';
 
 // The marketing FAQ — authored here as the source of truth. These are page
 // content, not CMS "content items": the old `faq_item` content type was
@@ -46,7 +54,7 @@ const FAQ_ITEMS: FaqItem[] = [
     order: 50,
     question: 'Do you offer custom domains and SSL?',
     answer:
-      'Yes, on every site. Add a domain, point your DNS, and we provision a Let’s Encrypt certificate automatically. Custom email-sending domains use Postal on sparx.email with auto-configured SPF, DKIM, and DMARC. No additional cost, no third-party DNS service required.',
+      'Yes, on every site. Add a domain, point your DNS, and we provision a Let’s Encrypt certificate automatically. Custom email-sending domains use Mailgun on sparx.email with auto-configured SPF, DKIM, and DMARC. No additional cost, no third-party DNS service required.',
   },
   {
     id: 'static-6',
@@ -65,24 +73,52 @@ const FAQ_ITEMS: FaqItem[] = [
 ];
 
 /**
- * The marketing FAQ section — an "index + spread": a rail of questions drives a
- * single answer panel (FaqSpread). The visible UI is interactive (client), but
- * the FAQPage JSON-LD is emitted HERE, server-side, from the same items — so the
- * questions and answers stay crawlable / answer-engine-extractable regardless of
- * what's on screen (the text an assistant quotes when a user asks about sparx in
- * their own AI chat). Reusable per page: pass page-specific `items` (never clone
- * one boilerplate FAQ across pages — duplicate Q&A is an anti-signal) and the
- * page's `accent` (the active rail dot + the "?" punctuation). Defaults: the
- * homepage set, Ember accent.
+ * The marketing FAQ section — ONE implementation, used by every page.
+ *
+ * ## Why this looks the way it does
+ *
+ * There were two FAQ designs on the site. This component rendered an "index +
+ * spread" (a left rail of questions driving a single answer panel, built on the
+ * bespoke `.mkt-faq-spread` / `.mkt-faq-rail` CSS) and served eleven module
+ * pages, /bootcamp and /partners. Meanwhile landing and /pricing had each
+ * hand-rolled a completely different one — a sticky headline beside silica's own
+ * `<Accordion>` — in two near-identical files that knew nothing about each other
+ * or about this one. Three copies, two designs, and adding a fourth page meant
+ * picking a side.
+ *
+ * The accordion is the right one to keep, and not only because the two newest
+ * pages chose it: it is silica's own answer. `@wizeworks/silicaui-html` ships a
+ * `faq_accordion` block — a single-open disclosure list — as the FAQ primitive on
+ * the builder path, so an accordion is what the design system already considers
+ * an FAQ to be. There is no React equivalent to import (the React path exposes
+ * `Accordion` and `Collapse` and nothing FAQ-shaped above them), which is why
+ * this composition exists at all rather than being a re-skin of something
+ * upstream.
+ *
+ * `faq-spread.tsx` and its two `.mkt-*` classes are deleted with it.
+ *
+ * ## What stays
+ *
+ * The FAQPage JSON-LD, emitted HERE, server-side, from the same `items` the
+ * accordion renders — so questions and answers stay crawlable and
+ * answer-engine-extractable no matter which panel is open. That is the text an
+ * assistant quotes when someone asks about sparx in their own AI chat, and it is
+ * the single highest-leverage reason this section exists.
+ *
+ * Pass page-specific `items` (never clone one boilerplate FAQ across pages —
+ * duplicate Q&A is an anti-signal). Defaults are the homepage set.
+ *
+ * The `accent` prop is gone. Every module page passed one — a colour VALUE
+ * (`var(--color-module-crm)`) that reached the DOM as an inline `style`, to tint
+ * a rail dot and a "?" that no longer exist. Callers that want their hue on the
+ * closing punctuation put it in `heading` themselves, which is where the rest of
+ * the site already keeps it.
  */
 export function Faq({
   items = FAQ_ITEMS,
   heading,
   lede,
   id,
-  accent = 'var(--color-primary)',
-  headlineSize,
-  headlineLineHeight,
 }: {
   /** Page-specific Q&A. Defaults to the homepage set. */
   items?: FaqItem[];
@@ -90,20 +126,7 @@ export function Faq({
   lede?: ReactNode;
   /** Anchor id for in-page nav (e.g. "faq"). */
   id?: string;
-  /** Section accent — the active rail dot + the "?" punctuation. Defaults to the Ember primary. */
-  accent?: string;
-  /** Override the headline's Display size (defaults to SectionHeader's own
-   *  56px). Callers on a bigger-type page can pass a larger value so this
-   *  section's type matches the rest of that page. The interactive
-   *  FaqSpread accordion + the server-rendered FAQPage JSON-LD stay shared
-   *  either way, so there's only ever one source of that structured data. */
-  headlineSize?: number;
-  headlineLineHeight?: number;
 } = {}) {
-  // FAQPage structured data (docs/50) — lets Google render rich FAQ results and
-  // gives answer engines clean question/answer pairs to cite. Emitted server-side
-  // from the same items FaqSpread renders, so the markup and the visible prose
-  // never diverge and every answer stays extractable even when collapsed.
   const faqJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
@@ -113,36 +136,55 @@ export function Faq({
       acceptedAnswer: { '@type': 'Answer', text: item.answer },
     })),
   };
+  const firstOpen = items[0]?.id;
 
   return (
-    <Section id={id} padding="xl">
+    <section id={id} className="scroll-mt-20 px-6 py-24 sm:px-8 lg:py-32">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <div className="flex flex-col gap-14">
-        <SectionHeader
-          headline={
-            heading ?? (
-              <>
-                Frequently asked
-                <Spark />
-              </>
-            )
-          }
-          lede={
-            lede ?? (
-              <>
-                Still curious? Read the platform docs, browse the API spec, or book a 20-min
-                architecture call. We don&apos;t do high-pressure demos.
-              </>
-            )
-          }
-          headlineSize={headlineSize}
-          headlineLineHeight={headlineLineHeight}
-        />
-        <FaqSpread items={items} accent={accent} />
+      <div className="mx-auto max-w-7xl">
+        <Reveal className="grid grid-cols-1 gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:gap-14">
+          <div className="flex flex-col gap-5 lg:sticky lg:top-24 lg:self-start">
+            <Heading
+              level={2}
+              size="display"
+              className="text-6xl leading-[0.95] tracking-tight sm:text-7xl"
+            >
+              {heading ?? (
+                <>
+                  Frequently asked<span className="text-primary">.</span>
+                </>
+              )}
+            </Heading>
+            <Text variant="lead" className="max-w-xl text-2xl">
+              {lede ?? (
+                <>
+                  Still curious? Read the platform docs, browse the API spec, or book a 20-min
+                  architecture call. We don&apos;t do high-pressure demos.
+                </>
+              )}
+            </Text>
+          </div>
+
+          {/* `shadow-none` because silica's Card ships one and this house does
+              not use shadows as a visual device — the border and the surface
+              shift do the separating. */}
+          <Card className="bg-base-100 shadow-none">
+            <Accordion defaultValue={firstOpen ? [firstOpen] : []}>
+              {items.map((item) => (
+                <AccordionItem key={item.id} value={item.id}>
+                  <AccordionTrigger className="text-lg">{item.question}</AccordionTrigger>
+                  <AccordionPanel>
+                    <Text className="whitespace-pre-line">{item.answer}</Text>
+                  </AccordionPanel>
+                </AccordionItem>
+              ))}
+            </Accordion>
+          </Card>
+        </Reveal>
       </div>
-    </Section>
+    </section>
   );
 }

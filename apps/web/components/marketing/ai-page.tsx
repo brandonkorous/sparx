@@ -59,7 +59,6 @@ export function AiPage() {
       <Faq
         items={CONCIERGE_FAQ}
         id="faq"
-        accent={AI.color}
         heading={
           <>
             Concierge questions
@@ -157,7 +156,7 @@ function ConciergeHero() {
               unsure. Instant help at your front door, running on your own AI, never ours.
             </p>
             <div className="flex flex-wrap items-center gap-4">
-              <Button color="neutral" size="lg">
+              <Button color="primary" size="lg">
                 Turn on your concierge →
               </Button>
               <a href="#how">
@@ -310,7 +309,6 @@ function AnswerLifecycle() {
   return (
     <Section id="how" surface="surface" padding="lg">
       <SectionHeader
-        accent={AI.color}
         headline={<>One question, one honest answer</>}
         lede={
           <>
@@ -400,7 +398,6 @@ function GroundedInData() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent={AI.color}
         headline={<>Live data, not a scraped FAQ</>}
         lede={
           <>
@@ -495,7 +492,6 @@ function KnowsWhenToEscalate() {
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
-        accent={AI.color}
         headline={<>It knows when to get a human</>}
         lede={
           <>
@@ -566,7 +562,6 @@ function ShapeItYourself() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent={AI.color}
         headline={<>Yours to shape, no code</>}
         lede={
           <>
@@ -682,7 +677,7 @@ function ConciergePricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="neutral" size="lg">
+          <Button color="primary" size="lg">
             Activate AI
           </Button>
         </div>

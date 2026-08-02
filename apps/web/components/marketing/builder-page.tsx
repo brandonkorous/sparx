@@ -74,7 +74,7 @@ function BuilderHero() {
           </Text>
 
           <div className="flex flex-wrap items-center gap-3">
-            <Button color="neutral" size="lg">
+            <Button color="primary" size="lg">
               Start your site →
             </Button>
             <a href="#how">
@@ -477,7 +477,7 @@ function BuilderPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="neutral" size="lg">
+          <Button color="primary" size="lg">
             Activate Builder
           </Button>
         </div>

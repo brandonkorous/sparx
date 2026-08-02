@@ -42,7 +42,6 @@ export function EmailPage() {
       <Faq
         items={EMAIL_FAQ}
         id="faq"
-        accent={E.color}
         heading={
           <>
             Email questions
@@ -166,7 +165,7 @@ function EmailPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="neutral" size="lg">
+          <Button color="primary" size="lg">
             Activate Email
           </Button>
         </div>

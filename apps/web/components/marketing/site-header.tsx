@@ -31,14 +31,20 @@ export interface SiteHeaderProps {
 
 // Top-level links other than Modules (which is a megamenu). All are route links
 // to their own marketing pages.
+//
+// "Who it's for" was labelled "Customers". On a platform with no public case
+// studies that label promises logos and quotes and then does not deliver them,
+// and it reads as a page ABOUT us rather than one about the visitor. The route
+// is unchanged — /customers is a stable, linked URL — but the label now says
+// what the page actually answers.
 const LINKS = [
   { label: 'Platform', href: '/platform' },
   { label: 'Features', href: '/features' },
   { label: 'Pricing', href: '/pricing' },
+  { label: "Who it's for", href: '/customers' },
   { label: 'Partners', href: '/partners' },
   { label: 'Tools', href: '/tools' },
   { label: 'Docs', href: '/docs' },
-  { label: 'Customers', href: '/customers' },
 ] as const;
 
 const NAV_LINK_CLASS = 'hover:text-sm font-medium';
@@ -110,7 +116,7 @@ export function SiteHeader({ signInHref = '/sign-in', signUpHref = '/sign-up' }:
             Sign in
           </Button>
         </span>
-        <Button render={<a href={signUpHref} aria-label="Start free" />} color="neutral" size="sm">
+        <Button render={<a href={signUpHref} aria-label="Start free" />} color="primary" size="sm">
           Start free
         </Button>
 

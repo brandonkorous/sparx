@@ -4,8 +4,14 @@
 // partners; the app layer further filters directory_visible.
 //
 //   GET  /v1/public/partners            → faceted, paged directory
-//   GET  /v1/public/partners/:id        → one public profile
+//   GET  /v1/public/partners/:id        → one public profile, by row id
+//   GET  /v1/public/partners/slug/:slug → one public profile, by public URL slug
 //   POST /v1/public/partners/apply      → submit an application (informal auto-approves)
+//
+// The two lookups are separate PATH SEGMENTS rather than one param that accepts
+// either. `:id` is `z.string().uuid()`, so widening it to also match a slug would
+// mean a malformed uuid silently becomes a slug lookup and 404s as "no such
+// partner" instead of failing validation.
 
 import type { FastifyPluginAsync, FastifyRequest } from 'fastify';
 import { z } from 'zod';
@@ -17,6 +23,13 @@ import { directoryService } from '../../../lib/partners/directory.js';
 import { partnerService } from '../../../lib/partners/service.js';
 
 const IdParam = z.object({ id: z.string().uuid() });
+const SlugParam = z.object({
+  slug: z
+    .string()
+    .min(1)
+    .max(160)
+    .regex(/^[a-z0-9-]+$/),
+});
 
 function clientMeta(request: FastifyRequest): {
   ipAddress: string | null;
@@ -42,6 +55,13 @@ const publicPartnerRoutes: FastifyPluginAsync = (app) => {
     const { id } = IdParam.parse(request.params);
     const partner = await directoryService.getPartner(id);
     if (!partner) throw notFound('Partner', id);
+    return ok(partner);
+  });
+
+  app.get('/v1/public/partners/slug/:slug', async (request) => {
+    const { slug } = SlugParam.parse(request.params);
+    const partner = await directoryService.getPartnerBySlug(slug);
+    if (!partner) throw notFound('Partner', slug);
     return ok(partner);
   });
 

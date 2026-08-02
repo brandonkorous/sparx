@@ -21,6 +21,7 @@ import * as React from 'react';
 // OWN legacy `Text`/`Display` for the ~143 un-swept marketing files; as those
 // convert, the local pair goes away and the aliases collapse to plain imports.
 import { Heading as SilicaHeading, Text as SilicaText } from '@wizeworks/silicaui-react';
+import { FILLED_SHAPE, PAINTED_TONE_CLASS, type PaintedTone } from './band';
 // NOTE: the vector wordmark/mark live in `@sparx/brand/react` — import them from
 // there DIRECTLY where needed. This file deliberately does NOT re-export them:
 // `primitives` is imported by both server sections and the `'use client'`
@@ -399,6 +400,24 @@ export function Container({
  * `--color-base-*` ramp flips to brand navy, so the surface, border, and every
  * descendant resolve on-brand with zero literal hexes. Pass `bleed` for sections
  * that must span gutter-to-gutter (rare).
+ *
+ * `primary` / `neutral` / `accent` are PAINTED tones, shared verbatim with
+ * `<Band>` via `PAINTED_TONE_CLASS`. They exist because a page whose only tones
+ * are `page` and `surface` is a grey → white → grey → white ladder, which is
+ * what all eleven module pages were: /commerce ran six alternating sections in a
+ * row and then two greys touching. A page is a tone SEQUENCE (DESIGN.md §2.4),
+ * and this axis is what lets a module page write one.
+ *
+ * Two constraints, both load-bearing:
+ *
+ *   • A painted tone is a fill + ink, NOT a theme scope. Bare prose inherits the
+ *     `-content` ink; a silica component paints itself from its own variables and
+ *     never sees it, so an `outline`/`ghost` control inside one still inks from
+ *     the LIGHT theme and lands near-black on a dark fill. Painted bands take
+ *     SOLID controls, or a bare underlined `<a>` that inherits. DESIGN.md §3.0.
+ *   • Any `bg-base-100` child inside a painted band must carry
+ *     `text-base-content` too. Carrying only the fill leaves it inheriting the
+ *     band's `-content` — i.e. white type on a white card, on `primary`.
  */
 export function Section({
   id,
@@ -406,33 +425,57 @@ export function Section({
   surface = 'page',
   padding = 'lg',
   bleed,
+  flush,
   className,
   style,
 }: {
   id?: string;
   children: React.ReactNode;
-  surface?: 'page' | 'surface' | 'dark';
+  surface?: 'page' | 'surface' | 'dark' | PaintedTone;
   padding?: 'md' | 'lg' | 'xl';
   bleed?: boolean;
+  /** Keep a filled section flush to the viewport edge — no inset, no radius.
+   *  The standing exception is a HERO: a page's first section sits under the
+   *  nav, and insetting it opens a 24px stripe of page background between the
+   *  header and the content. Same rule and same reason as `<Band flush>`. */
+  flush?: boolean;
   /** Extra utilities / surface-depth tier hook for the `.mkt-paneled` system. */
   className?: string;
   /** Migration bridge for un-converted pages still passing layout inline.
    *  Converted pages use utilities and omit this. */
   style?: React.CSSProperties;
 }) {
+  // A section that carries its own fill is INSET AND ROUNDED; one sitting on the
+  // page background is not. That rule was already true of `<Band>` and of every
+  // page built on it (/platform, /partners, /customers, /for/*, /tools) — but
+  // `Section`, which the eleven module pages run on, drew the same filled bands
+  // as square full-bleed stripes. A band that is rounded on /platform and square
+  // on /commerce is two design systems, so both shells now share `FILLED_SHAPE`.
+  //
+  // The `border-t` goes with it. It was the separator BECAUSE the stripes were
+  // flush and edge-to-edge; once a filled section floats on the page background
+  // its own edge separates it, and a `base-300` hairline drawn across ember or
+  // cyan is a seam rather than a divider.
+  const filled = surface !== 'page' && !flush;
   const surfaceClass =
-    surface === 'surface'
-      ? 'bg-base-100 border-t border-base-300'
-      : surface === 'dark'
-        ? 'bg-base-100 border-t border-base-300'
-        : 'bg-base-200';
+    surface === 'surface' || surface === 'dark'
+      ? `bg-base-100 ${flush ? 'border-t border-base-300' : ''}`
+      : surface === 'page'
+        ? 'bg-base-200'
+        : PAINTED_TONE_CLASS[surface];
   const pyClass =
     padding === 'md' ? 'py-section-md' : padding === 'lg' ? 'py-section-lg' : 'py-section-xl';
   return (
     <section
       id={id}
       data-theme={surface === 'dark' ? 'dark' : undefined}
-      className={cx(surfaceClass, pyClass, 'px-page scroll-mt-20', className)}
+      className={cx(
+        surfaceClass,
+        pyClass,
+        'px-page scroll-mt-20',
+        filled ? FILLED_SHAPE : '',
+        className
+      )}
       style={style}
     >
       {bleed ? children : <Container>{children}</Container>}

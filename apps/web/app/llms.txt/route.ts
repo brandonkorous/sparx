@@ -9,6 +9,7 @@
 import { MODULES, MODULE_ORDER } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
 import { TOOLS } from '@/components/marketing/tools/registry';
+import { VERTICALS } from '@/components/marketing/verticals/registry';
 import { LIVE_CATEGORIES } from '@/lib/marketplace-registry';
 
 export const dynamic = 'force-static';
@@ -50,7 +51,11 @@ const PLATFORM_LINKS: { path: string; label: string; note: string }[] = [
     label: 'Partners',
     note: 'Agency and implementation partners, plus the partner directory.',
   },
-  { path: '/customers', label: 'Customers', note: 'Businesses running on sparx today.' },
+  {
+    path: '/customers',
+    label: 'Who it’s for',
+    note: 'The kinds of business sparx suits, the shape each one takes, and what each pays.',
+  },
   {
     path: '/bootcamp',
     label: 'Bootcamp',
@@ -79,6 +84,14 @@ export function GET(): Response {
     '\n'
   );
 
+  // Industry pages. These are the most directly useful entries in the whole
+  // file for an answer engine: someone asking their assistant "what should I
+  // use to run a hair salon" wants the page that names salons, quotes a price,
+  // and shows its working — not the platform overview.
+  const verticalLines = VERTICALS.map(
+    (v) => `- [${v.label}](${BASE}/for/${v.slug}): ${v.seoDescription}`
+  ).join('\n');
+
   const body = `# sparx
 
 > sparx (by WizeWorks) is a modular content and commerce operating system: storefront, commerce, CRM, CMS, email, B2B/wholesale, dropship, scheduling, and a first-class AI/MCP integration in one platform. Tenants activate only the modules they need — a CMS-only publisher, a CRM-only team, and a B2B distributor are all equally first-class.
@@ -92,6 +105,12 @@ ${moduleLines}
 ## Platform
 
 ${platformLines}
+
+## By kind of business
+
+A page per industry, each answering what that trade needs done and what its module stack costs per month, with the tools it replaces priced beside it. Index at ${BASE}/customers.
+
+${verticalLines}
 
 ## Free tools
 

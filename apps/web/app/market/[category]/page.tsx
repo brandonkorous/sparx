@@ -227,7 +227,7 @@ function ComingSoonCategory({ cat }: { cat: MarketplaceCategory }) {
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <a href="/market/blueprints">
-            <Button color="neutral" size="lg">
+            <Button color="primary" size="lg">
               Browse blueprints
             </Button>
           </a>

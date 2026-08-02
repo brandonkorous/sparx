@@ -36,7 +36,7 @@ export function LoadMorePartners({
   return (
     <>
       {items.length > 0 ? (
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 items-start gap-5 lg:grid-cols-2">
           {items.map((p) => (
             <PartnerDirectoryCard key={p.id} partner={p} />
           ))}
@@ -44,7 +44,7 @@ export function LoadMorePartners({
       ) : null}
       {cursor ? (
         <div className="flex justify-center">
-          <Button variant="outline" onClick={onMore} loading={pending} disabled={pending}>
+          <Button size="lg" variant="outline" onClick={onMore} loading={pending} disabled={pending}>
             Load more
           </Button>
         </div>

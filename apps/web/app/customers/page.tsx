@@ -2,16 +2,16 @@ import type { Metadata } from 'next';
 import { CustomersPage } from '@/components/marketing/customers-page';
 
 export const metadata: Metadata = {
-  title: 'Who runs on sparx',
+  title: 'Whatever it is you run — sparx for your kind of business',
   description:
-    'Publishers, retailers, distributors, agencies, AI-first teams — each turns on the modules they need, on one bill. See the flagship Gillett Diesel build.',
+    'Salons, auto shops, tattoo studios, restaurants, trades and independent retail. Twelve separate parts; switch on the ones your week needs. See what a business like yours actually pays.',
   alternates: { canonical: '/customers' },
   // Per-page og:url — see app/pricing/page.tsx for why inheriting the layout's
   // site-root url breaks LinkedIn share de-duplication.
   openGraph: {
-    title: 'Who runs on sparx',
+    title: 'Whatever it is you run — sparx for your kind of business',
     description:
-      'Publishers, retailers, distributors, agencies, AI-first teams — each turns on the modules they need, on one bill.',
+      'Salons, auto shops, tattoo studios, restaurants, trades and independent retail. Switch on the parts your week needs and pay for nothing else.',
     url: 'https://sparx.works/customers',
   },
 };

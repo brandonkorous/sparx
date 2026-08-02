@@ -46,7 +46,6 @@ export function DropshipPage() {
       <Faq
         items={DROPSHIP_FAQ}
         id="faq"
-        accent={M.color}
         heading={
           <>
             Dropship questions
@@ -147,7 +146,6 @@ function DropshipWithCommerce() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent={M.color}
         headline="Hands-off fulfillment, on the same store"
         lede="Dropship is the supply side of Commerce, not a separate system. Commerce takes the order; Dropship sources and ships it. Same catalog, same checkout, same customer record — you just stop holding the inventory and packing the boxes."
       />
@@ -243,7 +241,7 @@ function DropshipPricing() {
               See all plans →
             </Button>
           </a>
-          <Button color="neutral" size="lg">
+          <Button color="primary" size="lg">
             Activate Dropship
           </Button>
         </div>

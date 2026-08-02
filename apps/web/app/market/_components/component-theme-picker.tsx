@@ -70,10 +70,13 @@ export function ComponentThemePicker({ groups }: { groups: PreviewThemeGroup[] }
         ))}
       </select>
       <div className="border-base-300 inline-flex items-center gap-1 rounded-full border p-1">
+        {/* Selection is a FILLED shape in a real color, not a soft grey tint
+            (RULE #4). Off is a neutral ghost — the dismiss half of a pair, one
+            of the places neutral is genuinely earned. */}
         <Button
           size="sm"
-          color="neutral"
-          variant={mode === 'light' ? 'soft' : 'ghost'}
+          color={mode === 'light' ? 'primary' : 'neutral'}
+          variant={mode === 'light' ? 'solid' : 'ghost'}
           aria-pressed={mode === 'light'}
           onClick={() => setMode('light')}
         >
@@ -81,8 +84,8 @@ export function ComponentThemePicker({ groups }: { groups: PreviewThemeGroup[] }
         </Button>
         <Button
           size="sm"
-          color="neutral"
-          variant={mode === 'dark' ? 'soft' : 'ghost'}
+          color={mode === 'dark' ? 'primary' : 'neutral'}
+          variant={mode === 'dark' ? 'solid' : 'ghost'}
           aria-pressed={mode === 'dark'}
           onClick={() => setMode('dark')}
         >

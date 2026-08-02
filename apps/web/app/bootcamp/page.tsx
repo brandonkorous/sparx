@@ -90,7 +90,6 @@ export default async function BootcampPage({
       <Faq
         id="faq"
         items={BOOTCAMP_FAQ}
-        accent="var(--color-primary)"
         heading={
           <>
             Bootcamp questions

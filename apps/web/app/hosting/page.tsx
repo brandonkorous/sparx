@@ -14,7 +14,7 @@ export default function HostingPage() {
     <ComingSoon
       eyebrow="Platform"
       title="Managed hosting"
-      description="WizeWorks operates your sparx infrastructure end-to-end: GKE, Postgres, Postal, Redis, monitoring, backups, 24/7 on-call. $750/mo flat, no per-resource surprise billing. Gillett Diesel is the reference customer."
+      description="WizeWorks operates your sparx infrastructure end-to-end: Kubernetes, Postgres, Redis, email, monitoring, backups, 24/7 on-call. $750/mo flat, no per-resource surprise billing."
       contact="hosting@sparx.works"
     />
   );

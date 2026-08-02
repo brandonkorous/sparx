@@ -3,7 +3,9 @@ import { LEGAL_DOC_VERSIONS, SUBPROCESSORS_VERSION } from '@/lib/legal-versions'
 import { MODULE_ORDER, MODULES } from '@/lib/modules';
 import { DOC_PAGES } from '@/lib/docs';
 import { TOOL_SLUGS } from '@/components/marketing/tools/registry';
+import { VERTICAL_SLUGS } from '@/components/marketing/verticals/registry';
 import { fetchPublishedBootcampSlugs } from '@/lib/bootcamp';
+import { fetchPartnerSlugs } from '@/lib/partners';
 import { fetchListingSlugs } from '@/lib/marketplace';
 import { LIVE_CATEGORIES } from '@/lib/marketplace-registry';
 import { ROLES, OPEN_APPLICATION } from './careers/roles';
@@ -19,12 +21,24 @@ const BASE = 'https://sparx.works';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
 
-  const bootcampSlugs = await fetchPublishedBootcampSlugs();
+  const [bootcampSlugs, partnerSlugs] = await Promise.all([
+    fetchPublishedBootcampSlugs(),
+    fetchPartnerSlugs(),
+  ]);
   const bootcampPages: MetadataRoute.Sitemap = bootcampSlugs.map((slug) => ({
     url: `${BASE}/bootcamp/${slug}`,
     lastModified: now,
     changeFrequency: 'daily' as const,
     priority: 0.6,
+  }));
+  // Listable partner profiles. Same guard as the bootcamps above — the fetch
+  // degrades to [] rather than throwing, so a down public API narrows this
+  // sitemap instead of taking all coverage with it.
+  const partnerPages: MetadataRoute.Sitemap = partnerSlugs.map((slug) => ({
+    url: `${BASE}/partners/${slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly' as const,
+    priority: 0.5,
   }));
 
   return [
@@ -63,6 +77,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'monthly' as const,
       priority: 0.6,
     })),
+    // The industry landing pages. High priority deliberately: these are the
+    // pages paid and social traffic lands on, and each is a distinct commercial
+    // query ("salon booking software", "auto repair shop software") rather than
+    // a facet of one. The bare /for parent is NOT listed — it 308s to
+    // /customers, which is the real hub and is listed with the static pages.
+    ...VERTICAL_SLUGS.map((slug) => ({
+      url: `${BASE}/for/${slug}`,
+      lastModified: now,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
     // Careers index + each founding role (and the open application) — now real,
     // indexable pages rather than a ComingSoon stub, so they belong in coverage.
     {
@@ -78,6 +103,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.5,
     })),
     ...bootcampPages,
+    ...partnerPages,
     ...staticPages(now),
   ];
 }

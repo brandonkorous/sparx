@@ -37,10 +37,14 @@ export function ThemePreviewToggle({
     <div className="flex flex-col gap-3">
       {hasDark ? (
         <div className="border-base-300 inline-flex items-center gap-1 self-end rounded-full border p-1">
+          {/* Selection is a FILLED shape in a real color, not a soft grey tint
+              (RULE #4). The half that is on wears `primary`; the half that is
+              off is a neutral ghost, which is the dismiss half of a pair and one
+              of the places neutral is genuinely earned. */}
           <Button
             size="sm"
-            variant={mode === 'light' ? 'soft' : 'ghost'}
-            color="neutral"
+            color={mode === 'light' ? 'primary' : 'neutral'}
+            variant={mode === 'light' ? 'solid' : 'ghost'}
             onClick={() => setMode('light')}
             aria-pressed={mode === 'light'}
           >
@@ -48,8 +52,8 @@ export function ThemePreviewToggle({
           </Button>
           <Button
             size="sm"
-            variant={mode === 'dark' ? 'soft' : 'ghost'}
-            color="neutral"
+            color={mode === 'dark' ? 'primary' : 'neutral'}
+            variant={mode === 'dark' ? 'solid' : 'ghost'}
             onClick={() => setMode('dark')}
             aria-pressed={mode === 'dark'}
           >
