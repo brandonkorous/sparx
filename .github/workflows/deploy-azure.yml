@@ -228,6 +228,39 @@ jobs:
           # A dotenv blob, so one repo secret carries the whole bundle rather
           # than ~30 individually-managed ones.
           printf '%s' "$APP_SECRETS" > /tmp/app.env
+
+          # OPERATOR_DATABASE_URL — derived when absent, never silently omitted.
+          #
+          # apps/admin talks to the wize_admin schema as `wize_operator`, a
+          # different role from the one in DATABASE_URL. GCP carried this as its
+          # own `operator-database-url` secret (terraform/envs/prod/main.tf) and
+          # Azure never got an equivalent, so the var was simply missing — and
+          # packages/operator-auth/src/db.ts falls back to a LOCALHOST dev
+          # default when it is unset. The admin pod therefore dialled
+          # 127.0.0.1:5544 in-cluster and every sign-in returned 500. Nothing
+          # else failed, so the console looked deployed and healthy.
+          #
+          # Deriving it is sound rather than a guess: packages/db/sql/azure-bootstrap.sql
+          # sets wize_operator's password from the SAME app_password as sparx_app
+          # ("ALTER ROLE wize_operator ... PASSWORD :'app_password'"), so on this
+          # provider the two differ only by role name. Supplying
+          # OPERATOR_DATABASE_URL explicitly in SPARX_APP_SECRETS_ENV overrides
+          # this entirely, which is what to do the moment those passwords diverge.
+          if ! grep -q '^OPERATOR_DATABASE_URL=' /tmp/app.env; then
+            DB_URL=$(grep -m1 '^DATABASE_URL=' /tmp/app.env | cut -d= -f2-)
+            if [ -z "$DB_URL" ]; then
+              echo "::error::DATABASE_URL missing from SPARX_APP_SECRETS_ENV; cannot derive OPERATOR_DATABASE_URL."
+              exit 1
+            fi
+            OP_URL=$(printf '%s' "$DB_URL" | sed 's#://sparx_app:#://wize_operator:#')
+            case "$OP_URL" in
+              *\?*) OP_URL="$OP_URL&schema=wize_admin" ;;
+              *)    OP_URL="$OP_URL?schema=wize_admin" ;;
+            esac
+            printf 'OPERATOR_DATABASE_URL=%s\n' "$OP_URL" >> /tmp/app.env
+            echo "OPERATOR_DATABASE_URL not supplied; derived it from DATABASE_URL as wize_operator."
+          fi
+
           kubectl create secret generic sparx-app-secrets -n "$NAMESPACE" \
             --from-env-file=/tmp/app.env \
             --dry-run=client -o yaml | kubectl apply -f -

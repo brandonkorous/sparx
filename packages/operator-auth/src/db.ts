@@ -21,6 +21,26 @@ declare global {
 function connectionString(): string {
   const explicit = process.env.OPERATOR_DATABASE_URL;
   if (explicit) return explicit;
+
+  // In production an unset URL is a CONFIGURATION BUG, never a default.
+  //
+  // This used to fall through to the dev localhost string unconditionally, and
+  // the Azure deployment shipped without OPERATOR_DATABASE_URL — so the admin
+  // console dialled 127.0.0.1:5544 from inside the cluster and every sign-in
+  // returned 500 with an ECONNREFUSED buried in the pod log. The pod was
+  // Running, its probes passed, and the only symptom was that nobody could log
+  // in. Failing at boot turns that into a rollout that visibly does not
+  // complete, which is the same call packages/events/src/transport.ts makes for
+  // an unset broker and for the same reason.
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'OPERATOR_DATABASE_URL is not set. The operator console needs its own ' +
+        'connection as `wize_operator` to the wize_admin schema; there is no ' +
+        'safe default in production. See the Sync secrets step in ' +
+        '.github/workflows/deploy-azure.yml.'
+    );
+  }
+
   // Dev fallback so a fresh checkout boots without env wiring. Matches the
   // docker Postgres port (5544) + the `wize_operator` role seeded by
   // packages/db/docker/init/01-roles.sql.
