@@ -38,10 +38,34 @@ function operatorSecret(): string {
   return 'dev-operator-secret-change-me-000000000000';
 }
 
+/** Better Auth's `baseURL`, which is also what it validates request origins against.
+ *
+ *  Unset in production is a configuration bug, exactly like the secret above.
+ *  The Azure deployment shipped without OPERATOR_AUTH_URL, so this resolved to
+ *  http://localhost:3002 while the console was served from
+ *  https://admin.wize.works — Better Auth compared the two and rejected every
+ *  sign-in with "invalid origin". The pod was healthy and the credentials were
+ *  correct; only the configured origin was wrong, and the localhost default is
+ *  what made that survivable enough to reach production.
+ */
+function operatorBaseUrl(): string {
+  const url = process.env.OPERATOR_AUTH_URL;
+  if (url) return url;
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(
+      'OPERATOR_AUTH_URL is required in production. Better Auth validates ' +
+        'request origins against it, so an unset value rejects every sign-in ' +
+        'with "invalid origin". Set it to the console origin, e.g. ' +
+        'https://admin.wize.works.'
+    );
+  }
+  return 'http://localhost:3002';
+}
+
 function createOperatorAuth() {
   return betterAuth({
     appName: 'sparx-operator',
-    baseURL: process.env.OPERATOR_AUTH_URL ?? 'http://localhost:3002',
+    baseURL: operatorBaseUrl(),
     secret: operatorSecret(),
     // pg Pool → Better Auth wraps it with the Kysely postgres dialect.
     database: operatorPool,
