@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 import { BRAND, MODULE_HEX, type ModuleKey } from '@sparx/brand';
 import type { StoryState } from '@sparx/story-schemas';
-import { storyTokens, type Token } from '@/components/marketing/landing-v3/story-tokens';
+import { storyTokens, type Token } from '@/components/marketing/landing/story-tokens';
 import { ModuleStrip } from '@/components/marketing/module-strip';
 import { PAID_MODULES } from '@/components/marketing/modules-catalog';
 import { OgWordmark } from './og-wordmark';
@@ -12,7 +12,7 @@ import { OgWordmark } from './og-wordmark';
 // which is the one image on the site nobody else's card could be.
 //
 // It renders from the SAME grammar the hero types (`storyTokens` in
-// landing-v3/story-tokens) so the card and the homepage can never drift. The one
+// landing/story-tokens) so the card and the homepage can never drift. The one
 // thing that grammar can't carry onto an OG card is its `color-mix()` tints —
 // satori resolves neither CSS custom properties nor `color-mix()` — so we bake a
 // literal hue off each chip's `mod` key from `MODULE_HEX` (the single TS source in

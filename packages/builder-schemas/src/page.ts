@@ -76,7 +76,7 @@ export interface BuilderPageSummaryDto {
    *  (docs/51 §6) — the per-type winner the storefront renders when a record has
    *  no per-record override. At most one per (tenant, recordType). */
   isDefault: boolean;
-  /** Which chrome wraps this page (doc 139 §5) — `null` for the site default, the
+  /** Which chrome wraps this page (docs/silicaui/01 §5) — `null` for the site default, the
    *  `'none'` sentinel for bare, or a layout id. Read as well as written: a settings
    *  form cannot show the author their current choice from the write path alone. */
   frameId: string | null;
@@ -147,7 +147,7 @@ export const UpdatePageInput = z
     recordType: z.string().max(63).nullish(),
     slug: PageSlugInput,
     /**
-     * Which chrome wraps this page (doc 139 §5). Three values, and the two that look
+     * Which chrome wraps this page (docs/silicaui/01 §5). Three values, and the two that look
      * empty mean opposite things:
      *   `null`     → the site default (whichever layout is active)
      *   `'none'`   → NO header or footer; the campaign/landing page

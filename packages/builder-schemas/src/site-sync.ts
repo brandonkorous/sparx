@@ -82,7 +82,7 @@ export const SiteSyncPageInput = z.object({
   slug: z.string(),
   root: SilicaTreeInput,
   /**
-   * Which chrome wraps this page (doc 139 §5), carried on the page it belongs to so the
+   * Which chrome wraps this page (docs/silicaui/01 §5), carried on the page it belongs to so the
    * engine's OWN per-page layout picker persists.
    *
    * FOUR states, because "say nothing" and "say default" have to be different:
@@ -390,7 +390,7 @@ export interface PublishedSilicaFrameDto {
   frame: SilicaFrame | null;
   /**
    * `frame` is null because this PAGE asked for no chrome — not because the property
-   * has published none (doc 139 §5).
+   * has published none (docs/silicaui/01 §5).
    *
    * The two are opposite instructions wearing the same `null`, and the storefront acts
    * on that difference: nothing published falls back to the code starter frame, so a

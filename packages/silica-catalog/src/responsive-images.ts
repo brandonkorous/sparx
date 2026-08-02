@@ -26,7 +26,7 @@
 //
 // The atom half used to call `expandComponent` and patch the resulting element, because
 // `Image.expand` built a fixed attribute set and dropped a `srcset` prop silently.
-// silicaui 0.36.0 forwards `srcset`/`sizes` (doc 139 §6), so that workaround is gone
+// silicaui 0.36.0 forwards `srcset`/`sizes` (docs/silicaui/01 §6), so that workaround is gone
 // along with its one real hazard: lowering a node early changed its kind mid-tree.
 
 import { type Child, type ElementNode, type Node } from '@wizeworks/silicaui-html';
@@ -169,7 +169,7 @@ function withSrcset(node: ElementNode, cap: number | undefined): ElementNode {
  *
  *  This used to call `expandComponent` here and patch the resulting element, because
  *  `Image.expand` built a fixed attribute set (`src`/`alt`/`loading`) and dropped a
- *  `srcset` prop without a word. silicaui 0.36.0 forwards both (doc 139 §6), so the
+ *  `srcset` prop without a word. silicaui 0.36.0 forwards both (docs/silicaui/01 §6), so the
  *  walk no longer has to lower a node early to reach its attributes — which also means
  *  it no longer changes any node's KIND mid-tree.
  *

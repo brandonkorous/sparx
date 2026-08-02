@@ -160,7 +160,7 @@ export function WorkbenchFrame({ bleed = false }: { bleed?: boolean } = {}) {
           bleed && '-mx-page px-page'
         )}
       >
-        <div className="bg-base-100 border-base-300 min-w-[1040px] overflow-hidden rounded-xl border">
+        <div className="bg-base-100 text-base-content border-base-300 min-w-[1040px] overflow-hidden rounded-xl border">
           <BrowserChrome />
           <Toolbar />
           <div className="bg-base-200 flex h-[560px] items-stretch">

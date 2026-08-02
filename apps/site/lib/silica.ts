@@ -103,7 +103,7 @@ async function propertyParam(): Promise<string> {
 }
 
 /**
- * `&path=<route>` — which page's chrome to answer with (doc 139 §5).
+ * `&path=<route>` — which page's chrome to answer with (docs/silicaui/01 §5).
  *
  * Per-page frames exist so a campaign or landing page can render with no header and
  * footer. The obstacle is structural: the root layout renders the chrome, and an App
@@ -223,7 +223,7 @@ export async function getPublishedSilicaFrame(
   // published version while the body previewed — the two halves of one page disagreeing
   // about what "preview" meant.
   const data = await fetchFrameEnvelope(tenantSlug, opts.previewToken);
-  // `frameless` is the page saying "I have no chrome ON PURPOSE" (doc 139 §5) — a
+  // `frameless` is the page saying "I have no chrome ON PURPOSE" (docs/silicaui/01 §5) — a
   // landing page. The starter fallback below exists for the opposite case, a property
   // that has published no chrome at all, and applying it here would put a header back
   // on the one page built without one. Two opposite instructions, one `null`.

@@ -4,7 +4,7 @@ Version: 2.0.0
 Author: Brandon Korous
 Last Updated: 2026-07-27
 
-> **The register is [doc 139](../139-silicaui-builder-asks.md), not this page.** The audit found
+> **The register is [docs/silicaui/01](../silicaui/01-builder-asks.md), not this page.** The audit found
 > eight things sparx cannot fix from the host seam; they are filed there, each naming the specific
 > missing API, verified against `@wizeworks/silicaui-builder@0.35.0`. This page exists only to
 > connect the audit's evidence to that register — it deliberately does not restate the asks, so
@@ -41,4 +41,4 @@ host-side and independently shippable. Two couplings are worth holding in mind:
   what makes them reach the page. The generation work is worth doing first regardless — the assets
   are useful the moment the emission exists.
 
-Related: [00-README.md](00-README.md) · [01-roadmap.md](01-roadmap.md) · [doc 139 — the register](../139-silicaui-builder-asks.md)
+Related: [00-README.md](00-README.md) · [01-roadmap.md](01-roadmap.md) · [docs/silicaui/01 — the register](../silicaui/01-builder-asks.md)

@@ -279,7 +279,7 @@ const PAGE_META_SELECT = {
   kind: true,
   recordType: true,
   isDefault: true,
-  // Which chrome wraps this page (doc 139 §5). A scalar, so it costs nothing on the
+  // Which chrome wraps this page (docs/silicaui/01 §5). A scalar, so it costs nothing on the
   // read that already refuses to drag trees it will discard.
   frameId: true,
   seoTitle: true,
@@ -343,7 +343,7 @@ function toPublishedPage(
  *  null when no authored theme is published (brand-derived theme wins).
  *
  *  `path` asks for the chrome THIS ROUTE should wear, rather than the site's default
- *  (doc 139 §5). It exists because of an App Router constraint: `layout.tsx` wraps
+ *  (docs/silicaui/01 §5). It exists because of an App Router constraint: `layout.tsx` wraps
  *  `page.tsx` and cannot see what the page resolved, so per-page frames are impossible
  *  while the layout asks for "the frame". Resolving by path here keeps the chrome in
  *  ONE place instead of duplicating `<SilicaChrome>` into a dozen routes.

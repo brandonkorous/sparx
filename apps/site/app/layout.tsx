@@ -511,7 +511,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       </SilicaChrome>
                     ) : (
                       // THE LANDING PAGE. This was unreachable while every page wore the
-                      // site's one frame; per-page frames (doc 139 §5) made it the real
+                      // site's one frame; per-page frames (docs/silicaui/01 §5) made it the real
                       // rendering path for a page whose chrome is set to "none" — a
                       // campaign page with no header and no footer, which the platform
                       // could not express at all before.

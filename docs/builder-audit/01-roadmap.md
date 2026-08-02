@@ -1,11 +1,11 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.17.0
+Version: 2.18.0
 Author: Brandon Korous
 Last Updated: 2026-07-30
 
 > **Status — EVERY SLICE IS DONE except the BLUEPRINT SHELF (18, another agent's) and slice 24,
-> which is now filed upstream as [doc 139 §16](../139-silicaui-builder-asks.md).** Waves 1, 2 and 4
+> which is now filed upstream as [docs/silicaui/01 §16](../silicaui/01-builder-asks.md).** Waves 1, 2 and 4
 > are complete and **wave 3 is closed**: silicaui answered §1–§15, including `statusBarSlot` and the
 > `activeTree` mode sync in `0.41.0`, and the sparx side is adopted throughout.
 >
@@ -134,7 +134,7 @@ Last Updated: 2026-07-30
 > **Nothing automated can catch the next upstream change**, and the note in `content-ink.ts` says
 > so plainly rather than implying a guard exists: the ground truth is a string inside the
 > Tailwind plugin, and neither package depends on it (only on `@wizeworks/silicaui-html`).
-> Re-verify by hand on every bump — already the standing rule (doc 139 §9) — with the `grep`
+> Re-verify by hand on every bump — already the standing rule (docs/silicaui/01 §9) — with the `grep`
 > recorded in that file. A real guard needs one devDependency and a `pnpm install`.
 >
 > Two test fixtures had quietly stopped testing anything, and both are re-cut: site-lint's
@@ -178,13 +178,13 @@ Last Updated: 2026-07-30
 >
 > **Decisions taken, so they are not re-litigated:**
 >
-> - **The silicaui asks go to [doc 139](../139-silicaui-builder-asks.md), not 119.** 119 is
+> - **The silicaui asks go to [docs/silicaui/01](../silicaui/01-builder-asks.md), not 119.** 119 is
 >   SUPERSEDED — written against silicaui-builder 0.8.0, and its framing question ("adopt
 >   the engine or keep ours?") is answered and executed. Only Q22/Q26 were still live and
 >   are carried into 139 §7.
 > - **~~Wave 3 is filed, not built.~~ SHIPPED — silicaui answered all eleven asks in
 >   `0.36.0`** (2026-07-28) and the sparx side is adopted. See
->   [doc 139](../139-silicaui-builder-asks.md) for the resolutions, including the two
+>   [docs/silicaui/01](../silicaui/01-builder-asks.md) for the resolutions, including the two
 >   counter-proposals that were better than the ask and the one place OUR premise was
 >   wrong (§10: `visible:false` always existed; I asserted an engine limitation without
 >   reading the resolver).
@@ -234,17 +234,17 @@ is the cheapest wave and the one that moves the score most: 5.5 → roughly 7.5.
 
   > A test asserts the old extractor returns all zeroes on a real silica tree, so the reported defect is pinned rather than merely fixed.
 
-- [x] **5. Co-editing undo is safe.** DONE — and NOT the stopgap. `invertOps` ([silica-op-invert.ts](../../packages/builder-schemas/src/silica-op-invert.ts), 19 tests) computes an action's inverse ops against the document it started from; [undo-history.tsx](../../apps/workbench/surfaces/builder/studio/undo-history.tsx) installs it as silica's `setHistoryDelegate`. Undo is now targeted — one node, one value — instead of a whole-site snapshot swap, so the stack stays alive across a co-editor's edit. — _in-our-control · M_
+- [x] **5. Co-editing undo is safe.** DONE — and NOT the stopgap. an action's inverse ops are computed against the document it started from — originally by a host module (`silica-op-invert.ts`, 19 tests), now by the engine's own `editor.inverseOf(ops, before)` (silicaui 0.36.0), which handles the two cases the host could not; [undo-history.tsx](../../apps/workbench/surfaces/builder/studio/undo-history.tsx) installs it as silica's `setHistoryDelegate`. Undo is now targeted — one node, one value — instead of a whole-site snapshot swap, so the stack stays alive across a co-editor's edit. — _in-our-control · M_
 
   > **The audit's framing was half right and worth correcting.** At 0.35.0 the engine already guards the data loss: `applyRemoteOps` does `if (!this.historyDelegate) { this.past = []; this.future = [] }`, so a remote edit cannot be reverted by a local undo — it throws the whole stack away instead. The defect that actually reaches the tenant is the second-order one: an agent editing alongside you over MCP is a DESIGNED-FOR workflow here, so in practice undo dies mid-session with nothing on screen to explain it.
   >
   > Redo replays the action's own ops — every op carries an absolute value, so re-applying IS the original edit. An undo is buffered and relayed like any other edit, because to the server and the other authors that is exactly what it is.
   >
-  > Two ops cannot be inverted from outside the engine (creating a saved component; a text edit that flattens rich children). The first drops the history — and **says so**, which is the whole point: a history that empties itself silently is the complaint this slice exists to fix. Both are filed as [doc 139 §8](../139-silicaui-builder-asks.md).
+  > Two ops cannot be inverted from outside the engine (creating a saved component; a text edit that flattens rich children). The first drops the history — and **says so**, which is the whole point: a history that empties itself silently is the complaint this slice exists to fix. Both are filed as [docs/silicaui/01 §8](../silicaui/01-builder-asks.md).
 
 - [x] **6. One responsive vocabulary.** DONE. Every seed factory is off viewport variants and onto container queries under an `@container` — [site.ts](../../packages/silica-catalog/src/site.ts), [site-chrome.ts](../../packages/silica-catalog/src/site-chrome.ts), [cms.ts](../../packages/silica-catalog/src/cms.ts), [commerce.ts](../../packages/silica-catalog/src/commerce.ts), [host-nodes.ts](../../packages/silica-catalog/src/host-nodes.ts). The ban IS enforced on live documents: `validateResponsiveVocabulary` ([vocabulary-check.ts](../../packages/silica-catalog/src/vocabulary-check.ts)) is a silica `ClassValidator` on the host seam, so `Editor.setClass` refuses a viewport variant before it commits and the Classes field shows the container class to write instead. — _in-our-control · S_
 
-  > **It turned out sparx could enforce this itself.** The audit filed enforcement as a silicaui ask; the engine already publishes the seam (`BuilderHost.validateClass` → `setClass` returns `{ok:false, reason}` for the UI). [doc 139 §2](../139-silicaui-builder-asks.md) is narrowed accordingly — what is left upstream is making the rule universal instead of per-host, and the one check a host genuinely cannot do: whether an ancestor declares `@container`.
+  > **It turned out sparx could enforce this itself.** The audit filed enforcement as a silicaui ask; the engine already publishes the seam (`BuilderHost.validateClass` → `setClass` returns `{ok:false, reason}` for the UI). [docs/silicaui/01 §2](../silicaui/01-builder-asks.md) is narrowed accordingly — what is left upstream is making the rule universal instead of per-host, and the one check a host genuinely cannot do: whether an ancestor declares `@container`.
   >
   > Three defects surfaced beyond the sweep. **The workbench never imported the shared vocabulary** — the canvas had its own viewport-only safelist, so a container variant emitted CSS on the storefront and nothing on the canvas. The studio would have shown a broken version of a page that published fine. It imports the shared file now. **The buy box measured the wrong box**: `@container` and `@2xl:grid-cols-2` sat on the SAME element, and a container query never measures the element that declares it — on the PDP it worked only by borrowing the full-bleed section above it, so the split keyed to the window while the box itself was capped at `max-w-6xl`. **Display utilities were undeclared**, covered only because the seeded chrome happened to use them; sweeping the chrome would have taken `sm:hidden`/`sm:flex` out of the bundle and left already-published navs rendering both halves at once, or neither.
   >
@@ -307,7 +307,7 @@ nobody in the comparison set does it well — this is where the builder can lead
   >
   > **Dark mode is checked as a second pass**, not skipped: a theme carrying a `dark` delta genuinely renders both ways, and findings name the mode — but only when there is more than one to name.
   >
-  > **Two defects found, one mine and one upstream.** Mine: deriving the OKLCH lightness from a round-tripped sRGB value moves it by up to 0.02, and the derivation is a THRESHOLD comparison, so quartz's `info` — written `oklch(68% …)`, exactly the default threshold — flipped to the wrong ink and a 7.4:1 pairing reported as 2.8:1. `cssLightness` reads it off the token. Upstream: **silicaui's `autoContent` picks the wrong ink across the whole 0.55–0.68 band**, so six token/foreground pairs across the four shipped presets fail AA while the ink the rule rejected would have passed. Filed with the measurements as [doc 139 §9](../139-silicaui-builder-asks.md). sparx's own compiler is unaffected — `deriveContent` already picks by measured contrast — so only tenants on a silica preset are hit.
+  > **Two defects found, one mine and one upstream.** Mine: deriving the OKLCH lightness from a round-tripped sRGB value moves it by up to 0.02, and the derivation is a THRESHOLD comparison, so quartz's `info` — written `oklch(68% …)`, exactly the default threshold — flipped to the wrong ink and a 7.4:1 pairing reported as 2.8:1. `cssLightness` reads it off the token. Upstream: **silicaui's `autoContent` picks the wrong ink across the whole 0.55–0.68 band**, so six token/foreground pairs across the four shipped presets fail AA while the ink the rule rejected would have passed. Filed with the measurements as [docs/silicaui/01 §9](../silicaui/01-builder-asks.md). sparx's own compiler is unaffected — `deriveContent` already picks by measured contrast — so only tenants on a silica preset are hit.
 
 - [x] **11. The Check step.** Run the lint in the Publish flow; show pass / warn / fail with click-to-node. **Never block** — the owner decides, the tool advises. — _in-our-control · M_
 
@@ -339,9 +339,9 @@ nobody in the comparison set does it well — this is where the builder can lead
 
 ## Wave 3 — the editing experience
 
-Upstream. Filed in [doc 139](../139-silicaui-builder-asks.md); [02-silicaui-asks.md](02-silicaui-asks.md) is the bridge from the audit's evidence.
+Upstream. Filed in [docs/silicaui/01](../silicaui/01-builder-asks.md); [02-silicaui-asks.md](02-silicaui-asks.md) is the bridge from the audit's evidence.
 
-- [x] **13. Per-breakpoint authoring** + an honest device canvas. — _~~silicaui-ask~~ → shipped in silicaui 0.36.0 (doc 139 §1 + §2); host half adopted · L_
+- [x] **13. Per-breakpoint authoring** + an honest device canvas. — _~~silicaui-ask~~ → shipped in silicaui 0.36.0 (docs/silicaui/01 §1 + §2); host half adopted · L_
 
   > **Both halves landed, and the answer was better than the ask.** The Inspector writes CONTAINER
   > variants (`@md:`), not viewport ones, and the device toggle drives the prefix through
@@ -360,7 +360,7 @@ Upstream. Filed in [doc 139](../139-silicaui-builder-asks.md); [02-silicaui-asks
 
   > `selectedIds` (ordered, last entry is the primary), `selectMany`, `toggleSelect`, and the batch op API 0.36.0 already carried. **No host work.** The studio touches selection in exactly one place — the Check panel's "Show me" calls `editor.select(nodeId)` to jump to a single finding — which is still the right call, and the canvas gestures are the engine's. `selection` stays the primary id so every existing reader is unchanged.
 
-- [x] **15. Alignment guides, arrow-key nudge, select-parent, `Cmd+X` / `Cmd+A`.** — _~~silicaui-ask~~ → the keyboard half shipped in 0.36.0; guides + nudge DECLINED, correctly (doc 139 §4) · M_
+- [x] **15. Alignment guides, arrow-key nudge, select-parent, `Cmd+X` / `Cmd+A`.** — _~~silicaui-ask~~ → the keyboard half shipped in 0.36.0; guides + nudge DECLINED, correctly (docs/silicaui/01 §4) · M_
 
   > **Shipped:** `selectParent`, `Cmd+A` and `Cmd+X` are in `useEditorShortcuts` — verified in the
   > 0.41.0 bundle, not taken from a changelog. Escape now steps UP the tree instead of clearing to
@@ -409,7 +409,20 @@ Upstream. Filed in [doc 139](../139-silicaui-builder-asks.md); [02-silicaui-asks
 
 Where "no better in the world" is actually won or lost.
 
-- [ ] **18. 20–40 blueprints.** Across verticals — a shop, a services business, a publisher, a restaurant, a studio, a B2B distributor, a nonprofit. The machinery is done; the shelf is empty. — _cost-decision (authoring time) · L_
+- [x] **18a. The BASE shelf — 21 one-size-fits-all starter themes.** SHIPPED. `marketplace-catalog/blueprints/`: the golden `sparx` bundle plus 20 themed clones from `_gen/gen-sparx-themed.ts`, each a complete multi-module starter (shop · journal · booking · wholesale). — _done · L_
+
+  > **They share one 7-page structure BY DESIGN, and that is not a deficiency.** Brandon,
+  > 2026-08-02: _"the 21 bundles are the base themes. They should be this way. They should NOT be
+  > thought of as specifics to an industry… these are intended to be one size fits all."_ The
+  > per-theme `audience` strings in the generator (`petal` → florists, `garage` → vehicle service)
+  > are marketing framing for the marketplace CARD, not a promise of vertical-specific content.
+  >
+  > **An earlier version of this entry read their uniformity as an empty shelf and scored the
+  > builder down for it. That was the wrong frame** and is corrected here so it is not re-derived.
+  > Real defects in these bundles are still worth fixing — 346 lint findings were, on 2026-08-02
+  > (see slice 28) — but "every base theme is the same layout" is not one of them.
+
+- [ ] **18b. Industry-specific blueprints.** A restaurant, a B2B distributor, a nonprofit, a studio — authored ALONGSIDE the base shelf, never by specialising it. Wanted, and starting once the rest of the builder is signed off. — _cost-decision (authoring time) · L_
 
   > **NOT STARTED.** `assertRequiredMedia` in `api-rest/lib/marketplace/ingest.ts` refuses any bundle missing `media/icon.png` and `media/preview.png`, and the failure is at ingest, so a bundle without them never reaches storage.
   >
@@ -495,7 +508,7 @@ Where "no better in the world" is actually won or lost.
 
   > **This was silent DATA LOSS, not a page size.** A bound `commerce.product` grid fetched 24 records, the storefront offered no pagination, and nothing said the other 113 existed — not to the shopper, not to the author, not to a log. It is a real page size now: `?page=2` reaches the rest, and `COLLECTION_PAGE_SIZE` is one named constant instead of a `24` inlined at each fetch.
   >
-  > **The pager is a HOST CORE (`site.pagination`), and that is the whole design decision.** Pagination is almost entirely conditional — no Previous on page one, no Next on the last, the current page is text not a link, the number window shifts as you walk, and the control must render _nothing_ when everything fits. A bound tree has no conditional, so a hand-authored pager would ship a **dead "Previous" on page one of every site on the platform** and offer a page 25 that is not there. Same wall `site.brand`'s `show` and `site.legal-links` hit; it is now filed as [doc 139 §10](../139-silicaui-builder-asks.md) with all four cases, because each one costs an author-editable region.
+  > **The pager is a HOST CORE (`site.pagination`), and that is the whole design decision.** Pagination is almost entirely conditional — no Previous on page one, no Next on the last, the current page is text not a link, the number window shifts as you walk, and the control must render _nothing_ when everything fits. A bound tree has no conditional, so a hand-authored pager would ship a **dead "Previous" on page one of every site on the platform** and offer a page 25 that is not there. Same wall `site.brand`'s `show` and `site.legal-links` hit; it is now filed as [docs/silicaui/01 §10](../silicaui/01-builder-asks.md) with all four cases, because each one costs an author-editable region.
   >
   > **Unpinned, and seeded only where it belongs.** `productsBlock` embeds the pager under a whole-catalog GRID and never under a rail — a Next button below a "Featured" strip is a curation that forgot it was one. It has to be added at authoring time rather than retrofitted: a stamped tree freezes at publish (docs/122), so a block inserted today is the only one this can reach. Unlocked, unlike every other seeded core, because it is a convenience under a grid the tenant may later delete — which tripped the `site-chrome.test.ts` deletability tripwire exactly as designed, and the assertion is now set-based rather than order-based.
   >
@@ -509,7 +522,7 @@ Where "no better in the world" is actually won or lost.
   >
   > **Conditional visibility is NOT built — it is filed.** `resolveTree` substitutes and expands; it never drops a node, and a host pre-pass cannot stand in because an item-scoped condition (`show the Sale badge only when there is a compare-at price`) can only be evaluated inside the expansion the engine owns. Doc 139 §10 asks for a `when` on `NodeBase` with a small closed predicate set.
 
-- [ ] **24. Cursors and selection presence**, plus per-node soft locks. — _silicaui-ask, now FILED as [doc 139 §16](../139-silicaui-builder-asks.md#16--other-editors-selections-and-a-soft-claim-on-a-subtree) · M_
+- [ ] **24. Cursors and selection presence**, plus per-node soft locks. — _silicaui-ask, now FILED as [docs/silicaui/01 §16](../silicaui/01-builder-asks.md#16--other-editors-selections-and-a-soft-claim-on-a-subtree) · M_
 
   > **The only open item on this roadmap that is not blueprint authoring, and it was the one ask
   > never written up.** Filed 2026-07-30. Reframed on the way: the ask is PEER SELECTIONS, not
@@ -554,7 +567,7 @@ they stopped covering the whole MDI — that treated the symptom. The container 
   > exactly one inspector seam, `BuilderHost.inspectorPanels?(node): InspectorPanel[]`, wrong on
   > both axes: it appends SECTIONS INSIDE an existing tab rather than adding a tab, and it is
   > NODE-SCOPED, so a document-scoped tool would appear and vanish with the selection. Filed as
-  > **doc 139 §17**; `0.43.0` answered it with
+  > **docs/silicaui/01 §17**; `0.43.0` answered it with
   > `inspectorTabs?(node: SelectableNode | undefined): InspectorTabDef[]` and a `scope: "panel"`
   > variant that renders with nothing selected.
   >
@@ -566,7 +579,7 @@ they stopped covering the whole MDI — that treated the symptom. The container 
   > **The rail is not the drawer, and the first pass proved it.** Porting the rows verbatim into a
   > 16–34%-wide column produced four identical bordered cards, each with a grey "You saved" badge
   > and an outlined button. Brandon: _"it still looks like absolute garbage."_ The rebuild is in
-  > [apps/workbench/DESIGN.md](../../apps/workbench/DESIGN.md) §5 as the canonical worked example:
+  > [DESIGN.md](../../DESIGN.md) §5 as the canonical worked example:
   > clock times under day headings (three saves in an afternoon all read "3 hours ago"), the actor
   > badge colored by WHO — `info` / `module-ai` / `warning` — so the rows differ with the text
   > covered, `info`/`warning` on the tab strip itself to carry draft-vs-live, solid `primary`
@@ -593,7 +606,7 @@ they stopped covering the whole MDI — that treated the symptom. The container 
   > busy person actually reads — "15 to fix" without opening anything. Brandon asked for the popup
   > to hang off the status bar itself; §14 documents that slot as non-interactive, so the COUNT is
   > down there and the CONTROL stayed in the toolbar — which is the engine's own split, state below
-  > and actions above. The rule looks one case too broad and is challenged as **doc 139 §18**,
+  > and actions above. The rule looks one case too broad and is challenged as **docs/silicaui/01 §18**,
   > without pre-empting it.
   >
   > **And it no longer runs on open** — opening cost a save plus a full walk of every page to
@@ -662,6 +675,46 @@ they stopped covering the whole MDI — that treated the symptom. The container 
   > true. My read: (a)+(b) together, since the current thing is a report and what an author needs is
   > a worklist. **Do not build until Brandon picks** — this is design, not a defect.
 
+- [x] **28. The shipped blueprints were never graded by the tool that grades tenant sites.** — _in-our-control · M · DONE 2026-08-02_
+
+  > **346 findings across the 21 bundles, 6 of them errors.** The engine had a linter, a Check panel
+  > and a per-section catalog sweep; the CONTENT those tools ship had none of it. Every defect below
+  > shipped to every tenant who installs a starter site, and none was visible by reading the JSON.
+  >
+  > - **Repeater cards with no bound `href` (63).** The product and post cards sit inside
+  >   `data: {kind:"collection"}` repeaters, so the destination must be BOUND
+  >   (`{kind:"value", ref:"url", attr:"href"}`) — the capture that produced these bundles lost it.
+  >   Every blueprint shipped a featured-products grid and a journal grid whose REAL records were
+  >   unclickable. A bound `<a>` and a forgotten one are indistinguishable in the tree, which is
+  >   exactly what `attr-binding.ts`'s own comment warns about.
+  > - **Viewport variants in the header (168).** `hidden … sm:flex` on the desktop nav and
+  >   `relative sm:hidden` on the hamburger — measured against the BROWSER WINDOW, while the
+  >   editor's phone preview resizes the BLOCK. The one piece of responsive behaviour on the page,
+  >   invisible in the preview built to check it. Fixed by adding `@container` to the frame's
+  >   `<nav>` / `<footer>` and two page sections (what `site-chrome.ts` already does), then
+  >   `sm:` → `@sm:`.
+  > - **`text-primary` as INK on `bg-base-100` (6 errors).** A fill token used as a text color, so
+  >   it inherits whatever lightness the theme's brand happens to have; on petal, salon and workshop
+  >   the product PRICE was near-invisible.
+  > - `gap-2.5` (21 — emits no CSS at all), an `h3` footer heading under the page `h1` (42), and six
+  >   pages with no search description (21).
+  >
+  > **One finding was a defect in the LINTER, not the content.** A `<Button type="submit">` inside a
+  > `<Form>` was reported as "This button doesn't go anywhere" — and the remedy it suggested (open it
+  > and choose a page) would have broken a working contact form. It fired on all 21 bundles and would
+  > fire on every tenant contact form on the platform. `links.ts` now skips `submit`/`reset`; a bare
+  > `<Button>Learn more</Button>` still reports.
+  >
+  > **Fixed at the SOURCE.** Twenty of the bundles are generated clones, so every change landed in
+  > the golden `sparx` bundle and propagated through `_gen/gen-sparx-themed.ts` — 21 files, and the
+  > diff is only the intended lines. Hand-editing a clone is pointless; the next generate overwrites it.
+  >
+  > **346 → 2**, and both survivors are the sparx ember at 4.1:1 light / 3.2:1 dark against its own
+  > `-content` pair — a THEME-token decision, accepted as-is by Brandon on 2026-08-02.
+  > [blueprint-sweep.test.ts](../../packages/site-lint/src/blueprint-sweep.test.ts) locks it in with a
+  > rule per fix plus a catch-all that tolerates exactly that one site-scoped `contrast-low`, so a new
+  > rule or a new bundle cannot land findings quietly.
+
 ---
 
 ## Sequencing notes
@@ -672,4 +725,4 @@ they stopped covering the whole MDI — that treated the symptom. The container 
 - **Slice 9 gates slices 10–12.** The lint engine is the substrate; contrast, the Check step and the budget are consumers of it.
 - **Wave 4 slice 18 is independent of everything** and can start in parallel at any point — it is authoring, not engineering.
 
-Related: [00-README.md](00-README.md) · [02-silicaui-asks.md](02-silicaui-asks.md) · [docs/139 — the silicaui asks register](../139-silicaui-builder-asks.md)
+Related: [00-README.md](00-README.md) · [02-silicaui-asks.md](02-silicaui-asks.md) · [docs/silicaui/01 — the silicaui asks register](../silicaui/01-builder-asks.md)

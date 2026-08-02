@@ -1,10 +1,10 @@
 # The marketing page system — extracted from the landing page
 
-**Version:** 1.1
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-30
+**Last Updated:** 2026-08-02
 
-The homepage (`apps/web/app/page.tsx` → `components/marketing/landing-v3/*`) is the only
+The homepage (`apps/web/app/page.tsx` → `components/marketing/landing/*`) is the only
 page on sparx.works that was designed as a whole rather than assembled. Everything else
 reads as leftover content because it was built against a different, older vocabulary and
 never given a compositional system.
@@ -343,7 +343,7 @@ Fixed and mechanical — copy it exactly.
   modules", "Book a 20-min call".
 - **Arrows are semantic:** `→` for commit, `↓` for an in-page scroll.
 - **Size is `xl` in the hero and closer, `lg` mid-page.**
-- **Every CTA is tracked**: `signupHref('landing-v3-hero')` — the ref string names the
+- **Every CTA is tracked**: `signupHref('landing-hero')` — the ref string names the
   band. New sections must pass their own ref.
 - Server Components use `buttonClasses({...})` on an `<a>`, **never** `<Button
 render={<a/>}>` — silica's `cloneElement` on an RSC lazy reference throws at prerender.
@@ -360,9 +360,9 @@ is a fair warning about what will happen on forty less-reviewed ones.
 **Copy**
 
 1. **Two typos in the same sentence**, live on the homepage
-   ([story.tsx](../apps/web/components/marketing/landing-v3/story.tsx)): "managing software
+   ([story.tsx](../apps/web/components/marketing/landing/story.tsx)): "managing software
    **instaed** of **servicng** customers." → "instead of serving customers."
-2. **A duplicated paragraph** ([proof.tsx](../apps/web/components/marketing/landing-v3/proof.tsx)).
+2. **A duplicated paragraph** ([proof.tsx](../apps/web/components/marketing/landing/proof.tsx)).
    The section lede and the body of its own hero card were the same sentence, verbatim,
    ~15px apart. → The lede keeps the general claim; the card now sets up the receipt
    directly ("Four subscriptions, four bills, four copies of the same customer — and you

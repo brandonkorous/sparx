@@ -128,7 +128,7 @@ function setAtPath(root: DataSources, dottedKey: string, value: unknown): void {
  *  many". Only ever a CEILING: a source that yields fewer previews fewer, so this is
  *  never the old lie in the other direction.
  *
- *  A per-instance `limit` (silicaui 0.38, docs/139 §12) is applied by the ENGINE at
+ *  A per-instance `limit` (silicaui 0.38, docs/silicaui/01 §12) is applied by the ENGINE at
  *  render, below this — so an author who asks for 3 correctly sees 3, hole included.
  *  That hole is real; the one this constant removes was not. */
 const DEFAULT_PREVIEW_ITEMS = 4;

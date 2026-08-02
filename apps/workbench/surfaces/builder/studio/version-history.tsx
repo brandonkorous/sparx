@@ -1,7 +1,7 @@
 'use client';
 
 // History — the studio's two undo ladders, as the inspector rail's third tab
-// (docs/126 §4.6 + §5.3, docs/139 §17).
+// (docs/126 §4.6 + §5.3, docs/silicaui/01 §17).
 //
 // TWO HISTORIES, and conflating them would be the dangerous bug. They restore
 // different things and one of them is visible to the public:

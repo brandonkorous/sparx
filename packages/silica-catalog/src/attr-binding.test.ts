@@ -4,7 +4,7 @@
 // children the moment it filled that node's binding — correct for a text binding (the
 // children were just replaced), wrong for an attribute binding (the children survive,
 // unresolved) — so the value rode a hidden `<input>` carrier that a hoist pass lifted
-// onto the parent. silicaui 0.36.0 recurses (doc 139 §7 / Q22), so the carrier is gone
+// onto the parent. silicaui 0.36.0 recurses (docs/silicaui/01 §7 / Q22), so the carrier is gone
 // and these are native `{ kind:'value', ref, attr }` bindings.
 //
 // The assertions did NOT go with it. Every one of them describes something a storefront

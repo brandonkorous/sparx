@@ -66,7 +66,7 @@ export interface DataSource {
    * NOT an author knob. Which source a block binds is the author's choice; how
    * many that source yields is ours. A per-instance override ("show 4 of these
    * 12") needs an options field on silica's collection binding, which the engine
-   * does not have — see docs/139.
+   * does not have — see docs/silicaui/01.
    */
   maxItems?: number;
 }

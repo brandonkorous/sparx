@@ -12,7 +12,7 @@
 //
 // So the value rode a hidden `<input>` carrier that `resolveTree` filled as a leaf, and
 // a `hoistAttrBindings` pass lifted it onto the parent before `toHtml`. That workaround
-// is GONE: 0.36.0's value branch recurses (doc 139 §7 / Q22), so these are plain native
+// is GONE: 0.36.0's value branch recurses (docs/silicaui/01 §7 / Q22), so these are plain native
 // bindings and the carrier, the hoist pass, and the `__sui-attr:` protocol are deleted.
 //
 // ── What did NOT come back for free ──────────────────────────────────────────

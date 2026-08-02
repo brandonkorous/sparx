@@ -55,7 +55,7 @@ const TenantQuery = z.object({
 });
 
 /** The frame read also takes the route's PATH, so it can answer with the chrome that
- *  page asks for rather than the site default (doc 139 §5). Optional — a caller that
+ *  page asks for rather than the site default (docs/silicaui/01 §5). Optional — a caller that
  *  omits it gets exactly what it got before per-page frames existed. */
 const FrameQuery = TenantQuery.extend({
   path: z.string().max(2048).optional(),
@@ -155,7 +155,7 @@ const publicBuilderRoutes: FastifyPluginAsync = (app) => {
     const stage = previewStage(app, request, tenantId);
     const [frame, commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
       // `path` asks for the chrome THIS route wears rather than the site default
-      // (doc 139 §5) — a landing page can have none. Omitted by any caller that just
+      // (docs/silicaui/01 §5) — a landing page can have none. Omitted by any caller that just
       // wants the default, which is every caller that predates per-page frames.
       siteService.getPublishedFrame({ tenantId, propertyId }, stage, q.path),
       // Drives the storefront's code-authored starter fallback (silica.ts) — a

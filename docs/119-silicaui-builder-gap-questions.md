@@ -4,7 +4,7 @@
 **Author:** Brandon Korous
 **Last Updated:** 2026-07-27
 
-> **⚠️ SUPERSEDED (2026-07-27) by [doc 139](139-silicaui-builder-asks.md).** This doc was written
+> **⚠️ SUPERSEDED (2026-07-27) by [docs/silicaui/01](silicaui/01-builder-asks.md).** This doc was written
 > against silicaui-builder **0.8.0**, and its framing question — _"should sparx adopt silica's
 > engine, or keep its own?"_ — has been answered and executed: `/builder/studio` **is** the silica
 > editor, sparx's bespoke editor is deleted, and `apps/dashboard` no longer exists. The

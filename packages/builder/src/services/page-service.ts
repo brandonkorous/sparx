@@ -341,7 +341,7 @@ export async function update(
     if (input.ogImage !== undefined) data.ogImage = emptyToNull(input.ogImage);
     if (input.noindex !== undefined) data.noindex = input.noindex;
     // Chrome. `null` RESETS to the site default; the sentinel and a layout id are both
-    // stored verbatim (doc 139 §5). Distinct from `undefined`, which leaves it alone.
+    // stored verbatim (docs/silicaui/01 §5). Distinct from `undefined`, which leaves it alone.
     if (input.frameId !== undefined) data.frameId = input.frameId;
 
     const updated = await tx.builderPage.update({ where: { id }, data });

@@ -1,6 +1,6 @@
 // Conditional visibility — showing a node only when the data behind it exists.
 //
-// silicaui 0.36.0 added `{ kind: 'visible', ref, negate? }` (doc 139 §10): the engine
+// silicaui 0.36.0 added `{ kind: 'visible', ref, negate? }` (docs/silicaui/01 §10): the engine
 // asks the host for `ref` and DROPS the node and its subtree when the answer is absent —
 // `null`, `undefined`, `false`, `''`, or an empty array. An `editing` walk ghosts it
 // instead of dropping, so the author can still select and un-bind it on the canvas.

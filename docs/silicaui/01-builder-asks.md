@@ -1,4 +1,4 @@
-# 139 — silicaui-builder: the asks (1–15 + §17 ANSWERED; §16, §18, §19 OPEN)
+# silicaui-builder — the asks (1–15 + §17 ANSWERED; §16, §18, §19 OPEN)
 
 **Version:** 3.6.0
 **Author:** Brandon Korous
@@ -85,7 +85,7 @@
 > threshold. That is a coincidence, not a safety margin: the measured build-time path is the
 > guarantee, the constant is best-effort.
 
-> **This supersedes [doc 119](119-silicaui-builder-gap-questions.md).** 119 was written 2026-07-11
+> **This supersedes [doc 119](../119-silicaui-builder-gap-questions.md).** 119 was written 2026-07-11
 > against silicaui-builder **0.8.0**, and its framing question — _"should sparx adopt silica's
 > engine, or keep its own?"_ — has since been answered and executed: `/builder/studio` **is** the
 > silica editor, sparx's bespoke editor is deleted, and `apps/dashboard` no longer exists. 119's
@@ -276,8 +276,11 @@ canvas and the storefront diverge.
 whole-site snapshot stack is discarded on every `applyRemoteOps` — which, in a product where
 an agent edits alongside the author over MCP, means the author's undo history quietly
 disappears mid-session. The host computes each action's inverse from the ops and the previous
-document ([`silica-op-invert.ts`](../packages/builder-schemas/src/silica-op-invert.ts)), and 22
-of the 24 op kinds invert cleanly against `Editor.applyOp`.
+document, and 22 of the 24 op kinds invert cleanly against `Editor.applyOp`. (At the time this
+was written the host computed that itself, in `packages/builder-schemas/src/silica-op-invert.ts`;
+the engine answered with `editor.inverseOf(ops, before)` in `0.36.0`, so that module is GONE and
+the host just binds the engine's — see
+[undo-history.tsx](../../apps/workbench/surfaces/builder/studio/undo-history.tsx).)
 
 **The two that do not:**
 
@@ -324,7 +327,7 @@ threshold down to about 0.60.
 > 0.68 where the site actually paints BLACK. A wrong verdict in whichever direction hurt more.
 >
 > Both now read `SILICA_CONTENT_THRESHOLD` / `inkForLightness` from
-> [silica-catalog/content-ink.ts](../packages/silica-catalog/src/content-ink.ts), which also fixes
+> [silica-catalog/content-ink.ts](../../packages/silica-catalog/src/content-ink.ts), which also fixes
 > a boundary the two copies disagreed on. **This is the concrete case for the standing rule in this
 > document: verify a bump against the shipped bundle, never the changelog.** A changelog line would
 > have carried this; a type error never could. `content-ink.ts` records the exact `grep`, and states
@@ -356,7 +359,7 @@ while the ink the rule rejected would have passed. It is not a rounding problem 
 systematic from roughly `l = 0.55` to `l = 0.68`, which is where a mid-tone brand color lives.
 
 sparx's own compiler already does the right thing: `deriveContent` in
-[site-themes/v2/color.ts](../packages/site-themes/src/v2/color.ts) picks whichever of near-white and
+[site-themes/v2/color.ts](../../packages/site-themes/src/v2/color.ts) picks whichever of near-white and
 near-black has the higher measured contrast, and emits it explicitly — so a tenant on their own
 brand colors is unaffected and only silica PRESET themes are hit. CSS cannot compute a contrast
 ratio, which is presumably why the threshold exists; a build-time derivation can, and silicaui
@@ -448,7 +451,7 @@ author.
 
 Two shipped `@wizeworks/silicaui-html` blocks — **"Content — prose section"** and **"Feature —
 media split"** — declare an `eyebrow` part. That is the exact pattern
-[RULE #2](../CLAUDE.md) bans, and because those blocks are in the default Insert palette, it ships
+[RULE #2](../../CLAUDE.md) bans, and because those blocks are in the default Insert palette, it ships
 into tenant sites by default.
 
 Either drop the part from those two blocks upstream, or sparx hides them via `catalog().hide` and
@@ -867,7 +870,7 @@ Two details worth keeping in mind when contributing one, both from the shipped d
 The engine also hides the identity header and the Duplicate/Delete footer while a panel tab is
 open, so the rail reads as one surface, and a node-scoped tab that stops being returned while open
 falls back to Design rather than blanking. Adopted in
-[apps/workbench/surfaces/builder/studio/version-history.tsx](../apps/workbench/surfaces/builder/studio/version-history.tsx)
+[apps/workbench/surfaces/builder/studio/version-history.tsx](../../apps/workbench/surfaces/builder/studio/version-history.tsx)
 — the drawer is gone.
 
 ---
@@ -991,4 +994,4 @@ looking like a typo nobody made.
 None of the above blocks the sparx-side work. [docs/builder-audit/01-roadmap.md](builder-audit/01-roadmap.md)
 Waves 1, 2 and 4 are all host-side and in flight; this register is Wave 3.
 
-Related: [builder-audit](builder-audit/00-README.md) · [119 (superseded)](119-silicaui-builder-gap-questions.md) · [118 — silicaui migration](118-builder-silicaui-html-migration.md) · [126 — op protocol](126-builder-op-protocol.md)
+Related: [builder-audit](builder-audit/00-README.md) · [119 (superseded)](../119-silicaui-builder-gap-questions.md) · [118 — silicaui migration](../118-builder-silicaui-html-migration.md) · [126 — op protocol](../126-builder-op-protocol.md)

@@ -1,12 +1,12 @@
-import { LandingV3Hero } from '@/components/marketing/landing-v3/hero';
-import { LandingV3Whoever } from '@/components/marketing/landing-v3/whoever';
-import { LandingV3Story } from '@/components/marketing/landing-v3/story';
-import { LandingV3Switchboard } from '@/components/marketing/landing-v3/switchboard';
-import { LandingV3Timeline } from '@/components/marketing/landing-v3/timeline';
-import { LandingV3Proof } from '@/components/marketing/landing-v3/proof';
-import { LandingV3DashboardSection } from '@/components/marketing/landing-v3/dashboard-section';
-import { LandingV3Faq } from '@/components/marketing/landing-v3/faq';
-import { LandingV3FinalCta } from '@/components/marketing/landing-v3/final-cta';
+import { LandingHero } from '@/components/marketing/landing/hero';
+import { LandingWhoever } from '@/components/marketing/landing/whoever';
+import { LandingStory } from '@/components/marketing/landing/story';
+import { LandingSwitchboard } from '@/components/marketing/landing/switchboard';
+import { LandingTimeline } from '@/components/marketing/landing/timeline';
+import { LandingProof } from '@/components/marketing/landing/proof';
+import { LandingDashboardSection } from '@/components/marketing/landing/dashboard-section';
+import { LandingFaq } from '@/components/marketing/landing/faq';
+import { LandingFinalCta } from '@/components/marketing/landing/final-cta';
 
 export const metadata = {
   // Lowercase `sparx` — it is the brand, and the title promised a different line
@@ -16,25 +16,25 @@ export const metadata = {
   description:
     'A narrative walkthrough of sparx — the modular content and commerce OS that brings your site, customers, sales, email and AI into one connected system.',
 };
-// v3 — rebuilding the homepage on pure silicaui (no primitives.tsx, no
-// mkt-* CSS classes, no inline style objects, no hardcoded colors), keeping
-// only the actual copy/content from the live homepage (formerly /landing/v2).
-// Built and reviewed section by section; sections land here as they're
-// signed off, in the same order they run on the live page. Currently:
-// Hero, Whoever, Story, Switchboard, Timeline, Proof, DashboardSection, Faq,
-// FinalCta — every section from the live homepage now has a v3 build.
-export default function LandingV3Page() {
+// The homepage. Built on pure silicaui — no primitives.tsx, no mkt-* CSS
+// classes, no inline style objects, no hardcoded colors — so a token or
+// component change upstream lands here with zero edits (RULE #1).
+//
+// Every section is its own file under components/marketing/landing/, in the
+// order they run down the page: Hero, Whoever, Story, Switchboard, Timeline,
+// Proof, DashboardSection, Faq, FinalCta.
+export default function LandingPage() {
   return (
     <main>
-      <LandingV3Hero />
-      <LandingV3Whoever />
-      <LandingV3Story />
-      <LandingV3Switchboard />
-      <LandingV3Timeline />
-      <LandingV3Proof />
-      <LandingV3DashboardSection />
-      <LandingV3Faq />
-      <LandingV3FinalCta />
+      <LandingHero />
+      <LandingWhoever />
+      <LandingStory />
+      <LandingSwitchboard />
+      <LandingTimeline />
+      <LandingProof />
+      <LandingDashboardSection />
+      <LandingFaq />
+      <LandingFinalCta />
     </main>
   );
 }

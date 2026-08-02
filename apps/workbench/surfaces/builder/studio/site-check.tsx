@@ -33,10 +33,10 @@
 // THE COUNT LIVES IN THE STATUS BAR, NOT HERE. `studio-surface.tsx` renders `CheckCount`
 // into silica's `statusBarSlot`, so "3 broken" is ambient — visible without opening
 // anything, which is the only version of this a busy person actually reads. That slot is
-// non-interactive by contract (docs/139 §14: a 28px strip is no place for a control), so
+// non-interactive by contract (docs/silicaui/01 §14: a 28px strip is no place for a control), so
 // the COUNT is down there and the CONTROL is up here — exactly the split the engine
 // argues for: state below, actions above. Brandon asked for the popup to hang off the
-// status bar itself; that needs the rule relaxed, and it is filed as docs/139 §18.
+// status bar itself; that needs the rule relaxed, and it is filed as docs/silicaui/01 §18.
 //
 // IT NO LONGER RUNS ON OPEN. Opening cost a save plus a full walk of every page's
 // composed document, to re-read a list the author had just read. There is a Run button
@@ -60,7 +60,7 @@
 // `goTo` points the spine at the tree the finding names, in BOTH directions: a page
 // finding clicked while the author is in Layout needs the same correction as a frame
 // finding clicked from a page. silicaui 0.41 syncs its own mode toggle off `activeTree`
-// (docs/139 §15), so the whole editor — canvas, rail, Navigator, chip — follows.
+// (docs/silicaui/01 §15), so the whole editor — canvas, rail, Navigator, chip — follows.
 // VERIFIED in a browser on 2026-07-30: a header finding switches the mode chip to Layout,
 // swaps the Navigator to the frame tree, selects the block, and retitles the pane.
 //

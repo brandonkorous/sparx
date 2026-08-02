@@ -261,7 +261,7 @@ describe('stagedTree / hasStagedTree — the published↔draft boundary', () => 
   });
 });
 
-// ── The chrome pointer obeys the same boundary (doc 139 §5) ──────────────────
+// ── The chrome pointer obeys the same boundary (docs/silicaui/01 §5) ──────────────────
 //
 // `frame_id` shipped as ONE column read live by the storefront, which was invisible
 // while nothing could write it. Once the editor got a frame picker, saving "no header

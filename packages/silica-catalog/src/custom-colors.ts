@@ -31,7 +31,7 @@
 // later is picked up with no change here. This is strictly WIDER than the canvas's
 // own preview, which covers only `.btn-<name>` + the three utilities — so a published
 // `badge-brand` now works even though the canvas still previews it bare (an upstream
-// gap, tracked in docs/139).
+// gap, tracked in docs/silicaui/01).
 //
 // Every COMPONENT rule is a pure var-setter (`--btn-bg: var(--color-brand)`) —
 // silicaui's core design, and what makes injecting them at render time safe: they

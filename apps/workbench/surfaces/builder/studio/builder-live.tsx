@@ -11,7 +11,7 @@
 //
 // WHAT IT RENDERS IS INDICATORS ONLY — who else is in the site, and an "an assistant is
 // editing" pulse while an agent is active. Both are non-interactive, which is what lets
-// this live in silicaui's `statusBarSlot` (0.41, docs/139 §14): the editor's footer, beside
+// this live in silicaui's `statusBarSlot` (0.41, docs/silicaui/01 §14): the editor's footer, beside
 // the surface and device labels, where the engine keeps its own state. That slot is
 // non-interactive by contract and more strictly than the header one — it is a 28px strip
 // and the engine's own children there are plain text.

@@ -332,7 +332,7 @@ export function useRestoreDraftVersion() {
 /** One page's row-level settings: how it describes itself to search engines and social
  *  cards, and which chrome wraps it. */
 export interface PageSettingsDto {
-  /** `null` = the site default, `'none'` = bare, otherwise a layout id (doc 139 §5). */
+  /** `null` = the site default, `'none'` = bare, otherwise a layout id (docs/silicaui/01 §5). */
   frameId: string | null;
   seoTitle: string | null;
   seoDescription: string | null;

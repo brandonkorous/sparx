@@ -1,4 +1,4 @@
-// Which chrome wraps one page (doc 139 §5).
+// Which chrome wraps one page (docs/silicaui/01 §5).
 //
 // A site's shells have always been a per-property CATALOG — `builder_layouts` holds
 // many rows and exactly one carries `is_active`. What was missing was the per-page

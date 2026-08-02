@@ -320,7 +320,7 @@ function StudioEditor({
   const siteOrigin = useSiteOrigin(propertyId);
 
   const pageIdParam = typeof ctx.params.pageId === 'string' ? ctx.params.pageId : null;
-  // Which editing surface the author LANDS on (silicaui 0.36's `initialMode` — doc 139
+  // Which editing surface the author LANDS on (silicaui 0.36's `initialMode` — docs/silicaui/01
   // §7 Q26). Until this existed a host could only ever open the editor on Page, so the
   // nav's own promise that "header / footer / menu land in the Editor" put the operator
   // on a page BODY with no signpost to the chrome at all.
@@ -995,7 +995,7 @@ function StudioEditor({
   // Which un-appliable remote changes are outstanding (docs/126 §4.5). Owned HERE rather
   // than inside `BuilderLiveSync` because the affordance it drives is a BUTTON, and the
   // live-sync indicators now render in silica's status slot, which must stay free of tab
-  // stops (docs/139 §13). Accumulated as a SET: two agent writes landing before the
+  // stops (docs/silicaui/01 §13). Accumulated as a SET: two agent writes landing before the
   // operator reacts is one reload, and repeating "the update" twice would suggest
   // otherwise.
   const [reloadHints, setReloadHints] = useState<string[]>([]);
@@ -1022,7 +1022,7 @@ function StudioEditor({
         onChange={onChange}
         onActivePageChange={onActivePageChange}
         onPublish={onPublish}
-        // STATE GOES IN THE STATUS BAR (silicaui 0.41 `statusBarSlot` / docs/139 §14).
+        // STATE GOES IN THE STATUS BAR (silicaui 0.41 `statusBarSlot` / docs/silicaui/01 §14).
         //
         // It rode in the header first — `toolbarSlot`, then §13's `toolbarStatusSlot` — and
         // the header was the wrong FLOOR, not just the wrong slot. The footer already carries

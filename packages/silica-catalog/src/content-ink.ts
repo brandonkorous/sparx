@@ -18,7 +18,7 @@
 //
 // ── THE VALUE, AND HOW TO RE-VERIFY IT ──────────────────────────────────────────────
 // 0.57, changed upstream FROM 0.68 in silicaui **0.36.0**. sparx asked for exactly this
-// (doc 139 §9 proposed 0.6 as a lower bound); silicaui went further and picked a value
+// (docs/silicaui/01 §9 proposed 0.6 as a lower bound); silicaui went further and picked a value
 // inside the real crossover range instead of above it. We adopted the rest of 0.36.0 and
 // missed this, so two stale 0.68s sat in the tree for five releases.
 //
@@ -31,7 +31,7 @@
 // NO TEST CAN CATCH THE NEXT UPSTREAM CHANGE. The ground truth is a string inside the
 // Tailwind plugin, and neither this package nor site-lint depends on that package (only
 // on `@wizeworks/silicaui-html`), so nothing here can read it. Verify it BY HAND on every
-// silicaui bump — which is already the standing rule for a bump (doc 139 §9: read the
+// silicaui bump — which is already the standing rule for a bump (docs/silicaui/01 §9: read the
 // shipped bundle, never the changelog):
 //
 //   grep -o 'content-threshold, [0-9.]*' \

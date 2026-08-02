@@ -20,7 +20,7 @@
 // between — alone. That is what lets the stack stay alive across a co-editor's edit
 // rather than being discarded.
 //
-// THE INVERSE IS THE ENGINE'S NOW (silicaui 0.36.0, doc 139 §8). sparx used to compute
+// THE INVERSE IS THE ENGINE'S NOW (silicaui 0.36.0, docs/silicaui/01 §8). sparx used to compute
 // it in `@sparx/builder-schemas/silica-op-invert`, which could not be faithful for two
 // ops no host can invert from outside: `symbol.set` that CREATES (undoing it needs a
 // detach cascade of ids only the engine mints) and `node.setText` (which flattens
