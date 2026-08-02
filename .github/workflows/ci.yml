@@ -40,41 +40,58 @@ concurrency:
 # the flag to tsc ("TS5023: Unknown compiler option"), not to turbo.
 jobs:
   lint:
-    name: Lint
+    name: Lint (${{ matrix.name }})
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: packages, scope: './packages/*' }
+          - { name: services, scope: './services/*' }
+          - { name: apps, scope: './apps/*' }
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/setup-workspace
         with:
-          turbo-cache-key: lint
+          turbo-cache-key: lint-${{ matrix.name }}
       # -----------------------------------------------------------------------
-      # BOUNDED CONCURRENCY AND A HEAP CEILING, because this job was failing on
-      # memory rather than on lint errors.
+      # SHARDED, because this job was failing on MEMORY rather than on lint
+      # errors — and one runner cannot hold the whole workspace.
       #
-      # The symptom did not look like it. The step reported `cancelled` and the
-      # job `failure`, with no ESLint output naming a file — which reads as a
-      # timeout or a cancelled run. It was neither: the runs died at 6.5 and 9.9
-      # minutes against a 20-minute limit, and `Typecheck` in the SAME run
-      # carried on happily for another nine minutes afterwards, so nothing was
-      # cancelling the run. What actually happens is V8 aborting inside one of
-      # the workers; the runner loses the process and GitHub records the step as
-      # cancelled.
+      # The symptom hid it. The step reported `cancelled` and the job `failure`
+      # with no ESLint output naming a file, which reads as a timeout or a
+      # cancelled run. It is neither. The runs died at 6.5 and 9.9 minutes
+      # against a 20-then-30-minute limit, and `Typecheck` in the SAME run
+      # carried on for another nine minutes afterwards — so the RUN was never
+      # cancelled, only this job's runner was lost. The last log line before it
+      # goes is `Tasks: 51 successful, 78 total`: it dies partway through, which
+      # is what running out of memory looks like from the outside.
       #
-      # It is intermittent by nature, which is why it looked random: the one
-      # green Lint in this window finished in 1m48s off an almost-total turbo
-      # cache hit, having barely linted anything. Cache hit → no OOM → green.
+      # `lint` dependsOn `^build`, so a single runner was building AND
+      # type-aware-linting all 78 packages inside 7 GB. Bounding concurrency and
+      # capping the heap was not enough on its own; the fix is to stop asking
+      # one runner to hold the whole graph. Three shards by workspace directory
+      # cut both peak memory and wall time, and `fail-fast: false` keeps one
+      # shard's failure from hiding the other two.
       #
-      # `--concurrency=2` matches the runner's 2 vCPUs. Turbo otherwise fans out
-      # to the core count with no memory awareness, and several typed-ESLint
+      # `--concurrency=2` matches the runner's 2 vCPUs — turbo otherwise fans
+      # out to the core count with no memory awareness, and several typed-ESLint
       # processes each holding a TypeScript program is the peak that does not
-      # fit in 7 GB. The heap cap is per worker and deliberately below the box's
-      # RAM, so a runaway worker throws a catchable JS heap error — which names
-      # the package — instead of the kernel taking the runner out silently.
+      # fit. The heap cap is per worker and deliberately below the box's RAM, so
+      # a runaway worker throws a catchable JS heap error naming its package
+      # instead of the kernel taking the runner out silently.
       #
       # Same failure the pre-push hook hits locally, where the workaround is
       # NODE_OPTIONS=--max-old-space-size=8192.
-      - run: pnpm lint -- --concurrency=2
+      #
+      # NOTE ON THE CACHE: turbo hashes every file in a package directory, so a
+      # commit that touches all 17 service Dockerfiles invalidates all 17 lint
+      # entries even though ESLint never reads a Dockerfile. That is why a run
+      # can report `Cached: 0 cached, 78 total` and do everything cold. Narrowing
+      # each task's `inputs` in turbo.json is the follow-up; sharding is what
+      # makes the cold case survivable in the meantime.
+      - run: pnpm lint -- --filter "{${{ matrix.scope }}}" --concurrency=2
         env:
           NODE_OPTIONS: --max-old-space-size=5120
 
