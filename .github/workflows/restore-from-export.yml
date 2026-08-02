@@ -262,7 +262,29 @@ jobs:
 
                         # DROP SCHEMA, not --clean in the dump: the export carries no
                         # DROP statements, so a re-run would collide on every CREATE.
-                        echo "resetting public schema ..."
+                        #
+                        # Dropped TABLE-BY-TABLE in autocommit, not as one
+                        # "DROP SCHEMA public CASCADE". That single statement takes a
+                        # lock on every object it removes and holds them all to
+                        # commit; against this schema (316 tables, 602 indexes, plus
+                        # sequences) it exhausts the server-wide lock table and dies
+                        # with "ERROR: out of shared memory". The lock table is
+                        # max_locks_per_transaction x max_connections = 64 x 50 = 3200
+                        # slots for the WHOLE server, shared with live traffic, and
+                        # raising either needs a Postgres restart — i.e. downtime, to
+                        # work around a transaction that never needed to be atomic.
+                        #
+                        # psql runs each piped statement in its own transaction, so a
+                        # per-table drop needs only that table's locks and releases
+                        # them immediately. The schema drop still runs afterwards to
+                        # clear views, sequences and types the table drops left
+                        # behind, and is cheap once the schema is nearly empty.
+                        echo "resetting public schema (per-table, autocommit) ..."
+                        psql "\$AUTH_DATABASE_URL" -tAc \
+                          "SELECT format('DROP TABLE IF EXISTS public.%I CASCADE;', tablename)
+                             FROM pg_tables WHERE schemaname='public'" \
+                          | psql "\$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 --quiet
+
                         psql "\$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 -c \
                           "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
 
