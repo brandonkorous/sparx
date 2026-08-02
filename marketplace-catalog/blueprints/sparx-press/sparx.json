@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-press",
   "name": "sparx — Press",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A complete multi-module starter in the Press look — for publishers, newsletters, and blogs.",
   "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Press look, tuned for publishers, newsletters, and blogs. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

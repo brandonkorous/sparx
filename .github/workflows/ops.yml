@@ -40,16 +40,17 @@ on:
         description: 'What to run'
         required: true
         type: choice
+        # EVERY MARKETPLACE TASK IS GONE FROM THIS LIST, and nothing replaced them.
+        # There were four: an ingest to publish first-party listings, and purges to
+        # retract a theme, a component or a blueprint. api-rest publishes sparx's whole
+        # catalog on boot and retracts by absence, so publishing is no longer something
+        # anyone triggers and removal is deleting the source — both happen in the commit
+        # that changes the catalog.
+        #
+        # Worth stating because the purges were BUILT and then never run: 25 of
+        # production's 96 component listings were retired or orphaned rows that a
+        # destructive workflow could have removed and nobody remembered to.
         options:
-          # Re-publishes the marketplace bundles WITHOUT a release. The release
-          # already does this on every push, so this is for publishing from an
-          # arbitrary ref, or re-running after a failure, not the normal path.
-          - marketplace-ingest
-          # Retract a listing. There is no other way to remove one — the ingest
-          # is an upsert and never deletes.
-          - marketplace-purge-themes
-          - marketplace-purge-blueprints
-          - marketplace-purge-components
           # Backfills platform CRM records for tenants that predate the worker.
           - platform-crm-backfill
       environment:
@@ -104,10 +105,12 @@ jobs:
       # A typed confirmation, for the tasks that destroy data.
       #
       # Checked BEFORE authenticating to anything, so a mistyped purge costs
-      # nothing and touches nothing. `marketplace-ingest` and the backfill are
-      # upserts and are not gated; the three purges delete catalog rows AND the
-      # immutable artifacts behind them, across every version, and nothing
-      # repopulates them but a re-ingest from a ref that still has the bundles.
+      # nothing and touches nothing. Upserts and backfills are not gated.
+      #
+      # No task in the list is destructive today — the marketplace purges were the
+      # only ones, and they are gone. The gate stays because it is the contract for
+      # adding one: name it `*-purge-*` and it inherits the typed confirmation
+      # rather than needing someone to remember to build one.
       # ---------------------------------------------------------------------
       - name: Confirm a destructive task
         run: |
@@ -158,29 +161,11 @@ jobs:
           REPO='ghcr.io/${{ github.repository }}'
 
           case "$TASK" in
-            marketplace-ingest)
-              image="$REPO/api-rest:$TAG"
-              # Runs from its own manifest, not the generic Job below: the
-              # ingest MOUNTS the sparx-media PVC. Without the volume it still
-              # reports success while writing every artifact to the container's
-              # own filesystem, leaving catalog rows pointing at keys that
-              # resolve to nothing.
-              manifest='true'
-              command=''
-              ;;
-            marketplace-purge-themes|marketplace-purge-blueprints|marketplace-purge-components)
-              image="$REPO/api-rest:$TAG"
-              manifest='false'
-              # WORKDIR in the image is /app/services/api-rest, so this relative
-              # path resolves.
-              command="[\"node\",\"--import\",\"tsx\",\"src/scripts/$TASK.ts\"]"
-              ;;
             platform-crm-backfill)
               image="$REPO/platform-crm-worker:$TAG"
-              manifest='false'
               # WORKDIR is /app/services/platform-crm-worker. The script reports
               # what it would change unless --apply is passed, which is why this
-              # task honours the `apply` input and the purges do not.
+              # task honours the `apply` input.
               if [ '${{ inputs.apply }}' = 'true' ]; then
                 command='["node","--import","tsx","scripts/backfill-tenants.ts","--apply"]'
               else
@@ -195,7 +180,6 @@ jobs:
 
           {
             echo "image=$image"
-            echo "manifest=$manifest"
             echo "command=$command"
           } >> "$GITHUB_OUTPUT"
 
@@ -209,31 +193,6 @@ jobs:
             echo "| apply | \`${{ inputs.apply }}\` |"
           } >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Run the marketplace ingest
-        if: steps.task.outputs.manifest == 'true'
-        env:
-          IMAGE: ${{ steps.task.outputs.image }}
-        run: |
-          set -euo pipefail
-          envsubst '$IMAGE $RUN_ID' \
-            < "$OVERLAY/jobs/marketplace-ingest.yaml" > /tmp/job.yaml
-
-          # Same reasoning as the release: a `requiredDuringScheduling`
-          # podAffinity matching zero pods is unsatisfiable rather than vacuous,
-          # so with no api-rest holding the volume the constraint is dropped
-          # instead of leaving the Job Pending forever.
-          if [ -z "$(kubectl get pods -n "$NAMESPACE" -l app=api-rest -o name 2>/dev/null)" ]; then
-            echo "No api-rest pod holds sparx-media yet — dropping the co-location constraint."
-            kubectl patch --local -f /tmp/job.yaml --type=json \
-              -p '[{"op":"remove","path":"/spec/template/spec/affinity"}]' \
-              -o yaml > /tmp/job.noaff.yaml
-            mv /tmp/job.noaff.yaml /tmp/job.yaml
-          fi
-
-          kubectl apply -n "$NAMESPACE" -f /tmp/job.yaml
-          ./.github/scripts/await-job.sh "marketplace-ingest-${RUN_ID}" "$NAMESPACE" 1800
-          kubectl -n "$NAMESPACE" logs "job/marketplace-ingest-${RUN_ID}" -c ingest \
-            --tail=-1 --ignore-errors=true || true
 
       # ---------------------------------------------------------------------
       # The generic case: an image, a command, the app's environment.
@@ -249,7 +208,7 @@ jobs:
       # parse error pointing at a line nobody wrote.
       # ---------------------------------------------------------------------
       - name: Run the task
-        if: steps.task.outputs.manifest == 'false'
+
         env:
           IMAGE: ${{ steps.task.outputs.image }}
           COMMAND: ${{ steps.task.outputs.command }}

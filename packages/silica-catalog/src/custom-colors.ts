@@ -69,6 +69,9 @@
 
 import silicaPlugin from '@wizeworks/silicaui';
 import { rolesOf, resolveThemeTokens, SEMANTIC_ROLES, type Theme } from '@wizeworks/silicaui-html';
+// The SUPPORTED path, as of silicaui 0.45.0 (docs/silicaui/01 §19) — a render-path entry
+// point that imports no React and emits the full registration.
+import { customColorCss, customRolesOf } from '@wizeworks/silicaui-html/theme';
 
 import { SPARX_RESIDUAL_COLOR_ROLES } from './resolve-sparx-theme';
 
@@ -188,16 +191,58 @@ function serialize(rules: RuleMap): string {
  */
 const ruleCache = new Map<string, string>();
 
-/** The `@layer base` component + utility rules for a set of custom color names. */
-export function customColorRuleCss(roles: string[]): string {
+/**
+ * The `@layer base` component + utility rules for a set of custom color names.
+ *
+ * ── NOW A THIN WRAPPER OVER silicaui, WHICH IS THE POINT ──────────────────────────
+ *
+ * This used to run the Tailwind plugin twice against a stub context — once with the
+ * custom names and once without — and keep the difference (`colorRules` below, still
+ * here as the FALLBACK). That recovered the full registration, and it worked, but it
+ * leaned on two things silicaui publishes no types for: the shape `plugin.withOptions`
+ * returns, and `addBase` being the only channel that matters. It was filed as
+ * docs/silicaui/01 §19 the day it was written, for exactly that reason.
+ *
+ * silicaui 0.45.0 answered it: `customColorCss(theme, scope?)` from
+ * `@wizeworks/silicaui-html/theme` is a real render-path entry point — no React, no
+ * plugin internals — and it emits the whole registration (41 rules across 37 component
+ * families, verified against 0.45.0) rather than the four this package could reach in
+ * 0.41. So the supported call is what runs.
+ *
+ * THE DIFFING FALLBACK IS KEPT, not deleted, and it is not sentimentality. The two
+ * disagree about one thing: which roles count as CUSTOM. This package decides against
+ * `SPARX_REGISTERED_COLOR_ROLES` — the names actually registered in each app's
+ * `globals.css`, which includes the eighteen module hues — while silicaui decides
+ * against its own shipped set, and would therefore treat a module color as custom and
+ * emit rules for a name the build already covers. Harmless (identical declarations,
+ * later in the cascade) but wasteful, so the supported path is used when the two agree
+ * on the role set and the local one when they do not.
+ */
+export function customColorRuleCss(roles: string[], theme?: Theme): string {
   if (roles.length === 0) return '';
   const key = roles.join(',');
   const hit = ruleCache.get(key);
   if (hit !== undefined) return hit;
-  const css = serialize(colorRules(roles));
-  const out = css ? `@layer base{${css}}` : '';
+  const css = theme ? fromSilica(theme, roles) : null;
+  const out = css ?? wrapBase(serialize(colorRules(roles)));
   ruleCache.set(key, out);
   return out;
+}
+
+/** silicaui's own registration for this theme, when its notion of "custom" matches
+ *  ours. `null` hands the caller back to the local diff rather than emitting rules for
+ *  a role set nobody asked about. */
+function fromSilica(theme: Theme, roles: string[]): string | null {
+  const theirs = [...customRolesOf(theme)].sort();
+  const ours = [...roles].sort();
+  if (theirs.length !== ours.length || theirs.some((r, i) => r !== ours[i])) return null;
+  // Unscoped on purpose: these stand in for colors a build-time registration would have
+  // declared globally, and the published page is not a preview of anything.
+  return wrapBase(customColorCss(theme));
+}
+
+function wrapBase(css: string): string {
+  return css ? `@layer base{${css}}` : '';
 }
 
 // ── Derived `-content` foregrounds ───────────────────────────────────────────────
@@ -294,6 +339,6 @@ export function buildCustomColorCss(theme: Theme, opts: BuildCustomColorCssOptio
     }
   }
 
-  out.push(customColorRuleCss(roles));
+  out.push(customColorRuleCss(roles, theme));
   return out.join('');
 }

@@ -135,7 +135,7 @@ export const BrandDecl = z.object({
 export type BrandDecl = z.infer<typeof BrandDecl>;
 
 // A blueprint ships its OWN named theme (docs/54 §3 D5): the installer creates a
-// tenant SiteTheme — a `basePresetKey` (one of the code-first presets) plus a
+// tenant SiteTheme — a `basePresetKey` (a theme sparx ships, @sparx/silica-catalog) plus a
 // Token Model v2 `presentation` overlay and an optional brand `look` snapshot —
 // then applies it. This is data, not a code preset, so it installs without a
 // deploy and stays fully editable afterward (savedThemeService.create + apply).

@@ -214,12 +214,24 @@ function themeListing(row: ThemeRow): MarketplaceListing {
 
 const themeAdapter: CategoryAdapter = {
   category: 'themes',
+  // The UNION of the themes sparx SHIPS and the themes anyone UPLOADS.
+  //
+  // ONE SHELF, MANY PUBLISHERS. Every theme is a row, whoever published it — sparx
+  // included. sparx's own catalog reaches these rows by publishing itself at boot
+  // (lib/marketplace/self-register.ts) rather than by a deploy-time copy step, so
+  // "what does the marketplace list" has exactly one answer and a collaborator's
+  // upload is not a second-class citizen in a different code path.
+  //
+  // This briefly served the code catalog directly and filtered sparx's rows out.
+  // That fixed the empty-shelf bug but bought it with a split: sparx content came
+  // from one place and everyone else's from another, which is the shape that
+  // produced two theme systems in the first place.
   loadVisible: async (tx) => {
     const rows = await tx.marketplaceTheme.findMany({
       where: BROWSE_WHERE,
       include: { publisher: PUBLISHER_SELECT },
     });
-    return rows.map(themeListing);
+    return rows.map((row) => themeListing(row));
   },
   loadOne: async (tx, slug) => {
     const row = await tx.marketplaceTheme.findFirst({
@@ -273,6 +285,11 @@ function componentListing(row: ComponentRow): MarketplaceListing {
 
 const componentAdapter: CategoryAdapter = {
   category: 'components',
+  // ONE SHELF, MANY PUBLISHERS — see the theme adapter's note. sparx's sections
+  // reach these rows by publishing themselves at boot from `SPARX_CATALOG`, the
+  // same catalog the Builder's Insert palette reads, so the marketplace lists
+  // exactly what the Builder can insert and a collaborator's upload lands in the
+  // same table through the same columns.
   loadVisible: async (tx) => {
     const rows = await tx.marketplaceComponent.findMany({
       where: BROWSE_WHERE,

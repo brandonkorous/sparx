@@ -755,7 +755,8 @@ jobs:
   #            comes from a Docker-image entrypoint convention that a MANAGED
   #            Postgres will never run. Idempotent, so it runs every time.
   #   schema   `prisma migrate deploy` from the db image.
-  #   rows     prisma/seed-platform.ts, then the marketplace bundle ingest.
+  #   rows     prisma/seed-platform.ts (the marketplace ingest that used to follow
+#            it is gone — api-rest publishes its own catalog on boot).
   #
   # All four connect as the OWNER role, not the RLS-constrained one. The
   # marketplace tables are FORCE-RLS with a policy that only admits a no-tenant
@@ -926,94 +927,24 @@ jobs:
           kubectl -n "$NAMESPACE" logs "job/db-seed-platform-${RUN_ID}" -c seed \
             --tail=-1 --ignore-errors=true || true
 
-      # -----------------------------------------------------------------------
-      # Bundle-backed listings (docs/85): compiles every bundle under
-      # marketplace-catalog/, writes its artifact to storage and upserts a thin
-      # catalog row. It runs the api-rest image because that Dockerfile bakes
-      # marketplace-catalog/ in.
+      # NOTE — THE MARKETPLACE INGEST USED TO RUN HERE, and it is gone rather than
+      # moved. api-rest now publishes sparx's own themes, components and blueprints
+      # itself, on BOOT, into the same rows a collaborator's upload will write.
       #
-      # It MOUNTS the sparx-media PVC. GCS_MEDIA_BUCKET is deliberately unset on
-      # this provider, which selects LocalStorage in packages/media rooted at
-      # that volume; omit the mount and the ingest still reports SUCCESS while
-      # writing every artifact to the container's own filesystem, leaving
-      # catalog rows pointing at keys that resolve to nothing. The failure only
-      # surfaces later, when someone tries to apply a theme.
+      # A release stage was the wrong shape for it three separate ways. It was a
+      # step someone had to remember, so an environment could be behind — and one
+      # was, for a month. It could only ADD, so a bundle deleted from the repo left
+      # its listing live forever (production served 25 such rows). And it mounted the
+      # media volume separately from the service, so a missing mount let it write
+      # every object to its own container filesystem, exit 0, and leave catalog rows
+      # pointing at keys that resolved to nothing.
       #
-      # The PVC is ReadWriteOnce, so it attaches to one node, and the Job's
-      # podAffinity co-locates it with whichever node api-rest is on. On a
-      # cluster where api-rest does not exist yet — a first release, a rebuilt
-      # namespace — a `requiredDuringScheduling` podAffinity matching zero pods
-      # is UNSATISFIABLE, not vacuous, so the Job would sit Pending forever.
-      # This stage deliberately runs BEFORE the rollout, so that case is normal
-      # rather than exotic: with no holder, the volume is attached nowhere and
-      # any node will do, so the constraint is dropped.
-      # -----------------------------------------------------------------------
-      - name: Ingest marketplace bundles
-        run: |
-          set -euo pipefail
-          IMAGE="$IMAGE_API" envsubst '$IMAGE $RUN_ID' \
-            < "$OVERLAY/jobs/marketplace-ingest.yaml" > /tmp/ingest-job.yaml
-
-          if [ -z "$(kubectl get pods -n "$NAMESPACE" -l app=api-rest \
-                       -o name 2>/dev/null)" ]; then
-            echo "No api-rest pod holds sparx-media yet — dropping the co-location constraint."
-            kubectl patch --local -f /tmp/ingest-job.yaml --type=json \
-              -p '[{"op":"remove","path":"/spec/template/spec/affinity"}]' \
-              -o yaml > /tmp/ingest-job.noaff.yaml
-            mv /tmp/ingest-job.noaff.yaml /tmp/ingest-job.yaml
-          fi
-
-          kubectl apply -n "$NAMESPACE" -f /tmp/ingest-job.yaml
-          ./.github/scripts/await-job.sh "marketplace-ingest-${RUN_ID}" "$NAMESPACE" 1800
-          kubectl -n "$NAMESPACE" logs "job/marketplace-ingest-${RUN_ID}" -c ingest \
-            --tail=-1 --ignore-errors=true || true
-
-      # What actually LANDED, counted from the database rather than inferred
-      # from a green Job. "Ran successfully and wrote nothing" is the failure
-      # this whole stage exists to make impossible to miss again.
-      - name: Report what is published
-        if: always()
-        run: |
-          kubectl -n "$NAMESPACE" delete job catalog-count --ignore-not-found
-          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
-          apiVersion: batch/v1
-          kind: Job
-          metadata:
-            name: catalog-count
-          spec:
-            backoffLimit: 0
-            ttlSecondsAfterFinished: 600
-            template:
-              spec:
-                restartPolicy: Never
-                enableServiceLinks: false
-                containers:
-                  - name: psql
-                    image: postgres:18-alpine
-                    command: ['sh', '-c']
-                    args:
-                      - >-
-                        psql "$AUTH_DATABASE_URL" -tA -F' ' -c
-                        "select 'themes', count(*) from marketplace_themes
-                         union all select 'blueprints', count(*) from marketplace_blueprints
-                         union all select 'components', count(*) from marketplace_components
-                         union all select 'integrations', count(*) from marketplace_integrations
-                         union all select 'platform_components', count(*) from platform_components
-                         order by 1"
-                    env:
-                      - name: AUTH_DATABASE_URL
-                        valueFrom:
-                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
-          YAML
-          ./.github/scripts/await-job.sh catalog-count "$NAMESPACE" 300 || true
-          {
-            echo '### Platform data'
-            echo ''
-            echo '| catalog | rows |'
-            echo '| --- | ---: |'
-            kubectl -n "$NAMESPACE" logs job/catalog-count --tail=-1 --ignore-errors=true \
-              | awk 'NF==2 { print "| " $1 " | " $2 " |" }'
-          } >> "$GITHUB_STEP_SUMMARY"
+      # Publishing at boot answers all three: it cannot be skipped, it retracts by
+      # absence, and the process writing the media is the process that serves it.
+      #
+      # The catalog COUNTS moved with it, to the end of stage 3 — they exist to catch
+      # "ran green and wrote nothing", and the thing that writes the catalog is now
+      # the rolled pods, so counting before the rollout would report the old release.
 
   # ---------------------------------------------------------------------------
   # STAGE 3 — CONTAINERS. The only stage that replaces anything.
@@ -1217,6 +1148,62 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
           kubectl get pods -n "$NAMESPACE" -o wide >> "$GITHUB_STEP_SUMMARY" 2>&1 || true
           echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      # What actually LANDED, counted from the database rather than inferred from a
+      # green rollout. "Ran successfully and wrote nothing" is the failure this
+      # exists to make impossible to miss again — `marketplace_themes` held ZERO rows
+      # on both clouds for a month while 20 bundles sat committed in the repo.
+      #
+      # It counts AFTER the rollout because api-rest publishes sparx's catalog on
+      # boot: the pods that just came up are what wrote these rows. Counting in the
+      # data stage — where this used to live, next to the ingest Job — would report
+      # the previous release's numbers and call them this one's.
+      #
+      # `always()`: a stage that failed part-way is exactly when the real row counts
+      # are worth seeing.
+      - name: Report what is published
+        if: always()
+        run: |
+          kubectl -n "$NAMESPACE" delete job catalog-count --ignore-not-found
+          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: catalog-count
+          spec:
+            backoffLimit: 0
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                containers:
+                  - name: psql
+                    image: postgres:18-alpine
+                    command: ['sh', '-c']
+                    args:
+                      - >-
+                        psql "$AUTH_DATABASE_URL" -tA -F' ' -c
+                        "select 'themes', count(*) from marketplace_themes
+                         union all select 'blueprints', count(*) from marketplace_blueprints
+                         union all select 'components', count(*) from marketplace_components
+                         union all select 'integrations', count(*) from marketplace_integrations
+                         union all select 'platform_components', count(*) from platform_components
+                         order by 1"
+                    env:
+                      - name: AUTH_DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+          YAML
+          ./.github/scripts/await-job.sh catalog-count "$NAMESPACE" 300 || true
+          {
+            echo '### Platform data'
+            echo ''
+            echo '| catalog | rows |'
+            echo '| --- | ---: |'
+            kubectl -n "$NAMESPACE" logs job/catalog-count --tail=-1 --ignore-errors=true \
+              | awk 'NF==2 { print "| " $1 " | " $2 " |" }'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   # ---------------------------------------------------------------------------
   # THE TAG. Cut last, and only when the release actually shipped.

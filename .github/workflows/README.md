@@ -19,7 +19,7 @@ There are four, and each is a different KIND of thing:
 push to main
   build            22 images → ghcr.io/<repo>/<image>:<sha>
   1 infrastructure terraform apply, then namespace + secrets + k8s/azure/infra
-  2 data           roles → migrate → seed platform rows → ingest bundles
+  2 data           roles → migrate → seed platform rows
   3 containers     pin every image to <sha>, apply k8s/azure/apps, wait
     tag            cut the v* tag — only if the release actually shipped
   4 cleanup        prune old image versions + obsolete workflow-run history
@@ -33,9 +33,9 @@ Schema before code is uncontroversial: new code must never meet an old schema.
 Rows are the same argument and were the same bug.
 
 `migrate` moves the SCHEMA. Nothing ever put a row in it. So platform content —
-the marketplace catalog, the global component library, starter legal pages,
-every bundle under `marketplace-catalog/` — could be committed, reviewed, merged
-and deployed while remaining entirely absent from the running platform.
+the marketplace catalog, the global component library, starter legal pages —
+could be committed, reviewed, merged and deployed while remaining entirely
+absent from the running platform.
 
 Not hypothetical: `marketplace_themes` held **zero rows on both clouds** against
 20 committed theme bundles, and `/market/themes` served its empty state for a
@@ -46,11 +46,20 @@ the seed fails, the old containers are still serving and no new code ever meets
 data that was never written. Running it afterwards means finding out the data is
 wrong from a release that has already shipped.
 
-Both halves are idempotent — upserts and version-guarded immutable artifacts —
-which is what lets this run unattended on every release rather than being a
-workflow someone has to remember. And it **fails the release** when it fails,
-which the hand-run predecessor did not: it logged warnings, so "the pipeline is
-green" and "the catalog is empty" were true at the same time.
+It is idempotent — upserts on stable natural keys — which is what lets it run
+unattended on every release rather than being a workflow someone has to remember.
+And it **fails the release** when it fails, which the hand-run predecessor did
+not: it logged warnings, so "the pipeline is green" and "the catalog is empty"
+were true at the same time.
+
+**The marketplace catalog is no longer a deploy stage at all**, which is the
+stronger form of the same fix. api-rest publishes sparx's own themes, components
+and blueprints on **boot**, into the same rows a licensed collaborator's upload
+will write, and retracts by absence. A stage that must run is still a stage that
+can be skipped, mis-wired to one cloud, or run without the volume it writes to —
+all three of which happened. Publishing because the image booted cannot be any of
+those. The catalog row counts moved to the end of stage 3 accordingly: the pods
+that just came up are what wrote them.
 
 ### Why the k8s overlay is split
 
@@ -162,8 +171,14 @@ with `none` when re-running part of a release.
 
 ## Ops is not the release
 
-`ops.yml` is manual-only and holds the chores: re-run the marketplace ingest
-from an arbitrary ref, retract a listing, backfill platform CRM records.
+`ops.yml` is manual-only and holds the chores. Today that is one: backfill
+platform CRM records for tenants that predate the worker.
+
+It used to hold four more — a marketplace ingest and three catalog purges. Those
+are **gone rather than moved**: api-rest publishes sparx's own catalog on boot and
+retracts by absence, so publishing is not something anyone triggers and unlisting
+is deleting the source. Worth recording that the purges were built and never run,
+which is exactly how production came to serve 25 dead component listings.
 
 They are here rather than in the release on purpose. A release pipeline should
 read as four stages and nothing else; the moment a task name like "purge themes"
@@ -176,8 +191,9 @@ It is one file with a `task` input rather than one file per chore, because the
 chores are all the same shape (run a script inside the cluster, against the
 app's own environment, as a Job) and the six files it replaced differed only in
 an image, a path, and which of them remembered to require a typed confirmation.
-The three purges now uniformly require typing the task name **and** ticking
-`apply`; the ingest and the backfill are idempotent and do not.
+Nothing in the list destroys data today, but the `*-purge-*` confirmation gate
+stays: it is the contract for adding one, so the next destructive task inherits
+the typed confirmation instead of needing someone to remember to build it.
 
 It shares the release's concurrency group, so an ops task and a release never
 run at the same time.
@@ -238,7 +254,8 @@ while it is valid HCL.
 
 The Azure set — `build-images-ghcr`, `deploy-azure`, `db-migrate-azure`,
 `cleanup-images-ghcr`, `marketplace-ingest-azure` — is folded into
-`release.yml` and `ops.yml`. `db-migrate-azure` was a reusable workflow so that
+`release.yml` and `ops.yml` (the ingest half has since been retired outright —
+see "Ops is not the release"). `db-migrate-azure` was a reusable workflow so that
 it could be a peer of its GCP sibling; with the sibling gone, the only thing
 that split bought was a job boundary and a concurrency-group deadlock that had
 to be worked around with an expression comparing `github.workflow` to a literal

@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-harbor",
   "name": "sparx — Harbor",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A complete multi-module starter in the Harbor look — for freight, haulage, and plant hire.",
   "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Harbor look, tuned for freight, haulage, and plant hire. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

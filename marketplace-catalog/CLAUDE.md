@@ -1,6 +1,7 @@
-# marketplace-catalog/ — first-party blueprints, components, themes
+# marketplace-catalog/ — first-party blueprints
 
-Scoped guidance for the bundles under here (`blueprints/`, `components/`, `themes/`) and
+Scoped guidance for the bundles under here (`blueprints/`; themes + components ship as
+code in `@sparx/silica-catalog` — see [README.md](README.md)) and
 their `_gen/` generators. The full **authoring reference** is
 [docs/guides/building-a-template.md](../docs/guides/building-a-template.md) — this file is
 the **working rules + footguns** that aren't obvious from a single file. See root
@@ -43,11 +44,16 @@ The general lesson: reconcile every reference, not just the convenient ones.)
 
 1. edit `_gen/*`
 2. **bump the version in BOTH** `_gen/<name>/manifest.ts` AND `blueprints/<name>/sparx.json`
-   (ingest keys on `(category, slug, version)` — forget the bump and it keeps the OLD payload)
+   — the artifact is keyed by `(category, slug, version)`, so forgetting the bump keeps the
+   OLD payload. The two spellings are now **cross-checked**: a disagreement fails the load
+   with both values named, rather than silently pointing the row at the wrong artifact.
 3. `pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-<name>.ts"`
 4. prettier **BOTH** `blueprints/<name>/**/*.ts` AND `_gen/<name>/**/*.ts` (so the manifest
    stays repo-formatted — pre-push `format:check` fails otherwise)
-5. `pnpm --filter @sparx/api-rest marketplace:ingest`
+5. `pnpm --filter @sparx/api-rest marketplace:self-register` — or just restart api-rest,
+   which does the same thing on boot. Publishing is not a deploy step: what sparx ships is
+   what the running service publishes, and **deleting a bundle directory retracts its
+   listing** (retract-by-absence, scoped to sparx's own rows).
 6. apply to a tenant + verify (below)
 
 Applying to a tenant — endpoints `POST /v1/blueprints/<key>/install`,

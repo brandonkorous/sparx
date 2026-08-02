@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-field",
   "name": "sparx — Field",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A complete multi-module starter in the Field look — for farming, landscaping, and outdoor contracting.",
   "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Field look, tuned for farming, landscaping, and outdoor contracting. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

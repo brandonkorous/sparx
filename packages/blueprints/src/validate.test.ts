@@ -19,7 +19,7 @@ function baseManifest(): Record<string, unknown> {
       fonts: { heading: 'Inter', body: 'Inter' },
       logoLightAssetId: 'logo',
     },
-    theme: { name: 'Mini theme', basePresetKey: 'market' },
+    theme: { name: 'Mini theme', basePresetKey: 'kitchen' },
     assets: [{ id: 'logo', url: 'https://cdn.example.com/logo.png' }],
     content: [
       {

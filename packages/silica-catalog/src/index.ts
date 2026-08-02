@@ -31,3 +31,11 @@ export * from './site-chrome';
 export * from './site';
 export * from './render';
 export * from './responsive-images';
+
+// The first-party theme catalog — sparx’s shelf + silica’s presets, as code.
+// The marketplace serves these ahead of any uploaded row; see the file header.
+export * from './first-party-themes';
+
+// The first-party component catalog — every section in the Insert palette, as the
+// marketplace lists it. Same posture as themes: shipped content is code, not rows.
+export * from './first-party-components';

@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-studio",
   "name": "sparx — Studio",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A complete multi-module starter in the Studio look — for design, photography, and creative studios.",
   "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Studio look, tuned for design, photography, and creative studios. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

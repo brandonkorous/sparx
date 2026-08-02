@@ -20,10 +20,10 @@
 
 // The captured Template site (frame + 7 pages + theme + symbols). Generated as data,
 // not written by hand — see README.md for the exact capture command. Imported as a
-// relative graph the ingest resolves (docs/85 §3, multi-file payloads). Validation is
-// runtime, through the ingest's `safeParseBlueprint` (the silica trees are opaque
+// relative graph the loader resolves (docs/85 §3, multi-file payloads). Validation is
+// runtime, through the loader's `safeParseBlueprint` (the silica trees are opaque
 // `looseObject`s, so a compile-time `satisfies Blueprint` adds noise, not safety).
-// A blueprint is PURE DATA — the ingest `import()`s this module with no workspace
+// A blueprint is PURE DATA — the loader `import()`s this module with no workspace
 // resolution, so it imports ONLY sibling JSON, never `@sparx/*`. The authored trees
 // (the captured site, the welcome email built from the silica email kit) are
 // generated as JSON and imported here verbatim.
@@ -46,7 +46,7 @@ import content from './content.json' with { type: 'json' };
 
 const blueprint = {
   key: 'sparx',
-  version: '1.2.0',
+  version: '1.3.0',
   name: 'sparx',
   summary:
     'A complete, multi-module starter — shop, journal, booking, and wholesale — in the sparx Ember look. Install it, make it yours, and launch a polished working site in minutes.',
@@ -72,12 +72,16 @@ const blueprint = {
   },
 
   // ── Theme (the provisioned SiteTheme the installer creates + applies) ─────────
-  // Ships the Ember theme verbatim (locked decision #2): base preset `apex` +
-  // Ember brand look. Data, so it installs with no deploy and stays editable. This
-  // is SEPARATE from `site.theme` (the captured silica tokens) below.
+  // Ships the Ember theme verbatim (locked decision #2): base preset `sparx` — the
+  // PLATFORM base, which is the Ember look — plus the Ember brand snapshot. Data, so
+  // it installs with no deploy and stays editable. This is SEPARATE from `site.theme`
+  // (the captured silica tokens) below.
+  //
+  // The base was `apex`, one of six retired presets, so the flagship's saved theme
+  // layered Ember identity over a generic indigo palette rather than over Ember.
   theme: {
     name: 'sparx',
-    basePresetKey: 'apex',
+    basePresetKey: 'sparx',
     presentation: { v: 2, containerWidth: '1152px' },
     brand: {
       colorPrimary: '#e04631',

@@ -3,7 +3,7 @@
   "category": "blueprint",
   "slug": "sparx-petal",
   "name": "sparx — Petal",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "tagline": "A complete multi-module starter in the Petal look — for florists, weddings, and events.",
   "description": "The complete sparx starter — a faceted shop, a journal, a booking page, and a wholesale page — in the Petal look, tuned for florists, weddings, and events. Install it, make it yours, and launch a polished working site in minutes.",
   "payload": "blueprint.ts",

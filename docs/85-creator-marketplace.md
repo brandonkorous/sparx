@@ -1,8 +1,8 @@
 # Creator Marketplace — submissions, the declarative contract, and the no-deploy runtime
 
-**Version:** 0.2.0
+**Version:** 0.3.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-10
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -188,7 +188,7 @@ storage object.
 
 Media flows through the existing `media-worker` for derivatives; a CDN fronts the public
 `marketplace/media/` prefix. Signed upload URLs gate a submitter's zip (Phase 2);
-first-party items are ingested directly (§14).
+sparx publishes its own catalog at service boot (§14).
 
 ## 7. Runtime resolution — apply/install/add/connect with no deploy
 
@@ -280,12 +280,12 @@ private bundles/artifacts, public CDN media only • RLS-scoped catalog writes
 
 ## 12. Phasing
 
-| Phase                          | Ships                                                                                                                                                                                                                                                                        | Notes                                                                                                           |
-| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
-| **1 — Data runtime + dogfood** | The no-deploy apply/install/add runtime (§7) reading **storage-backed artifacts** + sparx's own 10/10/10 catalog authored to the §4 contract, **ingested to storage** (compile → `writeObject` → thin row) and pushed through validation. The `DataThemePreset` engine seam. | Delivers the original ask; proves the contract **and the storage path** end-to-end. No self-service intake yet. |
-| **2 — Submission + review**    | The **self-service** front door: zip upload → §5 pipeline → review queue → publish. Publisher onboarding (tenant/partner). Declarative **integration connector** tier (Connect). (Storage + ingest already exist from Phase 1; Phase 2 adds the upload UI + review queue.)   | Opens third-party intake for free items.                                                                        |
-| **3 — Monetization**           | Price caps enforced + Stripe Connect payouts + paid acquire/billing.                                                                                                                                                                                                         | The financial subsystem.                                                                                        |
-| **4 — Code tier**              | The integration sandbox (§9) for code providers.                                                                                                                                                                                                                             | The hardest/riskiest; demand-driven.                                                                            |
+| Phase                          | Ships                                                                                                                                                                                                                                                                                                                             | Notes                                                                                                           |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------- |
+| **1 — Data runtime + dogfood** | The no-deploy apply/install/add runtime (§7) reading **storage-backed artifacts** + sparx's own catalog authored to the §4 contract and **self-published at service boot** (§14) — validate → `writeObject` → thin row → retract by absence. The `DataThemePreset` engine seam.                                                   | Delivers the original ask; proves the contract **and the storage path** end-to-end. No self-service intake yet. |
+| **2 — Submission + review**    | The **self-service** front door: zip upload → §5 pipeline → review queue → publish. Publisher onboarding (tenant/partner). Declarative **integration connector** tier (Connect). (Storage, validation and the publish path already exist from Phase 1 — Phase 2 adds the upload UI, the sandboxed compile, and the review queue.) | Opens third-party intake for free items.                                                                        |
+| **3 — Monetization**           | Price caps enforced + Stripe Connect payouts + paid acquire/billing.                                                                                                                                                                                                                                                              | The financial subsystem.                                                                                        |
+| **4 — Code tier**              | The integration sandbox (§9) for code providers.                                                                                                                                                                                                                                                                                  | The hardest/riskiest; demand-driven.                                                                            |
 
 ## 13. Open questions
 
@@ -296,9 +296,59 @@ private bundles/artifacts, public CDN media only • RLS-scoped catalog writes
 - Connector-tier coverage ceiling — when does the code tier become blocking?
 - Reconciling the in-flight code-preset themes (commit `428fbbd`) into data themes via Phase 1.
 
-## 14. Dogfood
+## 14. Dogfood — one shelf, many publishers
 
-The 10 themes, 10 components, and 10 blueprints already planned are **submission #1**:
-authored to the [`marketplace-templates/`](../marketplace-templates) contract,
-validated by the Phase-1 pipeline, and published as first-party. They are how we prove
-the contract before opening third-party intake.
+sparx's own catalog is **submission #1**, and the rule it establishes is that sparx is a
+publisher like any other. Its listings are rows in the same tables, owned by a
+`MarketplacePublisher`, told apart from a collaborator's only by which publisher wrote
+them. There is no first-party table, no first-party code path, and no first-party
+resolver.
+
+**The one thing that IS special about sparx: its source ships in the image, so it can
+publish itself.** `selfRegisterFirstPartyCatalog()`
+([`services/api-rest/src/lib/marketplace/self-register.ts`](../services/api-rest/src/lib/marketplace/self-register.ts))
+runs on every api-rest **boot** and publishes all four categories:
+
+| category     | source                                                   | payload                                                                              |
+| ------------ | -------------------------------------------------------- | ------------------------------------------------------------------------------------ |
+| themes       | `FIRST_PARTY_THEMES` (code)                              | token bag lives **in** the row — the card renders it live                            |
+| components   | `FIRST_PARTY_COMPONENTS` (code, from `SPARX_CATALOG`)    | node tree lives **in** the row, same reason                                          |
+| integrations | `FIRST_PARTY_INTEGRATIONS` (code)                        | discovery metadata only — the provider is resolved by `providerSlug` at connect time |
+| blueprints   | authored bundles under `marketplace-catalog/blueprints/` | manifest + card imagery go to **object storage**; the row is a thin index            |
+
+That last row is the only difference, and it is about payload size, not process — a
+blueprint manifest is far too big for a column. Its bytes land in the same storage a
+collaborator's upload will write to, read back by `resolveBlueprintManifest`, which
+cannot tell the publishers apart.
+
+**Integrations are here despite having no upload story yet**, and that is deliberate.
+This is the only thing that writes a first-party listing, so there is no second
+mechanism for the next person to find or copy. A category left behind on the platform
+seed would read as "integrations are different" precisely when someone sits down to
+build the upload flow — which is the confusion this section exists to prevent.
+
+Two integration facts worth recording, since the listing looks derivable and is not:
+`ProviderMetadataDescriptor` carries what the **installer** needs and has no `tagline`,
+`accent` or `sortWeight` (those are marketplace copy); and the provider registry is
+populated by side effect when a `@sparx/provider-*` package is imported, which api-rest
+never does — so `listProviders()` is empty in that process and deriving would publish
+nothing. `stripe` is also listed with no `@sparx/provider-stripe` package behind it.
+
+**Why this is not a deploy step.** It was, and the release stage failed in four
+specific ways that the boot-time version answers structurally:
+
+| the ingest was…                                           | consequence                                                                       | answered by                                                 |
+| --------------------------------------------------------- | --------------------------------------------------------------------------------- | ----------------------------------------------------------- |
+| a **release stage** wired to one cloud                    | move clouds and the shelf is empty — `marketplace_themes` held 0 rows for a month | runs at boot, on whatever cluster the image is on           |
+| a **second code path** (bundles, its own machinery)       | validated and stored by code no upload would ever exercise                        | writes the same rows an upload writes                       |
+| **add-only**                                              | 25 of production's 96 component listings were retired or orphaned rows            | prune by absence, scoped to `publisherId`                   |
+| mounting the media volume **separately** from the service | a missing mount wrote every object to its own container filesystem and exited 0   | the process that writes the media is the one that serves it |
+
+Retraction follows: **deleting the source is the removal.** The `marketplace-purge-*`
+ops tasks that used to be the only way to unlist something are gone — they were built
+and never run, which is how those 25 rows accumulated.
+
+**Idempotent by construction**, so every boot is safe: upsert by slug, retract by
+absence, artifacts immutable per version, and media rewritten only when its byte length
+differs. The steady state writes nothing. On-demand:
+`pnpm --filter @sparx/api-rest marketplace:self-register`.

@@ -15,7 +15,7 @@ every push to `main`:
 ```
 build            22 images → ghcr.io/<repo>/<image>:<sha>
 1 infrastructure terraform apply, then namespace + secrets + k8s/azure/infra
-2 data           roles → migrate → seed platform rows → ingest bundles
+2 data           roles → migrate → seed platform rows
 3 containers     pin every image to <sha>, apply k8s/azure/apps, wait
 4 cleanup        prune old image versions + obsolete workflow-run history
 ```
@@ -96,15 +96,22 @@ build ×2, ingest ×2) whose only real variance was three strings.
 
 ## Ops is deliberately not the release
 
-[ops.yml](../../../.github/workflows/ops.yml) is manual-only: `marketplace-ingest`,
-the three `marketplace-purge-*`, `platform-crm-backfill`. **A task name must
-never appear in the release** — the moment it does, the pipeline stops
-describing how the platform ships and becomes a list of chores with an obvious
-place to add the next one. One file with a `task` input, because all of them are
-"run a script in-cluster against the app's environment as a Job"; the six files
-it replaced differed only in an image, a path, and which remembered to require
-confirmation. Purges now uniformly require typing the task name **and** ticking
-`apply`. It shares the release's concurrency group.
+[ops.yml](../../../.github/workflows/ops.yml) is manual-only, and now holds exactly
+one task: `platform-crm-backfill`. **A task name must never appear in the release**
+— the moment it does, the pipeline stops describing how the platform ships and
+becomes a list of chores with an obvious place to add the next one. One file with a
+`task` input, because all of them are "run a script in-cluster against the app's
+environment as a Job"; the six files it replaced differed only in an image, a path,
+and which remembered to require confirmation. It shares the release's concurrency
+group.
+
+`marketplace-ingest` and the three `marketplace-purge-*` tasks are **gone**, and the
+ingest's release stage with them. api-rest publishes sparx's own themes, components
+and blueprints on **boot** and retracts by absence, so publishing is not something
+anyone triggers and unlisting is deleting the source
+([marketplace self-registration](../architecture/marketplace-self-registration.md)).
+The `*-purge-*` confirmation gate stays as the contract for adding a destructive task,
+not because one exists.
 
 ## GCP is deleted
 

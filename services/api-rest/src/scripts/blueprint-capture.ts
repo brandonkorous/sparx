@@ -10,9 +10,9 @@
 // It prints (or writes) the captured `SiteDecl` as JSON. That JSON is the hard,
 // error-prone part of a bundle — the silica node trees — produced as DATA rather
 // than hand-written; the author drops it into `marketplace-catalog/blueprints/<slug>/`
-// (a `blueprint.ts` may `import site from './site.json'`, the ingest supports relative
+// (a `blueprint.ts` may `import site from './site.json'`, the loader supports relative
 // import graphs) and completes the non-site fields (brand/commerce/content/emails)
-// before `marketplace:ingest`. `--omit-theme` leaves the theme out so one captured
+// before `marketplace:self-register`. `--omit-theme` leaves the theme out so one captured
 // base re-skins per installing tenant — the one-base-across-many-themes model.
 //
 // Staff/first-party only: it reads a tenant's authored site directly through the
