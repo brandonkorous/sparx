@@ -229,6 +229,38 @@ jobs:
           # than ~30 individually-managed ones.
           printf '%s' "$APP_SECRETS" > /tmp/app.env
 
+          # KEY_B64=<base64> → KEY=<decoded>, for values a dotenv line cannot
+          # carry safely.
+          #
+          # Not hypothetical: OPERATOR_AUTH_SECRET ends with a CARRIAGE RETURN
+          # (45 bytes, not 44) in both GCP Secret Manager and the cluster. Better
+          # Auth uses the secret's exact bytes as key material for the encrypted
+          # TOTP secrets and backup codes, so that trailing \r is load-bearing —
+          # drop it and every operator's authenticator AND their backup codes
+          # stop verifying, which is precisely the failure this deploy is
+          # repairing. A trailing \r before a newline is invisible in a browser
+          # textarea and does not survive a copy-paste, so round-tripping the raw
+          # value through a repo secret is a trap that re-arms itself every time
+          # the blob is edited. STRIPE_WEBHOOK_SECRET_SPARX_PAY is the same shape.
+          #
+          # base64 has no such ambiguity. Prefer it for ANY secret with leading
+          # or trailing whitespace rather than trying to preserve the whitespace.
+          # The _B64 keys are NEVER decoded into the env file. They are held back
+          # and written straight into the Secret's `data` field after it is
+          # created, because `data` is itself base64 — so the bytes reach the
+          # kubelet without passing through a single text parser.
+          #
+          # Decoding them here would defeat the point. `--from-env-file` reads
+          # LINES, and a value whose last byte is \r is indistinguishable from a
+          # CRLF line ending to any such parser; trimming it is the reasonable
+          # thing for a text format to do, and it would silently reconstruct the
+          # exact 44-byte secret that broke 2FA in the first place. Shell text
+          # tools do the same: grep and cut both ate the \r while this was being
+          # verified, which is how the bug hid for so long.
+          grep -v '_B64=' /tmp/app.env > /tmp/app.env.plain || true
+          grep '_B64=' /tmp/app.env > /tmp/app.env.b64 || true
+          B64_COUNT=$(wc -l < /tmp/app.env.b64 | tr -d ' ')
+
           # OPERATOR_DATABASE_URL — derived when absent, never silently omitted.
           #
           # apps/admin talks to the wize_admin schema as `wize_operator`, a
@@ -246,8 +278,8 @@ jobs:
           # provider the two differ only by role name. Supplying
           # OPERATOR_DATABASE_URL explicitly in SPARX_APP_SECRETS_ENV overrides
           # this entirely, which is what to do the moment those passwords diverge.
-          if ! grep -q '^OPERATOR_DATABASE_URL=' /tmp/app.env; then
-            DB_URL=$(grep -m1 '^DATABASE_URL=' /tmp/app.env | cut -d= -f2-)
+          if ! grep -q '^OPERATOR_DATABASE_URL' /tmp/app.env; then
+            DB_URL=$(grep -m1 '^DATABASE_URL=' /tmp/app.env.plain | cut -d= -f2-)
             if [ -z "$DB_URL" ]; then
               echo "::error::DATABASE_URL missing from SPARX_APP_SECRETS_ENV; cannot derive OPERATOR_DATABASE_URL."
               exit 1
@@ -257,14 +289,36 @@ jobs:
               *\?*) OP_URL="$OP_URL&schema=wize_admin" ;;
               *)    OP_URL="$OP_URL?schema=wize_admin" ;;
             esac
-            printf 'OPERATOR_DATABASE_URL=%s\n' "$OP_URL" >> /tmp/app.env
+            printf 'OPERATOR_DATABASE_URL=%s\n' "$OP_URL" >> /tmp/app.env.plain
             echo "OPERATOR_DATABASE_URL not supplied; derived it from DATABASE_URL as wize_operator."
           fi
 
           kubectl create secret generic sparx-app-secrets -n "$NAMESPACE" \
-            --from-env-file=/tmp/app.env \
+            --from-env-file=/tmp/app.env.plain \
             --dry-run=client -o yaml | kubectl apply -f -
-          rm -f /tmp/app.env
+
+          # Graft the whitespace-bearing values in as RAW BASE64. A Secret's
+          # `data` field is base64 by definition, so the kubelet writes exactly
+          # the bytes the repo secret carried — no line parsing, no trimming,
+          # nothing left to lose them.
+          if [ "$B64_COUNT" -gt 0 ]; then
+            PATCH='{"data":{'
+            SEP=''
+            while IFS= read -r line; do
+              [ -n "$line" ] || continue
+              key=${line%%=*}
+              PATCH="$PATCH$SEP\"${key%_B64}\":\"${line#*=}\""
+              SEP=','
+            done < /tmp/app.env.b64
+            PATCH="$PATCH}}"
+            printf '%s' "$PATCH" > /tmp/app.b64.patch
+            kubectl patch secret sparx-app-secrets -n "$NAMESPACE" \
+              --type=merge --patch-file=/tmp/app.b64.patch
+            rm -f /tmp/app.b64.patch
+            echo "Applied $B64_COUNT base64 value(s) straight to the Secret's data field."
+          fi
+
+          rm -f /tmp/app.env /tmp/app.env.plain /tmp/app.env.b64
 
           kubectl create secret generic typesense-secrets -n "$NAMESPACE" \
             --from-literal=api-key="$TYPESENSE_API_KEY" \
