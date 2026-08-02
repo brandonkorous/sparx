@@ -17,6 +17,13 @@ on:
       - 'apps/**'
       - 'services/**'
       - 'packages/**'
+      # The api-rest Dockerfile COPYs marketplace-catalog/ so the ingest Job can
+      # read the bundles out of the image. Without this path a bundle-only commit
+      # builds nothing, the deploy pins to an older SHA, and the ingest publishes
+      # whichever bundles happened to be baked into the last code change — i.e.
+      # editing a theme would silently do nothing. It rebuilds the whole matrix,
+      # which is the honest cost of the catalog being part of an image.
+      - 'marketplace-catalog/**'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - '.github/workflows/build-images-ghcr.yml'

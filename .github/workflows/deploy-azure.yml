@@ -41,6 +41,9 @@ on:
       - '.github/workflows/deploy-azure.yml'
       - '.github/workflows/db-migrate-azure.yml'
       - '.github/scripts/**'
+      # Bundle sources. A bundle-only commit changes no image path, so without
+      # this the deploy never fires and step 2b never publishes it.
+      - 'marketplace-catalog/**'
 
   workflow_dispatch:
     inputs:
@@ -56,6 +59,11 @@ on:
         options: [prod]
       run_migrations:
         description: 'Run database migrations before rolling out'
+        required: false
+        default: true
+        type: boolean
+      run_data:
+        description: 'Apply platform data (seed + marketplace ingest) after rolling out'
         required: false
         default: true
         type: boolean
@@ -81,11 +89,18 @@ env:
   CLUSTER: aks-sparx-prod-cus
   NAMESPACE: sparx-prod
 
-# THREE JOBS, because the middle one is a REUSABLE WORKFLOW.
+# FOUR JOBS, one of which is a REUSABLE WORKFLOW.
 #
 #   prepare  → secrets, tunnel, and the image SHA everything else pins to
 #   migrate  → db-migrate-azure.yml, the same workflow you can dispatch alone
 #   rollout  → pin images, apply, wait
+#   data     → platform seed + marketplace ingest (step 2b)
+#
+# `data` closes a hole in the pipeline rather than adding a feature. The first
+# three take infrastructure and containers to a running state and stop there:
+# `migrate` moves the SCHEMA and nothing ever put a row in it. Platform content
+# could therefore be committed, merged and deployed while never appearing on the
+# platform — which is what happened to the marketplace catalog. See the job.
 #
 # The migration used to be two steps inlined here. Extracting it is what lets
 # `DB Migrate (Azure)` exist as a peer of `DB Migrate (GCP)` without a second
@@ -551,3 +566,147 @@ jobs:
             echo ''
           } >> "$GITHUB_STEP_SUMMARY"
           kubectl get pods -n "$NAMESPACE" -o wide >> "$GITHUB_STEP_SUMMARY" 2>&1 || true
+
+  # ---------------------------------------------------------------------------
+  # STEP 2b — DATA. The stage this pipeline did not have.
+  #
+  # Infrastructure, then containers, then DATA, then it is running. `migrate`
+  # only moves the SCHEMA; nothing in this workflow ever put a row in it. So the
+  # platform's own content — the marketplace catalog, the global component
+  # library, the starter legal documents, the theme and component bundles under
+  # marketplace-catalog/ — could be committed, reviewed, merged and deployed
+  # while remaining completely absent from the running platform. That is not a
+  # hypothetical: marketplace_themes held ZERO rows against 20 committed theme
+  # bundles, on BOTH clouds, and /market/themes served its empty state to every
+  # visitor for a month. Nothing was broken. There was simply no step that
+  # published it.
+  #
+  # Both halves are idempotent — every write is an upsert or a version-guarded
+  # artifact — which is precisely what lets this run unattended on every deploy
+  # instead of being a workflow someone has to remember to dispatch. A deploy
+  # that changes no data re-upserts a few hundred rows and exits.
+  #
+  # AFTER the rollout, not before. The ingest writes artifacts to the sparx-media
+  # PVC and is pinned by podAffinity to api-rest's node, so it wants the new
+  # api-rest pod already settled — including the fsGroup that makes that volume
+  # writable at all. Running data before the rollout would have it race the pod
+  # it depends on.
+  #
+  # A failure here fails the deploy. The previous behaviour — platform data
+  # applied by a hand-run workflow, errors logged as warnings — is exactly how a
+  # green pipeline and an empty catalog were true at the same time.
+  # ---------------------------------------------------------------------------
+  data:
+    needs: [prepare, rollout]
+    if: >-
+      always() && needs.rollout.result == 'success' &&
+      (github.event_name != 'workflow_dispatch' || inputs.run_data)
+    runs-on: ubuntu-latest
+    environment: prod
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.sha || github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get cluster credentials
+        run: |
+          az aks get-credentials --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" --overwrite-existing
+
+      # Platform rows resolved from the in-code registries: the sparx-core
+      # marketplace catalog, the global platform_components library, and starter
+      # legal pages for any tenant that predates the legal-seed-worker.
+      #
+      # prisma/seed-platform.ts, NOT prisma/seed.ts — the latter provisions a
+      # demo tenant with an invented parts catalog and fake orders, which is why
+      # seeding was never wired into a deploy and why the platform data trapped
+      # alongside it never shipped. packages/db/prisma/platform-seed.ts holds the
+      # split.
+      - name: Seed platform data
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}/db:${{ needs.prepare.outputs.image_sha }}
+          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          export IMAGE RUN_ID
+          envsubst '$IMAGE $RUN_ID' \
+            < k8s/azure/db-seed-platform-job.yaml > /tmp/seed-job.yaml
+          kubectl apply -f /tmp/seed-job.yaml
+          ./.github/scripts/await-job.sh "db-seed-platform-${RUN_ID}" "$NAMESPACE" 900
+          kubectl -n "$NAMESPACE" logs "job/db-seed-platform-${RUN_ID}" -c seed \
+            --tail=-1 --ignore-errors=true || true
+
+      # Bundle-backed listings (docs/85): compiles every bundle under
+      # marketplace-catalog/, writes its artifact to storage and upserts a thin
+      # catalog row. The api-rest image is used because its Dockerfile bakes
+      # marketplace-catalog/ in — which is also why that directory is now part of
+      # build-images-ghcr.yml's path filter. Without it a bundle-only commit
+      # publishes no image, `prepare` pins to an older SHA, and this would ingest
+      # whichever bundles happened to be baked into the last code change.
+      - name: Ingest marketplace bundles
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}/api-rest:${{ needs.prepare.outputs.image_sha }}
+          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          export IMAGE RUN_ID
+          envsubst '$IMAGE $RUN_ID' \
+            < k8s/azure/marketplace-ingest-job.yaml > /tmp/ingest-job.yaml
+          kubectl apply -f /tmp/ingest-job.yaml
+          ./.github/scripts/await-job.sh "marketplace-ingest-${RUN_ID}" "$NAMESPACE" 1800
+          kubectl -n "$NAMESPACE" logs "job/marketplace-ingest-${RUN_ID}" -c ingest \
+            --tail=-1 --ignore-errors=true || true
+
+      # What actually landed, counted from the database rather than inferred from
+      # a green Job. "Ran successfully and wrote nothing" is the failure this
+      # whole stage exists to make impossible to miss again.
+      - name: Report what is published
+        if: always()
+        run: |
+          kubectl -n "$NAMESPACE" delete job catalog-count --ignore-not-found
+          kubectl apply -n "$NAMESPACE" -f - <<'YAML'
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: catalog-count
+          spec:
+            backoffLimit: 0
+            ttlSecondsAfterFinished: 600
+            template:
+              spec:
+                restartPolicy: Never
+                enableServiceLinks: false
+                containers:
+                  - name: psql
+                    image: postgres:18-alpine
+                    command: ['sh', '-c']
+                    args:
+                      - >-
+                        psql "$AUTH_DATABASE_URL" -tA -F' ' -c
+                        "select 'themes', count(*) from marketplace_themes
+                         union all select 'blueprints', count(*) from marketplace_blueprints
+                         union all select 'components', count(*) from marketplace_components
+                         union all select 'integrations', count(*) from marketplace_integrations
+                         union all select 'platform_components', count(*) from platform_components
+                         order by 1"
+                    env:
+                      - name: AUTH_DATABASE_URL
+                        valueFrom:
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+          YAML
+          ./.github/scripts/await-job.sh catalog-count "$NAMESPACE" 300 || true
+          {
+            echo '### Platform data'
+            echo ''
+            echo '| catalog | rows |'
+            echo '| --- | --- |'
+            kubectl -n "$NAMESPACE" logs job/catalog-count --tail=-1 --ignore-errors=true \
+              | awk 'NF==2 { print "| " $1 " | " $2 " |" }'
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,5 +1,13 @@
-# Marketplace ingest — publishes the first-party bundles under
+# Marketplace ingest — GCP. Publishes the first-party bundles under
 # marketplace-catalog/ into prod object storage + the catalog rows (docs/85 §14).
+# The LIVE sibling is marketplace-ingest-azure.yml; this one is the fallback,
+# kept in step with it for the day GKE is the target again.
+#
+# Renaming this file re-armed nothing — it is workflow_dispatch-only, so it
+# carries no `__disabled__` trigger sentinel the way deploy-gcp.yml and its
+# siblings do. (The sentinel exists because GitHub keys a workflow's disabled
+# state to its file PATH; a dispatch-only workflow has no automatic trigger to
+# neuter in the first place.)
 #
 # Manual only (workflow_dispatch). Pushing bundles to `main` ships the SOURCES;
 # prod storage + the marketplace stay empty until this runs with the prod env
@@ -16,7 +24,7 @@
 # immutable per version). Bump a bundle's sparx.json version to publish an update,
 # then run this again.
 
-name: Marketplace Ingest
+name: Marketplace Ingest (GCP)
 
 on:
   workflow_dispatch: {}

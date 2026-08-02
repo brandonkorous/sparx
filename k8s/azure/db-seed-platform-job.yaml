@@ -1,0 +1,89 @@
+# Platform data seed Job — step 2b of the deploy. Applied by deploy-azure.yml
+# after the rollout; ${IMAGE} and ${RUN_ID} are substituted via `envsubst`.
+#
+# Runs the @sparx/db runner image with its migration ENTRYPOINT overridden to
+# packages/db/prisma/seed-platform.ts — the platform-only half of seeding. It is
+# NOT `prisma/seed.ts`, and that distinction is the entire point of the file
+# existing: the full seed provisions a demo tenant with an invented parts
+# catalog, fake orders and a fake partner payout. Because the two lived behind
+# one entrypoint, neither ever ran in production, and the platform's own
+# marketplace catalog went unpublished for a month while the bundles sat
+# committed in the repo.
+#
+# Connects as the OWNER role, like the migration Job and for the same reasons:
+# platform_components is a global owner-write table, and the marketplace catalog
+# tables are FORCE-RLS with a policy that only admits a no-tenant write. The app
+# role does not error on those — it is silently filtered, which is the failure
+# mode that hides itself.
+#
+# Idempotent by construction, so it runs on EVERY deploy rather than being
+# something a human remembers to trigger. That is the property that makes it
+# safe to put in the pipeline at all.
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: db-seed-platform-${RUN_ID}
+  namespace: sparx-prod
+  labels:
+    app.kubernetes.io/name: db-seed-platform
+    app.kubernetes.io/part-of: sparx
+    app.kubernetes.io/component: seed
+spec:
+  ttlSecondsAfterFinished: 3600
+  # No retry. Every step is an upsert, so a retry is harmless in principle — but
+  # a failure here means the data is wrong, not flaky, and a second identical
+  # attempt only delays the red X by a few minutes.
+  backoffLimit: 0
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: db-seed-platform
+    spec:
+      restartPolicy: Never
+      enableServiceLinks: false
+      imagePullSecrets:
+        - name: ghcr
+      containers:
+        - name: seed
+          image: ${IMAGE}
+          imagePullPolicy: IfNotPresent
+          # Overrides the image ENTRYPOINT (scripts/run-migrations.ts). WORKDIR
+          # is /app/packages/db, so this relative path resolves.
+          command: ['pnpm', 'exec', 'tsx', 'prisma/seed-platform.ts']
+          envFrom:
+            - configMapRef:
+                name: sparx-app-env
+            - secretRef:
+                name: sparx-app-secrets
+          env:
+            - name: NODE_ENV
+              value: production
+            - name: SERVICE_NAME
+              value: db-seed-platform
+            # Explicit env BEATS envFrom in Kubernetes, which is what makes this
+            # override work — envFrom supplies DATABASE_URL as the RLS-constrained
+            # `sparx_app`, and these two put the owner connection in front of it.
+            # Same mechanism db-migrate-azure.yml relies on.
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+            - name: MIGRATION_DATABASE_URL
+              valueFrom:
+                secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+          securityContext:
+            runAsNonRoot: true
+            runAsUser: 1000
+            runAsGroup: 1000
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ['ALL']
+            seccompProfile:
+              type: RuntimeDefault
+          resources:
+            requests:
+              cpu: '100m'
+              memory: '384Mi'
+            limits:
+              cpu: '1000m'
+              memory: '1Gi'

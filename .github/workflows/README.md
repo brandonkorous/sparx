@@ -15,14 +15,36 @@ today but GKE could pull the same images.
 
 ## Live (Azure)
 
-| File                                               | When it runs                    | What it does                                                        |
-| -------------------------------------------------- | ------------------------------- | ------------------------------------------------------------------- |
-| [ci.yml](ci.yml)                                   | every PR + push to `main`       | pnpm lint / typecheck / test + Terraform fmt + validate             |
-| [build-images-ghcr.yml](build-images-ghcr.yml)     | push to `main` (path-filtered)  | matrix-builds each image, pushes to GHCR tagged with the commit SHA |
-| [deploy-azure.yml](deploy-azure.yml)               | after a green GHCR build        | syncs secrets + tunnel, calls DB Migrate (Azure), rolls out to AKS  |
-| [db-migrate-azure.yml](db-migrate-azure.yml)       | manual, or called by the deploy | creates roles, runs `prisma migrate deploy` as an in-cluster Job    |
-| [restore-from-export.yml](restore-from-export.yml) | manual                          | restores the Postgres dump and/or media tarball from Blob Storage   |
-| [auto-tag.yml](auto-tag.yml)                       | push to `main`                  | cuts a `v*` tag from conventional commits. Dispatches nothing.      |
+| File                                                         | When it runs                    | What it does                                                        |
+| ------------------------------------------------------------ | ------------------------------- | ------------------------------------------------------------------- |
+| [ci.yml](ci.yml)                                             | every PR + push to `main`       | pnpm lint / typecheck / test + Terraform fmt + validate             |
+| [build-images-ghcr.yml](build-images-ghcr.yml)               | push to `main` (path-filtered)  | matrix-builds each image, pushes to GHCR tagged with the commit SHA |
+| [deploy-azure.yml](deploy-azure.yml)                         | after a green GHCR build        | secrets → migrate → roll out to AKS → apply platform data           |
+| [db-migrate-azure.yml](db-migrate-azure.yml)                 | manual, or called by the deploy | creates roles, runs `prisma migrate deploy` as an in-cluster Job    |
+| [restore-from-export.yml](restore-from-export.yml)           | manual                          | restores the Postgres dump and/or media tarball from Blob Storage   |
+| [marketplace-ingest-azure.yml](marketplace-ingest-azure.yml) | manual                          | re-runs the bundle ingest alone, from any ref, without a deploy     |
+| [auto-tag.yml](auto-tag.yml)                                 | push to `main`                  | cuts a `v*` tag from conventional commits. Dispatches nothing.      |
+
+### Data is a deploy stage, not an errand
+
+A push to `main` used to ship schema and containers and **nothing else**.
+`migrate` moves the schema; no step ever put a row in it. Platform content — the
+marketplace catalog, the global component library, starter legal pages, every
+bundle under `marketplace-catalog/` — could be committed, reviewed, merged and
+deployed while remaining entirely absent from the running platform.
+
+That is not hypothetical. `marketplace_themes` held **zero rows on both clouds**
+against 20 committed theme bundles, and `/market/themes` served its empty state
+for a month. Nothing was broken; there was simply no step that published it.
+
+`deploy-azure.yml`'s `data` job is that step, and it runs on every deploy because
+both halves are idempotent — upserts and version-guarded artifacts. It also
+**fails the deploy** when it fails, which the hand-run predecessor did not: it
+logged warnings, so "the pipeline is green" and "the catalog is empty" were true
+at the same time.
+
+The manual ingest workflow survives as a re-run tool (publish from an arbitrary
+ref without a deploy), not as the only path.
 
 ## Fallback (GCP) — all blocked by a `__disabled__` trigger sentinel
 
@@ -35,11 +57,18 @@ a workflow's disabled state to its file PATH — renaming one produces a brand-n
 workflow that arrives **enabled**, silently undoing it. That is not theoretical:
 it is what nearly re-armed all three during the rename to these names.
 
-| File                                         | When it runs | What it does                                                         |
-| -------------------------------------------- | ------------ | -------------------------------------------------------------------- |
-| [build-images-gcp.yml](build-images-gcp.yml) | manual       | matrix-builds each image to Artifact Registry, scans with Trivy      |
-| [deploy-gcp.yml](deploy-gcp.yml)             | manual       | rolls out image tags to GKE + Cloud Run, smoke-tests `/health`       |
-| [db-migrate-gcp.yml](db-migrate-gcp.yml)     | manual       | builds the runner image, applies the migration Job against Cloud SQL |
+| File                                                     | When it runs | What it does                                                         |
+| -------------------------------------------------------- | ------------ | -------------------------------------------------------------------- |
+| [build-images-gcp.yml](build-images-gcp.yml)             | manual       | matrix-builds each image to Artifact Registry, scans with Trivy      |
+| [deploy-gcp.yml](deploy-gcp.yml)                         | manual       | rolls out image tags to GKE + Cloud Run, smoke-tests `/health`       |
+| [db-migrate-gcp.yml](db-migrate-gcp.yml)                 | manual       | builds the runner image, applies the migration Job against Cloud SQL |
+| [marketplace-ingest-gcp.yml](marketplace-ingest-gcp.yml) | manual       | the ingest against GCS + Cloud SQL; sibling of the Azure one         |
+
+The three `marketplace-purge-*.yml` workflows are **GCP-only and unported** —
+they still authenticate via WIF and reach GKE through the Connect Gateway, so
+they cannot run against AKS. Nothing depends on them for a normal publish (the
+ingest is idempotent and upserts); they exist to retract a listing, and that
+needs an Azure sibling before it can be done on the live platform.
 
 ## Required secrets
 
@@ -62,6 +91,17 @@ push to main
         prepare  → sync secrets + tunnel config, resolve which SHA has images
         migrate  → db-migrate-azure.yml: roles Job, then `prisma migrate deploy`
         rollout  → pin every image to the SHA, apply, wait on each Deployment
+        data     → platform seed Job, then marketplace ingest Job, then count
+                   what actually landed into the run summary
+```
+
+Which is the whole pipeline, in the order it has to happen:
+
+```
+1  infrastructure   terraform/ + bootstrap.yml
+2a containers       build-images-ghcr.yml → deploy-azure rollout
+2b data             deploy-azure `migrate` (schema) + `data` (rows)
+3  running
 ```
 
 Two SHAs are in play and they are not always the same. The image build is

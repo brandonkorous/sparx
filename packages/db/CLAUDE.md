@@ -7,10 +7,26 @@ Scoped guidance for `@sparx/db`. Loads when working in this package. See root [C
 The Cloud SQL instance is **private-IP only** — the Auth Proxy from a local machine cannot reach it. Workflow:
 
 1. Author migrations locally against docker Postgres: `pnpm db:up` + `prisma migrate dev`.
-2. Push to `main`. The [DB Migrate workflow](../../.github/workflows/db-migrate.yml) builds a runner image, applies a K8s Job in `sparx-prod`, and runs `prisma migrate deploy` via the Cloud SQL Auth Proxy sidecar.
-3. Re-seed with `gh workflow run db-migrate.yml -f run_seed=true`.
+2. Push to `main`. On Azure (the live path) [deploy-azure.yml](../../.github/workflows/deploy-azure.yml) calls [db-migrate-azure.yml](../../.github/workflows/db-migrate-azure.yml), which applies a K8s Job in `sparx-prod` running `prisma migrate deploy` as the owner role. The GCP fallback is [db-migrate-gcp.yml](../../.github/workflows/db-migrate-gcp.yml) with a Cloud SQL Auth Proxy sidecar.
 
 Full flow in [README.md](./README.md#applying-a-migration).
+
+## Two seeds, and only one of them is shippable
+
+`prisma/seed.ts` and `prisma/seed-platform.ts` are different deliverables. Reach
+for the right one — they were a single entrypoint until 2026-08-02, and the
+coupling is what kept the platform's own catalog out of production entirely.
+
+| entrypoint                                          | what it writes                                                                                                                      | where it runs                                                  |
+| --------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| `pnpm db:seed` → `prisma/seed.ts`                   | a **demo tenant** (`e2e-staff@sparx.test`) — parts catalog, orders, bookings, a partner payout — then calls the platform data below | laptops + CI only. **Never** production: it invents a business |
+| `pnpm db:seed:platform` → `prisma/seed-platform.ts` | platform data ONLY: sparx-core marketplace catalog, global `platform_components`, starter legal pages                               | the `data` stage of every Azure deploy, as an in-cluster Job   |
+
+Both call `seedPlatformData()` in [prisma/platform-seed.ts](./prisma/platform-seed.ts); the ONLY difference is `tolerateFailures`. Local dev tolerates (a catalog hiccup must not block a developer's demo data); the deploy does not, so a failure fails the rollout. Swallowing errors is precisely how "the seed ran green" and "the catalog is empty" were both true.
+
+Anything added to `platform-seed.ts` must be **idempotent** (upsert or find-or-create on a stable natural key) and **tenant-safe** (creates no tenants, invents no business data) — it runs on every deploy, unattended.
+
+Bundle-backed marketplace listings (`marketplace-catalog/**`, docs/85) are NOT seeded; they are published by the marketplace ingest, which runs in the same `data` stage from the api-rest image.
 
 ## RLS is hand-edited, not Prisma-generated
 

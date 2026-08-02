@@ -1,0 +1,127 @@
+# Marketplace ingest — AZURE. Publishes the first-party bundles under
+# marketplace-catalog/ into the live platform: the compiled artifact to object
+# storage, plus a thin catalog row (docs/85 §14). The GCP sibling is
+# marketplace-ingest-gcp.yml.
+#
+# WHY THIS FILE HAD TO EXIST. Pushing a bundle to `main` ships the SOURCE and
+# nothing else — no migration, no deploy and no seed writes a catalog row, so a
+# category stays empty in production until this runs. The only ingest that
+# existed was the GCP one (WIF → Artifact Registry → GKE Connect Gateway), and
+# with the platform on AKS that left no path at all from a bundle to the live
+# marketplace. It showed: `marketplace_themes` held ZERO rows on both clouds
+# while marketplace-catalog/themes/ carried 20 bundles, and /market/themes
+# rendered its empty state to every visitor. Components were the same story —
+# 71 bundles in the repo against 25 legacy seed rows in the database.
+#
+# SELF-CONTAINED, and deliberately so. It BUILDS api-rest from the current ref
+# (the Dockerfile COPYs marketplace-catalog/ into the image) and pushes it under
+# a distinct `marketplace-ingest-<sha>` tag — it never touches :latest or the
+# deployed SHA tag, and it does not wait on a deploy. That last part is the whole
+# point: build-images-ghcr.yml is path-filtered to apps/ services/ packages/, so
+# a commit that only edits a bundle publishes NO image, and "just use the
+# deployed one" would ingest whatever bundles happened to be baked into the last
+# code change. Building here is a few minutes; the gha cache is shared with the
+# api-rest build, so it is usually mostly layers.
+#
+# Idempotent: artifacts are immutable per version, so re-running the same bundle
+# version is a no-op write. Bump the version in a bundle's sparx.json to publish
+# an update, then run this again.
+
+name: Marketplace Ingest (Azure)
+
+on:
+  workflow_dispatch: {}
+
+concurrency:
+  # Shares the deploy's group. The Job mounts the sparx-media PVC, which is a
+  # ReadWriteOnce Azure Disk pinned to api-rest's node — a rollout mid-ingest
+  # moves that pod and can strand this one on a detached volume.
+  group: deploy-azure
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # Azure OIDC federated login
+  packages: write # push the ingest-tagged api-rest image to GHCR
+
+env:
+  RESOURCE_GROUP: rg-sparx-prod-cus
+  CLUSTER: aks-sparx-prod-cus
+  NAMESPACE: sparx-prod
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    environment: prod
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          # No stored secret — GITHUB_TOKEN is minted per run and scoped by the
+          # `packages: write` permission above.
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build api-rest image (with bundles baked in)
+        uses: docker/build-push-action@v6
+        with:
+          # ALWAYS the repo root — the Dockerfile COPYs from the workspace root
+          # (pnpm-workspace.yaml plus its packages/* closure, then
+          # marketplace-catalog/).
+          context: .
+          file: services/api-rest/Dockerfile
+          push: true
+          tags: ghcr.io/${{ github.repository }}/api-rest:marketplace-ingest-${{ github.sha }}
+          # Same scope as build-images-ghcr.yml uses for this image, so this
+          # reuses the layers that workflow already published.
+          cache-from: type=gha,scope=api-rest
+          provenance: false
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Get cluster credentials
+        run: |
+          az aks get-credentials --resource-group "$RESOURCE_GROUP" \
+            --name "$CLUSTER" --overwrite-existing
+
+      - name: Render + apply the ingest Job
+        env:
+          IMAGE: ghcr.io/${{ github.repository }}/api-rest:marketplace-ingest-${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}-${{ github.run_attempt }}
+        run: |
+          set -euo pipefail
+          export IMAGE RUN_ID
+          envsubst '$IMAGE $RUN_ID' \
+            < k8s/azure/marketplace-ingest-job.yaml > /tmp/ingest-job.yaml
+          echo "--- Rendered manifest ---"
+          cat /tmp/ingest-job.yaml
+          kubectl apply -f /tmp/ingest-job.yaml
+          echo "JOB_NAME=marketplace-ingest-${RUN_ID}" >> "$GITHUB_ENV"
+
+      # await-job.sh polls BOTH the Complete and Failed conditions and, on any
+      # non-success, dumps the Job, its pods, container states and namespace
+      # events — the things `kubectl wait` refuses to tell you when a pod was
+      # never scheduled at all. Which is the realistic failure here: the Job is
+      # pinned by podAffinity to api-rest's node for the RWO volume, so a full
+      # node leaves it Pending rather than failing.
+      - name: Wait for the ingest Job
+        run: ./.github/scripts/await-job.sh "$JOB_NAME" "$NAMESPACE" 1800
+
+      # The script's own log is the record of what was published — one line per
+      # bundle, `wrote` or `skip`, then a written/total tally. Printed on success
+      # too, because "ran green and wrote nothing" is a real and quiet outcome:
+      # every bundle whose version already exists is skipped.
+      - name: Ingest log
+        if: always()
+        run: |
+          kubectl -n "$NAMESPACE" logs "job/$JOB_NAME" -c ingest --tail=-1 \
+            --ignore-errors=true || true
