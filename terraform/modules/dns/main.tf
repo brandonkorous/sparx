@@ -548,30 +548,38 @@ resource "cloudflare_record" "wize_works_admin" {
   comment         = "WizeWorks operator console (Caddy → admin.wize-admin, behind Access)"
 }
 
-# Cloudflare Access self-hosted application gating admin.wize.works. Intended as
-# the network boundary that stands in for MFA until the Better Auth twoFactor
-# plugin lands (D8) — no request reaching the console without passing a policy.
+# Cloudflare Access self-hosted application gating admin.wize.works — the
+# network boundary that stands in for MFA until the Better Auth twoFactor plugin
+# lands (D8). No request reaches the console without passing a policy.
 #
-# ⚠️  IT HAS NEVER BEEN CREATED, AND THEREFORE IS NOT PROTECTING ANYTHING.
+# ⚠️  THE LIVE APPLICATION IS NOT MANAGED HERE. It was created in the Zero Trust
+# dashboard and Terraform has never owned it.
 #
-# It appears in no state file. Every apply failed it with "Authentication error
-# (10000)" — the Cloudflare API token carries DNS scopes but not
-# `Account → Access: Apps and Policies → Edit` — and a human applying by hand
-# read past the error. Combined with MFA still being unimplemented, the operator
-# console is currently protected by a password ALONE, while this comment and the
-# security posture around it both assume otherwise. That is the gap; the count
-# below does not create it, it stops the configuration from claiming a boundary
-# that is not there.
+# The enforcement is real and verified: admin.wize.works answers 302 to
+# plain-lake-421e.cloudflareaccess.com with `Www-Authenticate: Cloudflare-Access`,
+# offering the built-in Cloudflare one-time-PIN identity provider. So an operator
+# signs in with a Better Auth password AND an emailed code — two factors today,
+# which is what the D8 note above is standing in for.
+#
+# Terraform is not the source of that. Every apply of THIS resource failed with
+# "Authentication error (10000)" — the API token carries DNS scopes but not
+# `Account → Access: Apps and Policies → Edit` — so the boundary was put in place
+# by hand instead, and the two have been out of sync since. The risk is not an
+# unprotected console; it is that nothing in the repository can prove, change, or
+# restore the policy, and a dashboard edit that weakened it would leave no trace.
 #
 # GATED ON THE OPERATOR LIST, not on cloudflare_enabled. An Access application
-# with no policy admits nobody and is worse than useless — and the policy's own
-# `include.email` cannot be empty. So an empty list means "not configured", and
-# Terraform plans nothing rather than planning something that cannot succeed.
+# with no policy admits nobody — and the policy's own `include.email` cannot be
+# empty. An empty list therefore means "not configured here", and Terraform plans
+# nothing rather than planning something that cannot succeed.
 #
-# TO ACTUALLY TURN IT ON, both are required and neither alone is enough:
-#   1. Set OPERATOR_ACCESS_EMAILS (a JSON list, e.g. ["you@example.com"]).
-#   2. Add `Account → Access: Apps and Policies → Edit` to CLOUDFLARE_API_TOKEN,
-#      or step 1 simply reproduces the 10000 above.
+# TO BRING THE LIVE APP UNDER TERRAFORM, all three are required:
+#   1. Add `Account → Access: Apps and Policies → Edit` to CLOUDFLARE_API_TOKEN.
+#   2. Set OPERATOR_ACCESS_EMAILS to the CURRENT allow-list from the dashboard —
+#      this config is default-deny, so an incomplete list locks operators out.
+#   3. `terraform import` the existing application and policy. Do NOT simply let
+#      the count flip to 1: that plans a CREATE for a domain that already has an
+#      Access app, which either duplicates the app or fails the release.
 locals {
   access_enabled = var.cloudflare_enabled && length(var.operator_access_emails) > 0
 }

@@ -15,6 +15,7 @@ The binding cross-cutting commitments — each **verified against code**, not ta
 - [[modules-are-flags]] — gate by module flag, never by plan; 404 when disabled.
 - [[event-driven]] — publish events; never inline side effects.
 - [[one-service-many-transports]] — API-first + MCP-first; REST / MCP / GraphQL are separate services over one service layer.
+- [[marketplace-self-registration]] — one shelf, many publishers; sparx self-publishes at boot and retracts by absence. Never a deploy stage.
 
 ## Sources of truth
 

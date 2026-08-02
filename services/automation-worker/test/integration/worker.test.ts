@@ -9,6 +9,7 @@ import crypto from 'node:crypto';
 import type { AddressInfo } from 'node:net';
 import { PrismaClient } from '@prisma/client';
 import { createAutomation, setAutomationStatus } from '@sparx/automation';
+import { SYSTEM_AUTOMATIONS } from '@sparx/automation-actions';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createWorkerServer } from '../../src/server';
 
@@ -187,11 +188,26 @@ describe('automation-worker HTTP surface', () => {
     expect(summary.tenantsSeeded).toBeGreaterThanOrEqual(1);
 
     // The full B2B catalog is backfilled — the locked dunning ladder among it.
+    //
+    // Asserted against the CATALOG, not a hardcoded count. This read
+    // `toHaveLength(6)` and went stale the moment B2B grew its two
+    // order-approval email seeds: the reconcile pass was correct and the test
+    // was wrong, and because integration suites are excluded on CI (see
+    // vitest.config.ts — no database there) `main` stayed green while it was
+    // red. Deriving the expected NAMES also makes the failure message say which
+    // seed is missing instead of "expected 9 to be 6".
+    //
+    // `module: null` seeds ride along: reconcile installs the always-on catalog
+    // for every tenant regardless of which modules are active, so a b2b-only
+    // tenant legitimately gets those too.
+    const expected = SYSTEM_AUTOMATIONS.filter((s) => s.module === 'b2b' || s.module === null)
+      .map((s) => s.spec.name)
+      .sort();
     const seeded = await ownerDb.automation.findMany({
       where: { tenantId: tenant.id, origin: 'system' },
       select: { name: true, locked: true },
     });
-    expect(seeded).toHaveLength(6);
+    expect(seeded.map((a) => a.name).sort()).toEqual(expected);
     const dunning = seeded.find((a) => a.name === 'B2B overdue escalation');
     expect(dunning?.locked).toBe(true);
   });

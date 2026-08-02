@@ -7,7 +7,7 @@ Scoped guidance for `@sparx/db`. Loads when working in this package. See root [C
 The managed Postgres has public access **disabled** and lives in the VNet — nothing outside the cluster can reach it. Workflow:
 
 1. Author migrations locally against docker Postgres: `pnpm db:up` + `prisma migrate dev --create-only`, then hand-edit the SQL (RLS is not generated) and **rename the directory** per the rule below.
-2. Push to `main`. The **data** stage of [release.yml](../../.github/workflows/release.yml) runs a roles Job, then a K8s Job running `prisma migrate deploy` as the owner role, then the platform seed and the marketplace ingest — all before the containers roll, so new code never meets an old schema or missing rows.
+2. Push to `main`. The **data** stage of [release.yml](../../.github/workflows/release.yml) runs a roles Job, then a K8s Job running `prisma migrate deploy` as the owner role, then the platform seed — all before the containers roll, so new code never meets an old schema or missing rows.
 
 Full flow in [README.md](./README.md#applying-a-migration).
 
@@ -41,7 +41,9 @@ Both call `seedPlatformData()` in [prisma/platform-seed.ts](./prisma/platform-se
 
 Anything added to `platform-seed.ts` must be **idempotent** (upsert or find-or-create on a stable natural key) and **tenant-safe** (creates no tenants, invents no business data) — it runs on every release, unattended.
 
-Bundle-backed marketplace listings (`marketplace-catalog/**`, docs/85) are NOT seeded; they are published by the marketplace ingest, which runs in the same `data` stage from the api-rest image. Re-publishing without a release is [ops.yml](../../.github/workflows/ops.yml) `marketplace-ingest`.
+**The marketplace catalog is not seeded at all, and no deploy stage publishes it.** api-rest publishes **all four** categories — themes, components, blueprints, integrations — on **boot**, into the same rows a licensed collaborator's upload will write, and retracts by absence (`services/api-rest/src/lib/marketplace/self-register.ts`, docs/85 §14). The ingest Job that used to run in this `data` stage is gone, as are the `marketplace-purge-*` ops tasks: publishing happens because the image booted, and unlisting is deleting the source.
+
+`seedMarketplaceCatalog()` is **deleted**, not emptied. It owned three of the four categories by three different mechanisms while a release Job owned the fourth; a seed also structurally cannot retract, since a seed that DELETED rows would be a destructive migration wearing a seed's clothes. What remains here is only what has no publisher of its own: `platform_components` and the starter legal pages.
 
 ## RLS is hand-edited, not Prisma-generated
 

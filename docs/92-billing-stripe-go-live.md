@@ -130,11 +130,18 @@ subscription item on the customer's subscription**. Three things must exist firs
 `STRIPE_SECRET_KEY`) or — once the key is set but the meter isn't — a caught,
 non-fatal error. No double-charge risk either way.
 
-**The design is sound and intentionally keeps tiering in our code:** Stripe metered
-prices are flat per-unit and can't express per-tenant percentage tiers. So we compute
-the dollar fee ourselves and meter it as **cents**, against a metered price of exactly
-**$0.01 per unit** — `feeCents × $0.01 = the fee`. Stripe just multiplies; all the
-0.5/0.3/0% logic stays in `transactionFeeRate()`.
+**The design is sound and intentionally keeps the fee calculation in our code:** Stripe
+metered prices are flat per-unit and can't express a percentage of an arbitrary amount.
+So we compute the dollar fee ourselves and meter it as **cents**, against a metered price
+of exactly **$0.01 per unit** — `feeCents × $0.01 = the fee`. Stripe just multiplies.
+
+> **Corrected 2026-08-02.** This paragraph used to read "all the 0.5/0.3/0% logic stays in
+> `transactionFeeRate()`." There is no `transactionFeeRate()` anywhere in the codebase and
+> there is no 0.5/0.3/0% tiering — that model was **removed on 2026-07-22** (docs/17
+> §"Transaction Fees — REMOVED"). The live rule is **docs/94 §8**: sparx Pay 0.5%, every
+> other gateway and every manual payment $0, implemented as `sparxPayFeeCents()` in
+> [packages/payments/src/fee.ts](../packages/payments/src/fee.ts). This stale line was the
+> source of a false fee ladder shipped on the /commerce and /crm marketing pages.
 
 ✅ Code · 🟡 End-to-end billable (blocked on §3 + §5)
 

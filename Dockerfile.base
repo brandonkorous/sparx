@@ -72,9 +72,15 @@ COPY --chown=node:node apps/workbench/package.json ./apps/workbench/
 COPY --chown=node:node packages ./packages
 COPY --chown=node:node services ./services
 
-# First-party marketplace bundles (docs/85), read at ingest time by
-# api-rest's src/scripts/marketplace-ingest.ts, which resolves
-# repoRoot/marketplace-catalog → /app/marketplace-catalog. ~6 MB.
+# The authored first-party blueprint bundles (docs/85). api-rest reads these at
+# BOOT and publishes them into the marketplace itself — writing each manifest and
+# card image to object storage and upserting the catalog row — so the source has to
+# travel with the code. It resolves repoRoot/marketplace-catalog → /app/marketplace-catalog.
+#
+# NOTHING IS SERVED FROM HERE. This is the SOURCE; the bytes a browser fetches come
+# from storage, which is what a collaborator's upload will also write to. Keeping the
+# two apart is what stops first-party and third-party listings needing separate paths.
+# ~11 MB, of which ~7 MB is the card imagery.
 COPY --chown=node:node marketplace-catalog ./marketplace-catalog
 
 # Everything under services/, plus the transitive workspace closure each one

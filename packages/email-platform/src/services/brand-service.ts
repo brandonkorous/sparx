@@ -23,7 +23,6 @@ import {
   brandIdentityOverlay,
   colorToHex,
   compileTokens,
-  DEFAULT_THEME_KEY,
   type ThemeTokens,
 } from '@sparx/site-themes';
 import type { BrandTokens } from '@sparx/email';
@@ -286,7 +285,10 @@ export async function resolveEmailBrand(
     // preset; unset tokens inherit the preset. Compile both modes so the send can emit
     // a dark-mode block (docs/impl transactional-email §10).
     const overlay = brandIdentityOverlay(brand);
-    const compiled = compileTokens(DEFAULT_THEME_KEY, { light: overlay, dark: overlay });
+    // Over the PLATFORM base. This named `DEFAULT_THEME_KEY` ('apex'), which read as
+    // "the default theme" but was one of six legacy presets no site could pick; the
+    // key is gone and the base is what it always resolved to.
+    const compiled = compileTokens({ light: overlay, dark: overlay });
     return {
       ...tokensToBrand(compiled.light, { logoUrl, siteName }),
       ...(socials.length ? { socials } : {}),

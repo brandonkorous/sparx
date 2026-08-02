@@ -56,11 +56,22 @@ connection's **SKU mappings** panel; unmapped SKUs land in the review queue.
 ## Run
 
 ```bash
+cp services/inventory-bridge/.env.example services/inventory-bridge/.env   # then fill it in
 pnpm --filter @sparx/inventory-bridge start    # node --import tsx src/index.ts
 # or, containerized:
 docker build -f services/inventory-bridge/Dockerfile -t sparx-inventory-bridge .
 docker run --env-file bridge.env -v /path/to/exports:/data sparx-inventory-bridge
 ```
+
+**There is deliberately no `dev` script, so `pnpm dev` does not start the bridge.**
+It is the one thing under `services/` that does not run on sparx's infrastructure —
+it is installed on the _tenant's_ machine and paired to _one_ inventory source. Its
+three required variables (`SPARX_BASE_URL`, `SPARX_SOURCE_ID`, `SPARX_API_KEY`) can
+only come from a real source created in the dashboard and a `sk_live_…` key minted
+once by **Pair agent**, so there is no set of dev defaults that makes it meaningful
+to boot alongside the platform fleet: with them unset it exits 78 on every reload,
+and with them faked it pushes snapshots at a source that does not exist. Run it
+explicitly, with a real pairing, when you are working on the bridge itself.
 
 ## Fishbowl-native reader (`BRIDGE_READER=fishbowl`)
 
