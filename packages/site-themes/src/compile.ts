@@ -6,17 +6,9 @@
 // has a matching CommerceSiteTheme column is written through on publish so the
 // storefront's existing read path keeps working.
 
-import type { ThemeKey, ThemePreset, ThemeOverlay, ThemeTokens, CompiledTokens } from './types';
+import type { ThemeOverlay, ThemeTokens, CompiledTokens } from './types';
 import { TOKEN_KEYS } from './tokens';
-import { THEMES, DEFAULT_THEME_KEY } from './presets';
-
-export function getTheme(key: string): ThemePreset {
-  return THEMES[key as ThemeKey] ?? THEMES[DEFAULT_THEME_KEY];
-}
-
-export function isThemeKey(key: string): key is ThemeKey {
-  return key in THEMES;
-}
+import { PLATFORM_TOKEN_DEFAULTS } from './presets';
 
 // Keep only recognized token keys from an untrusted partial (the overlay comes
 // from JSONB, so a stray key shouldn't leak into the compiled output).
@@ -31,12 +23,18 @@ function pickKnown(partial: Partial<ThemeTokens> | undefined): Partial<ThemeToke
 }
 
 /**
- * Merge a theme preset's defaults with a tenant overlay → final tokens per
- * mode. Unknown overlay keys are dropped; missing overlay values fall back to
- * the preset default so the output is always a complete ThemeTokens map.
+ * Merge the PLATFORM defaults with a tenant overlay → final tokens per mode.
+ * Unknown overlay keys are dropped; missing overlay values fall back to the base
+ * so the output is always a complete ThemeTokens map.
+ *
+ * This took a `themeKey` and resolved one of six code presets. The six are gone
+ * (see presets/index.ts) and a real theme carries its own defaults, which is what
+ * `compileTokensFromDefaults` is for — so the key selected nothing and only made it
+ * look as though it did. Callers with a theme in hand should use that function; this
+ * one is the no-theme base.
  */
-export function compileTokens(themeKey: string, overlay?: ThemeOverlay): CompiledTokens {
-  return compileTokensFromDefaults(getTheme(themeKey).tokenDefaults, overlay);
+export function compileTokens(overlay?: ThemeOverlay): CompiledTokens {
+  return compileTokensFromDefaults(PLATFORM_TOKEN_DEFAULTS, overlay);
 }
 
 /**

@@ -1,8 +1,8 @@
 # Token Model v2
 
-**Version:** 1.2
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -278,11 +278,19 @@ path that depends on data nothing writes.
 **v2 render path — non-destructive, lands now (combines old §3 read-path + §4 CSS):**
 
 3. **Compile-from-config read path** — `/v1/public/tenants/:slug` compiles a v2 token document
-   from `getThemePresetV2(themeKey)` ← a **brand doc built from the existing `TenantBrand`
+   from the site's own stored preset (`storedPresetV2(draftSettings.themePreset)`, falling
+   back to `PLATFORM_PRESET_V2`) ← a **brand doc built from the existing `TenantBrand`
    columns** (color/type; shape/rhythm/effect fall through to preset defaults — no brand schema
    change yet) ← a best-effort presentation overlay mapped from the **existing** stored
    overrides. Returns the compiled CSS. No migration. SiteTheme columns + write-through
    stay (harmless) until step 6.
+
+   > **Amended 2026-08-02.** This step originally resolved the preset by KEY, from a
+   > six-entry registry (`getThemePresetV2`). Both the registry and the six legacy themes
+   > behind it are deleted — the themes sparx ships are code in `@sparx/silica-catalog`
+   > and carry their own presets, so a key resolved nothing while still reading as though
+   > it did. A theme is now PASSED to the compiler, never named to it.
+
 4. **site.css refactor** — onto the canonical `--st-*` vocabulary: radius trio,
    `--st-space-*` scale, `depth`-driven shadows. Legacy aliases (emitted by the CSS layer)
    keep any un-migrated rule rendering during the refactor.

@@ -116,25 +116,55 @@ function resolveColors(
   const danger = color(overlay?.danger, base.danger);
   const highlight = color(overlay?.highlight, base.highlight ?? DEFAULT_HIGHLIGHT);
 
-  // `-content`: explicit wins (brand for identity, overlay/preset elsewhere),
-  // else auto-derive for AA legibility.
+  // `-content` for the IDENTITY slots. Explicit still wins (overlay, then brand),
+  // but the PRESET's pair only applies while the preset's own colour is the one on
+  // screen — see identityContent. Everything else: explicit wins, else auto-derive.
+  const identityContent = (
+    stated: string | undefined,
+    presetColor: string,
+    presetContent: string | undefined,
+    resolved: string
+  ): string => {
+    if (stated) return stated;
+    // The preset paired this foreground with ITS colour. If a brand or overlay has
+    // replaced that colour and named no foreground of its own, the pair no longer
+    // describes anything on screen — derive against what is actually rendered.
+    //
+    // Without this, a preset that states `accentContent: '#fff7ef'` hands near-white
+    // to whatever accent a tenant sets, including a pale one. It only surfaced when
+    // the platform base started stating its `-content` pairs (it mirrors the shipped
+    // Ember theme, which states them); the six legacy presets left most of them
+    // unstated, so derivation happened to run every time and hid the rule.
+    if (presetContent && resolved === color(presetColor)) return presetContent;
+    return deriveContent(resolved);
+  };
+
   return {
     base100,
     base200,
     base300,
     baseContent,
     primary,
-    primaryContent:
-      optColor(overlay?.primaryContent, bc?.primaryContent, base.primaryContent) ??
-      deriveContent(primary),
+    primaryContent: identityContent(
+      optColor(overlay?.primaryContent, bc?.primaryContent),
+      base.primary,
+      base.primaryContent,
+      primary
+    ),
     secondary,
-    secondaryContent:
-      optColor(overlay?.secondaryContent, bc?.secondaryContent, base.secondaryContent) ??
-      deriveContent(secondary),
+    secondaryContent: identityContent(
+      optColor(overlay?.secondaryContent, bc?.secondaryContent),
+      base.secondary,
+      base.secondaryContent,
+      secondary
+    ),
     accent,
-    accentContent:
-      optColor(overlay?.accentContent, bc?.accentContent, base.accentContent) ??
-      deriveContent(accent),
+    accentContent: identityContent(
+      optColor(overlay?.accentContent, bc?.accentContent),
+      base.accent,
+      base.accentContent,
+      accent
+    ),
     neutral,
     neutralContent:
       optColor(overlay?.neutralContent, base.neutralContent) ?? deriveContent(neutral),

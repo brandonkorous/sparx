@@ -1,5 +1,3 @@
-'use client';
-
 import * as React from 'react';
 
 export type SparxModule =
@@ -40,94 +38,71 @@ export type SparxModule =
   | 'partner'
   | 'platform';
 
-interface ModuleColors {
-  color: string;
-  tint: string;
-  /** Dark ink for text on the light `tint` (--module-active-text). */
-  text: string;
-  /** Text/icon shown on the SOLID `color` fill (--module-active-content).
-   *  White for most hues; dark for amber/yellow modules where white fails AA. */
-  content: string;
-}
-
-const WHITE = '#ffffff';
-// Dark ink reused on amber/yellow fills (matches --color-warning-content).
-const AMBER_INK = '#422006';
-
-const MODULE_COLORS: Record<SparxModule, ModuleColors> = {
-  storefront: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA', content: WHITE },
-  // Builder shares the site-building indigo lineage (Site Builder's successor).
-  builder: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA', content: WHITE },
-  commerce: { color: '#F97316', tint: '#FFF7ED', text: '#C2410C', content: WHITE },
-  cms: { color: '#14B8A6', tint: '#F0FDFA', text: '#0F766E', content: WHITE },
-  crm: { color: '#06B6D4', tint: '#ECFEFF', text: '#0E7490', content: WHITE },
-  email: { color: '#0EA5E9', tint: '#F0F9FF', text: '#0369A1', content: WHITE },
-  b2b: { color: '#475569', tint: '#F1F5F9', text: '#334155', content: WHITE },
-  invoicing: { color: '#65A30D', tint: '#F7FEE7', text: '#3F6212', content: WHITE },
-  ai: { color: '#EC4899', tint: '#FDF2F8', text: '#9D174D', content: WHITE },
-  dropship: { color: '#10B981', tint: '#ECFDF5', text: '#065F46', content: WHITE },
-  // Inventory amber == --color-warning hue; white text fails AA, so on-fill ink
-  // is dark. Status colors inside Inventory use danger/red to stay legible.
-  inventory: { color: '#F59E0B', tint: '#FFFBEB', text: '#B45309', content: AMBER_INK },
-  chat: { color: '#8B5CF6', tint: '#F5F3FF', text: '#6D28D9', content: WHITE },
-  // Scheduling rose — distinct from AI's magenta-pink and Commerce's orange,
-  // claiming the open red/rose slot on the module hue wheel.
-  scheduling: { color: '#F43F5E', tint: '#FFF1F2', text: '#BE123C', content: WHITE },
-  // Social blue — blue-600, the social-network blue; distinct from Email's sky
-  // (#0EA5E9) and Builder's indigo (#6366F1). White ink passes AA on the fill.
-  social: { color: '#2563EB', tint: '#EFF6FF', text: '#1D4ED8', content: WHITE },
-  automations: { color: '#D946EF', tint: '#FDF4FF', text: '#A21CAF', content: WHITE },
-  // SEO yellow is bright; on-fill ink is dark for legibility.
-  seo: { color: '#EAB308', tint: '#FEFCE8', text: '#854D0E', content: AMBER_INK },
-  // Finance "money green" — green-600, a deeper shade than the emerald success
-  // token (#10B981) so finance chrome stays distinct from positive-state badges.
-  finance: { color: '#16A34A', tint: '#F0FDF4', text: '#15803D', content: WHITE },
-  // Partner violet — violet-600, one notch deeper than Chat's violet-500 (#8B5CF6)
-  // so the partner chrome reads as its own program hue, distinct from the module.
-  partner: { color: '#7C3AED', tint: '#F5F3FF', text: '#6D28D9', content: WHITE },
-  platform: { color: '#6366F1', tint: '#EEF2FF', text: '#4338CA', content: WHITE },
-};
-
-const ModuleContext = React.createContext<SparxModule>('platform');
-
-interface ModuleProviderProps {
+/**
+ * Paints a subtree with a module's identity: everything inside resolves
+ * `color="module"`, `bg-module`, `text-module` and the `bg-module bg-soft` tint
+ * to that module's registered hue.
+ *
+ * It renders **one attribute** and nothing else. The mapping from
+ * `data-module="commerce"` to `--color-module` / `--color-module-content` lives
+ * in `@sparx/brand/theme.css` (the "module bridge" block), beside the tokens it
+ * maps — so this file knows a module's NAME and never its colour.
+ *
+ * ## Why it used to be bigger, and what that cost
+ *
+ * It carried its own `MODULE_COLORS` table of nineteen hardcoded hexes and
+ * pushed two of them onto an inline `style`. The theme.css bridge already
+ * existed and already emitted the correct values from the same `data-module`
+ * attribute this component was already setting — that file's comment even said
+ * so, and added that ModuleProvider "can drop its style prop whenever that's
+ * worth doing", on the stated assumption that *"both paths land on identical
+ * results"*.
+ *
+ * They did not. The table had drifted: `content` was `#ffffff` for sixteen of
+ * the nineteen modules, including every hue white cannot sit on. Because an
+ * inline style beats any selector, the drifted copy won on every screen inside a
+ * provider. Measured on /tools/qr-code, `btn-module` rendered white on Commerce
+ * orange at **2.80:1**, while `badge-module-commerce` on the identical fill —
+ * reaching the real token, outside this override — measured **5.58:1**. The
+ * theme.css entry has carried the correct ink, and a note recording that exact
+ * 2.80:1 figure, the whole time.
+ *
+ * Someone had already patched `inventory` and `seo` to a dark ink, which is the
+ * shape of this class of bug: the two most obviously-unreadable hues get fixed
+ * by hand while `cms`, `crm`, `email`, `dropship` and `finance` fail just as
+ * hard, a shade less visibly.
+ *
+ * So the table is deleted rather than corrected. A second copy of a palette is a
+ * second thing to keep in sync, and this one is the proof of what happens when
+ * it isn't.
+ *
+ * ## It is a Server Component now
+ *
+ * The `'use client'` directive and the React context went with the table. The
+ * context existed only to power `useModule()`, which had no caller anywhere in
+ * the repo outside its own test — so every consumer was paying a client boundary
+ * to set one attribute. `apps/web`'s eighteen tool pages and `apps/admin`'s
+ * console layout render this from the server now and cross no boundary at all.
+ *
+ * The workbench's `<ModuleScope>` compiles to the same attribute, so the two
+ * genuinely do land on identical results.
+ */
+export function ModuleProvider({
+  module,
+  children,
+  className,
+  style,
+}: {
   module: SparxModule;
   children: React.ReactNode;
   className?: string;
+  /** Layout only. It is NOT a hook for colour — the hue comes from the
+   *  attribute, and an inline style here is what caused the bug above. */
   style?: React.CSSProperties;
-}
-
-export function ModuleProvider({ module, children, className, style }: ModuleProviderProps) {
-  const colors = MODULE_COLORS[module];
-
-  const cssVars = React.useMemo(
-    () =>
-      ({
-        // The active-module bridge. silicaui generates `.btn-module` /
-        // `.badge-module` / `.bg-module` / `.text-module` / … from the registered
-        // `module` color (see each app's globals.css @plugin colors list),
-        // reading this pair — so every `color="module"` component and the
-        // `bg-module bg-soft` tint resolve to the wrapping module's hue through
-        // silica's standard color machinery. The soft tint + module ink are
-        // derived by silicaui from this one color (no hand-picked per-theme tint
-        // tokens anymore) and adapt to dark mode automatically. Outside any
-        // provider, `--color-module` falls back to the brand default (= primary)
-        // in @sparx/brand/theme.css.
-        '--color-module': colors.color,
-        '--color-module-content': colors.content,
-      }) as React.CSSProperties,
-    [colors]
-  );
-
+}) {
   return (
-    <ModuleContext.Provider value={module}>
-      <div style={{ ...cssVars, ...style }} className={className} data-module={module}>
-        {children}
-      </div>
-    </ModuleContext.Provider>
+    <div data-module={module} className={className} style={style}>
+      {children}
+    </div>
   );
-}
-
-export function useModule(): SparxModule {
-  return React.useContext(ModuleContext);
 }

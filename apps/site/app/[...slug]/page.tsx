@@ -17,7 +17,7 @@ import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
 import { BuilderRenderer } from '@/components/builder-renderer';
 import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 
 // NO `force-dynamic` (docs/127 §6). It was doing two things and only one was wanted:
 // forcing dynamic rendering, and forcing `no-store` on every fetch beneath it — which
@@ -190,7 +190,7 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
     // facet/sort/page state; a pure-content page keeps the faster HTML-string path. Bindings
     // resolve either way via `host`.
     if (treeHasHostNode(silicaPage.root)) {
-      const renderHost = storefrontHostRenderer({
+      const renderHost = SiteHostRenderer({
         site,
         propertySlug: (await resolveActivePropertySlug()) ?? undefined,
         searchParams: sp,

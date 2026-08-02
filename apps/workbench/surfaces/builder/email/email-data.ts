@@ -348,11 +348,15 @@ export function useTenantBrand() {
   });
 }
 
-/** The Site Builder draft config — its `themeKey` and presentation overlay are the
- *  other two inputs the theme compiler needs (alongside the brand). */
+/** The Site Builder draft config — its theme preset and presentation overlay are the
+ *  other two inputs the theme compiler needs (alongside the brand). `themeKey` only
+ *  NAMES the theme; `themePreset` (`{v, v1, v2}`) is the theme. */
 export interface SiteBuilderConfig {
   themeKey: string;
-  draftSettings: { presentation?: PresentationOverlayV2 | null } | null;
+  draftSettings: {
+    presentation?: PresentationOverlayV2 | null;
+    themePreset?: unknown;
+  } | null;
 }
 
 export function useSiteBuilderConfig() {

@@ -32,6 +32,7 @@ import type {
   Op,
   OpMeta,
   PageMeta,
+  Peer,
   PublishPayload,
 } from '@wizeworks/silicaui-builder/react';
 import { THEME_PRESETS, type Node, type Site, type Theme } from '@wizeworks/silicaui-html';
@@ -44,7 +45,6 @@ import {
 import {
   COMMERCE_SOURCES,
   SITE_SOURCES,
-  frameIdToStored,
   toSilicaDataSources,
   type DataSource,
 } from '@sparx/builder-schemas';
@@ -100,7 +100,7 @@ import {
   type HistoryStacks,
   type InvertOps,
 } from './undo-history';
-import { CheckCount, SiteCheck } from './site-check';
+import { SiteCheck } from './site-check';
 import { VersionHistoryPanel } from './version-history';
 import { PageSettingsPanel, draftToPatch, type PageSettingsDraft } from './page-settings';
 import { buildStudioHost } from './host';
@@ -392,6 +392,7 @@ function StudioEditor({
     const brandTheme =
       tenantTheme(effectiveBrand, {
         themeKey: config?.themeKey ?? 'default',
+        themePreset: config?.draftSettings?.themePreset,
         presentation: config?.draftSettings?.presentation,
       }) ?? THEME_PRESETS[0]!;
     const theme: Theme = storedSite?.theme ?? brandTheme;
@@ -430,26 +431,12 @@ function StudioEditor({
               },
             }
           : {}),
-        // Named layouts get the SAME healing as the default shell. They are ordinary
-        // chrome trees that happen not to be live, so a legacy one carries the same
-        // id-less nodes and the same pre-navbar markup — and skipping them would mean
-        // the Navigator collides two id-less nodes the moment the author switches to
-        // one in the layout switcher.
-        ...(storedSite.frames
-          ? {
-              frames: Object.fromEntries(
-                Object.entries(storedSite.frames).map(([id, frame]) => [
-                  id,
-                  {
-                    ...frame,
-                    root: ensureUniqueIds(
-                      upgradePageBody(upgradeFrameChrome(frame.root).root).root
-                    ),
-                  },
-                ])
-              ),
-            }
-          : {}),
+        // NAMED LAYOUTS ARE NOT LOADED INTO THE ENGINE. silicaui 0.45.0 removed
+        // `Site.frames`, so there is nothing to hand them to — and handing an engine a
+        // key it does not know is how a save later drops it. They are not GONE: they are
+        // rows in `builder_layouts`, the site's active one still wraps every page, and
+        // the MCP layout tools still create, publish and switch them. What the canvas
+        // lost is editing a NON-active shell, which no blueprint has ever shipped.
       },
       pieces
     );
@@ -485,11 +472,10 @@ function StudioEditor({
   // the current set after each successful save.
   const baselineIdsRef = useRef<Set<string>>(new Set((storedSite?.pages ?? []).map((p) => p.id)));
 
-  // The same baseline for NAMED layouts (silicaui 0.37). Kept separate rather than
-  // folded into the page set: the two are different namespaces on the server, and a
-  // single set would make "delete the layout with this id" and "delete the page with
-  // this id" indistinguishable.
-  const baselineFrameIdsRef = useRef<Set<string>>(new Set(Object.keys(storedSite?.frames ?? {})));
+  // NO LAYOUT BASELINE ANY MORE — see `toSyncInput`. silicaui 0.45.0 removed `Site.frames`
+  // and `Page.frameId`, so the engine neither loads nor reports named layouts, and a
+  // baseline the editor can never advance is a set of ids that only ever produces
+  // deletions.
 
   // Pending per-page settings edits, keyed by page id, flushed on Save. `settingsDirty`
   // mirrors "the map is non-empty" into render so the Save button lights up for a
@@ -754,6 +740,10 @@ function StudioEditor({
       if (ops.length) {
         batchIdRef.current ??= `wb-${crypto.randomUUID()}`;
         opsBufferRef.current.push(...ops);
+        // Hold the subtree we are working in, for as long as we keep working in it
+        // (docs/silicaui/01 §16). Renewal is local to the live-sync component, so a long
+        // edit is one message rather than one per keystroke.
+        localEditRef.current?.();
       }
       setDirty(true);
       // Any edit can invalidate any finding, so the last report stops being reportable
@@ -782,10 +772,6 @@ function StudioEditor({
     // ONLY deletions this save may perform. Anything else absent from `currentIds`
     // (e.g. a page an agent just created over MCP) is not ours to delete.
     const deletedPageIds = [...baselineIdsRef.current].filter((id) => !currentIds.has(id));
-    const currentFrameIds = new Set(Object.keys(next.frames ?? {}));
-    const deletedFrameIds = [...baselineFrameIdsRef.current].filter(
-      (id) => !currentFrameIds.has(id)
-    );
     const ops = opsBufferRef.current;
     const batchId = ops.length > 0 ? batchIdRef.current : null;
     // Record our own batch so live-sync skips its echo when the relay comes back around.
@@ -812,7 +798,7 @@ function StudioEditor({
       });
     }
 
-    await sync.mutateAsync(toSyncInput(next, deletedPageIds, deletedFrameIds, ops, batchId));
+    await sync.mutateAsync(toSyncInput(next, deletedPageIds, ops, batchId));
     // Committed — drop the buffer (a failed save threw above, keeping ops + batch id for a
     // retry under the SAME id, so the op log never double-appends).
     opsBufferRef.current = [];
@@ -820,7 +806,6 @@ function StudioEditor({
     // The server now holds our current set (having deleted only what we named); advance
     // the baseline so the next removal is computed against the truth, not the load.
     baselineIdsRef.current = currentIds;
-    baselineFrameIdsRef.current = currentFrameIds;
     setDirty(false);
 
     // Page settings (chrome choice, title/description/social picture/indexing) land
@@ -1003,6 +988,31 @@ function StudioEditor({
     setReloadHints((prev) => Array.from(new Set([...prev, ...hints])));
   }, []);
 
+  // The other editors in this document (silicaui 0.45 `peers` / docs/silicaui/01 §16).
+  //
+  // Held HERE for the same structural reason as `reloadHints`: the roster arrives on the
+  // socket, which lives inside `<Builder>`, and `peers` is a prop ON `<Builder>`. The
+  // studio is the only place that can see both.
+  //
+  // Two effects, and the engine keeps them apart: a peer's `selection` is DRAWN (a named
+  // ring on the canvas, a marker in the Navigator) and a peer's `claim` is ENFORCED (that
+  // subtree greys, names its holder, and refuses to be edited here while it stands).
+  // Neither is correctness machinery — per-node last-write-wins, the op log and draft
+  // history already keep the document right, and a claim is never relayed and never
+  // reaches the undo stack, so it cannot be why a remote op was dropped. It exists to
+  // stop two people making a mess they then have to untangle by hand.
+  //
+  // Until this landed, co-editing worked and said nothing: a heading rewrote itself under
+  // the operator's cursor with only "3 editing" in the status bar to connect it to a
+  // person.
+  const [peers, setPeers] = useState<Peer[]>([]);
+
+  // Filled by `<BuilderLiveSync>` with "renew my claim". Called from `onChange` because
+  // that is the ONLY place a real edit's ops surface — `editor.subscribe` reports the
+  // change but hands over an empty `ops` array, so a claim driven from inside the socket
+  // component never fired. Same inversion as `invertRef` in undo-history.
+  const localEditRef = useRef<(() => void) | null>(null);
+
   // ONE toolbar. The status badge + Preview + Save are HOST concerns (silica owns
   // only local edits, not whether our onChange persistence succeeded), so they ride
   // in `toolbarSlot` — silica renders it in the editor header, right before its own
@@ -1017,6 +1027,7 @@ function StudioEditor({
         host={host}
         persistKey={null}
         dataToggle={false}
+        peers={peers}
         initialMode={modeParam}
         onModeChange={setMode}
         onChange={onChange}
@@ -1048,17 +1059,30 @@ function StudioEditor({
                 ownBatchesRef={ownBatchesRef}
                 onRemoteApplied={onRemoteApplied}
                 onReloadHints={onReloadHints}
+                onPeers={setPeers}
+                localEditRef={localEditRef}
               />
             ) : null}
             <Badge color={status.tone} variant="soft" size="sm">
               {status.label}
             </Badge>
-            {/* The check's COUNT, and only while it is still true — the studio drops it
-                on the next edit rather than showing a number that has stopped being
-                right. This is the half of the panel a busy person actually reads: "3
-                broken" without opening anything. The CONTROL that produces it stays in
-                the toolbar, because this slot is non-interactive by contract. */}
-            {!checkStale && check.data ? <CheckCount report={check.data} /> : null}
+            {/* The check, WHOLE, now that a status item may disclose its own detail
+                (silicaui 0.45 / docs/silicaui/01 §18). The count and the list used to be
+                two floors apart — the number here, the button that opened it up in the
+                toolbar — because §14 documented this slot as carrying nothing
+                interactive. `StatusItem` moved that line from "nothing interactive" to
+                "nothing that ACTS", so the number a person wants to click is the thing
+                they click. There is no Check button in the toolbar any more; one target,
+                where the fact is. */}
+            <SiteCheck
+              open={checkOpen}
+              onOpenChange={setCheckOpen}
+              report={check.data ?? null}
+              stale={checkStale}
+              running={check.isFetching}
+              error={check.error}
+              onRun={() => void runCheck()}
+            />
           </div>
         }
         toolbarSlot={
@@ -1075,15 +1099,6 @@ function StudioEditor({
                 setReloadHints([]);
                 onReload();
               }}
-            />
-            <SiteCheck
-              open={checkOpen}
-              onOpenChange={setCheckOpen}
-              report={check.data ?? null}
-              stale={checkStale}
-              running={check.isFetching}
-              error={check.error}
-              onRun={() => void runCheck()}
             />
             <Button
               data-tour="builder-preview"
@@ -1186,7 +1201,6 @@ function ApplyInitialPiece({ pieceKey }: { pieceKey: string }) {
 function toSyncInput(
   site: Site,
   deletedPageIds: string[],
-  deletedFrameIds: string[],
   ops: readonly Op[] = [],
   batchId: string | null = null
 ): SiteSyncInput {
@@ -1202,34 +1216,27 @@ function toSyncInput(
       name: p.name,
       slug: p.slug,
       root: p.root,
-      // The engine's own per-page layout picker writes `Page.frameId`, and this is what
-      // makes it stick — without it the author picks "No layout (bare page)", presses
-      // Save, and the page comes back wearing the header. Mapped rather than passed:
-      // JSON cannot carry `undefined`, so the engine's default case has to become an
-      // explicit value on the wire.
-      frameId: frameIdToStored(p.frameId),
+      // NO `frameId`. The engine stopped carrying one in 0.45.0, so the only value this
+      // could send is the "site default" sentinel — which the sync would apply, resetting
+      // every page the author had set to render bare. An ABSENT field is how this says
+      // "leave the page's chrome alone" (site-service only writes the column when the
+      // field is present), and the Search & sharing panel is what sets it now.
     })),
     pageIds: site.pages.map((p) => p.id),
     ...(deletedPageIds.length > 0 ? { deletedPageIds } : {}),
     ...(ops.length > 0 && batchId
       ? { ops: ops as unknown as SiteSyncInput['ops'], batchId, baseSeq: 0 }
       : {}),
+    // The site's ONE shared shell — the header and footer every page wears unless it has
+    // been switched off. This is `Site.frame`, which 0.45.0 keeps; Layout mode still
+    // edits it and every starter and blueprint seeds one.
     ...(site.frame ? { frame: { root: site.frame.root } } : {}),
-    // The NAMED layouts (silicaui 0.37) — the alternative shells the engine's own
-    // layout switcher creates. Sent whenever the engine reports any, and their removal
-    // is stated explicitly beside them for the same reason page deletions are: a
-    // layout an agent added over MCP while this editor was open must survive this save.
-    ...(site.frames && Object.keys(site.frames).length > 0
-      ? {
-          frames: Object.fromEntries(
-            Object.entries(site.frames).map(([id, frame]) => [
-              id,
-              { root: frame.root, name: frame.name, editable: frame.editable },
-            ])
-          ),
-        }
-      : {}),
-    ...(deletedFrameIds.length > 0 ? { deletedFrameIds } : {}),
+    // NO `frames` / `deletedFrameIds`, and the omission is the point. The engine has no
+    // `Site.frames` as of 0.45.0, so it can neither report the tenant's named layouts nor
+    // notice a new one — and a sync that spoke about them anyway could only ever say
+    // "there are none", which the server would honour by deleting the lot. Saying nothing
+    // preserves them: they are rows in `builder_layouts`, the active one still wraps every
+    // page, and the MCP layout tools still create, publish and switch them.
     // Sent even when EMPTY, unlike the other optional halves: the sync treats an
     // absent `symbols` as "not speaking about symbols" and preserves what is stored
     // (site-service `symbolsUpdateFor`). A site whose only symbols were tenant ones

@@ -9,7 +9,7 @@
 > engine, or keep its own?"_ — has been answered and executed: `/builder/studio` **is** the silica
 > editor, sparx's bespoke editor is deleted, and `apps/dashboard` no longer exists. The
 > load-bearing five are shipped. Only **Q22** and **Q26** are still live, and they are carried
-> forward into 139 §7. Read 139 for the current asks (verified against 0.35.0); keep this doc for
+> forward into docs/silicaui/01 §7. Read that register for the current asks (verified against 0.35.0); keep this doc for
 > the reasoning that produced the adoption decision.
 
 > **Purpose.** [Doc 118](118-builder-silicaui-html-migration.md) chose to **keep sparx's builder engine** and only retarget its rendering — a decision forced by what `@wizeworks/silicaui-builder` (0.8.0) **cannot yet do**. This doc turns those gaps into **open design questions**, framed **generically** — "how should a _domain-blind_ visual builder engine solve X?", with sparx as the _motivating instance_, never the shape of the answer. The goal is to decide whether the better long-term move is **not** re-skinning sparx's editor, but **investing in silicaui-builder** so it becomes the engine any host (sparx first) can adopt — [doc 118's Phase F](118-builder-silicaui-html-migration.md#14-the-destination-adopting-the-engine-later-phase-f-gated), pulled forward.

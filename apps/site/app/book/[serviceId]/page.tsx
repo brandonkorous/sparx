@@ -10,7 +10,7 @@ import { getPublishedSilicaCollection } from '@/lib/silica';
 import { serviceDetailPage } from '@sparx/silica-catalog';
 
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getBookableService } from '@/lib/scheduling';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
@@ -41,7 +41,7 @@ export default async function BookServicePage({ params }: Props) {
   // fallback). The core renders the service header + live widget from the id below.
   const published = await getPublishedSilicaCollection(site.slug, 'scheduling.service', serviceId);
   const shell = published?.root ?? serviceDetailPage();
-  const renderHost = storefrontHostRenderer({
+  const renderHost = SiteHostRenderer({
     site,
     propertySlug: propertySlug ?? undefined,
     recordId: serviceId,

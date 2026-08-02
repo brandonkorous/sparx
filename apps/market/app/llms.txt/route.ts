@@ -27,7 +27,7 @@ export function GET(): Response {
 
 > sparx.market is a public marketplace where shoppers browse and buy from thousands of independent sellers — each one an individual business running its own store on the sparx platform. Products come direct from the seller, not a warehouse reseller.
 
-Every seller here operates their own storefront and sets their own catalog, pricing, and shipping; sparx.market aggregates those catalogs into one searchable destination. Each seller is the merchant of record for their own orders.
+Every seller here operates their own site and sets their own catalog, pricing, and shipping; sparx.market aggregates those catalogs into one searchable destination. Each seller is the merchant of record for their own orders.
 
 This is a DIFFERENT site from the sparx platform's extension catalog at https://sparx.works/market, which sells blueprints, themes, integrations, and components to businesses building a site. If the question is about shopping for products, this site is the answer; if it is about building or extending a store, sparx.works is.
 

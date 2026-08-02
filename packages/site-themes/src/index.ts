@@ -1,10 +1,15 @@
 // @sparx/site-themes — barrel.
 //
-// The six storefront themes as code-side presets (light + dark token
-// defaults), the token surface + CSS-var mapping, and the token compiler that
-// feeds publishing's write-through to CommerceSiteTheme. Consumed by the
-// Site Builder service (compile-on-publish), the dashboard customizer (settings
-// schema + preview), and the storefront (token → CSS).
+// The token COMPILER, not a theme library. Given a site's own preset plus the
+// tenant's brand and presentation overlays, it produces the compiled theme the
+// storefront and the builder preview both render from (`compileThemeForTenant`).
+//
+// It used to ship six presets of its own — apex, industrial, drift, market, fleet,
+// drop — which were the platform's entire theme shelf before the silica catalog.
+// They are retired: sparx's forty shipped themes live in @sparx/silica-catalog as
+// authored silica `Theme`s, and `themePresetV2FromTokens` (v2/from-tokens.ts) is how
+// one becomes a preset this compiler can layer. What's left here of a "preset" is
+// the single platform base a site falls back to (presets/index.ts).
 
 export * from './types';
 export * from './tokens';

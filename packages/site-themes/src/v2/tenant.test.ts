@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { brandColsToTokenDoc, compileThemeForTenant } from './tenant';
 import { compileTokensV2 } from './compile';
-import { getThemePresetV2 } from '../presets/v2';
+import { PLATFORM_PRESET_V2 } from '../presets/v2';
 
 describe('brandColsToTokenDoc', () => {
   it('maps the identity columns onto a v2 brand doc', () => {
@@ -65,7 +65,6 @@ describe('brandColsToTokenDoc', () => {
 describe('compileThemeForTenant with brand shape/rhythm/effect', () => {
   it('applies brand shape + effect over the preset', () => {
     const c = compileThemeForTenant({
-      themeKey: 'apex',
       brand: { tokens: { v: 2, shape: { radiusBox: '0px' }, effect: { depth: 0 } } },
     });
     expect(c.shared.radiusBox).toBe('0px');
@@ -75,8 +74,8 @@ describe('compileThemeForTenant with brand shape/rhythm/effect', () => {
 
 describe('compileThemeForTenant', () => {
   it('falls back entirely to the preset with no brand or presentation', () => {
-    const c = compileThemeForTenant({ themeKey: 'apex' });
-    const preset = compileTokensV2(getThemePresetV2('apex'));
+    const c = compileThemeForTenant({});
+    const preset = compileTokensV2(PLATFORM_PRESET_V2);
     expect(c.light.primary).toBe(preset.light.primary);
     expect(c.light.base100).toBe(preset.light.base100);
     expect(c.shared.containerWidth).toBe(preset.shared.containerWidth);
@@ -84,7 +83,6 @@ describe('compileThemeForTenant', () => {
 
   it('lets brand identity win across both modes (mode-independent)', () => {
     const c = compileThemeForTenant({
-      themeKey: 'apex',
       brand: { colorPrimary: '#111111', colorAccent: '#22c55e' },
     });
     expect(c.light.primary).toBe('#111111');
@@ -94,9 +92,8 @@ describe('compileThemeForTenant', () => {
   });
 
   it('lets the presentation overlay win for its slots, per mode', () => {
-    const preset = compileTokensV2(getThemePresetV2('apex'));
+    const preset = compileTokensV2(PLATFORM_PRESET_V2);
     const c = compileThemeForTenant({
-      themeKey: 'apex',
       presentation: {
         v: 2,
         containerWidth: 'narrow',
@@ -112,7 +109,6 @@ describe('compileThemeForTenant', () => {
 
   it('lets brand secondary + explicit -content overrides win over derivation', () => {
     const c = compileThemeForTenant({
-      themeKey: 'apex',
       brand: {
         colorAccent: '#f97316',
         colorAccentForeground: '#1c1917',
@@ -129,7 +125,6 @@ describe('compileThemeForTenant', () => {
 
   it('derives -content for accent/secondary when the override columns are unset', () => {
     const c = compileThemeForTenant({
-      themeKey: 'apex',
       brand: { colorAccent: '#111111', colorSecondary: '#111111' },
     });
     expect(c.light.accentContent).toBe('#ffffff'); // derived for near-black
@@ -138,7 +133,6 @@ describe('compileThemeForTenant', () => {
 
   it('keeps brand identity even when presentation overrides surfaces', () => {
     const c = compileThemeForTenant({
-      themeKey: 'industrial',
       brand: { colorPrimary: '#4f46e5' },
       presentation: { v: 2, light: { base100: '#0a0a0a' } },
     });

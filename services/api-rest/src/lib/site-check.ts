@@ -36,6 +36,7 @@ import {
 import {
   applyBrandOverride,
   EMPTY_BRAND,
+  storedPresetV2,
   tenantTheme,
   type BrandColumns,
 } from '@sparx/site-themes';
@@ -126,10 +127,17 @@ async function effectiveTheme(tx: TxClient, ctx: PropertyContext): Promise<Theme
       }
     : EMPTY_BRAND;
 
-  const presentation = (config?.draftSettings as { presentation?: unknown } | null)?.presentation;
+  const settings = config?.draftSettings as {
+    presentation?: unknown;
+    themePreset?: unknown;
+  } | null;
   const compiled = tenantTheme(applyBrandOverride(base, property?.brandOverride), {
     themeKey: config?.themeKey ?? 'default',
-    ...(presentation === undefined ? {} : { presentation }),
+    // The site's OWN theme, so the check judges the colours the visitor gets. Without
+    // it this compiled the platform base under every site's brand, which reads as
+    // "your contrast is fine" about a palette the site does not wear.
+    preset: storedPresetV2(settings?.themePreset),
+    ...(settings?.presentation === undefined ? {} : { presentation: settings.presentation }),
   });
   return compiled ?? null;
 }

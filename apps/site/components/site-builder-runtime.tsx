@@ -34,7 +34,7 @@ function accountName(c: Customer | null): string | null {
   return full !== '' ? full : (c.email ?? null);
 }
 
-export function StorefrontBuilderRuntime({ children }: { children: React.ReactNode }) {
+export function SiteBuilderRuntime({ children }: { children: React.ReactNode }) {
   const { addItem } = useCart();
   const { tenantSlug, propertySlug, customer, status, logout } = useCustomer();
   const router = useRouter();

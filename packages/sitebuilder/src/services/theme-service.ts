@@ -1,28 +1,61 @@
 // themeService — theme catalog + per-tenant theme selection and settings.
 //
-// listThemes/getThemeSchema are static (no tenant). selectTheme/updateSettings
+// listThemes is static (no tenant). selectTheme/updateSettings
 // mutate the draft SiteConfig; they do NOT publish — changes go live only when
 // publishService.publishNow runs.
 
 import { SelectThemeInput, UpdateSettingsInput } from '@sparx/sitebuilder-schemas';
 import type { Prisma, SiteConfig, TxClient } from '@sparx/db';
 import { withTenant } from '@sparx/db';
-import { getTheme, isThemeKey, THEME_LIST, type ThemePreset } from '@sparx/site-themes';
+import { FIRST_PARTY_THEMES, firstPartyTheme } from '@sparx/silica-catalog';
 
 import { writeAuditLog } from '../audit';
 import { publishSitebuilderEvent } from '../events';
 import { SitebuilderNotFoundError, type PropertyContext } from '../errors';
 import { getOrCreateConfig } from './_config';
+import { themePresetFor } from './theme-preset';
 import { readDraftThemeSlices, syncSilicaDraftTheme } from './silica-theme-sync';
 
 // ── Static catalog (no tenant) ──────────────────────────────────────────────
 
-export function listThemes(): ThemePreset[] {
-  return THEME_LIST;
+/** One theme as the catalog surfaces it: what it's called and what it's for.
+ *  Deliberately NOT the palette — a caller listing themes is choosing between
+ *  them, and shipping forty full token bags to answer "what can I pick" is a
+ *  payload nobody reads. `get_silica_theme` returns the tokens for one. */
+export interface ThemeSummary {
+  slug: string;
+  name: string;
+  /** `sparx` — the business-named shelf. `silica` — the design system's presets. */
+  shelf: 'sparx' | 'silica';
+  tagline: string;
+  description: string;
+  industry: string;
+  mood: string;
+  colorFamily: string;
+  density: string;
 }
 
-export function getThemeSchema(themeKey: string): ThemePreset['settingsSchema'] {
-  return getTheme(themeKey).settingsSchema;
+/** Every theme sparx ships — the same forty the marketplace lists, from the same
+ *  code (`FIRST_PARTY_THEMES`).
+ *
+ *  This returned `THEME_LIST`: six presets that predated the silica catalog, were
+ *  reachable from no picker, and matched no row on any cluster. So the builder's
+ *  "which themes exist" answer and the marketplace's disagreed — six against forty —
+ *  and the six were the ones `selectTheme` would accept. */
+const title = (slug: string): string => slug.charAt(0).toUpperCase() + slug.slice(1);
+
+export function listThemes(): ThemeSummary[] {
+  return FIRST_PARTY_THEMES.map(({ slug, shelf, meta }) => ({
+    slug,
+    name: title(slug),
+    shelf,
+    tagline: meta.tagline,
+    description: meta.description,
+    industry: meta.industry,
+    mood: meta.mood,
+    colorFamily: meta.colorFamily,
+    density: meta.density,
+  }));
 }
 
 // ── Per-tenant config ───────────────────────────────────────────────────────
@@ -48,28 +81,37 @@ export async function selectTheme(
   const input = SelectThemeInput.parse(rawInput);
   const slug = input.themeKey;
 
-  // Resolve the slug (docs/85 §7): a marketplace DATA theme carries its full
-  // `DataThemePreset` as a storage artifact (resolved by the injected callback);
-  // the code foundations resolve by key. A slug that is neither is unknown.
-  const dataPreset = resolution.resolveDataPreset ? await resolution.resolveDataPreset(slug) : null;
-  const isData = dataPreset != null;
-  if (!isData && !isThemeKey(slug)) {
+  // Resolve the slug, first-party FIRST. sparx's forty themes are CODE
+  // (`FIRST_PARTY_THEMES`), so they resolve on every cluster with nothing ingested
+  // and no storage read; a tenant/partner upload is the one that genuinely arrives at
+  // runtime, and it resolves from its storage artifact (docs/85 §7).
+  //
+  // The order matters as a guard, not just as an optimisation: checking code first is
+  // what stops an uploaded row named `clinic` from redefining a shipped theme for the
+  // tenant who published it. It mirrors the marketplace adapter, which serves the same
+  // union under the same precedence.
+  const shipped = firstPartyTheme(slug);
+  const dataPreset =
+    !shipped && resolution.resolveDataPreset ? await resolution.resolveDataPreset(slug) : null;
+  const preset = shipped ? themePresetFor(shipped.theme) : dataPreset;
+  if (preset == null) {
     throw new SitebuilderNotFoundError('Theme', slug);
   }
 
   const updated = await withTenant(ctx, async (tx) => {
     const config = await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
 
-    // Carry (or clear) the inline preset in draftSettings so the compile engine
-    // applies it with no code preset. A code foundation clears any prior inline.
+    // Carry the resolved preset inline in draftSettings so every downstream compile
+    // is self-contained — no registry lookup, no marketplace read at render.
+    //
+    // A non-marketplace pick used to DELETE this key and lean on `themeKey` alone,
+    // because the six code presets could be resolved from it. Nothing resolves a key
+    // any more, so clearing the preset is how a site ends up compiling the platform
+    // default while its config says otherwise. Always write what was picked.
     const draftSettings: Record<string, unknown> = {
       ...((config.draftSettings as Record<string, unknown> | null) ?? {}),
+      themePreset: preset,
     };
-    if (isData) {
-      draftSettings.themePreset = dataPreset;
-    } else {
-      delete draftSettings.themePreset;
-    }
 
     const next = await tx.siteConfig.update({
       where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },

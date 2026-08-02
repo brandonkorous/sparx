@@ -1,6 +1,6 @@
 // Presentational marketplace merchant card. Pure — takes fully-resolved props
 // and fetches nothing. Renders on a silicaui <Card>: the seller's logo, name,
-// location, and listing count, linking to the merchant storefront page.
+// location, and listing count, linking to the merchant site page.
 
 import Link from 'next/link';
 import Image from 'next/image';

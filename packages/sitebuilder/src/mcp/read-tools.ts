@@ -68,7 +68,11 @@ export const readTools: AnyMcpTool[] = [
   {
     name: 'list_themes',
     description:
-      'List the available storefront themes (Apex, Industrial, Drift, Market, Fleet, Drop) with their settings schema and category.',
+      'List every theme sparx ships — forty of them, in two shelves: `sparx` themes named for the ' +
+      'BUSINESS they suit (clinic, workshop, kitchen, …) and `silica` themes named for the LOOK ' +
+      '(quartz, midnight, neon, …). Each entry carries its tagline, description and browse facets ' +
+      '(industry, mood, colorFamily, density) — enough to choose one. Pass a `slug` to select_theme ' +
+      'to apply it; use get_silica_theme for a theme’s actual colour tokens.',
     scope: 'read:builder',
     input: NoArgs,
     confirmation: false,

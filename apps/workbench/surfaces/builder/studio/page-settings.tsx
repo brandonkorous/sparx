@@ -47,21 +47,25 @@
 //
 // ── Scope ────────────────────────────────────────────────────────────────────
 //
-// NAME, SLUG and the page's CHROME are deliberately absent. silica owns all three —
-// the page switcher for the first two, and (since 0.37) a per-page layout picker right
-// beside it for the third. Putting any of them here too would give one field two
-// owners, which is the "identity once" rule this codebase already learned the hard way.
+// NAME and SLUG are deliberately absent. silica owns both, through the page switcher,
+// and putting either here too would give one field two owners — the "identity once" rule
+// this codebase already learned the hard way.
 //
-// The chrome one was briefly built here before that picker was found, and removing it
-// was the right call rather than the polite one: the engine's sits where an author is
-// already choosing pages, and the duplicate wrote the same column through a second
-// endpoint. What survives is the PERSISTENCE — `SiteSyncPageInput.frameId` carries the
-// engine's choice to `builder_pages.frame_id`, which is what makes its picker real.
+// THE PAGE'S CHROME IS BACK HERE, and the round trip is worth recording because it looks
+// like churn and is not. It was built here first; silicaui 0.37 then shipped a per-page
+// layout picker beside the page switcher, so this one was deleted — correctly, since two
+// controls writing one column through two endpoints is exactly the duplication above.
+// silicaui 0.45.0 removed `Page.frameId` along with named layouts, which left the column,
+// the resolver, the publish pipeline and the storefront read all intact and NOTHING able
+// to set them. So it returns, as the one owner rather than a second one.
+//
+// It is a SWITCH now, not the three-way picker it was. See the control below.
 
 import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import { Badge, Button, Input, Switch, Textarea } from '@wizeworks/silicaui-react';
 import { ChevronDown, ImageOff, ImagePlus, Trash2 } from 'lucide-react';
+import { FRAME_NONE } from '@sparx/builder-schemas';
 import { useMediaPicker } from '../../cms/media-picker';
 import { usePageSettings, type PageSettingsDto } from './data';
 
@@ -73,6 +77,15 @@ export interface PageSettingsDraft {
   canonical: string;
   ogImage: string;
   noindex: boolean;
+  /**
+   * Which chrome wraps this page, as the column stores it: `null` = the site's header
+   * and footer, `FRAME_NONE` = none at all, a uuid = a specific named layout.
+   *
+   * CARRIED VERBATIM rather than reduced to the boolean the control shows, so a page
+   * already pointing at a named layout keeps pointing at it. The switch only ever writes
+   * `null` or `FRAME_NONE`; a stored id it never touches survives a save untouched.
+   */
+  frameId: string | null;
 }
 
 const BLANK: PageSettingsDraft = {
@@ -81,6 +94,7 @@ const BLANK: PageSettingsDraft = {
   canonical: '',
   ogImage: '',
   noindex: false,
+  frameId: null,
 };
 
 function toDraft(stored: PageSettingsDto | undefined): PageSettingsDraft {
@@ -91,6 +105,7 @@ function toDraft(stored: PageSettingsDto | undefined): PageSettingsDraft {
     canonical: stored.canonical ?? '',
     ogImage: stored.ogImage ?? '',
     noindex: stored.noindex,
+    frameId: stored.frameId,
   };
 }
 
@@ -101,14 +116,15 @@ export function draftToPatch(draft: PageSettingsDraft): Partial<PageSettingsDto>
     const t = v.trim();
     return t === '' ? null : t;
   };
-  // No `frameId`: the site sync owns it (see the Scope note above), and an ABSENT field
-  // is how this patch says "leave the page's chrome alone" rather than resetting it.
   return {
     seoTitle: nullIfBlank(draft.seoTitle),
     seoDescription: nullIfBlank(draft.seoDescription),
     canonical: nullIfBlank(draft.canonical),
     ogImage: nullIfBlank(draft.ogImage),
     noindex: draft.noindex,
+    // Sent as loaded unless the author moved the switch, so writing the same value back
+    // is a no-op rather than a reset.
+    frameId: draft.frameId,
   };
 }
 
@@ -118,7 +134,8 @@ function sameDraft(a: PageSettingsDraft, b: PageSettingsDraft): boolean {
     a.seoDescription === b.seoDescription &&
     a.canonical === b.canonical &&
     a.ogImage === b.ogImage &&
-    a.noindex === b.noindex
+    a.noindex === b.noindex &&
+    a.frameId === b.frameId
   );
 }
 
@@ -324,6 +341,37 @@ export function PageSettingsPanel({ pageId, pageName, siteName, saved, onChange,
           {draft.noindex ? (
             <Badge color="warning" variant="soft" size="sm">
               Hidden
+            </Badge>
+          ) : null}
+        </div>
+      </PanelField>
+
+      {/* The landing-page case, and the whole reason `frame_id` exists: a page you send
+          an advert to usually should NOT carry the site's navigation, because every link
+          in it is a way out of the thing you paid to get someone to read.
+
+          A SWITCH, not a picker. It was a three-way choice — the site's chrome, none, or
+          a specific named layout — while silicaui could edit more than one shell. It
+          cannot as of 0.45.0, and a third option nobody can create is a question with no
+          answers. The RESOLVER stays three-way (`page-frame.ts`) because a page stored
+          against a named layout must keep rendering the way it always has; that is
+          decoding what is on disk, not a choice worth showing anyone. */}
+      <PanelField
+        label="Show your header and footer on this page"
+        help="Turn this off for a landing page — an advert or a campaign — where the menu would only give people a way to click away from it."
+      >
+        <div className="flex items-center gap-2">
+          <Switch
+            color="module"
+            checked={draft.frameId !== FRAME_NONE}
+            aria-label="Show your header and footer on this page"
+            onCheckedChange={(next: boolean) => {
+              set('frameId', next ? null : FRAME_NONE);
+            }}
+          />
+          {draft.frameId === FRAME_NONE ? (
+            <Badge color="warning" variant="soft" size="sm">
+              No header or footer
             </Badge>
           ) : null}
         </div>

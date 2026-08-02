@@ -10,7 +10,7 @@
 //
 //   · LIVE (apps/site): a <BuilderRuntimeProvider> high in the storefront tree
 //     bridges these calls to the real <CartProvider>/<CustomerProvider> hooks,
-//     which stay in apps/site. See apps/site/components/storefront-builder-runtime.
+//     which stay in apps/site. See apps/site/components/site-builder-runtime.
 //   · EDIT (apps/dashboard canvas): no provider → the no-op default runs, so the
 //     real BuyBox/Signup render and behave (variant selection, qty, validation)
 //     yet never mutate a cart or capture a contact.

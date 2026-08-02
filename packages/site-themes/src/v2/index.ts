@@ -15,6 +15,7 @@
 export * from './types';
 export * from './color';
 export * from './compile';
+export * from './from-tokens';
 export * from './silica-css';
 export * from './tenant';
 export * from './brand-theme';

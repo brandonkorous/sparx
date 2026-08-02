@@ -1,15 +1,33 @@
-# silicaui-builder — the asks (1–15 + §17 ANSWERED; §16, §18, §19 OPEN)
+# silicaui-builder — the asks (1–19, ALL ANSWERED AND ADOPTED)
 
-**Version:** 3.6.0
+**Version:** 4.1.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-31
+**Last Updated:** 2026-08-02
 
-> ## ⚑ §16, §18 AND §19 ARE OPEN — §17 SHIPPED IN `0.43.0` (all raised 2026-07-30 against `0.41.0`)
+> ## ⚑ EVERY ASK ON THIS LIST IS ANSWERED — §16, §18 AND §19 CLOSED IN `0.45.0` (2026-08-02)
 >
-> **[§16 — other editors' selections, and a soft claim on a subtree](#16--other-editors-selections-and-a-soft-claim-on-a-subtree)**
-> — the builder audit's last roadmap item (slice 24), never written up until now. A POLISH ask: the
-> document is already safe without it (per-node LWW + the op log + draft history), but two authors on
-> one page currently see each other's edits with no attribution.
+> The last three open items shipped together, and **all three were adopted here the same day** —
+> peers on `/ws/builder` + `<Builder peers>`, the check count as a `StatusItem` disclosure, and
+> `custom-colors.ts` calling the supported `customColorCss`. This file is now purely the RECORD of
+> nineteen asks and their resolutions; nothing is outstanding on either side.
+>
+> **`0.45.0` also WITHDREW named layouts** — `Site.frames`, `Page.frameId`, `setPageFrame` and the
+> switcher UI, all shipped for §5 in `0.37.0`. A deliberate removal (the feature was breaking the
+> engine), so it is recorded rather than re-filed. The capability that mattered — a landing page
+> with no header or footer — is sparx's again: the column, the resolver, the publish path and the
+> storefront read never moved, and the control returned to the page-settings panel it came from.
+> What is genuinely gone is editing a non-active shell on the canvas, which no shipped blueprint
+> has ever used. Detail in
+> [../builder-audit/01-roadmap.md](../builder-audit/01-roadmap.md) slice 25.
+>
+> **[§16 — other editors' selections, and a soft claim on a subtree](#16--other-editors-selections-and-a-soft-claim-on-a-subtree)
+> — ANSWERED in `0.45.0`.** Shipped as ONE roster rather than the two lists the ask proposed:
+> `peers?: readonly Peer[]` on `<Builder>` (and `editor.setPeers`), where each `Peer` carries
+> `selection` (DRAWN — a named ring on the canvas + a Navigator marker) and `claim` (ENFORCED —
+> the subtree greys, names its holder, and refuses local mutation). Merging them is the better
+> call: a claim with no name and no color cannot tell the author who is holding a block, and two
+> lists keyed differently drift the moment one updates without the other. Unblocks the audit's
+> slice 24.
 >
 > **[§17 — a host-contributed TAB in the inspector](#17--a-host-contributed-tab-in-the-inspector-for-document-scoped-tools)
 > — ANSWERED in `0.43.0`.** `inspectorTabs?(node: SelectableNode | undefined): InspectorTabDef[]`,
@@ -17,20 +35,23 @@
 > node and no mutation ctx, and the engine hides the identity header + Duplicate/Delete footer
 > while it is open. sparx's History moved out of its drawer and is now the rail's third tab.
 >
-> **[§18 — let a status-bar item be clickable](#18--let-a-status-bar-item-be-clickable)**
-> — §14's non-interactive rule is one case too broad: a status item revealing its OWN detail
-> ("3 broken" → which three) is reading the same fact at more depth, not a control. sparx has
-> deliberately not pre-empted the rule — the count is plain text and its trigger stayed in the
-> toolbar.
+> **[§18 — let a status-bar item be clickable](#18--let-a-status-bar-item-be-clickable)
+> — ANSWERED in `0.45.0`.** Not a softened sentence but a typed affordance: `StatusItem`, exported
+> from `@wizeworks/silicaui-builder`. No `onClick` renders a plain `<span>` identical to the
+> engine's own labels; with one it becomes a ghost `btn-xs` — 24px inside the 28px strip, so the
+> row height never moves — carrying `aria-expanded`/`aria-controls`. The `expanded` prop is what
+> keeps §14's line intact: an item with no disclosed panel to point at is an action in disguise
+> and still belongs in `toolbarSlot`.
 >
-> **[§19 — a custom color is a canvas-only color](#19--a-custom-color-is-a-canvas-only-color)**
-> — raised BY silicaui, and the one ask whose suggested remedy a host cannot perform: the
-> `@plugin { colors: … }` list is a build-time constant and the name is coined at runtime by a
-> tenant. Two gaps — nothing carries it to publish, and `customColorCss` covers 4 of the 41
-> rules a real registration emits, so a custom color looks button-only even ON the canvas.
-> **The second is in flight** (the remaining components, confirmed 2026-07-31). The first
-> needs a render-path entry point; until then sparx ships a workaround
-> (`buildCustomColorCss`) that reaches into plugin internals.
+> **[§19 — a custom color is a canvas-only color](#19--a-custom-color-is-a-canvas-only-color)
+> — ANSWERED in `0.45.0`, both halves.** `customColorCss(theme, scope?)` and `customColorRules`
+> now ship from `@wizeworks/silicaui-html/theme` — a real render-path entry point that imports no
+> React — and they emit the FULL registration, verified at **41 rules** across 37 component
+> families (`badge`, `alert`, `input`, `tabs`, `step`, `calendar`, `data-table`, `chat-bubble`, …),
+> not the utility trio + `btn` of `0.41`. The optional `scope` is the canvas/published split the
+> workaround had to hand-roll. This retires
+> [../../packages/silica-catalog/src/custom-colors.ts](../../packages/silica-catalog/src/custom-colors.ts),
+> which reached into `plugin.withOptions`' return shape to recover the same rules.
 >
 > ## ⚑ 1–15 are answered and adopted.
 >
@@ -41,13 +62,13 @@
 > | 13   | 2026-07-29 | `0.40.0`      | `toolbarStatusSlot`                                                                  |
 > | 14   | 2026-07-29 | `0.41.0`      | `statusBarSlot` — and it SUPERSEDES §13 for sparx's use                              |
 > | 15   | 2026-07-29 | `0.41.0`      | mode follows `activeTree`; `select()` returns whether it landed                      |
-> | 16   | 2026-07-30 | —             | **OPEN** — peer selections + a soft subtree claim                                    |
+> | 16   | 2026-07-30 | `0.45.0`      | `peers` / `setPeers` — one roster carrying `selection` (drawn) + `claim` (enforced)  |
 > | 17   | 2026-07-30 | `0.43.0`      | `inspectorTabs` + `scope: "panel"` — History is now the rail's third tab             |
-> | 18   | 2026-07-30 | —             | **OPEN** — let a status-bar item reveal its own detail                               |
-> | 19   | 2026-07-30 | in flight     | widening to every component is on its way; the render-path entry point is still open |
+> | 18   | 2026-07-30 | `0.45.0`      | `StatusItem` — a status item may disclose its own detail, `expanded` keeps it honest |
+> | 19   | 2026-07-30 | `0.45.0`      | `customColorCss` / `customColorRules` from `silicaui-html/theme` — all 41 rules      |
 >
-> Turnaround on §12–§15 was same-day or next-morning. Apart from §16–§19, this file is the
-> RECORD of the asks and their resolutions, not a to-do list.
+> Turnaround on §12–§15 was same-day or next-morning, and §16–§19 closed inside four days. This
+> file is the RECORD of the asks and their resolutions, not a to-do list.
 
 > ## ⚑ ALL ELEVEN WERE ANSWERED AND SHIPPED IN `0.36.0` (2026-07-28)
 >
@@ -94,7 +115,7 @@
 >
 > **What this doc is.** The current register of things sparx **cannot** fix from the host seam,
 > each naming the specific missing API. It is the input to silicaui's own roadmap — WizeWorks owns
-> both sides — and the companion to [docs/builder-audit](builder-audit/00-README.md), which is
+> both sides — and the companion to [docs/builder-audit](../builder-audit/00-README.md), which is
 > where the evidence and the sparx-side work live.
 >
 > **The generic-first bar from 119 still applies and is still right:** every ask below must have an
@@ -163,7 +184,7 @@ contains any viewport variant is quietly lying about what mobile looks like.
 The second is cheaper and matches the engine's existing philosophy.
 
 **Status: sparx has done the host half, so this ask is now narrower than it was.** The
-[builder-audit roadmap](builder-audit/01-roadmap.md) slice 6 swept the sparx catalog onto
+[builder-audit roadmap](../builder-audit/01-roadmap.md) slice 6 swept the sparx catalog onto
 container queries and enforces the rule through the seam the engine already publishes — a
 `ClassValidator` on `BuilderHost.validateClass`, which `Editor.setClass` runs before it commits
 and whose `reason` the Classes field surfaces. So a host CAN enforce this today; nothing here
@@ -808,6 +829,37 @@ who else is in here, and stop me editing what they are holding."
 correctness one — the document is safe without it (per-node LWW + the op log + draft version
 history). Filed at the priority that implies.
 
+### ANSWERED — `0.45.0`
+
+Shipped as ONE roster instead of the two lists asked for, and the merge is the right call:
+
+```tsx
+<Builder peers={[{ id: socketId, name: 'Ana', selection: [nodeId], claim: [nodeId] }]} />
+```
+
+`Peer` is `{ id, name, color?, selection?, claim? }`. Pass the full roster on every change — the
+engine diffs it — or reach the same thing imperatively via `editor.setPeers`, whichever matches
+how presence already arrives.
+
+- **`selection` is DRAWN and never enforced** — a named ring on the canvas plus a marker in the
+  Navigator. Pass it alone and the editor gains attribution and nothing else, which is exactly
+  the coarse case sparx is missing today.
+- **`claim` is ENFORCED** — the subtree greys, names its holder, and refuses local mutation while
+  everything around it stays editable. Nothing is relayed and nothing lands on the undo stack, so
+  a claim can never be why a remote op was dropped; `applyRemoteOps` ignores claims entirely,
+  including the claim held by the very peer whose ops are arriving. The host owns the lifetime —
+  start on focus, end on blur or a timeout.
+- `color` defaults to a stable value derived from `id`, and is deliberately NOT a theme role: a
+  peer painted `primary` vanishes into a document that is mostly primary, and two peers would
+  collide.
+- `useClaim(id)` and `usePeers()` are exported for host chrome, plus `peerColor` and
+  `editor.claimOn(id)` (which resolves the holder of a node OR any ancestor). `ChangeKind` gains
+  `"peers"`.
+
+**Adoption note for sparx.** `/ws/builder` already relays `{socketId, userId, name, activePage}`,
+so `selection` is a small addition to the presence payload and `claim` is a focus/blur lifetime on
+top of it. That is the audit's slice 24, now unblocked.
+
 ---
 
 ## 17 — A host-contributed TAB in the inspector, for document-scoped tools
@@ -908,6 +960,31 @@ the theory the rule is wrong — the count is plain text and the trigger stayed 
 **Generic?** Yes. Any host with a countable state — unsaved conflicts, failing validations,
 queued jobs, collaborators — wants the number and the detail to be the same target.
 
+### ANSWERED — `0.45.0`
+
+Answered with a component rather than a softened sentence, which is better than what was asked
+for: `StatusItem`, exported from `@wizeworks/silicaui-builder`.
+
+```tsx
+<StatusItem onClick={open} expanded={isOpen} controls="site-check-panel">
+  3 broken · 15 to fix
+</StatusItem>
+```
+
+- **No `onClick`** → a plain `<span>`, no tab stop, no hover, identical to the engine's own
+  `mode`/`device` labels. That is what most status is.
+- **With `onClick`** → a ghost `btn-xs`, 24px inside the 28px strip so the row height never moves,
+  carrying `aria-expanded` / `aria-controls` when `expanded` and `controls` are passed — because a
+  disclosure that doesn't announce itself is a mystery target for anyone not using a mouse.
+
+`expanded` is what keeps §14's rule intact rather than repealing it. An item with no disclosed
+panel to point at is an action wearing a status item's clothes, and it still belongs in
+`toolbarSlot` beside Publish. The line moved from "nothing interactive" to "nothing that ACTS —
+send, save, publish, navigate away", which is the distinction the ask was arguing for.
+
+**Adoption note for sparx.** `site-check.tsx` renders the count as plain text with its trigger in
+the toolbar. The count becomes the trigger, and the toolbar button goes away.
+
 ---
 
 ## 19 — A custom color is a canvas-only color
@@ -991,7 +1068,7 @@ looking like a typo nobody made.
 
 ## What sparx is doing meanwhile
 
-None of the above blocks the sparx-side work. [docs/builder-audit/01-roadmap.md](builder-audit/01-roadmap.md)
+None of the above blocks the sparx-side work. [docs/builder-audit/01-roadmap.md](../builder-audit/01-roadmap.md)
 Waves 1, 2 and 4 are all host-side and in flight; this register is Wave 3.
 
-Related: [builder-audit](builder-audit/00-README.md) · [119 (superseded)](../119-silicaui-builder-gap-questions.md) · [118 — silicaui migration](../118-builder-silicaui-html-migration.md) · [126 — op protocol](../126-builder-op-protocol.md)
+Related: [builder-audit](../builder-audit/00-README.md) · [119 (superseded)](../119-silicaui-builder-gap-questions.md) · [118 — silicaui migration](../118-builder-silicaui-html-migration.md) · [126 — op protocol](../126-builder-op-protocol.md)

@@ -19,6 +19,7 @@ import { BuilderOpTarget, SiteSyncInput, resolvePageFrame } from '@sparx/builder
 
 import {
   framesToDelete,
+  hasSilicaContent,
   hasStagedTree,
   pagesToDelete,
   rowsToStoredSite,
@@ -478,5 +479,32 @@ describe('BuilderOpTarget — a named layout keeps its id', () => {
 
   it('still accepts a bare frame target — that IS the site default', () => {
     expect(BuilderOpTarget.parse({ scope: 'frame' })).toEqual({ scope: 'frame' });
+  });
+});
+
+// The storefront reads `silica_published_tree`; every silica-aware tool filtered on
+// `silica_draft_tree`. A row where the first is set and the second is null is therefore
+// LIVE and unreachable — it wins its slug, no listing shows it, and `reset` (the one
+// tool for "get this off my site") skipped it, so it could not be removed at all. Seen
+// in production: /contact served a seeded starter page while the page the tenant had
+// authored never rendered, and nothing in the product could clear it.
+describe('hasSilicaContent — reset must see what VISITORS see, not what the editor sees', () => {
+  const row = (draft: unknown, published: unknown) =>
+    ({ silicaDraftTree: draft, silicaPublishedTree: published }) as Parameters<
+      typeof hasSilicaContent
+    >[0];
+
+  it('matches the orphan: published body, no draft', () => {
+    expect(hasSilicaContent(row(null, { kind: 'element' }))).toBe(true);
+  });
+
+  it('still matches the ordinary cases', () => {
+    expect(hasSilicaContent(row({ kind: 'element' }, { kind: 'element' }))).toBe(true);
+    // Draft-only — authored, never published. Reset must clear it too.
+    expect(hasSilicaContent(row({ kind: 'element' }, null))).toBe(true);
+  });
+
+  it('leaves a row carrying no silica content alone', () => {
+    expect(hasSilicaContent(row(null, null))).toBe(false);
   });
 });

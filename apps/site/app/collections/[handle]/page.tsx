@@ -14,7 +14,7 @@ import { collectionDetailPage } from '@sparx/silica-catalog';
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SectionRenderer } from '@/components/section-renderer';
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getCollection } from '@/lib/commerce';
 import { getPublishedSilicaCollection } from '@/lib/silica';
 import { mediaUrl } from '@/lib/media';
@@ -94,7 +94,7 @@ export default async function CollectionDetailPage({ params, searchParams }: Pag
       sitePreview ? { previewToken: sitePreview } : {}
     );
     const shell = published?.root ?? collectionDetailPage();
-    const renderHost = storefrontHostRenderer({
+    const renderHost = SiteHostRenderer({
       site,
       propertySlug: propertySlug ?? undefined,
       recordHandle: handle,

@@ -1,4 +1,4 @@
-// Storefront root layout. Resolves the tenant from the Host, injects the tenant's theme
+// site root layout. Resolves the tenant from the Host, injects the tenant's theme
 // tokens (light + dark), frames every page in the silica FRAME, and mounts the client
 // providers.
 //
@@ -13,7 +13,7 @@
 // and the compiled theme tokens — not for chrome.
 //
 // Unknown hosts (no tenant) render a bare frame — the page-level not-found handles the
-// "store not found" messaging.
+// "site not found" messaging.
 
 import type { Metadata } from 'next';
 import { cookies, headers } from 'next/headers';
@@ -29,9 +29,9 @@ import { RevealController } from '@/components/reveal-controller';
 import { MotionController } from '@/components/motion-controller';
 import { SiteSuspended } from '@/components/site-suspended';
 import { SilicaChrome } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { SilicaBehaviors } from '@/components/silica-behaviors';
-import { StorefrontBuilderRuntime } from '@/components/storefront-builder-runtime';
+import { SiteBuilderRuntime } from '@/components/site-builder-runtime';
 import type { PublishedSilicaFrameDto } from '@sparx/builder-schemas';
 import { getPublishedSilicaFrame } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
@@ -50,7 +50,7 @@ import { ogImageUrl } from '@/lib/og';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 import { getPublishedSite } from '@/lib/site';
 
-// MUST be first: declares the cascade-layer order, so the storefront's own
+// MUST be first: declares the cascade-layer order, so the site's own
 // element defaults in site.css rank BENEATH silica's `components` layer and can't
 // shadow a themeable control. See layers.css.
 import './layers.css';
@@ -66,7 +66,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const site = await resolveSite();
   if (!site) {
     return {
-      title: 'Store not found',
+      title: 'Site not found',
       robots: { index: false, follow: false },
       icons: { icon: '/sparx-icon.svg' },
     };
@@ -113,7 +113,7 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: { index: true, follow: true },
     // The tenant's own favicon always wins. Until they set one, fall back to
     // the sparx mark (public/) rather than the browser's default globe — a
-    // brand-new store still looks finished. Deliberately favicon-only: no
+    // brand-new site still looks finished. Deliberately favicon-only: no
     // apple-icon / manifest, so sparx never brands a tenant's home-screen
     // install. Assets: apps/site/public/{favicon.ico,sparx-icon.svg}.
     icons: favicon
@@ -187,7 +187,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   ]);
 
   // Billing suspended (docs/17 §6): serve the "site unavailable" overlay as the
-  // WHOLE document and short-circuit ALL storefront chrome + data reads below. A
+  // WHOLE document and short-circuit ALL site chrome + data reads below. A
   // lapsed tenant is rare, so paying the one tenant fetch (already done above) and
   // nothing else is the cheap, correct path. Reactivating flips billingPhase back
   // and the site returns unchanged. Grace/trialing/active all render normally.
@@ -279,7 +279,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // The per-tenant silica theme file (docs/118 §1.0 north star): silicaui's own
   // token vocabulary (`--color-primary`, `--radius-box`, …) so every generated
   // silica class resolves with no per-tenant CSS compile. This is now the ONLY
-  // source of tenant colour and type on the storefront.
+  // source of tenant colour and type on the site.
   //
   // site.theme is the SINGLE source of the look (docs/impl theming-spine plan): a
   // site ALWAYS resolves to a concrete theme. The authored theme leads; a site that
@@ -321,7 +321,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   // bubble. The rendered theme's own `--color-primary` is the truth.
   const silicaThemePrimary = effectiveSilicaTheme.tokens?.['--color-primary'];
 
-  // The fonts to load, or the storefront renders every theme in the Geist fallback.
+  // The fonts to load, or the site renders every theme in the Geist fallback.
   // The AUTHORED silica theme leads: a typeface/heading font picked in the builder's
   // Design inspector lives ONLY in that theme (`--font-head` + `theme.fonts`), not the
   // brand columns — so reading just the columns names the font but never loads it.
@@ -372,8 +372,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
     : [];
 
   // Site-wide structured data (docs/50): Organization identity (logo + social
-  // `sameAs`) and a WebSite with the storefront search action — so search and
-  // answer engines attribute pages to this store and can surface a sitelinks
+  // `sameAs`) and a WebSite with the site search action — so search and
+  // answer engines attribute pages to this site and can surface a sitelinks
   // search box. Needs the public origin (forwarded host) for absolute URLs.
   const sdHost = hdrs.get('x-forwarded-host') ?? hdrs.get('host');
   const sdProto = hdrs.get('x-forwarded-proto') ?? 'https';
@@ -473,7 +473,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 propertySlug={activePropertySlug ?? undefined}
                 currency={site.commerce.defaultCurrency}
               >
-                <StorefrontBuilderRuntime>
+                <SiteBuilderRuntime>
                   <div className="flex min-h-[100dvh] flex-col">
                     {/* The silica engine's frame owns the chrome (docs/118 Stage 6): the
                         routed page drops at the frame's own Outlet, and the frame carries
@@ -495,7 +495,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                         // The chrome's host cores (the brand mark) render live from the
                         // resolved site, so Site settings reach the header with no
                         // re-publish.
-                        renderHost={storefrontHostRenderer({
+                        renderHost={SiteHostRenderer({
                           site,
                           ...(activePropertySlug ? { propertySlug: activePropertySlug } : {}),
                           // So a `site.theme-toggle` host in the frame mounts the real
@@ -518,7 +518,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       //
                       // Still a bare landmark rather than a throw, for the case that IS
                       // unreachable (no frame and no `frameless`): the root layout wraps
-                      // every route, so failing here would take the whole storefront down
+                      // every route, so failing here would take the whole site down
                       // instead of one page.
                       <main
                         className="flex-[1_0_auto] focus:outline-none"
@@ -563,7 +563,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                       accentColor={silicaThemePrimary ?? site.theme?.colorPrimary ?? null}
                     />
                   ) : null}
-                </StorefrontBuilderRuntime>
+                </SiteBuilderRuntime>
               </CartProvider>
             </WishlistProvider>
           </CustomerProvider>

@@ -32,7 +32,18 @@ export type Align = z.infer<typeof Align>;
 export const AppearancePolicy = z.enum(['light-only', 'dark-only', 'auto', 'toggle']);
 export type AppearancePolicy = z.infer<typeof AppearancePolicy>;
 
-export const ThemeKey = z.enum(['apex', 'industrial', 'drift', 'market', 'fleet', 'drop']);
+// A theme SLUG — one of the forty sparx ships (@sparx/silica-catalog) or a
+// tenant/partner upload. Deliberately not an enum: this was
+// `z.enum(['apex','industrial','drift','market','fleet','drop'])`, the six legacy
+// presets, so the schema rejected every theme a tenant could actually choose. The
+// closed set now lives where it can be checked against real themes —
+// `themeService.selectTheme` resolves the slug and 404s an unknown one — rather than
+// in a literal that has to be edited whenever the catalog grows.
+export const ThemeKey = z
+  .string()
+  .min(1)
+  .max(63)
+  .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Must be a lowercase slug like "clinic"');
 export type ThemeKey = z.infer<typeof ThemeKey>;
 
 export const LayoutSlot = z.enum(['header', 'footer', 'announcement']);

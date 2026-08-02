@@ -308,10 +308,17 @@
  * else. No inline `style`, no JS colour table — the mapping lives here, beside
  * the tokens it maps, and is the only place that knows a module's hue.
  *
- * This is what the workbench's <ModuleScope> compiles to. @sparx/ui's older
- * <ModuleProvider> sets the same two variables through an inline style prop; it
- * ALSO emits data-module, so both paths land on identical results and
- * ModuleProvider can drop its style prop whenever that's worth doing.
+ * This is what BOTH the workbench's <ModuleScope> and @sparx/ui's
+ * <ModuleProvider> compile to — the attribute is now the only mechanism either
+ * of them uses.
+ *
+ * It did not used to be. ModuleProvider also pushed the same two variables onto
+ * an inline style, from its own hardcoded hex table, and this comment claimed
+ * "both paths land on identical results". They did not: that table said
+ * `#ffffff` for sixteen of nineteen modules, and an inline style beats any
+ * selector, so the drifted copy won inside every provider — white on Commerce
+ * orange at 2.80:1, the exact figure noted on that token below. The table is
+ * deleted; this block is the one place that knows a module's hue again.
  *
  * Theme-independent on purpose: a saturated hue reads on either surface, and the
  * soft/tinted rendering is derived by silicaui's `soft` treatment at paint time

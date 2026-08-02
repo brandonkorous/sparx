@@ -1,13 +1,28 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.18.0
+Version: 2.21.0
 Author: Brandon Korous
-Last Updated: 2026-07-30
+Last Updated: 2026-08-02
 
-> **Status — EVERY SLICE IS DONE except the BLUEPRINT SHELF (18, another agent's) and slice 24,
-> which is now filed upstream as [docs/silicaui/01 §16](../silicaui/01-builder-asks.md).** Waves 1, 2 and 4
-> are complete and **wave 3 is closed**: silicaui answered §1–§15, including `statusBarSlot` and the
-> `activeTree` mode sync in `0.41.0`, and the sparx side is adopted throughout.
+> **Status — EVERY SLICE IS DONE except industry blueprints (18b).** Waves 1, 2 and 4 are complete,
+> **wave 3 is fully closed** — silicaui answered all nineteen asks — and as of 2026-08-02 the sparx
+> side is adopted for every one of them.
+>
+> **`0.45.0` closed the last three upstream asks and all three are now BUILT**
+> (see [docs/silicaui/01](../silicaui/01-builder-asks.md)):
+>
+> - **§16 → slice 24 SHIPPED.** `/ws/builder` relays `selection` and `claim` per editor; the studio
+>   hands the roster to `<Builder peers>`. A colleague's selection draws as a named ring, and the
+>   subtree they are actively editing greys and refuses local edits until they stop. Both halves
+>   verified in two live browsers, including the refusal and its release at the six-second TTL.
+> - **§18 → the check count IS the trigger.** `StatusItem` in the status bar opens the panel; the
+>   toolbar Check button is gone. One target, at the number that motivates pressing it.
+> - **§19 → the custom-color workaround is retired.** `custom-colors.ts` calls silicaui's supported
+>   `customColorCss` instead of diffing two plugin runs.
+>
+> **`0.45.0` also REMOVED named layouts** (`Site.frames`, `Page.frameId`, `setPageFrame`) — a
+> deliberate upstream removal, because the feature was breaking the engine. Slice 25 is amended
+> below rather than un-ticked: the capability that mattered survives, in sparx's own hands.
 >
 > **Slices 13 and 15 were ticked on 2026-07-30 after re-reading the shipped bundle** — both had been
 > resolved upstream for two versions with the boxes left unchecked. 15 is partly a DECLINE that
@@ -111,6 +126,20 @@ Last Updated: 2026-07-30
 > restart, so the two changed packages were typechecked directly (`tsc --noEmit`, both clean) and
 > linted directly. Re-run `pnpm typecheck` once dev is down before trusting a green workspace.
 >
+> **RE-RUN ON 0.45.0 (2026-08-02), dev down.** `pnpm format:check` **clean** · `pnpm typecheck`
+> **96/96** · `pnpm lint` **92/94** · `pnpm test` **81/87**. The count fell from 98 because the
+> workspace is now 96 packages (`packages/site-ui` went in the `@sparx/ui` prune, `783f47ab`), and
+> ALL 96 declare `typecheck` — so coverage is total, not two short.
+>
+> **Both red stages are other agents' live work, and neither is builder-side.** Lint: 9 errors, all
+> in `services/api-rest/src/lib/marketplace/self-register.ts`, which is UNTRACKED. Tests: one
+> failure, `automation-worker`'s reconcile-seeds tick (`automations_tenant_id_fkey` violated), whose
+> spec is dirty in the tree. This checkout carries several agents at once, so a red workspace gate
+> is the normal state mid-flight and is NOT evidence about the builder. Scope your own read of it:
+> the builder packages and the touched api-rest websocket files lint and typecheck clean on their
+> own. Note the pre-push guard runs `lint` over the WHOLE tree, so whoever owns those files has to
+> land them before anyone can push.
+>
 > **`themes-ink.test.ts` was red on `main` for five releases, and the themes were never wrong.**
 > An earlier draft of this note blamed five `secondary` values and called nudging them an
 > aesthetic decision for their owner. That was wrong, and measuring it is what showed it: the
@@ -181,7 +210,7 @@ Last Updated: 2026-07-30
 > - **The silicaui asks go to [docs/silicaui/01](../silicaui/01-builder-asks.md), not 119.** 119 is
 >   SUPERSEDED — written against silicaui-builder 0.8.0, and its framing question ("adopt
 >   the engine or keep ours?") is answered and executed. Only Q22/Q26 were still live and
->   are carried into 139 §7.
+>   are carried into docs/silicaui/01 §7.
 > - **~~Wave 3 is filed, not built.~~ SHIPPED — silicaui answered all eleven asks in
 >   `0.36.0`** (2026-07-28) and the sparx side is adopted. See
 >   [docs/silicaui/01](../silicaui/01-builder-asks.md) for the resolutions, including the two
@@ -520,9 +549,9 @@ Where "no better in the world" is actually won or lost.
   >
   > **Two bugs found on the way.** The HOME route never asked whether its tree had a host node, so **every host core an author placed on their home page rendered as an empty div** — a brand mark, a theme toggle, the pager, all silently nothing. `treeHasHostNode` was private to the catch-all route; it is now shared in `lib/silica.ts` and the home route branches on it. And `components/pagination.tsx` painted itself with two inline `style` blocks including a hand-written `marginTop: '3rem'`; migrated to utilities under the touching-it-means-fixing-it rule.
   >
-  > **Conditional visibility is NOT built — it is filed.** `resolveTree` substitutes and expands; it never drops a node, and a host pre-pass cannot stand in because an item-scoped condition (`show the Sale badge only when there is a compare-at price`) can only be evaluated inside the expansion the engine owns. Doc 139 §10 asks for a `when` on `NodeBase` with a small closed predicate set.
+  > **Conditional visibility is NOT built — it is filed.** `resolveTree` substitutes and expands; it never drops a node, and a host pre-pass cannot stand in because an item-scoped condition (`show the Sale badge only when there is a compare-at price`) can only be evaluated inside the expansion the engine owns. docs/silicaui/01 §10 asks for a `when` on `NodeBase` with a small closed predicate set.
 
-- [ ] **24. Cursors and selection presence**, plus per-node soft locks. — _silicaui-ask, now FILED as [docs/silicaui/01 §16](../silicaui/01-builder-asks.md#16--other-editors-selections-and-a-soft-claim-on-a-subtree) · M_
+- [x] **24. Cursors and selection presence**, plus per-node soft locks. — _~~silicaui-ask~~ → answered in silicaui `0.45.0` ([docs/silicaui/01 §16](../silicaui/01-builder-asks.md#16--other-editors-selections-and-a-soft-claim-on-a-subtree)) and **SHIPPED here 2026-08-02** · M_
 
   > **The only open item on this roadmap that is not blueprint authoring, and it was the one ask
   > never written up.** Filed 2026-07-30. Reframed on the way: the ask is PEER SELECTIONS, not
@@ -534,8 +563,56 @@ Where "no better in the world" is actually won or lost.
   > already answers the coarse question (who is here, on which page). What is missing is
   > attribution: two authors on ONE page see each other's edits land with nothing on screen
   > connecting them to a name.
+  >
+  > **The upstream half landed on 2026-08-02 in `0.45.0`**, and the shape is better than the ask:
+  > ONE `peers` roster instead of the proposed two lists, because a claim with no name and no color
+  > cannot say WHO is holding a block, and two lists keyed differently drift the moment one updates
+  > without the other. `selection` draws (named ring + Navigator marker); `claim` enforces (the
+  > subtree greys and refuses local mutation, while everything around it stays editable).
+  >
+  > **SHIPPED the same day.** `BuilderPresence` gained `selection` and `claim`; two client→server
+  > events carry them; the api-rest namespace stores each on the socket and rebroadcasts the roster;
+  > `BuilderLiveSync` reports it up and the studio hands it to `<Builder peers>`.
+  >
+  > **The two are sent on DELIBERATELY different rules, and that is the whole design.** A selection
+  > is where a person is LOOKING, so it is broadcast freely, binds nobody, and rides a 200ms
+  > trailing throttle — what a colleague wants to see is where someone settled, not every block
+  > they passed through. A claim is what a person is CHANGING, so it is asserted only while they
+  > are actually changing it and released six seconds after they stop. Collapsing them — claiming
+  > whatever is selected — would mean clicking a block to read it locks a colleague out of it, and
+  > people would learn to distrust the greying, which is worse than never having built it.
+  >
+  > **Three things had to be got right for a claim to stay honest.** It is renewed LOCALLY, so
+  > typing a paragraph is one message rather than one per keystroke. Relayed ops raise a depth
+  > guard, so folding in a colleague's edit never claims on their behalf. And it dies with the
+  > socket, so a tab that crashes mid-edit releases what it held as soon as socket.io notices,
+  > with no TTL to get wrong on the server.
+  >
+  > Nothing is relayed for claims and nothing touches the undo stack, so a claim can never be why a
+  > remote op was dropped — which is what keeps this polish rather than correctness.
+  >
+  > **One finding came out of building it, and it is the reason the wiring looks inside-out.** A
+  > claim has to be driven by a real EDIT, and `editor.subscribe` does not deliver one: it fires
+  > for `selection`, `peers` and `replace`, but a class change that returned `ok` — and that every
+  > other client received — arrives with `ops` EMPTY. Ops surface only through `<Builder onChange>`,
+  > which belongs to the studio, so the studio calls INTO the socket component through a ref rather
+  > than the socket component listening out. (`subscribe` does see selection, which is the other
+  > half of the same lesson: it is a usable trigger for one of these two and useless for the other.)
+  >
+  > **VERIFIED end to end in two browsers 2026-08-02**, both halves: a peer's selection draws as a
+  > dashed named ring plus a Navigator marker while the receiving client's own inspector correctly
+  > still reads "No selection"; a peer's claim renders the engine's banner — _"E2E Staff is editing
+  > this. Your changes here are paused until they move on."_ — and **refuses the local edit**
+  > (clicking a size pill on a claimed heading left it unchanged; the identical click on the
+  > identical control succeeded the moment the claim expired). The roster carried
+  > `selection` → `claim` → claim-gone at exactly the six-second TTL.
+  >
+  > **A claim cannot be verified from outside the browser, and assuming otherwise cost a session.**
+  > Any out-of-band check — attaching a socket, reading presence from a script — costs more than six
+  > seconds, so it reads back an expired claim and a working implementation looks broken. Watch the
+  > OTHER client inside the window; that is also the only thing a user ever experiences.
 
-- [x] **25. Named layouts — a second (and third) header/footer design.** — _~~silicaui-ask~~ → shipped in silicaui 0.37.0 + persisted here · M_
+- [x] **25. Named layouts — a second (and third) header/footer design.** — _~~silicaui-ask~~ → shipped in silicaui 0.37.0 + persisted here; **the engine half was WITHDRAWN in 0.45.0 — see the amendment at the end** · M_
 
   > **The engine took the half a host cannot own, including the UI.** 0.37.0 makes a layout catalog an engine concept — `Site.frames`, `createLayout` / `renameLayout` / `deleteLayout` / `editLayout`, `layouts`, `editingLayoutId`, the ops `frame.create` / `frame.rename` / `frame.delete`, and an `id` on the `frame` op scope — **and ships the switcher UI itself** (a Select plus add / rename / delete in Layout mode). So the host's job was persistence and nothing else. No sparx switcher was built, deliberately: a second one would be a second source of truth for which layout is open.
   >
@@ -550,6 +627,21 @@ Where "no better in the world" is actually won or lost.
   > **Deletion is explicit and the active layout is exempt** (`framesToDelete`), which is the page lesson from docs/126 §4.4 applied one namespace over: the engine hands a client the whole `Site`, so a stale client is missing every layout added since it loaded, and absence must never be read as removal. Pages pointing at a deleted layout fall back to the site DEFAULT rather than to bare — losing a header is a much louder change than the author asked for, and it is what the engine's own `deleteLayout` does.
   >
   > **This is what makes slice 17's picker complete.** Its third option — "use this other design for this page" — now lists designs an operator can actually author by clicking. The picker deliberately does NOT offer the live layout by id: silica's default shell is not a member of `Site.frames`, so such a page would dangle in the editor while resolving fine on the storefront — the same page previewing differently from how it publishes.
+  >
+  > ### AMENDED 2026-08-02 — silicaui 0.45.0 withdrew the engine half
+  >
+  > `Site.frames`, `Page.frameId`, `setPageFrame`, `createLayout` and the switcher UI are gone: 17 references in `0.44`'s builder declarations, zero in `0.45`. A DELIBERATE removal — the feature was breaking the engine — not a regression to chase.
+  >
+  > **What survives, which is nearly all of it.** `builder_layouts` is sparx's own table and is untouched: many rows per site, one `is_active`, draft/published per row, and the MCP tools (`create_builder_layout`, `set_active_layout`, `publish_builder_layout`, …) still create, publish and switch them. `Site.frame` — the ONE shared shell every page wears — is still an engine concept, still edited in Layout mode, and still seeded by the starter and all 21 blueprints. `builder_pages.frame_id`, `page-frame.ts`'s tri-state resolution, the publish pipeline and the storefront read are all ours and all still correct.
+  >
+  > **What was actually lost: editing a NON-active shell on the canvas.** Zero of the 21 shipped blueprints have ever used one.
+  >
+  > **Two silent data-loss paths had to be closed on the way**, and both are worth naming because each would have destroyed tenant work on the first Save after the upgrade rather than failing loudly:
+  >
+  > 1. **`deletedFrameIds` subtracts what the engine reports from what we loaded.** An engine that reports NOTHING therefore says "delete all of them", and `framesToDelete` obeys. A business with three header designs would have had one. The studio no longer speaks about `frames` at all — saying nothing preserves them.
+  > 2. **`frameId: frameIdToStored(p.frameId)` maps `undefined` to the site-default sentinel.** With the engine no longer carrying a `frameId`, every page would have been reset to the default on save — wiping every "this page renders bare" choice. The field is now ABSENT from the sync, which `site-service` reads as "leave the column alone".
+  >
+  > **The per-page chrome control came back to sparx, as a SWITCH.** It lived in page settings originally, was deleted when 0.37 shipped the engine's picker (two controls writing one column through two endpoints), and returns now as the single owner. It is two-state rather than three because the third option — "use this OTHER named design" — has nothing to point at and no way to be created. The RESOLVER stays tri-state: a page stored against a named layout must keep rendering as it always has, and that is decoding what is on disk rather than a choice worth showing anyone.
 
 ---
 
@@ -608,6 +700,13 @@ they stopped covering the whole MDI — that treated the symptom. The container 
   > down there and the CONTROL stayed in the toolbar — which is the engine's own split, state below
   > and actions above. The rule looks one case too broad and is challenged as **docs/silicaui/01 §18**,
   > without pre-empting it.
+  >
+  > **§18 was answered on 2026-08-02 in `0.45.0`, so the split can now close.** silicaui shipped a
+  > `StatusItem` component rather than a softened sentence: no `onClick` and it is a plain `<span>`
+  > like the engine's own labels; with one it becomes a ghost `btn-xs` sized so the 28px strip never
+  > changes height, carrying `aria-expanded`/`aria-controls`. `CheckCount` becomes the trigger and
+  > the toolbar button goes away — **not yet done**, and the only reason the count and its list are
+  > still two floors apart.
   >
   > **And it no longer runs on open** — opening cost a save plus a full walk of every page to
   > re-read a list you had just read. There is a Run button. The studio marks the report stale on

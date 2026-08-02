@@ -34,7 +34,7 @@ import {
   provisionTenant,
   type ModuleSlug,
 } from '@sparx/auth';
-import { safeParseBlueprint, type Blueprint } from '@sparx/blueprints';
+
 import { publishPlatformEvent } from '@sparx/crm';
 import {
   loadSampleData,
@@ -49,7 +49,7 @@ import type { FastifyBaseLogger } from 'fastify';
 
 import { findInstall, installBlueprint } from './blueprint-installer.js';
 import { installIndustryStarter, type InstallStarterResult } from './industry-starters.js';
-import { readArtifact } from './marketplace/artifacts.js';
+import { resolveBlueprintManifest } from './marketplace/resolve.js';
 
 export interface SeedTenantSpec {
   /** Stable, human-readable slug — the tenant is found-or-created by it, so a
@@ -205,21 +205,6 @@ async function enableModules(tenantId: string, modules: ModuleSlug[]): Promise<s
   return listEnabledModules(tenantId);
 }
 
-/** Resolve a blueprint manifest from the storage-backed marketplace catalog — the
- *  same path /v1/blueprints/:key/install uses (docs/85). The in-code registry is
- *  intentionally empty, so a blueprint only resolves once its bundle is ingested
- *  (prod, or a dev DB that ran `marketplace:ingest`). Returns null otherwise. */
-async function resolveCatalogBlueprint(tenantId: string, key: string): Promise<Blueprint | null> {
-  const row = await withTenant({ tenantId }, (tx) =>
-    tx.marketplaceBlueprint.findFirst({ where: { slug: key }, select: { version: true } })
-  );
-  if (!row) return null;
-  const artifact = await readArtifact('blueprints', key, row.version);
-  if (artifact == null) return null;
-  const parsed = safeParseBlueprint(artifact);
-  return parsed.success ? parsed.data : null;
-}
-
 /** Install the optional blueprint look — 409-guarded so a re-run is a no-op. Skips
  *  cleanly (with a reason) when no key is given or the catalog has no such bundle. */
 async function applyBlueprint(
@@ -230,11 +215,11 @@ async function applyBlueprint(
   logger: FastifyBaseLogger
 ): Promise<BlueprintOutcome> {
   if (!spec.blueprintKey) return { status: 'skipped', reason: 'no blueprintKey' };
-  const blueprint = await resolveCatalogBlueprint(tenantId, spec.blueprintKey);
+  const blueprint = await resolveBlueprintManifest(tenantId, spec.blueprintKey);
   if (!blueprint) {
     return {
       status: 'skipped',
-      reason: `blueprint ${spec.blueprintKey} not in catalog (ingest it)`,
+      reason: `blueprint ${spec.blueprintKey} is not in the marketplace catalog`,
     };
   }
   const prior = await findInstall(tenantId, propertyId, blueprint.key);

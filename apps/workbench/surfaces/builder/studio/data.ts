@@ -131,11 +131,15 @@ export function useBrand() {
   });
 }
 
-/** The draft site config — which theme preset the tenant is on, plus the v2
- *  presentation overlay the theme inspector edits. */
+/** The draft site config — which theme the site is on, the theme's own preset, and
+ *  the v2 presentation overlay the theme inspector edits.
+ *
+ *  `themePreset` is the theme itself (`{v, v1, v2}`); `themeKey` only NAMES it.
+ *  Reading the key alone is what left the canvas painting the platform base under
+ *  every site's brand — see brand-theme.ts. */
 export interface SiteConfigDto {
   themeKey: string;
-  draftSettings: { presentation?: unknown };
+  draftSettings: { presentation?: unknown; themePreset?: unknown };
 }
 
 export const FALLBACK_CONFIG: SiteConfigDto = { themeKey: 'default', draftSettings: {} };

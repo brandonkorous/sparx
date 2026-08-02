@@ -39,13 +39,13 @@ describe('sitebuilder saved themes', () => {
   it('create — saves a named presentation variant + brand snapshot; list is sorted by name', async () => {
     const summer = await savedThemeService.create(test.ctx, {
       name: 'Summer',
-      basePresetKey: 'apex',
+      basePresetKey: 'clinic',
       presentation: { containerWidth: '1200px' },
       brand: { colorPrimary: '#ff5a1f', fontHeading: 'Poppins' },
     });
     summerId = summer.id;
     expect(summer.name).toBe('Summer');
-    expect(summer.basePresetKey).toBe('apex');
+    expect(summer.basePresetKey).toBe('clinic');
     expect(summer.presentation.containerWidth).toBe('1200px');
     // The captured brand "look" round-trips (docs/33 self-contained themes).
     expect(summer.brand?.colorPrimary).toBe('#ff5a1f');
@@ -53,7 +53,7 @@ describe('sitebuilder saved themes', () => {
 
     await savedThemeService.create(test.ctx, {
       name: 'Holiday',
-      basePresetKey: 'industrial',
+      basePresetKey: 'kitchen',
       presentation: { containerWidth: '1320px' },
       brand: { colorPrimary: '#0a7d2b' },
     });
@@ -76,10 +76,10 @@ describe('sitebuilder saved themes', () => {
 
   it('apply — loads the saved theme into the working draft (theme + presentation + brand), no publish', async () => {
     const result = await savedThemeService.apply(test.ctx, summerId);
-    expect(result).toEqual({ ok: true, themeKey: 'apex', silicaTheme: true });
+    expect(result).toEqual({ ok: true, themeKey: 'clinic', silicaTheme: true });
 
     const config = await themeService.getConfig(test.ctx);
-    expect(config.themeKey).toBe('apex');
+    expect(config.themeKey).toBe('clinic');
     const draft = config.draftSettings as {
       presentation?: { containerWidth?: string };
       activeSavedThemeId?: string;
@@ -136,12 +136,12 @@ describe('sitebuilder saved themes', () => {
 
     const result = await scheduleService.processDueSchedule(test.ctx, scheduled.id);
     expect(result.status).toBe('published');
-    // The schedule pointed at the Holiday theme (industrial) — the published
-    // version carries it, even though the draft was on apex from the apply test.
-    expect(result.version?.themeKey).toBe('industrial');
+    // The schedule pointed at the Holiday theme (kitchen) — the published
+    // version carries it, even though the draft was on clinic from the apply test.
+    expect(result.version?.themeKey).toBe('kitchen');
 
     const config = await themeService.getConfig(test.ctx);
-    expect(config.themeKey).toBe('industrial');
+    expect(config.themeKey).toBe('kitchen');
 
     // The Holiday theme captured its own brand; the scheduled swap applies it to
     // the tenant brand, so the storefront — which compiles brand live — recolours
@@ -185,7 +185,7 @@ describe('sitebuilder saved theme apply — brand scope (docs/49)', () => {
     // A distinctive brand so the assertions can't pass by coincidence.
     const theme = await savedThemeService.create(test.ctx, {
       name: 'Sitewear',
-      basePresetKey: 'drift',
+      basePresetKey: 'garage',
       presentation: { containerWidth: '1100px' },
       brand: { colorPrimary: '#123456', fontBody: 'Georgia' },
     });
@@ -196,7 +196,7 @@ describe('sitebuilder saved theme apply — brand scope (docs/49)', () => {
 
     const secondary = await addSecondaryProperty(test);
     const result = await savedThemeService.apply(secondary.ctx, theme.id);
-    expect(result).toEqual({ ok: true, themeKey: 'drift', silicaTheme: true });
+    expect(result).toEqual({ ok: true, themeKey: 'garage', silicaTheme: true });
 
     // The site's OWN override carries the theme brand (recolours only this site)…
     const row = await readPropertyBrandOverride(test.tenant.tenantId, secondary.propertyId);

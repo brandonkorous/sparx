@@ -1,8 +1,8 @@
 # Building a template (blueprint)
 
-Version: 1.2.0
+Version: 1.3.0
 Author: Brandon Korous
-Last Updated: 2026-06-18
+Last Updated: 2026-08-02
 
 A **template** in sparx is a **blueprint**: a single declarative manifest that
 provisions a whole themed site in one install — brand + theme, content, an optional
@@ -11,15 +11,16 @@ manifest through the platform's own services, resolving every handle/reference t
 real id as it goes. **No template code ever runs** — a blueprint is data.
 
 This guide is the end-to-end path: anatomy → manifest → trees → theme → commerce →
-content → media → validate → ingest → install, plus how to turn a design mockup into
+content → media → validate → publish → install, plus how to turn a design mockup into
 a working template. Read it once and you can build and ship a template from scratch.
 
 > Source of truth for the schema is [`@sparx/blueprints`](../../packages/blueprints/src/manifest.ts)
 > (`manifest.ts`, `validate.ts`). The complete worked example is
 > [`marketplace-catalog/blueprints/sparx/`](../../marketplace-catalog/blueprints/sparx/) —
 > the first-party reference bundle, captured from the live sparx Template site. The
-> ingest is [`services/api-rest/src/lib/marketplace/ingest.ts`](../../services/api-rest/src/lib/marketplace/ingest.ts);
-> the installer is [`services/api-rest/src/lib/blueprint-installer.ts`](../../services/api-rest/src/lib/blueprint-installer.ts).
+> bundle loader is [`services/api-rest/src/lib/marketplace/blueprint-bundles.ts`](../../services/api-rest/src/lib/marketplace/blueprint-bundles.ts),
+> the publisher is [`self-register.ts`](../../services/api-rest/src/lib/marketplace/self-register.ts),
+> and the installer is [`services/api-rest/src/lib/blueprint-installer.ts`](../../services/api-rest/src/lib/blueprint-installer.ts).
 
 ---
 
@@ -28,32 +29,36 @@ a working template. Read it once and you can build and ship a template from scra
 A template is authored as a **bundle** (TypeScript + a JSON manifest + images) under
 [`marketplace-catalog/blueprints/<slug>/`](../../marketplace-catalog/blueprints/).
 You never write to a SQL payload column and you never commit a compiled artifact.
-The flow is (docs/85):
+The flow is (docs/85 §14):
 
 ```
-marketplace-catalog/blueprints/<slug>/   ← you author this (the SOURCE)
-        │  pnpm marketplace:ingest  (local)  /  gh workflow run marketplace-ingest.yml (prod)
+marketplace-catalog/blueprints/<slug>/   ← you author this (the SOURCE, ships in the image)
+        │  api-rest BOOT — selfRegisterFirstPartyCatalog()
         ▼
   ┌─────────────────────────────┐     ┌─────────────────────────────────────┐
-  │ object storage (artifact)   │     │ marketplace_blueprints (thin row)   │
+  │ object storage              │     │ marketplace_blueprints (thin row)   │
   │ marketplace/blueprints/     │     │  slug, name, vertical, version,     │
   │   <slug>/<version>.json     │ ◄── │  requiredModules, contents, media   │
-  │ (the full compiled manifest)│     │  (NO payload column — definition NULL)│
+  │ marketplace/media/…/*.png   │     │  (NO payload column — definition NULL)│
   └─────────────────────────────┘     └─────────────────────────────────────┘
         │                                          │
         ▼  browse + install                        ▼
   GET /v1/blueprints (catalog) ──► POST /v1/blueprints/:key/install ──► a draft site
 ```
 
-- The **bundle** is the source. Pushing it to `main` ships the source only; the
-  catalog stays empty until the **ingest** runs (local dev, or the prod workflow).
-- The ingest **compiles** the payload (validates it with `safeParseBlueprint`),
-  writes the manifest as an **immutable artifact** keyed by `(slug, version)` to
-  object storage, and **upserts a thin catalog row** the browse UI reads.
-- The runtime is **DB-first**: the moment the ingest completes, the template appears
-  in the dashboard `/marketplace`, `/builder/blueprints`, and `GET /v1/blueprints`.
-- The in-code `@sparx/blueprints` registry is an empty **fallback** only — first-party
-  templates ship as bundles, not in-code manifests.
+- The **bundle** is the source, and it ships inside the api-rest image. **There is no
+  publish step to run.** api-rest publishes on every boot, so a bundle merged to `main`
+  is live in every environment as soon as the pods roll.
+- Publishing **validates** the payload (`safeParseBlueprint`), writes the manifest as an
+  **immutable artifact** keyed by `(slug, version)` plus the card imagery to object
+  storage, and **upserts a thin catalog row** the browse UI reads.
+- It also **retracts by absence**: deleting a bundle directory removes its listing on
+  the next boot. That is the only way to unlist one, and it is deliberate — the purge
+  workflows that used to be the only way were built and never run.
+- sparx is **a publisher, not a special case**. A collaborator's upload lands in the
+  same rows and the same storage, and `resolveBlueprintManifest` cannot tell them apart.
+- To publish without waiting for a restart (or to work against docker Postgres):
+  `pnpm --filter @sparx/api-rest marketplace:self-register`.
 
 ---
 
@@ -69,15 +74,16 @@ marketplace-catalog/blueprints/<slug>/
   README.md       # optional — what the template is for
 ```
 
-Both `icon.png` and `preview.png` are **required** — the ingest denies a bundle that
-is missing either (`assertRequiredMedia`). The ingest copies every image under
-`media/` to public storage; `preview.png` becomes `media[0]` (the card hero).
+Both `icon.png` and `preview.png` are **required** — publishing rejects a bundle that
+is missing either. Every image under `media/` is copied to object storage;
+`preview.png` becomes `media[0]` (the card hero), which is why the order is enforced
+rather than incidental.
 
 ### Big templates: split the payload into parts
 
 `payload` names **one entry module**, but that entry may relative-import sibling data
 files — so a large template ships as a **folder of scoped files**, not one
-multi-thousand-line wall a human has to edit safely. The ingest dynamic-imports the
+multi-thousand-line wall a human has to edit safely. The loader dynamic-imports the
 entry and ESM resolves the whole relative graph:
 
 ```
@@ -181,16 +187,23 @@ checks. Top-level shape (full field reference:
    publishes. Product status, content status, and email publish all default off.
 
 > **The committed `blueprint.ts` must be SELF-CONTAINED data — no `@sparx/*` imports.**
-> The ingest dynamic-imports the payload from `marketplace-catalog/` (not a workspace
+> The loader dynamic-imports the payload from `marketplace-catalog/` (not a workspace
 > package), so a bare `import { seedNode } from '@sparx/builder-schemas'` in the
 > committed file fails to resolve (`ERR_MODULE_NOT_FOUND`). Author the trees with the
 > `node()` helper in a **generator** under `marketplace-catalog/_gen/` that imports the
 > helper by **relative path** (`../../packages/builder-schemas/src/index`) and
 > serializes the compiled manifest to `blueprint.ts` as `export default { … }`. The
-> theme + component bundles use exactly this generator mechanism — see
-> [`_gen/gen-silica-themes.ts`](../../marketplace-catalog/_gen/gen-silica-themes.ts) and
-> [`_gen/gen-silica-components.ts`](../../marketplace-catalog/_gen/gen-silica-components.ts)
-> (both now emit silica-native payloads rendered as live in-browser previews, docs/118).
+> themed clones use exactly this generator mechanism — see
+> [`_gen/gen-sparx-themed.ts`](../../marketplace-catalog/_gen/gen-sparx-themed.ts).
+>
+> There were two more generators here, for theme and component bundles. Both are
+> **deleted**: those categories ship as CODE now (`FIRST_PARTY_THEMES` /
+> `FIRST_PARTY_COMPONENTS` in `@sparx/silica-catalog`) and the marketplace serves
+> them from there, so there is no bundle to generate. Blueprints are the only bundle
+> category left, because their payload is too big for a row and they ship binary card
+> imagery — a difference in payload, not in process: all three are published by the
+> same function into the same tables.
+>
 > A **captured** blueprint like [`sparx`](../../marketplace-catalog/blueprints/sparx/) skips
 > this entirely: its `site.json` comes from `blueprint:capture` / the MCP `get_silica_site`
 > read, already serialized, so there is no `node()` authoring to generate.
@@ -501,7 +514,7 @@ Compose from the email leaves (`email_wordmark`, `line_item_table`, …).
 
 ## 9. Validation & integrity (what gets checked)
 
-The ingest runs `safeParseBlueprint` = **Zod schema** + **cross-reference integrity**
+Publishing runs `safeParseBlueprint` = **Zod schema** + **cross-reference integrity**
 ([`validate.ts`](../../packages/blueprints/src/validate.ts)). A failure denies the
 bundle with the offending path. Beyond the commerce rules in §6:
 
@@ -518,9 +531,11 @@ bundle with the offending path. Beyond the commerce rules in §6:
   - `emails[]` → must list `email`
   - any pages/layout/components → must list `builder`
 
-Validate locally before ingesting — write a tiny script or a unit test that calls
-`parseBlueprint(manifest)` (throws with the issues), or just run the ingest (it
-validates first and denies with the reason).
+Validate locally before publishing — write a tiny script or a unit test that calls
+`parseBlueprint(manifest)` (throws with the issues), or just run
+`marketplace:self-register` (it validates first and fails with the reason). CI already
+covers every committed bundle via `blueprint-bundles.test.ts`, which is what makes the
+all-or-nothing load safe: a malformed bundle fails a PR rather than a booting pod.
 
 ---
 
@@ -536,36 +551,34 @@ card hero). Two ways to make them:
    Playwright one-liner (`page.setViewportSize` → `page.goto(fileURL)` →
    `page.screenshot`) is enough; see the pattern in
    [`apps/dashboard/_marketplace-assets.mjs`](../../apps/dashboard/_marketplace-assets.mjs).
-2. **Install it and screenshot the real site** (highest fidelity): ingest locally,
+2. **Install it and screenshot the real site** (highest fidelity): publish locally,
    install into a dev tenant, screenshot the rendered home page.
 
 The `icon` is a simple square mark (a monogram on the brand color works well).
 
 ---
 
-## 11. Ingest (publish the template)
+## 11. Publishing the template
 
-**Local** (docker Postgres + local storage):
+**Prod: you do nothing.** Merge the bundle to `main`. api-rest publishes the catalog on
+boot, so the template is live in every environment as soon as the release rolls the
+pods — there is no workflow to run and no cluster that can be left behind.
 
-```bash
-pnpm --filter @sparx/api-rest marketplace:ingest
-```
-
-It reads every bundle under `marketplace-catalog/`, validates, writes the artifact +
-upserts the thin row. **Idempotent**: re-running the same `version` is a no-op write
-(artifacts are immutable per version). To publish an update, **bump `version`** in
-both `sparx.json` and the manifest, then ingest again.
-
-**Prod** (Cloud SQL + GCS, in-cluster):
+**Local** (docker Postgres + local storage), or to re-assert the shelf without a
+restart:
 
 ```bash
-gh workflow run marketplace-ingest.yml
+pnpm --filter @sparx/api-rest marketplace:self-register
 ```
 
-This builds the api-rest image with `marketplace-catalog/` baked in, pushes it under a
-distinct `marketplace-ingest-<sha>` tag (never touching `:latest`), and applies a
-one-off Job that runs the same ingest with the prod env. Pushing the bundle to `main`
-ships only the source — the catalog lights up when this workflow runs.
+It reads every bundle under `marketplace-catalog/blueprints/`, validates, writes the
+artifact + card imagery to storage, and upserts the thin row. **Idempotent**: the
+artifact is immutable per version so it is written once, media is rewritten only when
+its byte length differs, and a steady state writes nothing at all.
+
+To publish an update, **bump `version` in both `sparx.json` and the manifest**. The two
+are cross-checked — a mismatch fails the load naming both values, rather than pointing
+the row at an artifact it does not describe.
 
 ---
 
@@ -591,32 +604,21 @@ components → layout → pages → emails
 
 ---
 
-## 13. Resetting the catalog (remove templates)
+## 13. Removing a template
 
-To wipe the **first-party blueprint catalog** (e.g. before ingesting a fresh set):
+**Delete `marketplace-catalog/blueprints/<slug>/`.** That is the whole procedure. The
+next publish retracts the listing by **absence** — what sparx no longer ships, sparx no
+longer lists — scoped to sparx's own rows, so a collaborator's listing is never touched.
 
-**Local:**
+There is no purge command and no purge workflow, and that is the fix rather than a gap.
+Retraction used to require `marketplace-purge-blueprints`, a destructive ops task gated
+behind a typed confirmation, which meant unlisting something was a step separate from
+the commit that removed it. Nobody ever ran it: production served 96 component listings
+of which **25** were retired or orphaned rows left behind by exactly that separation.
 
-```bash
-pnpm --filter @sparx/api-rest marketplace:purge-blueprints
-```
-
-It deletes every Sparx-core `marketplace_blueprints` row **and** every blueprint
-artifact + card image in storage (all versions). It does **not** touch
-`tenant_blueprint_installs` (a tenant's installed site is torn down via Reset), and it
-leaves other catalog categories (themes/components/integrations) alone.
-
-**Prod** (gated, destructive):
-
-```bash
-gh workflow run marketplace-purge-blueprints.yml -f confirm=purge-blueprints
-```
-
-The workflow refuses to run unless you type the confirmation phrase. After a purge,
-author the new bundle(s) and run `marketplace-ingest.yml` to repopulate.
-
-To also remove a template from the **source** so it can't be re-ingested, delete its
-`marketplace-catalog/blueprints/<slug>/` folder.
+Removal does **not** touch `tenant_blueprint_installs` — a tenant that already installed
+the template keeps their site, and tears it down through uninstall. Nor does it touch
+the other catalog categories.
 
 ---
 
@@ -646,8 +648,10 @@ Recipe:
 4. **Build the home page** section by section, top to bottom, as `Section`s.
 5. **Add secondary pages**, then commerce/content if the template sells/publishes.
 6. **Capture media** (§10): screenshot the home page → `preview.png`; make an `icon.png`.
-7. **Ingest locally**, install into a dev tenant, eyeball it, iterate (bump `version`).
-8. **Ship**: push the bundle to `main`, then run `marketplace-ingest.yml`.
+7. **Publish locally** (`marketplace:self-register`), install into a dev tenant, eyeball
+   it, iterate (bump `version` in both places).
+8. **Ship**: merge the bundle to `main`. Nothing else — the release rolls the pods and
+   the pods publish it.
 
 ---
 
@@ -659,5 +663,5 @@ Recipe:
 - [ ] All references resolve by handle/assetId; one default variant + one primary image per product.
 - [ ] `layout` has exactly one `Outlet`; pages set `kind` correctly (singleton vs collection + recordType).
 - [ ] Static images hot-link URLs; record-bound images use `assets` + `*AssetId`.
-- [ ] `pnpm --filter @sparx/api-rest marketplace:ingest` succeeds locally and the template installs cleanly into a dev tenant.
+- [ ] `pnpm --filter @sparx/api-rest marketplace:self-register` succeeds locally and the template installs cleanly into a dev tenant.
 - [ ] `preview.png` reflects the actual home page.

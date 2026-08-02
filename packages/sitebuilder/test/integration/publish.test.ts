@@ -39,7 +39,7 @@ describe('sitebuilder publish lifecycle', () => {
   });
 
   it('publishNow — snapshots draft, write-throughs light tokens, emits event', async () => {
-    await themeService.selectTheme(test.ctx, { themeKey: 'industrial' });
+    await themeService.selectTheme(test.ctx, { themeKey: 'clinic' });
     await sectionService.create(test.ctx, {
       targetId: 'site:home',
       sectionType: 'hero',
@@ -49,7 +49,7 @@ describe('sitebuilder publish lifecycle', () => {
 
     const version = await publishService.publishNow(test.ctx, { note: 'first launch' });
     expect(version.versionNumber).toBe(1);
-    expect(version.themeKey).toBe('industrial');
+    expect(version.themeKey).toBe('clinic');
 
     // Event fired after commit.
     const published = test.publisher.events.filter((e) => e.topic === 'sitebuilder.published');
@@ -57,12 +57,18 @@ describe('sitebuilder publish lifecycle', () => {
 
     // getPublishedSnapshot reflects the live version. Identity tokens
     // (colorPrimary) still appear in the compiled snapshot — they come from the
-    // theme preset here (this tenant has no brand overlay).
+    // theme's own preset here (this tenant has no brand overlay).
+    //
+    // `clinic` is one of the FORTY themes sparx ships as code. It could not be
+    // selected at all until v1 was retired: the six legacy presets were the only keys
+    // `selectTheme` accepted, so this test used to name one of those and prove the
+    // pipeline worked on a theme no tenant could pick.
     const snap = await publishService.getPublishedSnapshot(test.ctx);
-    expect(snap?.themeKey).toBe('industrial');
+    expect(snap?.themeKey).toBe('clinic');
     expect(snap?.sections).toHaveLength(1);
-    expect(snap?.compiledTokens.light.colorPrimary).toBe('#cc1010');
-    expect(snap?.compiledTokens.dark.colorPrimary).toBe('#ef4444');
+    // OKLCH, not hex — silica's native colour format, carried through verbatim.
+    expect(snap?.compiledTokens.light.colorPrimary).toBe('oklch(46% 0.11 200)');
+    expect(snap?.compiledTokens.dark.colorPrimary).toBe('oklch(80% 0.1 200)');
 
     // Write-through: CommerceSiteTheme mirrors the compiled light *presentation*
     // tokens only — brand identity (colour/type/logo) is owned by TenantBrand
@@ -74,42 +80,39 @@ describe('sitebuilder publish lifecycle', () => {
     // …and the SILICA theme, which is the one the storefront renders. Every other
     // assertion in this test passes against columns only the builder + the legacy
     // commerce mirror read, which is how `select_theme` shipped for months looking
-    // fully wired while a visitor saw the platform base. Industrial's red, not Ember.
+    // fully wired while a visitor saw the platform base. Clinic's teal, not Ember.
     const silica = await readSilicaDraftTheme(test.tenant.tenantId, test.tenant.propertyId);
-    expect(silica?.name).toBe('industrial');
-    expect(silica?.tokens?.['--color-primary']).toBe('#cc1010');
-    // Dark is asserted as "present and not the platform base", not as an exact hex.
-    // The v1 snapshot above says `#ef4444` and the v2 compile here says `#dc2626` —
-    // the two models derive their dark ramps differently, and v1's number is not the
-    // authority on v2's. What this test is for is that the site stopped rendering
-    // sparx Ember, so that is what it checks.
+    expect(silica?.name).toBe('clinic');
+    expect(silica?.tokens?.['--color-primary']).toBe('oklch(46% 0.11 200)');
+    // Dark is asserted as "present and not the platform base", not as an exact value:
+    // what this test is for is that the site stopped rendering sparx Ember.
     expect(silica?.dark?.['--color-primary']).toBeTruthy();
     expect(silica?.dark?.['--color-primary']).not.toBe('#f2604b');
   });
 
   it('rollback — restores a prior version and republishes as a new version', async () => {
     // Publish v2 with a different theme.
-    await themeService.selectTheme(test.ctx, { themeKey: 'apex' });
+    await themeService.selectTheme(test.ctx, { themeKey: 'kitchen' });
     const v2 = await publishService.publishNow(test.ctx);
     expect(v2.versionNumber).toBe(2);
     // Write-through tracks the active version's compiled *presentation* tokens
     // (identity is brand-owned now, no longer mirrored here).
     let theme = await readCommerceSiteTheme(test.tenant.tenantId, test.tenant.propertyId);
     let snap = await publishService.getPublishedSnapshot(test.ctx);
-    expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground); // apex
+    expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground); // kitchen
 
-    // Roll back to v1 (industrial) → creates v3, restores tokens + draft theme.
+    // Roll back to v1 (clinic) → creates v3, restores tokens + draft theme.
     test.publisher.clear();
     const v3 = await publishService.rollback(test.ctx, { versionId: v1Id(await listIds(test)) });
     expect(v3.versionNumber).toBe(3);
-    expect(v3.themeKey).toBe('industrial');
+    expect(v3.themeKey).toBe('clinic');
 
     theme = await readCommerceSiteTheme(test.tenant.tenantId, test.tenant.propertyId);
     snap = await publishService.getPublishedSnapshot(test.ctx);
-    expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground); // industrial
+    expect(theme?.colorBackground).toBe(snap?.compiledTokens.light.colorBackground); // clinic
 
     const config = await themeService.getConfig(test.ctx);
-    expect(config.themeKey).toBe('industrial');
+    expect(config.themeKey).toBe('clinic');
 
     expect(test.publisher.events.some((e) => e.topic === 'sitebuilder.rolled_back')).toBe(true);
   });

@@ -3472,7 +3472,10 @@ async function seedDemoPartner(tenantId: string): Promise<void> {
     const partner = await tx.partner.upsert({
       where: { tenantId },
       update: profile,
-      create: { tenantId, referralCode: 'WIZEWORKS', ...profile },
+      // `slug` is on the create side only — it is the partner's permanent public
+      // URL (sparx.works/partners/wizeworks-studio) and a re-seed must not move
+      // it, exactly as a rename in the app does not.
+      create: { tenantId, referralCode: 'WIZEWORKS', slug: 'wizeworks-studio', ...profile },
     });
 
     // Rebuild the ledgers deterministically. Commissions first (they reference the

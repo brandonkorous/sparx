@@ -12,7 +12,7 @@ import { HOST_KEYS, functionalShell } from '@sparx/silica-catalog';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getPublishedSilicaPage } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
@@ -33,7 +33,7 @@ export default async function CategoryIndexPage() {
   // core. No shell heading — the core renders its own header + subtitle.
   const published = await getPublishedSilicaPage(site.slug, 'category');
   const shell = published?.root ?? functionalShell(HOST_KEYS.commerceCategories);
-  const renderHost = storefrontHostRenderer({
+  const renderHost = SiteHostRenderer({
     site,
     propertySlug: propertySlug ?? undefined,
   });

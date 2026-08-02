@@ -22,6 +22,7 @@ import { startSocialScheduledLoop } from './lib/social-scheduled.js';
 import { startSocialSweepLoops } from './lib/social-sweeps.js';
 import { startSocialSlotFillLoop } from './lib/social-slot-fill.js';
 import { startSitebuilderPublishLoop } from './lib/sitebuilder-publish.js';
+import { selfRegisterFirstPartyCatalog } from './lib/marketplace/self-register.js';
 import { startEmailDispatchLoop } from './lib/email-dispatch.js';
 import { startBookingNotificationLoop } from './lib/scheduling-notifications.js';
 import { startCalendarSyncLoop } from './lib/scheduling-calendar-sync.js';
@@ -210,6 +211,59 @@ async function main(): Promise<void> {
     app.log.error({ err }, 'listen failed');
     process.exit(1);
   }
+
+  // Publish sparx's own marketplace catalog — ALL FOUR categories: themes,
+  // components, blueprints and integrations — and retract what it no longer ships.
+  // This is how first-party content reaches the shelf: the platform publishing itself
+  // through the same rows a collaborator's upload lands in, at RUNTIME, on whatever
+  // cluster this image is running on. It is the ONLY thing that writes a first-party
+  // listing; there is no second mechanism anywhere.
+  //
+  // It replaces a release-stage ingest job, which is the thing that could be
+  // forgotten or wired to the wrong cloud: the move to Azure left `/market/themes`
+  // serving an empty page for a month while twenty themes sat committed in the repo.
+  // An environment can no longer be behind, because having the image IS having the
+  // catalog.
+  //
+  // Blueprints also write their manifest + card imagery to object storage here. That
+  // is deliberate rather than incidental — the bytes a browser fetches must come from
+  // the same place an uploaded blueprint's do, so there is no first-party serving path
+  // to rot separately. It is also why this could never have been the ingest Job again:
+  // that Job mounted the media volume separately from the service, so a missing mount
+  // wrote every object to its own container filesystem and exited 0. Here the writer
+  // IS the reader.
+  //
+  // AFTER listen, and non-fatal on purpose. The marketplace is one surface among
+  // many; a catalog that failed to refresh must not take down orders, checkout and
+  // webhooks with it. It is idempotent, so the next boot re-asserts the shelf — but
+  // the failure is logged at error level because a stale catalog is still wrong.
+  void selfRegisterFirstPartyCatalog()
+    .then((r) => {
+      app.log.info(
+        {
+          themes: r.themes.published,
+          components: r.components.published,
+          blueprints: r.blueprints.published,
+          integrations: r.integrations.published,
+          // Zero on a steady state; non-zero means a bundle changed or storage was
+          // missing objects this boot repaired.
+          objectsWritten: r.blueprints.objectsWritten,
+        },
+        'marketplace: first-party catalog published'
+      );
+      const pruned = [
+        ...r.themes.pruned,
+        ...r.components.pruned,
+        ...r.blueprints.pruned,
+        ...r.integrations.pruned,
+      ];
+      if (pruned.length) {
+        app.log.info({ pruned }, 'marketplace: retracted listings sparx no longer ships');
+      }
+    })
+    .catch((err: unknown) => {
+      app.log.error({ err }, 'marketplace: first-party catalog publish failed (serving stale)');
+    });
 }
 
 void main();

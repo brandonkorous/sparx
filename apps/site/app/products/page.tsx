@@ -10,7 +10,7 @@ import { HOST_KEYS, functionalShell } from '@sparx/silica-catalog';
 
 import { Breadcrumbs } from '@/components/breadcrumbs';
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import type { SearchParams } from '@/components/products/product-listing';
 import { getPublishedSilicaPage } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
@@ -41,7 +41,7 @@ export default async function ProductsPage({
   // the listing's heading is query-dependent, so the core owns it.
   const published = await getPublishedSilicaPage(site.slug, 'products');
   const shell = published?.root ?? functionalShell(HOST_KEYS.commercePlp);
-  const renderHost = storefrontHostRenderer({
+  const renderHost = SiteHostRenderer({
     site,
     propertySlug: propertySlug ?? undefined,
     searchParams: sp,

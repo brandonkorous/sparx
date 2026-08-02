@@ -30,13 +30,24 @@
 //      disclosure on the row that earns it. Nothing was deleted; it stopped being the
 //      first thing you meet.
 //
-// THE COUNT LIVES IN THE STATUS BAR, NOT HERE. `studio-surface.tsx` renders `CheckCount`
-// into silica's `statusBarSlot`, so "3 broken" is ambient — visible without opening
-// anything, which is the only version of this a busy person actually reads. That slot is
-// non-interactive by contract (docs/silicaui/01 §14: a 28px strip is no place for a control), so
-// the COUNT is down there and the CONTROL is up here — exactly the split the engine
-// argues for: state below, actions above. Brandon asked for the popup to hang off the
-// status bar itself; that needs the rule relaxed, and it is filed as docs/silicaui/01 §18.
+// THE WHOLE THING LIVES IN THE STATUS BAR NOW, and the count IS the trigger.
+//
+// It was split across two floors for a version: `CheckCount` in silica's `statusBarSlot`
+// so "3 broken" was ambient — the only version of this a busy person actually reads — and
+// the button that opened the list up in the toolbar, because §14 documented that slot as
+// carrying nothing interactive. Defensible, and still wrong in the way that matters:
+// Brandon's instinct on seeing the number was to click it, and the thing that answered
+// was somewhere else entirely.
+//
+// silicaui 0.45 answered docs/silicaui/01 §18 with `StatusItem` rather than by softening the
+// sentence, which is the better shape: an item with an `onClick` becomes a ghost `btn-xs`
+// sized so the 28px strip never changes height, and carries `aria-expanded` /
+// `aria-controls`. The rule it preserves is that a status item may DISCLOSE its own
+// detail but never ACT — so Run is still inside the panel, beside the list it refreshes,
+// and there is no Check button in the toolbar at all.
+//
+// The item reads the counts while the report is still true and the plain word "Check"
+// otherwise, so there is ONE target whether or not a check has ever been run.
 //
 // IT NO LONGER RUNS ON OPEN. Opening cost a save plus a full walk of every page's
 // composed document, to re-read a list the author had just read. There is a Run button
@@ -88,7 +99,7 @@ import {
   PopoverTrigger,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { useEditor } from '@wizeworks/silicaui-builder/react';
+import { StatusItem, useEditor } from '@wizeworks/silicaui-builder/react';
 import type { Node } from '@wizeworks/silicaui-html';
 import {
   CheckCircle2,
@@ -212,39 +223,52 @@ function placeOf(finding: CheckFinding): string {
   return ownerName;
 }
 
-/* ── The ambient half: the count in the status bar ──────────────────────────── */
+/* ── What the status item says ──────────────────────────────────────────────── */
 
 /**
- * Rendered by the studio into silica's `statusBarSlot`.
- *
- * ONLY MOUNTED WHILE THE REPORT IS STILL TRUE — the studio unmounts it on the next edit.
- * There is deliberately no "stale" styling: a greyed-out number is still a number people
- * read, and RULE #3 reserves fading for text nobody is meant to read. Absent beats wrong.
+ * The label on the strip: the counts while the report is still true, and the plain word
+ * otherwise.
  *
  * SUGGESTIONS ARE NOT COUNTED. They are things that would make a good site better, and a
  * permanent "+14" against them reads as a debt an author can never clear — which is how a
  * count stops being information and starts being noise you learn to ignore.
+ *
+ * A STALE REPORT SHOWS NO NUMBER AT ALL, and there is deliberately no greyed-out
+ * treatment for one: a faded number is still a number people read, RULE #3 reserves
+ * fading for text nobody is meant to read, and a count that has stopped being true is
+ * worse than no count. Fix three broken links, and a strip still reading "3 broken" is
+ * the one number the author was meant to trust telling them the one lie that matters.
  */
-export function CheckCount({ report }: { report: SiteCheckReport }) {
-  const { error, warning } = report.counts;
-  if (error === 0 && warning === 0) return null;
+function CheckLabel({ report, stale }: { report: SiteCheckReport | null; stale: boolean }) {
+  const counts = !stale && report ? report.counts : null;
+  if (!counts || (counts.error === 0 && counts.warning === 0)) {
+    return (
+      <span className="flex items-center gap-1.5">
+        <ShieldCheck className="size-3.5 shrink-0" aria-hidden />
+        Check
+      </span>
+    );
+  }
   return (
     <span className="flex items-center gap-2">
-      {error > 0 ? (
+      {counts.error > 0 ? (
         <span className="flex items-center gap-1">
           <span className="bg-error size-2 shrink-0 rounded-full" aria-hidden />
-          {String(error)} broken
+          {String(counts.error)} broken
         </span>
       ) : null}
-      {warning > 0 ? (
+      {counts.warning > 0 ? (
         <span className="flex items-center gap-1">
           <span className="bg-warning size-2 shrink-0 rounded-full" aria-hidden />
-          {String(warning)} to fix
+          {String(counts.warning)} to fix
         </span>
       ) : null}
     </span>
   );
 }
+
+/** `aria-controls` target, so the item announces what it opens. */
+const CHECK_PANEL_ID = 'sparx-site-check-panel';
 
 /* ── The panel ──────────────────────────────────────────────────────────────── */
 
@@ -438,18 +462,30 @@ export function SiteCheck({ open, onOpenChange, report, stale, running, error, o
     <PaneScope>
       <Popover open={open} onOpenChange={onOpenChange}>
         <PopoverTrigger>
-          <Button
-            size="sm"
-            variant="ghost"
-            color="neutral"
+          {/* THE NUMBER IS THE TARGET (silicaui 0.45 `StatusItem` / docs/silicaui/01 §18).
+              Brandon's instinct on first seeing "3 broken · 15 to fix" in the strip was
+              to click it, and for a while he could not: §14 documented this slot as
+              non-interactive, so the count sat here and the control that opened the list
+              sat in the toolbar, two floors from the number that motivates pressing it.
+
+              `StatusItem` is what closed that without repealing the rule. With an
+              `onClick` it renders a ghost `btn-xs` — 24px inside the 28px strip, so the
+              row height never moves — and carries `aria-expanded`/`aria-controls`. The
+              line it keeps is that a status item may DISCLOSE its own detail but never
+              ACT: Run still lives inside the panel, beside the list it refreshes. */}
+          <StatusItem
+            onClick={() => onOpenChange(!open)}
+            expanded={open}
+            controls={CHECK_PANEL_ID}
             title="Check for broken links, unreadable text and missing descriptions"
           >
-            <ShieldCheck className="size-4" aria-hidden />
-            Check
-          </Button>
+            <CheckLabel report={report} stale={stale} />
+          </StatusItem>
         </PopoverTrigger>
         <PopoverContent
-          side="bottom"
+          id={CHECK_PANEL_ID}
+          // Opens UPWARD now that it hangs off the footer rather than the header.
+          side="top"
           align="end"
           className="flex max-h-[34rem] w-[30rem] max-w-[calc(100vw-2rem)] flex-col p-0"
         >

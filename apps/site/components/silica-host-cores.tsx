@@ -80,7 +80,7 @@ export interface HostCoreContext {
  *  keys, closing over the route's context. Passed to `SilicaFunctionalBody`. This is a
  *  render CALLBACK invoked imperatively by the walk, not a React component (hence the
  *  lowercase name — it never appears in JSX as `<mountHostCore/>`). */
-export function storefrontHostRenderer(ctx: HostCoreContext): HostRenderer {
+export function SiteHostRenderer(ctx: HostCoreContext): HostRenderer {
   return function mountHostCore(node: HostNode): React.ReactNode {
     switch (node.component) {
       case HOST_KEYS.commerceCart:

@@ -9,7 +9,7 @@ import { notFound } from 'next/navigation';
 import { getPublishedSilicaHome, treeHasHostNode } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
 import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { ogImageUrl } from '@/lib/og';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
@@ -110,7 +110,7 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
           root={silicaHome.root}
           symbols={silicaHome.symbols}
           host={resolver}
-          renderHost={storefrontHostRenderer({
+          renderHost={SiteHostRenderer({
             site,
             propertySlug: (await resolveActivePropertySlug()) ?? undefined,
             searchParams: sp,

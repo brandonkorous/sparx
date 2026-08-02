@@ -16,7 +16,7 @@ import { postToBuilderRecord } from '@/lib/builder-data';
 import { getPublishedSilicaCollection } from '@/lib/silica';
 import { buildSilicaHost } from '@/lib/silica-data';
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getBlogPostBySlug } from '@/lib/content';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
@@ -130,7 +130,7 @@ export default async function BlogPostPage({ params, searchParams }: BlogPagePro
           root={silicaTemplate.root}
           symbols={silicaTemplate.symbols}
           host={resolver}
-          renderHost={storefrontHostRenderer({
+          renderHost={SiteHostRenderer({
             site,
             recordId: post.id,
             articleDoc: post.body?.body ?? null,

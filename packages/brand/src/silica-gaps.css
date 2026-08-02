@@ -17,16 +17,20 @@
    Lives in @sparx/brand rather than @sparx/ui because workbench deliberately
    imports no @sparx/ui CSS, and workbench is where most of these bite. */
 
-/* ── Checkbox: the third state ───────────────── silicaui 0.43, unfixed ───────
+/* ── Checkbox: the third state ─── raised upstream; unfixed as of 0.44 ────────
    `.checkbox` sets `appearance: none` — which suppresses the browser's own
    indeterminate dash — and then styles `:checked` only. So a checkbox holding
    the native `indeterminate` DOM property paints identically to an UNCHECKED
    one, and a "some rows selected" header reads as "none selected".
 
-   Live in `apps/workbench/surfaces/inventory/reorder-list.tsx` and in
-   `SelectionList`'s select-all header, both of which set `el.indeterminate`
-   through a ref (it is a DOM property with no HTML attribute, so it cannot be
-   set from JSX or from a class). */
+   Live in `apps/workbench/surfaces/inventory/reorder-list.tsx`, whose select-all
+   header sets `el.indeterminate` through a ref — it is a DOM property with no
+   HTML attribute, so it cannot be set from JSX or from a class.
+
+   ONE call site is not a reason to delete this. Any select-all header needs the
+   third state, and the next one will be written in workbench the same way; the
+   alternative is each surface hand-rolling a dash. Delete it when silicaui
+   styles `:indeterminate`, not when the call-site count dips. */
 .checkbox:indeterminate {
   background-color: var(--checkbox-accent, var(--color-primary));
   border-color: var(--checkbox-accent, var(--color-primary));

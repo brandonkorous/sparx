@@ -12,18 +12,31 @@
 // import path the studio already uses, and to keep the studio's `Theme` (silicaui's
 // nominal type) lined up with the structural `SilicaTheme` the package returns.
 
-import { tenantTheme as compileTenantTheme, type BrandColumns } from '@sparx/site-themes';
+import {
+  storedPresetV2,
+  tenantTheme as compileTenantTheme,
+  type BrandColumns,
+} from '@sparx/site-themes';
 import type { Theme } from '@wizeworks/silicaui-html';
 
 export { applyBrandOverride, EMPTY_BRAND } from '@sparx/site-themes';
 export type { BrandColumns, BrandOverride } from '@sparx/site-themes';
 
-/** Compile the tenant's (effective) brand into a silica `Theme`, so the canvas
- *  previews the real brand — colours, type, rounding. `undefined` on any failure, so
- *  the caller falls through to a preset rather than crashing. */
+/** Compile the site's theme + the tenant's (effective) brand into a silica `Theme`,
+ *  so the canvas opens on the real look — colours, type, rounding. `undefined` on any
+ *  failure, so the caller falls through to a preset rather than crashing.
+ *
+ *  `themePreset` is the site's stored theme blob (`SiteConfig.draftSettings`); the
+ *  brand layers OVER it. Passing none compiles the platform base, which is what the
+ *  canvas used to do unconditionally — so a site on `clinic` opened the editor in
+ *  Ember and the author edited against colours their visitors never see. */
 export function tenantTheme(
   brand: BrandColumns,
-  config: { themeKey: string; presentation?: unknown }
+  config: { themeKey: string; themePreset?: unknown; presentation?: unknown }
 ): Theme | undefined {
-  return compileTenantTheme(brand, config);
+  return compileTenantTheme(brand, {
+    themeKey: config.themeKey,
+    preset: storedPresetV2(config.themePreset),
+    presentation: config.presentation,
+  });
 }

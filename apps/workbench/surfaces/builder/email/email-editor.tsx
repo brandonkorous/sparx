@@ -89,7 +89,7 @@ import type {
   EmailProject,
 } from '@wizeworks/silicaui-builder/email';
 import { THEME_PRESETS, type Theme } from '@wizeworks/silicaui-html';
-import { compileThemeForTenant, compiledToSilicaTheme } from '@sparx/site-themes';
+import { compileThemeForTenant, compiledToSilicaTheme, storedPresetV2 } from '@sparx/site-themes';
 import {
   createSilicaResolver,
   defaultSilicaFormat,
@@ -271,7 +271,11 @@ function EmailStudio({ ctx }: { ctx: SurfaceContext }) {
       const property = siteBrands.data?.find((s) => s.id === activeSite?.propertyId);
       const effective = effectiveTenantBrand(brand.data, property?.brandOverride);
       const compiled = compileThemeForTenant({
-        themeKey: siteConfig.data.themeKey,
+        // The site's OWN theme under the brand — so the email canvas paints in the
+        // same palette as the site it is sent from. `themeKey` used to be passed
+        // instead, which resolved one of six legacy presets and matched nothing a
+        // tenant could pick, so every canvas fell back to the platform base.
+        preset: storedPresetV2(siteConfig.data.draftSettings?.themePreset),
         brand: effective,
         presentation: siteConfig.data.draftSettings?.presentation ?? null,
       });

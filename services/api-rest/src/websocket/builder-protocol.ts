@@ -18,13 +18,26 @@ export interface RelayOp {
   [k: string]: unknown;
 }
 
-/** One editor present in a site, as their peers see them. */
+/** One editor present in a site, as their peers see them.
+ *
+ *  `selection` and `claim` are the two halves of silicaui's `Peer` (docs/silicaui/01 §16),
+ *  carried here so the engine can DRAW one and HONOR the other. They are deliberately
+ *  separate facts: everything selected is drawn, only what is being EDITED is claimed. */
 export interface BuilderPresence {
   socketId: string;
   userId: string;
   name: string;
   /** The page id they're currently looking at, for "Alice is on About". */
   activePage?: string;
+  /** Node ids this editor has selected. Every other client draws a named ring on them —
+   *  never enforced, because a selection is where someone is LOOKING and blocking edits
+   *  on that would make clicking around the canvas a way to lock colleagues out. */
+  selection?: string[];
+  /** Node ids this editor is actively EDITING, each covering that node and its whole
+   *  subtree. Enforced by the receiving engine (the subtree greys and refuses local
+   *  mutation) and self-expiring: the holder re-states it while typing and clears it
+   *  when they stop, so a claim can never outlive the work it protects. */
+  claim?: string[];
 }
 
 export interface ServerToClientEvents {
@@ -53,6 +66,14 @@ export interface ClientToServerEvents {
   catchup: (baseSeq: number, ack: (payload: { seq: number; ops: RelayOp[] }) => void) => void;
   /** Update which page this editor is looking at (drives presence "where"). */
   'presence:active': (activePage: string | null) => void;
+  /** Which nodes this editor has selected, so everyone else can draw a ring on them.
+   *  Sent on a trailing throttle rather than per click — selection changes at the speed
+   *  of a mouse, and each one costs a roster gather. */
+  'presence:selection': (nodeIds: string[]) => void;
+  /** Which subtrees this editor is holding while they edit. Sent only when the SET
+   *  changes — not per keystroke — and cleared when editing stops. An empty array is a
+   *  real message meaning "I have let go", never an absence. */
+  'presence:claim': (nodeIds: string[]) => void;
 }
 
 export interface InterServerEvents {
@@ -65,6 +86,35 @@ export interface BuilderSocketData {
   name: string;
   propertyId: string;
   activePage?: string;
+  selection?: string[];
+  claim?: string[];
+}
+
+/** The most nodes one editor may claim to have selected or be holding.
+ *
+ *  A BOUND, not a feature. These arrays are relayed verbatim to every other client in
+ *  the room and held on the socket for the life of the connection, so an unbounded one
+ *  is a client-supplied array this server stores and re-broadcasts — the shape of thing
+ *  that turns one misbehaving tab into everyone else's problem. Multi-select in the
+ *  editor is a handful of nodes; 64 is far above any real selection and far below
+ *  anything that costs a room a frame. */
+const MAX_PRESENCE_NODES = 64;
+
+/** A client-supplied node-id list, made safe to store and re-broadcast.
+ *
+ *  Socket.io payloads are whatever the sender wrote — a typed `ClientToServerEvents`
+ *  describes the CONTRACT, never what actually arrived — so this validates rather than
+ *  casts. Non-strings are dropped instead of rejecting the whole list: a client one
+ *  version ahead sending a richer entry should lose that entry, not its whole selection. */
+export function sanitizeNodeIds(input: unknown): string[] {
+  if (!Array.isArray(input)) return [];
+  const out: string[] = [];
+  for (const value of input) {
+    if (typeof value !== 'string' || value === '') continue;
+    out.push(value);
+    if (out.length === MAX_PRESENCE_NODES) break;
+  }
+  return out;
 }
 
 /** The room every editor of one site joins — keyed by property, matching the op log's

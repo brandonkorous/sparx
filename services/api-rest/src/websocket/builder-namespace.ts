@@ -20,6 +20,7 @@ import { opLogService } from '@sparx/builder';
 import { env } from '../env.js';
 import {
   propertyRoom,
+  sanitizeNodeIds,
   type BuilderPresence,
   type BuilderSocketData,
   type ClientToServerEvents,
@@ -102,6 +103,12 @@ async function presenceFor(io: BuilderServer, propertyId: string): Promise<Build
     userId: s.data.userId,
     name: s.data.name,
     activePage: s.data.activePage,
+    // Omitted entirely when empty rather than sent as `[]`. The roster is broadcast to
+    // everyone on every change, and an editor who has selected nothing is the common
+    // case — so this is the difference between a payload that grows with the room and
+    // one that grows with what people are actually doing.
+    ...(s.data.selection?.length ? { selection: s.data.selection } : {}),
+    ...(s.data.claim?.length ? { claim: s.data.claim } : {}),
   }));
 }
 
@@ -127,6 +134,29 @@ export function registerBuilderHandlers(io: BuilderServer, logger: FastifyBaseLo
 
     socket.on('presence:active', (activePage) => {
       socket.data.activePage = activePage ?? undefined;
+      void emitPresence(io, data.propertyId).catch(() => undefined);
+    });
+
+    // Where this editor is looking, and what they are holding (docs/silicaui/01 §16).
+    //
+    // Both are pure RELAY: the server stores the latest value on the socket and
+    // rebroadcasts the roster, and has no opinion about either. That is deliberate for
+    // the claim in particular — it is advisory, enforced by the receiving engine against
+    // its own local edits, and never consulted on the write path. A claim can therefore
+    // not reject anyone's op, drop a relayed batch, or leave the document in a state one
+    // author can see and another cannot. Persistence stays exactly where it was.
+    //
+    // Neither survives a disconnect: the socket goes, its data goes with it, and the
+    // next roster simply lacks that editor. That is what makes a claim self-healing
+    // without a TTL on this side — a tab that dies mid-edit releases what it held as
+    // soon as socket.io notices, rather than holding a subtree until someone restarts.
+    socket.on('presence:selection', (nodeIds) => {
+      socket.data.selection = sanitizeNodeIds(nodeIds);
+      void emitPresence(io, data.propertyId).catch(() => undefined);
+    });
+
+    socket.on('presence:claim', (nodeIds) => {
+      socket.data.claim = sanitizeNodeIds(nodeIds);
       void emitPresence(io, data.propertyId).catch(() => undefined);
     });
 

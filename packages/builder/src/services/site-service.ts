@@ -68,10 +68,36 @@ const asJson = (v: unknown): Prisma.InputJsonValue => v as Prisma.InputJsonValue
  *  So this asserts what the column has always held rather than widening anything. */
 const asNode = (v: unknown): SilicaNode => v as SilicaNode;
 
-/** A page row is "silica-materialized" once it carries a silica body tree. Filtered
+/** A page row is "silica-materialized" once it carries a silica DRAFT body. Filtered
  *  in JS rather than the `where` clause: a Json column's NULL check needs Prisma's
- *  runtime sentinel, and the row set here is already small + fully fetched. */
+ *  runtime sentinel, and the row set here is already small + fully fetched.
+ *
+ *  DRAFT is the right test for every AUTHORING read (`load`, `sync`, `publish`,
+ *  `publishState`): those speak about the site an author is editing, and a row with no
+ *  draft body has nothing for them to edit, diff or re-snapshot. It is the WRONG test
+ *  for anything that speaks about what VISITORS are served — see `hasSilicaContent`. */
 const isSilica = (r: BuilderPage): boolean => r.silicaDraftTree != null;
+
+/**
+ * A page row that carries silica content in EITHER stage.
+ *
+ * The storefront reads `silica_published_tree` and never consults the draft
+ * (`PUBLISHED_PAGE_SELECT`). So a row whose draft body is null while its published body
+ * survives is **live and unreachable**: it wins its slug over any legacy sparx page,
+ * and every tool that reasons about silica pages filters on `isSilica` — the draft
+ * column — so it does not appear in the editor and `reset` skips it. Observed on a real
+ * site, where `/contact` served a seeded starter page that no listing showed and no
+ * tool could remove, while the page the tenant had actually authored never rendered.
+ *
+ * Use this ONLY where the question is "what is on the live site" rather than "what is
+ * the author editing". Widening the authoring reads instead would surface bodyless
+ * pages into the editor, which is a different bug with the same root.
+ *
+ * Exported for tests: the difference between this and `isSilica` is one `||`, and it
+ * decides whether content a tenant asked to remove actually leaves their site.
+ */
+export const hasSilicaContent = (r: Pick<BuilderPage, 'silicaDraftTree' | 'silicaPublishedTree'>) =>
+  r.silicaDraftTree != null || r.silicaPublishedTree != null;
 
 /**
  * The `silicaDraftSymbols` write for a sync payload — `{}` (write nothing) when the
@@ -1033,7 +1059,14 @@ export async function sync(
 export async function reset(ctx: PropertyContext): Promise<void> {
   await withTenant(ctx, async (tx) => {
     const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
-    const silicaRows = allPages.filter(isSilica);
+    // `hasSilicaContent`, not `isSilica`. Reset is the tool for "take this silica content
+    // off my site", so it has to reason about what is SERVED, and the storefront serves
+    // the published column. Filtering on the draft made reset skip precisely the rows a
+    // tenant most needs it for: a published body with no draft is live, invisible to
+    // every listing, and — before this — permanently so, because the one tool that
+    // clears silica content could not see it either. The branch below already clears
+    // BOTH columns; it was simply never reached for these rows.
+    const silicaRows = allPages.filter(hasSilicaContent);
 
     for (const r of silicaRows) {
       // `publishedTree` is the LEGACY sparx column. A silica-only row never has

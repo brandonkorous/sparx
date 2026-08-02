@@ -54,7 +54,7 @@ model BuilderPage {
   // meaningful on a `kind='collection'` page that has a recordType.
   isDefault Boolean @default(false) @map("is_default")
 
-  // WHICH chrome wraps this page (doc 139 §5). Three states in one column, and the
+  // WHICH chrome wraps this page (docs/silicaui/01 §5). Three states in one column, and the
   // difference between the two empty-looking ones is the whole point:
   //   null   → the site default (the `is_active` BuilderLayout). What every page
   //            does unless told otherwise.

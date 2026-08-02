@@ -29,7 +29,12 @@ export {
 } from './components/_recipes/variants';
 
 // ── Providers / context ───────────────────────────────────
-export { ModuleProvider, useModule, type SparxModule } from './providers/module-provider';
+// `useModule` is gone with ModuleProvider's React context. It had no caller
+// anywhere in the repo outside its own test, and dropping it is what let the
+// provider stop being a client component — every consumer was crossing a client
+// boundary to set one attribute. Nothing here needs to know the active module in
+// JS; the hue arrives through CSS.
+export { ModuleProvider, type SparxModule } from './providers/module-provider';
 
 // ── Hooks ─────────────────────────────────────────────────
 export { useTheme, THEME_INIT_SCRIPT, type Theme } from './hooks/use-theme';

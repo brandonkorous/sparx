@@ -27,20 +27,21 @@ import {
   applyBrandOverride,
   compileThemeForTenant,
   compiledToSilicaTheme,
+  storedPresetV2,
   type BrandColumns,
   type PresentationOverlayV2,
-  type ThemePresetV2,
 } from '@sparx/site-themes';
 
 export interface SilicaThemeSyncArgs {
-  /** The preset key the site now wears — `site_configs.theme_key`. */
+  /** The theme slug the site now wears — `site_configs.theme_key`. Recorded on the
+   *  compiled theme so the stored blob says which theme produced it; it resolves
+   *  NOTHING (a theme is compiled from its preset, never looked up by name). */
   themeKey: string;
   /** The v2 presentation overlay from `draft_settings.presentation`, if any. */
   presentation: unknown;
-  /** A marketplace DATA theme's inline preset from `draft_settings.themePreset`.
-   *  Passed through so a data theme compiles from the artifact it actually carries;
-   *  without it `themeKey` would be looked up in the code registry, miss, and the
-   *  whole compile would fail — silently leaving a marketplace theme unrendered. */
+  /** The site's stored theme preset from `draft_settings.themePreset` — the
+   *  `{v, v1, v2}` blob written by every theme surface (theme-preset.ts). Absent
+   *  → the platform base. */
   themePreset?: unknown;
   /** A brand override the CALLER just computed, so it doesn't have to be re-read
    *  (and can't drift from what was written). Null → read the stored one. */
@@ -104,8 +105,7 @@ export async function syncSilicaDraftTheme(
   let theme;
   try {
     const compiled = compileThemeForTenant({
-      themeKey: args.themeKey,
-      preset: (args.themePreset as ThemePresetV2 | undefined) ?? null,
+      preset: storedPresetV2(args.themePreset),
       brand: effective,
       presentation: (args.presentation as PresentationOverlayV2 | undefined) ?? null,
     });

@@ -8,7 +8,7 @@ import { notFound } from 'next/navigation';
 import { HOST_KEYS, functionalShell } from '@sparx/silica-catalog';
 
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getPublishedSilicaPage } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
@@ -26,7 +26,7 @@ export default async function ResetPage() {
   const published = await getPublishedSilicaPage(site.slug, 'account/reset');
   const shell =
     published?.root ?? functionalShell(HOST_KEYS.commerceAuth, { props: { mode: 'reset' } });
-  const renderHost = storefrontHostRenderer({ site, propertySlug: propertySlug ?? undefined });
+  const renderHost = SiteHostRenderer({ site, propertySlug: propertySlug ?? undefined });
 
   return (
     <div className="mx-auto w-full max-w-6xl px-6">

@@ -1,8 +1,8 @@
 # sparx design language
 
-**Version:** 2.2
+**Version:** 2.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-31
+**Last Updated:** 2026-08-02
 
 ## Scope: one system
 
@@ -350,6 +350,52 @@ because the repeated label is exactly what shouldn't be emphasised.
 Demote the repeat to a small coloured badge; promote the distinguishing value (a time, a name, an
 amount) to full weight. Worked through in §5.1 move 3.
 
+### 2.4 A page is a tone sequence, not an alternation
+
+**Two tones repeating is not a rhythm — it is a ladder, and it reads as one long grey page.** The
+per-element rules above are about a badge or a button; this one is about the thing underneath them.
+A section band answers _where am I in this argument_, and a page that answers it with grey → white →
+grey → white has answered "nowhere in particular" eleven times.
+
+The failure is structural, not a taste call: `/commerce` ran **six alternating white/grey sections in
+a row** and then two greys touching, because its section shell only offered `page` / `surface` /
+`dark`. Nobody chose monochrome — the vocabulary had no other word. Both marketing shells now carry
+the same six-tone axis (`page`, `surface`, `dark`, `primary`, `neutral`, `accent`), sharing one
+`PAINTED_TONE_CLASS` map so the fill and its paired ink can never drift apart.
+
+**How to sequence one:**
+
+- **Interrupt in the middle.** A tone at either end of a run doesn't break it. `/commerce`'s longest
+  plain run went 6 → 3 by painting section 5, not section 2.
+- **Ration painted bands to roughly one or two per page**, and spend them on the page's sharpest
+  claim and its money moment. A page where every band is painted is the same failure in brighter
+  paint.
+- **Don't fight the content's own hues.** Most sections already carry colour — a semantic ramp, a set
+  of module chips — and painting the ground under them kills it. `/commerce`'s fee ladder is inked
+  `error`/`info`/`success`, so it takes `accent` cyan; red on ember is mud. Pick the band tone that
+  is _furthest_ from what the section already says.
+- **`neutral` and `secondary` read as a fourth dark band.** On a page that already has a dark hero
+  and a dark CTA, the paintable tones in practice are `primary` and `accent`.
+
+**The two constraints that break painted bands** (both in §3.0, both worth repeating here because
+this is where people hit them):
+
+1. A painted tone is a **fill + ink, not a theme scope.** Bare prose inherits — silica typography is
+   `color: inherit` deliberately — but a silica _component_ paints from its own variables and never
+   sees it. So an `outline`/`ghost` control inside a painted band inks from the **light** theme and
+   lands near-black on the fill. **Painted bands take solid controls, or a bare underlined `<a>`.**
+2. Any `bg-base-100` child inside a painted band must carry **`text-base-content` too.** Fill without
+   ink leaves a white card inheriting the band's `-content` — white type on white, on `primary`.
+
+**And one measured fact about ember specifically: `--color-primary-content` is white, and white on
+`#e04631` is 4.13:1.** That clears the 3.0 large-text bar and misses the 4.5 body-copy bar. **`primary`
+is a display ground, not a reading ground** — put the price, the headline and solid controls on it,
+and move any paragraph onto a `bg-base-100 text-base-content` card. `accent` has no such limit: its
+paired ink is the deep navy, measured 10.16:1. Check the band you picked before you fill it with prose.
+
+If a band genuinely wants outline controls and freely-inked children, it doesn't want a painted tone.
+It wants `dark`, which _is_ a real `data-theme` island and re-resolves every token underneath it.
+
 ---
 
 ## 3. Neutral's four legitimate homes
@@ -369,6 +415,35 @@ Neutral is earned by clearing **one** of these. Nothing else qualifies.
 
 Anything else: **if you typed `color="neutral"`, either change it or write the reason in a comment on
 that line.** A neutral you can't justify in one sentence is the bug this document is about.
+
+### 3.0 Neutral is a real color — it just can't sit on a dark fill
+
+Two failures pull in opposite directions and this section is about the second one, so read them
+together before reaching for either fix.
+
+**`neutral` is a first-class member of the palette** — `primary`, `secondary`, `accent`, `success`,
+`info`, `warning`, `error`, `neutral`. §3 narrows _when_ it is the right answer; it never says the
+color is off-limits, and **stripping the `color` prop off a control is not a way to comply with it.**
+A colorless `<Button>` falls back to the base surface scale, which is the correct control for a
+genuinely untyped action — but reaching for it everywhere produces exactly the monochrome screen
+RULE #4 exists to prevent. Removing color is not the same as earning it.
+
+**The one hard constraint: `neutral` is near-black (`#282e39` light / `#323844` dark), so it must
+never be painted onto a dark surface.** `btn-neutral` on a `bg-neutral` band, on `data-theme="dark"`,
+or on any near-black fill is dark-on-dark — measured 1.68:1. That is not a subtle token interaction;
+it is a dark control on a dark background. On a _light_ or _mid-tone_ fill it is fine and often
+right: near-black on the Ember `primary` band is a strong contrasting solid, which is why
+/platform's pricing band uses it.
+
+| Surface                         | `color="neutral"` control            |
+| ------------------------------- | ------------------------------------ |
+| `base-100` / `base-200` (light) | ✅ fine — the untyped-action control |
+| `primary` / `accent` fill       | ✅ fine — a contrasting solid        |
+| `neutral` fill, `dark` island   | ❌ never — dark on dark              |
+
+On a dark band the untyped control is a **colorless** `outline`/`ghost`: it inherits that surface's
+own `-content` ink and measures 16:1. Naming _any_ color on an outline control inks the label in that
+color's raw accent instead, which is the same defect as `soft` (§7.1).
 
 ### 3.1 "Ink" is not `text-base-content` — components resolve their own
 
@@ -577,6 +652,9 @@ Use these names in review.
   sentence is still doing the work, the colour isn't. §5.2.
 - **Forked language** — inventing a separate rule set for "marketing" or "the console." There is one
   system; variance is a token override. See Scope.
+- **The grey/white ladder** — a page whose whole tone rhythm is two surfaces alternating. Every
+  section is technically "different from the last one" and the page still reads monochrome. Usually
+  means the section shell has no colored tone and nobody noticed the vocabulary was missing. §2.4.
 
 ---
 

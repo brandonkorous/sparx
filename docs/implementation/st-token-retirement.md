@@ -411,16 +411,22 @@ color for a module is still `<ModuleProvider module="…">` + `color="module"`, 
 
 **`.checkbox` styles `:checked` but not `:indeterminate`.** Silica sets `appearance: none`, which
 suppresses the browser's own dash, and nothing replaces it — so a tri-state checkbox paints exactly
-like an unchecked one. The one place sparx needs it is `SelectionList`'s "select all" header, where
-partial selection is a real third state.
+like an unchecked one. The live case is workbench's inventory reorder list, whose select-all header
+has a real third state ([reorder-list.tsx](../../apps/workbench/surfaces/inventory/reorder-list.tsx)).
 
-`packages/ui/src/tokens.css` carries a single rule for it, written against silica's OWN `.checkbox`
-class and its OWN `--checkbox-accent` / `--checkbox-content` vars — one platform-wide rule that
-inherits whatever accent the color class set, not a call-site patch and not a new class. **Raise it
-upstream; delete the block when silica ships it** (it will be redundant, never conflicting).
+[`@sparx/brand/silica-gaps.css`](../../packages/brand/src/silica-gaps.css) carries a single rule for
+it, written against silica's OWN `.checkbox` class and its OWN `--checkbox-accent` /
+`--checkbox-content` vars — one platform-wide rule that inherits whatever accent the color class
+set, not a call-site patch and not a new class. **Raise it upstream; delete the block when silica
+ships it** (it will be redundant, never conflicting).
 
-Separately: `indeterminate` is a DOM property with no HTML attribute, so it is unreachable from JSX.
-`SelectionList` sets it through a callback ref (`setIndeterminate`).
+It lives in `@sparx/brand`, not `packages/ui/src/tokens.css`, and that placement is the whole point:
+**workbench imports no `@sparx/ui` CSS at all**, so a rule added to `tokens.css` would have shipped
+to four apps and missed the only one that needed it. It was written there first; the mistake was
+caught by checking which apps actually import the file rather than assuming.
+
+Separately: `indeterminate` is a DOM property with no HTML attribute, so it is unreachable from JSX
+and from a class — it has to be set on the element through a ref.
 
 ### What is left, and why it is not the same problem
 

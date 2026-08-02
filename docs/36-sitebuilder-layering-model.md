@@ -1,8 +1,8 @@
 # Site Builder Layering Model
 
-**Version:** 1.1.1
+**Version:** 1.2.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -67,11 +67,11 @@ Two words have been used loosely ("template," "layout"). This model fixes them, 
 
 Applied per tier:
 
-| Tier            | Template (preset, platform-authored)              | Layout (instance, tenant-editable)      |
-| --------------- | ------------------------------------------------- | --------------------------------------- |
-| **Brand+Theme** | Theme presets (`industrial`, `apex`, …)           | the tenant's Brand + Theme (exists)     |
-| **SiteLayout**  | **Site Templates** (predefined region skeletons)  | the tenant's **SiteLayout** (future)    |
-| **PageLayout**  | **Page Templates** (predefined page compositions) | the tenant's **PageLayout** (near-term) |
+| Tier            | Template (preset, platform-authored)                   | Layout (instance, tenant-editable)      |
+| --------------- | ------------------------------------------------------ | --------------------------------------- |
+| **Brand+Theme** | Themes sparx ships (`clinic`, `workshop`, `quartz`, …) | the tenant's Brand + Theme (exists)     |
+| **SiteLayout**  | **Site Templates** (predefined region skeletons)       | the tenant's **SiteLayout** (future)    |
+| **PageLayout**  | **Page Templates** (predefined page compositions)      | the tenant's **PageLayout** (near-term) |
 
 **Site & Page Templates are how we get tenants to gold quickly** (owner's words). They are a
 curated catalog of good starting points; a tenant picks one, it is instantiated into an editable

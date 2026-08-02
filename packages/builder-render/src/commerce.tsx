@@ -35,12 +35,48 @@ function chipClass(selected: boolean): string {
 }
 
 /** A colour swatch. The fill is PRODUCT DATA (the option value's own hex), so it
- *  cannot come from a theme token — the selected ring and the border do. */
+ *  cannot come from a theme token — the selected ring and the border do. The fill
+ *  itself arrives through `swatchFillCss` below, not an inline `style`. */
 function swatchClass(selected: boolean): string {
   return cx(
     'size-8 rounded-full border transition-shadow disabled:opacity-40',
     selected ? 'border-primary ring-primary ring-2 ring-offset-2' : 'border-base-300'
   );
+}
+
+/** A merchant hex is DATA, so it can never be a token — but it does not have to be
+ *  an inline `style` either. Subtree colour via a scoped `<style>` block is the
+ *  sanctioned pattern in this repo (apps/web's `ThemePreview` does the same thing
+ *  for theme tokens). This was the last `style={…}` that PAINTED anything on the
+ *  storefront; the ones left in this package are layout or animation state
+ *  (`carousel`'s transform, the honeypot's offscreen box) or email, where a
+ *  stylesheet is not an option at all.
+ *
+ *  SANITISED, because this is the one place tenant data reaches raw CSS. React
+ *  escapes a `style` prop's value for you; a string interpolated into a stylesheet
+ *  is not escaped by anything, so an option value of `red;} body{display:none` is
+ *  a stylesheet injection. Only `#` + 3/4/6/8 hex digits is allowed through, and a
+ *  value that fails renders as an ordinary chip instead. */
+const HEX = /^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/;
+
+function isHex(v: string | null | undefined): v is string {
+  return typeof v === 'string' && HEX.test(v);
+}
+
+/** The per-value class a swatch's fill rule is written against. Ids come from the
+ *  database, so they are reduced to `[A-Za-z0-9_-]` — anything else would end the
+ *  selector early and leak the following rule. */
+function swatchScope(valueId: string): string {
+  return `bx-sw-${valueId.replace(/[^A-Za-z0-9_-]/g, '')}`;
+}
+
+/** One rule per swatch value, or `''` when a product has no usable hex (in which
+ *  case no `<style>` element is rendered at all). */
+function swatchFillCss(values: readonly { id: string; swatchHex?: string | null }[]): string {
+  return values
+    .filter((v) => isHex(v.swatchHex))
+    .map((v) => `.${swatchScope(v.id)}{background:${v.swatchHex}}`)
+    .join('');
 }
 
 export type {
@@ -287,8 +323,12 @@ export function BuilderVariantPicker() {
     <div className="bx-variant-picker">
       {f.product.options.map((opt) => {
         const isSwatch = opt.displayType === 'swatch' || opt.values.some((v) => v.swatchHex);
+        // The fills for THIS option, as one scoped stylesheet. Built per option so
+        // a product with no swatch option emits no <style> at all.
+        const fillCss = isSwatch ? swatchFillCss(opt.values) : '';
         return (
           <div key={opt.id} className={OPTION_ROW}>
+            {fillCss ? <style dangerouslySetInnerHTML={{ __html: fillCss }} /> : null}
             <span className={OPTION_LABEL}>
               {opt.name}
               {f.selected[opt.id] ? (
@@ -301,16 +341,14 @@ export function BuilderVariantPicker() {
               {opt.values.map((val) => {
                 const isSelected = f.selected[opt.id] === val.id;
                 const disabled = !f.valueAvailable[val.id];
-                return isSwatch && val.swatchHex ? (
+                // A hex that failed validation falls through to the chip branch,
+                // so a bad value renders a readable label rather than a blank
+                // circle the shopper cannot tell apart from any other.
+                return isSwatch && isHex(val.swatchHex) ? (
                   <button
                     key={val.id}
                     type="button"
-                    className={swatchClass(isSelected)}
-                    // The ONE inline style in the render path, unchanged from the
-                    // pre-silica picker: this hex is the merchant's own option
-                    // value from the database, not a design decision, so no token
-                    // can express it. Everything else on the control is silica.
-                    style={{ background: val.swatchHex }}
+                    className={cx(swatchClass(isSelected), swatchScope(val.id))}
                     aria-pressed={isSelected}
                     aria-label={val.value}
                     disabled={disabled}

@@ -1,8 +1,9 @@
 // savedThemeService — the tenant's NAMED theme variants (docs/36 Brand+Theme
 // tier). CRUD over SiteTheme rows + `apply`, which loads a saved theme's
 // presentation + base preset into the working draft (theme_key + draftSettings)
-// without publishing. Distinct from the read-only platform presets returned by
-// themeService.listThemes() — those stay code-first in @sparx/site-themes.
+// without publishing. Distinct from the read-only themes sparx SHIPS
+// (themeService.listThemes()) — those are code-first in @sparx/silica-catalog, and a
+// saved theme names one of them as the base it layers over.
 //
 // Tenant-scoped via withTenant; SiteTheme is ENABLE+FORCE RLS, so a findUnique
 // by a cross-tenant id returns null → ownership is enforced (NotFound), the same
@@ -21,6 +22,7 @@ import { writeAuditLog } from '../audit';
 import type { PropertyContext, ServiceContext } from '../errors';
 import { SitebuilderNotFoundError } from '../errors';
 import { getOrCreateConfig } from './_config';
+import { themePresetForSlug } from './theme-preset';
 import { syncSilicaDraftTheme } from './silica-theme-sync';
 
 export interface SavedThemeView {
@@ -204,6 +206,14 @@ export async function apply(
     if (!theme) throw new SitebuilderNotFoundError('SiteTheme', id);
     const config = await getOrCreateConfig(tx, ctx.tenantId, ctx.propertyId);
     const draft = (config.draftSettings ?? {}) as Record<string, unknown>;
+    // Re-resolve the BASE the saved theme layers on. A saved theme stores a
+    // presentation overlay and a brand snapshot, not a palette — so applying it has
+    // to put the base theme underneath, or the overlay lands on whatever the site
+    // wore before. `...draft` carried the previous theme's preset through unchanged,
+    // which is exactly that: theme_key said the new base and the colours stayed old.
+    // An uploaded base isn't reachable from this package (its artifact lives in
+    // storage), so it keeps the stored preset rather than dropping to the platform base.
+    const basePreset = themePresetForSlug(theme.basePresetKey) ?? draft.themePreset;
     await tx.siteConfig.update({
       where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: ctx.propertyId } },
       data: {
@@ -224,6 +234,7 @@ export async function apply(
           // rewriting it: the theme's own presentation + brand snapshot below are
           // the complete look.
           tokens: { light: {}, dark: {} },
+          ...(basePreset ? { themePreset: basePreset } : {}),
           presentation: theme.presentation,
           activeSavedThemeId: id,
         },
@@ -242,6 +253,7 @@ export async function apply(
     const themedSilica = await syncSilicaDraftTheme(tx, ctx.tenantId, ctx.propertyId, {
       themeKey: theme.basePresetKey,
       presentation: theme.presentation,
+      themePreset: basePreset,
       brandOverride: mergedOverride,
     });
     await writeAuditLog({

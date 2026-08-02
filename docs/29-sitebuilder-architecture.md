@@ -1,8 +1,8 @@
 # Site Builder Architecture
 
-**Version:** 1.1.1
+**Version:** 1.2.0
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -93,13 +93,29 @@ without RLS bypass; per-row writes still ride `withTenant`.
 
 ## 4. Theme engine & write-through
 
-`packages/site-themes` holds the six themes (apex, industrial, drift, market, fleet,
-drop) as dependency-light TS presets. Each preset declares a settings schema (field types:
-`color | font | select | text | number | boolean`) and **token defaults for both `light`
-and `dark`**.
+`packages/site-themes` is the **compiler**, not a theme library. The themes sparx ships
+are code in `@sparx/silica-catalog` — `FIRST_PARTY_THEMES`, forty of them across two
+shelves (twenty business-named, twenty silicaui presets).
 
-`compileTokens(themeKey, overlay)` returns `{ light, dark }` — each mode merges that mode's
-preset defaults with the tenant's overlay into a flat CSS-custom-property map.
+It held six presets of its own (apex, industrial, drift, market, fleet, drop), each with
+a settings schema and light/dark token defaults. Those are **retired**: they predated the
+silica catalog, were reachable from no picker, and matched no row on any cluster — while
+being the only keys `selectTheme` would accept, so the six the builder offered and the
+forty the marketplace listed were disjoint sets. All six shipped the identical
+`settingsSchema` constant, so the per-theme field list never varied by theme either.
+
+What survives is the compile path and one **platform base** (`PLATFORM_TOKEN_DEFAULTS` /
+`PLATFORM_PRESET_V2`), which mirrors `BASE_SILICA_THEME` so an unthemed site compiles the
+same Ember look the storefront falls back to. The v2 fallback used to be apex's indigo,
+so the two disagreed.
+
+A theme reaches the compiler as data, never by name:
+`themePresetV2FromTokens(light, dark)` turns a resolved silica token bag into a
+`ThemePresetV2`, and `themePresetFor` (in `@sparx/sitebuilder`) writes the stored
+`{v, v1, v2}` blob a site carries in `SiteConfig.draftSettings.themePreset`.
+`compileThemeForTenant({ preset, brand, presentation })` layers brand identity and the
+presentation overlay over it. `compileTokens(overlay)` remains for the legacy v1 surface
+and takes no key — the key selected nothing and only made it look as though it did.
 
 **Write-through on publish:** `publish-service.publishNow` compiles, writes a `SiteVersion`,
 and upserts the **light** subset that maps to existing `SiteTheme` columns — all in

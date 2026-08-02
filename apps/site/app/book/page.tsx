@@ -11,7 +11,7 @@ import { notFound } from 'next/navigation';
 import { HOST_KEYS, functionalShell } from '@sparx/silica-catalog';
 
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getPublishedSilicaPage, resolveSchedulingEnabled } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
 
@@ -34,7 +34,7 @@ export default async function BookIndexPage() {
   // No shell heading — the services list core renders its own header + subtitle.
   const published = await getPublishedSilicaPage(site.slug, 'book');
   const shell = published?.root ?? functionalShell(HOST_KEYS.schedulingServices);
-  const renderHost = storefrontHostRenderer({
+  const renderHost = SiteHostRenderer({
     site,
     propertySlug: propertySlug ?? undefined,
   });

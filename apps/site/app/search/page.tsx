@@ -11,7 +11,7 @@ import { notFound } from 'next/navigation';
 import { HOST_KEYS, functionalShell } from '@sparx/silica-catalog';
 
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import type { SearchParams } from '@/components/search/search-experience';
 import { getPublishedSilicaPage } from '@/lib/silica';
 import { resolveActivePropertySlug, resolveSite } from '@/lib/site-context';
@@ -34,7 +34,7 @@ export default async function SearchPage({
   // the pinned core), so a tenant who never edited search still gets a real page.
   const published = await getPublishedSilicaPage(site.slug, 'search');
   const shell = published?.root ?? functionalShell(HOST_KEYS.commerceSearch, { heading: 'Search' });
-  const renderHost = storefrontHostRenderer({
+  const renderHost = SiteHostRenderer({
     site,
     propertySlug: propertySlug ?? undefined,
     searchParams: sp,

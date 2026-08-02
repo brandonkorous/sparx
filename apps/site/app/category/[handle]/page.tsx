@@ -13,7 +13,7 @@ import { getPublishedSilicaCollection } from '@/lib/silica';
 import { categoryDetailPage } from '@sparx/silica-catalog';
 
 import { SilicaFunctionalBody } from '@/components/silica-chrome';
-import { storefrontHostRenderer } from '@/components/silica-host-cores';
+import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { getCategory } from '@/lib/commerce';
 import { mediaUrl } from '@/lib/media';
 import { ogImageUrl } from '@/lib/og';
@@ -75,7 +75,7 @@ export default async function CategoryDetailPage({ params, searchParams }: PageP
   // fallback). The core renders the header + subcategories + product rollup from the handle.
   const published = await getPublishedSilicaCollection(site.slug, 'commerce.category', category.id);
   const shell = published?.root ?? categoryDetailPage();
-  const renderHost = storefrontHostRenderer({
+  const renderHost = SiteHostRenderer({
     site,
     propertySlug: propertySlug ?? undefined,
     recordHandle: handle,

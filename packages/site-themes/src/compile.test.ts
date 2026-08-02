@@ -1,34 +1,44 @@
 import { describe, it, expect } from 'vitest';
-import { compileTokens, getTheme, toCommerceSiteThemeColumns } from './compile';
-import { THEME_LIST } from './presets';
+import { compileTokens, compileTokensFromDefaults, toCommerceSiteThemeColumns } from './compile';
+import { PLATFORM_TOKEN_DEFAULTS } from './presets';
 
 describe('compileTokens', () => {
-  it('returns complete light + dark token maps from preset defaults', () => {
-    const { light, dark } = compileTokens('apex');
-    expect(light.colorPrimary).toBe('#4f46e5');
+  it('returns complete light + dark token maps from the platform base', () => {
+    const { light, dark } = compileTokens();
+    expect(light.colorPrimary).toBe('#e04631');
     expect(dark.colorBackground).toBe('#0b1120');
     // Every token key is present (no holes) so the storefront always has a value.
     expect(Object.keys(light)).toContain('containerWidth');
   });
 
   it('overlays merchant overrides per mode and ignores unknown keys', () => {
-    const { light, dark } = compileTokens('apex', {
+    const { light, dark } = compileTokens({
       light: { colorPrimary: '#ff0000', bogus: 'nope' } as Record<string, string>,
       dark: { colorPrimary: '#00ff00' },
     });
     expect(light.colorPrimary).toBe('#ff0000');
     expect(dark.colorPrimary).toBe('#00ff00');
-    // Untouched tokens fall back to the preset default.
-    expect(light.colorAccent).toBe('#0ea5e9');
+    // Untouched tokens fall back to the base default.
+    expect(light.colorAccent).toBe('#c1652e');
     expect((light as Record<string, string>).bogus).toBeUndefined();
   });
 
-  it('falls back to apex for an unknown theme key', () => {
-    expect(getTheme('does-not-exist').key).toBe('apex');
+  // The seam a real theme goes through: it carries its OWN defaults, so nothing is
+  // resolved by key. `compileTokens` took a themeKey and looked one of six presets
+  // up; a slug that named any of the forty shipped themes missed and silently
+  // compiled the default, which is why the key argument is gone rather than widened.
+  it('compiles a theme that brings its own defaults, with no registry lookup', () => {
+    const own = {
+      light: { ...PLATFORM_TOKEN_DEFAULTS.light, colorPrimary: '#123456' },
+      dark: { ...PLATFORM_TOKEN_DEFAULTS.dark, colorPrimary: '#654321' },
+    };
+    const { light, dark } = compileTokensFromDefaults(own);
+    expect(light.colorPrimary).toBe('#123456');
+    expect(dark.colorPrimary).toBe('#654321');
   });
 
   it('projects light PRESENTATION tokens onto CommerceSiteTheme columns for write-through', () => {
-    const { light } = compileTokens('industrial');
+    const { light } = compileTokens();
     const cols = toCommerceSiteThemeColumns(light);
     // Presentation tokens are written through.
     expect(cols.colorBackground).toBe(light.colorBackground);
@@ -48,20 +58,7 @@ describe('compileTokens', () => {
 // vocabulary are deleted: tokens are a DATA contract now
 // (`SiteVersion.compiledTokens`), and CSS is emitted only by the v2 engine's silica
 // projection. See docs/implementation/st-token-retirement.md.
-
-describe('theme catalog', () => {
-  it('ships all six themes with light + dark defaults', () => {
-    expect(THEME_LIST.map((t) => t.key)).toEqual([
-      'apex',
-      'industrial',
-      'drift',
-      'market',
-      'fleet',
-      'drop',
-    ]);
-    for (const theme of THEME_LIST) {
-      expect(Object.keys(theme.tokenDefaults.light).length).toBeGreaterThan(0);
-      expect(Object.keys(theme.tokenDefaults.dark).length).toBeGreaterThan(0);
-    }
-  });
-});
+//
+// The `theme catalog` block that followed asserted the six presets shipped light +
+// dark defaults. There is no v1 catalog to assert: the shipped themes are the forty
+// in @sparx/silica-catalog, guarded by first-party-themes.test.ts.

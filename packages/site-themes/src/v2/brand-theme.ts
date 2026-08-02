@@ -17,6 +17,7 @@
 
 import { compileThemeForTenant } from './tenant';
 import { compiledToSilicaTheme, type SilicaTheme } from './silica-css';
+import type { ThemePresetV2 } from './types';
 
 /** The brand identity columns a theme compiles from — the `tenant_brands` row, minus
  *  everything the theme does not read. */
@@ -94,14 +95,19 @@ export function applyBrandOverride(base: BrandColumns, overrideRaw: unknown): Br
 }
 
 /** Compile an (already effective) brand into a silica `Theme`. Returns `undefined` on
- *  any failure so the caller falls through to a preset rather than crashing. */
+ *  any failure so the caller falls through to a preset rather than crashing.
+ *
+ *  `themeKey` NAMES the result — it is what the compiled theme is called — and does
+ *  not select anything. The theme itself comes from `preset`, the `.v2` half of the
+ *  site's stored `themePreset`; without it the brand compiles over the platform base,
+ *  which is right for a site that has picked no theme and wrong for one that has. */
 export function tenantTheme(
   brand: BrandColumns,
-  config: { themeKey: string; presentation?: unknown }
+  config: { themeKey: string; preset?: ThemePresetV2 | null; presentation?: unknown }
 ): SilicaTheme | undefined {
   try {
     const compiled = compileThemeForTenant({
-      themeKey: config.themeKey,
+      preset: config.preset ?? null,
       brand,
       // The v2 surface overlay the theme inspector edits; absent on a fresh config.
       presentation: (config.presentation as never) ?? null,

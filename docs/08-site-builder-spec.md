@@ -1,8 +1,8 @@
 # WizeWorks Platform — Site Builder Specification
 
-**Version:** 1.0.1  
+**Version:** 1.1.0  
 **Author:** Brandon Korous  
-**Last Updated:** 2026-06-01
+**Last Updated:** 2026-08-02
 
 ---
 
@@ -85,16 +85,23 @@ theme/
 }
 ```
 
-### Initial Theme Library
+### Theme Library
 
-| Theme          | Category            | Style                    |
-| -------------- | ------------------- | ------------------------ |
-| **Apex**       | General             | Clean, modern, versatile |
-| **Industrial** | B2B / Parts         | Dark, bold, technical    |
-| **Drift**      | Fashion / Lifestyle | Editorial, image-forward |
-| **Market**     | Food / Specialty    | Warm, artisan            |
-| **Fleet**      | B2B / Fleet         | Data-dense, professional |
-| **Drop**       | Dropship            | Product-grid focused     |
+> **Superseded.** This section described the six presets originally planned as the
+> theme library (Apex, Industrial, Drift, Market, Fleet, Drop) and the per-theme
+> `theme.json` settings schema above. Both are **retired** — the six were deleted
+> once the silica catalog landed, and all six shipped an identical settings schema,
+> so the per-theme field list never varied.
+>
+> sparx ships **forty** themes, as CODE, in `@sparx/silica-catalog`
+> (`FIRST_PARTY_THEMES`): twenty named for the **business** they suit (clinic,
+> workshop, kitchen…) and twenty named for the **look**, shipped by silicaui
+> (quartz, midnight, neon…). They are not rows and need no ingest — a theme reaches
+> every environment by being in the image. `marketplace_themes` remains the catalog
+> for tenant and partner uploads, which genuinely do arrive at runtime.
+>
+> See [29-sitebuilder-architecture.md](29-sitebuilder-architecture.md) §4 for the
+> compile path.
 
 ---
 

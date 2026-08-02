@@ -1,42 +1,33 @@
 import { describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
-import { ModuleProvider, useModule, type SparxModule } from './module-provider';
+import { render } from '@testing-library/react';
+import { ModuleProvider, type SparxModule } from './module-provider';
 
-// The CMS color from doc 23 §7 MODULE_COLORS — kept literal so a mismatch surfaces.
-const CMS_COLOR = '#14B8A6';
-
-function ModuleEcho() {
-  const m = useModule();
-  return <span data-testid="module">{m}</span>;
-}
-
+/**
+ * These assert the ATTRIBUTE, not a colour.
+ *
+ * The suite used to check `wrapper.style.getPropertyValue('--color-module')`
+ * against a literal `#14B8A6`, mirroring a hex table that lived in the component
+ * — so it locked in the very duplication that let that table drift out of sync
+ * with `@sparx/brand/theme.css` and ship white ink on Commerce orange at 2.80:1.
+ * A test that pins a copy of a value is how the copy survives.
+ *
+ * The contract now is: render `data-module`, and nothing else. What that
+ * attribute resolves to is theme.css's business.
+ */
 describe('ModuleProvider', () => {
-  it('exposes the active module via useModule', () => {
-    render(
-      <ModuleProvider module="cms">
-        <ModuleEcho />
-      </ModuleProvider>
-    );
-    expect(screen.getByTestId('module').textContent).toBe('cms');
-  });
-
-  it('falls back to "platform" outside any provider', () => {
-    render(<ModuleEcho />);
-    expect(screen.getByTestId('module').textContent).toBe('platform');
-  });
-
-  it('sets --color-module inline so children adopt the module color', () => {
+  it('marks the subtree with the module, and sets no inline colour', () => {
     const { container } = render(
       <ModuleProvider module="cms">
         <div>child</div>
       </ModuleProvider>
     );
     const wrapper = container.firstElementChild as HTMLElement;
-    expect(wrapper.style.getPropertyValue('--color-module')).toBe(CMS_COLOR);
     expect(wrapper.dataset.module).toBe('cms');
+    expect(wrapper.style.getPropertyValue('--color-module')).toBe('');
+    expect(wrapper.style.getPropertyValue('--color-module-content')).toBe('');
   });
 
-  it('switches CSS vars when the module prop changes', () => {
+  it('switches the attribute when the module prop changes', () => {
     const modules: SparxModule[] = ['cms', 'commerce', 'crm'];
     for (const m of modules) {
       const { container, unmount } = render(
@@ -44,10 +35,33 @@ describe('ModuleProvider', () => {
           <div />
         </ModuleProvider>
       );
-      const wrapper = container.firstElementChild as HTMLElement;
-      expect(wrapper.dataset.module).toBe(m);
-      expect(wrapper.style.getPropertyValue('--color-module')).not.toBe('');
+      expect((container.firstElementChild as HTMLElement).dataset.module).toBe(m);
       unmount();
     }
+  });
+
+  it('nests, so an inner module wins by cascade proximity', () => {
+    const { container } = render(
+      <ModuleProvider module="crm">
+        <ModuleProvider module="commerce">
+          <div data-testid="leaf" />
+        </ModuleProvider>
+      </ModuleProvider>
+    );
+    const outer = container.firstElementChild as HTMLElement;
+    const inner = outer.firstElementChild as HTMLElement;
+    expect(outer.dataset.module).toBe('crm');
+    expect(inner.dataset.module).toBe('commerce');
+  });
+
+  it('passes className and style through for layout', () => {
+    const { container } = render(
+      <ModuleProvider module="cms" className="flex" style={{ gap: 8 }}>
+        <div />
+      </ModuleProvider>
+    );
+    const wrapper = container.firstElementChild as HTMLElement;
+    expect(wrapper.className).toBe('flex');
+    expect(wrapper.style.gap).toBe('8px');
   });
 });

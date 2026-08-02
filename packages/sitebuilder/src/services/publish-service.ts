@@ -172,12 +172,7 @@ async function overlayBrand(
   const compiledTokens = brand
     ? applyBrandIdentityTokens(snapshot.compiledTokens, brand)
     : snapshot.compiledTokens;
-  const compiledV2 = compileThemeForTenant({
-    themeKey: snapshot.themeKey,
-    preset,
-    brand,
-    presentation,
-  });
+  const compiledV2 = compileThemeForTenant({ preset, brand, presentation });
   return { ...snapshot, compiledTokens, compiledV2 };
 }
 
@@ -293,7 +288,7 @@ export async function getDraftSnapshot(ctx: PropertyContext): Promise<PublishedS
     const inlineV1 = settings.themePreset?.v1;
     const compiled = inlineV1
       ? compileTokensFromDefaults(inlineV1, settings.tokens ?? {})
-      : compileTokens(config.themeKey, settings.tokens ?? {});
+      : compileTokens(settings.tokens ?? {});
     const presentation = readPresentation(config.draftSettings);
     const preset = readThemePreset(config.draftSettings);
     const definitions = await readDefinitionsForSections(tx, draft.sections);

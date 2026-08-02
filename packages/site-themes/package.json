@@ -2,7 +2,7 @@
   "name": "@sparx/site-themes",
   "version": "0.0.0",
   "private": true,
-  "description": "sparx Site Builder — tenant site theme presets (Apex/Industrial/Drift/Market/Fleet/Drop), light+dark token defaults, and the token compiler (docs/29-sitebuilder-architecture.md §4).",
+  "description": "sparx Site Builder — the tenant theme COMPILER: layers a site's own preset with the tenant brand and presentation overlay into the compiled light+dark theme the storefront renders, plus the platform base a site falls back to. The shipped themes themselves live in @sparx/silica-catalog (docs/29-sitebuilder-architecture.md §4).",
   "type": "module",
   "exports": {
     ".": {

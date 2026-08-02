@@ -1,6 +1,6 @@
-// Merchant profile page — the seller storefront. Banner + logo + name + trust row
+// Merchant profile page — the seller site. Banner + logo + name + trust row
 // (rating, product count, member-since, location) + bio + socials + a link out to
-// the seller's own storefront, then their catalog with in-store search + sort +
+// the seller's own site, then their catalog with in-store search + sort +
 // pagination. Pure server component (revalidate 60). Emits Store JSON-LD + OG/meta.
 // Solid fills only — no gradients.
 

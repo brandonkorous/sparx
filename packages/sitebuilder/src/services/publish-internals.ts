@@ -222,15 +222,15 @@ export async function publishWithinTx(
 
   const settings = (config.draftSettings ?? {}) as {
     tokens?: { light?: Record<string, string>; dark?: Record<string, string> };
-    // A DATA theme applied from the marketplace carries its full preset here
-    // (docs/85 §7). When present we compile the v1 snapshot from its inline
-    // light/dark defaults instead of resolving a code preset by themeKey.
+    // The site's theme carries its own light/dark defaults here — every theme
+    // surface writes it (theme-preset.ts). A site with none compiles the platform
+    // base; nothing is resolved from `themeKey`.
     themePreset?: { v1?: CompiledTokens };
   };
   const inlineV1 = settings.themePreset?.v1;
   const compiled = inlineV1
     ? compileTokensFromDefaults(inlineV1, settings.tokens ?? {})
-    : compileTokens(config.themeKey, settings.tokens ?? {});
+    : compileTokens(settings.tokens ?? {});
   const draft = await readDraft(tx);
   // Pin the custom-section definitions this draft references so the published
   // snapshot renders them deterministically (docs/38 Phase C).
