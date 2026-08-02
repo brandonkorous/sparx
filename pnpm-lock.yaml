@@ -2074,6 +2074,9 @@ importers:
       '@sparx/db':
         specifier: workspace:*
         version: link:../db
+      '@sparx/silica-catalog':
+        specifier: workspace:*
+        version: link:../silica-catalog
       '@sparx/site-themes':
         specifier: workspace:*
         version: link:../site-themes
