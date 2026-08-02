@@ -279,14 +279,32 @@ jobs:
                         # them immediately. The schema drop still runs afterwards to
                         # clear views, sequences and types the table drops left
                         # behind, and is cheap once the schema is nearly empty.
-                        echo "resetting public schema (per-table, autocommit) ..."
+                        # EVERY user schema, not just public. The dump carries a
+                        # "CREATE SCHEMA wize_admin;" of its own, so resetting only
+                        # public leaves that one standing and the restore dies on
+                        # "ERROR: schema wize_admin already exists" — early, before a
+                        # single COPY. That is almost certainly what wrecked the
+                        # original migration: a restore that was not stopping on
+                        # errors would plough straight past it and every later
+                        # failure, which is exactly the scattered half-loaded schema
+                        # this is being run to repair. public is recreated here
+                        # because the dump assumes it; wize_admin the dump creates
+                        # itself.
+                        echo "resetting all user schemas (per-table, autocommit) ..."
                         psql "\$AUTH_DATABASE_URL" -tAc \
-                          "SELECT format('DROP TABLE IF EXISTS public.%I CASCADE;', tablename)
-                             FROM pg_tables WHERE schemaname='public'" \
+                          "SELECT format('DROP TABLE IF EXISTS %I.%I CASCADE;', schemaname, tablename)
+                             FROM pg_tables
+                            WHERE schemaname NOT IN ('pg_catalog','information_schema')" \
+                          | psql "\$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 --quiet
+
+                        psql "\$AUTH_DATABASE_URL" -tAc \
+                          "SELECT format('DROP SCHEMA IF EXISTS %I CASCADE;', nspname)
+                             FROM pg_namespace
+                            WHERE nspname NOT LIKE 'pg_%' AND nspname <> 'information_schema'" \
                           | psql "\$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 --quiet
 
                         psql "\$AUTH_DATABASE_URL" -v ON_ERROR_STOP=1 -c \
-                          "DROP SCHEMA IF EXISTS public CASCADE; CREATE SCHEMA public;"
+                          "CREATE SCHEMA IF NOT EXISTS public;"
 
                         echo "streaming and restoring ..."
                         # Piped, never staged on disk: the container has no volume
