@@ -20,8 +20,17 @@ import type { ReactNode } from 'react';
  * the site follows — which is the whole point of the rule (RULE #1).
  */
 export type BandTone =
-  /** No fill. Sits directly on the page background (`--color-base-200`); not
-   *  inset, not rounded. The default, and the quiet half of the rhythm. */
+  /** No fill at all — the band shows the bare page ground, which is
+   *  `--color-base-300` (`#e6eaf2`, set on `body`), NOT `--color-base-200`.
+   *  Not inset, not rounded. The default, and the quiet half of the rhythm.
+   *
+   *  This comment used to name `--color-base-200` as the ground. It isn't:
+   *  `base-200` (`#f3f5f9`) is one step LIGHTER than the ground, so anything
+   *  painting it is elevated and earns the inset + radius. That mistake is
+   *  exactly what left `Section`'s same-named `page` tone — which, unlike this
+   *  one, DOES paint `base-200` — drawing square grey sections between rounded
+   *  neighbours. Same word, two different meanings; see Section in
+   *  primitives.tsx. */
   | 'page'
   /** The lifted surface — white on a light theme. A floating card against the
    *  page's grey, which is the light-mode counterpart of `dark`. */
@@ -84,8 +93,40 @@ const TONE_CLASS: Record<BandTone, string> = {
  *  Exported for the same reason as `PAINTED_TONE_CLASS`: `Section` in
  *  `primitives.tsx` is the site's other section shell, and a filled band that is
  *  rounded on /platform and square on /commerce is two design systems, not one.
- *  Change the radius or the inset HERE and every band on every page follows. */
+ *  Change the radius or the inset HERE and every band on every page follows.
+ *
+ *  THE `m-6` IS THE GAP BETWEEN SECTIONS, and it is load-bearing — it is what
+ *  separates one band from the next and lets the page ground show through
+ *  between them. Drop it and every filled band butts directly against its
+ *  neighbours: the radius is still there, but with no gap the rounded corners
+ *  have nothing to be rounded AGAINST, so the whole page reads as one continuous
+ *  slab. It is a margin rather than padding on purpose — adjacent margins
+ *  collapse, so two stacked bands share a single 24px gutter instead of stacking
+ *  48px between them.
+ *
+ *  It also scales now: `m-6` is `calc(var(--spacing) * 6)`, and `--spacing` is
+ *  re-pointed per breakpoint in globals.css, so the gutter runs 19.2px on a
+ *  phone → 24px → 28.8px on a desktop, in step with every other space on the
+ *  page rather than sitting at a fixed 24px. */
 export const FILLED_SHAPE = 'm-6 rounded-4xl';
+
+/**
+ * The shape of a FLUSH filled band — the hero, and only the hero.
+ *
+ * Flush kills the inset and the TOP radius, because a page's first band sits
+ * directly under the nav and insetting it opens a stripe of ground between the
+ * header and the content. It does NOT kill the bottom radius, which is the part
+ * this used to get wrong: the hero is a layer, and a layer has to END somewhere.
+ * Left fully square it ran hard into the rounded section beneath it and read as
+ * the one band nobody had finished.
+ *
+ * THE EXCEPTION: if the section immediately below is the SAME layer as the hero,
+ * there is no boundary to draw — the two are one continuous plane, and it is the
+ * next section down (a different layer) that carries the rounding instead. That
+ * is why the landing page's hero is square-bottomed. Pass `rounded-b-none` in
+ * `className` for that case; it is rare and should be deliberate.
+ */
+export const FLUSH_SHAPE = 'rounded-b-4xl';
 
 export function Band({
   id,
@@ -126,6 +167,10 @@ export function Band({
         'scroll-mt-20 px-6 py-24 sm:px-8 lg:py-32',
         TONE_CLASS[tone],
         filled ? FILLED_SHAPE : '',
+        // A flush band still ends: bottom corners round even though the top and
+        // the sides run to the viewport edge. `tone === 'page'` paints nothing,
+        // so there is no shape to give it.
+        flush && tone !== 'page' ? FLUSH_SHAPE : '',
         className ?? '',
       ]
         .filter(Boolean)

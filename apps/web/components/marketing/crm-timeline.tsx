@@ -7,8 +7,10 @@ import { getModuleColor, type MarketingModule, Section, SectionHeader } from './
  * email.opened, call, deal/quote, order.delivered) from the dashboard's
  * activity-timeline.tsx. CRM cyan + module hues as signals.
  *
- * Class-based per SILICA-VOCABULARY.md; the marker's fill is the only inline
- * style left, because it's a per-event module hue VALUE.
+ * Class-based per SILICA-VOCABULARY.md. This header used to say the marker's
+ * fill was "the only inline style left, because it's a per-event module hue
+ * VALUE" — it isn't a value any more: the marker takes `getModuleColor(m).bg`
+ * plus its paired `.content`, so this file renders no inline styles at all.
  */
 
 const M = getModuleColor('crm');
@@ -84,9 +86,13 @@ export function CrmTimeline() {
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
-        accent={M.color}
-        headline="Every interaction, in order, logged for you"
-        lede="The activity feed is append-only and auto-populated. Orders, shipments, email opens, quotes, invoices, logins — written the moment they happen, from whatever module did them. Add a call, a note, or a meeting by hand; corrections appear as new entries, never overwrites."
+        accent={M.ink}
+        // BEAT 5a — IT RECORDS. First consequence of the turn, and the first
+        // link in a chain that escalates: records → groups → connects → acts.
+        // "Every interaction, in order, logged for you" named the feature; this
+        // names what the reader no longer has to do.
+        headline="From here on, it writes itself"
+        lede="Nobody has to remember to log anything. Orders, deliveries, opened emails, quotes, invoices and sign-ins land on the customer’s page the moment they happen, whichever part of sparx did them. Add a call or a note by hand when it matters — and nothing ever overwrites anything, so a correction shows up as the next line rather than erasing what it corrected."
       />
       <div className="mkt-frame-grid mt-[52px]">
         <ol className="relative list-none">

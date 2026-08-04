@@ -25,7 +25,7 @@ export function DropshipHero() {
     'Connect a supplier, import their catalog, set a markup rule. When an order comes in, sparx routes it to the right supplier automatically, pulls back tracking, and emails the customer — all without you touching a box. Sell without holding inventory, on a real platform where suppliers, products, and orders live in one place.';
   const chips = ['supplier connectors', 'auto order routing', 'margin rules', 'tracking sync'];
   return (
-    <section className={`${M.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
+    <section className={`${M.bg} bg-soft px-page pt-20 pb-28`}>
       <Container>
         <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
           <div className="min-w-0 flex-1">

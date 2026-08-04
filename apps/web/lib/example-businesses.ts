@@ -113,8 +113,23 @@ export interface ExampleEmail {
  * device. None of this requires a shop to exist; CRM is the spine.
  */
 export interface ExampleCrm {
-  /** initials for the record avatar, e.g. 'DR'. */
+  /** initials for the record avatar, e.g. 'DR'. Still the accessible fallback
+   *  and the value any surface too small for a photo should use. */
   initials: string;
+  /**
+   * The customer's photograph, for the record avatar on /crm.
+   *
+   * A CRM record is a PERSON, and an initials monogram is the placeholder you
+   * show when you don't have one. Rendering the demo record with a monogram made
+   * the marquee device look like an empty seat — and the monogram was drawn
+   * `bg-module-crm bg-soft text-module-crm`, i.e. the accent inked over a 15%
+   * tint of itself, measured 2.15:1.
+   *
+   * Path under `apps/web/public/people/`; licence and provenance in that
+   * directory's README. Faces sit high in a standing portrait, so the avatar
+   * crops with `object-top` rather than centre.
+   */
+  avatar: string;
   /** customer type — drives the record's type badge. */
   type: 'retail' | 'b2b' | 'prospect';
   /** lifetime spend, formatted USD, e.g. '$1,847'. */
@@ -306,6 +321,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     },
     crm: {
       initials: 'DR',
+      avatar: '/people/dana-ruiz.jpg',
       type: 'retail',
       totalSpent: '$1,847',
       orders: 6,
@@ -419,6 +435,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     },
     crm: {
       initials: 'ML',
+      avatar: '/people/marcus-lee.jpg',
       type: 'retail',
       totalSpent: '$3,240',
       orders: 12,
@@ -532,6 +549,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     },
     crm: {
       initials: 'PN',
+      avatar: '/people/priya-nair.jpg',
       type: 'retail',
       totalSpent: '$880',
       orders: 6,
@@ -650,6 +668,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     },
     crm: {
       initials: 'SC',
+      avatar: '/people/sam-carter.jpg',
       type: 'retail',
       totalSpent: '$1,124',
       orders: 9,
@@ -772,6 +791,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
     },
     crm: {
       initials: 'RF',
+      avatar: '/people/luis-reyes.jpg',
       type: 'b2b',
       totalSpent: '$5,110',
       orders: 9,

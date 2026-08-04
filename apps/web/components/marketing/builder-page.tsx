@@ -56,7 +56,7 @@ function BuilderHero() {
     'content or commerce',
   ];
   return (
-    <section className="bg-base-200 px-page pb-section-lg pt-[clamp(56px,9vw,96px)]">
+    <section className="bg-base-200 px-page pt-20 pb-28">
       <Container className="flex flex-col gap-10">
         <div className="flex max-w-[1100px] flex-col gap-2">
           <Display as="h1" size={96} lineHeight={90}>

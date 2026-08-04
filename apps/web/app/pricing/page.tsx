@@ -29,7 +29,7 @@ export const metadata: Metadata = {
 
 // The pricing page, built the way the homepage is: a full silicaui purge (no
 // primitives.tsx, no mkt-* classes, no bespoke font-size override, no
-// --gutter-page/--section-py-* vars) around a narrative argument. The
+// --gutter-page var + the numeric spacing scale) around a narrative argument. The
 // interactive switchboard is the shared PricingSwitchboard, reused
 // byte-for-byte; every figure and answer comes from ./pricing/data.
 //

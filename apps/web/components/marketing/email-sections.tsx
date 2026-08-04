@@ -47,7 +47,7 @@ export function EmailHero() {
     'no per-email fees',
   ];
   return (
-    <section className={`${E.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
+    <section className={`${E.bg} bg-soft px-page pt-20 pb-28`}>
       <Container>
         <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
           <div className="min-w-0 flex-1">

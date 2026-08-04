@@ -36,7 +36,7 @@ const IDENTITY: { label: string; value: string }[] = [
 
 export function BrandHero() {
   return (
-    <section className="px-page pb-section-lg bg-base-200 border-base-300 border-b pt-[clamp(104px,13vw,168px)]">
+    <section className="px-page bg-base-200 border-base-300 border-b pt-[clamp(104px,13vw,168px)] pb-28">
       <Container className="flex flex-col gap-10">
         <OfficialWordmark className="w-[clamp(208px,32vw,332px)]" />
 

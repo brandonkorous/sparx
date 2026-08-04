@@ -1,8 +1,8 @@
 # Organizations, Teams & the Partner Program
 
-**Version:** 0.2
+**Version:** 0.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-07-06
+**Last Updated:** 2026-08-03
 
 > Status: **planning / not yet built.** This doc is the reconciled blueprint for two
 > coupled bodies of work decided in the 2026-07-02 build session:
@@ -346,13 +346,13 @@ bootcamp_registrations           (organization_id = host partner's org)
 
 ## B.6 Public marketing pages (`apps/web`, `mkt-*` + bespoke component pattern)
 
-| Route                 | Content                                                                                                                                                                                                                             |
-| --------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `/partners`           | Hero ("Build your practice on Sparx.") · The Opportunity (prose) · How It Works (4 steps) · Tiers (informal/registered/certified comparison) · Directory CTA · **self-serve apply** section · resources teaser · social proof (D7). |
-| `/partners/directory` | Filterable directory (tier / location / specialty facets), certified-first sort, `FacetBar` SSR pattern, `ListingCard`, empty state.                                                                                                |
-| `/partners/:id`       | Public partner profile.                                                                                                                                                                                                             |
-| `/bootcamp`           | Hero ("Build your business. Launch on Sparx.") · What You'll Build · Who It's For · Format labels · **filterable directory** (format/location/date) · Partner CTA.                                                                  |
-| `/bootcamp/:slug`     | Server-rendered detail · **auto OG image** · **schema.org `Event`** JSON-LD · internal RSVP form or external CTA · host partner + tier badge.                                                                                       |
+| Route                 | Content                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/partners`           | Hero ("Build your practice on Sparx.") · The Opportunity (prose) · How It Works (4 steps) · Tiers (informal/registered/certified comparison) · Directory CTA · **self-serve apply** section · resources teaser · social proof (D7).                                                                                                                                                                                                                                                                                 |
+| `/partners/directory` | Filterable directory (tier / location / specialty facets), certified-first sort, `FacetBar` SSR pattern, `ListingCard`, empty state.                                                                                                                                                                                                                                                                                                                                                                                |
+| `/partners/:slug`     | **Built 2026-08-03.** Public partner profile, keyed on a `slug` minted from the display name at approval and immutable after (a rename must not move a public URL). Server-rendered · **auto OG image** (accent = the partner's first specialty's module hue) · **schema.org `ProfessionalService`** JSON-LD · specialties expanded into plain-language rows · what the tier means to a BUYER. `notFound()` for a suspended, soft-deleted or directory-hidden partner, so a shared link cannot outlive the listing. |
+| `/bootcamp`           | Hero ("Build your business. Launch on Sparx.") · What You'll Build · Who It's For · Format labels · **filterable directory** (format/location/date) · Partner CTA.                                                                                                                                                                                                                                                                                                                                                  |
+| `/bootcamp/:slug`     | Server-rendered detail · **auto OG image** · **schema.org `Event`** JSON-LD · internal RSVP form or external CTA · host partner + tier badge.                                                                                                                                                                                                                                                                                                                                                                       |
 
 - Data via a new `apps/web/lib/partners.ts` + `lib/bootcamp.ts` (the `lib/marketplace.ts`
   `getPublic` + ISR `revalidate` scaffold).
@@ -381,7 +381,11 @@ contextual-panel `'partner'` arm, mirroring Finance. Sub-pages:
 ```
 # public (no auth, /v1/public/*)
 GET  /v1/public/partners                      directory (facets)
-GET  /v1/public/partners/:id                  profile
+GET  /v1/public/partners/:id                  profile by row id (uuid-validated)
+GET  /v1/public/partners/slug/:slug            profile by public slug — what /partners/:slug renders.
+                                               A SEPARATE segment, not a union param: `:id` is
+                                               z.string().uuid(), so widening it would turn a
+                                               malformed uuid into a silent slug lookup.
 GET  /v1/public/bootcamps                      directory (facets)
 GET  /v1/public/bootcamps/:slug                detail
 POST /v1/public/bootcamps/:slug/register       internal RSVP → host CRM

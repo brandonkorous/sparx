@@ -1168,7 +1168,11 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: var(--section-py-xl) var(--gutter-page);
+    /* `calc(var(--spacing) * 32)` is exactly what `py-32` emits — this rule is
+       plain CSS rather than a utility, so it spells the multiplier out and stays
+       on the one spacing system. It was `var(--section-py-xl)`, a token that no
+       longer exists. */
+    padding: calc(var(--spacing) * 32) var(--gutter-page);
     /* Purple band that matches the hero, so the video's rounded corner notches
      read as purple and connect to the flush hero above. */
     background-color: var(--color-primary);

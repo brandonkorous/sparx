@@ -79,7 +79,8 @@
    into first-class Tailwind utilities, so there are no arbitrary values and a
    design change is a single edit here — not a hunt through stamped inline styles.
 
-   • spacing  → `px-page`, `py-section-lg`, `gap-…`      (clamp()-fluid)
+   • spacing  → `px-page` (gutter token); vertical rhythm is the plain numeric
+                scale (`py-28`), fluid via the responsive `--spacing` below
    • text     → `text-md`, `text-lg`, `text-sm` (size + paired leading)
    • width    → `max-w-container` (the 1280px content cap)
 
@@ -95,10 +96,21 @@
    the one thing a design system cannot have two of. Both are deleted. Hierarchy
    comes from scale, weight and color.                                          */
 @theme {
+  /* The page GUTTER stays a token: it is a horizontal inset tied to the
+     container, not a step on the spacing scale, and `clamp(20px, 5vw, 80px)`
+     tracks viewport width continuously in a way a stepped multiplier can't.
+
+     The section RHYTHM tokens that used to sit here — `--spacing-section-md/lg/xl`,
+     wrapping `--section-py-*` — are deleted. They were a private spacing
+     vocabulary only sections could reach, so a section breathed while the cards
+     and gaps inside it stayed fixed. The responsive `--spacing` multiplier above
+     does the same job for EVERY utility, so sections now use the ordinary scale:
+
+       py-section-md → py-20      py-section-lg → py-28      py-section-xl → py-32
+
+     Those land within ~6px of the old desktop values (96 / 134 / 154 against
+     96 / 140 / 160) and scale on their own. */
   --spacing-page: var(--gutter-page);
-  --spacing-section-md: var(--section-py-md);
-  --spacing-section-lg: var(--section-py-lg);
-  --spacing-section-xl: var(--section-py-xl);
 
   --container-content: var(--container-max);
 
@@ -115,6 +127,48 @@
      `text-md` (or no size class) is the default. `text-sm` is the caption step.
      `text-xs` is reserved for text nobody is meant to READ. Above 30px use
      `<Display>`, which is fluid-clamped. */
+}
+
+/* ── ONE SPACING KNOB ────────────────────────────────────────────────────────
+   Tailwind v4 builds its ENTIRE numeric spacing scale off a single multiplier:
+   `.p-4 { padding: calc(var(--spacing) * 4) }`, `.gap-6`, `.py-28`, `.mt-2` —
+   all of them. So re-pointing `--spacing` at a breakpoint rescales every margin,
+   padding and gap in the app together, in proportion, with no per-component
+   breakpoints and no bespoke tokens.
+
+   This is why `--spacing-section-md/lg/xl` are gone. They were a second, private
+   spacing vocabulary that only sections could use: a hand-written `clamp()` per
+   size, invisible to cards, grids and gaps, so a section breathed on a phone
+   while everything inside it stayed put. A `py-28` now scales on its own —
+   89.6px on a phone, 134.4px on a desktop — which is what the clamp was for.
+
+   The ramp is 0.8× → 1.0× → 1.2× of Tailwind's 0.25rem default. Layout tightens
+   where screen space is scarce and opens up where it isn't.
+
+     ≤639px    0.20rem   3.2px/step    py-28 →  89.6px
+     640px+    0.25rem   4.0px/step    py-28 → 112.0px   (Tailwind's own default)
+     1280px+   0.30rem   4.8px/step    py-28 → 134.4px
+
+   NOTE the `sm` step is 0.25rem, not 1.25rem. At 1.25rem the multiplier is 5×
+   the default, so every `p-4` becomes 80px and every `gap-6` 120px between
+   640px and 1279px — then collapses back to 19px at 1280px.
+
+   SILICA CONTROLS ARE DELIBERATELY OUT OF THIS. Buttons, inputs and selectors
+   size off `--size-field` / `--size-selector`, not `--spacing`, so a control
+   keeps its own scale and its tap target while the layout around it moves.
+   That separation is intentional — don't wire them together. */
+:root {
+  --spacing: 0.2rem;
+}
+@media (width >= theme(--breakpoint-sm)) {
+  :root {
+    --spacing: 0.25rem;
+  }
+}
+@media (width >= theme(--breakpoint-xl)) {
+  :root {
+    --spacing: 0.3rem;
+  }
 }
 
 html {

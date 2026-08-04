@@ -158,10 +158,7 @@ function CommerceHero() {
     // and it is where module hues finally become legible as INK (~7:1 here,
     // against ~2.4:1 on a light band). The house hero, same as /features,
     // /pricing, /partners and every tool page.
-    <section
-      data-theme="dark"
-      className="bg-base-100 px-page pb-section-lg pt-[clamp(56px,9vw,96px)]"
-    >
+    <section data-theme="dark" className="bg-base-100 px-page rounded-b-4xl pt-20 pb-28">
       <Container>
         <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
           <div className="min-w-0 flex-1">

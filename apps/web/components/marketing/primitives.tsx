@@ -4,7 +4,7 @@
  * apps/web is CLASS-BASED: these primitives emit `className` built from the
  * marketing utility vocabulary registered in app/globals.css (`@theme`) — the
  * editorial type scale (`text-md`/`text-lg`/`text-sm`…), the section
- * rhythm + page gutter (`py-section-lg`/`px-page`), and silica's own color
+ * rhythm + page gutter (`py-28`/`px-page`), and silica's own color
  * utilities (`text-base-content`/`bg-base-200`/`text-primary`). Ink is ALWAYS
  * the surface's paired `-content` — there is no marketing-local ink vocabulary. Appearance lives in CSS,
  * so a design change is one edit there — NOT a hunt through stamped inline
@@ -21,7 +21,7 @@ import * as React from 'react';
 // OWN legacy `Text`/`Display` for the ~143 un-swept marketing files; as those
 // convert, the local pair goes away and the aliases collapse to plain imports.
 import { Heading as SilicaHeading, Text as SilicaText } from '@wizeworks/silicaui-react';
-import { FILLED_SHAPE, PAINTED_TONE_CLASS, type PaintedTone } from './band';
+import { FILLED_SHAPE, FLUSH_SHAPE, PAINTED_TONE_CLASS, type PaintedTone } from './band';
 // NOTE: the vector wordmark/mark live in `@sparx/brand/react` — import them from
 // there DIRECTLY where needed. This file deliberately does NOT re-export them:
 // `primitives` is imported by both server sections and the `'use client'`
@@ -176,6 +176,26 @@ export type MarketingModule = keyof typeof MODULE_COLORS;
 export function getModuleColor(module: MarketingModule) {
   return MODULE_COLORS[module];
 }
+
+/**
+ * Fill + paired ink for a LAYER 5 section — the module's own hue, painted.
+ *
+ * Built from the two literals already in `MODULE_COLORS` so Tailwind's scanner
+ * still sees both class names at their original site; nothing here is a new
+ * interpolated class.
+ *
+ * Every one of the 18 pairs was measured against WCAG before this existed —
+ * lowest is `module-finance` at 4.52:1, highest `module-seo` at 7.60:1, so all
+ * of them clear AA for BODY text, not just large. That is the whole reason the
+ * `-content` ink is mandatory rather than `text-white`: silica pairs cyan
+ * (`#06b6d4`) with a dark navy (`#083344`, 5.52:1) precisely because white on
+ * cyan fails. Paint the fill without its ink and a layer-5 band inherits
+ * whatever came before it — which on this site is usually near-black on the
+ * light theme and white inside a dark island.
+ */
+const MODULE_TONE_CLASS = Object.fromEntries(
+  Object.entries(MODULE_COLORS).map(([k, v]) => [k, `${v.bg} ${v.content}`])
+) as Record<MarketingModule, string>;
 
 // ── Text scale mapping ───────────────────────────────────────────────────────
 // A numeric px `size` maps onto SILICA's own rem ladder. There is no marketing
@@ -335,6 +355,25 @@ export function Code({ children }: { children: React.ReactNode }) {
  * use are a known set, so nothing here needs an inline style. See DESIGN.md,
  * the Contract.
  */
+/**
+ * Dot sizes as literal classes. The doc below has claimed since it was written
+ * that `size` "is quantised to literal classes ... so nothing here needs an
+ * inline style" — it wasn't; the component stamped `style={{width,height}}` on
+ * every one of the ~85 dots on the marketing site, which is what put
+ * `width:8px;height:8px` in the rendered markup of every module page.
+ *
+ * Measured across `apps/web`, `<Dot>` is called with exactly five sizes (3, 6,
+ * 7, 8, 9) plus the default. A literal map is therefore complete, not a
+ * best-effort — and being literal strings, Tailwind's scanner emits all five.
+ */
+const DOT_SIZE_CLASS: Record<number, string> = {
+  3: 'size-[3px]',
+  6: 'size-[6px]',
+  7: 'size-[7px]',
+  8: 'size-[8px]',
+  9: 'size-[9px]',
+};
+
 export function Dot({
   fill,
   color,
@@ -355,15 +394,21 @@ export function Dot({
   color?: string;
   size?: number;
 }) {
+  const sizeClass = DOT_SIZE_CLASS[size] ?? DOT_SIZE_CLASS[6];
   return (
     <span
       aria-hidden
-      className={cx('inline-block shrink-0 rounded-full', fill)}
-      style={
-        fill
-          ? { width: size, height: size }
-          : { width: size, height: size, backgroundColor: color ?? 'var(--color-primary)' }
-      }
+      className={cx(
+        'inline-block shrink-0 rounded-full',
+        sizeClass,
+        fill ?? (color ? '' : 'bg-primary')
+      )}
+      // The ONLY remaining inline style, and only on the legacy `color` path:
+      // a `var(--color-…)` VALUE cannot become a class, so a call site that
+      // hands one over forces the paint. `fill` emits nothing here at all.
+      // Migrate a call site by passing `getModuleColor(m).bg` instead of
+      // `.color`, and this branch goes with the last one.
+      style={!fill && color ? { backgroundColor: color } : undefined}
     />
   );
 }
@@ -392,9 +437,14 @@ export function Container({
 }
 
 /**
- * Standard marketing section wrapper. Page gutter (`px-page`) and vertical rhythm
- * (`py-section-*`) are clamp()-fluid utilities, so the section breathes from a
- * 320px phone to a 2560px monitor with no per-component breakpoints.
+ * Standard marketing section wrapper. The page gutter (`px-page`) is a token —
+ * a horizontal inset tied to the container. The vertical rhythm is NOT: it is
+ * the ordinary numeric scale (`py-20` / `py-28` / `py-32`), fluid on its own
+ * because `--spacing` is re-pointed per breakpoint in globals.css.
+ *
+ * That replaced `py-section-md/lg/xl`, three hand-written clamps only sections
+ * could use — so a section breathed with the viewport while every card, grid and
+ * gap inside it stayed fixed. One multiplier now moves all of them together.
  *
  * `surface="dark"` is a themed island (`data-theme="dark"`): the whole
  * `--color-base-*` ramp flips to brand navy, so the surface, border, and every
@@ -408,6 +458,13 @@ export function Container({
  * row and then two greys touching. A page is a tone SEQUENCE (DESIGN.md §2.4),
  * and this axis is what lets a module page write one.
  *
+ * `surface="module" module="crm"` is LAYER 5 — the module's own registered hue,
+ * painted, with its measured `-content` ink. It is the top of the depth ladder
+ * in DESIGN.md §2.5 and is reserved for module pages: exactly one section, the
+ * one that makes the argument only THAT module can make. `Section` had no way to
+ * paint it at all until now, which is the mechanical reason all eleven module
+ * pages topped out at layer 4 — the shell couldn't express their own identity.
+ *
  * Two constraints, both load-bearing:
  *
  *   • A painted tone is a fill + ink, NOT a theme scope. Bare prose inherits the
@@ -419,32 +476,65 @@ export function Container({
  *     `text-base-content` too. Carrying only the fill leaves it inheriting the
  *     band's `-content` — i.e. white type on a white card, on `primary`.
  */
-export function Section({
-  id,
-  children,
-  surface = 'page',
-  padding = 'lg',
-  bleed,
-  flush,
-  className,
-  style,
-}: {
+/**
+ * `surface` and `module` as a DISCRIMINATED UNION, so a layer-5 section cannot
+ * be written without naming its module. Left as two independent optional props,
+ * `surface="module"` with no `module` compiles fine and renders an unpainted
+ * band — a silent failure, and exactly the class of bug the `bg-*`-without-ink
+ * note above documents.
+ */
+type SectionTone =
+  | { surface?: 'page' | 'surface' | 'dark' | PaintedTone; module?: never }
+  | { surface: 'module'; module: MarketingModule };
+
+/**
+ * The tone → fill+ink class for a section.
+ *
+ * A standalone function because narrowing has to happen on the UNION, not on
+ * destructured bindings: pull `surface` and `module` out as separate consts and
+ * TypeScript stops correlating them, so `surface === 'module'` no longer proves
+ * `module` is defined. Taking the union whole means each branch narrows for
+ * free, with no cast and no non-null assertion.
+ */
+function sectionToneClass(tone: SectionTone): string {
+  if (tone.surface === 'module') return MODULE_TONE_CLASS[tone.module];
+  const s = tone.surface ?? 'page';
+  // `surface` and `dark` are the same fill token deliberately — `--color-base-100`
+  // is white on the light theme and near-black inside the `data-theme` island.
+  if (s === 'surface' || s === 'dark') return 'bg-base-100';
+  if (s === 'page') return 'bg-base-200';
+  return PAINTED_TONE_CLASS[s];
+}
+
+type SectionProps = SectionTone & {
   id?: string;
   children: React.ReactNode;
-  surface?: 'page' | 'surface' | 'dark' | PaintedTone;
   padding?: 'md' | 'lg' | 'xl';
   bleed?: boolean;
-  /** Keep a filled section flush to the viewport edge — no inset, no radius.
+  /** Keep a filled section flush to the viewport edge — no inset, no TOP radius.
    *  The standing exception is a HERO: a page's first section sits under the
    *  nav, and insetting it opens a 24px stripe of page background between the
-   *  header and the content. Same rule and same reason as `<Band flush>`. */
+   *  header and the content.
+   *
+   *  The BOTTOM corners still round. A hero is a layer and a layer has to end;
+   *  square-bottomed it runs hard into the rounded section beneath it. Opt out
+   *  with `className="rounded-b-none"` only when the next section is the SAME
+   *  layer — then there is no boundary and the rounding belongs further down.
+   *  Same rule and same reason as `<Band flush>`. */
   flush?: boolean;
   /** Extra utilities / surface-depth tier hook for the `.mkt-paneled` system. */
   className?: string;
   /** Migration bridge for un-converted pages still passing layout inline.
    *  Converted pages use utilities and omit this. */
   style?: React.CSSProperties;
-}) {
+};
+
+export function Section(props: SectionProps) {
+  // `surface`/`module` stay on `props` rather than being destructured out, so
+  // `sectionToneClass` receives the union intact and narrows it itself — a
+  // destructured `surface` is no longer correlated with `module`.
+  const { id, children, padding = 'lg', bleed, flush, className, style } = props;
+  const surface = props.surface ?? 'page';
   // A section that carries its own fill is INSET AND ROUNDED; one sitting on the
   // page background is not. That rule was already true of `<Band>` and of every
   // page built on it (/platform, /partners, /customers, /for/*, /tools) — but
@@ -456,15 +546,37 @@ export function Section({
   // flush and edge-to-edge; once a filled section floats on the page background
   // its own edge separates it, and a `base-300` hairline drawn across ember or
   // cyan is a seam rather than a divider.
-  const filled = surface !== 'page' && !flush;
-  const surfaceClass =
-    surface === 'surface' || surface === 'dark'
-      ? `bg-base-100 ${flush ? 'border-t border-base-300' : ''}`
-      : surface === 'page'
-        ? 'bg-base-200'
-        : PAINTED_TONE_CLASS[surface];
-  const pyClass =
-    padding === 'md' ? 'py-section-md' : padding === 'lg' ? 'py-section-lg' : 'py-section-xl';
+  //
+  // EVERY tone here is filled, `page` included — that is the part the first pass
+  // got wrong. `page` is a misnomer inherited from this prop's original three
+  // values: it does not mean "no fill", it paints `--color-base-200`. Measured,
+  // the ground under these pages is `--color-base-300` (`#e6eaf2`, set on
+  // `body`), and `base-200` is `#f3f5f9` — one step LIGHTER, i.e. elevated above
+  // the ground exactly like `surface` and `dark` are. So it earns the same shape
+  // for the same reason, and excluding it left /commerce with two square grey
+  // sections between rounded neighbours.
+  //
+  // A section that genuinely wants to sit on the ground carries no background at
+  // all (the FAQ does this — a bare `<section>`, measured transparent), or passes
+  // `flush`. Note `<Band>`'s `page` is a different thing under the same name: it
+  // emits NO fill, so it really is the bare ground.
+  const filled = !flush;
+  const surfaceClass = cx(
+    sectionToneClass(props),
+    // The hairline belongs to the FLUSH case only, which is why it isn't in the
+    // tone map: a flush section is edge-to-edge and needs a separator, a filled
+    // one floats and separates itself.
+    (surface === 'surface' || surface === 'dark') && flush && 'border-base-300 border-t'
+  );
+  // The ordinary numeric scale, NOT the deleted `py-section-*` tokens. These are
+  // fluid on their own because `--spacing` is re-pointed per breakpoint in
+  // globals.css (0.2 / 0.25 / 0.3rem), so `py-28` is 89.6px on a phone and
+  // 134.4px on a desktop with no clamp and no breakpoint here.
+  //
+  // If this ever reads `py-section-*` again, EVERY <Section> on the marketing
+  // site silently loses its vertical padding — the class has no definition
+  // behind it any more, so it emits nothing rather than failing loudly.
+  const pyClass = padding === 'md' ? 'py-20' : padding === 'lg' ? 'py-28' : 'py-32';
   return (
     <section
       id={id}
@@ -474,6 +586,10 @@ export function Section({
         pyClass,
         'px-page scroll-mt-20',
         filled ? FILLED_SHAPE : '',
+        // A flush section still ends: bottom corners round even though the top
+        // and sides run to the viewport edge. `page` paints nothing, so there is
+        // no shape to give it.
+        flush && surface !== 'page' ? FLUSH_SHAPE : '',
         className
       )}
       style={style}
@@ -543,9 +659,23 @@ export function SectionHeader({
  * `var()` — the prop's type was the multiplier.
  */
 export function Spark({ color }: { color?: string }) {
-  return (
-    <span className={color ? undefined : 'text-primary'} style={color ? { color } : undefined}>
-      .
-    </span>
-  );
+  // MIGRATION SHIM. `color` was specified as a colour VALUE and every one of the
+  // ~100 call sites hands it `var(--color-…)`, which forces the inline paint —
+  // 13 of them on /crm alone, and `Spark` is the single largest remaining source
+  // of `style="color:…"` in the rendered marketing markup.
+  //
+  // An INK CLASS (`text-module-crm`, from `getModuleColor(m).ink`) needs no
+  // style at all, so this now accepts either and routes on the shape of the
+  // string. That is deliberately forgiving rather than clever: it lets call
+  // sites migrate one page at a time instead of requiring a single 143-site
+  // commit across ~30 files, several of them pages nobody has audited yet.
+  //
+  // `SectionHeader`'s `accent` prop feeds straight into here and has always been
+  // DOCUMENTED as taking a class — this is what finally makes that true.
+  //
+  // When the last `.color` call site is gone, delete the branch and rename the
+  // prop to `ink`.
+  const isValue = !!color && (color.startsWith('var(') || color.startsWith('#'));
+  if (isValue) return <span style={{ color }}>.</span>;
+  return <span className={color ?? 'text-primary'}>.</span>;
 }

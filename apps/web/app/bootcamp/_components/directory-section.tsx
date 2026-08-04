@@ -27,7 +27,7 @@ export function BootcampDirectory({
   return (
     <section
       id="directory"
-      className="bg-base-200 border-base-300 px-page py-section-lg scroll-mt-20 border-t"
+      className="bg-base-200 border-base-300 px-page scroll-mt-20 border-t py-28"
     >
       <Container>
         <div className="flex flex-col gap-9">

@@ -137,7 +137,7 @@ function ConciergeHero() {
   // chat widget on a tenant's site, rotating through EXAMPLE_BUSINESSES so the
   // "works for any business" claim is demonstrated, not asserted.
   return (
-    <section className={`${AI.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
+    <section className={`${AI.bg} bg-soft px-page pt-20 pb-28`}>
       <Container>
         <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-14">
           <div className="mkt-stack-copy">

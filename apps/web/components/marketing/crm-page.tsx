@@ -2,20 +2,47 @@ import type { ReactNode } from 'react';
 import { Button } from '@wizeworks/silicaui-react';
 import { Display, getModuleColor, Section, Spark } from './primitives';
 import { CrmHero } from './crm-sections';
-import { CrmOneRecord } from './crm-devices';
+import { CrmOneRecord, CrmTurn } from './crm-devices';
 import { CrmTimeline } from './crm-timeline';
 import { CrmSegments, CrmPipeline } from './crm-segments';
 import { CrmAutomation, CrmCapabilities } from './crm-extras';
 import { Faq, type FaqItem } from './faq';
+import { PhotoBand } from './photo-band';
 
 /**
- * The /crm marketing page — CRM is the **customer spine** of sparx. The thesis
- * is one customer seen through every lens: because everything runs on one
- * database, a single record carries live signals from every module with nothing
- * to sync. The page moves who → what → group → forecast → automate → proof:
- * the unified record (the marquee device), the no-sync argument, the activity
- * feed, live segments, the pipeline, automation, then the one-database proof.
- * CRM cyan is a *signal* (source dots, stage markers, the spark) — never fill.
+ * The /crm marketing page.
+ *
+ * THE PAGE TELLS ONE STORY. It used to be a feature inventory: nine sections
+ * that each named a capability and then explained it — record, timeline,
+ * segments, pipeline, automation, "everything a sales team needs". Read only the
+ * headlines and they shuffled into any order without losing anything, which is
+ * the diagnostic (docs/brain/design/voice.md, "A page tells one story"). It also
+ * argued to the wrong reader: the comparison section addressed someone who had
+ * already decided they wanted a CRM and was choosing a vendor, when the actual
+ * reader doesn't know they want a CRM — they know a regular walked in and the
+ * new hire treated them like a stranger.
+ *
+ * The six beats, in an order that cannot be rearranged:
+ *
+ *   1. PROMISE ......... hero — your business already knows this customer
+ *   2. RECOGNITION ..... you already do this; it just doesn't scale past you
+ *   3. FALSE FIX ....... so you buy a CRM, and now they exist in five places
+ *   4. THE TURN ........ nothing to import — it's already your data   ← LAYER 5
+ *   5. CONSEQUENCES .... writes itself → keeps answering → already knows →
+ *                        does the next thing (records, groups, connects, acts —
+ *                        escalating, so the order is load-bearing)
+ *   6. RESOLUTION ...... now the new hire knows them too (closes beat 2), then
+ *                        the receipts, the price, the questions, the ask
+ *
+ * Beat 4 is the only place in the NARRATIVE that the one-database argument is
+ * made. It ran four times before — hero lede, comparison lede, a dedicated stats
+ * band, and the FAQ — which is what a page does when it has no turn to build
+ * toward. The FAQ still answers it, deliberately: a reader who jumped straight
+ * there never saw beat 4, and an FAQ is written for exactly that path.
+ *
+ * CRM cyan is a *signal* (source dots, stage markers, the spark) everywhere
+ * except beat 4, which paints it: the module's own hue at the one moment the
+ * page makes the argument only that module can make. DESIGN.md §2.5.
  *
  * Bespoke + full-length, modeled on commerce-page.tsx / cms-page.tsx; the
  * markup-heavy device sections live in crm-sections / crm-devices / crm-timeline
@@ -36,11 +63,50 @@ export function CrmPage() {
   return (
     <>
       <CrmHero />
+      {/* BEAT 2 — RECOGNITION. The reader is not failing at this; they are good
+          at it and have hit a ceiling. Naming the ceiling is what earns the
+          right to argue architecture two beats later, so this sits BEFORE the
+          comparison, not after it.
+
+          A photograph carries it because a visitor scanning the page reads the
+          pictures long before the copy — and because the thing being described
+          is a person in front of another person, which prose renders worse. */}
+      <PhotoBand
+        accent={M.ink}
+        side="right"
+        src="/scenes/salon-consult.jpg"
+        alt="A stylist leaning in to talk with a client in her chair, mid-consultation in a small salon."
+        headline="You already do this. It just doesn’t scale past you."
+        lede="You know who’s particular about delivery dates, who orders the same thing every time, and whose last order turned up damaged. None of it is written down anywhere — it’s in your head, and that works right up until you’re not the one standing there."
+      />
+      {/* BEAT 3 — THE FALSE FIX. */}
       <CrmOneRecord />
+      {/* BEAT 4 — THE TURN, and the only place the one-database argument is
+          made. Layer 5: the module's own hue, painted, at the one moment the
+          page says the thing only sparx can say. */}
+      <CrmTurn />
+      {/* BEAT 5 — CONSEQUENCES. These four are the old feature tour, re-ordered
+          and re-headlined so each one follows from the turn instead of sitting
+          on a menu: it records → it groups → it connects → it acts. The chain
+          escalates, so unlike the list it replaced, the order is load-bearing. */}
       <CrmTimeline />
       <CrmSegments />
       <CrmPipeline />
       <CrmAutomation />
+      {/* BEAT 6 — RESOLUTION. Closes the loop opened in beat 2: the thing that
+          didn't scale past you now does. Moved here from between segments and
+          pipeline, where it was breaking up a run of device sections — a
+          pacing job, not a story job. Side flipped so the two photo bands never
+          stack into the same silhouette. */}
+      <PhotoBand
+        surface="surface"
+        accent={M.ink}
+        side="left"
+        src="/scenes/counter-handover.jpg"
+        alt="A café worker smiling as he hands a paper bag across the counter to a regular customer."
+        headline="Now the new hire knows them too"
+        lede="The customer who comes back every week is worth more than the one you paid to find, and they can tell whether they’re remembered. Everyone on your team sees the same history — so a regular gets treated like a regular, whoever happens to be working that day."
+      />
       <CrmCapabilities />
       <CrmProof />
       <CrmPricing />
@@ -50,7 +116,7 @@ export function CrmPage() {
         heading={
           <>
             CRM questions
-            <Spark color={M.color} />
+            <Spark color={M.ink} />
           </>
         }
         lede="How it connects, what it costs, and what it does for a team — answered straight. Still deciding? Read the CRM docs or start the 14-day trial."
@@ -108,7 +174,7 @@ const CRM_FAQ: FaqItem[] = [
 function CrmProof() {
   const stats: { n: ReactNode; l: string }[] = [
     {
-      n: <>1{<Spark color={M.color} />}</>,
+      n: <>1{<Spark color={M.ink} />}</>,
       l: 'database under customers, orders, and email — nothing to sync',
     },
     { n: '0', l: 'webhooks to babysit · no Zapier between you and your data' },
@@ -125,13 +191,20 @@ function CrmProof() {
     <Section surface="dark" padding="lg">
       <div className="max-w-[760px]">
         <Display size={46} lineHeight={48}>
-          One customer, one truth, zero glue
-          <Spark color={M.color} />
+          What that adds up to
+          <Spark color={M.ink} />
         </Display>
+        {/* This band used to re-argue the one-database point under the headline
+            "One customer, one truth, zero glue" — the FOURTH time the page made
+            it, after the hero, the comparison lede and the turn. A story makes
+            its point once, at the moment it turns; everything after is
+            consequence. So this is now the RECEIPTS for beat 4, not a restatement
+            of it, and the copy points forward to the price rather than back at
+            the architecture. ("Zero glue" was also jargon — the audience is
+            non-technical business owners.) */}
         <p className="mt-[22px] max-w-[640px] text-lg">
-          Because the CRM reads the same database as orders, content, and email, the numbers
-          reconcile by default. There&rsquo;s nothing to sync — so there&rsquo;s nothing to drift,
-          dedupe, or argue with.
+          No per-seat pricing, no per-contact metering, and no charge for the parts that make it
+          work. Four numbers worth knowing before you look at the one that matters.
         </p>
       </div>
       <div className="mt-14 grid grid-cols-1 gap-0 sm:grid-cols-2 lg:grid-cols-4">
@@ -148,35 +221,58 @@ function CrmProof() {
   );
 }
 
-// ── PRICING STRIP ───────────────────────────────────────────────────────────────
+// ── PRICING STRIP (LAYER 4) ───────────────────────────────────────────────────
+//
+// A PAINTED band — the ask, in the brand's own color, which is the page's layer
+// 4 (DESIGN.md §2.5: at least one section of each of layers 1–4 on every page,
+// plus a layer 5 on a module page).
+//
+// It was a `${M.bg} bg-soft` box on an unpainted section: cyan at ~5% inside a
+// border, which is a RULE #3 violation twice over — soft used as a default
+// rather than as the accent on the one thing that earns it, and the module hue
+// spent on a wash where it can't be read. Removing it also stops this band
+// competing with the layer-5 turn, which is where the cyan actually argues
+// something.
+//
+// The band paints; it is NOT a theme scope. So the control is SOLID: near-black
+// `neutral` on Ember is the strong contrasting pair (the same one /platform's
+// pricing band uses). An `outline`/`ghost` button here would ink itself from the
+// LIGHT theme and land near-black on Ember. band.tsx, DESIGN.md §3.0.
+//
+// EMBER IS A DISPLAY GROUND, NOT A READING GROUND — the one hard constraint on
+// this band, and the first draft broke it. Measured in the browser, every
+// painted tone carries body text except this one: neutral 13.64:1, accent
+// 10.16:1, secondary 18.05:1 — and `primary` 4.13:1, which clears WCAG's
+// large-text bar (3.0) but fails the body bar (4.5). Large means 24px regular,
+// so an 18px lede and a 16px link on Ember both fail, which is exactly what the
+// first version of this band shipped.
+//
+// Hence: nothing here is smaller than `text-2xl` (24px) unless it is a solid
+// control painting its own foreground. The copy is short because it has to be —
+// which suits a closing ask anyway. A "See all plans" link used to sit beside
+// the button; it is gone rather than enlarged. At the moment of commitment a
+// second, quieter action is a distraction, and the FAQ directly below already
+// offers the other paths.
 function CrmPricing() {
   return (
-    <Section padding="lg">
-      <div
-        className={`flex flex-col gap-8 lg:flex-row ${M.bg} bg-soft border-base-300 items-center justify-between rounded-[14px] border p-10`}
-      >
-        <div className="flex flex-1 flex-col gap-3">
-          <div className="flex items-baseline gap-1.5">
-            <span className="text-[56px] font-medium tracking-[-0.025em]">$49</span>
-            <span className="text-md">/mo</span>
+    <Section surface="primary" padding="lg">
+      <div className="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center">
+        <div className="flex flex-1 flex-col gap-4">
+          <div className="flex items-baseline gap-2">
+            <span className="text-[clamp(56px,7vw,80px)] leading-none font-medium tracking-[-0.03em]">
+              $49
+            </span>
+            <span className="text-2xl">/mo</span>
           </div>
-          <p className="text-md max-w-[640px]">
-            A flat $49/mo — profiles, activity, segments, pipeline, tasks, and automation, with no
-            tiers, nothing extra when you hire someone, and nothing extra as your contact list
-            grows. It sits alongside your orders and content, so switch it on next to whatever you
-            already run. Free for 14 days, and we don&rsquo;t ask for a card to start.
+          <p className="max-w-[620px] text-2xl leading-[1.4]">
+            Everything on this page, flat. Nothing extra when you hire someone, nothing extra as
+            your list grows, and no tiers to compare. Free for fourteen days — we don&rsquo;t ask
+            for a card.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <a href="/pricing">
-            <Button size="lg" variant="outline">
-              See all plans →
-            </Button>
-          </a>
-          <Button color="primary" size="lg">
-            Activate CRM
-          </Button>
-        </div>
+        <Button color="neutral" size="xl">
+          Activate CRM →
+        </Button>
       </div>
     </Section>
   );
@@ -189,12 +285,15 @@ function CrmCta() {
       <div className="flex flex-col items-start gap-9">
         <Display size={88} lineHeight={84}>
           Know every customer cold
-          <Spark color={M.color} />
+          <Spark color={M.ink} />
         </Display>
+        {/* The ask. It does NOT re-explain the turn — beat 4 owns that, and the
+            phrase "no migration weekend" now lives there. What belongs here is
+            what it costs the reader to try, and what happens if they stop. */}
         <p className="max-w-[640px] text-lg">
-          Turn CRM on and your customers arrive with their whole history already attached — orders,
-          emails, quotes, conversations. No migration weekend, no contract; switch it off the day
-          you stop, and your data stays yours.
+          Fourteen days free, no card, and no contract at the end of it. Turn it off the day it
+          stops being worth $49 and your customers, their history and every note stay yours —
+          exportable in full, from a button, without asking anyone.
         </p>
         <div className="flex flex-wrap items-center gap-3">
           <Button color="module-crm" size="xl">

@@ -50,9 +50,12 @@ export function CrmAutomation() {
   return (
     <Section padding="lg">
       <SectionHeader
-        accent={M.color}
-        headline="When something changes, do the next thing"
-        lede="CRM shares triggers with the email automation engine. Pick the signal, pick the action — send an email, assign a rep, create a task, fire a webhook. No code, and it runs off the same events the timeline already records."
+        accent={M.ink}
+        // BEAT 5d — IT ACTS. Last and highest link in the chain: it stops
+        // waiting to be looked at. The lede's job is to make clear this runs on
+        // the SAME events beat 5a described, which is why the order matters.
+        headline="And then it does the next thing without being asked"
+        lede="Pick something that happens and pick what should follow it — send an email, hand the customer to someone, put a task on their list. It runs on the same events already landing on the timeline, so there is nothing extra to wire up and no code to write."
       />
       <div className="mt-[52px] flex flex-col gap-3.5">
         {rows.map((r) => (
@@ -97,7 +100,7 @@ function AutoCell({
       {/* "when" / "then" are field labels on the rule row — device chrome. */}
       <div className="font-mono text-sm">{label}</div>
       <div className="mt-[7px] flex items-center gap-[9px] text-sm font-medium">
-        <Dot color={getModuleColor(module).color} size={8} />
+        <Dot fill={getModuleColor(module).bg} size={8} />
         {text}
       </div>
     </div>
@@ -136,9 +139,13 @@ export function CrmCapabilities() {
   return (
     <Section surface="surface" padding="lg">
       <SectionHeader
-        accent={M.color}
-        headline="Everything a sales and support team needs"
-        lede="The record and the pipeline are the spine — these are the parts that make a day’s work actually move."
+        accent={M.ink}
+        // The inventory section, and honest about being one — it comes AFTER the
+        // story has finished rather than standing in for it. "Everything a sales
+        // and support team needs" was enterprise framing on a page written for
+        // owners of small businesses (docs/brain/business/audience.md).
+        headline="What else comes with it"
+        lede="The story above is the part worth reading. This is the rest of what turns up when you switch it on."
       />
       <div className="mt-[52px] grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {caps.map((c) => {
@@ -151,7 +158,7 @@ export function CrmCapabilities() {
               <span
                 className={`${hue.bg} bg-soft flex size-8 items-center justify-center rounded-lg`}
               >
-                <Dot color={hue.color} size={9} />
+                <Dot fill={hue.bg} size={9} />
               </span>
               <h3 className="text-lg font-medium tracking-[-0.01em]">{c.title}</h3>
               <p className="text-sm">{c.body}</p>

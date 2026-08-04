@@ -34,10 +34,12 @@ export interface PartnerCard {
   photoUrl: string | null;
 }
 
-/** A fuller record for the public profile route. */
+/** A fuller record for the public profile route — the card, plus the fields only
+ *  /partners/[slug] needs. (`headline` was declared here and never existed on
+ *  the Partner model or in any response; removed rather than left as a field a
+ *  future profile section could be built on and find permanently undefined.) */
 export interface PartnerProfile extends PartnerCard {
   locationCountry?: string | null;
-  headline?: string | null;
 }
 
 /** One facet value + its result count, as returned by the public facets block. */

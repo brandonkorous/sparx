@@ -36,7 +36,7 @@ export function CmsHero() {
     'sparx CMS is a calm, fast place to publish — a block editor, a media library, structured content, and SEO that does its homework. It runs standalone: a publisher, a docs site, or a portfolio needs no shop. Render it on a hosted sparx site, or pull it headless through the API.';
   const chips = ['standalone, no shop', 'structured content', 'SEO built in', 'REST + GraphQL'];
   return (
-    <section className={`${M.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
+    <section className={`${M.bg} bg-soft px-page pt-20 pb-28`}>
       <Container>
         <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
           <div className="min-w-0 flex-1">

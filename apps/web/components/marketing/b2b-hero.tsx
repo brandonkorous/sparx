@@ -23,7 +23,7 @@ export function B2bHero() {
     'sparx B2B is wholesale on the same engine as your retail orders — one catalog, one checkout, one customer record. Each business buyer logs in to their own price list, their net terms, and an RFQ-to-quote flow. Account pricing, credit limits, bulk POs, and fleet accounts — native, not a bolt-on. Pair the Scheduling module to book service against a fleet.';
   const chips = ['account price lists', 'net terms + credit', 'RFQ → quote', 'layered on commerce'];
   return (
-    <section className={`${M.bg} px-page pb-section-lg bg-soft pt-[clamp(56px,9vw,96px)]`}>
+    <section className={`${M.bg} px-page bg-soft pt-20 pb-28`}>
       <Container>
         <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
           <div className="min-w-0 flex-1">

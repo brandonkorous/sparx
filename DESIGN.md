@@ -1,8 +1,8 @@
 # sparx design language
 
-**Version:** 2.3
+**Version:** 2.4
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-02
+**Last Updated:** 2026-08-03
 
 ## Scope: one system
 
@@ -395,6 +395,87 @@ paired ink is the deep navy, measured 10.16:1. Check the band you picked before 
 
 If a band genuinely wants outline controls and freely-inked children, it doesn't want a painted tone.
 It wants `dark`, which _is_ a real `data-theme` island and re-resolves every token underneath it.
+
+### 2.5 The five layers — and the four-layer floor
+
+§2.4 is about the ORDER tones go in. This is about how many of them exist at all, and it is the rule
+to check first, because it is the only one in this document you can count.
+
+**There are five layers.** They are a depth stack: each one sits above the last.
+
+| #     | Layer                                             | What it is                                                                                       |
+| ----- | ------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
+| **1** | `bg-base-300`                                     | The ground. `#e6eaf2`, set on `body` — what a section shows when it paints nothing.              |
+| **2** | `bg-base-200`                                     | One step up. `#f3f5f9` — elevated, so it is inset and rounded like any other fill.               |
+| **3** | `bg-base-100`                                     | The lifted surface. White on the light theme; **near-black inside a `data-theme="dark"` scope.** |
+| **4** | `bg-primary` / `secondary` / `accent` / `neutral` | A painted semantic band. The strong statement.                                                   |
+| **5** | `bg-module-<slug>`                                | A module identity, at size.                                                                      |
+
+**`dark` is not a sixth layer.** It is layer 3 with the base ramp flipped — `bg-base-100` inside a
+theme scope. Counting it separately is how a page convinces itself it has four layers when it has
+three.
+
+**The floor: every page carries at least one section of EACH of layers 1, 2, 3 and 4.**
+
+Not "any four of the five" — **1 through 4 are each mandatory.** The floor is not a total to reach by
+any route; it names which layers specifically.
+
+**And on a module page, layer 5 is mandatory too — one section painted in that module's own hue, on
+top of 1–4.** A page that exists to sell Commerce or CRM and never once paints a section in that
+module's colour has left its own identity to badges and spark glyphs. Five layers is the floor for
+`/commerce`, `/crm`, `/cms`, `/b2b`, `/email`, `/builder` and the rest; four is the floor for
+everything else (`/pricing`, `/partners`, `/customers`, `/for/*`, the tool pages).
+
+Layer 5 is a fill at section scale, which is the one place a module hue works unreservedly — as ink
+on a light band the same colour measures ~2.2:1 and is unusable. See §1.2 and the `soft` defect in
+§7.1.
+
+That distinction is the whole point, because layers 1–3 are all greys. A page can reach a count of
+four with 1 + 2 + 3 + a dark island and still be the monochrome screen RULE #4 exists to prevent —
+which is not hypothetical, it is exactly what `/commerce` was when it got called monotone. **Layer 4
+is not optional and cannot be substituted by a dark band.** If a page has no painted semantic
+section, it fails, whatever else it has.
+
+**Why layers and not just "more colour."** Depth is what makes a page read as built rather than
+assembled. A single flat plane with different-coloured text on it reads as a document; sections that
+sit at visibly different heights read as a product, because the eye gets structure before it gets
+words. It also makes every other rule easier: a card needs a surface to lift off, a painted band
+needs a ground to float on, and a photograph needs an edge to end at.
+
+#### The hero is layer 4, and its bottom rounds
+
+**A hero is a painted band** — layer 4. It is the page's opening statement and the one section
+guaranteed to be seen, so it is where the mandatory painted layer most naturally lands. A hero that
+paints layer 3 (including a `dark` island, which IS layer 3) has spent the most valuable section on
+the site without moving the page off grey.
+
+**Flush kills the top radius and the inset. It does not kill the bottom.** The top is flush because a
+page's first band sits directly under the nav and insetting it opens a stripe of ground between the
+header and the content. The bottom has no such excuse: **a hero is a layer, and a layer has to end.**
+Square-bottomed it runs hard into the rounded section beneath it and reads as the one band nobody
+finished. `FLUSH_SHAPE` in [band.tsx](apps/web/components/marketing/band.tsx) is `rounded-b-4xl` and
+both section shells apply it.
+
+**The one exception — same layer below.** If the section immediately under the hero is the SAME
+layer, there is no boundary to draw: the two are one continuous plane, and the rounding belongs to
+the next section down, where the layer actually changes. That is why the landing page's hero is
+square-bottomed. Opt out with `className="rounded-b-none"`, and only for that reason.
+
+**How to count.** Per top-level section, take the layer it PAINTS — not what it inherits, and not the
+`data-theme` it sits in. Then check for a gap:
+
+- **Missing 4** → the page is grey, whatever its section count. This is the common failure.
+- **Missing 5 on a module page** → the module's identity is riding on badges and sparks alone.
+- **Missing 1 or 2** → usually means every section is painting something; the page has no ground for
+  anything to sit on, and the cards stop reading as cards.
+- **Every section painted** → the opposite failure. Paint is rationed — see §2.4's one-or-two-per-page.
+
+Measured at the time of writing:
+
+| Page        | Layers present             | Verdict                                                           |
+| ----------- | -------------------------- | ----------------------------------------------------------------- |
+| `/commerce` | 1, 2, 3, 4×2 (cyan, ember) | Passes 1–4. **Missing 5** — no section in Commerce orange.        |
+| `/crm`      | 1, 2, 3                    | **Fails.** No layer 4, no layer 5. Three greys and a dark island. |
 
 ---
 

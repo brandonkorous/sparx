@@ -92,10 +92,17 @@
   --gutter-page: clamp(20px, 5vw, 80px);
   --container-max: 1280px;
 
-  /* Section vertical rhythm */
-  --section-py-md: clamp(56px, 9vw, 96px);
-  --section-py-lg: clamp(72px, 11vw, 140px);
-  --section-py-xl: clamp(80px, 12vw, 160px);
+  /* Section vertical rhythm USED to live here as three hand-written clamps
+     (`--section-py-md/lg/xl`). They are deleted: they were a private spacing
+     vocabulary that only sections could reach, so a section scaled with the
+     viewport while every card, grid and gap inside it stayed fixed.
+
+     Tailwind v4 builds its whole numeric scale off one multiplier — `.py-28` is
+     `calc(var(--spacing) * 28)` — so re-pointing `--spacing` per breakpoint
+     scales EVERY spacing utility together. apps/web does that in its globals.css
+     and sections now use `py-20` / `py-28` / `py-32`. `--gutter-page` above stays
+     a token: it is a horizontal inset tied to the container, and its continuous
+     `5vw` term is not something a stepped multiplier reproduces. */
 
   /* Marketing display type — scales fluidly from phone to desktop */
   --display-hero: clamp(48px, 10vw, 120px); /* Hero headline */

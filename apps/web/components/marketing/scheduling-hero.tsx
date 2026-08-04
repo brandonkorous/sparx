@@ -48,7 +48,7 @@ export function SchedulingHero() {
     'Appointments, classes, reservations, and rentals run on one booking engine — with deposits, reminders, waitlists, and policies built in. Because it lives on sparx, every booking writes to the customer you already have: the deposit, the reminder, the no-show, the re-book all land in one system, not five disconnected tools.';
   const chips = ['appointments', 'classes', 'reservations', 'rentals'];
   return (
-    <section className={`${M.bg} bg-soft px-page pb-section-lg pt-[clamp(56px,9vw,96px)]`}>
+    <section className={`${M.bg} bg-soft px-page pt-20 pb-28`}>
       <Container>
         <div className="flex flex-col items-center gap-[clamp(40px,6vw,72px)] lg:flex-row">
           <div className="min-w-0 flex-1">

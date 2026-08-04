@@ -102,11 +102,7 @@ const ASSETS: Asset[] = [
 
 export function DownloadsSection() {
   return (
-    <section
-      id="downloads"
-      data-theme="dark"
-      className="px-page py-section-xl bg-base-100 scroll-mt-20"
-    >
+    <section id="downloads" data-theme="dark" className="px-page bg-base-100 scroll-mt-20 py-32">
       <Container className="flex flex-col gap-14">
         <div className="flex max-w-[760px] flex-col gap-6">
           <Display size={72} lineHeight={68}>

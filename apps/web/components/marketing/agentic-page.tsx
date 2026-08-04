@@ -70,7 +70,7 @@ function AiHero() {
   // the rest of the site. The spark flips to `--color-neutral-content` so the
   // brand accent still reads against its own color. No hexes on either axis.
   return (
-    <section className={`${AI.bg} px-page pb-section-lg text-neutral pt-[clamp(56px,9vw,96px)]`}>
+    <section className={`${AI.bg} px-page text-neutral pt-20 pb-28`}>
       <Container className="flex flex-col gap-10">
         <div className="flex max-w-[1100px] flex-col gap-2">
           <Display as="h1" size={104} lineHeight={96} color="currentColor">

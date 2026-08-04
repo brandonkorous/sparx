@@ -54,7 +54,7 @@ const HAS_PAGE = new Set<string>(MODULE_ORDER);
  * No section is lifted from the home page's sections.
  *
  * Built on silicaui + Tailwind utilities via the shared `<Band>` shell — no
- * `primitives.tsx` layout components, no `px-page` / `py-section-*` vars, no
+ * `primitives.tsx` layout components, no `px-page` / section-rhythm vars, no
  * inline `style` and no literal hex. Dark bands are real `data-theme` islands,
  * so everything inside resolves its own ink rather than being painted.
  */

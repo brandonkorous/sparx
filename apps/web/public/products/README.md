@@ -9,14 +9,19 @@ One file per product in [`apps/web/lib/example-businesses.ts`](../../lib/example
 the filename matches the `image` field on that product. Adding a product to a
 business means adding a file here.
 
-## Scope — read before adding more
+## Scope
 
-These are **device fixtures**, not marketing photography. They only ever appear
-inside a rendered mockup of the product, at ~32px square. sparx marketing pages
-carry no stock photography as a design element, deliberately: generic stock
-imagery is the house look the brand rules exist to avoid (see `DESIGN.md` and the
-no-gradients / no-slop rules in `CLAUDE.md`). If you want an image in a marketing
-_layout_, that is a design decision to raise, not a file to drop in here.
+These are **device fixtures**: product thumbnails that appear inside a rendered
+mockup of the software, at ~32px square. That is all this directory is for.
+
+Marketing photography — real photographs used in the page layout itself — is a
+separate and equally deliberate thing, and it lives in
+[`../scenes/`](../scenes/README.md) behind the shared `<PhotoBand>` section.
+An earlier version of this file claimed the marketing pages carry no photography
+by design. **That was wrong and has been reversed:** pages built only from type,
+colour and UI mockups ask a visitor to read their way to the point, and most
+won't. The rule that still stands is about the KIND of photograph — real people
+doing real work, never generic business stock — not about whether to use any.
 
 ## Source & licence
 

@@ -145,7 +145,7 @@ export default async function BootcampDetailPage({
       </section>
 
       {/* Body — description + sticky registration card. */}
-      <section className="bg-base-200 px-page py-section-lg">
+      <section className="bg-base-200 px-page py-28">
         <Container>
           <div className="mkt-detail-grid">
             <div

@@ -33,7 +33,7 @@ function ModuleHero({ meta, color }: { meta: ModuleMeta; color: ModuleColor }) {
   return (
     // Not <Section>: the hero's top pad is a tighter fluid clamp than the shared
     // section rhythm, so it owns its own band.
-    <section className="bg-base-200 px-page pb-section-lg pt-[clamp(56px,9vw,96px)]">
+    <section className="bg-base-200 px-page pt-20 pb-28">
       <div className="max-w-content mx-auto flex w-full flex-col gap-10">
         <div className="flex max-w-[1100px] flex-col gap-2">
           <Display as="h1" size={104} lineHeight={96}>
