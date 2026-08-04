@@ -125,6 +125,16 @@ export type EventType =
   | 'subscription.paused'
   | 'subscription.resumed'
   | 'subscription.cancelled'
+  // The renewal charge needs the cardholder to authenticate with their bank
+  // (3-D Secure on a merchant-initiated charge). NOT a payment failure — the
+  // card is good and the customer is willing, they just have to tap Confirm.
+  // Its own event because the email has to ask for something different.
+  | 'subscription.authentication_required'
+  // The renewal was billed rather than charged: an order plus a payment link,
+  // for a gateway that cannot hold a card on file and for accounts on terms
+  // (docs/142 §8). An outstanding invoice is accounts receivable, so this is
+  // deliberately not `payment_failed`.
+  | 'subscription.invoiced'
   // Returns / RMA
   | 'return.requested'
   | 'return.approved'

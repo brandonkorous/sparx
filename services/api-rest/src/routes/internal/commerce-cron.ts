@@ -11,6 +11,10 @@
 //     by the client-confirm race (BUG-002): a card OrderPayment left `pending` whose
 //     gateway intent already `succeeded`. Idempotent; a real-time capture (Part A) +
 //     webhook cover the common cases, so this only ever catches the rare straggler.
+//   • POST /internal/commerce/subscription-tick        → bills what is due (docs/142):
+//     creates each due renewal order, charges the customer's saved card off-session,
+//     and walks the dunning ladder for anything that failed. Accepts `?asOf=` to
+//     dry-run a future date and `?limit=` to cap the per-tenant batch.
 //
 // Per-tenant loops are sequential to keep DB load predictable. Commerce
 // reaper runs every minute on a tight loop because the impact of a stuck
@@ -80,6 +84,22 @@ function parseDays(raw: unknown): number | undefined {
   return Number.isFinite(n) && n > 0 ? n : undefined;
 }
 
+function parsePositiveInt(raw: unknown): number | undefined {
+  if (typeof raw !== 'string') return undefined;
+  const n = Number.parseInt(raw, 10);
+  return Number.isFinite(n) && n > 0 ? n : undefined;
+}
+
+/** An explicit `asOf` override, or undefined to bill against the real clock.
+ *  Garbage falls through to the default rather than erroring a cron run —
+ *  but note that a VALID date here bills real customers as of that date, which
+ *  is why the cron itself never sends one. */
+function parseIsoDate(raw: unknown): string | undefined {
+  if (typeof raw !== 'string') return undefined;
+  const parsed = new Date(raw);
+  return Number.isNaN(parsed.getTime()) ? undefined : parsed.toISOString();
+}
+
 const commerceCronRoutes: FastifyPluginAsync = (app) => {
   app.post('/internal/commerce/reservation-reaper', async (request) => {
     authorize(request);
@@ -110,6 +130,23 @@ const commerceCronRoutes: FastifyPluginAsync = (app) => {
     );
     return { success: true, data: summary };
   });
+
+  app.post<{ Querystring: { asOf?: string; limit?: string } }>(
+    '/internal/commerce/subscription-tick',
+    async (request) => {
+      authorize(request);
+      const asOf = parseIsoDate(request.query.asOf);
+      const limit = parsePositiveInt(request.query.limit);
+      const summary = await forEachActiveTenant((tenantId) =>
+        commerceSchedulers.runSubscriptionTick({
+          tenantId,
+          ...(asOf ? { asOf } : {}),
+          ...(limit !== undefined ? { limit } : {}),
+        })
+      );
+      return { success: true, data: summary };
+    }
+  );
 
   return Promise.resolve();
 };

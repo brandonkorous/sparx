@@ -34,6 +34,10 @@ function capabilityPhrases(gateway: GatewayDescriptor): string[] {
   if (gateway.capabilities.refunds) phrases.push('Refunds');
   if (gateway.capabilities.capture) phrases.push('Charge when you ship');
   if (gateway.capabilities.paymentLinks) phrases.push('Payment links on invoices');
+  // Worth saying out loud on the picker: whether a processor can run subscriptions
+  // is the one capability here a business can only discover AFTER committing to it,
+  // and the answer changes which gateway they should pick.
+  if (gateway.capabilities.storedMethods) phrases.push('Subscriptions and auto-ship');
   return phrases;
 }
 

@@ -25,6 +25,7 @@ const NAV: AccountNavItem[] = [
   { label: 'Bookings', href: '/account/bookings' },
   { label: 'Wishlist', href: '/account/wishlist' },
   { label: 'Addresses', href: '/account/addresses' },
+  { label: 'Payment methods', href: '/account/payment-methods' },
   { label: 'Profile', href: '/account/profile' },
   { label: 'B2B Account', href: '/account/b2b' },
 ];

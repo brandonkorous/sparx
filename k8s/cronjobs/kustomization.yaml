@@ -9,6 +9,8 @@ resources:
   - commerce-reservation-reaper.yaml
   - commerce-revenue-rollup.yaml
   - commerce-payment-reconcile-sweep.yaml
+  # Without this, a subscription can be created but never charges anyone.
+  - commerce-subscription-tick.yaml
   - invoicing-collected-rollup.yaml
   - dropship-orders-rollup.yaml
   - automation-runs-rollup.yaml

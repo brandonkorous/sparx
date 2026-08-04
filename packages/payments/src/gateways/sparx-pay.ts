@@ -9,18 +9,29 @@ import type Stripe from 'stripe';
 import { getPlatformStripe } from '../client';
 import { sparxPayFeeCents } from '../fee';
 import type {
+  ChargeStoredMethodParams,
+  CompleteVaultParams,
   CreatePaymentIntentParams,
   CreatePaymentLinkParams,
+  CreateSetupSessionParams,
   PaymentGateway,
   PaymentIntent,
   PaymentResult,
   ParsedWebhookEvent,
   RefundParams,
   RefundResult,
+  SetupSession,
+  StoredChargeResult,
+  VaultedMethod,
   WebhookEvent,
 } from '../gateway';
 import { credentialRef, getPaymentSecretReader } from '../secrets';
 import { normalizeStripeEvent, toPaymentIntent, toPaymentResult } from '../stripe-util';
+import {
+  chargeStripeStoredMethod,
+  completeStripeVault,
+  createStripeSetupSession,
+} from '../stripe-vault';
 import { constructEventWithAnySecret, parseWebhookSecrets } from '../webhook-secrets';
 
 export const SPARX_PAY_ID = 'sparx_pay';
@@ -157,6 +168,34 @@ export class SparxPayGateway implements PaymentGateway {
     });
 
     return session.url;
+  }
+
+  // ── Stored methods (docs/142 §5) ───────────────────────────────────────────
+  // The Customer and PaymentMethod live on the PLATFORM account, same as the
+  // charge does — sparx Pay is destination charges, so the money is routed at
+  // charge time rather than the card being held by the merchant. The storefront
+  // already loads Stripe.js with the platform publishable key, so no per-request
+  // key is needed here (unlike stripe_direct).
+
+  async createSetupSession(params: CreateSetupSessionParams): Promise<SetupSession> {
+    return createStripeSetupSession(this.platform(), params);
+  }
+
+  completeVault(params: CompleteVaultParams): Promise<VaultedMethod | null> {
+    return completeStripeVault(this.platform(), params.setupRef);
+  }
+
+  async chargeStoredMethod(params: ChargeStoredMethodParams): Promise<StoredChargeResult> {
+    const destination = await this.merchantAccountId(params.tenantId);
+    // The same destination-charge shape createPaymentIntent uses: the renewal
+    // settles to the merchant and sparx's flat fee comes off it. A subscription
+    // charge is not a different KIND of payment, so it must not earn different
+    // economics by taking a different code path.
+    return chargeStripeStoredMethod(this.platform(), params, {
+      on_behalf_of: destination,
+      transfer_data: { destination },
+      application_fee_amount: sparxPayFeeCents(params.amount),
+    });
   }
 
   /** Every secret configured for this endpoint. Comma-separated because ONE URL takes

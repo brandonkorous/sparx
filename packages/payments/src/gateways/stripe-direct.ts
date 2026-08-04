@@ -6,19 +6,30 @@ import type Stripe from 'stripe';
 
 import { stripeForKey } from '../client';
 import type {
+  ChargeStoredMethodParams,
+  CompleteVaultParams,
   CreatePaymentIntentParams,
   CreatePaymentLinkParams,
+  CreateSetupSessionParams,
   PaymentGateway,
   PaymentIntent,
   PaymentResult,
   ParsedWebhookEvent,
   RefundParams,
   RefundResult,
+  SetupSession,
+  StoredChargeResult,
+  VaultedMethod,
   WebhookEvent,
 } from '../gateway';
 import { getGatewayCredentialReader } from '../credentials';
 import { credentialRef, getPaymentSecretReader } from '../secrets';
 import { normalizeStripeEvent, toPaymentIntent } from '../stripe-util';
+import {
+  chargeStripeStoredMethod,
+  completeStripeVault,
+  createStripeSetupSession,
+} from '../stripe-vault';
 
 export const STRIPE_DIRECT_ID = 'stripe_direct';
 
@@ -154,6 +165,28 @@ export class StripeDirectGateway implements PaymentGateway {
       metadata: { tenantId: params.tenantId, invoiceId: params.invoiceId },
     });
     return session.url;
+  }
+
+  // ── Stored methods (docs/142 §5) ───────────────────────────────────────────
+  // Everything happens on the merchant's OWN account, so the browser needs the
+  // merchant's publishable key here for the same reason createPaymentIntent
+  // ships it: a client secret is only confirmable by the Stripe.js instance
+  // loaded with the key of the account that issued it.
+
+  async createSetupSession(params: CreateSetupSessionParams): Promise<SetupSession> {
+    const stripe = await this.stripeFor(params.tenantId);
+    const publishableKey = await this.optionalCred(params.tenantId, 'publishable_key');
+    return createStripeSetupSession(stripe, params, publishableKey);
+  }
+
+  async completeVault(params: CompleteVaultParams): Promise<VaultedMethod | null> {
+    return completeStripeVault(await this.stripeFor(params.tenantId), params.setupRef);
+  }
+
+  async chargeStoredMethod(params: ChargeStoredMethodParams): Promise<StoredChargeResult> {
+    // No on_behalf_of, no application_fee — this IS the merchant's account, same
+    // as every other charge on this gateway.
+    return chargeStripeStoredMethod(await this.stripeFor(params.tenantId), params);
   }
 
   // Webhook verification needs the tenant's secret, which the raw body doesn't carry

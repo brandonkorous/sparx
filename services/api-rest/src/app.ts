@@ -110,6 +110,7 @@ import publicCartRoutes from './routes/v1/public/cart.js';
 import publicCheckoutRoutes from './routes/v1/public/checkout.js';
 import publicReviewRoutes from './routes/v1/public/reviews.js';
 import publicAccountRoutes from './routes/v1/public/account.js';
+import publicPaymentMethodRoutes from './routes/v1/public/payment-methods.js';
 import publicAuthRoutes from './routes/v1/public/auth.js';
 import publicSiteSnapshotRoutes from './routes/v1/public/site-snapshot.js';
 import publicSiteRoutes from './routes/v1/public/site.js';
@@ -855,6 +856,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(publicMarketRoutes);
   await app.register(publicReviewRoutes);
   await app.register(publicAccountRoutes);
+  await app.register(publicPaymentMethodRoutes);
   await app.register(publicAuthRoutes);
   await app.register(publicB2bPortalRoutes);
   await app.register(publicEstimateRoutes);

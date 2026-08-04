@@ -1,8 +1,20 @@
-// Commerce — Subscriptions (auto-ship). First-class recurring orders for
-// dogfood / diesel-additive / supplement merchants. SubscriptionBilling
-// provider (Stripe by default) drives the actual charge schedule; the
-// subscription-billing-worker advances Sparx state on the back of
-// provider webhook events.
+// Commerce — Subscriptions (auto-ship). First-class recurring orders: a coffee
+// roaster's monthly bag, a clinic's supplement refill, a distributor's standing
+// pallet order.
+//
+// SPARX OWNS THE SCHEDULE (docs/142). The tick finds what is due, creates the
+// renewal order, and charges the customer's vaulted method off-session through
+// whichever gateway the tenant connected — Stripe, Square, Authorize.net, or a
+// payment link when the gateway cannot vault.
+//
+// This header used to say the opposite: that a `SubscriptionBilling` provider
+// (Stripe Billing) drove the charge schedule and a `subscription-billing-worker`
+// mirrored it back off webhooks. Neither was ever built, and the design was wrong
+// for this table anyway — it is the PLATFORM billing pattern (73-billing.prisma,
+// WizeWorks charging tenants) copied one file too far. That one works because
+// there is exactly one merchant: us. Here there is one per tenant, each with
+// their own processor, so delegating the schedule would lock recurring revenue
+// to Stripe and strand every other gateway. See docs/142 §1.
 
 model Subscription {
   id         String @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
@@ -14,13 +26,17 @@ model Subscription {
   status String @default("active") @db.VarChar(20)
   // ^ trialing | active | past_due | paused | cancelled
 
-  // Provider linkage — slug + provider's internal schedule ref.
+  // Which gateway collects this — a `GATEWAY_CATALOG` id (`sparx_pay`,
+  // `stripe_direct`, …). The two `…Ref` columns are the gateway's own
+  // identifiers, kept for reconciliation and for the day a tenant switches
+  // processors; sparx does NOT read a schedule out of them (docs/142 §1).
   providerSlug        String  @map("provider_slug") @db.VarChar(63)
   providerCustomerRef String? @map("provider_customer_ref") @db.VarChar(255)
   providerScheduleRef String? @map("provider_schedule_ref") @db.VarChar(255)
 
-  // Schedule shape — the worker reads these to compute next occurrences
-  // when the provider doesn't drive the cadence.
+  // Schedule shape. This IS the cadence — `computeNextOccurrence` reads it on
+  // every tick to set the next `nextOccurrenceAt`. Nothing else decides when a
+  // subscription bills.
   intervalUnit        String    @map("interval_unit") @db.VarChar(10) // day | week | month | year
   intervalCount       Int       @map("interval_count")
   deliveriesPerCycle  Int       @default(1) @map("deliveries_per_cycle")
@@ -43,6 +59,19 @@ model Subscription {
   pausedUntil        DateTime? @map("paused_until") @db.Timestamptz
   cancelledAt        DateTime? @map("cancelled_at") @db.Timestamptz
 
+  // How this subscription collects (docs/142 §8):
+  //   card    — charge `paymentMethod` off-session on each occurrence
+  //   invoice — create the order and email a payment link; the customer pays it
+  // Invoice mode is not a degraded card mode. It is what a gateway without a
+  // vault gets, AND what a wholesale account on terms wants: a standing order
+  // that bills rather than auto-charges. An unpaid invoice is accounts
+  // receivable, never `past_due`.
+  billingMode     String  @default("card") @map("billing_mode") @db.VarChar(10)
+  // The vaulted method that renews this. Null is valid on `invoice`; null on
+  // `card` is the state the API refuses to create (docs/142 D7) — it is exactly
+  // how a subscription used to be creatable that could never charge anyone.
+  paymentMethodId String? @map("payment_method_id") @db.Uuid
+
   // Dunning policy override per subscription; null = use tenant default.
   dunningPolicy Json? @map("dunning_policy")
 
@@ -51,6 +80,10 @@ model Subscription {
 
   tenant   Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
   customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  // Restrict, not SetNull: removing the card an active subscription renews on
+  // must fail loudly at the point of removal, not silently break the next
+  // renewal a month later where nobody is watching.
+  paymentMethod CustomerPaymentMethod? @relation(fields: [paymentMethodId], references: [id], onDelete: Restrict)
 
   items           SubscriptionItem[]
   events          SubscriptionEvent[]
@@ -113,9 +146,11 @@ model SubscriptionEvent {
   @@map("commerce_subscription_events")
 }
 
-// Per-subscription retry attempt log. The subscription-billing-worker
-// reads the tail of this to decide whether to retry, escalate, or
-// follow the policy's finalOutcome.
+// Per-subscription retry attempt log. The subscription tick reads the tail of
+// this to decide whether to retry, escalate, or apply the policy's
+// finalOutcome — `nextRetryAt` on the newest row IS the retry schedule, which
+// is why the tick queries due retries alongside due occurrences rather than
+// running a second scheduler (docs/142 §6).
 
 model DunningAttempt {
   id             String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid

@@ -3,7 +3,12 @@
 
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
-import { providerService, returnService, subscriptionService } from '@sparx/commerce';
+import {
+  paymentMethodService,
+  providerService,
+  returnService,
+  subscriptionService,
+} from '@sparx/commerce';
 import { ok, paged } from '@sparx/api-core/envelope';
 import { requireRole } from '@sparx/api-core/auth';
 import { requireCommerceModule, toCommerceContext } from '../../../lib/commerce-context.js';
@@ -222,6 +227,32 @@ const providerRoutes: FastifyPluginAsync = async (app) => {
     const body = (request.body as Record<string, unknown>) ?? {};
     await subscriptionService.cancel(toCommerceContext(request), { ...body, subscriptionId: id });
     return ok({ id, cancelled: true });
+  });
+
+  // A customer's saved cards, operator-side. Feeds the "use a different card"
+  // picker on a repeat order — without it an operator can see that a card is
+  // expired but has nothing to switch it to.
+  app.get('/v1/commerce/customers/:id/payment-methods', async (request) => {
+    requireRole(request, 'viewer');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    const methods = await paymentMethodService.list(toCommerceContext(request), id);
+    return ok({ methods });
+  });
+
+  // Repoint a repeat order at a different saved card, or switch it to invoicing
+  // (docs/142). The operator-side fix for an expired card — the alternative is
+  // cancelling a paying customer and re-selling them.
+  app.post('/v1/commerce/subscriptions/:id/payment-method', async (request) => {
+    requireRole(request, 'editor');
+    await requireCommerceModule(request);
+    const { id } = PathId.parse(request.params);
+    const body = (request.body as Record<string, unknown>) ?? {};
+    await subscriptionService.changePaymentMethod(toCommerceContext(request), {
+      ...body,
+      subscriptionId: id,
+    });
+    return ok({ id, updated: true });
   });
 };
 

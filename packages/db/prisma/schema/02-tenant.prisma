@@ -269,10 +269,11 @@ model Tenant {
   checkoutSessions CheckoutSession[]
 
   // Commerce module — subscriptions
-  subscriptions      Subscription[]
-  subscriptionItems  SubscriptionItem[]
-  subscriptionEvents SubscriptionEvent[]
-  dunningAttempts    DunningAttempt[]
+  subscriptions          Subscription[]
+  subscriptionItems      SubscriptionItem[]
+  subscriptionEvents     SubscriptionEvent[]
+  dunningAttempts        DunningAttempt[]
+  customerPaymentMethods CustomerPaymentMethod[]
 
   // Commerce module — reviews + Q&A + wishlists
   productReviews       ProductReview[]

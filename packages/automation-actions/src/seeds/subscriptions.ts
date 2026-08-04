@@ -59,6 +59,41 @@ export const SUBSCRIPTION_PAYMENT_FAILED_EMAIL: SystemAutomationSpec = {
   status: 'active',
 };
 
+export const SUBSCRIPTION_AUTHENTICATION_REQUIRED_EMAIL: SystemAutomationSpec = {
+  name: 'Subscription payment needs confirming — email',
+  description:
+    'Emails the customer when their bank asks them to confirm a renewal payment, so a good card is not mistaken for a failed one.',
+  trigger: { kind: 'event', eventType: 'subscription.authentication_required' },
+  conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: {
+        builderEmailKey: 'subscription-authentication-required',
+        emailType: 'transactional',
+      },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
+export const SUBSCRIPTION_INVOICE_EMAIL: SystemAutomationSpec = {
+  name: 'Subscription invoice — email',
+  description:
+    'Emails the customer the bill for a repeat order that is invoiced rather than charged to a saved card.',
+  trigger: { kind: 'event', eventType: 'subscription.invoiced' },
+  conditions: { logic: 'AND', conditions: [{ field: 'customer.email', operator: 'is_set' }] },
+  actions: [
+    {
+      type: 'email.send_campaign',
+      config: { builderEmailKey: 'subscription-invoice', emailType: 'transactional' },
+    },
+  ],
+  locked: false,
+  status: 'active',
+};
+
 export const SUBSCRIPTION_PAUSED_EMAIL: SystemAutomationSpec = {
   name: 'Subscription paused — email',
   description: 'Emails the customer when their subscription is paused.',

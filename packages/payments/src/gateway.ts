@@ -139,6 +139,130 @@ export interface CreatePaymentLinkParams {
   successUrl: string;
 }
 
+/* ── Stored payment methods (docs/142 §5) ─────────────────────────────────────
+ *
+ * Everything above assumes the customer is present: they are on the page, a card
+ * form is mounted, and they click. A subscription renewal is the opposite — it
+ * fires at 3am on a schedule with nobody watching. That needs two things the
+ * interface above cannot express: vaulting a method for later, and charging one
+ * without a browser in the loop.
+ *
+ * Gateways declare whether they can do this via `capabilities.storedMethods`;
+ * both methods below are optional on the interface and required when it is true.
+ */
+
+export interface CreateSetupSessionParams {
+  tenantId: string;
+  /** The sparx customer this method will belong to. */
+  customerId: string;
+  /** The gateway-side customer to attach to, when one already exists for this
+   *  shopper. Omitted on the first vault — the adapter creates one and returns
+   *  it, and the caller persists it for next time. */
+  customerRef?: string;
+  /** Shown by hosted setup pages so the shopper knows what they are agreeing to. */
+  description?: string;
+  /** Where a hosted (redirect-style) setup page returns the shopper. */
+  returnUrl?: string;
+  metadata?: Record<string, string>;
+}
+
+export interface SetupSession {
+  /** For inline gateways: the client secret the browser's card element confirms
+   *  against. Null for redirect gateways. */
+  clientSecret: string | null;
+  /** For redirect gateways: the hosted page that collects the card. Null for
+   *  inline. Exactly one of these two is set. */
+  redirectUrl: string | null;
+  /** The publishable/client key the BROWSER must mount with, when it is not the
+   *  platform's own — same reason as `PaymentIntent.publishableKey`: a client
+   *  secret is only confirmable by the SDK loaded with the key of the account
+   *  that issued it. */
+  publishableKey?: string;
+  /** The gateway-side customer this session vaults onto. Persist it: an
+   *  off-session charge needs the (customer, method) pair, not the method alone. */
+  customerRef: string;
+  /** The gateway's own id for the setup attempt, for reconciliation. */
+  setupRef: string;
+}
+
+/** What the gateway knows about a method once it is vaulted — display metadata
+ *  plus the token. `methodRef` is the only field that can charge anything, and
+ *  it is useless outside the gateway that minted it. */
+export interface VaultedMethod {
+  methodRef: string;
+  customerRef: string;
+  brand: string | null;
+  last4: string | null;
+  expMonth: number | null;
+  expYear: number | null;
+}
+
+/**
+ * Finishing a vault, in the two shapes real gateways actually use.
+ *
+ * Stripe creates a SetupIntent server-side, the browser confirms it, and we read
+ * the result back by its id — so `setupRef` carries everything. Square and
+ * Authorize.net have no such object: their browser SDK hands back a single-use
+ * card token which the SERVER then exchanges for a stored card, so `token` is
+ * the payload and `setupRef` means nothing.
+ *
+ * Both are optional because which one is populated is the adapter's business.
+ * An adapter reads the field it needs and ignores the other.
+ */
+export interface CompleteVaultParams {
+  tenantId: string;
+  /** The sparx customer, for gateways that create their customer at this step. */
+  customerId: string;
+  /** Stripe: the SetupIntent id returned by `createSetupSession`. */
+  setupRef?: string;
+  /** Square / Authorize.net: the single-use card token from the browser SDK. */
+  token?: string;
+  /** The gateway-side customer to attach to, when one is already known. */
+  customerRef?: string;
+}
+
+export interface ChargeStoredMethodParams {
+  tenantId: string;
+  /** Amount in cents. */
+  amount: number;
+  currency: string;
+  methodRef: string;
+  customerRef: string | null;
+  orderId?: string;
+  customerId?: string;
+  /** Derived from (subscription, occurrence, attempt) by the caller. A retried
+   *  HTTP request to the gateway must not become a second charge, and sparx
+   *  crashing mid-request must not either. */
+  idempotencyKey: string;
+  /** Where to send the shopper if the issuer demands authentication. */
+  returnUrl?: string;
+  metadata?: Record<string, string>;
+}
+
+export interface StoredChargeResult {
+  /** `requires_action` is NOT a decline — the issuer wants the cardholder to
+   *  authenticate (3-D Secure on a merchant-initiated charge). Treating it as a
+   *  failure would cancel healthy subscriptions, so it is its own outcome. */
+  status: 'succeeded' | 'failed' | 'requires_action';
+  /** The gateway charge / intent id, when one was created. */
+  paymentRef: string | null;
+  /** Set on `requires_action` when the GATEWAY hosts the confirmation page. */
+  actionUrl?: string;
+  /** Set on `requires_action` when the confirmation happens on a sparx page
+   *  instead (Stripe's 3-D Secure is confirmed by Stripe.js against this client
+   *  secret). The caller composes the customer-facing URL, because the adapter
+   *  has no idea what the tenant's storefront is called. */
+  actionSecret?: string;
+  failureCode?: string;
+  failureReason?: string;
+  /** True when the gateway says the method is PERMANENTLY dead — card closed,
+   *  account revoked, mandate withdrawn — rather than transiently declined.
+   *  Retrying a dead card three times over five days earns three more decline
+   *  fees and three more emails, so this skips the ladder and asks for a new
+   *  card instead. */
+  methodDead?: boolean;
+}
+
 export interface PaymentGateway {
   /** Stable id: 'sparx_pay' | 'stripe_direct' | 'paypal' | 'square' | 'custom'. */
   readonly id: string;
@@ -154,6 +278,22 @@ export interface PaymentGateway {
 
   /** Hosted payment link for invoices. Returns null when the gateway can't host one. */
   createPaymentLink(params: CreatePaymentLinkParams): Promise<string | null>;
+
+  // Stored payment methods — present iff `capabilities.storedMethods` is true
+  // for this gateway in GATEWAY_CATALOG. Callers reach them through
+  // paymentService, which checks the capability and raises a clear error rather
+  // than letting an undefined method throw.
+
+  /** Begin vaulting a method. The card is collected by the GATEWAY's element,
+   *  never by sparx. */
+  createSetupSession?(params: CreateSetupSessionParams): Promise<SetupSession>;
+
+  /** Turn a completed setup into a stored method — the display metadata plus the
+   *  token to persist. Returns null when the shopper never finished. */
+  completeVault?(params: CompleteVaultParams): Promise<VaultedMethod | null>;
+
+  /** Charge a vaulted method with the customer absent (merchant-initiated). */
+  chargeStoredMethod?(params: ChargeStoredMethodParams): Promise<StoredChargeResult>;
 
   // Webhook handling.
   parseWebhook(event: WebhookEvent): Promise<ParsedWebhookEvent>;

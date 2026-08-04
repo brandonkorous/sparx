@@ -149,9 +149,20 @@ export function SubscriptionsListSurface({ ctx }: { ctx: SurfaceContext }) {
                       {sub.customerName ?? 'A customer'}
                     </td>
                     <td>
-                      <Badge color={state.tone} variant="soft" size="sm">
-                        {state.label}
-                      </Badge>
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        <Badge color={state.tone} variant="soft" size="sm">
+                          {state.label}
+                        </Badge>
+                        {/* An invoiced repeat order is a different KIND of thing
+                            from a card one — someone has to pay a bill for it to
+                            ship — so it earns its own mark rather than looking
+                            identical to one that charges itself. */}
+                        {sub.billingMode === 'invoice' ? (
+                          <Badge color="info" variant="soft" size="sm">
+                            Invoiced
+                          </Badge>
+                        ) : null}
+                      </div>
                     </td>
                     <td className="hidden text-sm @lg:table-cell">
                       {sub.nextOccurrenceAt ? formatDate(sub.nextOccurrenceAt) : '—'}

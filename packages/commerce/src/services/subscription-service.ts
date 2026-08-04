@@ -1,14 +1,22 @@
-// subscriptionService — auto-ship / recurring orders. The sparx side
-// owns the schedule shape, the item set, the customer-facing
-// pause/skip/cancel surface, and the dunning state machine. Actual
-// charges are driven by a SubscriptionBilling provider (Stripe by
-// default); the subscription-billing-worker advances the schedule and
-// creates a CRM Order on each occurrence.
+// subscriptionService — auto-ship / recurring orders.
+//
+// sparx owns ALL of it (docs/142): the schedule, the item set, the
+// customer-facing pause/skip/cancel surface, the dunning state machine, and the
+// charge itself. `findDueOccurrences` + `processOccurrence` are driven by the
+// subscription tick (`POST /internal/commerce/subscription-tick`, every 15
+// minutes); the charge goes out off-session against the customer's vaulted
+// method through whichever gateway the tenant connected.
+//
+// A renewal ALWAYS produces an order, paid or not — the order is the record of
+// what was owed, and payment is a separate fact recorded against it. That keeps
+// the card path and invoice mode on one code path, and keeps a failed renewal
+// visible in the orders list instead of vanishing.
 
 import { orderService } from '@sparx/crm';
 import {
   CancelSubscriptionInput,
   ChangeSubscriptionAddressInput,
+  ChangeSubscriptionPaymentMethodInput,
   CreateSubscriptionInput,
   PauseSubscriptionInput,
   ResumeSubscriptionInput,
@@ -36,6 +44,9 @@ export interface SubscriptionSummary {
   monthlyRecurringRevenueCents: number;
   currency: string;
   providerSlug: string;
+  /** card | invoice — how this one collects (docs/142 §8). On a list this is
+   *  what separates "will charge itself" from "someone has to pay a bill". */
+  billingMode: string;
 }
 
 export interface SubscriptionEventRow {
@@ -84,6 +95,18 @@ export interface SubscriptionDetail extends SubscriptionSummary {
   /** Failed / retried payment attempts, newest first. Empty unless a charge has
    *  ever failed; the tail of it is why a subscription is `past_due`. */
   dunningAttempts: DunningAttemptRow[];
+  /** The card this renews on. Null on an invoice-mode subscription (nothing to
+   *  charge, by design) and null on a card one that has none — which is the
+   *  state that means it CANNOT renew, so the surface has to be able to say so
+   *  rather than showing a blank. */
+  paymentMethod: {
+    id: string;
+    brand: string | null;
+    last4: string | null;
+    expMonth: number | null;
+    expYear: number | null;
+    status: string;
+  } | null;
 }
 
 // ─── Reads ───────────────────────────────────────────────────────────
@@ -128,6 +151,7 @@ export async function get(
         customer: { select: CUSTOMER_NAME_SELECT },
         events: { orderBy: { occurredAt: 'desc' }, take: 50 },
         dunningAttempts: { orderBy: { attemptedAt: 'desc' }, take: 20 },
+        paymentMethod: true,
       },
     })
   );
@@ -174,7 +198,71 @@ export async function get(
       attemptedAt: att.attemptedAt.toISOString(),
       nextRetryAt: att.nextRetryAt?.toISOString() ?? null,
     })),
+    paymentMethod: row.paymentMethod
+      ? {
+          id: row.paymentMethod.id,
+          brand: row.paymentMethod.brand,
+          last4: row.paymentMethod.last4,
+          expMonth: row.paymentMethod.expMonth,
+          expYear: row.paymentMethod.expYear,
+          status: row.paymentMethod.status,
+        }
+      : null,
   };
+}
+
+/**
+ * Point a subscription at a different saved card, or switch it to invoicing.
+ *
+ * The recovery path for every "this cannot charge" state: a card that expired, a
+ * card the customer replaced, a subscription created before there was a vault at
+ * all. Without it, a past_due subscription can only be fixed by cancelling and
+ * re-selling it.
+ */
+export async function changePaymentMethod(ctx: ServiceContext, rawInput: unknown): Promise<void> {
+  const input = ChangeSubscriptionPaymentMethodInput.parse(rawInput);
+  await withTenant(ctx, async (tx) => {
+    const sub = await assertSubscription(tx, input.subscriptionId);
+
+    if (input.billingMode === 'card') {
+      const method = await tx.customerPaymentMethod.findFirst({
+        where: { id: input.paymentMethodId ?? '', customerId: sub.customerId },
+        select: { id: true, status: true },
+      });
+      if (!method) {
+        throw new CommerceNotFoundError('PaymentMethod', input.paymentMethodId ?? '');
+      }
+      if (method.status !== 'active') {
+        throw new CommerceValidationError('That saved card can no longer be charged.', [
+          { field: 'paymentMethodId', message: `The card is ${method.status}.` },
+        ]);
+      }
+    }
+
+    await tx.subscription.update({
+      where: { id: sub.id },
+      data: {
+        billingMode: input.billingMode,
+        paymentMethodId: input.billingMode === 'card' ? (input.paymentMethodId ?? null) : null,
+        // A new card earns a fresh attempt. Leaving it past_due would mean the
+        // customer fixes the problem and still has to wait for a retry that the
+        // ladder may already have given up on.
+        ...(sub.status === 'past_due' ? { status: 'active' } : {}),
+      },
+    });
+
+    if (sub.status === 'past_due') {
+      await tx.dunningAttempt.updateMany({
+        where: { subscriptionId: sub.id, nextRetryAt: { not: null } },
+        data: { nextRetryAt: new Date() },
+      });
+    }
+
+    await recordSubscriptionEvent(tx, ctx, sub.id, 'payment_method_changed', {
+      billingMode: input.billingMode,
+      paymentMethodId: input.paymentMethodId ?? null,
+    });
+  });
 }
 
 export interface ProductSubscriptionSummary {
@@ -319,6 +407,23 @@ export async function create(
     });
     if (!customer) throw new CommerceNotFoundError('Customer', input.customerId);
 
+    // The saved card must be THIS customer's and must still be usable. Checked
+    // here rather than trusted from the request: a payment-method id is a
+    // guessable handle to somebody's card, and the alternative is a renewal
+    // silently charging the wrong person.
+    if (input.paymentMethodId) {
+      const method = await tx.customerPaymentMethod.findFirst({
+        where: { id: input.paymentMethodId, customerId: input.customerId },
+        select: { id: true, status: true },
+      });
+      if (!method) throw new CommerceNotFoundError('PaymentMethod', input.paymentMethodId);
+      if (method.status !== 'active') {
+        throw new CommerceValidationError('That saved card can no longer be charged.', [
+          { field: 'paymentMethodId', message: `The card is ${method.status}.` },
+        ]);
+      }
+    }
+
     const sub = await tx.subscription.create({
       data: {
         tenantId: ctx.tenantId,
@@ -327,6 +432,8 @@ export async function create(
         currency: input.currency,
         status: initialStatus,
         providerSlug: input.paymentProviderSlug,
+        billingMode: input.billingMode,
+        paymentMethodId: input.paymentMethodId ?? null,
         intervalUnit: input.schedule.intervalUnit,
         intervalCount: input.schedule.intervalCount,
         deliveriesPerCycle: input.schedule.deliveriesPerCycle,
@@ -681,6 +788,17 @@ export async function recordDunningAttempt(
     paymentRef: string;
     outcome: 'succeeded' | 'failed' | 'retry_scheduled';
     nextRetryAt?: string;
+    /** The gateway's decline reason, stored so the subscription's dunning
+     *  history reads as "why" and not just "failed". */
+    reason?: string;
+    /** Whether this failure should reach the customer. The dunning policy's
+     *  `first_and_last` mode silences the middle attempts, so a customer whose
+     *  bank is having a bad week is not emailed three times about one card.
+     *  Defaults to true — a failure nobody is told about is the worse bug. */
+    notifyCustomer?: boolean;
+    /** The end of the ladder. Always notifies regardless of policy: this is the
+     *  one the customer cannot afford to miss. */
+    finalAttempt?: boolean;
   }
 ): Promise<void> {
   await withTenant(ctx, async (tx) => {
@@ -694,6 +812,7 @@ export async function recordDunningAttempt(
         paymentRef: input.paymentRef,
         attemptNumber: priorCount + 1,
         outcome: input.outcome,
+        failureReason: input.reason ?? null,
         nextRetryAt: input.nextRetryAt ? new Date(input.nextRetryAt) : null,
       },
     });
@@ -710,7 +829,11 @@ export async function recordDunningAttempt(
     }
   });
 
-  if (input.outcome === 'failed') {
+  // This event is what dispatches the customer's "your payment didn't go
+  // through" email, via the system automation seeded on it — so suppressing the
+  // publish IS how the notify policy is honoured.
+  const notify = input.finalAttempt === true || input.notifyCustomer !== false;
+  if (input.outcome === 'failed' && notify) {
     await publishCommerceEvent({
       tenantId: ctx.tenantId,
       actorId: ctx.userId ?? null,
@@ -719,6 +842,8 @@ export async function recordDunningAttempt(
         subscriptionId: input.subscriptionId,
         paymentRef: input.paymentRef,
         nextRetryAt: input.nextRetryAt,
+        reason: input.reason,
+        finalAttempt: input.finalAttempt === true,
       },
     });
   }
@@ -790,6 +915,7 @@ function toSummary(
     ),
     currency: row.currency,
     providerSlug: row.providerSlug,
+    billingMode: row.billingMode,
   };
 }
 

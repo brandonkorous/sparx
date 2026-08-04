@@ -150,6 +150,7 @@ export type {
   SubscriptionItem,
   SubscriptionEvent,
   DunningAttempt,
+  CustomerPaymentMethod,
   // Commerce — reviews, returns, shipping, tax, providers, storefront
   ProductReview,
   ReviewMedia,

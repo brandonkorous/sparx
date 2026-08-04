@@ -45,6 +45,10 @@ export {
 export * as marketService from './market';
 
 export * as subscriptionService from './subscription-service';
+// The vault behind recurring charges — a shopper's saved cards (docs/142 §4).
+export * as paymentMethodService from './payment-method-service';
+// Collection: the off-session charge, the dunning ladder, invoice mode.
+export * as subscriptionBilling from './subscription-billing';
 export * as shippingService from './shipping-service';
 export { dispatchShippingTrackingWebhook } from './shipping-webhook-dispatch';
 export { quoteOutboundRates } from './outbound-shipment-request';

@@ -761,3 +761,121 @@ export async function rescheduleMyBooking(
   );
   return parse<CustomerBooking>(res);
 }
+
+// ── Saved cards + repeat orders (docs/142 §9) ───────────────────────────────
+
+// The card itself never passes through here. `beginCardSetup` returns what the
+// gateway's own browser SDK needs; the SDK collects the card and hands back a
+// reference, which `completeCardSetup` exchanges for a stored card. sparx only
+// ever sees a token plus "Visa ending 4242".
+
+export interface SavedCard {
+  id: string;
+  gatewayId: string;
+  brand: string | null;
+  last4: string | null;
+  expMonth: number | null;
+  expYear: number | null;
+  isDefault: boolean;
+  status: string;
+  isExpired: boolean;
+  /** How many repeat orders renew on this card — why removing it can be refused. */
+  subscriptionCount: number;
+  createdAt: string;
+  lastUsedAt: string | null;
+}
+
+export interface CardSetupSession {
+  clientSecret: string | null;
+  redirectUrl: string | null;
+  publishableKey?: string;
+  setupRef: string;
+}
+
+export async function getSavedCards(
+  tenantSlug: string
+): Promise<{ methods: SavedCard[]; canSave: boolean }> {
+  const res = await fetch(url('/v1/public/commerce/account/payment-methods', tenantSlug), {
+    cache: 'no-store',
+  });
+  return parse<{ methods: SavedCard[]; canSave: boolean }>(res);
+}
+
+export async function beginCardSetup(
+  tenantSlug: string,
+  returnUrl?: string
+): Promise<CardSetupSession> {
+  const res = await fetch(url('/v1/public/commerce/account/payment-methods/setup', tenantSlug), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(returnUrl ? { returnUrl } : {}),
+  });
+  return parse<CardSetupSession>(res);
+}
+
+export async function completeCardSetup(
+  tenantSlug: string,
+  input: { setupRef?: string; token?: string; makeDefault?: boolean }
+): Promise<SavedCard | null> {
+  const res = await fetch(url('/v1/public/commerce/account/payment-methods/complete', tenantSlug), {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(input),
+  });
+  return (await parse<{ method: SavedCard | null }>(res)).method;
+}
+
+export async function setDefaultCard(tenantSlug: string, cardId: string): Promise<void> {
+  await fetch(
+    url(
+      `/v1/public/commerce/account/payment-methods/${encodeURIComponent(cardId)}/default`,
+      tenantSlug
+    ),
+    { method: 'POST' }
+  );
+}
+
+export async function removeSavedCard(tenantSlug: string, cardId: string): Promise<void> {
+  const res = await fetch(
+    url(`/v1/public/commerce/account/payment-methods/${encodeURIComponent(cardId)}`, tenantSlug),
+    { method: 'DELETE' }
+  );
+  // Parsed rather than ignored: removing a card that a repeat order depends on
+  // is refused with a message naming how many, and the customer needs to read it.
+  await parse<{ ok: boolean }>(res);
+}
+
+export interface MySubscription {
+  id: string;
+  status: string;
+  nextOccurrenceAt: string | null;
+  itemCount: number;
+  monthlyRecurringRevenueCents: number;
+  currency: string;
+  billingMode: string;
+}
+
+export async function getMySubscriptions(tenantSlug: string): Promise<MySubscription[]> {
+  const res = await fetch(url('/v1/public/commerce/account/subscriptions', tenantSlug), {
+    cache: 'no-store',
+  });
+  return (await parse<{ subscriptions: MySubscription[] }>(res)).subscriptions;
+}
+
+export async function setSubscriptionCard(
+  tenantSlug: string,
+  subscriptionId: string,
+  paymentMethodId: string
+): Promise<void> {
+  await fetch(
+    url(
+      `/v1/public/commerce/account/subscriptions/${encodeURIComponent(subscriptionId)}/payment-method`,
+      tenantSlug
+    ),
+    {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ billingMode: 'card', paymentMethodId }),
+    }
+  );
+}

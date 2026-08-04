@@ -63,12 +63,10 @@ const CATEGORY_ACCENT: Record<string, string> = {
   payments: '#f97316',
   shipping: '#0891b2',
   tax: '#65a30d',
-  subscription_billing: '#d97706',
   sales_channels: '#7c2d12',
   social: '#be123c',
   dropship: '#0369a1',
   ai: '#4f46e5',
-  identity: '#334155',
 };
 
 const ACCENT_FALLBACK = '#6b7280';

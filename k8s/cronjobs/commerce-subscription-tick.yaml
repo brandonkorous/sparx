@@ -1,0 +1,80 @@
+# Bills subscriptions that have come due (docs/142 §6).
+#
+# Per pass, per tenant: create each due renewal order, charge the customer's
+# saved card off-session, and walk the dunning ladder for anything that failed.
+# Gateways that cannot hold a card on file collect by invoice + payment link
+# instead, so every tenant is billed by this job regardless of processor.
+#
+# Every 15 minutes. A renewal is DATED, not urgent — a subscription due today
+# does not care which quarter-hour it bills in — so the cadence is set by how
+# stale a "next charge" date may look, not by latency. That also keeps the query
+# count low: two indexed lookups per tenant per pass.
+#
+# THIS JOB MOVES MONEY. Forbid concurrency is not a tidiness preference here: two
+# overlapping passes would both see the same due subscriptions. The charge path
+# is idempotent (the schedule advances in the same transaction as the order, and
+# the gateway call carries an idempotency key), but belt and braces on the one
+# job that can double-bill a customer.
+#
+# Longer --max-time than the other commerce crons because each charge is a
+# round-trip to a payment processor; a tenant with many due renewals legitimately
+# takes minutes.
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: commerce-subscription-tick
+  namespace: sparx-prod
+  labels:
+    app: commerce-cron
+    job: subscription-tick
+spec:
+  schedule: '*/15 * * * *'
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 3
+  startingDeadlineSeconds: 300
+  jobTemplate:
+    spec:
+      backoffLimit: 1
+      ttlSecondsAfterFinished: 3600
+      template:
+        metadata:
+          labels:
+            app: commerce-cron
+            job: subscription-tick
+        spec:
+          serviceAccountName: sparx-app
+          restartPolicy: OnFailure
+          containers:
+            - name: curl
+              image: curlimages/curl:8.10.1
+              command: ['sh', '-c']
+              args:
+                - >
+                  curl --fail-with-body --silent --show-error
+                  --max-time 600
+                  -X POST
+                  -H "X-Sparx-Internal-Cron-Token: $SPARX_INTERNAL_CRON_TOKEN"
+                  http://api-rest.sparx-prod.svc.cluster.local:3000/internal/commerce/subscription-tick
+              env:
+                - name: SPARX_INTERNAL_CRON_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: sparx-app-secrets
+                      key: SPARX_INTERNAL_CRON_TOKEN
+              resources:
+                requests:
+                  cpu: '25m'
+                  memory: '16Mi'
+                limits:
+                  cpu: '100m'
+                  memory: '32Mi'
+              securityContext:
+                runAsNonRoot: true
+                runAsUser: 1000
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop: ['ALL']
+                seccompProfile:
+                  type: RuntimeDefault

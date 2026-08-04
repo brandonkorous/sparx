@@ -284,6 +284,12 @@ const SUBSCRIPTION_EVENTS = [
   'subscription.resumed',
   'subscription.cancelled',
 ];
+// Two subscription events carry a link the SUBSCRIPTION ROW does not have — a
+// one-time bank-authentication handoff, and the hosted payment link for an
+// invoice-mode bill (docs/142). Both are facts about this send, not about the
+// subscription, so they ride in the payload and are merged on top of the
+// hydrated row rather than being looked up.
+const SUBSCRIPTION_LINK_EVENTS = ['subscription.authentication_required', 'subscription.invoiced'];
 // Returns / RMA lifecycle (docs/impl transactional-email §4 P3) — payload carries
 // `returnId`; the resolver hydrates the return + its order + customer.
 const RETURN_EVENTS = ['return.approved', 'return.received', 'return.refunded'];
@@ -314,6 +320,17 @@ export function installBuiltinResolvers(): void {
   }
   for (const ev of SUBSCRIPTION_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateSubscription(ctx, str(p.subscriptionId ?? p.id)));
+  }
+  for (const ev of SUBSCRIPTION_LINK_EVENTS) {
+    registerResolver(ev, async (ctx, p) => {
+      const fields = await hydrateSubscription(ctx, str(p.subscriptionId ?? p.id));
+      // Empty string rather than undefined: a bound row with an empty value
+      // self-drops, where a missing key renders the raw `{{…}}` token.
+      fields['subscription.confirmUrl'] = str(p.confirmUrl);
+      fields['subscription.payUrl'] = str(p.payUrl);
+      if (p.orderNumber !== undefined) fields['order.number'] = str(p.orderNumber);
+      return fields;
+    });
   }
   for (const ev of RETURN_EVENTS) {
     registerResolver(ev, (ctx, p) => hydrateReturn(ctx, str(p.returnId ?? p.id)));

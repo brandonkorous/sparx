@@ -46,6 +46,13 @@ export interface GatewayCapabilities {
   /** Hosted payment links for invoices. */
   paymentLinks: boolean;
   webhooks: boolean;
+  /** Can vault a payment method and charge it later with the customer ABSENT
+   *  (card-on-file / merchant-initiated). This is what recurring billing needs
+   *  and what nothing else in the interface provides — a subscription on a
+   *  gateway without it collects by invoice + payment link instead of by card
+   *  (docs/142 §8). Requires `createSetupSession` + `chargeStoredMethod` on the
+   *  adapter; `false` is an honest answer, not a missing one. */
+  storedMethods: boolean;
 }
 
 export interface GatewayDescriptor {
@@ -75,11 +82,17 @@ export interface GatewayDescriptor {
   docsUrl?: string;
 }
 
+/** A full-service card gateway: everything, including a vault it can charge
+ *  off-session. Shared by the two Stripe-backed gateways and by the two
+ *  hosted-redirect gateways whose own card-on-file vaults cover the same
+ *  ground (Square Cards, Authorize.net CIM) — the checkout STYLE differs, the
+ *  server-side capabilities do not. */
 const CARD_CAPS: GatewayCapabilities = {
   refunds: true,
   capture: true,
   paymentLinks: true,
   webhooks: true,
+  storedMethods: true,
 };
 
 export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
@@ -144,7 +157,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
       'Use your existing Square account. Great if you also sell in person — your online and POS sales land in one Square balance. Shoppers pay on a Square-hosted page; no sparx fee.',
     onboarding: 'api_keys',
     checkout: 'redirect',
-    capabilities: { refunds: true, capture: true, paymentLinks: true, webhooks: true },
+    capabilities: CARD_CAPS,
     credentialFields: [
       {
         key: 'access_token',
@@ -188,7 +201,7 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
       'The classic for established US merchants. Keep your Authorize.net account and gateway rates — sparx routes checkout to an Authorize.net hosted payment page. No sparx fee.',
     onboarding: 'api_keys',
     checkout: 'redirect',
-    capabilities: { refunds: true, capture: true, paymentLinks: true, webhooks: true },
+    capabilities: CARD_CAPS,
     credentialFields: [
       {
         key: 'api_login_id',
@@ -209,6 +222,17 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
         optional: true,
         help: 'For webhook verification. Optional but recommended.',
       },
+      {
+        // Needed only to SAVE a card for repeat orders (docs/142): Accept.js runs
+        // in the shopper's browser and exchanges the card for a one-time token,
+        // so the card itself never reaches sparx. Optional — one-off checkout
+        // works without it; subscriptions on this gateway fall back to invoicing.
+        key: 'public_client_key',
+        label: 'Public Client Key',
+        secret: false,
+        optional: true,
+        help: 'Authorize.net → Account → Settings → Manage Public Client Key. Only needed to let customers save a card for repeat orders.',
+      },
     ],
     environments: true,
     sparxFee: false,
@@ -223,7 +247,16 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
       'Common with ISO/agent-sold merchant accounts. Keep your 1stPayGateway processing — sparx routes checkout to a 1stPay hosted page. No sparx fee.',
     onboarding: 'api_keys',
     checkout: 'redirect',
-    capabilities: { refunds: true, capture: false, paymentLinks: true, webhooks: true },
+    // `storedMethods: false` here means UNVERIFIED, not impossible — 1stPay's
+    // card-on-file support has not been confirmed against their API. Subscriptions
+    // on this gateway collect by invoice until it is.
+    capabilities: {
+      refunds: true,
+      capture: false,
+      paymentLinks: true,
+      webhooks: true,
+      storedMethods: false,
+    },
     credentialFields: [
       {
         key: 'gateway_id',
@@ -251,7 +284,15 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
       'Use any other processor. Point sparx at your gateway’s hosted checkout URL and credentials; sparx redirects shoppers there and reconciles on return. For full control, a developer can drop in a code adapter — see the plugin contract.',
     onboarding: 'api_keys',
     checkout: 'redirect',
-    capabilities: { refunds: false, capture: false, paymentLinks: true, webhooks: true },
+    // A generic hosted redirect has no vault seam to reach through, so there is
+    // nowhere to put a saved card.
+    capabilities: {
+      refunds: false,
+      capture: false,
+      paymentLinks: true,
+      webhooks: true,
+      storedMethods: false,
+    },
     credentialFields: [
       {
         key: 'hosted_url',
@@ -296,7 +337,15 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     availability: 'coming_soon',
     onboarding: 'api_keys',
     checkout: 'redirect',
-    capabilities: { refunds: true, capture: true, paymentLinks: true, webhooks: true },
+    // PayPal vaults (Billing Agreements), but the adapter is unwritten — this
+    // tracks the ADAPTER, not the vendor. Flips with the rest of it.
+    capabilities: {
+      refunds: true,
+      capture: true,
+      paymentLinks: true,
+      webhooks: true,
+      storedMethods: false,
+    },
     credentialFields: [
       {
         key: 'client_id',
@@ -324,7 +373,15 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
       'Record check, cash, wire, or ACH by hand. No online card payments and no fee — you mark orders and invoices paid yourself.',
     onboarding: 'manual',
     checkout: 'none',
-    capabilities: { refunds: false, capture: false, paymentLinks: false, webhooks: false },
+    // No processor at all — cash, cheque, bank transfer. A recurring order here
+    // is a standing invoice, which is exactly what invoice mode produces.
+    capabilities: {
+      refunds: false,
+      capture: false,
+      paymentLinks: false,
+      webhooks: false,
+      storedMethods: false,
+    },
     credentialFields: [],
     environments: false,
     sparxFee: false,

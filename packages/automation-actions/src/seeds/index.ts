@@ -54,8 +54,10 @@ import {
   INVOICING_REMINDER_3D,
 } from './invoicing.js';
 import {
+  SUBSCRIPTION_AUTHENTICATION_REQUIRED_EMAIL,
   SUBSCRIPTION_CANCELLED_EMAIL,
   SUBSCRIPTION_CONFIRMED_EMAIL,
+  SUBSCRIPTION_INVOICE_EMAIL,
   SUBSCRIPTION_PAUSED_EMAIL,
   SUBSCRIPTION_PAYMENT_FAILED_EMAIL,
   SUBSCRIPTION_RENEWED_EMAIL,
@@ -114,6 +116,9 @@ export const SYSTEM_AUTOMATIONS: readonly SystemAutomationSeed[] = [
   { module: 'commerce', spec: SUBSCRIPTION_CONFIRMED_EMAIL },
   { module: 'commerce', spec: SUBSCRIPTION_RENEWED_EMAIL },
   { module: 'commerce', spec: SUBSCRIPTION_PAYMENT_FAILED_EMAIL },
+  // The two collection outcomes that are NOT failures (docs/142)
+  { module: 'commerce', spec: SUBSCRIPTION_AUTHENTICATION_REQUIRED_EMAIL },
+  { module: 'commerce', spec: SUBSCRIPTION_INVOICE_EMAIL },
   { module: 'commerce', spec: SUBSCRIPTION_PAUSED_EMAIL },
   { module: 'commerce', spec: SUBSCRIPTION_RESUMED_EMAIL },
   { module: 'commerce', spec: SUBSCRIPTION_CANCELLED_EMAIL },

@@ -90,6 +90,7 @@ model Customer {
   checkoutSessions CheckoutSession[]
   accountCredits   AccountCredit[]
   subscriptions    Subscription[]
+  paymentMethods   CustomerPaymentMethod[]
   reviews          ProductReview[]
   productQuestions ProductQuestion[]
   wishlists        Wishlist[]

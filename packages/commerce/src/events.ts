@@ -58,6 +58,8 @@ export type CommerceTopic = Extract<
   | 'subscription.paused'
   | 'subscription.resumed'
   | 'subscription.cancelled'
+  | 'subscription.authentication_required'
+  | 'subscription.invoiced'
   | 'return.requested'
   | 'return.approved'
   | 'return.received'

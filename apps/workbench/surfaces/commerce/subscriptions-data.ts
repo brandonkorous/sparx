@@ -35,6 +35,17 @@ export interface SubscriptionSummary {
   monthlyRecurringRevenueCents: number;
   currency: string;
   providerSlug: string;
+  /** `card` charges itself; `invoice` bills the customer and waits. */
+  billingMode: string;
+}
+
+export interface SubscriptionPaymentMethod {
+  id: string;
+  brand: string | null;
+  last4: string | null;
+  expMonth: number | null;
+  expYear: number | null;
+  status: string;
 }
 
 export interface SubscriptionItem {
@@ -79,6 +90,48 @@ export interface SubscriptionDetail extends SubscriptionSummary {
   items: SubscriptionItem[];
   events: SubscriptionEvent[];
   dunningAttempts: DunningAttempt[];
+  paymentMethod: SubscriptionPaymentMethod | null;
+}
+
+/**
+ * Why this repeat order cannot currently collect, in the owner's words — or null
+ * when it is fine.
+ *
+ * Worth stating on screen rather than leaving to inference: a card subscription
+ * with no card looks completely healthy in a list (status `active`, a next date,
+ * an MRR figure) and will silently never charge anybody. That is the exact
+ * failure this whole area exists to fix, so the surface has to name it.
+ */
+export function billingProblem(sub: {
+  billingMode: string;
+  paymentMethod: SubscriptionPaymentMethod | null;
+}): string | null {
+  if (sub.billingMode !== 'card') return null;
+  if (!sub.paymentMethod) {
+    return 'No saved card — this repeat order cannot charge anyone. Add a card or switch it to invoicing.';
+  }
+  if (sub.paymentMethod.status !== 'active') {
+    return `The saved card is ${sub.paymentMethod.status} and will be declined. Ask the customer for a new one, or switch to invoicing.`;
+  }
+  if (isCardExpired(sub.paymentMethod)) {
+    return 'The saved card has expired. The next renewal will fail unless it is replaced.';
+  }
+  return null;
+}
+
+export function isCardExpired(method: SubscriptionPaymentMethod): boolean {
+  if (!method.expMonth || !method.expYear) return false;
+  return Date.now() >= Date.UTC(method.expYear, method.expMonth, 1);
+}
+
+/** "Visa ending 4242" — what a person recognises a card by. */
+export function cardLabel(method: SubscriptionPaymentMethod): string {
+  const brand = method.brand ? titleCase(method.brand) : 'Card';
+  return method.last4 ? `${brand} ending ${method.last4}` : brand;
+}
+
+function titleCase(value: string): string {
+  return value.charAt(0).toUpperCase() + value.slice(1);
 }
 
 /* ── Keys ───────────────────────────────────────────────────────────────── */
@@ -161,6 +214,29 @@ export function useCancelSubscription(id: string) {
   });
 }
 
+/** The customer's saved cards — what the "use a different card" picker offers. */
+export function useCustomerPaymentMethods(customerId: string) {
+  return useQuery({
+    queryKey: ['commerce', 'customer-payment-methods', customerId] as const,
+    queryFn: () =>
+      api.get<{ methods: SubscriptionPaymentMethod[] }>(
+        `/v1/commerce/customers/${customerId}/payment-methods`
+      ),
+    enabled: customerId !== '',
+  });
+}
+
+export function useChangeSubscriptionPaymentMethod(id: string) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (input: { billingMode: 'card' | 'invoice'; paymentMethodId?: string }) =>
+      api.post(`/v1/commerce/subscriptions/${id}/payment-method`, input),
+    onSuccess: () => {
+      invalidateSubscription(queryClient, id);
+    },
+  });
+}
+
 /* ── Saying what a state / event means ──────────────────────────────────── */
 
 /** The repeat cadence in words: "every month", "every 2 weeks". */
@@ -190,6 +266,12 @@ export function subscriptionEventLabel(event: string): string {
       return 'What is delivered changed';
     case 'address_changed':
       return 'Delivery address changed';
+    case 'payment_method_changed':
+      return 'How it gets paid changed';
+    case 'invoiced':
+      return 'Billed — waiting on payment';
+    case 'authentication_required':
+      return 'The customer’s bank asked them to confirm';
     default:
       return event.replace(/_/g, ' ');
   }

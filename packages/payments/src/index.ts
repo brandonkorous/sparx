@@ -16,6 +16,12 @@ export type {
   CreatePaymentIntentParams,
   RefundParams,
   CreatePaymentLinkParams,
+  CreateSetupSessionParams,
+  SetupSession,
+  CompleteVaultParams,
+  VaultedMethod,
+  ChargeStoredMethodParams,
+  StoredChargeResult,
 } from './gateway';
 
 export {
@@ -48,7 +54,12 @@ export {
   registerPaymentIntegrations,
 } from './integration';
 
-export { PaymentService, paymentService, PaymentConfigError } from './service';
+export {
+  PaymentService,
+  paymentService,
+  PaymentConfigError,
+  StoredMethodsUnsupportedError,
+} from './service';
 
 export { SPARX_PAY_FEE_RATE, sparxPayFeeCents } from './fee';
 

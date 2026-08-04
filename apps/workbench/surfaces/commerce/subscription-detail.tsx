@@ -23,6 +23,7 @@ import {
   Badge,
   Button,
   Heading,
+  Select,
   Text,
   Timestamp,
   useToast,
@@ -35,10 +36,15 @@ import { RefreshButton } from '../../components/refresh-button';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import { formatCents, formatDate, productErrorMessage, subscriptionState } from './products-data';
 import {
+  billingProblem,
   cadenceLabel,
+  cardLabel,
   dunningOutcomeState,
+  isCardExpired,
   subscriptionEventLabel,
   useCancelSubscription,
+  useChangeSubscriptionPaymentMethod,
+  useCustomerPaymentMethods,
   usePauseSubscription,
   useResumeSubscription,
   useSubscription,
@@ -65,12 +71,20 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
   const pause = usePauseSubscription(sub.id);
   const resume = useResumeSubscription(sub.id);
   const cancel = useCancelSubscription(sub.id);
+  const changeMethod = useChangeSubscriptionPaymentMethod(sub.id);
+  const cards = useCustomerPaymentMethods(sub.customerId);
 
   const state = subscriptionState(sub.status);
   const customer = sub.customerName ?? 'A customer';
   const cadence = cadenceLabel(sub.intervalUnit, sub.intervalCount);
   const stopped = sub.status === 'cancelled';
   const paused = sub.status === 'paused';
+  const problem = billingProblem(sub);
+  // Only cards that can actually be charged. Offering a revoked one as the fix
+  // for a failing subscription would just move the failure.
+  const savedCards = (cards.data?.methods ?? []).filter(
+    (card) => card.status === 'active' && card.id !== sub.paymentMethod?.id
+  );
 
   const failed = (title: string) => (error: unknown) => {
     toast.add({
@@ -109,6 +123,52 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
       },
       onError: failed('Could not resume this repeat order'),
     });
+  };
+
+  const onUseCard = (paymentMethodId: string) => {
+    if (!paymentMethodId) return;
+    changeMethod.mutate(
+      { billingMode: 'card', paymentMethodId },
+      {
+        onSuccess: () => {
+          toast.add({
+            title: 'Card changed',
+            // Said out loud because it is the part an operator would otherwise
+            // have to wait and wonder about: fixing the card also un-sticks a
+            // failing repeat order rather than leaving it parked until the next
+            // scheduled retry.
+            description:
+              sub.status === 'past_due'
+                ? 'We’ll try the outstanding payment again shortly.'
+                : 'Future orders will be charged to this card.',
+            type: 'success',
+          });
+        },
+        onError: failed('Could not change the card'),
+      }
+    );
+  };
+
+  const onSwitchToInvoice = () => {
+    void (async () => {
+      const ok = await confirm({
+        title: `Bill ${customer} instead of charging them?`,
+        description:
+          'Each order will still be created on schedule, but nothing is taken automatically — they get an invoice with a link to pay. Useful for customers on account terms, or when a card keeps failing.',
+        confirmLabel: 'Bill them instead',
+        cancelLabel: 'Keep charging the card',
+      });
+      if (!ok) return;
+      changeMethod.mutate(
+        { billingMode: 'invoice' },
+        {
+          onSuccess: () => {
+            toast.add({ title: 'This repeat order will be invoiced', type: 'success' });
+          },
+          onError: failed('Could not switch to invoicing'),
+        }
+      );
+    })();
   };
 
   const onStop = () => {
@@ -188,6 +248,91 @@ function DetailBody({ sub }: { sub: SubscriptionDetail }) {
           </AlertContent>
         </Alert>
       ) : null}
+
+      {/* A card repeat order with no usable card looks perfectly healthy in a
+          list — active, a next date, an MRR figure — and will never charge
+          anybody. It is the exact silent failure this area exists to fix, so it
+          gets a danger callout with the fix attached rather than being left to
+          be noticed. */}
+      {problem ? (
+        <Alert color="danger" variant="soft">
+          <AlertContent>
+            <AlertTitle>This repeat order can’t collect payment</AlertTitle>
+            <AlertDescription>{problem}</AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+
+      <FormSection
+        title="How it gets paid"
+        description={
+          sub.billingMode === 'invoice'
+            ? 'Each order is billed to the customer and they pay it — nothing is charged automatically.'
+            : 'The saved card is charged automatically each time this repeat order comes round.'
+        }
+      >
+        <div className="flex flex-wrap items-center gap-3">
+          <Badge color={sub.billingMode === 'invoice' ? 'info' : 'module'} variant="soft" size="lg">
+            {sub.billingMode === 'invoice' ? 'Billed by invoice' : 'Charged to a card'}
+          </Badge>
+          {sub.paymentMethod ? (
+            <Text as="span" className="flex items-center gap-2 font-medium">
+              <CreditCard className="size-4" aria-hidden />
+              {cardLabel(sub.paymentMethod)}
+              {sub.paymentMethod.expMonth && sub.paymentMethod.expYear ? (
+                <Text as="span" className="text-sm">
+                  expires {String(sub.paymentMethod.expMonth).padStart(2, '0')}/
+                  {String(sub.paymentMethod.expYear).slice(-2)}
+                </Text>
+              ) : null}
+              {isCardExpired(sub.paymentMethod) ? (
+                <Badge color="danger" variant="soft" size="sm">
+                  Expired
+                </Badge>
+              ) : null}
+            </Text>
+          ) : sub.billingMode === 'card' ? (
+            <Text as="span" className="text-sm">
+              No card saved.
+            </Text>
+          ) : null}
+        </div>
+
+        {!stopped ? (
+          <div className="flex flex-wrap items-center gap-2">
+            {savedCards.length > 0 ? (
+              <Select
+                size="sm"
+                color="module"
+                aria-label="Charge a different card"
+                value=""
+                placeholder="Charge a different card…"
+                items={Object.fromEntries(savedCards.map((card) => [card.id, cardLabel(card)]))}
+                onValueChange={(next) => {
+                  onUseCard(String(next));
+                }}
+                disabled={changeMethod.isPending}
+              />
+            ) : null}
+            {sub.billingMode === 'card' ? (
+              <Button
+                size="sm"
+                variant="outline"
+                color="neutral"
+                loading={changeMethod.isPending}
+                onClick={onSwitchToInvoice}
+              >
+                Bill them instead
+              </Button>
+            ) : savedCards.length === 0 ? (
+              <Text className="text-sm">
+                {customer} has no saved card yet. They can add one from their account, then it can
+                be charged automatically.
+              </Text>
+            ) : null}
+          </div>
+        ) : null}
+      </FormSection>
 
       <FormSection title="What it's worth">
         <div className="flex flex-wrap gap-x-8 gap-y-4">

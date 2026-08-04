@@ -8,6 +8,7 @@ import {
   BulkUpdateProductStatusInput,
   CancelSubscriptionInput,
   ChangeSubscriptionAddressInput,
+  ChangeSubscriptionPaymentMethodInput,
   CreateSubscriptionInput,
   CreateSurchargeRuleInput,
   GrantAccountCreditInput,
@@ -285,6 +286,16 @@ const updateSubscriptionSchedule: McpToolDefinition = {
   run: (ctx, input) => subscriptionService.updateSchedule(ctx, input),
 };
 
+const changeSubscriptionPaymentMethod: McpToolDefinition = {
+  name: 'change_subscription_payment_method',
+  description:
+    'Point a repeat order at a different saved card, or switch it to being invoiced instead of auto-charged. Use this when a customer’s card expired or was replaced — it also clears a “payment failed” state and retries straight away, so the subscription does not have to be cancelled and set up again.',
+  scope: 'write:commerce',
+  confirmation: true,
+  input: ChangeSubscriptionPaymentMethodInput,
+  run: (ctx, input) => subscriptionService.changePaymentMethod(ctx, input),
+};
+
 const changeSubscriptionAddress: McpToolDefinition = {
   name: 'change_subscription_address',
   description: 'Change the shipping address a subscription’s recurring orders go to.',
@@ -388,6 +399,7 @@ export const writeTools: AnyMcpTool[] = [
   updateSubscriptionItems,
   updateSubscriptionSchedule,
   changeSubscriptionAddress,
+  changeSubscriptionPaymentMethod,
   skipNextSubscriptionOccurrence,
   pauseSubscription,
   resumeSubscription,

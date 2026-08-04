@@ -6,15 +6,22 @@
 
 import { withTenant } from '@sparx/db';
 
+import { getGatewayDescriptor } from './catalog';
 import { sparxPayFeeCents } from './fee';
 import type {
+  ChargeStoredMethodParams,
+  CompleteVaultParams,
   CreatePaymentIntentParams,
   CreatePaymentLinkParams,
+  CreateSetupSessionParams,
   PaymentGateway,
   PaymentIntent,
   PaymentResult,
   RefundParams,
   RefundResult,
+  SetupSession,
+  StoredChargeResult,
+  VaultedMethod,
 } from './gateway';
 import { SPARX_PAY_ID } from './gateways/sparx-pay';
 import { gatewayRegistry } from './registry';
@@ -116,6 +123,108 @@ export class PaymentService {
   async createPaymentLink(params: CreatePaymentLinkParams): Promise<string | null> {
     const gateway = await this.getGatewayForTenant(params.tenantId);
     return gateway.createPaymentLink(params);
+  }
+
+  /* ── Stored payment methods (docs/142 §5) ─────────────────────────────────
+   *
+   * The three below all resolve the tenant's gateway, then check
+   * `capabilities.storedMethods` BEFORE reaching for the optional adapter
+   * method. Calling an undefined method would throw "not a function" — a stack
+   * trace that says nothing about the actual situation, which is that this
+   * tenant's processor cannot hold a card on file and their subscriptions
+   * should be collecting by invoice instead. Callers catch this and fall back.
+   */
+
+  /** Whether this tenant's gateway can vault + charge off-session. Cheap and
+   *  side-effect-free, so callers can branch on it before doing any work. */
+  async supportsStoredMethods(tenantId: string): Promise<boolean> {
+    const gateway = await this.getGatewayForTenant(tenantId);
+    return getGatewayDescriptor(gateway.id)?.capabilities.storedMethods === true;
+  }
+
+  private async vaultingGateway(tenantId: string): Promise<PaymentGateway> {
+    const gateway = await this.getGatewayForTenant(tenantId);
+    const descriptor = getGatewayDescriptor(gateway.id);
+    if (descriptor?.capabilities.storedMethods !== true) {
+      throw new StoredMethodsUnsupportedError(descriptor?.name ?? gateway.id);
+    }
+    return gateway;
+  }
+
+  async createSetupSession(params: CreateSetupSessionParams): Promise<SetupSession> {
+    const gateway = await this.vaultingGateway(params.tenantId);
+    if (!gateway.createSetupSession) {
+      throw new StoredMethodsUnsupportedError(gateway.name);
+    }
+    return gateway.createSetupSession(params);
+  }
+
+  async completeVault(params: CompleteVaultParams): Promise<VaultedMethod | null> {
+    const gateway = await this.vaultingGateway(params.tenantId);
+    if (!gateway.completeVault) {
+      throw new StoredMethodsUnsupportedError(gateway.name);
+    }
+    return gateway.completeVault(params);
+  }
+
+  /** Charge a vaulted method. Also mirrors the attempt into our own
+   *  `payment_intents` ledger on success, so a renewal charge shows up in the
+   *  same place as every interactive one rather than being invisible to
+   *  reconciliation. */
+  async chargeStoredMethod(params: ChargeStoredMethodParams): Promise<StoredChargeResult> {
+    const gateway = await this.vaultingGateway(params.tenantId);
+    if (!gateway.chargeStoredMethod) {
+      throw new StoredMethodsUnsupportedError(gateway.name);
+    }
+    const result = await gateway.chargeStoredMethod(params);
+
+    if (result.paymentRef) {
+      const platformFee = gateway.id === SPARX_PAY_ID ? sparxPayFeeCents(params.amount) : 0;
+      await withTenant({ tenantId: params.tenantId }, (tx) =>
+        tx.paymentIntent.upsert({
+          where: {
+            gatewayId_externalId: { gatewayId: gateway.id, externalId: result.paymentRef ?? '' },
+          },
+          create: {
+            tenantId: params.tenantId,
+            gatewayId: gateway.id,
+            externalId: result.paymentRef ?? '',
+            amount: params.amount,
+            currency: params.currency,
+            platformFee,
+            status: ledgerStatus(result.status),
+            ...(params.orderId ? { orderId: params.orderId } : {}),
+            ...(params.customerId ? { customerId: params.customerId } : {}),
+            metadata: params.metadata ?? {},
+          },
+          update: { status: ledgerStatus(result.status) },
+        })
+      );
+    }
+
+    return result;
+  }
+}
+
+/** The tenant's processor cannot hold a card on file. Not a bug and not a
+ *  misconfiguration — `manual` and `custom` are legitimate choices — so this
+ *  reads as a routing signal rather than an error, and the subscription layer
+ *  answers it by collecting via invoice instead (docs/142 §8). */
+export class StoredMethodsUnsupportedError extends Error {
+  constructor(gatewayName: string) {
+    super(`${gatewayName} cannot save a payment method for later charges.`);
+    this.name = 'StoredMethodsUnsupportedError';
+  }
+}
+
+function ledgerStatus(status: StoredChargeResult['status']): string {
+  switch (status) {
+    case 'succeeded':
+      return 'succeeded';
+    case 'requires_action':
+      return 'requires_action';
+    default:
+      return 'failed';
   }
 }
 

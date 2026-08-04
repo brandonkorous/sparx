@@ -12,6 +12,7 @@
     "blueprint:capture": "node --import tsx src/scripts/blueprint-capture.ts",
     "seed:demo": "node --import tsx src/scripts/seed-demo.ts",
     "backfill:webhook-secrets": "node --import tsx src/scripts/backfill-webhook-secrets.ts",
+    "ops:retire-legacy-tier": "node --import tsx src/scripts/retire-legacy-site-tier.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run --passWithNoTests",

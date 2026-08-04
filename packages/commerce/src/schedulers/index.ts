@@ -6,3 +6,4 @@ export { listCommerceActiveTenants, listDropshipActiveTenants } from './active-t
 export { reapExpiredReservations } from './reservation-reaper';
 export { reconcileRevenueRollup } from './revenue-rollup';
 export { reconcileDropshipOrdersRollup, type DropshipOrdersRollupResult } from './dropship-rollup';
+export { runSubscriptionTick, type SubscriptionTickResult } from './subscription-tick';
