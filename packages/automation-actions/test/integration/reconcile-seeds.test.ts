@@ -110,6 +110,57 @@ describe('reconcileSystemSeeds (backfill)', () => {
     expect(b2b!.tenants).toBeGreaterThanOrEqual(1);
   });
 
+  it('a tenant that vanished mid-pass is skipped, not fatal', async () => {
+    // Discovery and seeding are separate steps, so a tenant can be deleted in the
+    // gap between them — the write then fails on `automations_tenant_id_fkey`.
+    // Unisolated that took the whole pass down: every tenant AFTER it in the scan
+    // silently lost its backfill and the CronJob reported a 500.
+    //
+    // Reproduced deterministically rather than by racing a delete: a stub `db`
+    // hands the pass a dead tenant id ahead of a live one, which is exactly the
+    // state the scan leaves behind. Only `$queryRaw` (module discovery) and
+    // `tenant.findMany` (always-on) are read off `db` — the seeding writes ride
+    // the real client underneath, so the FK violation is genuine.
+    const live = await makeTenant({ b2bEnabled: true });
+    const dead = '00000000-0000-0000-0000-0000000000ff';
+
+    const warns: object[] = [];
+    const stub = {
+      // The scan is called once per seed-owning module, with the module slug as the
+      // only bound parameter — answer for `b2b` alone so the live tenant ends up
+      // with exactly the b2b catalog rather than every module's.
+      $queryRaw: (_strings: TemplateStringsArray, module: string) =>
+        Promise.resolve(module === 'b2b' ? [{ tenant_id: dead }, { tenant_id: live }] : []),
+      tenant: { findMany: () => Promise.resolve([{ id: dead }, { id: live }]) },
+    } as unknown as PrismaClient;
+
+    const summary = await reconcileSystemSeeds(stub, {
+      info: () => undefined,
+      warn: (obj) => warns.push(obj),
+    });
+
+    // The live tenant behind the dead one still got its full catalog — the proof
+    // that the pass carried on rather than aborting at the first failure.
+    expect((await systemAutomations(live)).map((a) => a.name).sort()).toEqual([
+      'B2B account approved',
+      'B2B invoice due reminder',
+      'B2B order approved — email',
+      'B2B order rejected — email',
+      'B2B overdue escalation',
+      'B2B quote expiring',
+      'B2B quote received',
+      'Handle form submissions',
+      'New B2B account onboarding task',
+    ]);
+
+    // The skip is REPORTED, not swallowed: one on each pass (module + always-on).
+    expect(summary.tenantsSkipped).toBe(2);
+    expect(summary.tenantsSeeded).toBe(1);
+    expect(summary.modules.find((m) => m.module === 'b2b')?.skipped).toBe(1);
+    expect(summary.modules.find((m) => m.module === '(always-on)')?.skipped).toBe(1);
+    expect(warns).toHaveLength(2);
+  });
+
   it('is idempotent — a second reconcile installs no duplicate', async () => {
     const tenantId = await makeTenant({ b2bEnabled: true });
 
