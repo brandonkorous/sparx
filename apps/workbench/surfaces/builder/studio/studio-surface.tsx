@@ -945,14 +945,29 @@ function StudioEditor({
     // Open the tab synchronously (pop-up-blocker-safe), then point it at the
     // draft-preview URL once the token is minted. Save first so the server draft
     // the preview serves reflects the current edits.
-    const tab = window.open('', '_blank', 'noopener,noreferrer');
+    //
+    // NO `noopener` / `noreferrer` IN THESE FEATURES, and that is the whole reason this
+    // works. Either one makes `window.open` return NULL by specification — so the handle
+    // this function is built around was thrown away at birth, and the "pop-up-blocker-safe"
+    // promise above became the opposite: the placeholder tab sat at about:blank forever
+    // while the fallback `window.open` below ran AFTER two awaits, outside the user
+    // gesture, where the pop-up blocker kills it. Every Preview click stranded a blank tab
+    // and showed no error, because neither failure branch had run. Found in the browser
+    // 2026-08-02 (`/v1/builder/preview-token` returned 200 each time — the token was never
+    // the problem).
+    //
+    // The isolation `noopener` exists for is kept by nulling `opener` on the child instead,
+    // which is legal while it is still same-origin `about:blank` and leaves OUR handle
+    // intact. Setting `location.href` on it afterwards stays allowed cross-origin.
+    const tab = window.open('', '_blank');
+    if (tab) tab.opener = null;
     try {
       if (unsaved) await doSync();
-      const [{ token }, origin] = await Promise.all([
+      const [{ token }, target] = await Promise.all([
         previewToken.mutateAsync(),
         siteOrigin.refetch().then((r) => r.data ?? siteOrigin.data ?? null),
       ]);
-      if (!origin) {
+      if (!target) {
         tab?.close();
         toast.add({
           title: 'No web address yet',
@@ -965,7 +980,10 @@ function StudioEditor({
       // always opened `/`, so previewing a change to the About page meant landing on
       // Home and navigating — and on a site whose home is unchanged, reading as
       // "Preview does nothing".
-      const url = `${origin}${previewPath(activeSlugRef.current)}?sparxSitePreview=${encodeURIComponent(token)}`;
+      // `extraQuery` is empty in every deployed environment; in local dev it carries the
+      // `?tenant=`/`?property=` the storefront needs to know which site this is, because
+      // there is no per-tenant DNS on a developer's machine.
+      const url = `${target.origin}${previewPath(activeSlugRef.current)}?sparxSitePreview=${encodeURIComponent(token)}${target.extraQuery}`;
       if (tab) tab.location.href = url;
       else window.open(url, '_blank', 'noopener,noreferrer');
     } catch {

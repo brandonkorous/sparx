@@ -434,19 +434,52 @@ interface DomainRow {
   isCanonical: boolean;
 }
 
+/** Where Preview should open this site, and anything the target needs in the query
+ *  string to know WHICH site it is. `extraQuery` is empty everywhere but local dev. */
+export interface SitePreviewTarget {
+  origin: string;
+  extraQuery: string;
+}
+
+/** The local storefront, for development only.
+ *
+ *  A tenant's canonical domain is REAL DNS pointing at production, so in local dev the
+ *  editor's Preview opened `https://<tenant>.sparx.zone` — the live site — and handed it a
+ *  preview JWT minted by the LOCAL api-rest. The draft was therefore never shown (prod
+ *  rejects a token it cannot verify), and a local credential left the machine to an
+ *  external host on every click. Observed 2026-08-02.
+ *
+ *  Set `NEXT_PUBLIC_STOREFRONT_ORIGIN=http://localhost:3004` and Preview stays here. Unset —
+ *  which is every deployed environment — this whole branch is dead and behaviour is
+ *  unchanged, so production still previews against the tenant's real address. */
+const DEV_STOREFRONT_ORIGIN = (process.env.NEXT_PUBLIC_STOREFRONT_ORIGIN ?? '').replace(/\/+$/, '');
+
 /** The site's public origin for THIS property — its canonical address, preferring a
  *  live one. Null when the site has no reachable host yet. */
 export function useSiteOrigin(propertyId: string | null) {
-  return useQuery({
-    queryKey: ['builder', 'site-origin', propertyId],
+  return useQuery<SitePreviewTarget | null>({
+    queryKey: ['builder', 'site-origin', propertyId, DEV_STOREFRONT_ORIGIN],
     queryFn: async () => {
+      // Local dev has no per-tenant DNS, so the storefront identifies the site from
+      // `?tenant=`/`?property=` (its proxy stashes them as headers + cookies). Without
+      // them a fresh preview tab resolves nothing and renders "Store not found".
+      if (DEV_STOREFRONT_ORIGIN) {
+        const [tenant, properties] = await Promise.all([
+          api.get<{ slug: string }>('/v1/tenant'),
+          api.get<{ id: string; slug: string }[]>('/v1/properties'),
+        ]);
+        const params = new URLSearchParams({ tenant: tenant.slug });
+        const property = properties.find((p) => p.id === propertyId);
+        if (property) params.set('property', property.slug);
+        return { origin: DEV_STOREFRONT_ORIGIN, extraQuery: `&${params.toString()}` };
+      }
       const domains = await api.get<DomainRow[]>('/v1/domains');
       const mine = domains.filter((d) => d.propertyId === propertyId);
       const live = mine.find(
         (d) => d.isCanonical && (d.status === 'active' || d.type === 'subdomain')
       );
       const chosen = live ?? mine.find((d) => d.isCanonical) ?? mine[0] ?? null;
-      return chosen ? `https://${chosen.host}` : null;
+      return chosen ? { origin: `https://${chosen.host}`, extraQuery: '' } : null;
     },
     enabled: Boolean(propertyId),
     staleTime: 300_000,
