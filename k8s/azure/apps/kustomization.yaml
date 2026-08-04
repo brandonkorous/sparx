@@ -375,6 +375,29 @@ patches:
                 env:
                   - name: NODE_OPTIONS
                     value: '--max-old-space-size=1024'
+                  # Prisma sizes its pool `cpus * 2 + 1`, and this container requests
+                  # 50m, so it sees ONE cpu and opens THREE connections. api-rest is not
+                  # a worker: it runs eight background ticks (social sweeps, scheduled
+                  # publish, email dispatch, sitebuilder publish, webhook delivery, …)
+                  # alongside every HTTP request, all contending for those three.
+                  #
+                  # That produced 154 pool timeouts in 45 minutes with ZERO server-side
+                  # rejections — the database was never the constraint, the client pool
+                  # was. Each tick died mid-transaction, and since `email-dispatch` is
+                  # the only publisher of `email.send`, no transactional email had ever
+                  # been sent here: its JetStream consumer read `delivered: 0` for three
+                  # days.
+                  #
+                  # Set HERE and not in DATABASE_URL because that URL lives in the shared
+                  # `sparx-app-secrets` that ~20 services mount via envFrom — a limit
+                  # there multiplies across all of them. The single-consumer workers are
+                  # correctly served by 3.
+                  #
+                  # 8 is deliberately modest: Postgres is B1ms (~35 max_connections) and
+                  # pools are lazy, so this adds at most 5 in-flight connections to a
+                  # budget nothing is currently exhausting.
+                  - name: DB_CONNECTION_LIMIT
+                    value: '8'
                 volumeMounts:
                   - name: media
                     mountPath: /media
