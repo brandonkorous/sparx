@@ -347,6 +347,11 @@ jobs:
     if: ${{ github.event_name != 'workflow_dispatch' || inputs.infrastructure }}
     runs-on: ubuntu-latest
     environment: ${{ needs.target.outputs.environment }}
+    outputs:
+      # Whether this run changed the app Secret. The containers stage rolls on it —
+      # env reaches a pod only at start, so a changed secret with no rollout is a
+      # release that reports success and changes nothing.
+      secrets_changed: ${{ steps.secrets.outputs.changed }}
     env:
       RESOURCE_GROUP: ${{ needs.target.outputs.resource_group }}
       CLUSTER: ${{ needs.target.outputs.cluster }}
@@ -576,6 +581,7 @@ jobs:
       # credential to move it with exists.
       # -----------------------------------------------------------------------
       - name: Sync secrets
+        id: secrets
         env:
           APP_SECRETS: ${{ secrets.SPARX_APP_SECRETS_ENV }}
           TYPESENSE_API_KEY: ${{ secrets.TYPESENSE_API_KEY }}
@@ -712,6 +718,23 @@ jobs:
             echo "Media storage: AZURE_STORAGE_ACCOUNT supplied explicitly; leaving Terraform's value unused."
           fi
 
+          # Did the app's SECRETS actually change? The containers stage decides whether
+          # to roll by diffing runtime PATHS (apps/ services/ packages/ k8s/), which is
+          # right for code and blind to environment: a pod reads its env once, at start,
+          # so a value that changes here reaches nothing until something restarts it.
+          #
+          # That blindness is not hypothetical — it is how this very step's Azure storage
+          # derivation first shipped. The release went green, the Secret carried both
+          # values, and every pod kept running with them unset, still serving media off
+          # the local disk. A stage that succeeds while the thing it exists to change
+          # does not change is the failure mode this pipeline is built to refuse.
+          #
+          # Compared BEFORE the apply, against the live Secret, so it needs no stored
+          # state — same trick the rollout guard uses when it reads the deployed tag off
+          # the cluster. Missing Secret (a first release) counts as changed.
+          LIVE_HASH=$(kubectl get secret sparx-app-secrets -n "$NAMESPACE" \
+            -o jsonpath='{.data}' 2>/dev/null | sha256sum | cut -d' ' -f1 || true)
+
           kubectl create secret generic sparx-app-secrets -n "$NAMESPACE" \
             --from-env-file=/tmp/app.env.plain \
             --dry-run=client -o yaml | kubectl apply -f -
@@ -738,6 +761,18 @@ jobs:
           fi
 
           rm -f /tmp/app.env /tmp/app.env.plain /tmp/app.env.b64
+
+          # Read back AFTER the base64 graft, so the comparison covers the Secret as the
+          # kubelet will actually serve it rather than only the dotenv half.
+          NEW_HASH=$(kubectl get secret sparx-app-secrets -n "$NAMESPACE" \
+            -o jsonpath='{.data}' 2>/dev/null | sha256sum | cut -d' ' -f1 || true)
+          if [ "$LIVE_HASH" = "$NEW_HASH" ] && [ -n "$LIVE_HASH" ]; then
+            echo 'changed=false' >> "$GITHUB_OUTPUT"
+            echo 'App secrets unchanged.'
+          else
+            echo 'changed=true' >> "$GITHUB_OUTPUT"
+            echo 'App secrets CHANGED — the containers stage will roll so pods pick them up.'
+          fi
 
           kubectl create secret generic typesense-secrets -n "$NAMESPACE" \
             --from-literal=api-key="$TYPESENSE_API_KEY" \
@@ -1083,6 +1118,15 @@ jobs:
 
           DEPLOYED=$(kubectl -n "$NAMESPACE" get deploy api-rest \
             -o jsonpath='{.spec.template.spec.containers[0].image}' 2>/dev/null | sed 's/.*://' || true)
+
+          # A changed Secret settles it before the path diff is even consulted: the
+          # images may be byte-identical and the pods still need restarting, because a
+          # container reads its environment once and never again.
+          if [ '${{ needs.infrastructure.outputs.secrets_changed }}' = 'true' ]; then
+            echo 'value=true' >> "$GITHUB_OUTPUT"
+            echo 'Rolling — the app secrets changed this release; pods must restart to read them.'
+            exit 0
+          fi
 
           case "$DEPLOYED" in
             *[!0-9a-f]* | '')

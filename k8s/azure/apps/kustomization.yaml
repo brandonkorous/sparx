@@ -336,11 +336,18 @@ patches:
   # forced `--max-old-space-size=384`. NODE_OPTIONS must move with the limit or
   # the heap stays capped regardless of what the container is allowed.
   #
-  # It also mounts the media volume, because with GCS_MEDIA_BUCKET unset
-  # packages/media resolves to LocalStorage and api-rest STREAMS variants from
-  # the same volume media-worker writes them to. The PVC itself is created by
-  # the INFRA overlay, one stage earlier — the marketplace ingest mounts it
-  # during the data stage, before this pod exists at all.
+  # It also mounts the media volume. That mount is now a FALLBACK, not the store:
+  # media moved to Azure Blob once AZURE_STORAGE_ACCOUNT/KEY reached this pod, and
+  # api-rest streams variants out of the `media-public` container. The PVC is kept
+  # mounted because it still holds the only copy of anything the migration missed,
+  # and because the local backend is what the code falls back to if those two
+  # variables ever go missing again. The PVC itself is created by the INFRA
+  # overlay, one stage earlier — the marketplace ingest mounts it during the data
+  # stage, before this pod exists at all.
+  #
+  # Once Blob has been verified over a few uploads, this mount, the fsGroup below
+  # and media-worker's node pinning can all come out together — they exist for a
+  # ReadWriteOnce disk that will no longer be in the read path.
   #
   # fsGroup is what makes that volume WRITABLE, and it is not optional here.
   # Every container in this overlay runs as uid 1000, but the media tarball was
