@@ -175,7 +175,21 @@ export function assemble(
   const claimed = new Set<string>();
 
   const rows: PagePerformanceRow[] = pages.map((page) => {
-    const path = normalizePath(page.slug ?? '/');
+    // A NULL SLUG IS "NO ADDRESS", NOT "THE HOME PAGE".
+    //
+    // This read `page.slug ?? '/'`, which is the difference between an empty string and
+    // null quietly collapsing: the home page is slug `''`, so an unaddressed page fell onto
+    // the SAME `/` and looked up the same metrics row. Both then rendered as `/` with
+    // identical figures, and reading down the People column double-counted every visit the
+    // site's busiest page had. Seen live 2026-08-02: "Home" and "Home — Landing" each
+    // claiming 10 people / 103 opens / 5.0s, for one page's traffic.
+    //
+    // An unaddressed page is still LISTED — a page nobody can reach is exactly the kind of
+    // thing this table exists to surface — but it owns no path, claims no metrics, and
+    // leaves the home page's traffic to the home page.
+    const slug = page.slug;
+    const addressed = slug != null;
+    const path = slug != null ? normalizePath(slug) : '';
     const prefix =
       page.kind === 'collection' && page.recordType
         ? routePrefixForRecordType(page.recordType)
@@ -189,10 +203,12 @@ export function assemble(
           claimed.add(p);
           return row;
         });
-    } else {
+    } else if (addressed) {
       const own = byPath.get(path);
       matched = own ? [own] : [];
       claimed.add(path);
+    } else {
+      matched = [];
     }
 
     const folded = matched.length > 0 ? fold(matched) : EMPTY_METRICS;
@@ -202,7 +218,9 @@ export function assemble(
       name: page.name,
       path,
       pathPrefix: prefix,
-      pathsCovered: prefix ? matched.length : 1,
+      // Zero for an unaddressed page: it covers no path, so saying "1" would claim it
+      // stands for a URL somewhere.
+      pathsCovered: prefix ? matched.length : addressed ? 1 : 0,
       ...folded,
       orders: commerce ? folded.orders : 0,
       revenueCents: commerce ? folded.revenueCents : 0,

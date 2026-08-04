@@ -1,8 +1,8 @@
 # Builder audit — roadmap to 10/10
 
-Version: 2.21.0
+Version: 2.23.0
 Author: Brandon Korous
-Last Updated: 2026-08-02
+Last Updated: 2026-08-03
 
 > **Status — EVERY SLICE IS DONE except industry blueprints (18b).** Waves 1, 2 and 4 are complete,
 > **wave 3 is fully closed** — silicaui answered all nineteen asks — and as of 2026-08-02 the sparx
@@ -179,31 +179,92 @@ Last Updated: 2026-08-02
 > +40 of those are a new assertion that the winning ink clears AA, which agreement alone never
 > proved) and **site-lint 109**.
 >
-> **Not settled by any of that — only a browser can.** The four tests above closed the DATA
-> half of four of these claims; each left a browser half behind, and this list is now those
-> remainders plus what was always browser-only. Do not read a green suite as a verified screen:
+> **~~Not settled by any of that — only a browser can.~~ SETTLED IN TWO LIVE BROWSERS,
+> 2026-08-02.** This list used to be the standing warning that a green suite is not a verified
+> screen. It has now been walked end to end against a real tenant, and the warning was earned:
+> five claims held, and the walk found **six defects that every green suite had missed**.
 >
-> - preview-vs-draft (1) · two-tab undo, where `Ctrl+Z` must move only your own node (5) · a
->   saved piece round-tripping and a master edit reaching its instances (7) · the Page results
->   table against a site with real traffic, where the collection-template row is the one to look
->   at (22).
-> - **a page whose frame is set to `none` actually rendering with no header/footer AND still
->   fully themed** (17 — the theme half is the bug `silicaActive` would have shipped), and the
->   frame picker round-tripping: choose "No header or footer", Save, confirm Publish lights up
->   and the live page is UNCHANGED until you press it (17).
-> - **the remainders.** `list-paging.test.ts` proves the arithmetic; it does not prove the route
->   RENDERS page 2 or that the pager hides itself when everything fits (23).
->   `responsive-images.test.ts` proves the ladder survives `toHtml`; a phone actually selecting
->   the 400/800 rung is the browser's own `sizes` resolution (20). `site-service.test.ts` proves
->   a named layout round-trips through the row mapper; the engine's switcher CREATING a second
->   design that survives a reload, and a page pointed at it publishing through it, is UI (25).
->   `catalog-sweep.test.ts` grades every section against every theme for structure and contrast;
->   **"does it look good" is not a judgement a test can make** (19).
-> - **this session's UI work, none of it eyes-verified** (no browser tooling was available):
->   the status badges sitting in the footer beside "Page" · **Search & sharing** appearing in the
->   inspector when the Page root is selected in Layers, and NOT drawing an empty titled section
->   on any other element · Check and History dimming only the editor pane rather than the whole
->   MDI · a header/footer finding's **Show me** switching to Layout mode with the block selected.
+> **PASS, with the evidence that settles each:**
+>
+> - **(5) two-tab undo.** A edits a heading, B edits a paragraph, both relay. `Ctrl+Z` in A
+>   inverted ONLY A's node and left B's bold intact — and, the sharper case, two further
+>   `Ctrl+Z` on A's exhausted stack did NOTHING rather than falling through to the shared op
+>   log and eating B's work.
+> - **(7) saved pieces.** "Save as component" → duplicate → ONE master colour edit turned BOTH
+>   instances green; after save + hard reload both returned still linked and still green.
+> - **(1) preview vs draft.** Same URL, token only: live serves the published design, the
+>   `?sparxSitePreview=` token serves the DRAFT, fully themed.
+> - **(17) `frame: 'none'`.** The chrome-free page renders with **`<nav>` 0 / `<footer>` 0** and
+>   is still FULLY THEMED (the half `silicaActive` would have broken), while the live page stays
+>   at `<nav>` 1 / `<footer>` 1 until Publish. Round-trips back to `null` cleanly.
+> - **(20) the `srcset` mechanism.** On `/blog` the ladder is real — 400w/800w/1200w/2000w, four
+>   DISTINCT urls — and the browser genuinely selected **1200w**. `sizes` resolution works.
+> - Also cleared from the never-eyes-verified list: **Search & sharing** renders on the Page root
+>   (search-result preview, title, description, sharing picture) and on no other element.
+>
+> **DEFECTS FOUND — none of which a test was ever going to catch. ALL FOUR ARE NOW FIXED,
+> each with the regression test its absence explains.**
+>
+> 1. **Preview was completely broken.** `window.open('', '_blank', 'noopener,noreferrer')`
+>    returns NULL by specification, so the "pop-up-blocker-safe" handle was discarded at birth;
+>    the placeholder tab sat at `about:blank` and the fallback `open` ran after two awaits,
+>    outside the user gesture, where the blocker killed it. Every click stranded a blank tab and
+>    reported nothing, because no failure branch had run. **Fixed** — opened without those
+>    flags, `opener` nulled on the child instead, which keeps the isolation and the handle.
+> 2. **The width ladder reached only ONE of the three render paths.** `responsiveImages` lives
+>    inside `renderSilicaBody`, so `SilicaFunctionalBody` and `SilicaChrome` — the two React
+>    walks — skipped it. Whether a page got responsive images therefore depended on something
+>    no author can see or control: whether it happens to contain a host node. The storefront
+>    home took the walk and shipped **28 images at one full-size URL each**, while `/blog` (no
+>    host node) correctly offered 400/800/1200/2000. **Fixed** in `silica-chrome.tsx`; home went
+>    **0 → 26 of 28**. The two remaining are the brand logo, a host-node `<img>` that is usually
+>    an SVG, where a width ladder means nothing.
+> 3. **`/blog?page=2` published the template's placeholder.** An out-of-range page served a card
+>    headed "Post title" with a src-less image — the unbound collection template — to the public.
+>    The cause is NOT a resolution bug: a repeat over `[]` renders its template once on purpose,
+>    because on the studio canvas no record is ever in scope. Making empty collections drop their
+>    children would silently delete authored placeholder copy from every published site. **Fixed
+>    at the HTTP layer instead** — `pageOutOfRange` in `list-paging.ts`, and the routes 404. Page
+>    one is never out of range, so an empty blog still renders its empty state.
+> 4. **The Page results table double-counted a null-slug page.** `page.slug ?? '/'` collapsed
+>    "no address" into "the home page", so "Home — Landing" (`slug: null`) read the home row's
+>    metrics and rendered as a second `/` with identical figures. **Fixed** — an unaddressed page
+>    is still listed (a page nobody can reach is worth surfacing) but claims no path and no
+>    traffic. Verified live: Home 12 people / 105 opens alone; the orphan 0 / 0 / no path.
+> 5. **Preview opened the CANONICAL PRODUCTION origin in local dev** — `siteOrigin` resolves the
+>    tenant's real domain, so a locally-minted preview JWT went to an external host and the draft
+>    could never be shown. **Fixed** behind `NEXT_PUBLIC_STOREFRONT_ORIGIN`, which also appends
+>    the `?tenant=`/`?property=` the storefront needs where there is no per-tenant DNS. Unset —
+>    every deployed environment — the branch is dead and production behaviour is unchanged.
+>
+> **TWO REPORTED DEFECTS WERE RETRACTED, and both were measurement error rather than code:**
+>
+> - **"`sizes` does not match the layout"** — not a defect. `responsive-images.ts` already
+>   explains it: `grid-cols-*` is authored as a CONTAINER query and `sizes` can only express
+>   VIEWPORT conditions, so dividing by column count risks understating, and an understated
+>   `sizes` is a blurry image — worse than a wasteful one. A documented, deliberate trade-off.
+> - **"`/shop` emits `sizes` with zero `srcset`"** — the grep was case-sensitive and React emits
+>   `srcSet`. `/shop` has a full next/image ladder (256→3840) through the custom loader.
+>
+> Both are worth keeping in the record: the verification pass that found four real defects also
+> produced two false ones, and in each case the tool was wrong rather than the tree.
+>
+> **Still not settled, stated as such rather than glossed:**
+>
+> - **The collection-template row (22)** could not be inspected: all 8 pages on the test site are
+>   `kind: singleton`, so the row the check asks for does not exist. Needs a fixture with a
+>   collection page.
+> - **"The pager hides when everything fits" (23)** is consistent with what was seen but NOT
+>   proven — no `rel="next"`/`rel="prev"` exists anywhere and every collection fits on one page.
+>   Needs a collection larger than the page size.
+> - **Phone rung selection (20)** was read from the live DOM at desktop width; a real narrow
+>   viewport was not exercised.
+> - `site-service.test.ts`'s named-layout UI half (25) is **moot** — 0.45.0 withdrew the feature.
+> - `catalog-sweep.test.ts` grades structure and contrast, but **"does it look good" is not a
+>   judgement a test can make** (19).
+> - Never eyes-verified, still: the status badges beside "Page" in the footer · Check and History
+>   dimming only the editor pane rather than the whole MDI · a header/footer finding's **Show me**
+>   switching to Layout mode with the block selected.
 >
 > **Decisions taken, so they are not re-litigated:**
 >

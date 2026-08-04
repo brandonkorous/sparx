@@ -58,11 +58,53 @@ function wordingFor(reason: VocabularyIssue['reason']): Wording {
     title: "This styling won't appear anywhere",
     lead:
       reason === 'arbitrary-value'
-        ? 'A styling value written by hand like this is not part of the site stylesheet, so it is ' +
-          'ignored completely — on the canvas and on the live page.'
-        : 'This styling names a size that the site stylesheet does not contain, so it is ignored ' +
-          'completely — on the canvas and on the live page.',
+        ? 'A size typed in by hand is not one of the sizes your design carries, so it is ignored ' +
+          'completely — here in the editor and on your live page.'
+        : 'This names a size your design does not include, so it is ignored completely — here in ' +
+          'the editor and on your live page.',
   };
+}
+
+/**
+ * The half of the message that names the concrete thing to write instead.
+ *
+ * BUILT FROM `replacement`, NOT FROM `hint`. The catalog ships both, derived from the
+ * same values — but `hint` is a sentence for an MCP agent inspecting a tree it just
+ * wrote, and it reads like one: "not in the declared scale and emits no CSS", "the
+ * nearest declared step", a bare list of every legal number. Appending it verbatim put
+ * that in front of a business owner, which is the one audience this surface has.
+ *
+ * Wording it here is NOT the second, quietly diverging answer the catalog warns about:
+ * the class name still comes from `replacement`, the same field the one-click fix
+ * substitutes. Prose and button now quote one value instead of two strings built
+ * independently — so they cannot disagree, which the old pairing could.
+ *
+ * `offered` is the ancestor-aware decision from `fixFor`, and it belongs in the words:
+ * promising "Fix it will do that" beside a withheld button is worse than saying nothing.
+ */
+function adviceFor(issue: VocabularyIssue, offered: boolean): string {
+  const swap = offered ? ' Fix it will make the change.' : '';
+
+  if (issue.reason === 'arbitrary-value') {
+    return 'Pick one of the sizes your design already carries — those are the ones that show up.';
+  }
+
+  if (issue.reason === 'viewport-variant') {
+    // The `@container` clause is load-bearing, so it survives — but it is the reason the
+    // button is missing, and it is spelled out rather than assumed. An owner cannot act
+    // on "needs a container ancestor"; they can act on "move it inside a section".
+    return offered
+      ? `Use \`${issue.replacement}\` instead, which measures this block rather than the ` +
+          `browser window.${swap}`
+      : `The version that measures this block is \`${issue.replacement}\`, but it only works ` +
+          'inside a wrapper marked to be measured (`@container`) and nothing above this one is ' +
+          '— so it is not offered as a one-click change. The sections, menu bar and footer your ' +
+          'site came with are already marked.';
+  }
+
+  return issue.replacement
+    ? `The closest size your design does carry is \`${issue.replacement}\`.${swap}`
+    : 'Pick one of the sizes your design already carries.';
 }
 
 /**
@@ -102,11 +144,8 @@ function fixFor(
 /**
  * Every unusable class in one page's composed document.
  *
- * The catalog's `hint` is appended verbatim rather than paraphrased: it names the
- * concrete legal value to write instead (`gap-6` for a rejected `gap-7`, the exact
- * container variant for a viewport one), and that string is derived from the declared
- * vocabulary. Rewriting it here would mean maintaining a second, quietly diverging
- * answer to "what should I have written".
+ * The catalog's `hint` is deliberately NOT used here — see `adviceFor`. It is the same
+ * finding worded for a different reader, and this one's reader is a business owner.
  */
 export function checkClasses(inventory: DocumentInventory): RawFinding[] {
   const findings: RawFinding[] = [];
@@ -146,6 +185,10 @@ export function checkClasses(inventory: DocumentInventory): RawFinding[] {
 
     for (const issue of checkClassString(classes)) {
       const wording = wordingFor(issue.reason);
+      // Resolved ONCE: `adviceFor` has to say whether a button is coming, and the answer
+      // is the same one the finding carries. Calling `fixFor` twice would let the words
+      // and the button drift apart on the next edit to either.
+      const offer = fixFor(issue, visited);
       findings.push({
         origin: visited.origin,
         nodeId: visited.node.id ?? null,
@@ -153,9 +196,9 @@ export function checkClasses(inventory: DocumentInventory): RawFinding[] {
         rule: wording.rule,
         severity: wording.severity,
         title: wording.title,
-        detail: `${wording.lead} ${issue.hint}`,
+        detail: `${wording.lead} ${adviceFor(issue, Boolean(offer.fix))}`,
         evidence: issue.className,
-        ...fixFor(issue, visited),
+        ...offer,
       });
     }
   }

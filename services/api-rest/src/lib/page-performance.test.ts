@@ -204,4 +204,35 @@ describe('assemble', () => {
     );
     expect(report.totals).toEqual({ views: 14, visitors: 12, orders: 2, revenueCents: 7500 });
   });
+
+  // An UNADDRESSED page (slug null) used to fall onto `/` via `page.slug ?? '/'`, so it read
+  // the home page's metrics row and rendered as a second `/` with identical figures. Reading
+  // down the People column then double-counted the busiest page on the site.
+  it('does not let a slugless page claim the home page traffic', () => {
+    const report = assemble(
+      [
+        page({ id: 'p1', name: 'Home', slug: '' }),
+        page({ id: 'p2', name: 'Home — Landing', slug: null }),
+      ],
+      [metric({ path: '/', views: 103, visitors: 10 })],
+      NO_AUDITS,
+      true
+    );
+
+    const home = report.pages.find((p) => p.name === 'Home');
+    const orphan = report.pages.find((p) => p.name === 'Home — Landing');
+
+    expect(home?.views).toBe(103);
+    expect(home?.visitors).toBe(10);
+    // Still listed — a page nobody can reach is worth surfacing — but owning nothing.
+    expect(orphan).toBeDefined();
+    expect(orphan?.views).toBe(0);
+    expect(orphan?.visitors).toBe(0);
+    expect(orphan?.path).toBe('');
+    expect(orphan?.pathsCovered).toBe(0);
+    // The column now sums to the traffic that actually happened.
+    expect(report.pages.reduce((n, p) => n + p.visitors, 0)).toBe(10);
+    // And `/` is still credited, so it is not double-counted as unowned either.
+    expect(report.totals.views).toBe(103);
+  });
 });

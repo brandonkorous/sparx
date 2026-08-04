@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 
-import { pageFrom, pagingParamFor, shownRange, totalPagesFor } from './list-paging';
+import {
+  pageFrom,
+  pageOutOfRange,
+  pagingParamFor,
+  shownRange,
+  totalPagesFor,
+  type ListPaging,
+} from './list-paging';
 
 // These four functions are the whole answer to "does `?page=2` actually work". They used
 // to live in `apps/site/lib/silica-data.ts`, where nothing could test them — no app in
@@ -157,5 +164,52 @@ describe('the pager and the fetch agree — the round trip', () => {
     expect(param).toBe('page');
     expect(page).toBe(2);
     expect(shownRange(page, PER_PAGE, PER_PAGE)).toEqual({ from: 25, to: 48 });
+  });
+});
+
+// The guard that stops an out-of-range page publishing a phantom record. A repeat over an
+// empty collection renders its TEMPLATE once — deliberate on the canvas, and on a live
+// storefront it served a card headed "Post title" with a src-less image at `/blog?page=2`.
+// The fix is the HTTP one, so these cases are the contract for what counts as out of range.
+describe('pageOutOfRange', () => {
+  const entry = (over: Partial<ListPaging>): ListPaging => ({
+    source: 'cms.blog_post',
+    param: 'page',
+    page: 1,
+    perPage: 24,
+    total: 12,
+    totalPages: 1,
+    hasMore: false,
+    ...over,
+  });
+
+  it('is true past the last page', () => {
+    expect(pageOutOfRange([entry({ page: 2 })])).toBe(true);
+    expect(pageOutOfRange([entry({ page: 99 })])).toBe(true);
+  });
+
+  it('is false on the last page itself', () => {
+    expect(pageOutOfRange([entry({ page: 3, totalPages: 3 })])).toBe(false);
+  });
+
+  it('never 404s page one — an empty collection is page 1 of 1, not a missing page', () => {
+    expect(pageOutOfRange([entry({ page: 1, total: 0, totalPages: 1 })])).toBe(false);
+  });
+
+  it('does not guess when the source cannot count', () => {
+    expect(pageOutOfRange([entry({ page: 9, total: null, totalPages: null })])).toBe(false);
+  });
+
+  it('trips on ANY list, so one out-of-range grid is enough', () => {
+    expect(
+      pageOutOfRange([
+        entry({ source: 'commerce.product', param: 'page-product', page: 1 }),
+        entry({ page: 4 }),
+      ])
+    ).toBe(true);
+  });
+
+  it('is false for a page with no paginated lists at all', () => {
+    expect(pageOutOfRange([])).toBe(false);
   });
 });

@@ -7,7 +7,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 
 import { getPublishedSilicaHome, treeHasHostNode } from '@/lib/silica';
-import { buildSilicaHost } from '@/lib/silica-data';
+import { buildSilicaHost, pageOutOfRange } from '@/lib/silica-data';
 import { SilicaBody, SilicaFunctionalBody } from '@/components/silica-chrome';
 import { SiteHostRenderer } from '@/components/silica-host-cores';
 import { ogImageUrl } from '@/lib/og';
@@ -100,6 +100,9 @@ export default async function SiteRoot({ searchParams }: RootPageProps) {
       // on the first 24 records with no way to say so.
       searchParams: sp,
     });
+    // Out-of-range `?page=` is a 404 here too — a home page carrying a journal index or a
+    // product grid paginates like any other, so it could publish the same phantom record.
+    if (pageOutOfRange(paging)) notFound();
     // A home page that embeds a host core — the page-links core under a grid, a theme
     // toggle, the brand mark — renders through the React walk so the core mounts live.
     // This branch did not exist: every core on a home page lowered to an empty div and

@@ -11,7 +11,7 @@ import { applyRedirect } from '@/lib/redirects';
 import { getPublishedSite, sectionsForPage } from '@/lib/site';
 import { getPublishedBuilderPage, getPublishedBuilderStyles } from '@/lib/builder';
 import { getPublishedSilicaPage, treeHasHostNode } from '@/lib/silica';
-import { buildSilicaHost } from '@/lib/silica-data';
+import { buildSilicaHost, pageOutOfRange } from '@/lib/silica-data';
 import { loadBuilderData } from '@/lib/builder-data';
 import { PageView } from '@/components/page-view';
 import { SectionRenderer } from '@/components/section-renderer';
@@ -185,6 +185,11 @@ export default async function SitePage({ params, searchParams }: SlugPageProps) 
       // journal index paginates like any other.
       searchParams: sp,
     });
+    // `?page=99` on a one-page list is Not Found, not a 200 (see `pageOutOfRange`). Without
+    // this the reader got the collection TEMPLATE rendered as a real record — a card headed
+    // "Post title" with an image that had no src, published to anyone who followed a stale
+    // link. Page 1 is never out of range, so an empty blog still renders its empty state.
+    if (pageOutOfRange(paging)) notFound();
     // A page that embeds a pinned host core (e.g. the faceted PLP on /shop) renders through
     // the React walk so the core mounts live and can read the route's search params for its
     // facet/sort/page state; a pure-content page keeps the faster HTML-string path. Bindings

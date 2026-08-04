@@ -32,7 +32,7 @@ import {
   type ResolveHost,
   type SymbolDef,
 } from '@wizeworks/silicaui-html';
-import { dropEmptyUrlAttrs, renderSilicaBody } from '@sparx/silica-catalog';
+import { dropEmptyUrlAttrs, renderSilicaBody, responsiveImages } from '@sparx/silica-catalog';
 
 /** Mounts the real interactive component for a pinned functional core (docs/122) —
  *  keyed by the host node's `component`. The route supplies this (closing over its own
@@ -64,7 +64,11 @@ export function SilicaBody({
     // error thrown) while silently never reaching the server at all.
     html: { ids: true },
   });
-  return <div className="sx-silica-body" dangerouslySetInnerHTML={{ __html: html }} />;
+  // No class on the wrapper. `sx-silica-body` used to sit here and nothing in the
+  // repo ever styled it — one applied class, zero selectors — so it was a label, not
+  // a hook, and the `sx-` prefix belongs to `@sparx/ui` rather than a tenant surface.
+  // The div itself stays: `dangerouslySetInnerHTML` needs a container element.
+  return <div dangerouslySetInnerHTML={{ __html: html }} />;
 }
 
 // ── SilicaChrome: the frame walked to React, children at the Outlet ──────────
@@ -217,7 +221,12 @@ export function SilicaChrome({
   // Mirror `renderSilicaBody`'s pipeline: the frame can bind attributes too (a
   // bound logo link), and an unhoisted carrier would render a stray hidden input
   // into the chrome. Always run — it also strips carriers that never resolved.
-  return walk(dropEmptyUrlAttrs(resolved), 'frame', {
+  //
+  // `responsiveImages` is part of that pipeline and was MISSING here, which is the
+  // whole reason the header logo shipped as a single full-width file on every page of
+  // every site. "Mirror the pipeline" was the stated intent; only two of its three
+  // steps were actually mirrored. See the note on `SilicaFunctionalBody`.
+  return walk(responsiveImages(dropEmptyUrlAttrs(resolved)), 'frame', {
     outlet: children,
     ...(renderHost ? { renderHost } : {}),
   });
@@ -248,5 +257,17 @@ export function SilicaFunctionalBody({
 }): React.ReactNode {
   const flat = flattenSymbols(root, symbols ?? {});
   const resolved = host ? resolveTree(flat, host, scope) : flat;
-  return walk(dropEmptyUrlAttrs(resolved), 'body', { renderHost });
+  // THE WIDTH LADDER BELONGS TO EVERY RENDER PATH, NOT THE HTML ONE.
+  //
+  // There are three ways a silica tree reaches a visitor — `SilicaBody` (the HTML-string
+  // projection), this React walk, and `SilicaChrome` — and `responsiveImages` used to run
+  // in only the first, because it lives inside `renderSilicaBody`. So the ladder appeared
+  // or vanished based on something no author can see or control: whether the page happens
+  // to contain a host node. A page with a theme toggle or a brand mark takes THIS branch,
+  // and every image on it shipped at one full-size URL — 28 of them on the storefront home,
+  // while `/blog` (no host node, so the HTML path) correctly offered 400/800/1200/2000.
+  //
+  // Runs LAST and outermost, exactly as in `render.ts`: a bound image's src only exists
+  // after `resolveTree`, so anything earlier has no URL to build a `srcset` from.
+  return walk(responsiveImages(dropEmptyUrlAttrs(resolved)), 'body', { renderHost });
 }

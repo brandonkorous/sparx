@@ -94,6 +94,33 @@ export function totalPagesFor(total: number | null | undefined, perPage: number)
 }
 
 /**
+ * Did the reader ask for a page that does not exist — `?page=99` on a list one page long?
+ *
+ * WHY THIS HAS TO BE A 404 AND CANNOT BE FIXED IN RESOLUTION. An empty collection resolves
+ * to `[]`, and silica renders a repeat over `[]` as its template ONCE — deliberately, because
+ * on the studio canvas no record is ever in scope and a template that vanished would leave the
+ * author a blank region with nothing to click. On a PUBLIC page that same rule published a
+ * fake post: `/blog?page=2` served a card reading "Post title" / "The short summary of this
+ * post, written in the CMS" with an image that had no `src`. Found live 2026-08-02.
+ *
+ * The tempting fix — make an empty collection drop its children — is the one thing that must
+ * not happen: `hideWhenEmpty` is opt-in precisely because the site builder relies on the
+ * opposite, and flipping it globally would silently delete authored placeholder copy from
+ * every published site (see `silica-resolve.ts`). The defect is not that an empty list renders
+ * its template; it is that a URL naming a page that does not exist returned 200 at all.
+ *
+ * So the answer is the HTTP one, which is also what a crawler expects: out of range is Not
+ * Found. Page 1 is never out of range — an empty collection is legitimately "page 1 of 1", and
+ * 404-ing an empty blog would hide a site that simply has not published yet.
+ *
+ * `totalPages: null` means the source cannot count (a cursor-walked list), so nothing is
+ * provably out of range and this stays false rather than guessing.
+ */
+export function pageOutOfRange(paging: readonly ListPaging[]): boolean {
+  return paging.some((p) => p.page > 1 && p.totalPages != null && p.page > p.totalPages);
+}
+
+/**
  * The human span this page covers — "Showing **25–48** of 137".
  *
  * Derived from what was actually SHOWN rather than from `perPage`, so a short last page

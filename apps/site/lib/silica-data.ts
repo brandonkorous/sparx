@@ -20,6 +20,7 @@ import {
   defaultSilicaFormat,
   entityPinKey,
   pageFrom,
+  pageOutOfRange,
   pagingParamFor,
   shownRange,
   totalPagesFor,
@@ -72,6 +73,10 @@ const COLLECTION_PAGE_SIZE = COLLECTION_PAGE_ITEMS;
  *  `…From`/`…To` refs a template puts in a "Showing 25–48 of 137" line — and each derived
  *  it separately while the definitions lived in an app that has no tests. */
 export type { ListPaging };
+// Re-exported for the routes, which turn "you asked for a page that does not exist" into
+// the 404 it always should have been — see `pageOutOfRange`'s note for why this cannot be
+// solved by making an empty collection render nothing.
+export { pageOutOfRange };
 
 /** The resolver plus what it paginated. Two values because the render walk and the
  *  pagination core need different halves of the same fetch, and re-deriving either

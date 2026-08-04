@@ -405,6 +405,40 @@ describe('styling', () => {
     expect(found?.detail).toContain('@3xl:grid-cols-3');
   });
 
+  // The catalog ships TWO wordings of the same finding, and this surface has exactly one
+  // reader: a business owner. `hint` is written for an MCP agent inspecting a tree it just
+  // wrote, and it was being appended verbatim — so the Check panel said "not in the
+  // declared scale and emits no CSS — the nearest declared step is `gap-2`. Declared: 0,
+  // 1, 2, 3, …" to someone who has never heard of a scale, CSS, or a declaration.
+  it("never speaks to the owner in the agent hint's vocabulary", () => {
+    const report = run({
+      pages: [
+        page({ root: body(el('div', 'flex gap-2.5', { text: 'x' })) }),
+        page({ slug: '/b', root: body(el('div', 'leading-[1.05]', { text: 'x' })) }),
+        page({ slug: '/c', root: body(el('div', 'grid md:grid-cols-3', { text: 'x' })) }),
+      ],
+    });
+    const styling = report.findings.filter(
+      (f) => f.rule === 'class-no-css' || f.rule === 'class-preview-blind'
+    );
+    expect(styling.length).toBeGreaterThan(0);
+
+    for (const finding of styling) {
+      expect(finding.detail, finding.rule).not.toMatch(
+        /declared scale|emits no CSS|Declared:|stylesheet|Tailwind|scale token|is never scanned/i
+      );
+    }
+  });
+
+  it('names the replacement the Fix it button would apply, not a second answer', () => {
+    // Prose and button quote ONE field (`replacement`). They were two independently
+    // built strings, which is a divergence waiting to happen.
+    const report = run({ pages: [page({ root: body(el('div', 'flex gap-2.5', { text: 'x' })) })] });
+    const found = report.findings.find((f) => f.rule === 'class-no-css');
+    expect(found?.detail).toContain('gap-2');
+    expect(found?.detail).not.toContain('gap-2.5');
+  });
+
   it('says nothing about ordinary classes', () => {
     expect(
       rules({
