@@ -44,18 +44,18 @@ Each row is a distinct design language. Folder holds the design doc + screenshot
 finalised in the design doc (an existing preset from the 20, or a bespoke one that
 echoes the reference's colour mood).
 
-| #   | Reference        | Archetype                          | Example business (ours)              | sparx slug          | Bespoke theme            | Status        |
-| --- | ---------------- | ---------------------------------- | ------------------------------------ | ------------------- | ------------------------ | ------------- |
-| 1   | SKIMS            | Minimal luxury / muted editorial   | premium skincare                     | `luxe-minimal`      | muted-neutral (no accent) | ✅ doc ☐ build |
-| 2   | Gymshark         | Bold athletic DTC                  | **Threshold** — endurance cycling    | `bold-athletic`     | `velodrome` (dark chrome + hi-vis) | ✅ doc ☐ build |
-| 3   | Allbirds         | Natural / sustainable clean        | eco everyday housewares              | `natural-clean`     | `sage-oat` (tinted-paper) | ✅ doc ☐ build |
-| 4   | Kith             | Streetwear editorial grid          | **Atelier Nord** — design furniture  | `editorial-grid`    | `atelier` (mono + serif display) | ✅ doc ☐ build |
-| 5   | Bombas           | Playful colourful mission          | **Rally** — pet supplies + giveback  | `playful-mission`   | `romp` (bright marigold + bands) | ✅ doc ☐ build |
-| 6   | Bokksu           | Warm subscription / food editorial | **Latitude Coffee Club** — sub + shop | `warm-subscription` | `roastery` (cream + terracotta) | ✅ doc ☐ build |
-| 7   | Victoria Beckham | High-fashion luxury serif          | **Vérane** — jewellery + fragrance   | `couture-serif`     | `maison` (serif-across, pure B/W) | ✅ doc ☐ build |
-| 8   | DJI              | Tech / cinematic product           | **Aphelion** — premium audio         | `tech-cinematic`    | `flux` (true-dark + electric blue) | ✅ doc ☐ build |
-| 9   | Sephora → Huda   | Beauty counter grid                | **Maeve** — colour cosmetics         | `beauty-counter`    | `gloss` (blush + magenta) | ✅ doc ☐ build |
-| 10  | Fashion Nova     | Dense fast-fashion catalog         | **Voltage** — apparel                | `catalog-dense`     | `voltage` (bright + sale-red) | ✅ doc ☐ build |
+| #   | Reference        | Archetype                          | Example business (ours)               | sparx slug          | Bespoke theme                      | Status         |
+| --- | ---------------- | ---------------------------------- | ------------------------------------- | ------------------- | ---------------------------------- | -------------- |
+| 1   | SKIMS            | Minimal luxury / muted editorial   | premium skincare                      | `luxe-minimal`      | muted-neutral (no accent)          | ✅ doc ☐ build |
+| 2   | Gymshark         | Bold athletic DTC                  | **Threshold** — endurance cycling     | `bold-athletic`     | `velodrome` (dark chrome + hi-vis) | ✅ doc ☐ build |
+| 3   | Allbirds         | Natural / sustainable clean        | eco everyday housewares               | `natural-clean`     | `sage-oat` (tinted-paper)          | ✅ doc ☐ build |
+| 4   | Kith             | Streetwear editorial grid          | **Atelier Nord** — design furniture   | `editorial-grid`    | `atelier` (mono + serif display)   | ✅ doc ☐ build |
+| 5   | Bombas           | Playful colourful mission          | **Rally** — pet supplies + giveback   | `playful-mission`   | `romp` (bright marigold + bands)   | ✅ doc ☐ build |
+| 6   | Bokksu           | Warm subscription / food editorial | **Latitude Coffee Club** — sub + shop | `warm-subscription` | `roastery` (cream + terracotta)    | ✅ doc ☐ build |
+| 7   | Victoria Beckham | High-fashion luxury serif          | **Vérane** — jewellery + fragrance    | `couture-serif`     | `maison` (serif-across, pure B/W)  | ✅ doc ☐ build |
+| 8   | DJI              | Tech / cinematic product           | **Aphelion** — premium audio          | `tech-cinematic`    | `flux` (true-dark + electric blue) | ✅ doc ☐ build |
+| 9   | Sephora → Huda   | Beauty counter grid                | **Maeve** — colour cosmetics          | `beauty-counter`    | `gloss` (blush + magenta)          | ✅ doc ☐ build |
+| 10  | Fashion Nova     | Dense fast-fashion catalog         | **Voltage** — apparel                 | `catalog-dense`     | `voltage` (bright + sale-red)      | ✅ doc ☐ build |
 
 Consolidated Phase-2 catalog additions the ten docs converge on: [CATALOG-ADDITIONS.md](CATALOG-ADDITIONS.md).
 _(Sephora hard-blocked automated capture with a 403; #9 was studied on Huda Beauty, the same archetype.)_
