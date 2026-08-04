@@ -73,6 +73,24 @@ export function variantUrlPath(key: string): string {
   return key.replace('/variants/', '/');
 }
 
+/** The URL for an asset that has NO processed variants — api-rest's public asset route,
+ *  which resolves the bytes whatever form they take: an external hot-linked key is
+ *  redirected to verbatim, a `data:` URI is decoded and served, and an original still
+ *  waiting on (or skipped by) the transcoder is piped through.
+ *
+ *  Requiring a variant is what silently dropped images from posts. Two different assets
+ *  hit it: a sample/stock image (`createSampleImageAsset` writes an absolute URL into
+ *  `key` and creates zero MediaVariant rows) and a freshly UPLOADED one whose transcode
+ *  has not landed yet. Both render fine in the composer, which reads the asset directly
+ *  — so the post looked correct right up until it published without its picture.
+ *
+ *  A `data:` asset resolves to this route rather than to the URI itself: no platform can
+ *  fetch a data URI, but every one of them can fetch this URL, which serves the decoded
+ *  bytes with a real content-type. */
+function assetFallbackUrl(base: string, assetId: string, tenantSlug: string): string {
+  return `${base}/v1/public/media/${assetId}?tenant=${encodeURIComponent(tenantSlug)}`;
+}
+
 /** Load the post's assets with their base + crop variants, preserving id order. */
 export async function resolvePostAssets(
   tenantId: string,
@@ -82,16 +100,20 @@ export async function resolvePostAssets(
   const base = env.MEDIA_PUBLIC_BASE_URL.replace(/\/$/, '');
   const url = (key: string): string => `${base}/v1/public/media/variants/${variantUrlPath(key)}`;
 
-  const assets = await withTenant({ tenantId }, (tx) =>
-    tx.mediaAsset.findMany({
+  const { assets, tenantSlug } = await withTenant({ tenantId }, async (tx) => ({
+    assets: await tx.mediaAsset.findMany({
       where: { id: { in: assetIds }, status: 'ready', deletedAt: null },
       select: {
         id: true,
+        key: true,
         mimeType: true,
         variants: { select: { key: true, width: true, aspect: true, format: true } },
       },
-    })
-  );
+    }),
+    // The public asset route is addressed by tenant SLUG, not id. One lookup per post.
+    tenantSlug: (await tx.tenant.findFirst({ where: { id: tenantId }, select: { slug: true } }))
+      ?.slug,
+  }));
   const byId = new Map(assets.map((a) => [a.id, a]));
 
   const out: ResolvedAsset[] = [];
@@ -125,8 +147,19 @@ export async function resolvePostAssets(
       }
     }
     // Base URL falls back to any crop (all crops are jpeg) when there's no scale-to-width
-    // variant — a valid, platform-accepted image either way.
-    const baseUrl = baseKey ? url(baseKey) : Object.values(crops)[0];
+    // variant — a valid, platform-accepted image either way — and finally to the public
+    // asset route when the asset has NO variants at all.
+    //
+    // That last fallback is not an edge case, it is the common one. A sample/stock image
+    // has no variants by construction (`createSampleImageAsset` writes an absolute URL
+    // into `key` with zero MediaVariant rows), and a freshly uploaded image has none yet
+    // if its transcode has not landed. Requiring a variant dropped both — `requested 1,
+    // resolved 0` — while the composer showed the picture the whole time, because it
+    // reads the asset directly. The post published without it and reported success.
+    const baseUrl = baseKey
+      ? url(baseKey)
+      : (Object.values(crops)[0] ??
+        (tenantSlug ? assetFallbackUrl(base, asset.id, tenantSlug) : undefined));
     if (!baseUrl) continue; // nothing renderable
     out.push({ id, kind, baseUrl, crops });
   }
