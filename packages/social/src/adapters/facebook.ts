@@ -87,7 +87,7 @@ export type FacebookPostPlan =
  *  caption and a gallery's message have no clickable link field, so the link is folded
  *  into the text; a link with no image becomes a feed post with a preview card. */
 export function planFacebookPost(post: RenderedPost): FacebookPostPlan {
-  const imgs = imageUrls(post.mediaUrls);
+  const imgs = imageUrls(post.media);
   const link = post.link ?? null;
   const [firstImg] = imgs;
   if (imgs.length === 1 && firstImg) {

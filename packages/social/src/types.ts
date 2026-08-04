@@ -78,6 +78,16 @@ export interface TargetOverride {
  *  adapter receives exactly this and does no further shaping. */
 export interface RenderedPost {
   text: string;
+  /** The attachments WITH their kind — the authoritative source for "is this an image
+   *  or a video", and what every adapter must branch on.
+   *
+   *  `mediaUrls` below is the same list flattened to bare URLs, kept for callers that
+   *  genuinely do not care about kind. Deciding kind from a URL is NOT sound: it was
+   *  done by sniffing the file extension, and a stock/CDN URL has none
+   *  (`images.unsplash.com/photo-1588850561407-…`), so an image was read as "not an
+   *  image" — dropped entirely on Facebook, and mistaken for a VIDEO on
+   *  Instagram/Threads/TikTok/YouTube, whose video branch is `!isImageUrl(u)`. */
+  media: MediaRef[];
   mediaUrls: string[];
   link?: string;
   firstComment?: string;

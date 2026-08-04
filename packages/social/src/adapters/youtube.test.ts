@@ -6,17 +6,25 @@ import {
   planYouTubeShort,
   youtubeShortsPermalink,
 } from './youtube.js';
+import { isImageUrl } from './_media.js';
 import type { RenderedPost } from '../types.js';
 
 // The YouTube adapter's pure decision logic (docs/134 Phase 3). The resumable upload is
 // integration surface; here we lock the video-required rule, the #Shorts title, the
 // permalink, and the authorize URL.
 
-const rendered = (over: Partial<RenderedPost>): RenderedPost => ({
-  text: 'Hello',
-  mediaUrls: [],
-  ...over,
-});
+const rendered = (over: Partial<RenderedPost>): RenderedPost => {
+  const base = { text: 'Hello', mediaUrls: [] as string[], ...over };
+  return {
+    ...base,
+    // These fixtures express attachments as bare URLs. Real posts carry MediaRef.kind
+    // from the asset's MIME type; here we classify the way the media resolver would, so
+    // a `.jpg` fixture stays an image and a `.mp4` stays a video.
+    media:
+      over.media ??
+      base.mediaUrls.map((url) => ({ url, kind: isImageUrl(url) ? 'image' : 'video' }) as const),
+  };
+};
 
 describe('planYouTubeShort', () => {
   it('builds a Short from the video, appending #Shorts to the title', () => {

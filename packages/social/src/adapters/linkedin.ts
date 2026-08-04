@@ -163,7 +163,7 @@ export interface LinkedInPostPlan {
  *  image the link rides in the commentary, otherwise a bare link becomes an article
  *  card, otherwise it's text-only. */
 export function planLinkedInPost(post: RenderedPost): LinkedInPostPlan {
-  const imageUrl = firstImageUrl(post.mediaUrls);
+  const imageUrl = firstImageUrl(post.media);
   if (imageUrl) {
     return {
       commentary: post.link ? appendLink(post.text, post.link) : post.text,

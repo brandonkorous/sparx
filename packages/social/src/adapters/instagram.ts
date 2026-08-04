@@ -54,7 +54,7 @@ import {
   IG_INSIGHTS_SCOPE,
   type MetaCreds,
 } from './_meta.js';
-import { appendLink, imageUrls, isImageUrl } from './_media.js';
+import { appendLink, firstVideoUrl, imageUrls } from './_media.js';
 import { requireCreds, splitScopes } from './_http.js';
 
 const POST_SCOPE =
@@ -83,11 +83,11 @@ export type InstagramPostPlan =
  *  a media-less post is `none` (the renderer normally blocks it first). */
 export function planInstagramPost(post: RenderedPost): InstagramPostPlan {
   const caption = post.link ? appendLink(post.text, post.link) : post.text;
-  const imgs = imageUrls(post.mediaUrls);
+  const imgs = imageUrls(post.media);
   const [firstImg] = imgs;
   if (imgs.length === 1 && firstImg) return { kind: 'image', imageUrl: firstImg, caption };
   if (imgs.length > 1) return { kind: 'carousel', imageUrls: imgs, caption };
-  const video = post.mediaUrls.find((u) => !isImageUrl(u));
+  const video = firstVideoUrl(post.media);
   if (video) return { kind: 'reel', videoUrl: video, caption };
   return { kind: 'none' };
 }

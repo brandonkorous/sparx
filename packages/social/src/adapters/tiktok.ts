@@ -34,7 +34,7 @@ import type {
 } from '../types.js';
 import { PLATFORM_CONSTRAINTS } from '../constraints.js';
 import { waitForContainer } from './_meta.js';
-import { appendLink, deriveTitle, imageUrls, isImageUrl } from './_media.js';
+import { appendLink, deriveTitle, firstVideoUrl, imageUrls } from './_media.js';
 import {
   describeResponse,
   expiresInSeconds,
@@ -79,9 +79,9 @@ export type TikTokPostPlan =
  *  renderer normally blocks it first). */
 export function planTikTokPost(post: RenderedPost): TikTokPostPlan {
   const caption = post.link ? appendLink(post.text, post.link) : post.text;
-  const video = post.mediaUrls.find((u) => !isImageUrl(u));
+  const video = firstVideoUrl(post.media);
   if (video) return { kind: 'video', videoUrl: video, caption };
-  const imgs = imageUrls(post.mediaUrls);
+  const imgs = imageUrls(post.media);
   if (imgs.length > 0) return { kind: 'photo', imageUrls: imgs, caption };
   return { kind: 'none' };
 }

@@ -93,7 +93,7 @@ export interface PinterestPinPlan {
  *  image/link mapping is unit-tested without any network. Returns null when there's no
  *  image (a Pin cannot exist without one). */
 export function planPinterestPin(post: RenderedPost): PinterestPinPlan | null {
-  const imageUrl = firstImageUrl(post.mediaUrls);
+  const imageUrl = firstImageUrl(post.media);
   if (!imageUrl) return null;
   return {
     imageUrl,

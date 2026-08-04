@@ -34,7 +34,7 @@ import type {
 } from '../types.js';
 import { PLATFORM_CONSTRAINTS } from '../constraints.js';
 import { classifyMediaContainerStatus, waitForContainer } from './_meta.js';
-import { appendLink, imageUrls, isImageUrl } from './_media.js';
+import { appendLink, firstVideoUrl, imageUrls } from './_media.js';
 import {
   describeResponse,
   expiresInSeconds,
@@ -81,7 +81,7 @@ export type ThreadsPostPlan =
  *  native link attachment; a media post has no link field, so the link folds into the
  *  text. */
 export function planThreadsPost(post: RenderedPost): ThreadsPostPlan {
-  const imgs = imageUrls(post.mediaUrls);
+  const imgs = imageUrls(post.media);
   const [firstImg] = imgs;
   if (imgs.length === 1 && firstImg) {
     return {
@@ -97,7 +97,7 @@ export function planThreadsPost(post: RenderedPost): ThreadsPostPlan {
       text: post.link ? appendLink(post.text, post.link) : post.text,
     };
   }
-  const video = post.mediaUrls.find((u) => !isImageUrl(u));
+  const video = firstVideoUrl(post.media);
   if (video) {
     return {
       kind: 'video',

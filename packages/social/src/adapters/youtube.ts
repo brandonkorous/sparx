@@ -29,7 +29,7 @@ import type {
   SocialTokens,
 } from '../types.js';
 import { PLATFORM_CONSTRAINTS } from '../constraints.js';
-import { appendLink, deriveTitle, isImageUrl } from './_media.js';
+import { appendLink, deriveTitle, firstVideoUrl } from './_media.js';
 import {
   describeResponse,
   expiresInSeconds,
@@ -63,7 +63,7 @@ export interface YouTubeShortPlan {
  *  title/description derivation is unit-tested without any network. Returns null when
  *  there's no video (only images/text), since a Short needs a video. */
 export function planYouTubeShort(post: RenderedPost): YouTubeShortPlan | null {
-  const videoUrl = post.mediaUrls.find((u) => !isImageUrl(u));
+  const videoUrl = firstVideoUrl(post.media);
   if (!videoUrl) return null;
   const base = deriveTitle(post.text, TITLE_MAX);
   const title = /#shorts/i.test(base) ? base : `${base} #Shorts`;

@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { FacebookPageAdapter, facebookPermalink, planFacebookPost } from './facebook.js';
 import type { RenderedPost, SocialAuth, SocialTargetRef } from '../types.js';
+import { isImageUrl } from './_media.js';
 
 function jsonRes(body: unknown): Response {
   return { ok: true, status: 200, json: () => Promise.resolve(body) } as unknown as Response;
@@ -22,11 +23,18 @@ function binRes(bytes: Uint8Array, contentType = 'image/jpeg'): Response {
 // (token exchange, Page listing, Graph publish) are integration surface; here we lock
 // the photo/gallery/link/text branching, the permalink shape, and the authorize URL.
 
-const rendered = (over: Partial<RenderedPost>): RenderedPost => ({
-  text: 'Hello',
-  mediaUrls: [],
-  ...over,
-});
+const rendered = (over: Partial<RenderedPost>): RenderedPost => {
+  const base = { text: 'Hello', mediaUrls: [] as string[], ...over };
+  return {
+    ...base,
+    // These fixtures express attachments as bare URLs. Real posts carry MediaRef.kind
+    // from the asset's MIME type; here we classify the way the media resolver would, so
+    // a `.jpg` fixture stays an image and a `.mp4` stays a video.
+    media:
+      over.media ??
+      base.mediaUrls.map((url) => ({ url, kind: isImageUrl(url) ? 'image' : 'video' }) as const),
+  };
+};
 
 describe('planFacebookPost', () => {
   it('is a single photo (link folded into the caption) with one image', () => {

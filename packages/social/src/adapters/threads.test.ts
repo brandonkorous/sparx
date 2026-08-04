@@ -1,17 +1,25 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 
 import { ThreadsAdapter, mapThreadsMetrics, planThreadsPost, threadsPermalink } from './threads.js';
+import { isImageUrl } from './_media.js';
 import type { RenderedPost } from '../types.js';
 
 // The Threads adapter's pure decision logic (docs/134 Phase 2). The two-step publish +
 // its separate host are integration surface; here we lock the text/image/carousel/video
 // branching (native link attachment vs. folded-in link) and the authorize URL.
 
-const rendered = (over: Partial<RenderedPost>): RenderedPost => ({
-  text: 'Hello',
-  mediaUrls: [],
-  ...over,
-});
+const rendered = (over: Partial<RenderedPost>): RenderedPost => {
+  const base = { text: 'Hello', mediaUrls: [] as string[], ...over };
+  return {
+    ...base,
+    // These fixtures express attachments as bare URLs. Real posts carry MediaRef.kind
+    // from the asset's MIME type; here we classify the way the media resolver would, so
+    // a `.jpg` fixture stays an image and a `.mp4` stays a video.
+    media:
+      over.media ??
+      base.mediaUrls.map((url) => ({ url, kind: isImageUrl(url) ? 'image' : 'video' }) as const),
+  };
+};
 
 describe('planThreadsPost', () => {
   it('is a text post with a native link attachment (Threads posts text-only)', () => {

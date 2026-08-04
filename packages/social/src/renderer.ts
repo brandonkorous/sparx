@@ -98,6 +98,10 @@ export function renderForTarget(
 
   const rendered: RenderedPost = {
     text,
+    // Carry the kind through. The renderer KNOWS it (it just validated against
+    // `constraints.supportedMedia` on line 89) — flattening to bare URLs here is what
+    // forced each adapter to guess it back from the file extension.
+    media: [...media],
     mediaUrls: media.map((m) => m.url),
     ...(post.link ? { link: post.link } : {}),
     ...(firstComment ? { firstComment } : {}),

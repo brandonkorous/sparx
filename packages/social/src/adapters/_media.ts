@@ -5,6 +5,7 @@
 // by extension. Centralized here so LinkedIn + the Meta family agree on exactly which
 // URLs count as an image and how a canonical link is appended to a caption.
 
+import type { MediaRef } from '../types.js';
 import { fetchT, HttpError } from './_http.js';
 
 /** File extensions the platforms treat as an uploadable image. `avif` is included so a
@@ -36,21 +37,35 @@ export async function fetchImageBinary(
   return { bytes, contentType, filename: `image.${ext}` };
 }
 
-/** Whether a resolved media URL points at an image (by extension). */
+/** Whether a URL LOOKS like an image by its file extension.
+ *
+ *  NOT a way to decide what an attachment is — use `MediaRef.kind`, which the renderer
+ *  carries through from the resolved asset's MIME type. An extension is absent from
+ *  every stock/CDN URL (`images.unsplash.com/photo-1588850561407-…`, which is a jpeg),
+ *  so this returns false for images all day. It survives only for the media RESOLVER,
+ *  which picks a variant by filename and has no MIME to consult. */
 export function isImageUrl(url: string): boolean {
   return IMAGE_EXT_RE.test(url);
 }
 
-/** The first attached media URL that is an image, or null. Adapters that are image-only
- *  (or that need a lead image) use this; a video URL falls through to a link/text post
- *  rather than a hard failure. */
-export function firstImageUrl(mediaUrls: readonly string[]): string | null {
-  return mediaUrls.find((u) => isImageUrl(u)) ?? null;
+/** The first attached IMAGE's URL, or null. Adapters that are image-only (or that need
+ *  a lead image) use this; a video-only post falls through to a link/text post rather
+ *  than a hard failure. */
+export function firstImageUrl(media: readonly MediaRef[]): string | null {
+  return media.find((m) => m.kind === 'image')?.url ?? null;
 }
 
-/** Every attached image URL, in order — for platforms that take a gallery/carousel. */
-export function imageUrls(mediaUrls: readonly string[]): string[] {
-  return mediaUrls.filter((u) => isImageUrl(u));
+/** Every attached IMAGE url, in order — for platforms that take a gallery/carousel. */
+export function imageUrls(media: readonly MediaRef[]): string[] {
+  return media.filter((m) => m.kind === 'image').map((m) => m.url);
+}
+
+/** The first attached VIDEO's URL, or null. The counterpart to `firstImageUrl`, and the
+ *  replacement for `mediaUrls.find((u) => !isImageUrl(u))` — that predicate called
+ *  anything it could not recognize a video, so an extensionless PHOTO was handed to a
+ *  video-upload path. */
+export function firstVideoUrl(media: readonly MediaRef[]): string | null {
+  return media.find((m) => m.kind === 'video')?.url ?? null;
 }
 
 /** Append a link to caption text on its own paragraph, unless it's already present.
