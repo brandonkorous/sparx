@@ -68,19 +68,27 @@ describe('customerService', () => {
   });
 
   it('update — applies partial patch, emits crm.customer.updated', async () => {
+    // Conversion moves the LIFECYCLE axis, not the relationship one (docs/137).
+    // A retail individual being worked as a lead is still retail after they buy —
+    // what changes is that they reach `customer` and stop having a work state.
     const created = await customerService.create(test.ctx, {
-      type: 'prospect',
+      lifecycleStage: 'lead',
+      leadStatus: 'in_progress',
       email: 'lead@example.test',
       firstName: 'Lead',
     });
+    expect(created.type).toBe('retail'); // the axis default, not something we passed
     test.publisher.clear();
 
     const updated = await customerService.update(test.ctx, created.id, {
-      type: 'retail',
+      lifecycleStage: 'customer',
+      leadStatus: null,
       tags: ['converted'],
     });
 
-    expect(updated.type).toBe('retail');
+    expect(updated.lifecycleStage).toBe('customer');
+    expect(updated.leadStatus).toBeNull();
+    expect(updated.type).toBe('retail'); // untouched by a lifecycle patch
     expect(updated.tags).toEqual(['converted']);
     expect(updated.email).toBe('lead@example.test'); // untouched
 
@@ -90,7 +98,7 @@ describe('customerService', () => {
 
   it('softDelete — sets deletedAt and the row vanishes from list', async () => {
     const created = await customerService.create(test.ctx, {
-      type: 'prospect',
+      lifecycleStage: 'lead',
       email: 'doomed@example.test',
     });
     test.publisher.clear();
@@ -109,18 +117,23 @@ describe('customerService', () => {
     expect(items.find((c) => c.id === created.id)).toBeUndefined();
   });
 
-  it('list — filter by type returns only matching rows', async () => {
+  it('list — filters the classification axes independently', async () => {
     await customerService.create(test.ctx, {
       type: 'retail',
+      lifecycleStage: 'customer',
       email: 'retail@example.test',
     });
     await customerService.create(test.ctx, {
       type: 'b2b',
+      lifecycleStage: 'customer',
       email: 'b2b@example.test',
     });
+    // `partner` is label-only, but it proves the relationship enum is the widened
+    // four and not the old overloaded one.
     await customerService.create(test.ctx, {
-      type: 'prospect',
-      email: 'prospect@example.test',
+      type: 'partner',
+      lifecycleStage: 'lead',
+      email: 'partner@example.test',
     });
 
     const retail = await customerService.list(test.ctx, { type: 'retail' });
@@ -129,6 +142,13 @@ describe('customerService', () => {
 
     const b2b = await customerService.list(test.ctx, { type: 'b2b' });
     expect(b2b.items.every((c) => c.type === 'b2b')).toBe(true);
+
+    // The axes are orthogonal: filtering lifecycle crosses relationship types
+    // rather than partitioning within one.
+    const leads = await customerService.list(test.ctx, { lifecycleStage: 'lead' });
+    expect(leads.items.every((c) => c.lifecycleStage === 'lead')).toBe(true);
+    expect(leads.items.some((c) => c.email === 'partner@example.test')).toBe(true);
+    expect(leads.items.some((c) => c.email === 'retail@example.test')).toBe(false);
   });
 
   it('create — invalid input rolls back atomically (no orphan customer, no event)', async () => {

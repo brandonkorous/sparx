@@ -80,8 +80,10 @@ export type UpdateCustomerInput = z.infer<typeof UpdateCustomerInput>;
 // waitlist). Deliberately minimal: a visitor hands over an email (and maybe a
 // name) and opts into marketing. The service upserts on the (tenant, property,
 // email) identity and folds `marketing` into gdpr_consent, so a repeat submit is
-// idempotent rather than a unique-constraint error. No `type` here — a fresh
-// capture is always a `prospect`; an existing customer keeps theirs.
+// idempotent rather than a unique-constraint error. No classification here — an
+// opt-in says nothing about how someone transacts, so a fresh capture takes the
+// default relationship type and lands at lifecycle `subscriber`; an existing
+// customer keeps whatever they already carry on all three axes.
 export const SubscribeCustomerInput = z.object({
   email: z.string().email().max(255),
   // The site (web property) the form was on (docs/58 D2). Null → a tenant-level

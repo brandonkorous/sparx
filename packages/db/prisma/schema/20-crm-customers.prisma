@@ -4,8 +4,11 @@
 // and B2B FK into this row rather than defining a parallel customer table.
 //
 // Locked architectural commitments (memory/feedback_crm_architecture.md):
-//   • One table, three types — `type` ∈ {prospect, retail, b2b}. Promotion
-//     is a column update, not a row migration.
+//   • One table, three orthogonal classification axes (docs/137) — `type`
+//     (relationship), `lifecycle_stage` (journey), `lead_status` (work state).
+//     Promotion is a column update, not a row migration. `type` was once the
+//     single overloaded axis and carried `prospect`; 20270116000000 split it,
+//     and a prospect is now lifecycle `lead`, not a relationship kind.
 //   • `authUserId` is NOT a FK to staff `users` (which is staff-only per
 //     docs/16 §2 Layer 1). It will FK to a customer-auth-layer table when
 //     that module lands. Stored as plain UUID for now.

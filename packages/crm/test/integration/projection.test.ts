@@ -19,9 +19,10 @@ describe('customer projection', () => {
     await disposeTestContext(test);
   });
 
-  it('a fresh prospect — no orders, not high value, not inactive', async () => {
+  it('a fresh lead — no orders, not high value, not inactive', async () => {
     const c = await customerService.create(test.ctx, {
-      type: 'prospect',
+      lifecycleStage: 'lead',
+      leadStatus: 'new',
       email: 'fresh@example.test',
     });
     const p = await buildCustomerProjection(test.ctx, c.id);

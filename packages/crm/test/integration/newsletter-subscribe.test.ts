@@ -1,7 +1,7 @@
 // Newsletter subscribe → marketing-segment membership (docs/51 §7).
 //
 // End-to-end for the storefront "Email signup" capture: customerService.subscribe
-// upserts a consenting prospect AND drives the in-process segment evaluator so the
+// upserts a consenting subscriber AND drives the in-process segment evaluator so the
 // subscriber lands in the built-in "Newsletter Subscribers" segment — which is how
 // an email broadcast resolves its recipients. Covers: fresh capture, idempotent
 // re-subscribe (no duplicate member), and that the evaluator drops a do-not-contact
@@ -64,13 +64,19 @@ describe('newsletter subscribe → segment membership', () => {
     });
   }
 
-  it('captures a consenting prospect and adds them to the newsletter segment', async () => {
+  it('captures a consenting subscriber and adds them to the newsletter segment', async () => {
     const email = 'newsub@example.test';
     const { customer, created } = await customerService.subscribe(ctx, { email, source: 'signup' });
     await bus.drain();
 
     expect(created).toBe(true);
-    expect(customer.type).toBe('prospect');
+    // An opt-in says nothing about how they transact, so the RELATIONSHIP axis takes
+    // its default and the capture is expressed on the LIFECYCLE axis (docs/137):
+    // `subscriber` is the stage below `lead` — they gave an email, nobody is working
+    // them yet, so there is no lead status either.
+    expect(customer.type).toBe('retail');
+    expect(customer.lifecycleStage).toBe('subscriber');
+    expect(customer.leadStatus).toBeNull();
     expect(customer.doNotContact).toBe(false);
     expect((customer.gdprConsent as { scope?: string[] }).scope).toContain('marketing');
 
