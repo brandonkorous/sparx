@@ -409,6 +409,20 @@ spec:
             - { name: NODE_ENV, value: production }
             - { name: SERVICE_NAME, value: social-worker }
             - { name: PORT, value: '8080' }
+            # The origin every platform fetches a post's image from. WITHOUT
+            # this, `resolvePostAssets` returns NOTHING and every social post on
+            # every platform publishes TEXT-ONLY — no error, no log line at the
+            # call site, just a missing image. It is also the `publicBase` half
+            # of `swapMediaHost`, so an unset value silently disables the
+            # MEDIA_DIRECT_BASE_URL swap below as well.
+            #
+            # It is spelled MEDIA_PUBLIC_URL in the shared `sparx-app-env`
+            # ConfigMap (api-rest's name for the same origin) and
+            # MEDIA_PUBLIC_BASE_URL here, so envFrom does NOT supply it. That
+            # name mismatch is why it survived only in the now-dead GCP
+            # Cloud Run terraform and never crossed to Azure — a Facebook Page
+            # post on 2026-08-04 went out with its image dropped.
+            - { name: MEDIA_PUBLIC_BASE_URL, value: 'https://media.sparx.works' }
             # URL-fetch platforms (Instagram/Threads/Pinterest) hand THEIR
             # servers this URL to fetch. Unchanged from prod — but the hostname
             # now earns its name a different way: it was grey-cloud DNS-only so
