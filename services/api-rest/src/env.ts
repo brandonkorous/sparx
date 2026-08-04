@@ -165,6 +165,16 @@ const EnvSchema = z
     // via the superRefine below.
     GCS_MEDIA_BUCKET: z.string().optional(),
     GCS_MEDIA_PUBLIC_BUCKET: z.string().default(''),
+    // Azure Blob — the live backend, and the FIRST one `getStorage()` checks. Set both
+    // the account and the key or the selector falls through; the account key is what
+    // signs the SAS URLs the browser PUTs to, so there is no separate credential.
+    // Containers mirror the GCS private/public split (originals vs derived variants) so
+    // the object keys and their routing are unchanged; both are private, because
+    // variants are served by api-rest's own route rather than read anonymously.
+    AZURE_STORAGE_ACCOUNT: z.string().optional(),
+    AZURE_STORAGE_KEY: z.string().optional(),
+    AZURE_MEDIA_CONTAINER: z.string().default('media'),
+    AZURE_MEDIA_PUBLIC_CONTAINER: z.string().default('media-public'),
     MEDIA_LOCAL_DIR: z.string().default('.media-tmp'),
     // Public base URL for serving processed variants. In prod this is the
     // Cloudflare-fronted CDN domain; in dev it's the api-rest origin so the
@@ -325,6 +335,19 @@ const EnvSchema = z
         code: z.ZodIssueCode.custom,
         path: ['GCS_MEDIA_PUBLIC_BUCKET'],
         message: 'Required when GCS_MEDIA_BUCKET is set (split-bucket setup).',
+      });
+    }
+
+    // Azure needs BOTH halves or `getStorage()` skips it entirely and silently falls
+    // through to local disk. Half-configured is the dangerous state: the service boots,
+    // serves, and quietly writes production media to a container-local directory that
+    // no worker reads and the next rollout discards. Fail the boot instead.
+    if (Boolean(data.AZURE_STORAGE_ACCOUNT) !== Boolean(data.AZURE_STORAGE_KEY)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: [data.AZURE_STORAGE_ACCOUNT ? 'AZURE_STORAGE_KEY' : 'AZURE_STORAGE_ACCOUNT'],
+        message:
+          'AZURE_STORAGE_ACCOUNT and AZURE_STORAGE_KEY must be set together — one alone falls back to local disk.',
       });
     }
 

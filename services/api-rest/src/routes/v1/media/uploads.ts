@@ -186,13 +186,18 @@ const uploadRoutes: FastifyPluginAsync = (app) => {
       // (Skipping HEAD here keeps tests deterministic; the worker will
       // detect a missing object and flip status='failed' anyway.)
 
-      const nextStatus = storage.mode === 'gcs' ? 'uploading' : 'ready';
+      // Ask whether a worker will TRANSCODE this, not which vendor is behind it.
+      // This read `storage.mode === 'gcs'`, which quietly inverted the moment production
+      // moved off GCS: every upload was marked `ready` with no variants, and since
+      // `resolvePostAssets` requires a ready asset WITH variants, the image was there in
+      // the composer and gone from the published post.
+      const nextStatus = storage.transcodes ? 'uploading' : 'ready';
       const updated = await tx.mediaAsset.update({
         where: { id },
         data: {
-          // Stay 'uploading' in GCS mode — the worker flips to 'ready'
-          // after variants exist. In local mode we don't run a worker;
-          // mark ready immediately so the dashboard can render the file.
+          // Stay 'uploading' on a transcoding backend — media-worker flips it to 'ready'
+          // once the variants exist. On local disk nothing else will ever touch it, so
+          // mark it ready now or it stays invisible forever.
           status: nextStatus,
         },
       });

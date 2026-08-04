@@ -34,8 +34,15 @@ const EnvSchema = z.object({
     .min(1)
     .optional()
     .transform((v) => v ?? process.env.GCS_MEDIA_BUCKET ?? ''),
+  // Azure Blob — the live backend, checked BEFORE GCS and before local disk. Must match
+  // api-rest's values exactly: the two services address the same objects, so a mismatch
+  // transcodes happily into a container nothing serves from.
+  AZURE_STORAGE_ACCOUNT: z.string().min(1).optional(),
+  AZURE_STORAGE_KEY: z.string().min(1).optional(),
+  AZURE_MEDIA_CONTAINER: z.string().min(1).default('media'),
+  AZURE_MEDIA_PUBLIC_CONTAINER: z.string().min(1).default('media-public'),
   // Where the local backend reads originals and writes variants. Only consulted
-  // when GCS_MEDIA_BUCKET is unset. Must be the SAME volume api-rest mounts —
+  // when no object store is configured. Must be the SAME volume api-rest mounts —
   // it streams these variants back out over /v1/public/media/variants/*, so two
   // different directories transcode successfully and then 404 forever.
   MEDIA_LOCAL_DIR: z.string().min(1).default('/media'),

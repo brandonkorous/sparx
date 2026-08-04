@@ -56,6 +56,10 @@ on:
           # DESTRUCTIVE. Deletes every page on a site that is still entirely on the
           # legacy sparx-builder tier and re-seeds it onto silica. Dry-runs by default.
           - retire-legacy-site-tier
+          # Copies the media PVC into Azure Blob storage. Read-only on the disk;
+          # writes to Blob. Dry-runs by default. Safe to re-run — it skips blobs
+          # that already exist.
+          - migrate-media-to-blob
       environment:
         description: 'Where to run it'
         required: false
@@ -197,6 +201,16 @@ jobs:
                 command='["node","--import","tsx","src/scripts/retire-legacy-site-tier.ts"]'
               fi
               ;;
+            migrate-media-to-blob)
+              image="$REPO/api-rest:$TAG"
+              # WORKDIR is /app/services/api-rest. Unticked it lists what it WOULD
+              # copy and writes nothing. Needs the media PVC — see MOUNT_MEDIA below.
+              if [ '${{ inputs.apply }}' = 'true' ]; then
+                command='["node","--import","tsx","src/scripts/migrate-media-to-blob.ts","--apply"]'
+              else
+                command='["node","--import","tsx","src/scripts/migrate-media-to-blob.ts"]'
+              fi
+              ;;
             *)
               echo "::error::Unknown task '$TASK'."
               exit 1
@@ -239,9 +253,38 @@ jobs:
         run: |
           set -euo pipefail
           JOB="ops-${TASK}-${RUN_ID}"
-          export JOB IMAGE COMMAND
 
-          envsubst '$JOB $IMAGE $COMMAND $TASK' > /tmp/job.yaml <<'YAML'
+          # Only the media migration needs the PVC, and it needs it for the same
+          # reason api-rest does: the bytes it is copying out live on that volume.
+          # Every other task gets an empty string here, so the rendered Job is
+          # byte-for-byte what it was before this existed.
+          #
+          # fsGroup matches api-rest's — the tarball this volume was restored from
+          # carries uids that exist nowhere in the cluster, so without it the files
+          # are unreadable and the migration copies nothing while reporting success.
+          MEDIA_MOUNT=""
+          MEDIA_VOLUME=""
+          MEDIA_SECURITY=""
+          if [ "$TASK" = 'migrate-media-to-blob' ]; then
+            MEDIA_MOUNT=$'
+                    volumeMounts:
+                      - name: media
+                        mountPath: /media
+                        readOnly: true'
+            MEDIA_VOLUME=$'
+                volumes:
+                  - name: media
+                    persistentVolumeClaim:
+                      claimName: sparx-media'
+            MEDIA_SECURITY=$'
+                securityContext:
+                  fsGroup: 1000
+                  fsGroupChangePolicy: OnRootMismatch'
+          fi
+
+          export JOB IMAGE COMMAND MEDIA_MOUNT MEDIA_VOLUME MEDIA_SECURITY
+
+          envsubst '$JOB $IMAGE $COMMAND $TASK $MEDIA_MOUNT $MEDIA_VOLUME $MEDIA_SECURITY' > /tmp/job.yaml <<'YAML'
           apiVersion: batch/v1
           kind: Job
           metadata:
@@ -257,7 +300,7 @@ jobs:
               spec:
                 restartPolicy: Never
                 enableServiceLinks: false
-                imagePullSecrets: [{ name: ghcr }]
+                imagePullSecrets: [{ name: ghcr }]${MEDIA_SECURITY}
                 containers:
                   - name: task
                     image: ${IMAGE}
@@ -286,7 +329,7 @@ jobs:
                         type: RuntimeDefault
                     resources:
                       requests: { cpu: '100m', memory: '384Mi' }
-                      limits: { memory: '1Gi' }
+                      limits: { memory: '1Gi' }${MEDIA_MOUNT}${MEDIA_VOLUME}
           YAML
 
           echo '--- Rendered manifest ---'

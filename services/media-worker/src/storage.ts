@@ -14,6 +14,7 @@
 // and pins them to the same node). Point them at different directories and
 // every image transcodes successfully and then 404s forever.
 
+import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import { Storage } from '@google-cloud/storage';
 import { promises as fs } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -72,6 +73,34 @@ function gcsBackend(bucketName: string): Backend {
   };
 }
 
+function azureBackend(account: string, key: string): Backend {
+  // Same reasoning as gcsBackend: built inside the factory, not at module scope, so a
+  // deployment without Azure credentials never constructs a client it will discard.
+  const service = new BlobServiceClient(
+    `https://${account}.blob.core.windows.net`,
+    new StorageSharedKeyCredential(account, key)
+  );
+  // Originals are read from the private container; variants are written to the public
+  // one. Same split as GCS, same object keys — so `variantKey()` and the public
+  // resolver need no knowledge of which backend produced the bytes.
+  const originals = service.getContainerClient(env.AZURE_MEDIA_CONTAINER);
+  const variants = service.getContainerClient(env.AZURE_MEDIA_PUBLIC_CONTAINER);
+
+  return {
+    async download(key) {
+      return originals.getBlockBlobClient(key).downloadToBuffer();
+    },
+    async upload(key, contentType, body) {
+      await variants.getBlockBlobClient(key).upload(body, body.byteLength, {
+        blobHTTPHeaders: {
+          blobContentType: contentType,
+          blobCacheControl: 'public, max-age=31536000, immutable',
+        },
+      });
+    },
+  };
+}
+
 function localBackend(rootDir: string): Backend {
   const root = resolve(rootDir);
   return {
@@ -90,11 +119,22 @@ function localBackend(rootDir: string): Backend {
   };
 }
 
-const backend: Backend = env.GCS_MEDIA_BUCKET
-  ? gcsBackend(env.GCS_MEDIA_BUCKET)
-  : localBackend(env.MEDIA_LOCAL_DIR);
+// Azure first, then GCS, then local disk — the same precedence api-rest applies, and it
+// MUST stay in step with it. The two services address the same objects; if they disagree
+// about which store holds them, every transcode succeeds and every variant 404s.
+const backend: Backend =
+  env.AZURE_STORAGE_ACCOUNT && env.AZURE_STORAGE_KEY
+    ? azureBackend(env.AZURE_STORAGE_ACCOUNT, env.AZURE_STORAGE_KEY)
+    : env.GCS_MEDIA_BUCKET
+      ? gcsBackend(env.GCS_MEDIA_BUCKET)
+      : localBackend(env.MEDIA_LOCAL_DIR);
 
-export const storageMode: 'gcs' | 'local' = env.GCS_MEDIA_BUCKET ? 'gcs' : 'local';
+export const storageMode: 'gcs' | 'azure' | 'local' =
+  env.AZURE_STORAGE_ACCOUNT && env.AZURE_STORAGE_KEY
+    ? 'azure'
+    : env.GCS_MEDIA_BUCKET
+      ? 'gcs'
+      : 'local';
 
 export async function downloadObject(key: string): Promise<Buffer> {
   return backend.download(key);

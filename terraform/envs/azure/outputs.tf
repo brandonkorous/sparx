@@ -55,3 +55,19 @@ output "ingress_pip_name" {
   description = "Name for the k8s Service's service.beta.kubernetes.io/azure-pip-name annotation."
   value       = azurerm_public_ip.ingress.name
 }
+
+output "media_storage_account" {
+  description = <<-EOT
+    AZURE_STORAGE_ACCOUNT — the media blob account. Set this, and the key below,
+    in the repo secret that feeds `sparx-app-secrets`; api-rest, media-worker and
+    packages/media each select the Azure backend only when BOTH are present, and
+    fall back to local disk otherwise.
+  EOT
+  value       = azurerm_storage_account.media.name
+}
+
+output "media_storage_key" {
+  description = "AZURE_STORAGE_KEY — signs the SAS URLs the browser PUTs uploads to."
+  value       = azurerm_storage_account.media.primary_access_key
+  sensitive   = true
+}

@@ -18,6 +18,13 @@ const StorageEnvSchema = z.object({
   // Public bucket — world-readable variants behind the CDN. Falls back to the
   // private bucket name when only one is configured.
   GCS_MEDIA_PUBLIC_BUCKET: z.string().optional(),
+  // Azure Blob — the live backend, selected ahead of GCS and local disk. Both halves are
+  // required together; one alone falls through, which would silently write a headless
+  // caller's uploads to container-local disk that nothing serves.
+  AZURE_STORAGE_ACCOUNT: z.string().optional(),
+  AZURE_STORAGE_KEY: z.string().optional(),
+  AZURE_MEDIA_CONTAINER: z.string().default('media'),
+  AZURE_MEDIA_PUBLIC_CONTAINER: z.string().default('media-public'),
   // Externally-reachable api origin that serves /v1/public/media/* (empty →
   // same-origin relative URLs, used in dev).
   MEDIA_PUBLIC_URL: z.string().default(''),

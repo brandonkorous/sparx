@@ -15,13 +15,18 @@
 // variants. Dev (unset) writes under MEDIA_LOCAL_DIR and hands back the
 // api-rest file route the resolver already serves.
 
+import { BlobServiceClient, StorageSharedKeyCredential } from '@azure/storage-blob';
 import { Storage as GcsClient } from '@google-cloud/storage';
 import { promises as fs } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { storageEnv } from './env.js';
 
 export interface MediaStorage {
-  readonly mode: 'gcs' | 'local';
+  readonly mode: 'gcs' | 'azure' | 'local';
+  /** Whether a media-worker produces variants for objects written here — true for any
+   *  object store, false for local disk. Callers deciding whether a new asset is `ready`
+   *  or still `uploading` must ask THIS, not the vendor name. */
+  readonly transcodes: boolean;
   // Write raw bytes to `key`. Returns the public URL for a variant key; empty
   // for a private original (the resolver derives its URL from the asset id).
   writeObject(key: string, contentType: string, body: Buffer): Promise<{ url: string }>;
@@ -34,8 +39,45 @@ function isPublicKey(key: string): boolean {
   return key.includes('/variants/');
 }
 
+class AzureBlobStorage implements MediaStorage {
+  readonly mode = 'azure' as const;
+  readonly transcodes = true;
+  private readonly service: BlobServiceClient;
+  constructor(
+    account: string,
+    key: string,
+    private readonly privateContainer: string,
+    private readonly publicContainer: string,
+    private readonly publicBase: string
+  ) {
+    this.service = new BlobServiceClient(
+      `https://${account}.blob.core.windows.net`,
+      new StorageSharedKeyCredential(account, key)
+    );
+  }
+
+  async writeObject(key: string, contentType: string, body: Buffer): Promise<{ url: string }> {
+    const isPublic = isPublicKey(key);
+    const container = this.service.getContainerClient(
+      isPublic ? this.publicContainer : this.privateContainer
+    );
+    await container.getBlockBlobClient(key).upload(body, body.byteLength, {
+      blobHTTPHeaders: {
+        blobContentType: contentType,
+        blobCacheControl: isPublic ? 'public, max-age=31536000, immutable' : 'private, no-store',
+      },
+    });
+    return { url: isPublic ? this.publicUrl(key) : '' };
+  }
+
+  publicUrl(key: string): string {
+    return `${this.publicBase}/v1/public/media/variants/${key}`;
+  }
+}
+
 class GcsStorage implements MediaStorage {
   readonly mode = 'gcs' as const;
+  readonly transcodes = true;
   private readonly client: GcsClient;
   constructor(
     private readonly privateBucket: string,
@@ -83,6 +125,7 @@ function assertSafeKey(key: string): void {
 
 class LocalStorage implements MediaStorage {
   readonly mode = 'local' as const;
+  readonly transcodes = false;
   private readonly root: string;
   constructor(
     root: string,
@@ -112,7 +155,17 @@ let cached: MediaStorage | null = null;
 export function getStorage(): MediaStorage {
   if (cached) return cached;
   const env = storageEnv();
-  if (env.GCS_MEDIA_BUCKET) {
+  // Azure → GCS → local disk. Same precedence as api-rest and media-worker; all three
+  // must agree, since they read and write the same objects.
+  if (env.AZURE_STORAGE_ACCOUNT && env.AZURE_STORAGE_KEY) {
+    cached = new AzureBlobStorage(
+      env.AZURE_STORAGE_ACCOUNT,
+      env.AZURE_STORAGE_KEY,
+      env.AZURE_MEDIA_CONTAINER,
+      env.AZURE_MEDIA_PUBLIC_CONTAINER,
+      env.MEDIA_PUBLIC_URL
+    );
+  } else if (env.GCS_MEDIA_BUCKET) {
     cached = new GcsStorage(
       env.GCS_MEDIA_BUCKET,
       env.GCS_MEDIA_PUBLIC_BUCKET ?? env.GCS_MEDIA_BUCKET,

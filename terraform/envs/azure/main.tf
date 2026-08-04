@@ -349,3 +349,77 @@ resource "azurerm_postgresql_flexible_server_configuration" "extensions" {
   server_id = azurerm_postgresql_flexible_server.main.id
   value     = "PGCRYPTO,BTREE_GIST"
 }
+
+# ---------------------------------------------------------------------------
+# Media storage
+#
+# The durable home for tenant media: originals, and the transcoded variants
+# media-worker derives from them.
+#
+# WHY THIS EXISTS. Media used to live in GCS. When GCP was retired
+# `GCS_MEDIA_BUCKET` went with it, and every `getStorage()` in the codebase —
+# api-rest, media-worker, packages/media — fell through to its LAST branch,
+# LocalStorage, the backend written for a developer's laptop. Production media
+# was therefore served off a single ReadWriteOnce Azure Disk, which is why
+# api-rest and media-worker are pinned to the same node by pod affinity: a RWO
+# volume mounts on exactly one. It worked, and it is a dead end — one node, no
+# object durability, and a PVC that has to be restored by hand.
+#
+# Two containers, mirroring the GCS split the object keys already encode
+# (`<tenant>/originals/...` vs `<tenant>/variants/...`):
+#
+#   media         private — originals + tenant-sensitive objects. Read back via
+#                 short-lived SAS, never a public URL.
+#   media-public  derived variants. ALSO PRIVATE: api-rest serves these over
+#                 /v1/public/media/variants/* exactly as it did under GCS (where
+#                 an org policy forbade allUsers), so every existing URL —
+#                 media.sparx.works, the MEDIA_DIRECT_BASE_URL host the social
+#                 adapters fetch from, Cloudflare in front of both — keeps
+#                 working with no DNS or CDN change. The name records intent;
+#                 anonymous access is deliberately NOT granted.
+#
+# LRS, not GRS: these are derived assets with a re-transcodable source, and
+# geo-redundancy would roughly double the price for a recovery story we do not
+# need. Hot tier — variants are read on every page view.
+# ---------------------------------------------------------------------------
+resource "azurerm_storage_account" "media" {
+  # Storage account names are globally unique, 3–24 chars, lowercase alphanumeric
+  # ONLY — no hyphens, which is why this cannot reuse `local.suffix` directly.
+  name                     = replace("st${local.suffix}", "-", "")
+  resource_group_name      = azurerm_resource_group.main.name
+  location                 = azurerm_resource_group.main.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+  account_kind             = "StorageV2"
+  access_tier              = "Hot"
+
+  # The app authenticates with the account key (it signs the SAS URLs the browser
+  # PUTs to), so shared-key auth stays on. Everything else is closed down.
+  shared_access_key_enabled       = true
+  allow_nested_items_to_be_public = false
+  https_traffic_only_enabled      = true
+  min_tls_version                 = "TLS1_2"
+
+  blob_properties {
+    # A deleted blob is recoverable for a week. Cheap insurance against a bad
+    # `deletePrefix` — which the code guards against, but guards are not backups.
+    delete_retention_policy {
+      days = 7
+    }
+  }
+
+  tags = local.tags
+}
+
+resource "azurerm_storage_container" "media" {
+  name                  = "media"
+  storage_account_id    = azurerm_storage_account.media.id
+  container_access_type = "private"
+}
+
+resource "azurerm_storage_container" "media_public" {
+  name               = "media-public"
+  storage_account_id = azurerm_storage_account.media.id
+  # Private on purpose — see the note above. api-rest streams these bytes.
+  container_access_type = "private"
+}

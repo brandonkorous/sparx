@@ -28,6 +28,7 @@
     "clean": "rm -rf .turbo dist *.tsbuildinfo"
   },
   "dependencies": {
+    "@azure/storage-blob": "^12.33.0",
     "@google-cloud/storage": "^7.16.0",
     "@sparx/db": "workspace:*",
     "@sparx/events": "workspace:*",

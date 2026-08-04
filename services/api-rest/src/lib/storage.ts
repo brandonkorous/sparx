@@ -1,24 +1,43 @@
 // Media storage backends.
 //
-// Two implementations:
+// Three implementations:
 //
-//   - GcsStorage (prod) — generates V4 signed PUT URLs against
-//     `GCS_MEDIA_BUCKET`. The browser PUTs the bytes directly to GCS so
-//     api-rest never streams large files. Object keys follow the per-tenant
-//     prefix scheme documented in plan §3.2:
-//       `${tenantId}/originals/${assetId}/${filename}`
-//       `${tenantId}/variants/${assetId}/${format}-${width}.${ext}`
+//   - AzureBlobStorage (prod) — the live backend. Generates SAS PUT URLs against
+//     `AZURE_STORAGE_ACCOUNT`, so the browser PUTs bytes straight to Blob storage and
+//     api-rest never streams an upload.
 //
-//   - LocalStorage (dev / test) — writes to `MEDIA_LOCAL_DIR` on the host
-//     filesystem and returns a path-based "presigned" URL that points back
-//     at api-rest's own /v1/media/_local/* endpoints. Lets the dashboard
-//     exercise the full upload flow without a GCS service account.
+//   - GcsStorage — the previous production backend, kept because the object-key scheme,
+//     the public/private split and the whole `media.uploaded` contract were designed
+//     around it and it is still the reference implementation. Selected only if
+//     `GCS_MEDIA_BUCKET` is set, which nothing does since the GCP retirement.
 //
-// The pubsub `media.uploaded` event lands the same way in both modes —
-// downstream workers (media-worker) read the asset row and pull from
-// storage via `readObject(key)` rather than re-deriving the URL, so the
-// abstraction is honest end-to-end.
+//   - LocalStorage (dev / test) — writes to `MEDIA_LOCAL_DIR` on the host filesystem and
+//     returns a path-based "presigned" URL pointing back at api-rest's own
+//     /v1/media/_local/* endpoints. Lets a laptop exercise the full upload flow with no
+//     cloud credentials at all.
+//
+// Object keys are identical in all three (plan §3.2):
+//   `${tenantId}/originals/${assetId}/${filename}`
+//   `${tenantId}/variants/${assetId}/${format}-${width}.${ext}`
+//
+// WHY AZURE EXISTS AT ALL. When GCP was retired, `GCS_MEDIA_BUCKET` went with it and
+// `getStorage()` fell through to its LAST branch — LocalStorage, the mode written for a
+// developer's laptop. Production media therefore ran on a single Azure Disk: a
+// ReadWriteOnce volume, which is why api-rest and media-worker are pinned to the same
+// node by pod affinity. It worked, but it is a scaling dead end and it is not what any
+// of this code was designed against.
+//
+// The pubsub `media.uploaded` event lands the same way in every mode — downstream
+// workers (media-worker) read the asset row and pull from storage via `readObject(key)`
+// rather than re-deriving a URL, so the abstraction stays honest end-to-end.
 
+import {
+  BlobServiceClient,
+  StorageSharedKeyCredential,
+  generateBlobSASQueryParameters,
+  BlobSASPermissions,
+  type ContainerClient,
+} from '@azure/storage-blob';
 import { Storage as GcsClient } from '@google-cloud/storage';
 import { promises as fs, createReadStream, createWriteStream } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -47,7 +66,17 @@ export interface ReadObject {
 }
 
 export interface MediaStorage {
-  readonly mode: 'gcs' | 'local';
+  /** Which backend is live. Callers must not branch on `=== 'gcs'` to mean "a real object
+   *  store" — use `transcodes` for that. See its note for the bug that caused. */
+  readonly mode: 'gcs' | 'azure' | 'local';
+  /** Whether a media-worker will produce variants for objects written here.
+   *
+   *  True for every object store, false for local disk. `/v1/media/uploads/:id/complete`
+   *  needs exactly this question: leave the asset `uploading` and let the worker flip it
+   *  to `ready` once variants exist, or mark it `ready` immediately because nothing else
+   *  ever will. It used to ask `mode === 'gcs'`, which silently became "false" the day
+   *  production moved off GCS — every upload was then marked ready with no variants. */
+  readonly transcodes: boolean;
   // Generate a presigned PUT URL the browser can use to upload `key` with
   // the given content-type.
   presignPut(key: string, contentType: string, contentLength: number): Promise<PresignedPut>;
@@ -91,8 +120,160 @@ const GET_URL_TTL_SEC = 7 * 24 * 60 * 60;
 // GCS backend
 // ────────────────────────────────────────────────────────────────────────
 
+class AzureBlobStorage implements MediaStorage {
+  readonly mode = 'azure' as const;
+  readonly transcodes = true;
+  private readonly credential: StorageSharedKeyCredential;
+  private readonly service: BlobServiceClient;
+  // Mirrors the GCS private/public split exactly, so `isPublicKey` routing and every
+  // object key carry over unchanged. BOTH containers are private: variants are served by
+  // api-rest's own /v1/public/media/variants/:key route (the same way they were under
+  // GCS, where an org policy forbade allUsers), so nothing here is anonymously readable
+  // and no public-container access level is required.
+  private readonly privateContainer: ContainerClient;
+  private readonly publicContainer: ContainerClient;
+  private readonly publicBase: string;
+
+  constructor(
+    account: string,
+    key: string,
+    privateName: string,
+    publicName: string,
+    publicBase: string
+  ) {
+    this.credential = new StorageSharedKeyCredential(account, key);
+    this.service = new BlobServiceClient(
+      `https://${account}.blob.core.windows.net`,
+      this.credential
+    );
+    this.privateContainer = this.service.getContainerClient(privateName);
+    this.publicContainer = this.service.getContainerClient(publicName);
+    this.publicBase = publicBase;
+  }
+
+  private isPublicKey(key: string): boolean {
+    return key.includes('/variants/');
+  }
+
+  private container(key: string): ContainerClient {
+    return this.isPublicKey(key) ? this.publicContainer : this.privateContainer;
+  }
+
+  private blob(key: string) {
+    return this.container(key).getBlockBlobClient(key);
+  }
+
+  /** A SAS URL for one blob. Azure signs against the account key, so this needs no
+   *  network round-trip — unlike a User Delegation SAS, which would. */
+  private sasUrl(key: string, permissions: string, ttlSeconds: number): string {
+    const blob = this.blob(key);
+    const startsOn = new Date(Date.now() - 5 * 60 * 1000); // clock-skew allowance
+    const expiresOn = new Date(Date.now() + ttlSeconds * 1000);
+    const sas = generateBlobSASQueryParameters(
+      {
+        containerName: this.container(key).containerName,
+        blobName: key,
+        permissions: BlobSASPermissions.parse(permissions),
+        startsOn,
+        expiresOn,
+      },
+      this.credential
+    ).toString();
+    return `${blob.url}?${sas}`;
+  }
+
+  presignPut(key: string, contentType: string): Promise<PresignedPut> {
+    const expiresAt = new Date(Date.now() + PUT_URL_TTL_SEC * 1000).toISOString();
+    return Promise.resolve({
+      url: this.sasUrl(key, 'cw', PUT_URL_TTL_SEC),
+      // `x-ms-blob-type` is REQUIRED on a direct PUT to Blob storage — without it the
+      // service rejects the request with 400 InvalidHeaderValue. The browser sends
+      // exactly the headers we hand back here, so it has to be in this map.
+      headers: { 'content-type': contentType, 'x-ms-blob-type': 'BlockBlob' },
+      key,
+      expiresAt,
+    });
+  }
+
+  async readObject(key: string): Promise<ReadObject> {
+    const blob = this.blob(key);
+    const res = await blob.download();
+    return {
+      // Node SDK always populates the readable stream server-side.
+      body: res.readableStreamBody as unknown as Readable,
+      contentType: res.contentType ?? null,
+      size: typeof res.contentLength === 'number' ? res.contentLength : null,
+    };
+  }
+
+  async writeObject(key: string, contentType: string, body: Buffer | Readable) {
+    const isPublic = this.isPublicKey(key);
+    const blob = this.blob(key);
+    const blobHTTPHeaders = {
+      blobContentType: contentType,
+      // Same cache posture as the GCS backend: an immutable variant is safe to cache
+      // forever, a private original must never be stored by an intermediary.
+      blobCacheControl: isPublic ? 'public, max-age=31536000, immutable' : 'private, no-store',
+    };
+    if (Buffer.isBuffer(body)) {
+      await blob.upload(body, body.byteLength, { blobHTTPHeaders });
+    } else {
+      await blob.uploadStream(body, undefined, undefined, { blobHTTPHeaders });
+    }
+    return { url: isPublic ? this.publicUrl(key) : '' };
+  }
+
+  async deleteObject(key: string): Promise<void> {
+    await this.blob(key).deleteIfExists();
+  }
+
+  async copyObject(srcKey: string, destKey: string): Promise<void> {
+    // Server-side copy — Azure moves the bytes account-internally; the app never streams
+    // them. A same-account copy completes synchronously, but poll anyway rather than
+    // assume: `syncCopyFromURL` is capped at 256 MiB and would throw on a larger object.
+    const src = this.sasUrl(srcKey, 'r', 60 * 60);
+    const poller = await this.blob(destKey).beginCopyFromURL(src);
+    await poller.pollUntilDone();
+  }
+
+  async deletePrefix(prefix: string): Promise<void> {
+    assertNonRootPrefix(prefix);
+    const container = this.container(prefix);
+    // Delete in pages rather than collecting every name first — a blueprint catalog
+    // prefix can hold thousands of blobs across versions.
+    for await (const page of container.listBlobsFlat({ prefix }).byPage({ maxPageSize: 200 })) {
+      await Promise.all(
+        page.segment.blobItems.map((b) => container.getBlockBlobClient(b.name).deleteIfExists())
+      );
+    }
+  }
+
+  publicUrl(key: string): string {
+    // Only variants have a stable public URL — originals are private. Identical to the
+    // GCS backend, and deliberately still routed through api-rest rather than at the
+    // blob directly, so every existing media URL (media.sparx.works, the
+    // MEDIA_DIRECT_BASE_URL host the social adapters fetch from, Cloudflare in front of
+    // both) keeps working unchanged.
+    if (!this.isPublicKey(key)) {
+      throw new Error(
+        `Refusing to mint a public URL for a private-container key: ${JSON.stringify(key)}`
+      );
+    }
+    return `${this.publicBase}/v1/public/media/variants/${variantUrlPath(key)}`;
+  }
+
+  presignGet(key: string, ttlSeconds = GET_URL_TTL_SEC): Promise<string> {
+    return Promise.resolve(this.sasUrl(key, 'r', ttlSeconds));
+  }
+}
+
+// ────────────────────────────────────────────────────────────────────────
+// GCS backend
+// ────────────────────────────────────────────────────────────────────────
+
 class GcsStorage implements MediaStorage {
   readonly mode = 'gcs' as const;
+  readonly transcodes = true;
   private readonly client: GcsClient;
   // Private bucket — originals + any tenant-sensitive object. Reads via
   // service-account auth or short-lived signed URLs.
@@ -253,6 +434,9 @@ function assertNonRootPrefix(prefix: string): void {
 
 class LocalStorage implements MediaStorage {
   readonly mode = 'local' as const;
+  // No worker runs against a laptop's disk, so an upload here is final the moment it
+  // lands — `/complete` marks it ready rather than waiting for variants that never come.
+  readonly transcodes = false;
   private readonly root: string;
   private readonly publicBase: string;
 
@@ -353,7 +537,19 @@ let cached: MediaStorage | null = null;
 
 export function getStorage(): MediaStorage {
   if (cached) return cached;
-  if (env.GCS_MEDIA_BUCKET) {
+  // Order matters: the FIRST configured object store wins, and local disk is the
+  // fallback of last resort. It is only correct as a fallback on a laptop — reaching it
+  // in production means media has no durable home and no transcoder, which is exactly
+  // what happened when GCP was retired and this fell straight through to LocalStorage.
+  if (env.AZURE_STORAGE_ACCOUNT && env.AZURE_STORAGE_KEY) {
+    cached = new AzureBlobStorage(
+      env.AZURE_STORAGE_ACCOUNT,
+      env.AZURE_STORAGE_KEY,
+      env.AZURE_MEDIA_CONTAINER,
+      env.AZURE_MEDIA_PUBLIC_CONTAINER,
+      env.MEDIA_PUBLIC_URL
+    );
+  } else if (env.GCS_MEDIA_BUCKET) {
     cached = new GcsStorage(
       env.GCS_MEDIA_BUCKET,
       env.GCS_MEDIA_PUBLIC_BUCKET,

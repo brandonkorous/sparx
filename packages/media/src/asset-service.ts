@@ -152,10 +152,13 @@ export async function createImageAssetFromBytes(
   }
 
   const storage = getStorage();
-  // In local dev there is no transcoder worker, so the asset must reach 'ready'
-  // itself to render; in gcs mode it stays 'uploading' until media-worker flips
-  // it after producing variants (mirrors api-rest's /complete).
-  const nextStatus = storage.mode === 'gcs' ? 'uploading' : 'ready';
+  // On a transcoding backend the asset stays 'uploading' until media-worker flips it
+  // after producing variants; on local disk nothing else ever will, so it has to reach
+  // 'ready' itself or it never renders. Mirrors api-rest's /complete.
+  //
+  // This asked `mode === 'gcs'`, which silently became "not transcoding" when production
+  // moved off GCS — so every headless upload was marked ready with no variants.
+  const nextStatus = storage.transcodes ? 'uploading' : 'ready';
 
   const created = await withTenant({ tenantId: ctx.tenantId }, async (tx) => {
     const row = await tx.mediaAsset.create({

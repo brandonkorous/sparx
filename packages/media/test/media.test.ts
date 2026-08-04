@@ -63,7 +63,16 @@ beforeEach(() => {
   created.rows = [];
   publishEventMock.mockClear();
   writeObject = vi.fn<MediaStorage['writeObject']>(() => Promise.resolve({ url: '' }));
-  const fake: MediaStorage = { mode: 'gcs', writeObject, publicUrl: (k) => `/cdn/${k}` };
+  // `transcodes: true` is what makes a new asset stay `uploading` until a worker
+  // produces its variants — the behaviour these tests assert. It is a separate flag from
+  // `mode` on purpose: reading the vendor name instead is what silently marked every
+  // upload `ready` (with no variants) the day production moved off GCS.
+  const fake: MediaStorage = {
+    mode: 'gcs',
+    transcodes: true,
+    writeObject,
+    publicUrl: (k) => `/cdn/${k}`,
+  };
   _setStorageForTest(fake);
 });
 
