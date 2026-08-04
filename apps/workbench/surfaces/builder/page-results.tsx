@@ -253,8 +253,14 @@ export function PageResultsSurface({ ctx }: { ctx: SurfaceContext }) {
  *
  * Each one exists because leaving it out would make an honest number read as a wrong
  * one: sales are credited to the page that BROUGHT the buyer in, not the one they
- * checked out from; traffic to products and posts is not any single page's; and a
- * load time measured on four visits is not a fact about the page.
+ * checked out from; some visits belong to no row here at all; and a load time
+ * measured on four visits is not a fact about the page.
+ *
+ * The leftovers note names cart/checkout/sign-in/legal, NOT products and posts. It
+ * used to name those, and that was true while a record template had no address and
+ * therefore no row — every product view fell through to this sentence. Now the
+ * template owns its prefix and its traffic is rolled up into a real row above, so
+ * naming products here would send an owner hunting for a row that is already there.
  */
 function ReportFootnotes({ report }: { report: ReturnType<typeof usePageResults>['data'] }) {
   if (!report) return null;
@@ -272,8 +278,8 @@ function ReportFootnotes({ report }: { report: ReturnType<typeof usePageResults>
       {otherViews > 0 ? (
         <p className="text-base">
           Another {formatCount(otherViews)} visits landed on addresses no page here owns — your
-          products, posts and legal pages, which are built elsewhere. They are counted in your
-          traffic figures but have no row above.
+          cart, checkout, sign-in and legal pages, which sparx builds for you. They are counted in
+          your traffic figures but have no row above.
         </p>
       ) : null}
       <p className="text-base">

@@ -604,6 +604,54 @@ const subscriptionCancelled = (): SectionNode[] => [
   ]),
 ];
 
+// The bank wants the cardholder to confirm (docs/142 §5.3). Deliberately NOT
+// worded as a failure: the card is fine and the customer has done nothing wrong,
+// so the tone is "one tap needed", not "there was a problem". Getting this wrong
+// makes people cancel a subscription they were happy with.
+const subscriptionAuthenticationRequired = (): SectionNode[] => [
+  copyBlock([
+    heading('Your bank needs you to confirm this payment'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your card is fine, but your bank asked us to check it’s really you before your next order goes through. It only takes a moment.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Amount', value: '{{subscription.amount}}', emphasize: true },
+      { label: 'Delivery', value: '{{subscription.interval}}' },
+    ],
+    { status: { label: 'One step left', role: 'info' } }
+  ),
+  copyBlock([
+    button('Confirm payment', '{{subscription.confirmUrl}}', 'center'),
+    para('Once you confirm, your order ships as usual — nothing else to do.'),
+  ]),
+];
+
+// Invoice mode (docs/142 §8) — the renewal was billed rather than charged. This
+// is the normal monthly email for an account on terms, so it reads as a routine
+// bill and not as something going wrong.
+const subscriptionInvoice = (): SectionNode[] => [
+  copyBlock([
+    heading('Your repeat order is ready'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — here’s the bill for your latest order. Once it’s paid we’ll get it on its way.'
+    ),
+  ]),
+  detailPanel(
+    [
+      { label: 'Amount due', value: '{{subscription.amount}}', emphasize: true },
+      { label: 'Order', value: '{{order.number}}' },
+      { label: 'Delivery', value: '{{subscription.interval}}' },
+    ],
+    { status: { label: 'Awaiting payment', role: 'info' } }
+  ),
+  copyBlock([
+    button('Pay now', '{{subscription.payUrl}}', 'center'),
+    para('Prefer to pay the way you usually do? That works too — just reply and let us know.'),
+  ]),
+];
+
 // ── Commerce: returns / RMA (docs/impl transactional-email §4 P3) ────────────
 // Triggered on `return.approved` / `return.received` / `return.refunded`; read the
 // `return` data source (status · outcome · refundAmount · refundMethod · labelUrl)
@@ -887,6 +935,8 @@ const SILICA_EMAIL_BODIES: Record<string, SectionNode[]> = {
   'subscription-confirmed': subscriptionConfirmed(),
   'subscription-renewed': subscriptionRenewed(),
   'subscription-payment-failed': subscriptionPaymentFailed(),
+  'subscription-authentication-required': subscriptionAuthenticationRequired(),
+  'subscription-invoice': subscriptionInvoice(),
   'subscription-paused': subscriptionPaused(),
   'subscription-resumed': subscriptionResumed(),
   'subscription-cancelled': subscriptionCancelled(),

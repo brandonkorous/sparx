@@ -12,8 +12,17 @@
 // wording rules, no scoring — those exist, they are already good, and a second
 // half-implementation of them here would eventually contradict the first.
 
+import { isRecordAddress } from '@sparx/silica-catalog';
+
 import type { RawFinding } from './finding';
 import type { LintablePage } from './types';
+
+/** A page that TEMPLATES one record per visit (`/products/:handle`) rather than being
+ *  one page at one address. Same predicate `links.ts` uses for relative paths, and for
+ *  the same underlying reason: its slug is a pattern, not a location. */
+function isRecordPage(page: LintablePage): boolean {
+  return isRecordAddress(page.slug) || page.kind === 'collection';
+}
 
 function clean(value: string | null | undefined): string {
   return (value ?? '').trim();
@@ -49,14 +58,27 @@ function duplicatesOf(
  * A thank-you page or a private landing page has no business carrying a search
  * description, and asking for one is the kind of finding that teaches an owner to
  * dismiss the whole list.
+ *
+ * A RECORD PAGE is exempt for a different reason, and skipped entirely rather than
+ * reported. `/products/:handle` is not a page with a description — it is a template a
+ * hundred products render through, and each of those carries its own title and
+ * description already. There is no sentence an owner could write here that would be
+ * true of every product, so "this page has no search description" is advice that
+ * cannot be taken: five permanent findings on every site, which is precisely how an
+ * advisory list teaches people to ignore it. Per-record metadata is graded per record
+ * by `@sparx/seo-audit` — the boundary this file draws at the top.
  */
 export function checkSeo(pages: readonly LintablePage[]): RawFinding[] {
   const findings: RawFinding[] = [];
-  const visible = pages.filter((page) => !page.noindex);
+  // Excluded from the duplicate tallies too, not just the loop: an untouched site has
+  // five record pages sharing an empty description, and counting them would invent
+  // duplicates out of pages that were never going to carry one.
+  const gradable = pages.filter((page) => !isRecordPage(page));
+  const visible = gradable.filter((page) => !page.noindex);
   const titles = duplicatesOf(visible, (page) => clean(page.seoTitle));
   const descriptions = duplicatesOf(visible, (page) => clean(page.seoDescription));
 
-  for (const page of pages) {
+  for (const page of gradable) {
     const origin = pageOrigin(page);
     const base = { origin, nodeId: null, nodePath: '' };
 

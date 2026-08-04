@@ -168,6 +168,27 @@ describe('siteFooter — legal links are live, never hardcoded', () => {
     );
     expect(core?.props).toEqual({ heading: 'Legal' });
   });
+
+  it('never ships the block’s "SilicaUI" placeholder text (esp. the copyright line)', () => {
+    // The copyright slot ships "© 2026 SilicaUI, Inc." — an UNFILLED slot publishes that
+    // verbatim on every tenant footer. It must be the tenant's own (bound) identity, and
+    // no other slot may leak the demo brand either.
+    const leaks = textsIn(siteFooter({ commerceEnabled: true })).filter((t) => /silicaui/i.test(t));
+    expect(leaks, `footer leaks placeholder text: ${leaks.join(' | ')}`).toEqual([]);
+    // …and the copyright IS bound to the live site name, so it renders the tenant's.
+    expect(JSON.stringify(siteFooter())).toContain('site.identity.name');
+  });
+
+  it('grows the Explore column to fit every destination + Search, never capping at 4', () => {
+    // The footer's Explore column had the same 4-slot cap the navbar did: five modules on
+    // (five destinations) plus Search is six, so Contact + Search silently fell off.
+    const footer = siteFooter({ commerceEnabled: true, cmsEnabled: true, schedulingEnabled: true });
+    for (const href of ['/shop', '/book', '/blog', '/about', '/contact', '/search']) {
+      expect(hrefs(footer), `Explore column dropped ${href}`).toContain(href);
+    }
+    // Growth is SCOPED — the Account column still carries exactly its own three links.
+    expect(hrefs(footer)).toEqual(expect.arrayContaining(['/account/orders', '/cart']));
+  });
 });
 
 // ─── Reachability ───────────────────────────────────────────────────────────
@@ -183,6 +204,31 @@ describe('siteFooter — legal links are live, never hardcoded', () => {
 //
 // Neither is a styling preference; both make the site unusable, so they are asserted
 // structurally rather than left to a visual pass.
+
+/** Every visible string in a chrome tree — raw children, `text`, and `props.text`/
+ *  `props.label` — for asserting no placeholder demo copy survived. */
+function textsIn(node: unknown): string[] {
+  const out: string[] = [];
+  const visit = (n: unknown): void => {
+    if (typeof n === 'string') {
+      out.push(n);
+      return;
+    }
+    if (Array.isArray(n)) return n.forEach(visit);
+    if (!n || typeof n !== 'object') return;
+    const rec = n as {
+      text?: unknown;
+      props?: { text?: unknown; label?: unknown };
+      children?: unknown[];
+    };
+    if (typeof rec.text === 'string') out.push(rec.text);
+    if (typeof rec.props?.text === 'string') out.push(rec.props.text);
+    if (typeof rec.props?.label === 'string') out.push(rec.props.label);
+    if (rec.children) rec.children.forEach(visit);
+  };
+  visit(node);
+  return out;
+}
 
 /** Every anchor href in a chrome tree, in document order. */
 function hrefs(node: unknown): string[] {
@@ -340,7 +386,7 @@ describe('siteNavbar — behaviors the hand-rolled fork did not have', () => {
     // just the default. `floatingPill`/`megaMenu` were dropped precisely because they
     // would fail this — a different slot shape leaves `#` placeholders (an avatar, a mega
     // shelf, a missing CTA slot) the shared fill never reaches. Runs every module on, so
-    // all four link slots are exercised.
+    // there are FIVE destinations against the block's four slots.
     for (const variant of Object.keys(NAVBAR_VARIANTS) as NavbarVariant[]) {
       const nav = siteNavbar({
         navbar: variant,
@@ -354,6 +400,21 @@ describe('siteNavbar — behaviors the hand-rolled fork did not have', () => {
         findHost(nav, HOST_KEYS.siteThemeToggle),
         `${variant} lost the theme-toggle host`
       ).not.toBeNull();
+      // GROW-TO-FIT: all five destinations render, not just the block's four slots — the
+      // header shows exactly what the site has, never a hard cap.
+      for (const href of ['/shop', '/book', '/blog', '/about', '/contact']) {
+        expect(hrefsIn(nav), `${variant} dropped ${href} at the 4-slot cap`).toContain(href);
+      }
+    }
+  });
+
+  it('grows the phone panel to fit too, so it never differs from the desktop row', () => {
+    // The slots repeat across the desktop row and the phone panel; both must grow, or a
+    // narrow screen silently loses the fifth destination the wide one shows.
+    const nav = siteNavbar({ commerceEnabled: true, cmsEnabled: true, schedulingEnabled: true });
+    const panel = findNode(nav, (n) => n.part === 'panel');
+    for (const href of ['/shop', '/book', '/blog', '/about', '/contact']) {
+      expect(hrefsIn(panel), `phone panel dropped ${href}`).toContain(href);
     }
   });
 });

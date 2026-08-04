@@ -389,6 +389,24 @@ const subscriptionPaymentFailed = (): BuilderNode =>
     button('Update payment', '{{subscription.manageUrl}}'),
   ]);
 
+const subscriptionAuthenticationRequired = (): BuilderNode =>
+  body([
+    heading('Your bank needs you to confirm this payment'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — your card is fine, but your bank asked us to check it’s really you before your next order ({{subscription.amount}}) goes through.'
+    ),
+    button('Confirm payment', '{{subscription.confirmUrl}}'),
+  ]);
+
+const subscriptionInvoice = (): BuilderNode =>
+  body([
+    heading('Your repeat order is ready'),
+    para(
+      'Hi {{customer.firstName ?? "there"}} — here’s the bill for your latest order ({{subscription.amount}}). Once it’s paid we’ll get it on its way.'
+    ),
+    button('Pay now', '{{subscription.payUrl}}'),
+  ]);
+
 const subscriptionPaused = (): BuilderNode =>
   body([
     heading('Your subscription is paused'),
@@ -852,6 +870,33 @@ const TEMPLATES: Omit<DefaultEmailTemplate, 'doc'>[] = [
     sources: ['customer', 'subscription', 'tenant'],
     refs: ['customerId', 'subscriptionId'],
     tree: subscriptionPaymentFailed(),
+  },
+  {
+    // 3-D Secure on a merchant-initiated charge. Its own template because the
+    // ask is different from a decline: nothing is wrong, the customer just has
+    // to confirm. Wording it as a failure is how you lose a happy subscriber.
+    key: 'subscription-authentication-required',
+    name: 'Subscription payment needs confirming',
+    type: 'transactional',
+    category: 'subscription',
+    subject: 'Confirm your payment to keep your order on track',
+    preheader: 'Your bank needs one quick check — it takes a moment.',
+    sources: ['customer', 'subscription', 'tenant'],
+    refs: ['customerId', 'subscriptionId'],
+    tree: subscriptionAuthenticationRequired(),
+  },
+  {
+    // Invoice mode (docs/142 §8) — billed rather than charged. The routine
+    // monthly email for an account on terms, so it reads as a normal bill.
+    key: 'subscription-invoice',
+    name: 'Subscription invoice',
+    type: 'transactional',
+    category: 'subscription',
+    subject: 'Your repeat order is ready',
+    preheader: 'Here’s the bill for your latest order.',
+    sources: ['customer', 'subscription', 'order', 'tenant'],
+    refs: ['customerId', 'subscriptionId', 'orderId'],
+    tree: subscriptionInvoice(),
   },
   {
     key: 'subscription-paused',

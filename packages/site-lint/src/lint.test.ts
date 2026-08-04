@@ -545,6 +545,61 @@ describe('search metadata', () => {
     expect(found).toContain('seo-description-missing');
   });
 
+  // Seeded on every commerce site, so getting this wrong puts five findings nobody can
+  // act on at the top of every Check run. A template's description would have to be
+  // true of all hundred products rendering through it; each product carries its own.
+  it('asks nothing of a record page, which templates a hundred records', () => {
+    const found = rules({
+      pages: [
+        page({
+          id: 'rec',
+          name: 'Product detail',
+          slug: '/products/:handle',
+          kind: 'collection',
+          recordType: 'commerce.product',
+          root: body(),
+          seoTitle: null,
+          seoDescription: null,
+        }),
+      ],
+    });
+    expect(found).not.toContain('seo-title-missing');
+    expect(found).not.toContain('seo-description-missing');
+    // Not "hidden" either — its rendered instances are very much meant to be indexed,
+    // so reporting it as excluded from search would be a different lie.
+    expect(found).not.toContain('seo-page-hidden');
+  });
+
+  it('does not let record pages invent a duplicate out of a shared blank', () => {
+    // Five seeded record pages all with no description must not read as five pages
+    // sharing one — the empty value is not a value they chose.
+    const found = rules({
+      pages: [
+        page({ root: body() }),
+        page({
+          id: 'r1',
+          name: 'Product detail',
+          slug: '/products/:handle',
+          kind: 'collection',
+          root: body(),
+          seoTitle: 'Shared',
+          seoDescription: 'Shared',
+        }),
+        page({
+          id: 'r2',
+          name: 'Blog post',
+          slug: '/blog/:slug',
+          kind: 'collection',
+          root: body(),
+          seoTitle: 'Shared',
+          seoDescription: 'Shared',
+        }),
+      ],
+    });
+    expect(found).not.toContain('seo-title-duplicate');
+    expect(found).not.toContain('seo-description-duplicate');
+  });
+
   it('flags two pages sharing a title, ignoring case and spacing', () => {
     const found = rules({
       pages: [

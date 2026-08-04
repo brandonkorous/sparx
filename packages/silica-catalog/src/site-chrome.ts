@@ -35,7 +35,7 @@
 // cookie-backed, SSR-no-flash, policy-gated switch. We take the block's SHAPE and
 // keep our controls.
 
-import { type Node } from '@wizeworks/silicaui-html';
+import { bind, el, type Node } from '@wizeworks/silicaui-html';
 // `/blocks` is its own entry point — the composed sections live behind a subpath so
 // a consumer that only needs the node primitives doesn't pull 44 block trees in.
 import { getBlock } from '@wizeworks/silicaui-html/blocks';
@@ -86,6 +86,25 @@ function isNodeObject(v: unknown): v is SlotBearing {
  *  list bullet and a gap where a link used to be. */
 const isDisposableWrapper = (n: SlotBearing): boolean => n.tag === 'li';
 
+/** Write a destination's text + href onto a link node, in place. Text lives in
+ *  `children` for an element and in `props.label`/`props.text` for a component — both
+ *  shapes appear across these blocks — so write whichever the node actually uses rather
+ *  than guessing from the tag. */
+function writeLink(node: SlotBearing, text: string, href: string): void {
+  const c = node as SlotBearing & {
+    attrs?: Record<string, unknown>;
+    props?: Record<string, unknown>;
+  };
+  if (c.props && ('label' in c.props || 'text' in c.props)) {
+    if ('label' in c.props) c.props.label = text;
+    if ('text' in c.props) c.props.text = text;
+    c.props.href = href;
+  } else {
+    c.children = [text];
+    c.attrs = { ...(c.attrs ?? {}), href };
+  }
+}
+
 /**
  * Fill a block's declared slots, in place, on an already-cloned tree.
  *
@@ -118,21 +137,7 @@ export function fillSlots(root: Node, fills: Record<string, Fill>): Node {
             continue;
           }
           const { text, href } = fill as { text: string; href: string };
-          // Text lives in `children` for an element and in `props.label`/`props.text`
-          // for a component — both shapes appear across these blocks, so write
-          // whichever the node actually uses rather than guessing from the tag.
-          const c = child as SlotBearing & {
-            attrs?: Record<string, unknown>;
-            props?: Record<string, unknown>;
-          };
-          if (c.props && ('label' in c.props || 'text' in c.props)) {
-            if ('label' in c.props) c.props.label = text;
-            if ('text' in c.props) c.props.text = text;
-            c.props.href = href;
-          } else {
-            c.children = [text];
-            c.attrs = { ...(c.attrs ?? {}), href };
-          }
+          writeLink(child, text, href);
           next.push(visit(child));
           continue;
         }
@@ -198,6 +203,112 @@ function withHostThemeToggle(root: Node): Node {
     return node;
   };
   return visit(root) as Node;
+}
+
+const LINK_SLOT = /^link(\d+)$/;
+
+/** The numeric index of a `link{n}` slot node, or null for anything that isn't one. */
+function linkSlotIndex(node: unknown): number | null {
+  if (!isNodeObject(node)) return null;
+  const name = node.slot?.name;
+  const m = typeof name === 'string' ? LINK_SLOT.exec(name) : null;
+  return m ? Number(m[1]) : null;
+}
+
+/**
+ * A link "unit" in a container's child list — either a BARE link-slot node (the navbar's
+ * `<a slot=link1>` sitting straight in its `<nav>`) or a single-purpose WRAPPER around
+ * one (the footer's `<li><a slot=link1></li>`). Returns the slot index and the inner link
+ * node to write; the CHILD itself is the unit kept or cloned, so a wrapped link grows by
+ * cloning the whole `<li>`, never by cramming siblings inside it.
+ */
+function linkUnit(child: unknown): { index: number; link: SlotBearing } | null {
+  const direct = linkSlotIndex(child);
+  if (direct !== null) return { index: direct, link: child as SlotBearing };
+  if (isNodeObject(child) && Array.isArray(child.children) && child.children.length === 1) {
+    const innerIndex = linkSlotIndex(child.children[0]);
+    if (innerIndex !== null) return { index: innerIndex, link: child.children[0] as SlotBearing };
+  }
+  return null;
+}
+
+/**
+ * Fill the navbar's numbered link slots with EVERY destination, GROWING past the
+ * block's declared count instead of truncating at it. A site shows exactly the links
+ * it has — the block's four slots are a starting shape, never a ceiling.
+ *
+ * Each declared `link{i}` slot takes `destinations[i-1]`; a slot with no destination is
+ * dropped (so a short nav publishes no dead `#`), and every destination BEYOND the
+ * highest declared index is appended as a clone of that last slot, in the same container
+ * it sits in. That container placement is what respects a split layout: `centerLogo`
+ * puts `link1..2` on the left of the wordmark and `link3..4` on the right, so `link4` is
+ * the tail and the overflow lands on the right — the editorial split holds for any
+ * number of links. The slots repeat across the desktop row and the phone panel, and both
+ * are grown identically (each has its own `link{max}`), so the two renderings can never
+ * differ. Handles bare links (the navbar) and `<li>`-wrapped ones (the footer columns)
+ * alike, via `linkUnit`.
+ */
+function fillNavLinks(root: Node, destinations: [string, string][]): Node {
+  // The highest declared slot index anywhere — the point past which extras append.
+  let maxIndex = 0;
+  const scan = (n: unknown): void => {
+    const i = linkSlotIndex(n);
+    if (i !== null && i > maxIndex) maxIndex = i;
+    if (isNodeObject(n) && Array.isArray(n.children)) n.children.forEach(scan);
+  };
+  scan(root);
+
+  const visit = (node: unknown): unknown => {
+    if (!isNodeObject(node) || !Array.isArray(node.children)) return node;
+    const next: unknown[] = [];
+    for (const child of node.children) {
+      const unit = linkUnit(child);
+      if (unit === null) {
+        next.push(visit(child));
+        continue;
+      }
+      const { index, link } = unit;
+      // A declared link slot: fill the inner link (keeping any wrapper) if a destination
+      // maps to it, else drop the whole unit.
+      if (index <= destinations.length) {
+        const [text, href] = destinations[index - 1]!;
+        writeLink(link, text, href);
+        next.push(child);
+      }
+      // Overflow — every destination past the last declared slot, appended as a clone of
+      // this whole unit (wrapper included) so it trails the block's last link here.
+      if (index === maxIndex && destinations.length > maxIndex) {
+        for (let j = maxIndex; j < destinations.length; j += 1) {
+          const clone = structuredClone(child);
+          const cloneLink = linkUnit(clone)!.link as SlotBearing & { slot?: unknown };
+          delete cloneLink.slot; // a concrete link now, not a template slot
+          const [text, href] = destinations[j]!;
+          writeLink(cloneLink, text, href);
+          next.push(clone);
+        }
+      }
+    }
+    node.children = next;
+    return node;
+  };
+  return visit(root) as Node;
+}
+
+/** The container whose direct children hold the link unit with this slot index — the
+ *  `<ul>`/`<nav>` a column's links live in. Lets a multi-column block (the footer) grow
+ *  ONE column to fit without the global fill reaching the others. */
+function findLinkListContainer(root: Node, index: number): Node | null {
+  let found: Node | null = null;
+  const visit = (node: unknown): void => {
+    if (found || !isNodeObject(node) || !Array.isArray(node.children)) return;
+    if (node.children.some((c) => linkUnit(c)?.index === index)) {
+      found = node as Node;
+      return;
+    }
+    node.children.forEach(visit);
+  };
+  visit(root);
+  return found;
 }
 
 export interface SiteChromeOptions {
@@ -276,15 +387,17 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
   const root = cloneBlock(NAVBAR_VARIANTS[opts.navbar ?? 'brandLeft']);
   const filled = fillSlots(root, {
     brand: hostCore(HOST_KEYS.siteBrand),
-    ...linkFills(destinations, 4),
     // Every site has shopper sign-in (Layer-2 auth), so the secondary link is real
     // on a content-only site too — it reaches the account, not a store.
     secondary: { text: 'Sign in', href: '/account/login' },
     cta: { text: 'Get in touch', href: '/contact' },
   });
+  // The nav renders EXACTLY the site's destinations — the block's link slots GROW to fit
+  // however many there are, never truncating at the block's default count.
+  const linked = fillNavLinks(filled, destinations);
   // Keep the cookie-backed, SSR-integrated, policy-gated theme toggle rather than the
   // block's client-only behavior.
-  return withHostThemeToggle(filled);
+  return withHostThemeToggle(linked);
 }
 
 /**
@@ -301,7 +414,7 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
   const { commerceEnabled = true } = opts;
   const destinations = navDestinations(opts);
   const root = cloneBlock('footer');
-  return fillSlots(root, {
+  const filled = fillSlots(root, {
     brand: hostCore(HOST_KEYS.siteBrand),
     blurb: {
       text: commerceEnabled
@@ -316,8 +429,8 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
     social2: null,
     social3: null,
     col1: { text: 'Explore', href: '/' },
-    // Search is footer-only: a utility destination the header has no slot for.
-    ...linkFills([...destinations, ['Search', '/search']], 4),
+    // The Explore column (link1-4) is GROWN below to fit every destination + Search, so
+    // it is deliberately left OUT of this by-name fill and handled after.
     ...(commerceEnabled
       ? {
           col2: { text: 'Account', href: '/account' },
@@ -339,10 +452,23 @@ export function siteFooter(opts: SiteChromeOptions = {}): Node {
     link10: null,
     link11: null,
     link12: null,
-    // The copyright row's own link trio duplicates the columns above on a starter
-    // site; the bound copyright line carries the identity on its own.
+    // The copyright line is the tenant's OWN name, bound live — never the block's shipped
+    // "© 2026 SilicaUI, Inc." placeholder, which an unfilled slot would publish verbatim.
+    copyright: el('p', 'text-sm text-base-content', {
+      children: [
+        '© ',
+        bind(el('span', 'font-medium', { text: 'Your site' }), 'site.identity.name'),
+      ],
+    }),
+    // The copyright row's own link trio duplicates the columns above; dropped.
     link13: null,
     link14: null,
     link15: null,
   });
+  // Explore grows to fit EXACTLY the site's destinations + the footer-only Search — the
+  // same no-cap rule as the navbar, scoped to that one column (via its `link1`) so the
+  // Account and legal columns are never touched.
+  const explore = findLinkListContainer(filled, 1);
+  if (explore) fillNavLinks(explore, [...destinations, ['Search', '/search']]);
+  return filled;
 }

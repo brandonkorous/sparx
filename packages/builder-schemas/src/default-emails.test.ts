@@ -12,10 +12,10 @@ function* walk(node: BuilderNode): Generator<BuilderNode> {
 const types = (root: BuilderNode): string[] => [...walk(root)].map((nd) => nd.type);
 
 describe('DEFAULT_EMAIL_TEMPLATES', () => {
-  it('ships exactly the 37 documented templates with unique keys', () => {
+  it('ships exactly the 39 documented templates with unique keys', () => {
     const keys = DEFAULT_EMAIL_TEMPLATES.map((t) => t.key);
-    expect(keys).toHaveLength(37);
-    expect(new Set(keys).size).toBe(37);
+    expect(keys).toHaveLength(39);
+    expect(new Set(keys).size).toBe(39);
     expect(keys).toEqual(
       expect.arrayContaining([
         'welcome-customer',
@@ -44,6 +44,9 @@ describe('DEFAULT_EMAIL_TEMPLATES', () => {
         'subscription-confirmed',
         'subscription-renewed',
         'subscription-payment-failed',
+        // docs/142 — the two collection outcomes that are not failures
+        'subscription-authentication-required',
+        'subscription-invoice',
         'subscription-paused',
         'subscription-resumed',
         'subscription-cancelled',

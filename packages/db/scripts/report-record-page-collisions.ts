@@ -18,11 +18,20 @@
 // `position`) and demotes the rest to ordinary unrouted pages — this is the report that
 // says whose site that would happen to.
 //
-// Reads through the bare client (no RLS context): it is an operator-run audit across
-// every tenant, which is the one thing tenant-scoped reads cannot do. It lives HERE
-// rather than in the repo-root `scripts/` because `@prisma/client` is a dependency of
-// this package — pnpm links it into `packages/db/node_modules` only, so a root-level
-// script cannot resolve it at all.
+// READS ONE TENANT AT A TIME, and that is not a stylistic choice. `builder_pages` is
+// ENABLE + FORCE row level security and the connection role is `sparx_app`, a
+// non-superuser — so a bare `findMany` across the table returns ZERO rows and this
+// report cheerfully prints "no duplicates". A pre-flight that cannot fail loudly is
+// worse than no pre-flight, because the answer it gives is the one you were hoping
+// for. The scan therefore walks `tenants` (which is not RLS-scoped) and re-reads under
+// `set_config('app.tenant_id', …, true)` per tenant — the same shape the backfill
+// migration itself uses, for the same reason (packages/db/CLAUDE.md, "Backfilling a
+// FORCE-RLS table"). The tenant count is printed so a run that saw nothing is
+// distinguishable from a run that had nothing to see.
+//
+// Lives HERE rather than in the repo-root `scripts/` because `@prisma/client` is a
+// dependency of this package — pnpm links it into `packages/db/node_modules` only, so
+// a root-level script cannot resolve it at all.
 
 import { PrismaClient } from '@prisma/client';
 
@@ -46,6 +55,12 @@ interface Row {
   isDefault: boolean;
   position: number;
   publishedAt: Date | null;
+  /** Whether the row carries a silica draft body. TIER IS THE COLUMN THIS REPORT WAS
+   *  MISSING, and the omission cost a production outage: it counted legacy sparx-tier
+   *  templates in its totals without ever saying they were legacy, so "40 templates,
+   *  0 collisions, 40 already addressed" read as an all-clear while 36 of those 40 were
+   *  rows `ensureRecordPagesTx` was about to collide with. */
+  silicaDraftTree: unknown;
 }
 
 /** Group by a derived key, preserving insertion order. */
@@ -60,22 +75,42 @@ function groupBy<T>(rows: T[], key: (row: T) => string): Map<string, T[]> {
   return out;
 }
 
+/** Every record template on the platform, read under each tenant's own RLS context. */
+async function scanAllTenants(): Promise<{ rows: Row[]; tenants: number }> {
+  const tenants = await prisma.tenant.findMany({ select: { id: true } });
+  const rows: Row[] = [];
+
+  for (const tenant of tenants) {
+    // One transaction per tenant: `set_config(..., true)` is transaction-local, so the
+    // context and the read have to share it, and a single long transaction spanning
+    // every tenant would trip the interactive-transaction timeout on a large platform.
+    const found = await prisma.$transaction(async (tx) => {
+      await tx.$executeRawUnsafe(`select set_config('app.tenant_id', $1, true)`, tenant.id);
+      return tx.builderPage.findMany({
+        where: { kind: 'collection', recordType: { in: ROUTED } },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          tenantId: true,
+          propertyId: true,
+          recordType: true,
+          isDefault: true,
+          position: true,
+          publishedAt: true,
+          silicaDraftTree: true,
+        },
+        orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+      });
+    });
+    rows.push(...found);
+  }
+
+  return { rows, tenants: tenants.length };
+}
+
 async function main() {
-  const rows: Row[] = await prisma.builderPage.findMany({
-    where: { kind: 'collection', recordType: { in: ROUTED } },
-    select: {
-      id: true,
-      name: true,
-      slug: true,
-      tenantId: true,
-      propertyId: true,
-      recordType: true,
-      isDefault: true,
-      position: true,
-      publishedAt: true,
-    },
-    orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
-  });
+  const { rows, tenants } = await scanAllTenants();
 
   const buckets = groupBy(rows, (r) => `${r.propertyId} ${r.recordType}`);
   const collisions = [...buckets.entries()].filter(([, group]) => group.length > 1);
@@ -85,9 +120,21 @@ async function main() {
   // re-run is not mistaken for a fresh one.
   const alreadyAddressed = rows.filter((r) => (r.slug ?? '').includes(':'));
 
+  // Tier of the rows already sitting at an address. A LEGACY one is the shape that took
+  // the builder down: the migration addresses by `kind`+`record_type` without regard to
+  // tier, but only silica rows reach the page switcher — so the property reads as still
+  // missing its product page while the address is already spoken for. `recordPagePlan`
+  // upgrades those in place now; this line is how you SEE them before a release, which
+  // is the whole reason this file exists.
+  const legacyAtAddress = alreadyAddressed.filter((r) => r.silicaDraftTree == null);
+
+  console.log(`tenants scanned                    : ${tenants}`);
   console.log(`record templates for routed types : ${rows.length}`);
   console.log(`distinct (property, record type)   : ${buckets.size}`);
   console.log(`already carrying an address        : ${alreadyAddressed.length}`);
+  console.log(
+    `  ...of those, LEGACY (no silica)  : ${legacyAtAddress.length}  → upgraded in place on next builder load`
+  );
   console.log(`properties needing a decision      : ${collisions.length}`);
 
   if (collisions.length === 0) {

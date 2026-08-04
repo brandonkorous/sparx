@@ -694,6 +694,12 @@ export const EMAIL_SOURCES: DataSource[] = [
       text('pausedUntil', 'Paused until'),
       text('currentPeriodEnd', 'Current period ends'),
       text('manageUrl', 'Manage link'),
+      // Per-send links that come from the EVENT rather than the subscription
+      // row: `confirmUrl` carries a one-time authentication handoff, `payUrl` a
+      // hosted payment link for the invoice-mode bill (docs/142). Both are empty
+      // on every other subscription email, so a row bound to them self-drops.
+      text('confirmUrl', 'Confirm payment link'),
+      text('payUrl', 'Pay invoice link'),
     ],
   },
   {
