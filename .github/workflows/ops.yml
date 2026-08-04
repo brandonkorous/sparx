@@ -265,7 +265,58 @@ jobs:
           MEDIA_MOUNT=""
           MEDIA_VOLUME=""
           MEDIA_SECURITY=""
+          MEDIA_CREDS=""
           if [ "$TASK" = 'migrate-media-to-blob' ]; then
+            # The storage credentials come from AZURE, not from sparx-app-secrets.
+            #
+            # This matters for ORDERING, which is the whole point of the task. The app
+            # secret only carries AZURE_STORAGE_* once a release has derived them — and
+            # that same release rolls the containers, so the platform starts READING from
+            # Blob in the same run. Sourcing the migration's credentials from that secret
+            # would mean the bytes can only be copied AFTER the switch that depends on
+            # them, leaving a window where every image 404s against an empty container.
+            #
+            # Reading them here instead lets the copy run while the platform is still
+            # serving from the PVC, which is what the script's own header asks for and
+            # what makes the cutover seamless rather than merely quick.
+            #
+            # Exactly one storage account lives in the app resource group (the Terraform
+            # state account is in a different one), so this needs no name to be kept in
+            # sync — but it ASSERTS that, because silently picking the wrong account
+            # would write 21 MB of media somewhere nobody looks.
+            ACCOUNTS=$(az storage account list --resource-group "$RESOURCE_GROUP" --query '[].name' -o tsv)
+            COUNT=$(printf '%s\n' "$ACCOUNTS" | grep -c . || true)
+            if [ "$COUNT" -ne 1 ]; then
+              echo "::error::Expected exactly one storage account in $RESOURCE_GROUP, found $COUNT: $(printf '%s ' $ACCOUNTS)"
+              exit 1
+            fi
+            ST_ACCOUNT="$ACCOUNTS"
+            ST_KEY=$(az storage account keys list --resource-group "$RESOURCE_GROUP" \
+              --account-name "$ST_ACCOUNT" --query '[0].value' -o tsv)
+            if [ -z "$ST_KEY" ]; then
+              echo "::error::Could not read a key for storage account $ST_ACCOUNT."
+              exit 1
+            fi
+
+            # Held in a Secret rather than inlined as `value:` — the rendered manifest is
+            # echoed to the run log below, and a Job's pod spec is readable by anything
+            # with `get jobs`. Deleted in the cleanup step whatever happens.
+            CREDS_SECRET="ops-media-creds-${RUN_ID}"
+            kubectl create secret generic "$CREDS_SECRET" -n "$NAMESPACE" \
+              --from-literal=AZURE_STORAGE_ACCOUNT="$ST_ACCOUNT" \
+              --from-literal=AZURE_STORAGE_KEY="$ST_KEY" \
+              --dry-run=client -o yaml | kubectl apply -f -
+            echo "Media storage: migrating into account $ST_ACCOUNT."
+
+            # Double-quoted (not $'…') so $CREDS_SECRET expands; the body needs no escapes.
+            MEDIA_CREDS="
+                      - name: AZURE_STORAGE_ACCOUNT
+                        valueFrom:
+                          secretKeyRef: { name: $CREDS_SECRET, key: AZURE_STORAGE_ACCOUNT }
+                      - name: AZURE_STORAGE_KEY
+                        valueFrom:
+                          secretKeyRef: { name: $CREDS_SECRET, key: AZURE_STORAGE_KEY }"
+
             MEDIA_MOUNT=$'
                     volumeMounts:
                       - name: media
@@ -282,9 +333,9 @@ jobs:
                   fsGroupChangePolicy: OnRootMismatch'
           fi
 
-          export JOB IMAGE COMMAND MEDIA_MOUNT MEDIA_VOLUME MEDIA_SECURITY
+          export JOB IMAGE COMMAND MEDIA_MOUNT MEDIA_VOLUME MEDIA_SECURITY MEDIA_CREDS
 
-          envsubst '$JOB $IMAGE $COMMAND $TASK $MEDIA_MOUNT $MEDIA_VOLUME $MEDIA_SECURITY' > /tmp/job.yaml <<'YAML'
+          envsubst '$JOB $IMAGE $COMMAND $TASK $MEDIA_MOUNT $MEDIA_VOLUME $MEDIA_SECURITY $MEDIA_CREDS' > /tmp/job.yaml <<'YAML'
           apiVersion: batch/v1
           kind: Job
           metadata:
@@ -317,7 +368,7 @@ jobs:
                         value: info
                       - name: DATABASE_URL
                         valueFrom:
-                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }
+                          secretKeyRef: { name: sparx-app-secrets, key: AUTH_DATABASE_URL }${MEDIA_CREDS}
                     securityContext:
                       runAsNonRoot: true
                       runAsUser: 1000
@@ -338,3 +389,11 @@ jobs:
           ./.github/scripts/await-job.sh "$JOB" "$NAMESPACE" 1800
           kubectl -n "$NAMESPACE" logs "job/$JOB" -c task \
             --tail=-1 --ignore-errors=true || true
+
+      # A storage account key outliving the run that needed it is how a short-lived
+      # credential becomes a permanent one. `always()` — the Job failing is exactly
+      # when the secret would otherwise be left behind.
+      - name: Drop the one-off storage credentials
+        if: always() && inputs.task == 'migrate-media-to-blob'
+        run: |
+          kubectl delete secret "ops-media-creds-${RUN_ID}" -n "$NAMESPACE" --ignore-not-found
