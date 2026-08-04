@@ -87,7 +87,7 @@ const asNode = (v: unknown): SilicaNode => v as SilicaNode;
  *  `publishState`): those speak about the site an author is editing, and a row with no
  *  draft body has nothing for them to edit, diff or re-snapshot. It is the WRONG test
  *  for anything that speaks about what VISITORS are served — see `hasSilicaContent`. */
-const isSilica = (r: BuilderPage): boolean => r.silicaDraftTree != null;
+const isSilica = (r: Pick<BuilderPage, 'silicaDraftTree'>): boolean => r.silicaDraftTree != null;
 
 /**
  * A page row that carries silica content in EITHER stage.
@@ -233,12 +233,15 @@ export function load(
     // here would leave a half-seeded site — record pages and no Home.
     const silicaPages = allPages.filter(isSilica);
     if (silicaPages.length > 0) {
-      // SILICA ROWS ONLY decide whether an address is taken. A legacy sparx-tier
-      // template (`STARTER_PAGES` seeds one per record type, with a null slug and no
-      // silica tree) never reaches the switcher, so counting it as the occupant would
-      // mean seeding nothing and leaving the tenant exactly as unable to edit their
-      // product page as before. It cannot collide either — its slug is null.
-      const seeded = await ensureRecordPagesTx(tx, ctx, silicaPages, modules);
+      // EVERY row is passed, not just the silica ones. Whether the tenant can EDIT their
+      // product page is a question about silica rows — but whether a `create` would
+      // collide is a question about ALL of them, and passing only the silica rows asked
+      // the first question twice. `20270203000000_record_page_addresses` addresses record
+      // pages without regard to tier, so a legacy sparx-tier template (`STARTER_PAGES`
+      // seeds one per record type) now HOLDS `/products/:handle` while still being
+      // invisible to the filter above — and seeding "the missing page" over the top of it
+      // hit `(tenant_id, property_id, slug)` and 500'd every builder load in production.
+      const seeded = await ensureRecordPagesTx(tx, ctx, allPages, modules);
       if (seeded) {
         allPages = await tx.builderPage.findMany({
           where: { propertyId: ctx.propertyId },
@@ -375,6 +378,114 @@ function addressOf(slug: string): RecordAddress | null {
   return address;
 }
 
+/** The columns {@link recordPagePlan} decides from. A `Pick` rather than a shape of its
+ *  own, so "what the planner reads" cannot drift from what the row actually is. */
+export type RecordPageRow = Pick<
+  BuilderPage,
+  'id' | 'slug' | 'recordType' | 'position' | 'silicaDraftTree'
+>;
+
+/** What {@link ensureRecordPagesTx} should write. `upgrades` come first: they are the
+ *  rows that already OWN an address, so resolving them is what makes the `creates` safe
+ *  against `(tenant_id, property_id, slug)`. */
+export interface RecordPagePlan {
+  /** Rows holding an address with no silica body — given one IN PLACE. `slug` is the
+   *  address to write, or null to leave the row's own slug alone. */
+  upgrades: { id: string; address: RecordAddress; slug: string | null }[];
+  /** Addresses no row holds at all — created fresh. */
+  creates: RecordAddress[];
+  /** The `position` the first created page takes; each later one increments. */
+  nextPosition: number;
+}
+
+/**
+ * Decide which record detail pages a property is missing, and HOW to give it each one.
+ *
+ * Pure and exported for tests, like `pagesToDelete` and `framesToDelete` — the DB call
+ * below is then a transcription of the answer. The distinction it exists to hold is one
+ * the collapsed version got wrong in production:
+ *
+ *   DELIVERED — a SILICA row holds the address. Only silica rows reach the page switcher
+ *               (`load` filters on `isSilica`), so only a silica row means the tenant can
+ *               actually open and edit their product page. This is what "missing" is
+ *               measured against.
+ *   OCCUPIED  — ANY row holds the address, silica or not. This is what the unique index
+ *               is measured against, and it is strictly wider.
+ *
+ * Those two were one `taken` set, computed from silica rows only, on the premise that a
+ * legacy sparx-tier template "cannot collide — its slug is null". That was true right up
+ * until `20270203000000_record_page_addresses` gave those rows their address: the
+ * migration filters on `kind='collection'` + `record_type` and says nothing about tier,
+ * so it addressed legacy rows too. From then on a property with a legacy product template
+ * read as not-delivered (correct) AND not-occupied (wrong), and the `create` collided on
+ * every single builder load.
+ *
+ * A legacy occupant is UPGRADED IN PLACE rather than sidestepped, which is also the better
+ * answer on its own merits: the row keeps its id, its name, its SEO, its frame choice and
+ * any `builder_page_assignments` pointing at it, and simply gains the silica body that
+ * makes it editable. Minting a second row would have left the tenant's own template
+ * orphaned beside a factory copy. It is the same in-place materialization the
+ * onboarding→silica bridge already does, and the same shape `sync` uses when a legacy row
+ * is saved from the studio.
+ */
+export function recordPagePlan(
+  rows: readonly RecordPageRow[],
+  modules: SiteChromeOptions
+): RecordPagePlan {
+  const active = {
+    commerce: modules.commerceEnabled ?? true,
+    scheduling: modules.schedulingEnabled ?? false,
+    cms: modules.cmsEnabled ?? false,
+  };
+  // The address a row presents at — by its slug, else by the `recordType`
+  // `rowsToStoredSite` derives one from. Both spellings are in production.
+  const addressOfRow = (r: RecordPageRow): RecordAddress | null =>
+    recordAddressAt(r.slug) ?? recordAddressFor(r.recordType ?? '');
+
+  const delivered = new Set(
+    rows.filter(isSilica).flatMap((r) => {
+      const address = addressOfRow(r);
+      return address ? [address.recordType] : [];
+    })
+  );
+  // Every slug already spoken for, so an upgrade never writes an address a SIBLING row
+  // holds — the same collision one tier down.
+  const occupiedSlugs = new Set(rows.map((r) => normalizeSlug(r.slug)));
+  // A row is claimed by at most one address. Two addresses can otherwise select the same
+  // row when its slug and its `recordType` disagree, and the second update would silently
+  // overwrite the first.
+  const claimed = new Set<string>();
+
+  const upgrades: RecordPagePlan['upgrades'] = [];
+  const creates: RecordAddress[] = [];
+  for (const address of RECORD_ADDRESSES) {
+    if (!active[address.module] || delivered.has(address.recordType)) continue;
+    // Prefer the row SITTING at the address over one that merely claims the record type:
+    // that is the row the unique index would actually collide with.
+    const occupant =
+      rows.find(
+        (r) =>
+          !isSilica(r) &&
+          !claimed.has(r.id) &&
+          recordAddressAt(r.slug)?.recordType === address.recordType
+      ) ??
+      rows.find((r) => !isSilica(r) && !claimed.has(r.id) && r.recordType === address.recordType);
+    if (!occupant) {
+      creates.push(address);
+      continue;
+    }
+    claimed.add(occupant.id);
+    // Write the address only when this row isn't already at it AND nothing else is. A row
+    // matched on `recordType` alone still carries its old slug; taking the address is what
+    // puts it in the switcher, but never at the cost of the collision being fixed here.
+    const writeSlug =
+      recordAddressAt(occupant.slug) === null && !occupiedSlugs.has(normalizeSlug(address.slug));
+    if (writeSlug) occupiedSlugs.add(normalizeSlug(address.slug));
+    upgrades.push({ id: occupant.id, address, slug: writeSlug ? address.slug : null });
+  }
+  return { upgrades, creates, nextPosition: Math.max(0, ...rows.map((r) => r.position)) + 1 };
+}
+
 /**
  * Give a property the record detail pages its active modules call for.
  *
@@ -395,33 +506,35 @@ function addressOf(slug: string): RecordAddress | null {
  *
  * Appended at the end, so no existing page's `position` moves. Both published readers
  * tiebreak on `position asc`, and renumbering pages on a read would be a real change
- * wearing the clothes of a no-op.
+ * wearing the clothes of a no-op. An UPGRADE keeps its row's position for the same reason.
  */
 async function ensureRecordPagesTx(
   tx: TxClient,
   ctx: PropertyContext,
-  rows: readonly { slug: string | null; recordType: string | null; position: number }[],
+  rows: readonly RecordPageRow[],
   modules: SiteChromeOptions
 ): Promise<boolean> {
-  const active = {
-    commerce: modules.commerceEnabled ?? true,
-    scheduling: modules.schedulingEnabled ?? false,
-    cms: modules.cmsEnabled ?? false,
-  };
-  // An address counts as taken by its slug OR by a legacy row's `recordType`, because
-  // `rowsToStoredSite` presents those at the same address — seeding a second one would
-  // put two pages in the switcher for one route and collide on the unique index.
-  const taken = new Set(
-    rows.flatMap((r) => {
-      const address = recordAddressAt(r.slug) ?? recordAddressFor(r.recordType ?? '');
-      return address ? [address.recordType] : [];
-    })
-  );
-  const missing = RECORD_ADDRESSES.filter((a) => active[a.module] && !taken.has(a.recordType));
-  if (missing.length === 0) return false;
+  const plan = recordPagePlan(rows, modules);
+  if (plan.upgrades.length === 0 && plan.creates.length === 0) return false;
 
-  let position = Math.max(0, ...rows.map((r) => r.position)) + 1;
-  for (const address of missing) {
+  // Upgrades FIRST — each one settles a slug a create might otherwise have reached for.
+  for (const { id, address, slug } of plan.upgrades) {
+    await tx.builderPage.update({
+      where: { id },
+      data: {
+        kind: 'collection',
+        recordType: address.recordType,
+        ...(slug !== null ? { slug } : {}),
+        // The body it was always missing. `name` is deliberately NOT written: the row is
+        // the tenant's, and renaming their page to the factory label on a READ would be
+        // an edit they never made.
+        silicaDraftTree: asJson(recordPage(address).root),
+      },
+    });
+  }
+
+  let position = plan.nextPosition;
+  for (const address of plan.creates) {
     const page = recordPage(address);
     await tx.builderPage.create({
       data: {

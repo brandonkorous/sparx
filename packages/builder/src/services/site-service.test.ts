@@ -22,6 +22,7 @@ import {
   hasSilicaContent,
   hasStagedTree,
   pagesToDelete,
+  recordPagePlan,
   rowsToStoredSite,
   stagedFrameId,
   stagedTree,
@@ -506,5 +507,143 @@ describe('hasSilicaContent — reset must see what VISITORS see, not what the ed
 
   it('leaves a row carrying no silica content alone', () => {
     expect(hasSilicaContent(row(null, null))).toBe(false);
+  });
+});
+
+// ── recordPagePlan — the 500 that took the builder down in production ─────────
+//
+// `GET /v1/builder/site` seeds any record detail page the property is missing, and it
+// measured "missing" against SILICA rows only, on the premise that a legacy sparx-tier
+// template "cannot collide — its slug is null".
+//
+// `20270203000000_record_page_addresses` ended that. It addresses record pages by
+// `kind='collection'` + `record_type` and says nothing about tier, so the legacy
+// `STARTER_PAGES` product template — no silica body, invisible to the switcher — came out
+// of the migration holding `/products/:handle`. The seeding then read the property as
+// still missing its product page, created a second row at the same address, and hit
+// `(tenant_id, property_id, slug)`. Every builder load 500'd for every tenant whose site
+// predated addresses, which is most of them.
+//
+// The fix separates DELIVERED (a silica row holds it — what the tenant can edit) from
+// OCCUPIED (any row holds it — what the unique index sees), and upgrades the occupant in
+// place instead of minting a rival.
+describe('recordPagePlan — a legacy occupant is upgraded, never duplicated', () => {
+  const row = (
+    over: Partial<Parameters<typeof recordPagePlan>[0][number]>
+  ): Parameters<typeof recordPagePlan>[0][number] => ({
+    id: 'p1',
+    slug: null,
+    recordType: null,
+    position: 0,
+    silicaDraftTree: null,
+    ...over,
+  });
+
+  // A silica home so the property reads as a real site, as `load` requires.
+  const home = row({ id: 'home', slug: '/', silicaDraftTree: { kind: 'element' } });
+
+  // Commerce alone calls for THREE addresses (product, collection, category), so every
+  // assertion below is scoped to the one under test — the others are legitimately created.
+  const creates = (plan: ReturnType<typeof recordPagePlan>) =>
+    plan.creates.map((a) => a.recordType);
+  const upgradeOf = (plan: ReturnType<typeof recordPagePlan>, recordType: string) =>
+    plan.upgrades.find((u) => u.address.recordType === recordType);
+
+  it('THE REGRESSION: a migration-addressed legacy row is upgraded, not re-created', () => {
+    const legacy = row({
+      id: 'legacy-product',
+      slug: '/products/:handle',
+      recordType: 'commerce.product',
+    });
+    const plan = recordPagePlan([home, legacy], { commerceEnabled: true });
+
+    // Nothing is created at a slug another row already holds — this is the 500.
+    expect(creates(plan)).not.toContain('commerce.product');
+    expect(upgradeOf(plan, 'commerce.product')).toEqual({
+      id: 'legacy-product',
+      address: expect.objectContaining({ recordType: 'commerce.product' }),
+      // Already at its address, so the slug is left alone rather than rewritten.
+      slug: null,
+    });
+  });
+
+  it('upgrades a pre-migration legacy row and gives it the address', () => {
+    // The same row as it looked BEFORE the migration ran: recordType, no slug.
+    const legacy = row({ id: 'legacy-product', slug: null, recordType: 'commerce.product' });
+    const plan = recordPagePlan([home, legacy], { commerceEnabled: true });
+
+    expect(creates(plan)).not.toContain('commerce.product');
+    expect(upgradeOf(plan, 'commerce.product')).toEqual({
+      id: 'legacy-product',
+      address: expect.objectContaining({ recordType: 'commerce.product' }),
+      slug: '/products/:handle',
+    });
+  });
+
+  it('creates only where NO row holds the address', () => {
+    const plan = recordPagePlan([home], { commerceEnabled: true });
+    expect(plan.upgrades).toEqual([]);
+    expect(creates(plan)).toContain('commerce.product');
+  });
+
+  it('is idempotent once a silica row holds the address — the second load re-writes nothing', () => {
+    const seeded = row({
+      id: 'product',
+      slug: '/products/:handle',
+      recordType: 'commerce.product',
+      silicaDraftTree: { kind: 'element' },
+    });
+    const plan = recordPagePlan([home, seeded], { commerceEnabled: true });
+    expect(upgradeOf(plan, 'commerce.product')).toBeUndefined();
+    expect(creates(plan)).not.toContain('commerce.product');
+  });
+
+  it('a silica row identified only by recordType still counts as delivered', () => {
+    // `rowsToStoredSite` presents this row AT the address, so seeding another would put
+    // two pages in the switcher for one route.
+    const seeded = row({
+      id: 'product',
+      slug: null,
+      recordType: 'commerce.product',
+      silicaDraftTree: { kind: 'element' },
+    });
+    const plan = recordPagePlan([home, seeded], { commerceEnabled: true });
+    expect(upgradeOf(plan, 'commerce.product')).toBeUndefined();
+    expect(creates(plan)).not.toContain('commerce.product');
+  });
+
+  it('never writes an address a SIBLING row already holds', () => {
+    // Two legacy rows: one parked ON the address, one merely claiming the record type.
+    // The one at the address is upgraded; the other must not be handed the same slug.
+    const atAddress = row({ id: 'at-address', slug: '/products/:handle' });
+    const claiming = row({ id: 'claiming', slug: '/old-product', recordType: 'commerce.product' });
+    const plan = recordPagePlan([home, atAddress, claiming], { commerceEnabled: true });
+
+    expect(creates(plan)).not.toContain('commerce.product');
+    expect(upgradeOf(plan, 'commerce.product')).toEqual({
+      id: 'at-address',
+      address: expect.objectContaining({ recordType: 'commerce.product' }),
+      slug: null,
+    });
+    // The runner-up is left entirely alone — one address, one row.
+    expect(plan.upgrades.filter((u) => u.id === 'claiming')).toEqual([]);
+  });
+
+  it('honours the module gates — a publisher gets no product page', () => {
+    const plan = recordPagePlan([home], {
+      commerceEnabled: false,
+      cmsEnabled: true,
+      schedulingEnabled: false,
+    });
+    const types = plan.creates.map((a) => a.recordType);
+    expect(types).toContain('cms.blog_post');
+    expect(types).not.toContain('commerce.product');
+    expect(types).not.toContain('scheduling.service');
+  });
+
+  it('appends after the LAST row, counting legacy rows too', () => {
+    const legacy = row({ id: 'legacy', slug: '/about', position: 7 });
+    const plan = recordPagePlan([home, legacy], { commerceEnabled: true });
+    expect(plan.nextPosition).toBe(8);
   });
 });
