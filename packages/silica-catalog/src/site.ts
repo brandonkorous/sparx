@@ -30,6 +30,12 @@ import {
 import { blogIndexPage } from './cms';
 import { featuredProducts, productGrid, shopHeader } from './commerce';
 import { HOST_KEYS, functionalShell, hostCore } from './host-nodes';
+import {
+  RECORD_ADDRESSES,
+  RECORD_TEMPLATES,
+  RECORD_TEMPLATE_LABELS,
+  type RecordAddress,
+} from './record-templates';
 import { siteFooter, siteNavbar, type SiteChromeOptions } from './site-chrome';
 
 // ── Page content (sparx-authored, neutral copy) ──────────────────────────────
@@ -331,13 +337,45 @@ export function starterPages(opts: SiteChromeOptions = {}): Page[] {
         ]
       : []),
     // Journal — the blog INDEX, seeded only for a tenant with the CMS module active.
-    // The per-post DETAIL page is not seeded here: it is a record template, so it comes
-    // from the `cms.blog_post` code composite (`starterCollectionDto`) like the PDP,
-    // which reaches every tenant instead of only ones created after this shipped.
+    // The per-post DETAIL page is not here because it is not an ORDINARY page: it lives
+    // at a record address (`/blog/:slug`) and is seeded by `recordPages` below, which
+    // `starterSite` composes in. Keeping the two lists apart is deliberate — see the
+    // note on `recordPages`.
     ...(cmsEnabled ? [makePage('Journal', '/blog', stampTree(blogIndexPage()))] : []),
     makePage('About', '/about', stampTree(pageBody([aboutContent(), featureTrio()]))),
     makePage('Contact', '/contact', stampTree(pageBody([contactContent()]))),
   ];
+}
+
+/** One record detail page as a silica `Page`: the code-authored template at its address,
+ *  stamped and ready to edit like anything else in the switcher. */
+export function recordPage(address: RecordAddress): Page {
+  return makePage(
+    RECORD_TEMPLATE_LABELS[address.recordType],
+    address.slug,
+    stampTree(RECORD_TEMPLATES[address.recordType]())
+  );
+}
+
+/**
+ * Every record detail page a site with these modules should have.
+ *
+ * SEPARATE FROM `starterPages`, ON PURPOSE — twice over. `starterPages` means "the
+ * ordinary pages a new site opens with", and `starter-binds.test.ts` tests exactly that
+ * meaning: no starter page binds at its root, because an ordinary page is not scoped to
+ * one record. A record template legitimately IS, so folding these in would make that
+ * suite fail for being correct. And the two lists have different lifecycles — an existing
+ * property gets these backfilled by `ensureRecordPagesTx` long after its starter pages
+ * were written.
+ *
+ * Module-gated by `RecordAddress.module`, so a publisher with no Commerce module never
+ * sees a product page in their switcher — the same courtesy `starterPages` already
+ * extends to Shop and Cart.
+ */
+export function recordPages(opts: SiteChromeOptions = {}): Page[] {
+  const { commerceEnabled = true, schedulingEnabled = false, cmsEnabled = false } = opts;
+  const active = { commerce: commerceEnabled, scheduling: schedulingEnabled, cms: cmsEnabled };
+  return RECORD_ADDRESSES.filter((a) => active[a.module]).map(recordPage);
 }
 
 /** The complete silica-native starter `Site` — shared branded frame + starter pages
@@ -345,12 +383,17 @@ export function starterPages(opts: SiteChromeOptions = {}): Page[] {
  *  (`compiledToSilicaTheme` of its brand) so the seed previews/renders in the real
  *  brand; falls back to a shipped preset when none is supplied. `commerceEnabled`
  *  (default `true`, so every existing caller/test is unaffected) strips every
- *  Shop-flavored page/link/CTA for a tenant with no Commerce module active. */
+ *  Shop-flavored page/link/CTA for a tenant with no Commerce module active.
+ *
+ *  Record detail pages are APPENDED after the ordinary ones, so the switcher reads
+ *  Home → Shop → … → About → Contact → Product detail → Blog post. Appending also keeps
+ *  every existing page's position stable, which matters because both published readers
+ *  tiebreak on `position asc`. */
 export function starterSite(theme: Theme = THEME_PRESETS[0]!, opts: SiteChromeOptions = {}): Site {
   return {
     version: '1.0.0',
     theme,
     frame: starterFrame(opts),
-    pages: starterPages(opts),
+    pages: [...starterPages(opts), ...recordPages(opts)],
   };
 }

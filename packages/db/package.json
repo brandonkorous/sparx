@@ -32,6 +32,7 @@
     "db:rls-audit": "tsx scripts/rls-audit.ts",
     "db:backfill:builder-class": "tsx scripts/backfill-builder-class.ts",
     "db:backfill:property-name": "tsx scripts/backfill-property-name.ts",
+    "db:report:record-pages": "tsx scripts/report-record-page-collisions.ts",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf .turbo dist *.tsbuildinfo"

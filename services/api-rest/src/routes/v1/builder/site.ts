@@ -89,7 +89,19 @@ const builderSiteRoutes: FastifyPluginAsync = (app) => {
   app.get('/v1/builder/site', async (request) => {
     requireRole(request, 'viewer');
     await requireBuilderModule(request);
-    const site = await siteService.load(await toBuilderContext(request));
+    const ctx = await toBuilderContext(request);
+    // The module flags decide which RECORD detail pages this property should have, and
+    // `load` seeds any that are missing — the only thing that puts a product or blog-post
+    // page in front of a tenant whose site predates page addresses. Same failure
+    // directions as the frame reset below: Commerce fails OPEN so a flag blip never hides
+    // a page from a tenant who pays for it, Scheduling and CMS fail CLOSED so a blip never
+    // invents one.
+    const [commerceEnabled, schedulingEnabled, cmsEnabled] = await Promise.all([
+      isModuleEnabled(ctx.tenantId, 'commerce').catch(() => true),
+      isModuleEnabled(ctx.tenantId, 'scheduling').catch(() => false),
+      isModuleEnabled(ctx.tenantId, 'cms').catch(() => false),
+    ]);
+    const site = await siteService.load(ctx, { commerceEnabled, schedulingEnabled, cmsEnabled });
     return ok({ site });
   });
 

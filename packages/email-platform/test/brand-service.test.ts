@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
+import { BASE_SILICA_THEME } from '@sparx/silica-catalog';
+
 import { siteThemeToBrand } from '../src/services/brand-service';
 
 // A resolved silica theme in OKLCH (what SPARX_THEMES / resolveSparxTheme produce).
@@ -73,5 +75,44 @@ describe('siteThemeToBrand', () => {
     expect(brand.logoUrl).toBeUndefined();
     expect(brand.siteName).toBeUndefined();
     expect(brand.socials).toBeUndefined();
+  });
+});
+
+// The un-themed fallback: resolveEmailBrand returns siteThemeToBrand(BASE_SILICA_THEME, …)
+// for a site with no published silica theme, mirroring the site's own fallback so
+// email and site stay in lockstep before a theme is stored.
+describe('siteThemeToBrand(BASE_SILICA_THEME) — the un-themed fallback', () => {
+  it('flattens the sparx Ember base to email-safe hex, light + dark', () => {
+    const brand = siteThemeToBrand(BASE_SILICA_THEME, {});
+    // The BASE bag is already hex; colorToHex passes it through unchanged.
+    expect(brand.primary).toBe('#e04631'); // sparx Ember
+    expect(brand.background).toBe('#ffffff');
+    expect(brand.foreground).toBe('#0f172a');
+    expect(brand.dark?.background).toBe('#0b1120');
+    for (const v of [
+      brand.primary,
+      brand.primaryForeground,
+      brand.accent,
+      brand.background,
+      brand.foreground,
+      brand.muted,
+      brand.border,
+    ]) {
+      expect(v).toMatch(HEX_RE);
+    }
+    for (const v of Object.values(brand.dark ?? {})) {
+      expect(v).toMatch(HEX_RE);
+    }
+  });
+
+  it('threads identity through the base fallback', () => {
+    const brand = siteThemeToBrand(BASE_SILICA_THEME, {
+      siteName: "Bob's Parts",
+      logoUrl: 'https://x.test/logo.png',
+    });
+    expect(brand.siteName).toBe("Bob's Parts");
+    expect(brand.logoUrl).toBe('https://x.test/logo.png');
+    // Identity does not change the look — the palette is still the Ember base.
+    expect(brand.primary).toBe('#e04631');
   });
 });

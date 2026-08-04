@@ -148,8 +148,10 @@ export const SILICA_STYLE_GUIDE = {
       'native.faq_accordion — Q/A disclosure list (behavior: disclosure).',
       'native.contact_section — copy + a WORKING validating form (behavior: form). See `forms` below.',
       'native.tabs / native.accordion / native.dropdown — interactive primitives.',
-      'native.navbar / native.footer — AVOID for the frame: they hardcode "SilicaUI" demo branding. Use the sparx ' +
-        'chrome composites (sparx.navbar / sparx.footer), which bind to the tenant’s own identity.',
+      'native.navbar (+ _center_links / _center_logo / _mega_menu / _floating_pill) and native.footer — real, ' +
+        'behavior-carrying chrome. Their "SilicaUI" wordmark and `#` hrefs are SLOT DEFAULTS, not hardcoded branding: ' +
+        'fill the slots and they are the tenant’s. For the FRAME prefer sparx.navbar / sparx.footer, which are these ' +
+        'same blocks pre-filled with the tenant’s live brand + legal-links host cores.',
     ],
     colorBands:
       'BUILD PAGES WITH RANGE, and know the two traps that punish it. A page built only from ' +
@@ -183,8 +185,11 @@ export const SILICA_STYLE_GUIDE = {
         'standalone (pin it to one product). "Save as component" to fork a custom card.',
       'buyBox — the PDP add-to-cart form (variant picker + quantity + submit); pre-wired to the cart end to end.',
       "collectionHeader — a collection/category page's title + description band, bound to the in-scope record.",
-      'siteNavbar / siteFooter — sparx-branded chrome (bound to site.identity/site.social); prefer these over the ' +
-        'native navbar/footer blocks for the FRAME so the wordmark/social links resolve per-tenant automatically.',
+      'siteNavbar / siteFooter — silica’s own `navbar` / `footer` blocks with the tenant’s brand and destinations ' +
+        'filled into their slots, plus the two live host cores silica cannot know about (`site.brand`, ' +
+        '`site.legal-links`). Use these for the FRAME so identity and legal pages resolve per-tenant. They are the ' +
+        'blocks, not a replacement for them: `navbar_center_links` / `_center_logo` / `_mega_menu` / `_floating_pill` ' +
+        'all share the same slot names, so a different header shape is a variant swap, not a re-author.',
     ],
     forms:
       "There is NO sparx-authored form composite — use silica's native `contact_section` block as-is for a contact " +

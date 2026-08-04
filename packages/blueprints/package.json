@@ -24,6 +24,7 @@
     "@sparx/builder-schemas": "workspace:*",
     "@sparx/cms-schemas": "workspace:*",
     "@sparx/commerce-schemas": "workspace:*",
+    "@sparx/silica-catalog": "workspace:*",
     "@sparx/sitebuilder-schemas": "workspace:*",
     "zod": "^4.4.3"
   },

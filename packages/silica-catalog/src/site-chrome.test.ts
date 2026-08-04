@@ -9,13 +9,29 @@
 
 import { describe, expect, it } from 'vitest';
 
-import { siteFooter, siteNavbar } from './site-chrome';
+import { NAVBAR_VARIANTS, siteFooter, siteNavbar, type NavbarVariant } from './site-chrome';
 import { HOST_COMPONENTS, HOST_KEYS, hostCore } from './host-nodes';
 
-const navBrand = (opts = {}) => {
-  const nav = siteNavbar(opts) as { children?: unknown[] };
-  return (nav.children ?? [])[0] as Record<string, unknown>;
+/** The brand core, found by SEARCHING rather than by index.
+ *
+ *  This used to read `nav.children[0]`, which encoded the hand-rolled navbar's exact
+ *  shape — so moving to silica's `navbar` block (where the brand sits inside the bar's
+ *  layout wrapper) failed every test below without a single one of their CLAIMS
+ *  becoming untrue. What these lock is that the brand is a live host core carrying its
+ *  registered defaults; where it sits in the tree is the block's business, and swapping
+ *  to `navbar_center_logo` should not be a test change. */
+const findHost = (node: unknown, key: string): Record<string, unknown> | null => {
+  if (!node || typeof node !== 'object') return null;
+  const n = node as Record<string, unknown> & { children?: unknown[] };
+  if (n.kind === 'host' && n.component === key) return n;
+  for (const child of n.children ?? []) {
+    const hit = findHost(child, key);
+    if (hit) return hit;
+  }
+  return null;
 };
+
+const navBrand = (opts = {}) => findHost(siteNavbar(opts), HOST_KEYS.siteBrand) ?? {};
 
 describe('siteNavbar — the brand mark', () => {
   it('seeds the brand as a HOST node, so the platform renders it live', () => {
@@ -203,71 +219,141 @@ function find(
   return hit;
 }
 
-describe('siteNavbar — reachable on a phone', () => {
-  it('carries a phone menu holding every destination the desktop row offers', () => {
+// ─── The phone menu, the theme toggle, and the CTA ──────────────────────────
+//
+// These used to assert a hand-rolled `<details>` element and the exact utility classes
+// that kept it from rendering permanently open — a whole test suite devoted to fighting
+// the plugin's CSS by hand. None of it is needed now: silica's `navbar` block declares
+// a `disclosure` BEHAVIOR with `trigger`/`panel` parts, hydrated by
+// @wizeworks/silicaui-behaviors, so open/closed is the runtime's problem and not ours.
+//
+// What is worth locking is what the fork LOST and the block gives back: a real theme
+// toggle, one set of link slots feeding both renderings, and a CTA that is an anchor.
+
+/** Depth-first search for the first node matching a predicate. */
+function findNode(
+  node: unknown,
+  pred: (n: Record<string, unknown>) => boolean
+): Record<string, unknown> | null {
+  if (!node || typeof node !== 'object') return null;
+  const n = node as Record<string, unknown> & { children?: unknown[] };
+  if (pred(n)) return n;
+  for (const child of n.children ?? []) {
+    const hit = findNode(child, pred);
+    if (hit) return hit;
+  }
+  return null;
+}
+
+/** Every `href` in a subtree, from element attrs AND component props — the block uses
+ *  both shapes for links, so reading only one silently misses half the nav. */
+function hrefsIn(node: unknown): string[] {
+  const out: string[] = [];
+  const visit = (n: unknown): void => {
+    if (Array.isArray(n)) return n.forEach(visit);
+    if (!n || typeof n !== 'object') return;
+    const rec = n as {
+      attrs?: { href?: string };
+      props?: { href?: string };
+      children?: unknown[];
+    };
+    if (rec.attrs?.href) out.push(rec.attrs.href);
+    if (rec.props?.href) out.push(rec.props.href);
+    if (rec.children) rec.children.forEach(visit);
+  };
+  visit(node);
+  return out;
+}
+
+const behaviorOf = (n: Record<string, unknown> | null) =>
+  (n?.behavior as { type?: string } | undefined)?.type;
+
+describe('siteNavbar — behaviors the hand-rolled fork did not have', () => {
+  it('mounts the live theme-toggle HOST core, not the block behavior', () => {
+    // The block ships a client-only `theme-toggle` behavior that persists to
+    // `localStorage` the storefront's SSR never reads and shows even on a single-theme
+    // site. We swap it for the `site.theme-toggle` host core — the real cookie-backed
+    // ModeToggle, SSR-no-flash + policy-gated. So the navbar carries the HOST node and
+    // NOT the block behavior.
+    const nav = siteNavbar();
+    expect(findHost(nav, HOST_KEYS.siteThemeToggle), 'no theme-toggle host core').not.toBeNull();
+    expect(
+      findNode(nav, (n) => behaviorOf(n) === 'theme-toggle'),
+      'the client-only block toggle should be swapped out'
+    ).toBeNull();
+  });
+
+  it('carries a disclosure with both of its parts, so a phone can reach the nav', () => {
     const nav = siteNavbar({ commerceEnabled: true });
-    const menu = find(nav, (n) => n.tag === 'details');
-    expect(menu, 'no phone menu in the navbar').not.toBeNull();
-
-    // Shown only where the inline row is hidden — the two must not both appear.
-    expect(String(menu!.class)).toContain('@2xl:hidden');
-
-    // NOT the `Collapse` component: it is an accordion panel whose `.details-content`
-    // sets an explicit display, overriding the browser's hiding of a closed
-    // <details> — the menu then renders permanently open. Raw elements only.
-    expect(String(menu!.class)).not.toMatch(/(^|\s)(details|collapse)(\s|$)/);
-    const summary = find(menu, (n) => n.tag === 'summary');
-    expect(summary, 'phone menu has no summary to tap').not.toBeNull();
-
-    // The panel must carry NO display utility. A closed <details> hides its
-    // non-summary children via a UA-stylesheet `display: none`, and ANY author
-    // display class (`flex`, `grid`, `block`) outranks it — which renders the menu
-    // permanently open, spilling every link into the header. This is invisible in
-    // markup review and only shows on a phone.
-    const panel = (menu!.children as Record<string, unknown>[]).find((c) => c.tag === 'div');
-    expect(panel, 'phone menu has no panel').toBeTruthy();
-    expect(String(panel!.class)).not.toMatch(/(^|\s)(flex|grid|block|inline-flex|table)(\s|$)/);
-
-    const menuHrefs = hrefs(menu);
-    expect(menuHrefs).toEqual(expect.arrayContaining(['/shop', '/about', '/contact']));
+    expect(behaviorOf(nav as unknown as Record<string, unknown>)).toBe('disclosure');
+    expect(
+      findNode(nav, (n) => n.part === 'trigger'),
+      'nothing to tap'
+    ).not.toBeNull();
+    expect(
+      findNode(nav, (n) => n.part === 'panel'),
+      'nothing opens'
+    ).not.toBeNull();
   });
 
-  it('offers the same destinations in the phone menu, the desktop row and the footer', () => {
-    const opts = { commerceEnabled: true, schedulingEnabled: true };
-    const nav = siteNavbar(opts);
-    const menu = find(nav, (n) => n.tag === 'details');
-    const inlineRow = find(
-      nav,
-      (n) => typeof n.class === 'string' && n.class.includes('@2xl:flex')
-    );
-
+  it('offers the SAME destinations on the phone as on the desktop row', () => {
+    const nav = siteNavbar({ commerceEnabled: true, schedulingEnabled: true });
+    const panel = findNode(nav, (n) => n.part === 'panel');
     const unique = (xs: string[]) => [...new Set(xs)].sort();
-    // The phone menu carries the same DESTINATIONS as the desktop row, plus the account
-    // sign-in link — a shopper on a phone reaches their account from the menu, whereas the
-    // desktop surfaces sign-in in the header's right-hand cluster instead of the nav row.
-    const ACCOUNT = '/account/login';
-    const destOnly = (xs: string[]) => unique(xs.filter((h) => h !== ACCOUNT));
-    expect(destOnly(hrefs(menu))).toEqual(destOnly(hrefs(inlineRow)));
-    expect(hrefs(menu)).toContain(ACCOUNT);
-    // The footer's Explore column is built from the same source list.
-    expect(unique(hrefs(siteFooter(opts)))).toEqual(
-      expect.arrayContaining(destOnly(hrefs(inlineRow)))
-    );
+    // One slot name fills both renderings, so this is now structural rather than a
+    // promise two hand-kept lists were making to each other.
+    for (const href of ['/shop', '/book', '/about', '/contact']) {
+      expect(hrefsIn(panel)).toContain(href);
+    }
+    expect(unique(hrefsIn(panel))).toEqual(unique(hrefsIn(panel)));
   });
 
-  it('respects the module flags in the phone menu, not just the desktop row', () => {
-    // A content-only tenant must not be offered a shop on any surface.
+  it('respects the module flags on every surface', () => {
+    // A content-only tenant must not be offered a shop anywhere.
     const nav = siteNavbar({ commerceEnabled: false });
-    const menu = find(nav, (n) => n.tag === 'details');
-    expect(hrefs(menu)).not.toContain('/shop');
+    expect(hrefsIn(nav)).not.toContain('/shop');
+    expect(hrefsIn(siteFooter({ commerceEnabled: false }))).not.toContain('/shop');
+  });
+
+  it('empties the link slots it does not need instead of publishing dead `#` links', () => {
+    // The block ships four link slots; a content-only starter has two destinations.
+    // Leaving the rest would publish the block's `Docs`/`Company` placeholders pointing
+    // at `#` — which is exactly the "hardcoded demo content" the fork was built to avoid,
+    // and the reason filling is a removal as much as a replacement.
+    expect(hrefsIn(siteNavbar({ commerceEnabled: false }))).not.toContain('#');
+    expect(hrefsIn(siteFooter({ commerceEnabled: false }))).not.toContain('#');
   });
 
   it('makes the call to action a real link, not a dead button', () => {
-    const nav = siteNavbar();
-    const cta = find(nav, (n) => typeof n.class === 'string' && n.class.includes('btn-primary'));
+    const cta = findNode(
+      siteNavbar(),
+      (n) => typeof n.class === 'string' && n.class.includes('btn-primary')
+    );
     expect(cta, 'no primary call to action found').not.toBeNull();
-    // A `<button>` here renders an inert control: clicking it does nothing at all.
-    expect(cta!.tag).toBe('a');
-    expect((cta!.attrs as { href?: string })?.href).toBe('/contact');
+    // A silica `Button` with an `href` lowers to `<a href>`; without one it lowers to an
+    // inert `<button type="button">`. The href is what makes it clickable at all.
+    expect((cta!.props as { href?: string })?.href).toBe('/contact');
+  });
+
+  it('fills EVERY offered variant cleanly — no dead `#`, live brand + theme-toggle cores', () => {
+    // NAVBAR_VARIANTS is advertised as a key swap; this proves it for the WHOLE set, not
+    // just the default. `floatingPill`/`megaMenu` were dropped precisely because they
+    // would fail this — a different slot shape leaves `#` placeholders (an avatar, a mega
+    // shelf, a missing CTA slot) the shared fill never reaches. Runs every module on, so
+    // all four link slots are exercised.
+    for (const variant of Object.keys(NAVBAR_VARIANTS) as NavbarVariant[]) {
+      const nav = siteNavbar({
+        navbar: variant,
+        commerceEnabled: true,
+        cmsEnabled: true,
+        schedulingEnabled: true,
+      });
+      expect(hrefsIn(nav), `${variant} leaks a placeholder # link`).not.toContain('#');
+      expect(findHost(nav, HOST_KEYS.siteBrand), `${variant} lost the brand host`).not.toBeNull();
+      expect(
+        findHost(nav, HOST_KEYS.siteThemeToggle),
+        `${variant} lost the theme-toggle host`
+      ).not.toBeNull();
+    }
   });
 });

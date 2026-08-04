@@ -3,7 +3,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { describe, expect, it } from 'vitest';
 
-import { ROUTED_RECORD_TYPES } from '@sparx/silica-catalog';
+import { RECORD_ADDRESSES, ROUTED_RECORD_TYPES } from '@sparx/silica-catalog';
 
 import {
   BUILTIN_PATHS,
@@ -91,14 +91,51 @@ describe('the storefront route table', () => {
   });
 
   it('names the record type behind every parameterized route, in the catalog spelling', () => {
-    // `recordType` is what lets a report join real traffic (`/products/brake-kit`) back
-    // to the collection template that produced it. The catalog owns the vocabulary, so
-    // the check is that this table agrees with it EXACTLY in both directions — a typo
-    // here silently attributes a template's whole traffic to nothing, and a route the
-    // catalog can render but this table omits does the same.
+    // `recordType` and `prefix` are DERIVED from the catalog's `RECORD_ADDRESSES` now,
+    // so this can no longer drift — it is one list, not two kept in step. Retained as a
+    // cheap assertion that the derivation covers everything and adds nothing.
     expect([...DYNAMIC_ROUTES].map((r) => r.recordType).sort()).toEqual(
       [...ROUTED_RECORD_TYPES].sort()
     );
+  });
+
+  it('gives every record address a param that is the REAL dynamic segment on disk', () => {
+    // The strongest guard available on this change, and the reason `param` exists as a
+    // field rather than being folded into the slug string: it makes a record page's
+    // address PROVABLE against the router instead of asserted.
+    //
+    // A record page lives at `/products/:handle` because `app/products/[handle]` is what
+    // serves it. If someone renames that directory to `[slug]`, the address silently
+    // names a parameter the router does not have — the page still resolves (lookup is by
+    // the whole slug string), so nothing fails, and the address quietly lies about the
+    // route it belongs to. Reading the directory back is what stops that.
+    const dynamicSegment = new Map<string, string>();
+    for (const segments of routes) {
+      if (segments.length !== 2) continue;
+      const [parent, child] = segments as [string, string];
+      const param = /^\[(.+)\]$/.exec(child)?.[1];
+      if (param) dynamicSegment.set(`/${parent}/`, param);
+    }
+
+    for (const address of RECORD_ADDRESSES) {
+      expect(
+        dynamicSegment.get(address.prefix),
+        `no dynamic route directory serves ${address.prefix}`
+      ).toBe(address.param);
+      expect(address.slug).toBe(`${address.prefix}:${address.param}`);
+    }
+  });
+
+  it('has a real route for every record address, so the catch-all can never serve one', () => {
+    // `apps/site/app/[...slug]` would happily match `/products/:handle` and hand back a
+    // template with nothing bound into it. It never gets the chance ONLY because a more
+    // specific route wins Next's precedence. That safety is a coincidence of routing
+    // unless something checks it, so this checks it.
+    const served = new Set(routes.map((segments) => `/${segments.join('/')}`));
+    for (const address of RECORD_ADDRESSES) {
+      const dir = `${address.prefix}[${address.param}]`;
+      expect(served.has(dir), `${address.slug} has no route at ${dir}`).toBe(true);
+    }
   });
 
   it('resolves a record type to where its visitors actually land', () => {

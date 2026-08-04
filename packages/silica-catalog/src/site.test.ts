@@ -69,7 +69,25 @@ describe('starterSite — the silica-native seed', () => {
       '/account/reset',
       '/about',
       '/contact',
+      // The RECORD pages, appended after the ordinary ones. A product detail page is a
+      // page like any other now — it has an address, so it appears in the switcher and
+      // a tenant can actually open it. Appended rather than interleaved because both
+      // published readers tiebreak on `position asc`, so inserting one earlier would
+      // renumber every page after it.
+      '/products/:handle',
+      '/collections/:handle',
+      '/category/:handle',
     ]);
+  });
+
+  it('seeds a record page only for a module the tenant actually has', () => {
+    // A publisher with no Commerce module has no product page to edit, so putting one
+    // in their switcher would be an invitation to style a page their site never serves.
+    const cmsOnly = starterSite(undefined, { commerceEnabled: false, cmsEnabled: true });
+    const slugs = cmsOnly.pages.map((p) => p.slug);
+    expect(slugs).toContain('/blog/:slug');
+    expect(slugs).not.toContain('/products/:handle');
+    expect(slugs).not.toContain('/category/:handle');
   });
 
   it('gives the frame exactly one Outlet (the page-body slot)', () => {

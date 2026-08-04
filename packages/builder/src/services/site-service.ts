@@ -47,7 +47,18 @@ import { Prisma, withTenant, type TxClient } from '@sparx/db';
 import { defaultMakeId, pageBody, stampTree } from '@wizeworks/silicaui-html';
 // The starter chrome factory — the one definition of "the default header + footer",
 // shared with the studio's seed path so a reset restores today's chrome, not a copy.
-import { starterFrame, type SiteChromeOptions } from '@sparx/silica-catalog';
+import {
+  RECORD_ADDRESSES,
+  RECORD_ADDRESS_SLUGS,
+  isRecordAddress,
+  recordAddressAt,
+  recordAddressFor,
+  recordPage,
+  slugCandidatesForPath,
+  starterFrame,
+  type RecordAddress,
+  type SiteChromeOptions,
+} from '@sparx/silica-catalog';
 
 import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
@@ -173,7 +184,20 @@ export function rowsToStoredSite(
     pages: pages.map((r) => ({
       id: r.id,
       name: r.name,
-      slug: r.slug ?? '/',
+      // A PRE-ADDRESS RECORD TEMPLATE HAS ITS ADDRESS DERIVED, not defaulted to `/`.
+      //
+      // A page that renders one record used to be identified by `recordType` with no
+      // slug at all, and rows like that are already in production — the DB seed writes
+      // them, `STARTER_PAGES` ships them, and every blueprint install creates them. The
+      // bare `?? '/'` loaded each one into the editor as a SECOND HOME PAGE: two entries
+      // in the switcher both claiming `/`, one of them a product template.
+      //
+      // Its address was always implied by its `recordType`. Stating it here does three
+      // things at once: the switcher shows it where it belongs, the ensure below reads
+      // the address as occupied so it does not seed a duplicate, and the tenant's own
+      // template — not a fresh copy of the factory — is the one they edit. The row
+      // self-migrates on their next save, when `sync` writes the derived slug back.
+      slug: recordAddressFor(r.recordType ?? '')?.slug ?? r.slug ?? '/',
       root: r.silicaDraftTree as unknown as SilicaNode,
       // The stored chrome choice, in the engine's spelling — so its own per-page layout
       // picker opens showing what this page actually does, rather than defaulting every
@@ -189,13 +213,39 @@ export function rowsToStoredSite(
 
 /** Load the property's stored silica site, or null if none is materialized yet.
  *  Carries the authored theme when one exists; otherwise the caller composes the
- *  tenant's brand-derived theme. */
-export function load(ctx: PropertyContext): Promise<StoredSilicaSite | null> {
+ *  tenant's brand-derived theme.
+ *
+ *  `modules` decides which record detail pages this property should have. Omitted, it
+ *  defaults the same way `starterPages` does (Commerce on, Scheduling and CMS off), so
+ *  a caller that has no flags to hand — a test, a script — behaves predictably rather
+ *  than seeding a publisher a product page. */
+export function load(
+  ctx: PropertyContext,
+  modules: SiteChromeOptions = {}
+): Promise<StoredSilicaSite | null> {
   return withTenant(ctx, async (tx) => {
-    const allPages = await tx.builderPage.findMany({
+    let allPages = await tx.builderPage.findMany({
       where: { propertyId: ctx.propertyId },
       orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
     });
+    // Only for a property that already HAS a site. With no pages at all the studio opens
+    // on `starterSite`, which composes the record pages itself, and materializing them
+    // here would leave a half-seeded site — record pages and no Home.
+    const silicaPages = allPages.filter(isSilica);
+    if (silicaPages.length > 0) {
+      // SILICA ROWS ONLY decide whether an address is taken. A legacy sparx-tier
+      // template (`STARTER_PAGES` seeds one per record type, with a null slug and no
+      // silica tree) never reaches the switcher, so counting it as the occupant would
+      // mean seeding nothing and leaving the tenant exactly as unable to edit their
+      // product page as before. It cannot collide either — its slug is null.
+      const seeded = await ensureRecordPagesTx(tx, ctx, silicaPages, modules);
+      if (seeded) {
+        allPages = await tx.builderPage.findMany({
+          where: { propertyId: ctx.propertyId },
+          orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
+        });
+      }
+    }
     const pages = allPages.filter(isSilica);
     if (pages.length === 0) return null;
     const [layouts, site] = await Promise.all([
@@ -267,6 +317,128 @@ export function stagedFrameId(
  *  path segment (`shop`, or `''` for home) compare on equal footing. */
 function normalizeSlug(slug: string | null | undefined): string {
   return (slug ?? '').replace(/^\/+/, '');
+}
+
+/**
+ * The first row whose slug matches the earliest candidate — the literal page before the
+ * record page that would also serve the path.
+ *
+ * `slugCandidatesForPath` documents its result as being in precedence order, and this is
+ * what honours it. Both readers use this rather than an `orderBy`, because a SQL `IN`
+ * has no order and the only stable ordering available (`position`) is something the
+ * author controls by dragging pages around.
+ *
+ * `target === ''` (home) is passed through unchanged: its candidates are the NULL/''/'/'
+ * spellings, which are alternates of one identity rather than a precedence chain, so the
+ * caller's `position` ordering already decided it and there is nothing to re-rank.
+ */
+function pickByCandidate<T extends { slug: string | null }>(
+  rows: readonly T[],
+  candidates: readonly string[],
+  target: string
+): T | undefined {
+  if (target === '' || rows.length <= 1) return rows[0];
+  for (const candidate of candidates) {
+    const row = rows.find((r) => r.slug === candidate);
+    if (row) return row;
+  }
+  return rows[0];
+}
+
+/**
+ * What a page's slug makes it — and the gate on `:`.
+ *
+ * A slug containing a colon is a RECORD ADDRESS or it is a mistake; there is no third
+ * case, because `:` is not a pattern language here. `RECORD_ADDRESSES` is a closed,
+ * platform-authored set of five, and every lookup that consumes one — the storefront's
+ * per-record read, the frame resolver, the sitemap's skip, the link checker — is an exact
+ * string comparison. Refusing anything else is precisely what keeps it that way: the
+ * moment a free-form `:` slug can be stored, every one of those readers has to grow a
+ * route matcher, and the ones that forget will fail silently.
+ *
+ * `sync` is the single door. Every silica write funnels through it — the studio, the MCP
+ * `upsertPage`, the blueprint installer — so this is the one place the rule has to hold,
+ * and the reason `PageSlug`'s regex is deliberately left alone (it guards the *authoring*
+ * inputs, where a `:` must be impossible to type in the first place).
+ */
+function addressOf(slug: string): RecordAddress | null {
+  const address = recordAddressAt(slug);
+  if (!address && slug.includes(':')) {
+    throw new BuilderValidationError(
+      `"${slug}" is not a valid page address. Page addresses use lowercase letters, ` +
+        `numbers and hyphens; the only addresses containing ":" are the pages sparx ` +
+        `provides for your records (${RECORD_ADDRESS_SLUGS.join(', ')}), which cannot ` +
+        `be created or renamed.`,
+      [{ field: 'slug', message: 'Not a valid page address.' }]
+    );
+  }
+  return address;
+}
+
+/**
+ * Give a property the record detail pages its active modules call for.
+ *
+ * WHY THIS RUNS ON LOAD. A product detail page is an ordinary page now — it has an
+ * address, so it belongs in the page switcher like Home and Shop. But every site created
+ * before addresses existed was seeded without one, and there are a lot of them. This is
+ * the only thing that puts the page in front of an existing tenant, and it follows the
+ * house pattern for exactly that problem: `pageService.ensureHomeTx` heals a home-less
+ * property on read, `listOrSeed` materializes the starters on first list. Same shape,
+ * same idempotence.
+ *
+ * WHY ROWS RATHER THAN AN IN-MEMORY INJECTION. Handing the editor pages that have no row
+ * looks cheaper and is not: two co-editors would mint different ids for the same page,
+ * the op relay would carry edits against ids the other client has never seen, and the
+ * durable op log would replay them at every later `catchup`. Writing the row first means
+ * every client, every session and every op agrees on one identity — the same reason every
+ * other seeded page is a row.
+ *
+ * Appended at the end, so no existing page's `position` moves. Both published readers
+ * tiebreak on `position asc`, and renumbering pages on a read would be a real change
+ * wearing the clothes of a no-op.
+ */
+async function ensureRecordPagesTx(
+  tx: TxClient,
+  ctx: PropertyContext,
+  rows: readonly { slug: string | null; recordType: string | null; position: number }[],
+  modules: SiteChromeOptions
+): Promise<boolean> {
+  const active = {
+    commerce: modules.commerceEnabled ?? true,
+    scheduling: modules.schedulingEnabled ?? false,
+    cms: modules.cmsEnabled ?? false,
+  };
+  // An address counts as taken by its slug OR by a legacy row's `recordType`, because
+  // `rowsToStoredSite` presents those at the same address — seeding a second one would
+  // put two pages in the switcher for one route and collide on the unique index.
+  const taken = new Set(
+    rows.flatMap((r) => {
+      const address = recordAddressAt(r.slug) ?? recordAddressFor(r.recordType ?? '');
+      return address ? [address.recordType] : [];
+    })
+  );
+  const missing = RECORD_ADDRESSES.filter((a) => active[a.module] && !taken.has(a.recordType));
+  if (missing.length === 0) return false;
+
+  let position = Math.max(0, ...rows.map((r) => r.position)) + 1;
+  for (const address of missing) {
+    const page = recordPage(address);
+    await tx.builderPage.create({
+      data: {
+        id: page.id,
+        tenantId: ctx.tenantId,
+        propertyId: ctx.propertyId,
+        name: page.name,
+        kind: 'collection',
+        recordType: address.recordType,
+        slug: address.slug,
+        draftTree: asJson(blankPageTree()),
+        silicaDraftTree: asJson(page.root),
+        position: position++,
+      },
+    });
+  }
+  return true;
 }
 
 /** The property's site-global symbols for `stage` (saved components). Read alongside
@@ -515,10 +687,16 @@ const EMPTY_IDS: readonly string[] = [];
  *  Reading the draft column on a published render would mean pressing Save in the editor
  *  silently restyled production.
  *
- *  Slug matching mirrors `getPublishedPageBySlug` EXACTLY — including querying both the
- *  bare and `/`-prefixed forms, because slugs are stored either way depending on their
- *  vintage. A second, subtly different matcher here would resolve the page one way for
- *  its body and another for its chrome, which is a page rendering in the wrong shell. */
+ *  THE INVARIANT IS "SAME PAGE", NOT "SAME QUERY". This used to say it mirrored
+ *  `getPublishedPageBySlug` exactly, and that was the right rule while every page was
+ *  found by a literal slug. It is not any more: the body at `/products/brake-kit` comes
+ *  from `getPublishedByRecordType`, which resolves the record page at `/products/:handle`
+ *  — a slug no literal match would ever reach. Mirroring the old query would leave a
+ *  product page taking the site-default chrome while its body came from a page that had
+ *  chosen a different shell, which is the wrong-shell bug this comment has always warned
+ *  about, arriving through the door the comment left open.
+ *
+ *  So both readers ask `slugCandidatesForPath` instead. One matcher, one answer. */
 async function findPageFrameId(
   tx: TxClient,
   propertyId: string,
@@ -526,18 +704,26 @@ async function findPageFrameId(
   stage: SiteStage
 ): Promise<string | null | undefined> {
   const target = normalizeSlug(path);
-  const row = await tx.builderPage.findFirst({
+  const candidates = slugCandidatesForPath(target);
+  const rows = await tx.builderPage.findMany({
     where: {
       propertyId,
       // Home is the slugless page — stored as NULL, '' or '/' depending on how it was
       // seeded; every other page is stored bare or `/`-prefixed by vintage.
       ...(target === ''
         ? { OR: [{ slug: null }, { slug: { in: ['', '/'] } }] }
-        : { slug: { in: [target, `/${target}`] } }),
+        : { slug: { in: candidates } }),
     },
-    select: { frameId: true, publishedFrameId: true },
+    select: { slug: true, frameId: true, publishedFrameId: true },
     orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
   });
+  // PRECEDENCE COMES FROM THE CANDIDATE ORDER, NOT FROM `position`. A tenant who owns a
+  // real page at `/products/brake-kit` must get THAT page's chrome, not the record
+  // page's, and `IN` returns rows in no particular order. Ordering by position would
+  // usually give the right answer — a seeded record page is appended last — and "usually"
+  // is exactly the kind of thing that renders one tenant's page in the wrong shell after
+  // they drag their pages into a different order.
+  const row = pickByCandidate(rows, candidates, target);
   // `undefined` (no page owns this path) and `null` (this page takes the site default)
   // both land on `default`, which is what those routes have always rendered.
   if (!row) return undefined;
@@ -555,6 +741,15 @@ export function getPublishedPageBySlug(
   const target = normalizeSlug(slug);
   // Home has its own reader; an empty target here can never resolve.
   if (target === '') return Promise.resolve(null);
+  // A RECORD ADDRESS IS NOT A LOCATION. `/products/:handle` is where the page lives, not
+  // somewhere a visitor goes, and answering it would hand back a template with nothing
+  // bound into it — an empty buy box, a post with no post. Next's routing precedence
+  // means the storefront never asks (the `[handle]` route wins over the catch-all), but
+  // the auth-exempt `GET /v1/public/builder/silica/page?slug=…` takes any string a caller
+  // sends. Refusing here is the difference between that being safe by design and safe by
+  // coincidence.
+  if (isRecordAddress(target)) return Promise.resolve(null);
+  const candidates = slugCandidatesForPath(target);
   return withTenant(ctx, async (tx) => {
     const [pages, site] = await Promise.all([
       tx.builderPage.findMany({
@@ -563,7 +758,7 @@ export function getPublishedPageBySlug(
         // forms are queried rather than normalized on write — normalizing would need a
         // backfill migration, and an `IN` on the `(tenant, property, slug)` unique index
         // is exact and index-backed regardless.
-        where: { propertyId: ctx.propertyId, slug: { in: [target, `/${target}`] } },
+        where: { propertyId: ctx.propertyId, slug: { in: candidates } },
         select: pageSelectFor(stage),
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       }),
@@ -571,7 +766,8 @@ export function getPublishedPageBySlug(
     ]);
     // The tree check stays in JS: a Json column's NULL test needs Prisma's runtime
     // sentinel and this module imports Prisma as a type only.
-    const row = pages.find((p) => hasStagedTree(p, stage));
+    const publishable = pages.filter((p) => hasStagedTree(p, stage));
+    const row = pickByCandidate(publishable, candidates, target);
     if (!row) return null;
     return toPublishedPage(row, stagedSymbols(site, stage), stage);
   });
@@ -604,10 +800,17 @@ export function getPublishedHome(
  *  per-record router: the PUBLISHED silica tree that renders a record of
  *  `recordType` (`commerce.product`, `cms.blog_post`), or null when none resolves.
  *
- *  Resolution order (docs/51 §6) — first PUBLISHED candidate wins:
- *    1. per-record OVERRIDE (BuilderPageAssignment for `recordId`, if given)
- *    2. the type DEFAULT     (BuilderPage.isDefault for this recordType)
- *    3. FALLBACK             (lowest-position published)
+ *  RESOLUTION ORDER. The ADDRESS wins first: the page stored at `/products/:handle` is
+ *  the product page, and because `(tenant, property, slug)` is UNIQUE that tier resolves
+ *  to at most one row and needs no precedence rule at all. That is the whole point of
+ *  giving these pages an address — the override table, the `isDefault` flag and the
+ *  lowest-position tiebreak below exist only to pick between several rows claiming one
+ *  record type, and an address makes several impossible.
+ *
+ *  Everything after it is the LEGACY tier, kept verbatim so Stage 1 regresses nobody
+ *  whose template predates addresses (docs/51 §6) — per-record override, then
+ *  `isDefault`, then lowest-position published. It goes away with the columns in Stage 2.
+ *
  *  An unpublished override/default falls through so the storefront never renders a
  *  draft. The caller injects the in-scope record (`product`, `blog_post`) — the buy
  *  box / entry template scopes its descendants to it. Off the `silica_*` published
@@ -618,16 +821,28 @@ export function getPublishedByRecordType(
   recordId?: string,
   stage: SiteStage = 'published'
 ): Promise<PublishedSilicaPageDto | null> {
+  const address = recordAddressFor(recordType);
   return withTenant(ctx, async (tx) => {
     const [rows, site] = await Promise.all([
       tx.builderPage.findMany({
-        where: { recordType, kind: 'collection', propertyId: ctx.propertyId },
+        where: {
+          propertyId: ctx.propertyId,
+          OR: [
+            ...(address ? [{ slug: { in: [normalizeSlug(address.slug), address.slug] } }] : []),
+            { recordType, kind: 'collection' },
+          ],
+        },
         select: pageSelectFor(stage),
         orderBy: [{ position: 'asc' }, { createdAt: 'asc' }],
       }),
       tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     ]);
     if (rows.length === 0) return null;
+
+    const addressed = rows.find((r) => recordAddressAt(r.slug)?.recordType === recordType);
+    if (addressed && hasStagedTree(addressed, stage)) {
+      return toPublishedPage(addressed, stagedSymbols(site, stage), stage);
+    }
 
     // Per-record override (a specific template pinned to this exact record).
     let overrideId: string | null = null;
@@ -753,6 +968,49 @@ export async function sync(
   opts: SyncOptions = {}
 ): Promise<SiteSyncResult> {
   const input = SiteSyncInput.parse(rawInput);
+  return asSlugConflict(input, () => syncTx(ctx, input, opts));
+}
+
+/**
+ * Turn a duplicate-address constraint violation into a sentence the author can act on.
+ *
+ * `(tenantId, propertyId, slug)` is UNIQUE, so two pages claiming one address is a raw
+ * Prisma P2002. Nothing downstream handled it: the builder error mapper knows only its
+ * own three error classes, so it fell through to the generic handler as a 500 — and the
+ * studio only forwards 4xx messages, which left the author with "Could not save —
+ * Nothing was saved. Try again in a moment." on every subsequent attempt, forever, with
+ * nothing anywhere naming the page or the address.
+ *
+ * Pre-existing, and reachable now that a record page has an address a second page could
+ * collide with. `BuilderConflictError` maps to a 409 with the real message.
+ */
+async function asSlugConflict<T>(
+  input: { pages: readonly { slug: string; name: string }[] },
+  run: () => Promise<T>
+): Promise<T> {
+  try {
+    return await run();
+  } catch (err) {
+    const code = (err as { code?: string })?.code;
+    const target = (err as { meta?: { target?: unknown } })?.meta?.target;
+    const onSlug =
+      code === 'P2002' && (Array.isArray(target) ? target.includes('slug') : target === 'slug');
+    if (!onSlug) throw err;
+    const page = input.pages.find((p) => isRecordAddress(p.slug)) ?? input.pages[0];
+    throw new BuilderConflictError(
+      page
+        ? `Another page already uses the address "${page.slug}". Two pages cannot share one address.`
+        : 'Another page already uses that address. Two pages cannot share one address.',
+      'slug'
+    );
+  }
+}
+
+function syncTx(
+  ctx: PropertyContext,
+  input: SiteSyncInput,
+  opts: SyncOptions
+): Promise<SiteSyncResult> {
   return withTenant(ctx, async (tx) => {
     const allPages = await tx.builderPage.findMany({ where: { propertyId: ctx.propertyId } });
     const silicaRows = allPages.filter(isSilica);
@@ -848,6 +1106,7 @@ export async function sync(
     // loop index — with a partial payload the index is meaningless.
     for (const p of input.pages) {
       const i = positionOf.get(p.id) ?? 0;
+      const address = addressOf(p.slug);
       if (existingById.has(p.id)) {
         const existing = existingById.get(p.id)!;
         // Only stamp `slug` when it actually changed under normalization — a
@@ -857,12 +1116,27 @@ export async function sync(
         // reads) even though both normalize to the same empty route. Leaving a
         // semantically-unchanged slug alone keeps that legacy sentinel intact
         // for a row a bridge (not the studio editor) materialized in place.
-        const slugChanged = normalizeSlug(existing.slug) !== normalizeSlug(p.slug);
+        //
+        // A RECORD ADDRESS IS NOT THE AUTHOR'S TO CHANGE. It is how the storefront finds
+        // the page at all: rename `/products/:handle` and every product page on the site
+        // silently falls back to the platform template, with the tenant's own design
+        // still sitting in the editor looking applied. silica's page settings will
+        // happily offer the rename, so it is refused here rather than trusted not to
+        // happen. The write is dropped, not thrown on — the page still saves, it just
+        // keeps its address.
+        const slugChanged =
+          !isRecordAddress(existing.slug) && normalizeSlug(existing.slug) !== normalizeSlug(p.slug);
         await tx.builderPage.update({
           where: { id: p.id },
           data: {
             name: p.name,
             ...(slugChanged ? { slug: p.slug } : {}),
+            // Re-derived on every save, which is what self-heals a legacy row: an
+            // MCP- or blueprint-authored template arrives carrying the right
+            // `recordType` and no slug, `rowsToStoredSite` gives it its address on the
+            // way out, and this writes the address back. No migration needed for the
+            // rows that were already correct in the old vocabulary.
+            ...(address ? { kind: 'collection', recordType: address.recordType } : {}),
             silicaDraftTree: asJson(p.root),
             // Chrome only when the payload SPEAKS about it. `undefined` here is the
             // scripted writer that has no opinion, and overwriting on its behalf would
@@ -879,7 +1153,15 @@ export async function sync(
             tenantId: ctx.tenantId,
             propertyId: ctx.propertyId,
             name: p.name,
-            kind: 'singleton',
+            // DERIVED FROM THE ADDRESS, never sent. The address is the fact now; these
+            // two columns are a projection of it that half a dozen consumers still read
+            // — the sitemap's `kind:'singleton'` filter, the Pages report's prefix
+            // rollup, the link checker's relative-path rule, the storefront's legacy
+            // per-record tier. Writing them keeps every one of those correct with no
+            // change of its own, and Stage 2 deletes the columns and their readers
+            // together rather than one ahead of the other.
+            kind: address ? 'collection' : 'singleton',
+            recordType: address?.recordType ?? null,
             slug: p.slug,
             // The sparx tree column is NOT NULL; a silica-only row parks a blank
             // sparx tree there (the storefront never reads it — it has no sparx

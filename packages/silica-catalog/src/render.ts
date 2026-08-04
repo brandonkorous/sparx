@@ -26,6 +26,7 @@
 // publish) with no React dependency and stays the single source of render truth.
 
 import { dropEmptyUrlAttrs } from './attr-binding';
+import { isRecordAddress } from './record-templates';
 import { responsiveImages } from './responsive-images';
 import {
   composeFrame,
@@ -100,18 +101,26 @@ export interface RenderedSilicaPage {
   html: string;
 }
 
-/** Render EVERY page of a site to composed HTML (the publish/export path). The
- *  host is shared across pages; a per-record collection page still resolves one
- *  page at a time upstream, so this is the static/singleton export. */
+/** Render every ADDRESSABLE page of a site to composed HTML (the publish/export path).
+ *  The host is shared across pages; a per-record page still resolves one record at a
+ *  time upstream, so this is the static/singleton export.
+ *
+ *  RECORD PAGES ARE SKIPPED. `/products/:handle` is an address, not a location — there
+ *  is no single URL to export it to, its bindings resolve against a record this call has
+ *  no way to choose, and a `:` in an exported filename is a hazard on every filesystem
+ *  and CDN that would have to hold it. Rendering one would produce a page with an empty
+ *  buy box at a path no visitor can reach. */
 export function renderSilicaSite(
   site: Site,
   opts: RenderSilicaPageOptions = {}
 ): RenderedSilicaPage[] {
   const symbols = site.symbols ?? {};
-  return site.pages.map((p) => ({
-    id: p.id,
-    name: p.name,
-    slug: p.slug,
-    html: renderComposedTree(p.root, site.frame?.root, symbols, opts),
-  }));
+  return site.pages
+    .filter((p) => !isRecordAddress(p.slug))
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      slug: p.slug,
+      html: renderComposedTree(p.root, site.frame?.root, symbols, opts),
+    }));
 }

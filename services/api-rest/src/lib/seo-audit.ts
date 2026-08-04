@@ -7,6 +7,7 @@
 // live audits. Both the live endpoint and the reindex reuse this.
 
 import type { Prisma, TxClient } from '@sparx/db';
+import { isRecordAddress } from '@sparx/silica-catalog';
 import {
   auditEntity,
   extractBuilderTreeSignals,
@@ -46,9 +47,13 @@ function silicaSignalsFor(page: {
   return tree == null ? null : extractSilicaTreeSignals(tree);
 }
 
-/** A best-effort storefront path for the overview link. */
+/** A best-effort storefront path for the overview link.
+ *
+ *  Null for a RECORD PAGE: its slug is an address (`/products/:handle`), and turning
+ *  that into a link would give the owner an "open the page" affordance that 404s. This
+ *  string is persisted on the audit row, so a wrong answer here outlives the request. */
 export function pathFor(type: EntityType, slug: string | null): string | null {
-  if (!slug) return null;
+  if (!slug || isRecordAddress(slug)) return null;
   if (type === 'product') return `/products/${slug}`;
   if (type === 'collection') return `/collections/${slug}`;
   return `/${slug}`; // builder_page, cms_page
@@ -122,7 +127,15 @@ export async function buildAuditableEntity(
         noindex: page.noindex,
         canonical: emptyToNull(page.canonical),
         slug: page.slug,
-        inSitemap: page.kind === 'singleton' && !!page.slug && !!page.publishedAt && !page.noindex,
+        // Matches the sitemap's own filter, including the record-address skip — a page
+        // reported as "in the sitemap" that the sitemap route excludes is a grading
+        // error the owner has no way to diagnose.
+        inSitemap:
+          page.kind === 'singleton' &&
+          !!page.slug &&
+          !isRecordAddress(page.slug) &&
+          !!page.publishedAt &&
+          !page.noindex,
         ...signals,
         ogImage: emptyToNull(page.ogImage) ? 'custom' : 'generated',
         structuredDataTypes: [],

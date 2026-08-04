@@ -9,10 +9,17 @@ import { describe, expect, it } from 'vitest';
 import { toHtml } from '@wizeworks/silicaui-html';
 
 import {
+  RECORD_ADDRESSES,
+  RECORD_ADDRESS_SLUGS,
   RECORD_TEMPLATES,
   RECORD_TEMPLATE_LABELS,
   ROUTED_RECORD_TYPES,
+  isRecordAddress,
+  recordAddressAt,
+  recordAddressFor,
+  recordIndexPath,
   recordTemplate,
+  slugCandidatesForPath,
 } from './record-templates';
 
 /** Every host-core key mounted anywhere in a subtree. */
@@ -84,5 +91,85 @@ describe('RECORD_TEMPLATES — every routed record type has a default', () => {
       // A stale client asking for a type we removed must degrade, not 500.
       expect(recordTemplate('commerce.nonsense')).toBeNull();
     });
+  });
+});
+
+describe('RECORD_ADDRESSES — a record page has a real address', () => {
+  it('gives every routed record type exactly one address, and maps back', () => {
+    for (const type of ROUTED_RECORD_TYPES) {
+      const address = recordAddressFor(type);
+      expect(address, `no address for routed type "${type}"`).toBeTruthy();
+      expect(recordAddressAt(address!.slug)?.recordType).toBe(type);
+    }
+    expect(RECORD_ADDRESSES).toHaveLength(ROUTED_RECORD_TYPES.length);
+  });
+
+  it('derives the slug from the prefix and the param, so they cannot drift', () => {
+    for (const a of RECORD_ADDRESSES) {
+      expect(a.slug).toBe(`${a.prefix}:${a.param}`);
+      expect(a.prefix.endsWith('/'), `${a.prefix} must end in a slash`).toBe(true);
+    }
+  });
+
+  it('is the ONLY place a platform slug contains a colon', () => {
+    // `:` is a reserved literal here, not a pattern language — the closed set is what
+    // lets every lookup on the platform stay an exact string comparison. If a sixth
+    // colon-bearing slug ever appears, some reader has to learn to match patterns.
+    for (const slug of RECORD_ADDRESS_SLUGS) expect(slug).toContain(':');
+    expect(new Set(RECORD_ADDRESS_SLUGS).size).toBe(RECORD_ADDRESS_SLUGS.length);
+  });
+
+  it('accepts either stored spelling, because slugs are written both ways by vintage', () => {
+    expect(recordAddressAt('/products/:handle')?.recordType).toBe('commerce.product');
+    expect(recordAddressAt('products/:handle')?.recordType).toBe('commerce.product');
+  });
+
+  it('does NOT treat a visitor path as an address', () => {
+    // The distinction the whole design rests on: `/products/brake-kit` is where someone
+    // lands, `/products/:handle` is where the page lives.
+    expect(recordAddressAt('/products/brake-kit')).toBeNull();
+    expect(recordAddressAt('/products/:handle/extra')).toBeNull();
+    expect(recordAddressAt('/products/:other')).toBeNull();
+    expect(recordAddressAt('/products')).toBeNull();
+    expect(recordAddressAt(null)).toBeNull();
+    expect(isRecordAddress('/about')).toBe(false);
+  });
+
+  it('points Preview at the route index, which is a URL a browser can actually fetch', () => {
+    expect(recordIndexPath(recordAddressFor('commerce.product')!)).toBe('/products');
+    expect(recordIndexPath(recordAddressFor('cms.blog_post')!)).toBe('/blog');
+  });
+});
+
+describe('slugCandidatesForPath — one matcher for body and chrome', () => {
+  // `getPublishedPageBySlug` and `findPageFrameId` must agree about which page owns a
+  // path. If they diverge, a page renders its body from one row and its chrome from
+  // another — a product page in the wrong shell, with nothing to explain it.
+  it('offers the record address for a path with exactly one segment under the prefix', () => {
+    expect(slugCandidatesForPath('/products/brake-kit')).toContain('products/:handle');
+    expect(slugCandidatesForPath('/blog/hello-world')).toContain('blog/:slug');
+  });
+
+  it('still offers the literal slug first, so an ordinary page wins its own path', () => {
+    // `/products` is the INDEX page — an ordinary page with its own row and its own
+    // frame. It must not resolve the record page.
+    expect(slugCandidatesForPath('/products')).toEqual(['products', '/products']);
+  });
+
+  it('does not reach a record page from a deeper path', () => {
+    expect(slugCandidatesForPath('/products/a/b')).toEqual(['products/a/b', '/products/a/b']);
+  });
+
+  it('never offers a record address for the address spelled literally', () => {
+    // Answering this would serve a template with no record bound into it.
+    expect(slugCandidatesForPath('/products/:handle')).toEqual([
+      'products/:handle',
+      '/products/:handle',
+    ]);
+  });
+
+  it('tolerates a trailing slash without inventing an empty segment', () => {
+    expect(slugCandidatesForPath('/products/')).toEqual(['products', '/products']);
+    expect(slugCandidatesForPath('/')).toEqual([]);
   });
 });

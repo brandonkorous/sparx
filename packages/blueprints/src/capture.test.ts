@@ -7,18 +7,24 @@ import { captureSite, type CapturedSiteInput } from './capture';
 const node = (kind: string) => ({ kind }) as never;
 
 /** A live site with the two page shapes a capture must handle: a home singleton
- *  (stored slug `'/'`) and a collection template bound to a recordType. */
+ *  (stored slug `'/'`) and a collection template bound to a recordType.
+ *
+ *  The collection here is deliberately a type the STOREFRONT DOES NOT ROUTE. A routed
+ *  type (`commerce.product`, `cms.blog_post`, …) is a record page with a platform
+ *  address now, and capture skips those on purpose — see the dedicated test. A custom
+ *  content type with no storefront route of its own still has no address, so it captures
+ *  exactly as it always did. */
 function baseSite(): CapturedSiteInput {
   return {
     pages: [
       { id: 'row_home', name: 'Home', slug: '/', root: node('page'), kind: 'singleton' },
       {
-        id: 'row_product',
-        name: 'Product',
-        slug: 'product',
+        id: 'row_recipe',
+        name: 'Recipe',
+        slug: 'recipe',
         root: node('page'),
         kind: 'collection',
-        recordType: 'commerce.product',
+        recordType: 'cms.recipe',
         isDefault: true,
         seoTitle: 'Buy it',
       },
@@ -55,11 +61,36 @@ describe('captureSite', () => {
 
   it('carries the collection domain columns through (recordType, isDefault, SEO)', () => {
     const decl = captureSite(baseSite());
-    const product = decl.pages[1]!;
-    expect(product.kind).toBe('collection');
-    expect(product.recordType).toBe('commerce.product');
-    expect(product.isDefault).toBe(true);
-    expect(product.seoTitle).toBe('Buy it');
+    const recipe = decl.pages[1]!;
+    expect(recipe.kind).toBe('collection');
+    expect(recipe.recordType).toBe('cms.recipe');
+    expect(recipe.isDefault).toBe(true);
+    expect(recipe.seoTitle).toBe('Buy it');
+  });
+
+  it('never captures a RECORD page, however it is spelled', () => {
+    // A blueprint carrying `/products/:handle` would install one tenant's product design
+    // as a permanent frozen copy on everyone who used that blueprint — and because it
+    // arrives as a row, the platform template would never be seeded for them again. The
+    // improving-template guarantee is exactly what these pages exist for.
+    //
+    // Both spellings are dropped: the address, and a legacy row that carries the routed
+    // recordType with no slug yet.
+    const decl = captureSite({
+      pages: [
+        { id: 'row_home', name: 'Home', slug: '/', root: node('page') },
+        { id: 'row_pdp', name: 'Product detail', slug: '/products/:handle', root: node('page') },
+        {
+          id: 'row_legacy',
+          name: 'Blog post',
+          slug: null,
+          root: node('page'),
+          kind: 'collection',
+          recordType: 'cms.blog_post',
+        },
+      ],
+    });
+    expect(decl.pages.map((p) => p.name)).toEqual(['Home']);
   });
 
   it('defaults kind to singleton and never marks a singleton default', () => {

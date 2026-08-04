@@ -14,6 +14,8 @@
 // composed document, a `/path` against the page roster, and `/products/<handle>`
 // against the handles the caller supplied.
 
+import { isRecordAddress } from '@sparx/silica-catalog';
+
 import type { DocumentInventory, VisitedNode } from './walk';
 import { attr, bindsAttr, isElement, prop, typeOf } from './walk';
 import type { RawFinding } from './finding';
@@ -97,7 +99,17 @@ export function resolveTargets(
   if (!targets?.paths) return { paths: null, handles };
 
   const paths = new Set<string>(BUILTIN_PATHS);
-  for (const slug of pageSlugs) paths.add(normalizePath(slug));
+  // A RECORD PAGE'S SLUG IS NOT A REACHABLE PATH. `/products/:handle` is where the page
+  // LIVES; visitors land on `/products/brake-kit`. Admitting the address would make a
+  // link to that literal string read as valid, and it 404s for everyone.
+  //
+  // Here rather than at the `lintSite` call site: this function owns the roster, so the
+  // rule belongs with it and every caller gets it — including a test that builds a
+  // roster directly.
+  for (const slug of pageSlugs) {
+    if (isRecordAddress(slug)) continue;
+    paths.add(normalizePath(slug));
+  }
   for (const extra of targets.paths) paths.add(normalizePath(extra));
   return { paths, handles };
 }
@@ -202,13 +214,18 @@ function noun(link: FoundLink): string {
 /**
  * Every link finding for one page's composed document.
  *
- * A collection template's path is a pattern rather than a location (`/products/…`
- * renders once per product), so relative hrefs on one are left unresolved — see
- * `classifyHref`.
+ * A record page's address is not a location (`/products/:handle` renders once per
+ * product, at a different path each time), so relative hrefs on one are left unresolved
+ * — see `classifyHref`. Resolving `about` against it would produce `/products/about`
+ * and report a working link as broken on every tenant.
+ *
+ * Asked of the ADDRESS as well as the legacy `kind`, so this keeps answering correctly
+ * once the column is dropped.
  */
 export function checkLinks(inventory: DocumentInventory, targets: ResolvedTargets): RawFinding[] {
   const findings: RawFinding[] = [];
-  const fromPath = inventory.page.kind === 'collection' ? null : normalizePath(inventory.page.slug);
+  const perRecord = isRecordAddress(inventory.page.slug) || inventory.page.kind === 'collection';
+  const fromPath = perRecord ? null : normalizePath(inventory.page.slug);
 
   for (const link of findLinks(inventory.nodes)) {
     const { visited } = link;

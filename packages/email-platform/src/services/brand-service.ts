@@ -5,10 +5,11 @@
 // overrides it. We read `TenantBrand` directly — the old cascade (Commerce
 // CommerceSiteTheme → EmailSettings.brandingOverride → defaults) is gone; those
 // sources were consolidated into TenantBrand by migration 20260610000000 and
-// `brandingOverride` is removed. The brand's identity palette/typography overlay
-// the default theme preset; unset tokens fall back to the preset, and a tenant
-// with no brand identity at all yields null (caller renders @sparx/email's
-// sparx defaultBrand).
+// `brandingOverride` is removed. Those brand fields are IDENTITY now (name/logo/
+// socials) — the LOOK no longer derives from them. It comes from the site's published
+// silica theme, or BASE_SILICA_THEME until one is stored; see resolveEmailBrand. A
+// tenant with no identity at all still yields null (caller renders @sparx/email's
+// sparx defaults).
 //
 // Light palette is the base; the brand also carries its site's DARK neutrals
 // (`BrandTokens.dark`, from the preset's dark tokens) so the silica send can emit an
@@ -16,15 +17,12 @@
 // transactional-email §10) — progressive enhancement for Apple/Outlook-Mac, ignored by
 // Gmail/Outlook.com. We read concrete token values — never CSS custom properties —
 // because React Email inlines styles and `var(--…)` doesn't survive in Gmail/Outlook.
-// Theme compilation is delegated to @sparx/site-themes; we never fork a second registry.
+// The look is the silica theme's own token bag flattened to hex (colorToHex) — we
+// never compile a second theme or fork a registry.
 
 import { withTenant } from '@sparx/db';
-import {
-  brandIdentityOverlay,
-  colorToHex,
-  compileTokens,
-  type ThemeTokens,
-} from '@sparx/site-themes';
+import { colorToHex } from '@sparx/site-themes';
+import { BASE_SILICA_THEME } from '@sparx/silica-catalog';
 import type { BrandTokens } from '@sparx/email';
 
 import type { ServiceContext } from '../errors';
@@ -119,27 +117,8 @@ function fontStack(name: string): string {
   return `'${clean}', Arial, Helvetica, sans-serif`;
 }
 
-function tokensToBrand(
-  tokens: ThemeTokens,
-  extras: { logoUrl?: string; siteName?: string }
-): BrandTokens {
-  return {
-    primary: tokens.colorPrimary,
-    primaryForeground: tokens.colorPrimaryForeground,
-    accent: tokens.colorAccent,
-    background: tokens.colorBackground,
-    foreground: tokens.colorForeground,
-    muted: tokens.colorMuted,
-    border: tokens.colorBorder,
-    fontHeading: fontStack(tokens.fontHeading),
-    fontBody: fontStack(tokens.fontBody),
-    ...(extras.logoUrl ? { logoUrl: extras.logoUrl } : {}),
-    ...(extras.siteName ? { siteName: extras.siteName } : {}),
-  };
-}
-
 // The per-site brand override (docs/49 §3, Property.brand_override) — the same
-// presentation-only identity overlay the storefront merges. Read loosely from the
+// presentation-only identity overlay the site merges. Read loosely from the
 // JSON column; only the identity fields email cares about are picked. A site with
 // no override (or null fields) inherits the tenant brand field-by-field.
 interface BrandOverride {
@@ -164,7 +143,7 @@ function parseBrandOverride(value: unknown): BrandOverride | null {
 }
 
 /** The site's social links out of its free-form `settings` JSON — the SAME shape the
- *  storefront reads (`{ platform, url }[]`) — so the footer's social row matches the
+ *  site reads (`{ platform, url }[]`) — so the footer's social row matches the
  *  live site. Defensive: the column is unvalidated, so anything malformed is dropped. */
 function extractSocials(settings: unknown): { platform: string; url: string }[] {
   const raw = (settings as { socials?: unknown } | null)?.socials;
@@ -183,7 +162,7 @@ function extractSocials(settings: unknown): { platform: string; url: string }[] 
  * (the caller then renders with @sparx/email's sparx defaults). When `propertyId`
  * is given (docs/49 Phase 7), the site's `brand_override` is merged field-by-field
  * OVER the tenant brand, so an email sent on behalf of a site renders that site's
- * name / colours / fonts / logo — exactly the merge the storefront payload does.
+ * name / colours / fonts / logo — exactly the merge the site payload does.
  */
 export async function resolveEmailBrand(
   ctx: ServiceContext,
@@ -231,7 +210,7 @@ export async function resolveEmailBrand(
       fontHeading: override?.fontHeading ?? brandRow?.fontHeading ?? null,
       fontBody: override?.fontBody ?? brandRow?.fontBody ?? null,
       // New field wins over the legacy single-logo field, then the tenant base —
-      // mirrors mergeBrandIdentity so email and storefront resolve the same logo.
+      // mirrors mergeBrandIdentity so email and site resolve the same logo.
       logoLightMediaId:
         override?.logoLightMediaId ?? override?.logoMediaId ?? brandRow?.logoLightMediaId ?? null,
     };
@@ -246,7 +225,7 @@ export async function resolveEmailBrand(
 
     // ── SINGLE SOURCE OF THE LOOK (docs/impl theming-spine plan) ──────────────────
     // The site's PUBLISHED silica theme drives the email's palette + fonts, flattened
-    // to hex, so the email matches the storefront for that exact site. Identity
+    // to hex, so the email matches the live site it was sent for. Identity
     // (logo/name/socials) threads in from `brand`. Read the theme of the send's
     // property (else the tenant's primary).
     const effectivePropertyId = propertyId ?? primaryProperty?.id ?? null;
@@ -261,15 +240,17 @@ export async function resolveEmailBrand(
       return siteThemeToBrand(silicaTheme, { logoUrl, siteName, socials });
     }
 
-    // ── Fallback: brand-derived look ─────────────────────────────────────────────
+    // ── Fallback: the BASE silica theme ─────────────────────────────────────────────
     // For a site that has published no silica theme yet (an existing brand-only
-    // tenant). Retires once every site's effective theme is persisted as its
-    // silica theme (the Phase-5 backfill migration).
+    // tenant, or the pre-install window) — the look falls back to BASE below, exactly
+    // as the site does. The null-returns here preserve the existing contract: a
+    // tenant with NO identity at all yields null, and the caller renders @sparx/email's
+    // sparx defaults (itself the Ember look).
     //
     // A tenant with no brand record AND no per-site override → sparx defaults.
     if (brandRow === null && !override) return null;
     // A merged brand with no identity tokens at all → defaults. `businessName` still
-    // counts: a tenant who set a brand name (but no colours/logo) keeps a branded email.
+    // counts: a tenant who set a name (but no colours/logo) keeps a branded email.
     const hasIdentity = [
       brand.businessName,
       brand.colorPrimary,
@@ -281,26 +262,10 @@ export async function resolveEmailBrand(
     ].some(Boolean);
     if (!hasIdentity) return null;
 
-    // Overlay the (merged) brand's identity palette/typography over the default
-    // preset; unset tokens inherit the preset. Compile both modes so the send can emit
-    // a dark-mode block (docs/impl transactional-email §10).
-    const overlay = brandIdentityOverlay(brand);
-    // Over the PLATFORM base. This named `DEFAULT_THEME_KEY` ('apex'), which read as
-    // "the default theme" but was one of six legacy presets no site could pick; the
-    // key is gone and the base is what it always resolved to.
-    const compiled = compileTokens({ light: overlay, dark: overlay });
-    return {
-      ...tokensToBrand(compiled.light, { logoUrl, siteName }),
-      ...(socials.length ? { socials } : {}),
-      dark: {
-        background: compiled.dark.colorBackground,
-        foreground: compiled.dark.colorForeground,
-        muted: compiled.dark.colorMuted,
-        border: compiled.dark.colorBorder,
-        primary: compiled.dark.colorPrimary,
-        primaryForeground: compiled.dark.colorPrimaryForeground,
-        accent: compiled.dark.colorAccent,
-      },
-    };
+    // The look is BASE (the sparx Ember bag) — the same fallback the site uses
+    // for an un-themed site — with identity (logo/name/socials) threaded in. Brand
+    // colours/fonts deliberately do NOT paint here: the look is the site's silica
+    // theme, or BASE until one is stored. Identical shape to the themed path above.
+    return siteThemeToBrand(BASE_SILICA_THEME, { logoUrl, siteName, socials });
   });
 }

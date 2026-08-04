@@ -13,6 +13,7 @@ import {
 import { bindAttr, starterFrame, starterPages } from '@sparx/silica-catalog';
 
 import { lintSite } from './index';
+import { resolveTargets } from './links';
 import type { LinkTargets, LintablePage, LintRuleId, SiteLintInput } from './types';
 
 /* ── Fixtures ───────────────────────────────────────────────────────────────── */
@@ -129,6 +130,39 @@ describe('links', () => {
     expect(
       rules({ pages: [page({ root: linkTo('https://example.com/nope') })], targets: FULL_ROSTER })
     ).not.toContain('link-broken');
+  });
+
+  // A record page's slug is an ADDRESS (`/products/:handle`), not a location — it
+  // renders at a different path for every product. Two consequences, both of which used
+  // to be handled off `kind === 'collection'` alone and now survive that column's
+  // removal.
+  it('never resolves a relative href against a record page', () => {
+    // Resolving `about` against `/products/:handle` yields `/products/about`, which is
+    // reported broken on every tenant who ever wrote a relative link on their product
+    // page — a finding about a link that works.
+    const report = run({
+      pages: [
+        page({
+          id: 'pdp',
+          name: 'Product detail',
+          slug: '/products/:handle',
+          root: body(el('a', '', { attrs: { href: 'about' }, text: 'About' })),
+        }),
+      ],
+      targets: FULL_ROSTER,
+    });
+    expect(report.findings.map((f) => f.rule)).not.toContain('link-broken');
+  });
+
+  it('does not admit a record address into the roster of reachable paths', () => {
+    // Asserted on `resolveTargets` directly rather than through a link finding: every
+    // record address sits under a `DYNAMIC_ROUTES` prefix, so a link to one is reported
+    // broken by the handle-roster branch whether or not the path roster admits it. A
+    // finding-level test would pass without the filter and prove nothing.
+    const withRecordPage = resolveTargets(['/', '/products/:handle'], { paths: [] });
+    expect(withRecordPage.paths?.has('/products/:handle')).toBe(false);
+    // The ordinary page beside it still lands in the roster.
+    expect(withRecordPage.paths?.has('/')).toBe(true);
   });
 
   it('resolves a relative href against the page it is on', () => {

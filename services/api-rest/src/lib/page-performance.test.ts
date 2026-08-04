@@ -100,6 +100,40 @@ describe('assemble', () => {
     expect(report.otherPaths.map((p) => p.path)).toEqual(['/about']);
   });
 
+  it('never lets a record page report its own ADDRESS as a visited path', () => {
+    // A record page's slug is `/products/:handle` now, and that string is not somewhere
+    // anyone lands. Two things have to hold or the report starts lying:
+    //   · `pathPrefix` is set, because the surface renders that INSTEAD of `path`
+    //     (`subtitleOf` in page-results.tsx) — otherwise the row's subtitle reads
+    //     "/products/:handle", an address no visitor has ever seen.
+    //   · the address claims no traffic of its own and never appears in `otherPaths`,
+    //     which is what keeps the People column summing to real visits.
+    const report = assemble(
+      [
+        page({
+          id: 'p1',
+          name: 'Product detail',
+          slug: '/products/:handle',
+          kind: 'collection',
+          recordType: 'commerce.product',
+        }),
+      ],
+      [
+        metric({ path: '/products/brake-kit', views: 30, visitors: 20 }),
+        metric({ path: '/products/oil-filter', views: 10, visitors: 8 }),
+      ],
+      NO_AUDITS,
+      true
+    );
+
+    const row = report.pages[0];
+    expect(row?.pathPrefix).toBe('/products/');
+    expect(row?.pathsCovered).toBe(2);
+    expect(row?.views).toBe(40);
+    expect(report.otherPaths.map((p) => p.path)).not.toContain('/products/:handle');
+    expect(report.totals.views).toBe(40);
+  });
+
   it('weights a folded load time by how many measurements each path had', () => {
     // Averaging two averages treats a path measured twice as equal to one measured
     // two thousand times, which is how a report ends up confidently wrong.

@@ -271,8 +271,8 @@ export const BUILDER_STYLE_GUIDE = {
       'first), then `get_silica_frame` → `set_silica_frame` → `publish_silica_site`. The frame needs at least one silica ' +
       'page to attach to, so `upsert_silica_page` the home page first if the site has none.',
     identity:
-      'Use the sparx `siteNavbar` / `siteFooter` composites rather than silica’s native navbar/footer blocks — the ' +
-      'natives carry hardcoded demo branding, the composites bind `site.identity` and `site.social` to the tenant’s own.',
+      'Use the sparx `siteNavbar` / `siteFooter` composites — silica’s own navbar/footer blocks pre-filled with the ' +
+      'tenant’s live brand + legal-links host cores. The blocks’ "SilicaUI" wordmark is a slot DEFAULT, not branding.',
   },
 
   binding: {

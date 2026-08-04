@@ -49,6 +49,7 @@ function statusOf(counts: Record<LintSeverity, number>): LintStatus {
  */
 export function lintSite(input: SiteLintInput): SiteLintReport {
   const sightings: { finding: RawFinding; page: string }[] = [];
+  // `resolveTargets` drops record addresses from the roster itself — see the note there.
   const targets = resolveTargets(
     input.pages.map((page) => page.slug),
     input.targets

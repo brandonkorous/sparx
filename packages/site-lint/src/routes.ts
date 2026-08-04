@@ -12,6 +12,8 @@
 // every finding, the second only costs them the one they already had. So anything
 // this file cannot resolve with certainty resolves as FINE.
 
+import { RECORD_ADDRESSES } from '@sparx/silica-catalog';
+
 /** Routes the storefront serves that take no parameter. */
 export const BUILTIN_PATHS: readonly string[] = [
   '/',
@@ -53,7 +55,10 @@ export type RosterKey =
 export interface DynamicRoute {
   /** Always with a trailing slash — `/products/`. The trailing slash is load-bearing:
    *  consumers match with `startsWith`, and `/products` would also claim
-   *  `/products-archive`. */
+   *  `/products-archive`.
+   *
+   *  DERIVED from `@sparx/silica-catalog`'s `RECORD_ADDRESSES`, not written here — see
+   *  the note on `DYNAMIC_ROUTES`. */
   prefix: string;
   roster: RosterKey;
   /** What the parameter IS, in an owner's words, for the finding text. */
@@ -70,39 +75,35 @@ export interface DynamicRoute {
   recordType: string;
 }
 
-/** The parameterized storefront routes, each paired with the roster that decides
- *  whether a given parameter resolves. `/blog/[slug]` reads posts; the rest read
- *  commerce records. */
-export const DYNAMIC_ROUTES: readonly DynamicRoute[] = [
-  {
-    prefix: '/products/',
-    roster: 'productHandles',
-    noun: 'product',
-    recordType: 'commerce.product',
-  },
-  {
-    prefix: '/collections/',
-    roster: 'collectionHandles',
-    noun: 'collection',
-    recordType: 'commerce.collection',
-  },
-  {
-    prefix: '/category/',
-    roster: 'categoryHandles',
-    noun: 'category',
-    recordType: 'commerce.category',
-  },
-  { prefix: '/blog/', roster: 'postSlugs', noun: 'blog post', recordType: 'cms.blog_post' },
-  {
-    prefix: '/book/',
-    roster: 'serviceIds',
-    noun: 'bookable service',
-    recordType: 'scheduling.service',
-  },
-];
+/** What this package adds to an address: the roster that decides whether a given
+ *  parameter resolves, and the owner-facing noun for the finding text. Neither belongs
+ *  in the catalog — a roster is a lint concern and a noun is copy. */
+const ROUTE_EXTRAS: Record<string, { roster: RosterKey; noun: string }> = {
+  'commerce.product': { roster: 'productHandles', noun: 'product' },
+  'commerce.collection': { roster: 'collectionHandles', noun: 'collection' },
+  'commerce.category': { roster: 'categoryHandles', noun: 'category' },
+  'cms.blog_post': { roster: 'postSlugs', noun: 'blog post' },
+  'scheduling.service': { roster: 'serviceIds', noun: 'bookable service' },
+};
 
-/** Where visitors to a collection template's records actually land, or null for a
- *  record type the storefront has no route for. */
+/**
+ * The parameterized storefront routes.
+ *
+ * `prefix` and `recordType` are DERIVED from `@sparx/silica-catalog`'s
+ * `RECORD_ADDRESSES` rather than written out again. They used to be a second five-row
+ * list here, kept honest by a test asserting it covered the catalog's exactly — which
+ * is a drift detector, not an absence of drift. The catalog now owns the fact (it is
+ * the same fact that gives a record page its address), this package contributes only
+ * what is genuinely its own, and the two cannot disagree because there is one list.
+ */
+export const DYNAMIC_ROUTES: readonly DynamicRoute[] = RECORD_ADDRESSES.map((a) => ({
+  prefix: a.prefix,
+  recordType: a.recordType,
+  ...ROUTE_EXTRAS[a.recordType]!,
+}));
+
+/** Where visitors to a record page's records actually land, or null for a record type
+ *  the storefront has no route for. */
 export function routePrefixForRecordType(recordType: string): string | null {
   return DYNAMIC_ROUTES.find((r) => r.recordType === recordType)?.prefix ?? null;
 }

@@ -38,6 +38,8 @@ import type {
 import { THEME_PRESETS, type Node, type Site, type Theme } from '@wizeworks/silicaui-html';
 import {
   ensureUniqueIds,
+  recordAddressAt,
+  recordIndexPath,
   starterSite,
   upgradeFrameChrome,
   upgradePageBody,
@@ -1156,10 +1158,18 @@ function StudioEditor({
 }
 
 /** A page's storefront path for the preview URL. silica stores a slug as `/`, `/shop`
- *  or (older trees) a bare `shop`; the storefront routes on a leading-slash path, and a
- *  collection template has no route of its own — previewing one lands on the home page,
- *  which is the honest answer for "a template, not a page". */
+ *  or (older trees) a bare `shop`; the storefront routes on a leading-slash path.
+ *
+ *  A RECORD PAGE HAS A ROUTE BUT NOT A URL. `/products/:handle` is where the page lives;
+ *  a browser sent there gets a 404, because `:handle` is a literal segment as far as the
+ *  router is concerned and no product has that handle. So preview opens the route's
+ *  INDEX — `/products`, `/blog` — which is a real page showing the records this template
+ *  renders, one click from any of them. (This used to say a collection template "has no
+ *  route of its own" and land on the home page; it has one now, it just needs a record
+ *  to point at.) */
 function previewPath(slug: string | null | undefined): string {
+  const address = recordAddressAt(slug);
+  if (address) return recordIndexPath(address);
   const bare = (slug ?? '').trim().replace(/^\/+/, '');
   if (bare === '') return '/';
   return `/${bare}`;

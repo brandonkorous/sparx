@@ -23,6 +23,7 @@
 import type { FastifyPluginAsync } from 'fastify';
 import { z } from 'zod';
 import { prisma, withTenant } from '@sparx/db';
+import { isRecordAddress } from '@sparx/silica-catalog';
 import { badRequest, notFound } from '@sparx/api-core/errors';
 import {
   resolvePublicPropertyId,
@@ -170,6 +171,13 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
           // Published Builder SINGLETON pages that own a storefront slug (docs/50),
           // scoped to THIS site's page tree (property_id, docs/49 Phase 1B).
           // publishedAt is set on publish; noindex pages are filtered out below.
+          //
+          // A RECORD PAGE MUST NEVER REACH THIS QUERY. `/products/:handle` is an address,
+          // not a URL — emitting it would publish a literal `:handle` to Google, which
+          // crawls it and gets a 404. `kind:'singleton'` already excludes them today, but
+          // that is the column Stage 2 removes; `isRecordAddress` is the filter that
+          // still holds afterwards, and having both means the column can go without this
+          // file being the thing that breaks.
           tx.builderPage.findMany({
             where: {
               kind: 'singleton',
@@ -220,9 +228,10 @@ const sitemapRoutes: FastifyPluginAsync = (app) => {
       });
     }
 
-    // Published Builder singleton pages — skip any flagged noindex.
+    // Published Builder singleton pages — skip any flagged noindex, and any that is a
+    // record page's ADDRESS rather than a location a visitor can reach.
     for (const b of builderPages) {
-      if (b.noindex || !b.slug) continue;
+      if (b.noindex || !b.slug || isRecordAddress(b.slug)) continue;
       push({
         path: `/${b.slug}`,
         lastmod: b.publishedAt ?? b.updatedAt,

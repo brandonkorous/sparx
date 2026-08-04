@@ -827,6 +827,9 @@ importers:
       '@sparx/commerce-schemas':
         specifier: workspace:*
         version: link:../commerce-schemas
+      '@sparx/silica-catalog':
+        specifier: workspace:*
+        version: link:../silica-catalog
       '@sparx/sitebuilder-schemas':
         specifier: workspace:*
         version: link:../sitebuilder-schemas
@@ -1399,6 +1402,9 @@ importers:
       '@sparx/events':
         specifier: workspace:*
         version: link:../events
+      '@sparx/silica-catalog':
+        specifier: workspace:*
+        version: link:../silica-catalog
       '@sparx/site-themes':
         specifier: workspace:*
         version: link:../site-themes

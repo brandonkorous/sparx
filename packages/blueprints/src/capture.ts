@@ -32,6 +32,7 @@
 // time — rather than at ingest.
 
 import type { BuilderPageKind, SilicaNode, SilicaTheme } from '@sparx/builder-schemas';
+import { isRecordAddress, recordAddressFor } from '@sparx/silica-catalog';
 
 import { SiteDecl } from './manifest';
 
@@ -89,24 +90,36 @@ function normalizeSlug(slug: string | null | undefined): string | undefined {
  * `ZodError` if the captured site would not reinstall.
  */
 export function captureSite(input: CapturedSiteInput, opts: CaptureOptions = {}): SiteDecl {
-  const pages = input.pages.map((p) => {
-    const kind: BuilderPageKind = p.kind ?? 'singleton';
-    const slug = normalizeSlug(p.slug);
-    return {
-      name: p.name,
-      kind,
-      ...(p.recordType ? { recordType: p.recordType } : {}),
-      ...(slug !== undefined ? { slug } : {}),
-      root: p.root,
-      // `isDefault` is meaningful only for a collection template.
-      ...(kind === 'collection' && p.isDefault ? { isDefault: true } : {}),
-      ...(p.seoTitle ? { seoTitle: p.seoTitle } : {}),
-      ...(p.seoDescription ? { seoDescription: p.seoDescription } : {}),
-      ...(p.canonical ? { canonical: p.canonical } : {}),
-      ...(p.ogImage ? { ogImage: p.ogImage } : {}),
-      ...(p.noindex ? { noindex: true } : {}),
-    };
-  });
+  const pages = input.pages
+    // RECORD PAGES ARE NEVER CAPTURED. A blueprint carrying `/products/:handle` would
+    // install one tenant's product design as a permanent, frozen copy on every tenant
+    // who used that blueprint — and because it arrives as a row, `ensureRecordPagesTx`
+    // would consider the address taken and never seed the platform template. The whole
+    // point of these pages living in `RECORD_TEMPLATES` is that improvements reach
+    // tenants; a captured fork opts every one of them out silently.
+    //
+    // `PageSlug` would reject the `:` anyway (blueprint slugs are validated on the way
+    // in), so without this filter `captureSite` throws a ZodError on any site that has
+    // a record page — which is now every site.
+    .filter((p) => !isRecordAddress(p.slug) && !recordAddressFor(p.recordType ?? ''))
+    .map((p) => {
+      const kind: BuilderPageKind = p.kind ?? 'singleton';
+      const slug = normalizeSlug(p.slug);
+      return {
+        name: p.name,
+        kind,
+        ...(p.recordType ? { recordType: p.recordType } : {}),
+        ...(slug !== undefined ? { slug } : {}),
+        root: p.root,
+        // `isDefault` is meaningful only for a collection template.
+        ...(kind === 'collection' && p.isDefault ? { isDefault: true } : {}),
+        ...(p.seoTitle ? { seoTitle: p.seoTitle } : {}),
+        ...(p.seoDescription ? { seoDescription: p.seoDescription } : {}),
+        ...(p.canonical ? { canonical: p.canonical } : {}),
+        ...(p.ogImage ? { ogImage: p.ogImage } : {}),
+        ...(p.noindex ? { noindex: true } : {}),
+      };
+    });
 
   const decl = {
     ...(input.frame?.root ? { frame: { root: input.frame.root } } : {}),

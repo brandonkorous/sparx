@@ -27,7 +27,7 @@ import { writeAuditLog } from '../audit';
 import { publishBuilderEvent } from '../events';
 import { invalidatePublishedStylesheet } from './surface-css-service';
 import type { PropertyContext, ServiceContext } from '../errors';
-import { BuilderNotFoundError, BuilderValidationError } from '../errors';
+import { BuilderConflictError, BuilderNotFoundError, BuilderValidationError } from '../errors';
 import { getSchema } from './binding-service';
 import { expandTreeForPublish } from './component-service';
 import { syncFormDefinitions } from './form-definition-service';
@@ -344,8 +344,25 @@ export async function update(
     // stored verbatim (docs/silicaui/01 §5). Distinct from `undefined`, which leaves it alone.
     if (input.frameId !== undefined) data.frameId = input.frameId;
 
-    const updated = await tx.builderPage.update({ where: { id }, data });
-    return toDto(updated);
+    try {
+      const updated = await tx.builderPage.update({ where: { id }, data });
+      return toDto(updated);
+    } catch (err) {
+      // `(tenantId, propertyId, slug)` is UNIQUE, so renaming a page onto an address
+      // another page already holds is a raw P2002. The builder error mapper knows only
+      // its own error classes, so that fell through as a 500 and the studio — which
+      // forwards 4xx messages only — showed "Nothing was saved. Try again in a moment"
+      // with nothing naming the conflict. Same fix as `siteService.sync`.
+      const code = (err as { code?: string })?.code;
+      const target = (err as { meta?: { target?: unknown } })?.meta?.target;
+      const onSlug =
+        code === 'P2002' && (Array.isArray(target) ? target.includes('slug') : target === 'slug');
+      if (!onSlug) throw err;
+      throw new BuilderConflictError(
+        `Another page already uses the address "${input.slug}". Two pages cannot share one address.`,
+        'slug'
+      );
+    }
   });
 }
 

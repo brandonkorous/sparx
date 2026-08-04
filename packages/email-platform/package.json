@@ -37,6 +37,7 @@
     "@sparx/db": "workspace:*",
     "@sparx/email": "workspace:*",
     "@sparx/events": "workspace:*",
+    "@sparx/silica-catalog": "workspace:*",
     "@sparx/site-themes": "workspace:*",
     "@sparx/ui": "workspace:*",
     "lucide-react": "^0.577.0",
