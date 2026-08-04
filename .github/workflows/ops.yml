@@ -53,6 +53,9 @@ on:
         options:
           # Backfills platform CRM records for tenants that predate the worker.
           - platform-crm-backfill
+          # DESTRUCTIVE. Deletes every page on a site that is still entirely on the
+          # legacy sparx-builder tier and re-seeds it onto silica. Dry-runs by default.
+          - retire-legacy-site-tier
       environment:
         description: 'Where to run it'
         required: false
@@ -107,10 +110,11 @@ jobs:
       # Checked BEFORE authenticating to anything, so a mistyped purge costs
       # nothing and touches nothing. Upserts and backfills are not gated.
       #
-      # No task in the list is destructive today — the marketplace purges were the
-      # only ones, and they are gone. The gate stays because it is the contract for
-      # adding one: name it `*-purge-*` and it inherits the typed confirmation
-      # rather than needing someone to remember to build one.
+      # The `*-purge-*` prefix inherits this gate automatically, which is the contract
+      # for adding a destructive task without anyone having to remember to build one.
+      # `retire-legacy-site-tier` is named for what it does rather than bent to fit that
+      # prefix, so it is listed explicitly — and it gates on APPLY only, because unlike a
+      # purge it has a real dry run that is worth running freely.
       # ---------------------------------------------------------------------
       - name: Confirm a destructive task
         run: |
@@ -126,6 +130,17 @@ jobs:
                 exit 1
               fi
               echo "Confirmed: $TASK"
+              ;;
+            retire-legacy-site-tier)
+              # Unticked it only REPORTS, so the confirmation is required exactly when a
+              # write is being asked for. This deletes tenants' authored pages and cannot
+              # be undone — there is no `.bx-*` → silica translator, so the trees are not
+              # recoverable from anywhere once they are gone.
+              if [ '${{ inputs.apply }}' = 'true' ] && [ '${{ inputs.confirm }}' != "$TASK" ]; then
+                echo "::error::$TASK PERMANENTLY DELETES authored site content for every legacy-only property and replaces it with the starter. Run it without 'apply' first to see exactly which sites and pages. To write, re-run with confirm set to exactly: $TASK"
+                exit 1
+              fi
+              echo "Confirmed: $TASK (apply=${{ inputs.apply }})"
               ;;
             *)
               echo "$TASK is idempotent; no confirmation required."
@@ -172,6 +187,16 @@ jobs:
                 command='["node","--import","tsx","scripts/backfill-tenants.ts"]'
               fi
               ;;
+            retire-legacy-site-tier)
+              image="$REPO/api-rest:$TAG"
+              # WORKDIR is /app/services/api-rest. Unticked it reports the sites and
+              # pages it WOULD delete and writes nothing.
+              if [ '${{ inputs.apply }}' = 'true' ]; then
+                command='["node","--import","tsx","src/scripts/retire-legacy-site-tier.ts","--apply"]'
+              else
+                command='["node","--import","tsx","src/scripts/retire-legacy-site-tier.ts"]'
+              fi
+              ;;
             *)
               echo "::error::Unknown task '$TASK'."
               exit 1
@@ -192,7 +217,6 @@ jobs:
             echo "| namespace | \`$NAMESPACE\` |"
             echo "| apply | \`${{ inputs.apply }}\` |"
           } >> "$GITHUB_STEP_SUMMARY"
-
 
       # ---------------------------------------------------------------------
       # The generic case: an image, a command, the app's environment.
