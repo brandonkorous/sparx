@@ -579,6 +579,12 @@ jobs:
         env:
           APP_SECRETS: ${{ secrets.SPARX_APP_SECRETS_ENV }}
           TYPESENSE_API_KEY: ${{ secrets.TYPESENSE_API_KEY }}
+          # For `terraform output` below — the media storage credentials are read
+          # back out of the state this job just applied.
+          ARM_USE_OIDC: 'true'
+          ARM_CLIENT_ID: ${{ vars.AZURE_CLIENT_ID }}
+          ARM_TENANT_ID: ${{ vars.AZURE_TENANT_ID }}
+          ARM_SUBSCRIPTION_ID: ${{ vars.AZURE_SUBSCRIPTION_ID }}
         run: |
           set -euo pipefail
           kubectl create namespace "$NAMESPACE" --dry-run=client -o yaml | kubectl apply -f -
@@ -651,6 +657,59 @@ jobs:
             esac
             printf 'OPERATOR_DATABASE_URL=%s\n' "$OP_URL" >> /tmp/app.env.plain
             echo "OPERATOR_DATABASE_URL not supplied; derived it from DATABASE_URL as wize_operator."
+          fi
+
+          # AZURE_STORAGE_ACCOUNT / AZURE_STORAGE_KEY — read out of the state this
+          # job just applied, not copied by hand.
+          #
+          # These two select the media storage backend. api-rest, media-worker and
+          # packages/media each take Azure Blob when BOTH are present and fall through
+          # to the LOCAL DISK backend when either is missing — the backend written for
+          # a laptop. That fallback is silent by design and it has already cost us
+          # once: when GCP was retired `GCS_MEDIA_BUCKET` went away, all three services
+          # dropped to local disk, and production media lived on a single ReadWriteOnce
+          # Azure Disk for months. Nothing failed. Nothing logged. api-rest and
+          # media-worker just quietly had to be pinned to the same node, because a RWO
+          # volume mounts on exactly one.
+          #
+          # So this is DERIVED rather than supplied. Terraform owns the account and
+          # rotating the key is a `terraform apply` — round-tripping it through a
+          # textarea in the repo secret would mean every rotation silently reverts the
+          # platform to laptop mode until someone notices images have stopped loading.
+          # Supplying either key explicitly in SPARX_APP_SECRETS_ENV still wins, which
+          # is the escape hatch for pointing an environment at a different account.
+          # Both or neither — a half-supplied pair is the one input that reproduces the
+          # original bug, since the backends require BOTH and go quietly to disk otherwise.
+          HAVE_ACCOUNT=$(grep -c '^AZURE_STORAGE_ACCOUNT' /tmp/app.env || true)
+          HAVE_KEY=$(grep -c '^AZURE_STORAGE_KEY' /tmp/app.env || true)
+          if [ "$HAVE_ACCOUNT" -ne 0 ] && [ "$HAVE_KEY" -eq 0 ]; then
+            echo "::error::SPARX_APP_SECRETS_ENV sets AZURE_STORAGE_ACCOUNT without AZURE_STORAGE_KEY." \
+                 "The media backends need both and fall back to local disk with either missing." \
+                 "Supply both, or neither and let Terraform provide them."
+            exit 1
+          fi
+          if [ "$HAVE_KEY" -ne 0 ] && [ "$HAVE_ACCOUNT" -eq 0 ]; then
+            echo "::error::SPARX_APP_SECRETS_ENV sets AZURE_STORAGE_KEY without AZURE_STORAGE_ACCOUNT." \
+                 "The media backends need both and fall back to local disk with either missing." \
+                 "Supply both, or neither and let Terraform provide them."
+            exit 1
+          fi
+
+          if [ "$HAVE_ACCOUNT" -eq 0 ]; then
+            ST_ACCOUNT=$(terraform -chdir="$TERRAFORM_DIR" output -raw media_storage_account 2>/dev/null || true)
+            ST_KEY=$(terraform -chdir="$TERRAFORM_DIR" output -raw media_storage_key 2>/dev/null || true)
+            if [ -z "$ST_ACCOUNT" ] || [ -z "$ST_KEY" ]; then
+              echo "::error::Could not read media_storage_account/media_storage_key from $TERRAFORM_DIR." \
+                   "Media would fall back to local disk. Either this Terraform environment does not" \
+                   "define the media storage account, or set AZURE_STORAGE_ACCOUNT + AZURE_STORAGE_KEY" \
+                   "explicitly in SPARX_APP_SECRETS_ENV."
+              exit 1
+            fi
+            printf 'AZURE_STORAGE_ACCOUNT=%s\n' "$ST_ACCOUNT" >> /tmp/app.env.plain
+            printf 'AZURE_STORAGE_KEY=%s\n'     "$ST_KEY"     >> /tmp/app.env.plain
+            echo "Media storage: derived AZURE_STORAGE_ACCOUNT=$ST_ACCOUNT from Terraform state."
+          else
+            echo "Media storage: AZURE_STORAGE_ACCOUNT supplied explicitly; leaving Terraform's value unused."
           fi
 
           kubectl create secret generic sparx-app-secrets -n "$NAMESPACE" \
@@ -756,7 +815,7 @@ jobs:
   #            Postgres will never run. Idempotent, so it runs every time.
   #   schema   `prisma migrate deploy` from the db image.
   #   rows     prisma/seed-platform.ts (the marketplace ingest that used to follow
-#            it is gone — api-rest publishes its own catalog on boot).
+  #            it is gone — api-rest publishes its own catalog on boot).
   #
   # All four connect as the OWNER role, not the RLS-constrained one. The
   # marketplace tables are FORCE-RLS with a policy that only admits a no-tenant
