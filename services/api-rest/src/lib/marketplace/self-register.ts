@@ -64,10 +64,7 @@ import {
   loadFirstPartyBlueprints,
   type FirstPartyBlueprint,
 } from './blueprint-bundles.js';
-import {
-  FIRST_PARTY_INTEGRATIONS,
-  type FirstPartyIntegration,
-} from './first-party-integrations.js';
+import { firstPartyIntegrations, type FirstPartyIntegration } from './first-party-integrations.js';
 import { getStorage, marketplaceMediaKey, marketplaceMediaUrl } from '../storage.js';
 
 /** What one pass changed, per category — returned rather than only logged so a
@@ -324,19 +321,24 @@ export async function selfRegisterFirstPartyCatalog(): Promise<SelfRegisterRepor
     objectsWritten += staged.objectsWritten;
   }
 
+  // Read the plane ONCE, here, rather than at module scope: the registry is filled by
+  // `bootstrapIntegrations()` during boot, so an import-time constant would capture it
+  // empty and publish nothing.
+  const integrations = firstPartyIntegrations();
+
   return withSystem(async (tx) => {
     const publisherId = await sparxPublisherId(tx);
 
     for (const t of FIRST_PARTY_THEMES) await publishTheme(tx, publisherId, t);
     for (const c of FIRST_PARTY_COMPONENTS) await publishComponent(tx, publisherId, c);
-    for (const i of FIRST_PARTY_INTEGRATIONS) await publishIntegration(tx, publisherId, i);
+    for (const i of integrations) await publishIntegration(tx, publisherId, i);
     for (const bp of blueprints) {
       await publishBlueprint(tx, publisherId, bp, stagedMedia.get(bp.slug) ?? []);
     }
 
     const themeSlugs = FIRST_PARTY_THEMES.map((t) => t.slug);
     const componentSlugs = FIRST_PARTY_COMPONENTS.map((c) => c.slug);
-    const integrationSlugs = FIRST_PARTY_INTEGRATIONS.map((i) => i.slug);
+    const integrationSlugs = integrations.map((i) => i.slug);
     const blueprintSlugs = blueprints.map((b) => b.slug);
 
     // Retract by ABSENCE. This is the half the ingest never had: production carried
@@ -393,7 +395,7 @@ export async function selfRegisterFirstPartyCatalog(): Promise<SelfRegisterRepor
         objectsWritten,
       },
       integrations: {
-        published: FIRST_PARTY_INTEGRATIONS.length,
+        published: integrations.length,
         pruned: staleIntegrations.map((r) => r.slug),
       },
     };

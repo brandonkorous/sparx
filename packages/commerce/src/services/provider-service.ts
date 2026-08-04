@@ -122,8 +122,8 @@ export interface ActiveProviderContext {
 }
 
 /** Like resolveActive(), but also surfaces the decrypted-at-rest config
- *  (Secret Manager refs, not raw secrets) a ShippingProvider/PaymentProvider
- *  call needs to build a ProviderRunContext. */
+ *  (Secret Manager refs, not raw secrets) a ShippingProvider/TaxProvider call needs
+ *  to build a ProviderRunContext. */
 export async function resolveActiveConfig(
   ctx: ServiceContext,
   kind: ProviderKind
@@ -435,9 +435,9 @@ export async function recordHealth(
 
 /**
  * Idempotently record a verified webhook. Caller (provider-webhook-worker)
- * already validated the signature via `bundle.payment.verifyWebhook` (or
- * the equivalent for other kinds). We persist the raw payload + return
- * the canonical eventId so duplicate provider retries are a no-op.
+ * already validated the signature via the bundle's own `verifyWebhook`. We persist
+ * the raw payload + return the canonical eventId so duplicate provider retries are a
+ * no-op.
  */
 export async function ingestWebhook(
   ctx: ServiceContext,
@@ -518,6 +518,11 @@ function toMetadata(bundle: ProviderBundle): ProviderMetadata {
     vendor: bundle.metadata.vendor,
     logoMediaUrl: bundle.metadata.logoMediaUrl,
     kinds: bundle.metadata.kinds,
+    // The descriptor leaves this off when a bundle simply works; the parsed
+    // metadata type requires it (the zod `.default()` makes it required on the
+    // way OUT). Resolving the default here is what keeps a bundle from having
+    // to declare that it is available.
+    availability: bundle.metadata.availability ?? 'available',
     supportedCurrencies: bundle.metadata.supportedCurrencies,
     supportedCountries: bundle.metadata.supportedCountries,
     sandboxAvailable: bundle.metadata.sandboxAvailable,

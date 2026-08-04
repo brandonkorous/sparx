@@ -45,11 +45,19 @@ function GatewayRow({
   onOpen: (id: string, event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const state = gatewayState(gateway, config, credential);
+  // A gateway with no adapter yet cannot be opened, because the pane behind this row
+  // offers "use this provider" — and selecting one that cannot charge a card would
+  // leave checkout throwing GatewayNotFoundError on a live store. The row still
+  // renders, so the catalog stays honest about what is coming; it just does nothing.
+  const unbuilt = gateway.availability === 'coming_soon';
   return (
     <button
       type="button"
-      className="hover:bg-base-200 flex w-full flex-wrap items-center gap-2 rounded px-2 py-2 text-left"
+      disabled={unbuilt}
+      aria-disabled={unbuilt}
+      className="hover:bg-base-200 flex w-full flex-wrap items-center gap-2 rounded px-2 py-2 text-left disabled:cursor-default disabled:hover:bg-transparent"
       onClick={(event) => {
+        if (unbuilt) return;
         onOpen(gateway.id, event);
       }}
     >

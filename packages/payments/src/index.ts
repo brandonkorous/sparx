@@ -41,6 +41,13 @@ export {
 
 export { gatewayRegistry, registerBuiltInGateways, GatewayNotFoundError } from './registry';
 
+// The shared-plane face of the gateway catalog (@sparx/integrations).
+export {
+  paymentIntegrations,
+  gatewayToIntegrationDescriptor,
+  registerPaymentIntegrations,
+} from './integration';
+
 export { PaymentService, paymentService, PaymentConfigError } from './service';
 
 export { SPARX_PAY_FEE_RATE, sparxPayFeeCents } from './fee';
@@ -95,18 +102,23 @@ import { AuthorizeNetGateway } from './gateways/authorize-net';
 import { FirstPayGateway } from './gateways/first-pay';
 import { CustomRedirectGateway } from './gateways/custom-redirect';
 import { registerBuiltInGateways } from './registry';
+import { registerPaymentIntegrations } from './integration';
 
 /** Register the built-in gateways. Call once at host boot. A developer PLUGIN
  *  (docs/111 D6) registers its own adapter the same way — `gatewayRegistry.register(
  *  new MyGateway())` at boot + a GATEWAY_CATALOG descriptor — and it lights up across
  *  checkout, invoices, and B2B with zero flow changes. */
 export function registerSparxGateways(): void {
-  registerBuiltInGateways([
+  const gateways = [
     new SparxPayGateway(),
     new StripeDirectGateway(),
     new SquareGateway(),
     new AuthorizeNetGateway(),
     new FirstPayGateway(),
     new CustomRedirectGateway(),
-  ]);
+  ];
+  registerBuiltInGateways(gateways);
+  // …and publish the same set to the shared integration plane, so "how you get paid"
+  // appears in the one Integrations catalog rather than only under commerce.
+  registerPaymentIntegrations(gateways);
 }

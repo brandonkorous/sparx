@@ -25,6 +25,9 @@
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
+  "dependencies": {
+    "@sparx/integrations": "workspace:*"
+  },
   "devDependencies": {
     "typescript": "^5.7.3"
   }

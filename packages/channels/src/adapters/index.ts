@@ -9,7 +9,8 @@
 // push) call `registerBuiltinChannels()` once at boot. Adding a channel = one
 // adapter file + one line here, with no change to the worker dispatch core.
 
-import { hasChannel, registerChannel } from '../registry.js';
+import { getChannel, hasChannel, registerChannel } from '../registry.js';
+import { registerChannelIntegrations } from '../integration.js';
 import { GoogleShoppingAdapter } from './google-shopping.js';
 import { MetaAdapter } from './meta.js';
 import { PinterestAdapter } from './pinterest.js';
@@ -44,6 +45,10 @@ export function registerBuiltinChannels(): void {
   for (const adapter of adapters) {
     if (!hasChannel(adapter.id)) registerChannel(adapter);
   }
+  // …and publish the catalog to the shared integration plane, so channels appear in
+  // the one Integrations panel alongside payments, shipping and social. Runs after the
+  // adapters land so each descriptor's availability reflects a real `isConfigured()`.
+  registerChannelIntegrations(getChannel);
   registered = true;
 }
 

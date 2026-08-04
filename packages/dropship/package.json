@@ -18,7 +18,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@sparx/db": "workspace:*"
+    "@sparx/db": "workspace:*",
+    "@sparx/integrations": "workspace:*"
   },
   "devDependencies": {
     "typescript": "^5.7.3"

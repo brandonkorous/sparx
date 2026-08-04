@@ -47,6 +47,11 @@ export interface GatewayDescriptor {
   name: string;
   tagline?: string;
   blurb: string;
+  /** Whether a tenant can switch this on today. Absent means yes — a gateway that
+   *  works does not declare it. `coming_soon` is a catalogued processor whose adapter
+   *  is unwritten: it is listed so the shelf is honest, and every control for it stays
+   *  inert. */
+  availability?: 'available' | 'coming_soon';
   recommended?: boolean;
   onboarding: GatewayOnboarding;
   checkout: GatewayCheckout;
@@ -198,6 +203,15 @@ export function gatewayState(
   credential: MaskedGatewayCredential | undefined
 ): GatewayState {
   const isSelected = config?.gatewayId === gateway.id;
+
+  // An UNBUILT gateway is never "Available", whatever else is true of it. The catalog
+  // now carries entries whose adapter does not exist yet (PayPal), so that the shelf
+  // can say sparx will support them instead of hiding them — and this is the surface
+  // that must not then offer a control which would throw. Checked first: a tenant can
+  // neither select nor save keys for something that cannot charge a card.
+  if (gateway.availability === 'coming_soon') {
+    return { tone: 'neutral', label: 'Coming soon' };
+  }
 
   if (isSelected && config?.isActive) {
     return { tone: 'success', label: 'Active — taking payments' };

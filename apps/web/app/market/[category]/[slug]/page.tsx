@@ -7,7 +7,7 @@
 
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { Badge, Button } from '@wizeworks/silicaui-react';
 import { Section, Display, Spark } from '@/components/marketing/primitives';
 import {
@@ -17,6 +17,7 @@ import {
   type MarketplaceListing,
 } from '@/lib/marketplace';
 import { getCategory } from '@/lib/marketplace-registry';
+import { legacySlugTarget } from '@/lib/marketplace-legacy-slugs';
 import { fetchChatAvailability } from '@/lib/chat';
 import { ListingCard } from '../../_components/listing-card';
 import { MarketChatCta } from '../../_components/chat-cta';
@@ -87,7 +88,14 @@ export default async function ListingDetailPage({
   if (!cat) notFound();
 
   const item = await fetchListing(category, slug);
-  if (!item) notFound();
+  // A slug that no longer resolves may be one that was RENAMED rather than retired —
+  // integration listings became category-qualified when they started being derived
+  // from the registry. Checked only on a miss, so a live listing costs nothing.
+  if (!item) {
+    const renamed = legacySlugTarget(category, slug);
+    if (renamed) permanentRedirect(`/market/${category}/${renamed}`);
+    notFound();
+  }
 
   const related = await fetchCategory(category, { limit: '4' }).then((r) =>
     r.items.filter((i) => i.slug !== item.slug).slice(0, 3)

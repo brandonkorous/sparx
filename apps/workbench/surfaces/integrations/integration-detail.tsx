@@ -42,7 +42,7 @@ import { useViewer } from '../../lib/api/shell-data';
 import { PaneToolbar, PANE_SHELL } from '../../components/pane-toolbar';
 import { FormSection } from '../../components/form-section';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
-import { kindIcon } from './kind-icon';
+import { providerKindIcon } from './kind-icon';
 import {
   installationState,
   integrationErrorMessage,
@@ -59,7 +59,7 @@ import {
   type ConfigField,
   type ProviderEnvironment,
   type ProviderKind,
-} from './data';
+} from './provider-connection';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
@@ -299,7 +299,7 @@ function ConnectIntegration({
     );
   }
 
-  const KindIcon = kindIcon(kind);
+  const KindIcon = providerKindIcon(kind);
   const failure = install.isError
     ? integrationErrorMessage(install.error, 'Could not connect that service. Nothing was saved.')
     : null;
@@ -468,7 +468,7 @@ function ManageIntegration({
   }
 
   const state = installationState(installation);
-  const KindIcon = kindIcon(installation.kind);
+  const KindIcon = providerKindIcon(installation.kind);
   const isLive = installation.environment === 'production';
 
   const onTest = () => {

@@ -162,6 +162,8 @@ import inventoryRoutes from './routes/v1/inventory/index.js';
 import marketRoutes from './routes/v1/market/index.js';
 import channelRoutes from './routes/v1/channels/index.js';
 import socialRoutes from './routes/v1/social/index.js';
+// The one catalog of everything connectable, across every category.
+import integrationRoutes from './routes/v1/integrations/index.js';
 import schedulingRoutes from './routes/v1/scheduling/index.js';
 import tenantRoutes from './routes/v1/tenant.js';
 import tenantBusinessRoutes from './routes/v1/tenant-business.js';
@@ -908,6 +910,7 @@ export async function createApp(): Promise<FastifyInstance> {
   await app.register(inventoryRoutes);
   await app.register(channelRoutes);
   await app.register(socialRoutes);
+  await app.register(integrationRoutes);
   await app.register(marketRoutes);
   await app.register(schedulingRoutes);
   await app.register(tenantRoutes);

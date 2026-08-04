@@ -53,6 +53,11 @@ export interface GatewayDescriptor {
   name: string;
   tagline?: string;
   blurb: string;
+  /** Whether a tenant can switch this on TODAY. Omitted means `available` — a gateway
+   *  that works should not have to declare it. `coming_soon` keeps the entry visible
+   *  and honest while its adapter is unwritten: the catalog says sparx will support it,
+   *  and the surface disables the control instead of offering a button that throws. */
+  availability?: 'available' | 'coming_soon';
   /** sparx Pay leads the picker (docs/111 D7). */
   recommended?: boolean;
   onboarding: GatewayOnboarding;
@@ -274,6 +279,43 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     sparxFee: false,
     feeNote: 'No sparx fee — your processor’s rates apply.',
     regions: [],
+  },
+  {
+    // PayPal lives HERE, in the gateway catalog, and not as a provider bundle.
+    //
+    // It used to be `@sparx/provider-paypal`: 85 lines implementing the provider
+    // framework's `PaymentProvider`, every method throwing, purely so the catalog could
+    // say "coming soon". That contract was a second model of payments — nothing
+    // dispatched it, while every real payment went through this catalog — and the stub
+    // was the only thing keeping it alive. A catalog entry with `availability` says the
+    // same sentence without a parallel abstraction behind it.
+    id: 'paypal',
+    name: 'PayPal',
+    blurb:
+      'Let customers pay with their PayPal balance, Venmo, or Pay Later. No sparx fee — you pay PayPal’s rates directly.',
+    availability: 'coming_soon',
+    onboarding: 'api_keys',
+    checkout: 'redirect',
+    capabilities: { refunds: true, capture: true, paymentLinks: true, webhooks: true },
+    credentialFields: [
+      {
+        key: 'client_id',
+        label: 'Client ID',
+        placeholder: 'A21AA…',
+        secret: false,
+        help: 'PayPal Developer Dashboard → Apps & Credentials → your app.',
+      },
+      {
+        key: 'client_secret',
+        label: 'Client secret',
+        secret: true,
+        help: 'Alongside the Client ID on the same PayPal app.',
+      },
+    ],
+    environments: true,
+    sparxFee: false,
+    feeNote: 'No sparx fee — you pay PayPal’s rates directly.',
+    regions: ['US', 'CA', 'GB', 'AU', 'DE', 'FR', 'NL', 'IT', 'ES', 'JP'],
   },
   {
     id: 'manual',

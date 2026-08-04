@@ -9,7 +9,8 @@
 // `registerBuiltinSocialAdapters()` once at boot. Adding a platform = one adapter file
 // + one line here, with no change to the worker dispatch core.
 
-import { registerSocialAdapter } from '../registry.js';
+import { getSocialAdapter, registerSocialAdapter } from '../registry.js';
+import { registerSocialIntegrations } from '../integration.js';
 import { GoogleBusinessAdapter } from './google-business.js';
 import { LinkedInAdapter } from './linkedin.js';
 import { FacebookPageAdapter } from './facebook.js';
@@ -36,6 +37,11 @@ export function registerBuiltinSocialAdapters(): void {
   registerSocialAdapter(new PinterestAdapter());
   registerSocialAdapter(new TikTokAdapter());
   registerSocialAdapter(new YouTubeAdapter());
+  // …and publish the catalog to the shared integration plane, so social accounts appear
+  // in the one Integrations panel. Runs after the adapters land so each descriptor's
+  // availability reflects a real `isConfigured()`. X has no adapter by design and
+  // registers descriptor-only — the catalog says "coming soon" instead of going silent.
+  registerSocialIntegrations(getSocialAdapter);
   registered = true;
 }
 

@@ -29,18 +29,21 @@ export interface VerifiedWebhook {
 
 /**
  * Verify a raw inbound webhook and return the parsed event. Throws
- * WebhookVerificationError when the signature can't be validated, or
- * `ProviderConfigurationError`-equivalent when the bundle doesn't
- * expose any verifier. Payment is the predominant webhook source, so it
- * takes priority; falls through to the shipping verifier for providers
- * (like Shippo) that only implement that kind.
+ * WebhookVerificationError when the signature can't be validated, or when the bundle
+ * doesn't expose a verifier.
+ *
+ * Shipping is the only verifier this router has ever actually used. The line used to
+ * read `bundle.payment ?? bundle.shipping`, with a comment calling payment "the
+ * predominant webhook source" — but no bundle ever implemented payment, and real
+ * payment webhooks are verified by `@sparx/payments` gateways on their own route. The
+ * fallback WAS the whole behaviour; the priority in front of it was decoration.
  */
 export function verifyInboundWebhook(input: InboundWebhook): VerifiedWebhook {
   const bundle = getProvider(input.providerSlug);
   if (!bundle) {
     throw new WebhookVerificationError(input.providerSlug, 'Provider not registered');
   }
-  const verifier = bundle.payment ?? bundle.shipping;
+  const verifier = bundle.shipping;
   if (!verifier) {
     throw new WebhookVerificationError(
       input.providerSlug,

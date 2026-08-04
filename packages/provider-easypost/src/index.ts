@@ -26,6 +26,11 @@ const easypostMetadata: ProviderMetadataDescriptor = {
     'Multi-carrier with deep US coverage: USPS, UPS, FedEx, DHL, Lasership, OnTrac, freight (FedEx Freight, ABF, Estes, YRC, Saia). Real-time rates, label printing, scan-based returns.',
   vendor: 'EasyPost, Inc.',
   kinds: ['shipping'],
+  // Built, registered, and not yet connectable — every method throws
+  // ProviderUnsupportedError. Declaring it is what lets the bundle be REGISTERED
+  // instead of left out: this package shipped complete and unregistered, so the
+  // catalog advertised EasyPost while nothing in the platform had ever heard of it.
+  availability: 'coming_soon',
   supportedCurrencies: ['USD', 'CAD'],
   supportedCountries: ['US', 'CA'],
   sandboxAvailable: true,

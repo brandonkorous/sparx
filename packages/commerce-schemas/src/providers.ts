@@ -69,6 +69,11 @@ export const ProviderMetadata = z.object({
   // the install form renders these masked; providerService encrypts them
   // before they ever reach the row.
   secretFields: z.array(z.string().min(1).max(127)).default([]),
+  // Can a tenant install this TODAY? A `coming_soon` bundle is registered so the
+  // catalog can say sparx will talk to it, but every method throws — so a surface
+  // rendering one must disable its install control and say why. Defaults to
+  // `available`, because a provider that works should not have to declare it.
+  availability: z.enum(['available', 'coming_soon']).default('available'),
 });
 export type ProviderMetadata = z.infer<typeof ProviderMetadata>;
 

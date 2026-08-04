@@ -6,7 +6,7 @@ import type { RateOption, ShipmentRequest } from '@sparx/commerce-schemas';
 
 import type { ProviderRunContext } from './context';
 import type { ProviderMetadataDescriptor } from './metadata';
-import type { WebhookEvent } from './payment-provider';
+import type { WebhookEvent } from './webhook-event';
 
 export interface ShippingLabel {
   labelRef: string;

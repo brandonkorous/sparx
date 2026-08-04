@@ -36,6 +36,7 @@
   "dependencies": {
     "@sparx/api-core": "workspace:*",
     "@sparx/db": "workspace:*",
+    "@sparx/integrations": "workspace:*",
     "zod": "^4.4.3"
   },
   "scripts": {

@@ -20,6 +20,9 @@ const taxjarMetadata: ProviderMetadataDescriptor = {
     'Automatic US sales tax calculation across all 50 states plus 30+ countries. Strong exemption-certificate workflow (resale, manufacturing, agricultural) for B2B merchants. AutoFile filing service.',
   vendor: 'Stripe / TaxJar',
   kinds: ['tax'],
+  // Built, registered, and not yet connectable — every method throws. See the note on
+  // the EasyPost bundle: this shipped complete and unregistered for months.
+  availability: 'coming_soon',
   supportedCurrencies: ['USD', 'CAD', 'EUR', 'GBP', 'AUD'],
   supportedCountries: ['US', 'CA', 'GB', 'AU', 'NZ', 'FR', 'DE', 'IT', 'ES'],
   sandboxAvailable: true,

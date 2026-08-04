@@ -47,3 +47,10 @@ export {
   type VendorCredentialField,
   type VendorCapabilities,
 } from './vendors.js';
+
+// The shared-plane face of the vendor catalog (@sparx/integrations).
+export {
+  dropshipIntegrations,
+  vendorToIntegrationDescriptor,
+  registerDropshipIntegrations,
+} from './integration.js';

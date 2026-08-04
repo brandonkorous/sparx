@@ -1,15 +1,21 @@
-// Provider-bundle bootstrap. Runs once per process to populate the
-// integration-framework registry and tell @sparx/commerce where to
-// resolve install secrets. Idempotent: createApp() can be called many
-// times in tests without double-register errors.
+// Credential plumbing for integrations — how a stored secret ref becomes a real
+// secret, for every kind that reads one.
 //
-// New providers register here. Tests can skip this by calling
-// `_resetRegistryForTest()` and re-registering with stubbed bundles.
+// WHAT MOVED, AND WHY. This used to also register provider bundles, and it registered
+// exactly one (Shippo) — which is how easypost, taxjar and avalara came to ship
+// complete and never be reachable. Registration now happens in ONE place for every
+// category (`./integrations-bootstrap.ts`); what stays here is the secret reader and
+// the payment gateways, which are inseparable because the same call installs the
+// reader those gateways resolve their own credentials through.
+//
+// The `catch` that regex-matched "already registered" is gone with it. The shared
+// plane's registrations are last-wins, so a second boot is a no-op and there is no
+// benign exception left to tell apart from a real one.
 
 import { setSecretReader, envSecretReader, mapSecretReader } from '@sparx/commerce';
 import { SecretNotFoundError, type SecretReader } from '@sparx/integration-framework';
-import { registerShippoProviders } from '@sparx/provider-shippo';
 
+import { bootstrapIntegrations } from './integrations-bootstrap.js';
 import { bootstrapPayments } from './payments-bootstrap.js';
 
 let booted = false;
@@ -18,18 +24,14 @@ export function bootstrapProviders(): void {
   if (booted) return;
   booted = true;
 
-  try {
-    registerShippoProviders();
-  } catch (err) {
-    // "Provider already registered" — fine, another caller beat us to
-    // it (HMR, parallel test setup). Anything else is a real bug.
-    if (!(err instanceof Error) || !/already registered/i.test(err.message)) throw err;
-  }
-
   setSecretReader(buildSecretReader());
 
-  // The go-forward payment surface (@sparx/payments gateways + secret reader).
+  // The payment surface (@sparx/payments gateways + their secret reader). This also
+  // publishes the gateway catalog to the shared integration plane.
   bootstrapPayments();
+
+  // Every other category — providers, channels, social, dropship, AI.
+  bootstrapIntegrations();
 }
 
 /** env: refs hit process.env directly. projects/… refs hit Google Secret

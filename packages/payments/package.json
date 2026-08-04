@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@sparx/db": "workspace:*",
+    "@sparx/integrations": "workspace:*",
     "stripe": "^17.7.0"
   },
   "devDependencies": {

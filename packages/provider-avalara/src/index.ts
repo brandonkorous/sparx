@@ -20,6 +20,9 @@ const avalaraMetadata: ProviderMetadataDescriptor = {
     'Enterprise-grade tax compliance: AvaTax for calculation, CertCapture for exemption certificates, Returns for filing. 12,000+ tax jurisdictions globally.',
   vendor: 'Avalara, Inc.',
   kinds: ['tax'],
+  // Built, registered, and not yet connectable — every method throws. See the note on
+  // the EasyPost bundle: this shipped complete and unregistered for months.
+  availability: 'coming_soon',
   supportedCurrencies: ['USD', 'CAD', 'EUR', 'GBP', 'AUD', 'NZD', 'JPY'],
   supportedCountries: [
     'US',

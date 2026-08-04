@@ -43,3 +43,10 @@ export {
   getChannelDescriptor,
   type ChannelDescriptor,
 } from './catalog.js';
+
+// The shared-plane face of the channel catalog (@sparx/integrations).
+export {
+  channelIntegrations,
+  channelToIntegrationDescriptor,
+  registerChannelIntegrations,
+} from './integration.js';

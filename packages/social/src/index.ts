@@ -57,6 +57,13 @@ export {
   type SocialPlatformPhase,
 } from './catalog.js';
 
+// The shared-plane face of the platform catalog (@sparx/integrations).
+export {
+  socialIntegrations,
+  socialToIntegrationDescriptor,
+  registerSocialIntegrations,
+} from './integration.js';
+
 export {
   renderForTarget,
   renderForTargets,
