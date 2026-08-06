@@ -53,7 +53,7 @@ import type { SemanticRole, Theme } from '@wizeworks/silicaui-html';
 
 /** One mode's complete palette. Both modes are required — a partial dark is how
  *  a theme ends up painting a light-mode fill onto a dark surface. */
-interface Palette {
+export interface Palette {
   /** `base-100`, `base-200`, `base-300`, `base-content`, in that order. */
   surfaces: [string, string, string, string];
   roles: Record<SemanticRole, string>;
@@ -61,7 +61,7 @@ interface Palette {
 
 /** The non-color tokens that decide whether a theme reads as sharp and technical
  *  or soft and welcoming. Omitted keys inherit silica's own defaults. */
-interface Shape {
+export interface Shape {
   selector?: string;
   field?: string;
   box?: string;
@@ -73,13 +73,13 @@ interface Shape {
 /** A webfont pick in exactly the form silica's theme editor writes — the CSS
  *  stack for the token, and the weights recorded on `Theme.fonts` so publishing
  *  can self-host the real files. */
-interface Face {
+export interface Face {
   family: string;
   stack: string;
   weights: number[];
 }
 
-const face = (family: string, generic: string): Face => ({
+export const face = (family: string, generic: string): Face => ({
   family,
   stack: `"${family}", ${generic}`,
   weights: [400, 600, 700],
@@ -107,7 +107,7 @@ const FACE = {
   workSans: face('Work Sans', 'sans-serif'),
 } satisfies Record<string, Face>;
 
-interface ThemeSpec {
+export interface ThemeSpec {
   /** The `[data-theme]` value, stored on every site that adopts it — permanent. */
   name: string;
   light: Palette;
@@ -119,7 +119,7 @@ interface ThemeSpec {
 /** Assemble a spec into a silica `Theme`. `dark` is a whole `Palette`, not a
  *  partial override bag, so an unstated dark role is a type error rather than a
  *  light-mode color quietly surviving into dark mode. */
-function defineTheme(spec: ThemeSpec): Theme {
+export function defineTheme(spec: ThemeSpec): Theme {
   const tokens: Record<string, string> = {
     ...surfaceTokens(spec.light.surfaces),
     ...roleTokens(spec.light.roles),
@@ -196,14 +196,14 @@ function shapeTokens(shape: Shape | undefined): Record<string, string> {
 // A theme overrides an individual slot only when its own brand hue sits close
 // enough to be misread — a restaurant whose brand IS tomato red cannot also warn
 // in tomato red.
-const STATUS_ON_LIGHT = {
+export const STATUS_ON_LIGHT = {
   info: 'oklch(52% 0.13 232)',
   success: 'oklch(48% 0.13 150)',
   warning: 'oklch(76% 0.14 80)',
   error: 'oklch(52% 0.19 25)',
 };
 
-const STATUS_ON_DARK = {
+export const STATUS_ON_DARK = {
   info: 'oklch(76% 0.11 232)',
   success: 'oklch(76% 0.13 150)',
   warning: 'oklch(84% 0.13 80)',

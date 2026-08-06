@@ -279,6 +279,29 @@ export function productsBlock(opts: ProductsBlockOptions = {}): Node {
   return el('section', 'bg-base-100 @container px-6 py-12', { children });
 }
 
+/** A HEADLESS product carousel — the same `track` + Previous/Next the carousel
+ *  `productsBlock` uses, but WITHOUT the `<section>` chrome or the heading row. `productsBlock`
+ *  is the section-level block a page drops in directly; this is the bare interactive strip, for
+ *  a container that already frames it — a tab panel whose pill row is the heading, a column
+ *  that supplies its own padding. Same `carousel` behavior + `carousel`/`carousel-item` classes,
+ *  so it hydrates and scrolls identically; only the surrounding section + `<h2>` are dropped. */
+export function productCarousel(source: ProductsSource = 'commerce.product'): Node {
+  return behave(
+    el('div', 'flex flex-col gap-6', {
+      children: [
+        el('div', 'flex items-center justify-end gap-2', {
+          children: [
+            carouselControl('prev', 'Previous products', 'arrow-left'),
+            carouselControl('next', 'Next products', 'arrow-right'),
+          ],
+        }),
+        repeat(carouselTrack(), source),
+      ],
+    }),
+    { type: 'carousel' }
+  );
+}
+
 /** A responsive grid over the whole catalog — the shop-all page. A preset of
  *  `productsBlock`. */
 export function productGrid(): Node {
@@ -327,7 +350,7 @@ export function featuredCarousel(): Node {
  *  to '' for a product with no live variant. No `required` guard here, because the
  *  attribute is inert on a hidden input and `checkValidity()` would pass anyway —
  *  the storefront's `onAction` is what refuses to add an empty variant. */
-function addToCartForm(): Node {
+export function addToCartForm(): Node {
   return action(
     behave(
       el('form', 'mt-2 flex flex-col gap-3', {

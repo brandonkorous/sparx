@@ -32,7 +32,16 @@ import type { Theme } from '@wizeworks/silicaui-html';
  * rules simply return nothing and the other twenty-one still run. For a re-seed it is
  * the signal to fall back to a preset rather than write a themeless site.
  */
-export async function effectiveTheme(tx: TxClient, ctx: PropertyContext): Promise<Theme | null> {
+export async function effectiveTheme(
+  tx: TxClient,
+  ctx: PropertyContext,
+  opts: {
+    /** Skip the stored authored theme and compile from brand + preset regardless.
+     *  For repairing a stored theme that is itself the thing being corrected — the
+     *  authored short-circuit would otherwise just hand back the broken value. */
+    ignoreAuthored?: boolean;
+  } = {}
+): Promise<Theme | null> {
   const [site, brandRow, property, config] = await Promise.all([
     tx.builderSite.findUnique({ where: { propertyId: ctx.propertyId } }),
     tx.tenantBrand.findUnique({ where: { tenantId: ctx.tenantId } }),
@@ -41,7 +50,7 @@ export async function effectiveTheme(tx: TxClient, ctx: PropertyContext): Promis
   ]);
 
   const authored = site?.silicaDraftTheme as Theme | null | undefined;
-  if (authored) return authored;
+  if (authored && !opts.ignoreAuthored) return authored;
 
   const base: BrandColumns = brandRow
     ? {

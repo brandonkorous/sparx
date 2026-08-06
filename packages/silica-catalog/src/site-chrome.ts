@@ -64,6 +64,26 @@ export const NAVBAR_VARIANTS = {
 
 export type NavbarVariant = keyof typeof NAVBAR_VARIANTS;
 
+/** The footer blocks whose slot set sparx's fill matches. Both share the
+ *  `brand`/`blurb`/`col1`+`link1..4`/`col2`+`link5..8`/`copyright`/`social1..3` slots the
+ *  fill writes, so switching a site's footer is this key and nothing else — the same
+ *  no-re-author key swap the navbar variants get.
+ *
+ *    · `columns`    — silica's `footer` (Footer — Columns): a brand blurb + three link
+ *      columns over a legal bar. The DEFAULT, and the one that carries the `site.legal-links`
+ *      host core (it has the third `link9..12` column to mount it in).
+ *    · `newsletter` — silica's `footer_newsletter`: a working "join our list" subscribe form
+ *      leading two link columns, over a copyright bar. The editorial (Kith-family) footer —
+ *      a capture up front, small-caps columns, a `© <business name>` bottom bar. It has NO
+ *      third column, so the legal-links host core has no slot here; a tenant's published legal
+ *      pages stay reachable from the builder-authored body, not this block. */
+export const FOOTER_VARIANTS = {
+  columns: 'footer',
+  newsletter: 'footer_newsletter',
+} as const;
+
+export type FooterVariant = keyof typeof FOOTER_VARIANTS;
+
 /** What a slot is filled with. `null` REMOVES the node (and prunes the `<li>` or
  *  other wrapper left empty behind it) — a block ships four link slots and a site
  *  with two destinations must not publish two dead `#` links. */
@@ -334,6 +354,14 @@ export interface SiteChromeOptions {
   /** Which navbar shape to start on. Defaults to `brandLeft` — the plainest of the
    *  three, and the one a tenant is least likely to have to undo. */
   navbar?: NavbarVariant;
+  /** Which footer shape to start on. Defaults to `columns` — the block that carries the
+   *  live legal-links host core. `newsletter` is the editorial "join our list" footer. */
+  footer?: FooterVariant;
+  /** Whether the navbar carries a filled call-to-action button. Defaults to `true`, so
+   *  existing sites keep their "Get in touch" button. Set `false` for an editorial header
+   *  that leads with the wordmark and nav alone (the Kith-family bar has no filled CTA) —
+   *  the `cta` slot is pruned on both the desktop bar and the phone panel. */
+  showCta?: boolean;
 }
 
 /** The site's primary destinations, in one place so the desktop row and the phone
@@ -390,7 +418,9 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
     // Every site has shopper sign-in (Layer-2 auth), so the secondary link is real
     // on a content-only site too — it reaches the account, not a store.
     secondary: { text: 'Sign in', href: '/account/login' },
-    cta: { text: 'Get in touch', href: '/contact' },
+    // `null` prunes the CTA slot (both the desktop bar and the phone panel declare it), for
+    // an editorial header that leads with the wordmark + nav and no filled button.
+    cta: (opts.showCta ?? true) ? { text: 'Get in touch', href: '/contact' } : null,
   });
   // The nav renders EXACTLY the site's destinations — the block's link slots GROW to fit
   // however many there are, never truncating at the block's default count.
@@ -401,25 +431,37 @@ export function siteNavbar(opts: SiteChromeOptions = {}): Node {
 }
 
 /**
- * The site footer — silica's `footer` block, filled the same way.
+ * The site footer — silica's `footer` block by default, or a chosen `FOOTER_VARIANTS`
+ * key, filled the same way.
  *
- * The block ships three link columns; a starter site has one column's worth of
+ * The `columns` block ships three link columns; a starter site has one column's worth of
  * real destinations, so the second and third are emptied rather than filled with
  * invented pages. The legal column is the LIVE `site.legal-links` host core: it
  * lists the documents the tenant has ACTUALLY published and renders nothing until
  * there are any, replacing a hardcoded Privacy/Terms pair that shipped every new
  * site two footer links to pages that did not exist.
+ *
+ * The `newsletter` variant shares the `brand`/`blurb`/`col1`/`col2` slots, so the same
+ * by-name fill drives it; the legal-links `link9` and the columns-only `link10..15` keys
+ * simply find no slot in that block and are ignored (`fillSlots` fills only slots it finds).
  */
 export function siteFooter(opts: SiteChromeOptions = {}): Node {
   const { commerceEnabled = true } = opts;
   const destinations = navDestinations(opts);
-  const root = cloneBlock('footer');
+  const variant = opts.footer ?? 'columns';
+  const root = cloneBlock(FOOTER_VARIANTS[variant]);
   const filled = fillSlots(root, {
     brand: hostCore(HOST_KEYS.siteBrand),
+    // The `newsletter` block leads with a subscribe form, so its blurb is the invitation to
+    // join the list; the `columns` block's blurb is a plain brand line. The block keeps its
+    // shipped `cta` ("Subscribe") + `note` reassurance — both are real, neither is a leak.
     blurb: {
-      text: commerceEnabled
-        ? 'Everything you publish and sell, in one place.'
-        : 'Everything you publish, in one place.',
+      text:
+        variant === 'newsletter'
+          ? 'Join the list — new work, journal notes, and studio news, about once a month.'
+          : commerceEnabled
+            ? 'Everything you publish and sell, in one place.'
+            : 'Everything you publish, in one place.',
       href: '/',
     },
     // Socials are a tenant setting, not something a starter can invent. Emptied

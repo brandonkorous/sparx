@@ -96,6 +96,10 @@ describe('silicaSharedVars — shape/type/depth in silica tokens', () => {
     expect(vars['--radius-field']).toBe('0.5rem');
     expect(vars['--border']).toBe('1px');
     expect(vars['--size-field']).toBe('2.5rem');
+    // The SECOND density lever. It was never emitted, so badges/checkboxes/toggles
+    // kept silicaui's built-in 0.25rem while inputs and buttons beside them moved to
+    // the tenant's — half a customization, silently.
+    expect(vars['--size-selector']).toBe(c.shared.sizeSelector);
     expect(vars['--depth']).toBe('1');
   });
 

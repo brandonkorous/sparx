@@ -61,6 +61,7 @@ function BlueprintCard({
   onOpen: (event: { shiftKey: boolean; altKey: boolean }) => void;
 }) {
   const state = blueprint.install ? installState(blueprint.install.status) : null;
+  const updateAvailable = blueprint.install?.update_available ?? false;
   const vertical = verticalLabel(blueprint.vertical);
   const summary = contentsSummary(blueprint.contents);
 
@@ -96,6 +97,11 @@ function BlueprintCard({
           {state ? (
             <Badge color={state.tone} variant="soft" size="sm">
               {state.label}
+            </Badge>
+          ) : null}
+          {updateAvailable ? (
+            <Badge color="module" variant="soft" size="sm">
+              Update
             </Badge>
           ) : null}
         </div>

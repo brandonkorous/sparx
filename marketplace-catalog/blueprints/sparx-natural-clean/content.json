@@ -1,0 +1,233 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "how-we-choose-materials",
+    "status": "published",
+    "body": {
+      "title": "How we choose our materials",
+      "excerpt": "The one question every product has to answer before it earns a place in the shop — and why \"what is it made of?\" is harder than it sounds.",
+      "featuredImage": {
+        "$asset": "post-materials"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most housewares are quietly made of plastic. A dish brush, a food wrap, a laundry sheet, a storage tub — reach into an ordinary cupboard and almost everything in it started as oil and will end as landfill. We started Fernwood to see whether the useful, boring things could be made of something else without asking anyone to try harder or spend a fortune."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Grown or dug, not drilled"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The first test is simple: can we name what a thing is made of, and does the earth make more of it? Organic cotton and flax linen grow in a field. Bamboo and seagrass grow back faster than we can cut them. Glass is sand, and it recycles forever. Beeswax comes from bees, clay comes from the ground. If the honest answer to \"what is it made of?\" is a chemical nobody can pronounce, it does not go in the shop."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "It still has to work"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The second test is the one that fails most \"eco\" products: it has to work at least as well as the plastic thing it replaces. A compostable brush that will not scrub a pan is not a win — it is a thing you use once and give up on. So every item earns its place twice, on the material and on the job, and plenty of samples never make it past the sink."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of this is complicated. It is just slower, and it means saying no to a lot of things that would sell. That is the trade we made, and it is the whole reason the shop exists."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "the-life-of-a-beeswax-wrap",
+    "status": "published",
+    "body": {
+      "title": "The life of a beeswax wrap",
+      "excerpt": "How to get a year or more out of a food wrap, when to retire it, and the surprisingly good thing you can do with it at the end.",
+      "featuredImage": {
+        "$asset": "post-beeswax"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A beeswax wrap is the rare swap that is genuinely nicer to use than the thing it replaces. The warmth of your hands softens the wax so it clings to a bowl or folds around a sandwich, and it peels away clean. But it is a natural thing, not a plastic one, so it lives by a few plain rules."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Cool water, no heat"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Wash it in cool water with a little mild soap and let it air-dry. Heat is the enemy: no dishwasher, no hot tap, and never around raw meat, because you cannot scrub it the way you would a plastic board. Treated gently, one wrap will see you through a year or more of lunches and leftovers."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "When it stops sticking"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Eventually the wax wears thin and the cling goes. That is not the end — you can re-wax a tired wrap with a grated block and a warm oven, and it comes back to life. We sell the refresh blocks for exactly this reason: a wrap you top up is a wrap you never throw away."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "And when it is truly finished, it composts. Or, our favourite trick: wrap it around a bit of kindling and use it to light the fire. A food wrap that ends as a firelighter is about as good as the end of a thing gets."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "our-first-carbon-report",
+    "status": "published",
+    "body": {
+      "title": "Our first carbon report",
+      "excerpt": "We measured a year of making and shipping everything in the shop, added it up, and are publishing the number — including the parts we are not proud of.",
+      "featuredImage": {
+        "$asset": "post-carbon"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "This is the first year we have measured our whole footprint — the materials, the making, the packaging and the miles — and written it down. We are a small shop and the report is not perfect, but we would rather publish an honest, rough number than a polished, quiet nothing."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where it comes from"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The biggest share, by a distance, is shipping. Sending a basket across the country costs more carbon than growing the seagrass it is woven from. The next chunk is the raw materials, and the smallest is our own workshop and warehouse. Knowing the order matters, because it tells us where an hour of effort actually moves the number."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "What we are changing"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So this year we are consolidating shipments, moving to plastic-free packaging across the whole range, and switching our workshop to a renewable tariff. We are not buying offsets to call ourselves neutral — we would rather cut the real number than pay to look like we have."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We will publish this every year, and we will show the parts that go the wrong way as well as the parts that improve. A report you only publish when it flatters you is marketing, not measurement."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

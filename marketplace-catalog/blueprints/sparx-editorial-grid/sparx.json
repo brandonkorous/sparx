@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "category": "blueprint",
+  "slug": "sparx-editorial-grid",
+  "name": "sparx — Editorial Grid",
+  "version": "1.1.0",
+  "tagline": "An editorial, gallery-quiet template for makers of considered furniture and objects.",
+  "description": "A magazine-quiet storefront for design furniture and objects — a full-bleed serif hero over a repeating editorial-band and shoppable-carousel rhythm, in a paper-ground mono theme. Modelled on the editorial-streetwear archetype; shipped as Atelier Nord.",
+  "payload": "blueprint.ts",
+  "facets": {
+    "vertical": "retail",
+    "industry": "Design furniture & objects"
+  },
+  "pricing": {
+    "model": "free",
+    "priceCents": 0
+  },
+  "requires": {
+    "modules": ["builder", "commerce", "cms", "crm", "email"]
+  },
+  "media": [
+    {
+      "file": "media/icon.png",
+      "kind": "icon",
+      "alt": "sparx — Editorial Grid icon"
+    },
+    {
+      "file": "media/preview.png",
+      "kind": "preview",
+      "alt": "sparx — Editorial Grid — home page preview"
+    }
+  ],
+  "author": {
+    "displayName": "sparx"
+  },
+  "accent": "#050606",
+  "sortWeight": 100
+}

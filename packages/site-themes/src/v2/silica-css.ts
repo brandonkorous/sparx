@@ -92,8 +92,19 @@ export function silicaSharedVars(s: SharedTokensV2): Record<string, string> {
     '--radius-box': s.radiusBox,
     // Line weight → silica's `--border` (its universal border-width token).
     '--border': s.borderWidth,
-    // Control height → silica's `--size-field`.
+    // The two DENSITY LEVERS → silica's own. Both are BASE UNITS that silica
+    // multiplies by the size class, NOT control heights: an `md` field is
+    // `calc(var(--size-field) * 10)` and an `md` checkbox `calc(var(--size-selector) * 6)`,
+    // so the platform `0.25rem` yields a 40px input and a 24px checkbox. They are the
+    // "Field base size" / "Selector base size" controls in the builder's Design
+    // inspector, which is why they are two levers and not one — a theme can run tight
+    // toggles against roomy inputs.
+    //
+    // `--size-selector` was NOT emitted here at all, so badges, checkboxes, radios,
+    // switches and toggles silently kept silicaui's built-in `0.25rem` while every
+    // input and button beside them moved to the tenant's. Half the lever worked.
     '--size-field': s.sizeField,
+    '--size-selector': s.sizeSelector,
     // Shadow intensity → silica's `--depth` (its shadow utilities scale with it),
     // replacing v2's hand-derived `--st-shadow-*` set.
     '--depth': String(s.depth),

@@ -1,0 +1,2492 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "061044a7-0ee9-4dd0-87f6-6fd167274b23",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "3de1bdfa-0b07-4e5d-889d-e7681324f083",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "ebede154-d22c-464c-b4aa-81286d2de36e",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "d5fcd930-6831-4fef-b86a-4fdfb360e485",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "8a322fcb-4f3c-4b4e-911b-f50bad526e1f",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "32ae20c8-300c-4c4d-9b15-2060b81b2e99",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "425c651d-5994-4827-b62d-a20f793a3955",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "88eb9181-5730-4089-bb23-9663dd29ea33",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "82c12597-5275-4a43-8312-3f9c58c685c2",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "8aeebc9d-a2bf-4202-b41f-dfac43a9586a",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "b8efb4db-cf09-47ba-96dd-b061416a9f6e",
+                  "ord": "a2"
+                }
+              ],
+              "id": "2da7cbdc-bb43-4579-adba-48e4be1e0a56",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "e8c8ab7e-2eb8-49a4-b531-5c6a21df75d9",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "5d6228b5-6aec-4e4e-a09b-1003adf0cbd5",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "7593436f-ffcb-47d7-b336-c0fcfc5c3f85",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "cd0017ef-c149-4e76-810b-83da970c5942",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "3e31032f-b099-4e22-86b8-dd0d0ba1a332",
+                  "ord": "a4"
+                }
+              ],
+              "part": "panel",
+              "id": "97fdf7c6-0d7d-4bfd-92d4-27ce02c7e4f3",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "11f53387-713a-42d4-bc33-9e59758700b7",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "8c553e6a-1980-4152-890e-6117d03e3ebf",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "14764ba3-8a9c-4545-8e50-56ac66e4720e",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "9cc6b9a7-79fb-488f-bab0-e016a0042b6c",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "c19f76bb-6c2c-4dee-99a3-8270224aaa4f",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "48fd9fb8-61db-49dd-923f-f6cbea1cb73a",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "ce63a975-15ba-4c32-8f9d-a16ff3de81d7",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "beac3a0d-0c1c-4a83-86e7-1264e3924433",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "ed5a183b-7397-4c80-bb42-3ee751d4e28f",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "7f17856a-bc3e-404e-b06c-4de08bb5e346",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "8530173e-763a-434b-996d-97f5a946d1ed",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "cf186b45-1fb5-4d19-ad33-1f0c5789f85c",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "5511aa15-4655-47ff-8397-c05f72ccfd85",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "dd0f7ac6-fbfb-4e44-8eb3-31cc57c2e5e4",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "b0f67486-fa91-47b6-9f59-fe9165d7fa9f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3877c9dc-b388-40cc-99de-12b64fb19552",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "ab0cac57-e0cc-4adb-b72d-a7a1a892ac78",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "a760b9e0-a1f5-4cf4-b62b-990e79773c5d",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "b37d41f1-375f-465b-8ba1-a329320e9d20",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "8402e6ce-2a98-45f2-baa2-bf0a69c98e01",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "fe111c73-2fcb-4780-92c8-2d7a88f74850",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "e5c243ac-e1f2-4f1a-aa8b-91d083102b54",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "b95fc3ef-1196-4422-9bda-11bf9d14ecad",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "737d8f35-ee99-4b78-87c6-71bbd0f53735",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "150cba0a-63ec-4348-89e9-9eb6c1646d9a",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "0eee9d83-636d-48d0-af02-0c9af905d0a4",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "6d57ebb4-60b7-48d0-82dc-bcb3f60daecb",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "f5283c89-4416-4573-8246-1dbb024ba758",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "38363588-caf3-4f87-8e17-dc5eb655d2ab",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "e329f755-6c4b-4bb8-ba91-994fd861740a",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "fb5d0b8f-021d-4c1d-8500-9ef5e122750b",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "8db95d04-78e8-4f63-95de-1217ca48ac4f",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e625610e-b923-418a-b0a0-9b7470f0ac91",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "ab0b7453-3f6d-4f20-b509-c7e09df94693",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "60364bb1-2d60-45bc-a1f2-5106d0711eaa",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "d0728da3-5704-4a2e-b2f1-a22a2d7c615b",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "25879a45-6c06-44d5-b8ea-19a9b9a1d98b",
+                  "ord": "a1"
+                }
+              ],
+              "id": "2695be68-d03c-4f52-93b1-08eb83421749",
+              "ord": "a0"
+            }
+          ],
+          "id": "6e95d0a2-fcb1-498a-8676-9e168debe8ac",
+          "ord": "a2"
+        }
+      ],
+      "id": "1758f8fa-5685-4cdc-b7f9-0a91acfadcf1"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Nue Skincare — a short range of skincare essentials",
+      "seoDescription": "Nue Skincare is a short, considered range of skincare essentials — a cleanser, a serum, a cream, an SPF — made for every skin, and nothing it does not need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "eee0f029-7fe4-47d6-9346-319d5332d95c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "component",
+                "component": "Video",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "props": {
+                  "src": "/video/tpl-luxe-minimal.mp4",
+                  "poster": "https://images.unsplash.com/photo-1620916297397-a4a5402a3c6c?w=1400&q=80",
+                  "autoplay": true,
+                  "muted": true,
+                  "loop": true,
+                  "playsinline": true,
+                  "preload": "metadata",
+                  "aria-label": "Hands smoothing a few drops of serum, wrapped in soft linen"
+                },
+                "id": "e5cdad34-e76b-4e2f-aea3-cf7f3bb4e44c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Solutions for every skin"],
+                        "id": "2fb6bafd-e3c2-4858-86b2-99a7ba656d4c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A short range of skincare essentials — a cleanser, a serum, a cream, an SPF — made for every skin, and nothing it does not need."
+                        ],
+                        "id": "1e60a452-415d-43ee-afc7-9bcd3a35ef32",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold uppercase tracking-wide text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": ["Shop the ritual"],
+                        "id": "02b2a18e-8aa0-40ee-90f9-e7baedd188ee",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "fad0344e-74ff-4e74-a2b8-9538efd53c95",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "b44ce723-f960-4b99-af80-269d02e58383",
+                "ord": "a1"
+              }
+            ],
+            "id": "47d90f94-5721-484b-a18a-6502c59f386b",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-6xl",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @3xl:grid-cols-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-3 bg-base-100",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1590923801255-05c5e06536f4?w=1400&q=80",
+                              "alt": "A soft cleansing foam texture",
+                              "loading": "lazy"
+                            },
+                            "id": "f932cf4b-a96c-43e6-b0ed-cf5346f2e8d7",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-sm font-semibold uppercase tracking-wide text-base-content",
+                            "children": ["Cleanse"],
+                            "id": "3c22ef9b-1673-4b11-b73b-b6d3ae38954f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "cb8a9552-794f-4a06-95ed-063f28dda64c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-3 bg-base-100",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1670201202961-dce15b9e6939?w=1400&q=80",
+                              "alt": "A woman pressing a treatment essence into her skin",
+                              "loading": "lazy"
+                            },
+                            "id": "4f2d1bac-bd33-4a7c-bd7e-1f169f418272",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-sm font-semibold uppercase tracking-wide text-base-content",
+                            "children": ["Treat"],
+                            "id": "b9ff8cf0-468c-466c-b39f-3ed1faeb49b4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d169ee28-22d6-4544-8624-5efd6f28b82d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-3 bg-base-100",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1585945037805-5fd82c2e60b1?w=1400&q=80",
+                              "alt": "A swatch of moisturizing cream on a warm ground",
+                              "loading": "lazy"
+                            },
+                            "id": "71fc562a-2f55-4263-b361-baccbb997064",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-sm font-semibold uppercase tracking-wide text-base-content",
+                            "children": ["Moisturize"],
+                            "id": "31d3b29a-78d9-4225-8a87-69d1b180e932",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "961557b5-971d-4841-b0df-c9b86d6966d2",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-3 bg-base-100",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1683408640631-2c99fff964d7?w=1400&q=80",
+                              "alt": "A calm face at rest, skin clear and even",
+                              "loading": "lazy"
+                            },
+                            "id": "dd7c180a-bd0c-4850-a2b5-083c0a9d2d97",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-center text-sm font-semibold uppercase tracking-wide text-base-content",
+                            "children": ["Protect"],
+                            "id": "57be42ae-4d24-4d3e-9577-90459e07670f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "0b1b9ae6-5e6b-45c6-84d4-960784058f68",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "fe81c83a-57f5-4cb2-b701-d65baa72078b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "69991f25-fe09-40b0-a741-1576bd309cdb",
+                "ord": "a0"
+              }
+            ],
+            "id": "cfa1ce1c-8626-4037-a35c-cfe7b8b2c3e9",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Best sellers"],
+                    "id": "a6951e6b-cc70-4be5-a8dd-382b97d8ae80",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "f2398f51-8b94-46bd-8d1a-f0b192050143",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "d54998b2-12ae-47ec-94ad-dca51ba655eb",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "cfcff776-5186-4c81-bda4-80e7a579137a",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "0cdee406-a839-4024-bd34-8a6f41af6817",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "247ffef9-52a4-4f33-82c2-b34b6fa2b99b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5235cef4-88c4-4bfe-aeae-96a505ffed4a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "3ee5a4e9-674e-437b-969b-9a3bc7b4a10b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "da2d44dc-8043-4363-867f-e728d2f7bfc5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "08e39fad-4c73-4f3e-8d61-accaea0cbdcc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b809704e-d62f-4aa5-87e5-3af328864a33",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "6bf50e89-2809-48d7-a0d8-6da0bc90dc6e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "abd1c18b-dbe8-4e87-8f24-d79b9c8efb6c",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "ba5204dc-7444-4cb2-bb35-2e5f2bf1a6da",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1670201203291-e719f27d1e0e?w=1400&q=80",
+                  "alt": "Essence poured from a frosted bottle onto the back of a hand",
+                  "loading": "lazy"
+                },
+                "id": "eddfdd13-a479-41d7-a034-def16fda0551",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["The morning ritual"],
+                        "id": "45021da2-0c6a-45f4-afa2-a906e411b210",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Four steps, five minutes: cleanse, treat, moisturize, protect. The order is the whole method — each step earns its place, and there is nothing to add."
+                        ],
+                        "id": "4da45ad4-7312-4ab4-9bbc-f7770ed4171d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold uppercase tracking-wide text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": ["See the routine"],
+                        "id": "616a3fbc-b8bc-4460-8374-a4af9c95887e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "340f8778-358b-4579-b699-949b12754e0d",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "eba60560-f13c-4b9d-8bb5-266ce41fb11a",
+                "ord": "a1"
+              }
+            ],
+            "id": "1f9cae82-adfd-4999-9bc0-57f6f3052237",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Treat"],
+                    "id": "c59bed57-6d60-4bbb-b457-e679d389f516",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "e7d8723f-453e-4641-98e0-11a55ef98269",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "9bbb8b68-b5c8-4413-9c43-c4c853c5962e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "d2716386-29d8-4b27-bfb4-96455a2c8d5b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "58b564a8-9813-4aa4-a7d8-bfcda25a145c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "df45387b-5225-4e77-a2fd-35daedba87ba",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "0d2d926b-142a-4005-a29d-12fc66c95a54",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "6fef9820-04ee-4ff5-b5cc-5b31ad49caee",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "9d990515-3228-4db6-9221-2e18ed13a072",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "f3e09311-f10b-4413-b910-879737aca9a0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "4c69391e-fbaf-4945-b4f1-fe812f82ee45",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "355813bd-2a23-4984-b3e7-b2f290840597",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.treat"
+                },
+                "id": "f6c77f8a-653e-4183-ad3e-10fe897ef1e9",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "6e427a1d-b315-4aa8-8d2f-e1c3c808d3dd",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1643379855542-82c0c7483f3a?w=1400&q=80",
+                  "alt": "A close portrait of bare skin with two dabs of cream",
+                  "loading": "lazy"
+                },
+                "id": "1d2cd03a-4aaa-4ef4-a88d-d7024a32ae71",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-5xl",
+                        "children": ["Made for every skin"],
+                        "id": "91951598-03e4-47de-a7d8-8f70fb0ef394",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "No line for oily, no line for dry, no ten-step maze. One considered range that works across skin types, ages and seasons — because most skin wants less, done well."
+                        ],
+                        "id": "45fa4e76-0e61-41d4-a3d0-7ad000ac626d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-semibold uppercase tracking-wide text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/about"
+                        },
+                        "children": ["Read our approach"],
+                        "id": "ccb3ff2b-a4a8-480f-a605-b3d12394bb81",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "b1d02916-22bd-4fde-8c70-0230563e7363",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "e3139416-1b6b-464f-8bfc-f6b0779e9c46",
+                "ord": "a1"
+              }
+            ],
+            "id": "1d156319-368e-492f-84a9-ccb712352bea",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-primary text-primary-content @container px-6 py-24 @3xl:py-32",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-4xl flex-col items-center gap-6 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-3xl font-bold uppercase leading-tight tracking-tight @3xl:text-5xl",
+                    "children": [
+                      "Nue is a skincare studio building a calmer, simpler routine — a short range of essentials, made for every skin, and nothing you do not need."
+                    ],
+                    "id": "4cea5481-4837-4beb-8623-9d23115e5d45",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "693d97ef-3645-4b1b-a975-7c54987ac9f0",
+                "ord": "a0"
+              }
+            ],
+            "id": "8a8de2e7-144c-4231-a3e2-855e19db33a7",
+            "ord": "a6"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Nue Skincare",
+      "seoDescription": "Browse everything Nue Skincare makes, with prices and options at a glance. Premium skincare.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "da79a1f2-d320-4d68-b515-3b96df0ee6c9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Shop the range"],
+                    "id": "1801480c-a0d4-4dc4-bc9a-1645852a12d8",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The whole of Nue in one place — cleanse, treat, moisturize, protect, and the few considered extras around them. Filter by step or sort however you like; every product here is made for every skin, and nothing it does not need."
+                    ],
+                    "id": "c7ac593b-9304-4159-9371-5b479e9e3fd3",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9d8185c9-6eb5-4a2f-91fb-239e3ac4d4a1",
+                "ord": "a0"
+              }
+            ],
+            "id": "08d54c79-e20a-487c-8789-9f4d4c94506d",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "1a4c04e6-fd95-4df2-8dd6-4541a118bfeb",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Nue Skincare",
+      "seoDescription": "Explore the collections at Nue Skincare, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7c6e436e-d1dc-4e1b-af4b-f82f25dc1240",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The range"],
+                    "id": "32536d72-6b11-4aad-8963-78112595a3fd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Cleanse, treat, moisturize, protect — and the few considered extras around them, grouped the way a routine is actually built. Start where your skin needs the most help; every product here is made for every skin, and nothing it does not need."
+                    ],
+                    "id": "4f54ccad-1b88-45bd-872a-9b7aa117ae72",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e9fb8710-63d1-46eb-a132-ec1ec70eddf8",
+                "ord": "a0"
+              }
+            ],
+            "id": "79e7c86d-b232-4b75-939b-5825f2832924",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "7298483d-5197-4be6-8ad1-e77e58391d08",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Nue Skincare",
+      "seoDescription": "Review what is in your cart and check out securely at Nue Skincare.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f775f03a-66da-4d57-bc0c-fa586470aa7d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "022d9967-0d0b-4849-8259-698df0f770ca",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Complimentary carbon-neutral shipping on every order, a few samples tucked in to try something new, and 30 days to return anything — opened or not — for a full refund. Skincare is personal; take your time deciding."
+                    ],
+                    "id": "29e6fd0b-3c38-49ee-8ae2-bcdadf6669c1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7e8c39e1-88dd-4f1c-8394-7963321b5d73",
+                "ord": "a0"
+              }
+            ],
+            "id": "6f883c43-1358-4106-a471-971384ef2958",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "f10b5d22-0783-417a-8e3d-02495592d71b",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Nue Skincare",
+      "seoDescription": "Search Nue Skincare for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1b030110-d811-4d2f-936f-a38fcfe428e0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search Nue"],
+                    "id": "7e07c156-9cc3-4260-a2a1-c475666668d4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a step, an ingredient, or something you read once? Search the whole range and the Journal below — a barrier serum, an SPF that leaves no cast, or just where to start."
+                    ],
+                    "id": "0029b23b-1683-41e0-ad59-8abb45a09998",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "fffbeaa4-61fa-459e-b487-af71462d3432",
+                "ord": "a0"
+              }
+            ],
+            "id": "b19a9804-b1af-4c85-a9ca-ba47bca2d8c1",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "eedc1570-6a47-4046-aed6-f4b48c219b86",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Nue Skincare",
+      "seoDescription": "Stories, guides and notes from Nue Skincare.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "eed0c873-8f2d-4d0f-a9f1-e2d29fad76fe",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Nue Journal"],
+                    "id": "0317c83c-ecb3-4134-bc33-ccf111d8d4dd",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Plain notes on skin — what a routine actually needs, what each step is for, and why less, done well, beats a shelf of things you will not keep up. No trends, no jargon, just what works."
+                    ],
+                    "id": "41bd7c5d-a09b-431c-9cef-3c552401eb4e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "139416d9-b5d2-4705-a219-02dfd933df2a",
+                "ord": "a0"
+              }
+            ],
+            "id": "c0438be2-efa6-4d8f-99f9-82d28f43ecac",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "087e1e69-79ae-4920-8f02-c2d73c9bee9e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "e9bbacbb-e4d2-44a8-82d1-9bd6c23c02f6",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "12017542-fb83-4afa-b2bd-b95592b64f12",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "badec8ff-f2a5-41e2-8254-99c23baacd48",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "2cdcec91-a09b-4ae6-8cae-1a8b94b44723",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "9e7e9d18-f90c-4a02-ab14-d2c10a86fd3c",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d380ef8f-be71-48bb-a01c-517760adf3ee",
+                "ord": "a0"
+              }
+            ],
+            "id": "783cad3a-0b4a-4aca-b08c-dc75a1f81d21",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Nue Skincare",
+      "seoDescription": "Why Nue Skincare keeps its range short — the thinking, the formulas and the skin-first approach behind every essential.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "d1db18c7-83eb-446c-9b71-980e2025307c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["About Nue"],
+                    "id": "1ce890ea-ae6a-46bb-910c-1117ffc6a6ed",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Nue is a skincare studio with a short memory for trends and a long one for what actually works. We make a small range of essentials — a cleanser, a serum, a moisturizer, an SPF, and a handful of things around them — formulated to be gentle enough for daily use and honest about what each one does."
+                    ],
+                    "id": "f31a6d08-fd16-4712-bd47-a1aa3ed3f753",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "There is no line for oily skin and no line for dry, no ten-step maze, and nothing you do not need. Just a considered routine that works across skin types, ages and seasons — packaged plainly, priced fairly, and made for every skin. That is the whole idea: solutions for every skin."
+                    ],
+                    "id": "f24d0d5b-ae8e-4b5d-8d35-f131f57dc4e8",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "0aeceadf-2296-4a8d-9381-1025e2025b71",
+                "ord": "a0"
+              }
+            ],
+            "id": "6082d6fd-b3da-4c48-8cfa-d8273b7c6b42",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Nue Skincare",
+      "seoDescription": "Get in touch with Nue Skincare — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "505f6c53-54e5-4b74-ad01-8252cc69593c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-5xl font-bold uppercase tracking-tight text-base-content @2xl:text-6xl",
+                    "children": ["Talk to us"],
+                    "id": "314100ac-a41a-46ba-8dce-bf8127cdfa76",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Not sure where to start, or which of two to choose? Tell us about your skin and what you are hoping to change, and a real person — not a script — will point you to the shortest routine that will do it."
+                    ],
+                    "id": "36695b7b-f6d2-4c62-8eb0-3ac9e4d95bf5",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@nueskincare.example"
+                    },
+                    "children": ["Email the studio"],
+                    "id": "7417f4e2-d312-464a-9641-33aa9cff7459",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "1425e525-3eb7-4953-b44c-65bd39a37f7d",
+                "ord": "a0"
+              }
+            ],
+            "id": "d1c909db-cbe9-4537-ba01-3f7894ee34cd",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Nue Skincare",
+      "seoDescription": "Product details at Nue Skincare — premium skincare, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "d787a87d-6db5-4ac4-b922-e43847891326",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-8 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-widest text-base-content",
+                            "children": ["Nue Skincare"],
+                            "id": "025f0ccb-4e67-481f-bc45-9e1e882665ee",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "d653a322-20a4-43eb-b03f-1cfccec68637",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "50ca68e8-8b39-4330-8cca-536cf04b7c7f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-base-content line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "3cbe08d1-d059-4672-9ad4-16e9142458cb",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "43fbce81-9a22-4f72-a8dd-70793689d281",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2d929e54-d6ef-4984-92cb-716046587add",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "6bd4b79b-2482-4b9b-9232-6b6357103a65",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "8d9ad180-e10c-46b3-b7fd-844614ae35c1",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "3fc5236d-c054-4551-a4a3-e29aec53d2cc",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "0ca4b886-ece6-4d04-91d8-33ad150d6817",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "624eced2-e518-44d2-8c6c-ef33a6217f1a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "a7e9d667-cc9b-4f59-a23e-d151ef4becaf",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "6664a572-f505-403a-9bca-16f9e3966372",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "cb031bc2-3906-47fc-845b-6b509ac047dd",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-1 flex flex-col gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["Ingredients"],
+                                "id": "1bc9b659-81da-4370-af66-4b52cab349d2",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Every Nue formula is fragrance-free, non-comedogenic and built from a short list of ingredients that earn their place — humectants, ceramides and gentle actives at levels skin can actually use. No essential oils, no drying alcohols, no colour, and nothing added to make a jar look busy on a shelf."
+                                ],
+                                "id": "7c5ea4a8-e4f1-4b9e-a367-5b281a473bfa",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6c409eb8-fdf1-4b54-8b9b-268b25e2bc8a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["How to use"],
+                                "id": "5ec66259-6fed-41bc-88fd-0f6b9ef6862c",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Work into clean skin in the order of the ritual — cleanse, treat, moisturize, then protect in the morning — a little at a time, morning and night as the step calls for. Introduce one new product at a time and give it a fortnight: skin changes slowly, and the results that last are the ones that arrive quietly."
+                                ],
+                                "id": "294bfb0a-a9c9-4ce9-9bd6-c8cbc98d590e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8b580e78-937d-4b2c-a0c3-490f13ba6441",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["Shipping & returns"],
+                                "id": "9bba2263-6082-4e6c-bc32-021d69c0c789",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Complimentary carbon-neutral shipping on orders over $50, dispatched within two business days and tracked to your door. If something is not right for your skin, return it within 30 days — opened or not — for a full refund. Skincare is personal, and finding your routine should feel that way."
+                                ],
+                                "id": "e6975308-5248-447b-81c2-f96583d78276",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f04360c1-2fdf-44ad-af11-1b5898e4145a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "7800f14f-d26e-4acd-b9d5-c194879318e7",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "9fbd07d4-f822-4f48-b9ad-b9ba17c12baf",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "55bb229a-df6e-4bcc-8657-5aef6c48d935",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "0b8be5cb-0339-480c-9e74-ceb04b4d8d67",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["You may also like"],
+                    "id": "ad8d4d10-051f-44e9-9609-b75ca0e8a279",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "54c25364-fb3a-48f4-95cd-a1e73eeb3af4",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "ce56fd85-2585-4b93-9119-d79d835cef01",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "cb5fb82b-cb76-4673-9195-332c68b4accc",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "0df92bd1-fbfc-45d3-b499-9e398b00f857",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4ee5f25e-e600-4df5-a6d1-b5cf19c68597",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "bf7e3858-ac9e-4a1d-a549-2d9a3ae7b6a0",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "2722b4c5-e409-4bb1-86ca-40a71b70c421",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "5f0fa0b9-aade-4b37-bbe5-9902d618834b",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "0faa630b-bcf6-4752-bdab-0b3a1267fd1d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5342dd9e-fb48-4b67-8a9a-ef9ae61d4d4e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "72016055-f4e4-4b51-ae16-25901c31431d",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "45e58cd5-1c2c-4e61-9af1-cf72722fcd3b",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "1928bf6e-239e-457d-a61d-4e9cf1e8b28e",
+            "ord": "a1"
+          }
+        ],
+        "id": "e66a3399-5581-4b9d-bb4e-30a2823e51df"
+      }
+    }
+  ],
+  "theme": {
+    "name": "bare",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(96% 0.006 85)",
+      "--color-base-200": "oklch(93% 0.01 82)",
+      "--color-base-300": "oklch(88% 0.014 80)",
+      "--color-base-content": "oklch(18% 0.008 70)",
+      "--color-primary": "oklch(18% 0.006 70)",
+      "--color-secondary": "oklch(45% 0.012 75)",
+      "--color-accent": "oklch(60% 0.02 75)",
+      "--color-neutral": "oklch(22% 0.008 70)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.25rem",
+      "--radius-field": "0.125rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Oswald\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.006 70)",
+      "--color-secondary-content": "oklch(98% 0.01 75)",
+      "--color-accent-content": "oklch(15% 0.02 75)",
+      "--color-neutral-content": "oklch(98% 0.008 70)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(60% 0.02 75)",
+      "--color-highlight-content": "oklch(15% 0.02 75)",
+      "--color-border": "oklch(88% 0.014 80)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Oswald\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(16% 0.008 70)",
+      "--color-base-200": "oklch(13% 0.008 70)",
+      "--color-base-300": "oklch(10% 0.008 70)",
+      "--color-base-content": "oklch(94% 0.008 85)",
+      "--color-primary": "oklch(95% 0.006 85)",
+      "--color-secondary": "oklch(70% 0.012 75)",
+      "--color-accent": "oklch(66% 0.02 75)",
+      "--color-neutral": "oklch(30% 0.008 70)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.006 85)",
+      "--color-secondary-content": "oklch(15% 0.012 75)",
+      "--color-accent-content": "oklch(15% 0.02 75)",
+      "--color-neutral-content": "oklch(98% 0.008 70)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(66% 0.02 75)",
+      "--color-highlight-content": "oklch(15% 0.02 75)",
+      "--color-border": "oklch(10% 0.008 70)"
+    }
+  }
+}

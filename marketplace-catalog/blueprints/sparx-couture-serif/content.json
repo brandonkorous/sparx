@@ -1,0 +1,233 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "winter-high-jewellery",
+    "status": "published",
+    "body": {
+      "title": "The Winter High Jewellery",
+      "excerpt": "A first look at this winter’s numbered pieces — where the stones came from, and why there are so few of them.",
+      "featuredImage": {
+        "$asset": "post-winter-high-jewellery"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A high-jewellery run begins with the stones, not the drawings. We buy a small parcel, lay it out under a north light, and see what it wants to become — which is why we can never tell you in advance exactly how many pieces a season will hold."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Matched by eye, set by hand"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every stone in a Colette bracelet is chosen against its neighbours for cut and colour, then grain-set by one setter from end to end. A machine could set faster; it could not match the line the way an eye does, and the line is the whole point."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Few by necessity"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When one person answers for every setting, the numbers stay small on their own. We would rather make twelve pieces we can stand behind for a lifetime than a hundred we cannot, and the winter run is exactly that: few, and finished properly."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Each piece leaves the atelier numbered, with a note of where its principal stone was cut. That note is not marketing — it is the reason to buy the real thing."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "the-making-of-no3",
+    "status": "published",
+    "body": {
+      "title": "The making of Nº3 Black Rose & Oud",
+      "excerpt": "How the house’s evening scent came together — real oud, a dark rose, and eighteen months of getting the balance wrong.",
+      "featuredImage": {
+        "$asset": "post-making-no3"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Nº3 took the longest of the four to settle. Oud is a difficult material — powerful, unpredictable, and expensive enough that every trial batch is a real decision — and pairing it with a rose dark enough to hold its own without turning to jam took most of two years."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Composed in small litres"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We compose in small quantities, let each version rest, and wear it for a week before changing a single note. A scent behaves differently on skin an hour in than it does on a blotter, and the only honest test is time."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why it costs what it costs"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Real oud, a natural rose absolute and an amber base are what make Nº3 warm and dense rather than sharp and loud. There is no cheaper way to that particular warmth, so we did not look for one."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you are not sure it is you, start with the discovery set. A week with a 2ml vial will tell you more than any description we could write."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "as-composed-by-the-founder",
+    "status": "published",
+    "body": {
+      "title": "As composed by the founder",
+      "excerpt": "The pieces our founder wears every day, and the single rule behind the whole house: buy less, choose better, keep it for good.",
+      "featuredImage": {
+        "$asset": "post-founder"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "People ask which piece to start with, and the honest answer is: the one you will actually wear. A signet worn every day is worth more than a necklace kept in a box for occasions that never quite arrive."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "One good thing at a time"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The house was built on a plain idea — buy less, choose better, and keep it for good. A collection assembled slowly, around a few pieces worth keeping, reads as yours in a way a whole set bought at once never will."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Made to be lived in"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Fine jewellery is not fragile. Gold takes a scratch and polishes back; silver softens into a patina; a good stone has survived far worse than a dinner table. Wear it. That is what it is for."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When you are ready, come to the atelier. We would rather help you choose one piece you will keep than sell you three you will not."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

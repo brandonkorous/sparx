@@ -1,0 +1,814 @@
+{
+  "categories": [
+    {
+      "handle": "beds-blankets",
+      "name": "Beds & Blankets",
+      "description": "Orthopedic beds, calming donuts and washable blankets.",
+      "featured": true
+    },
+    {
+      "handle": "collars-leads",
+      "name": "Collars & Leads",
+      "description": "Collars, no-pull harnesses and reflective leads.",
+      "featured": true
+    },
+    {
+      "handle": "toys",
+      "name": "Toys",
+      "description": "Rope tugs, catnip kickers and the toys that survive.",
+      "featured": true
+    },
+    {
+      "handle": "bowls-feeding",
+      "name": "Bowls & Feeding",
+      "description": "Slow-feed and stoneware bowls for tidier mealtimes.",
+      "featured": false
+    },
+    {
+      "handle": "treats",
+      "name": "Treats",
+      "description": "Grain-free training treats and baked biscuit bites.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New Arrivals",
+      "description": "The latest additions to the pack.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "orthopedic-bolster-dog-bed",
+        "no-pull-adjustable-harness",
+        "reflective-city-lead",
+        "catnip-kicker-toy",
+        "grain-free-training-treats"
+      ]
+    },
+    {
+      "handle": "best-sellers",
+      "name": "Best Sellers",
+      "description": "The ones that keep tails wagging.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "orthopedic-bolster-dog-bed",
+        "calming-donut-cat-bed",
+        "no-pull-adjustable-harness",
+        "grain-free-training-treats"
+      ]
+    },
+    {
+      "handle": "beds-blankets",
+      "name": "Beds & Blankets",
+      "description": "Somewhere soft to land, for pets on both ends of the giveback.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "orthopedic-bolster-dog-bed",
+        "calming-donut-cat-bed",
+        "cozy-fleece-pet-blanket"
+      ]
+    },
+    {
+      "handle": "collars-leads",
+      "name": "Collars & Leads",
+      "description": "The kit that gets a dog out the door and home again.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "everyday-webbing-collar",
+        "no-pull-adjustable-harness",
+        "reflective-city-lead"
+      ]
+    },
+    {
+      "handle": "toys",
+      "name": "Toys",
+      "description": "Built to be chased, thrown and wrestled.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["rope-tug-toy", "catnip-kicker-toy"]
+    },
+    {
+      "handle": "giveback",
+      "name": "The Giveback Edit",
+      "description": "The pieces that put the most into a shelter with every order.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "orthopedic-bolster-dog-bed",
+        "calming-donut-cat-bed",
+        "everyday-webbing-collar",
+        "stainless-slow-feed-bowl",
+        "ceramic-bowl-set",
+        "rope-tug-toy",
+        "grain-free-training-treats",
+        "peanut-butter-biscuit-bites"
+      ]
+    }
+  ],
+  "products": [
+    {
+      "handle": "orthopedic-bolster-dog-bed",
+      "title": "Orthopedic Bolster Dog Bed",
+      "description": "The bed a dog sinks into and does not want to leave. A thick orthopedic foam base takes the pressure off older hips and hard floors, and raised bolster sides give a chin-rester somewhere to lean. The whole cover unzips and machine-washes, because a bed that cannot be cleaned is a bed you end up throwing away. Buy one, and a shelter dog gets a warm bed of their own.",
+      "status": "active",
+      "productType": "Beds",
+      "vendor": "Rally",
+      "tags": ["bed", "orthopedic", "dog", "washable", "giveback"],
+      "categoryHandles": ["beds-blankets"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "beds-blankets", "giveback"],
+      "seoTitle": "Orthopedic Bolster Dog Bed — washable memory-foam dog bed",
+      "seoDescription": "A supportive orthopedic foam dog bed with bolstered sides and a fully machine-washable cover.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small"
+            },
+            {
+              "value": "Medium"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        },
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oatmeal"
+            },
+            {
+              "value": "Slate"
+            },
+            {
+              "value": "Moss"
+            },
+            {
+              "value": "Clay"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RLY-BED-BOL-S",
+          "priceCents": 8900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small",
+            "Colour": "Oatmeal"
+          }
+        },
+        {
+          "sku": "RLY-BED-BOL-M",
+          "priceCents": 11900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium",
+            "Colour": "Oatmeal"
+          }
+        },
+        {
+          "sku": "RLY-BED-BOL-L",
+          "priceCents": 14900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large",
+            "Colour": "Oatmeal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "orthopedic-bolster-dog-bed",
+          "isPrimary": true,
+          "alt": "The Orthopedic Bolster Dog Bed"
+        }
+      ]
+    },
+    {
+      "handle": "calming-donut-cat-bed",
+      "title": "Calming Donut Cat Bed",
+      "description": "A deep, plush ring a cat or small dog can burrow into and disappear. The high faux-fur sides feel like a curled-up litter-mate, which is exactly why anxious pets settle so fast in one. Non-slip base, a cover that washes clean, and a shape that survives being kneaded into oblivion. One bought means one donut bed given to a rescue cat who has never had a soft place to sleep.",
+      "status": "active",
+      "productType": "Beds",
+      "vendor": "Rally",
+      "tags": ["bed", "cat", "calming", "plush", "giveback"],
+      "categoryHandles": ["beds-blankets"],
+      "collectionHandles": ["best-sellers", "beds-blankets", "giveback"],
+      "seoTitle": "Calming Donut Cat Bed — plush anti-anxiety pet bed",
+      "seoDescription": "A deep, plush faux-fur donut bed that helps anxious cats and small dogs settle and sleep.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Cream"
+            },
+            {
+              "value": "Grey"
+            },
+            {
+              "value": "Blush"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RLY-BED-DON-CRM",
+          "priceCents": 5400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Cream"
+          }
+        },
+        {
+          "sku": "RLY-BED-DON-GRY",
+          "priceCents": 5400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Grey"
+          }
+        },
+        {
+          "sku": "RLY-BED-DON-BLS",
+          "priceCents": 5400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Blush"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "calming-donut-cat-bed",
+          "isPrimary": true,
+          "alt": "The Calming Donut Cat Bed"
+        }
+      ]
+    },
+    {
+      "handle": "cozy-fleece-pet-blanket",
+      "title": "Cozy Fleece Pet Blanket",
+      "description": "The blanket that saves your sofa and your sanity. A double-sided sherpa fleece that pets love to nest in and hair brushes straight off, sized to drape a bed, a crate or the good armchair they have already claimed. Warm, washable and quietly indestructible. Buy one, give one — a shelter animal gets a blanket that finally smells like theirs.",
+      "status": "active",
+      "productType": "Blankets",
+      "vendor": "Rally",
+      "tags": ["blanket", "fleece", "washable", "giveback"],
+      "categoryHandles": ["beds-blankets"],
+      "collectionHandles": ["beds-blankets"],
+      "seoTitle": "Cozy Fleece Pet Blanket — double-sided sherpa pet blanket",
+      "seoDescription": "A warm, washable double-sided sherpa fleece blanket for beds, crates and sofas.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oat"
+            },
+            {
+              "value": "Charcoal"
+            },
+            {
+              "value": "Rust"
+            },
+            {
+              "value": "Sage"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RLY-BLK-FLC-OAT",
+          "priceCents": 3200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Oat"
+          }
+        },
+        {
+          "sku": "RLY-BLK-FLC-CHR",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Charcoal"
+          }
+        },
+        {
+          "sku": "RLY-BLK-FLC-RST",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Rust"
+          }
+        },
+        {
+          "sku": "RLY-BLK-FLC-SGE",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Sage"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cozy-fleece-blanket",
+          "isPrimary": true,
+          "alt": "The Cozy Fleece Pet Blanket"
+        }
+      ]
+    },
+    {
+      "handle": "everyday-webbing-collar",
+      "title": "Everyday Webbing Collar (3-Pack)",
+      "description": "The collar you stop thinking about, three times over. Soft-edged recycled webbing that will not chafe, a quick-release buckle that actually holds, and a welded D-ring that has never once let go. Comes as a three-pack so there is a clean one on while the muddy one dries. Every pack bought puts a collar and an ID tag on a shelter dog waiting to be adopted.",
+      "status": "active",
+      "productType": "Collars",
+      "vendor": "Rally",
+      "tags": ["collar", "dog", "recycled", "multipack", "giveback"],
+      "categoryHandles": ["collars-leads"],
+      "collectionHandles": ["collars-leads", "giveback"],
+      "seoTitle": "Everyday Webbing Collar 3-Pack — recycled dog collars",
+      "seoDescription": "A three-pack of soft recycled-webbing dog collars with quick-release buckles and welded D-rings.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Small"
+            },
+            {
+              "value": "Medium"
+            },
+            {
+              "value": "Large"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RLY-COL-EVR-S",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Small"
+          }
+        },
+        {
+          "sku": "RLY-COL-EVR-M",
+          "priceCents": 3800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Medium"
+          }
+        },
+        {
+          "sku": "RLY-COL-EVR-L",
+          "priceCents": 3800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "Large"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "everyday-webbing-collar",
+          "isPrimary": true,
+          "alt": "The Everyday Webbing Collar 3-Pack"
+        }
+      ]
+    },
+    {
+      "handle": "no-pull-adjustable-harness",
+      "title": "No-Pull Adjustable Harness",
+      "description": "Walks that stop being a tug-of-war. A front-clip design gently turns a lunging dog back toward you instead of letting them haul, and five points of adjustment mean it actually fits the dog you have — deep-chested, barrel-bodied or somewhere in between. Padded where it presses, breathable where it counts, reflective for the dark mornings. One sold, one given to a rescue dog learning to walk on a lead for the first time.",
+      "status": "active",
+      "productType": "Harnesses",
+      "vendor": "Rally",
+      "tags": ["harness", "no-pull", "dog", "reflective", "giveback"],
+      "categoryHandles": ["collars-leads"],
+      "collectionHandles": ["new-arrivals", "best-sellers", "collars-leads"],
+      "seoTitle": "No-Pull Adjustable Harness — front-clip dog harness",
+      "seoDescription": "A padded front-clip no-pull dog harness with five-point adjustment and reflective trim.",
+      "options": [
+        {
+          "name": "Size",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "XS"
+            },
+            {
+              "value": "S"
+            },
+            {
+              "value": "M"
+            },
+            {
+              "value": "L"
+            },
+            {
+              "value": "XL"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RLY-HAR-NPL-XS",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XS"
+          }
+        },
+        {
+          "sku": "RLY-HAR-NPL-S",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "S"
+          }
+        },
+        {
+          "sku": "RLY-HAR-NPL-M",
+          "priceCents": 4600,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "M"
+          }
+        },
+        {
+          "sku": "RLY-HAR-NPL-L",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "L"
+          }
+        },
+        {
+          "sku": "RLY-HAR-NPL-XL",
+          "priceCents": 4600,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Size": "XL"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "no-pull-harness",
+          "isPrimary": true,
+          "alt": "The No-Pull Adjustable Harness"
+        }
+      ]
+    },
+    {
+      "handle": "reflective-city-lead",
+      "title": "Reflective City Lead",
+      "description": "A lead built for real streets. A full reflective weave lights up in headlights the whole length, a padded neoprene handle saves your hand on the pullier days, and an extra traffic handle down low pulls a dog in close at a crossing. Rated well past the weight of the dog on the end of it. Buy one, and a shelter gets a lead to walk a dog who rarely gets to go outside.",
+      "status": "active",
+      "productType": "Leads",
+      "vendor": "Rally",
+      "tags": ["lead", "leash", "reflective", "dog", "giveback"],
+      "categoryHandles": ["collars-leads"],
+      "collectionHandles": ["new-arrivals", "collars-leads"],
+      "seoTitle": "Reflective City Lead — padded reflective dog leash",
+      "seoDescription": "A fully reflective dog lead with a padded handle and a low traffic handle for busy streets.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Marigold"
+            },
+            {
+              "value": "Navy"
+            },
+            {
+              "value": "Sage"
+            },
+            {
+              "value": "Coral"
+            },
+            {
+              "value": "Charcoal"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RLY-LED-REF-MAR",
+          "priceCents": 2900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Marigold"
+          }
+        },
+        {
+          "sku": "RLY-LED-REF-NVY",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Navy"
+          }
+        },
+        {
+          "sku": "RLY-LED-REF-SGE",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Sage"
+          }
+        },
+        {
+          "sku": "RLY-LED-REF-CRL",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Coral"
+          }
+        },
+        {
+          "sku": "RLY-LED-REF-CHR",
+          "priceCents": 2900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Charcoal"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "reflective-city-lead",
+          "isPrimary": true,
+          "alt": "The Reflective City Lead"
+        }
+      ]
+    },
+    {
+      "handle": "stainless-slow-feed-bowl",
+      "title": "Stainless Slow-Feed Bowl",
+      "description": "For the dog who inhales dinner in nine seconds flat. A maze of stainless ridges turns a gulped meal into a ten-minute puzzle, which is easier on the stomach and a lot easier on your carpet afterwards. One piece of food-grade steel — no plastic to scratch and harbour, no dishwasher it cannot handle. Every one bought feeds a shelter animal from a matching bowl.",
+      "status": "active",
+      "productType": "Bowls",
+      "vendor": "Rally",
+      "tags": ["bowl", "slow-feed", "stainless", "giveback"],
+      "categoryHandles": ["bowls-feeding"],
+      "collectionHandles": ["giveback"],
+      "seoTitle": "Stainless Slow-Feed Bowl — anti-gulp dog bowl",
+      "seoDescription": "A one-piece stainless steel slow-feed bowl that turns a gulped meal into a ten-minute puzzle.",
+      "variants": [
+        {
+          "sku": "RLY-BWL-SLW",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "stainless-slow-feed-bowl",
+          "isPrimary": true,
+          "alt": "The Stainless Slow-Feed Bowl"
+        }
+      ]
+    },
+    {
+      "handle": "ceramic-bowl-set",
+      "title": "Stoneware Bowl Set (2)",
+      "description": "The bowls you would actually leave out on the kitchen floor. A pair of hand-glazed stoneware dishes — one for food, one for water — heavy enough that a determined eater cannot skate them across the tiles, with a reactive glaze that means no two sets are quite the same. Dishwasher-safe and built to outlast a few enthusiastic dinners a day. One set bought, one given to a rescue.",
+      "status": "active",
+      "productType": "Bowls",
+      "vendor": "Rally",
+      "tags": ["bowl", "ceramic", "stoneware", "set", "giveback"],
+      "categoryHandles": ["bowls-feeding"],
+      "collectionHandles": ["giveback"],
+      "seoTitle": "Stoneware Bowl Set — hand-glazed ceramic pet bowls",
+      "seoDescription": "A weighted, hand-glazed stoneware pet bowl set — one for food, one for water — dishwasher-safe.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Marigold"
+            },
+            {
+              "value": "Sage"
+            },
+            {
+              "value": "Speckled Cream"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RLY-BWL-SET-MAR",
+          "priceCents": 4200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Marigold"
+          }
+        },
+        {
+          "sku": "RLY-BWL-SET-SGE",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Sage"
+          }
+        },
+        {
+          "sku": "RLY-BWL-SET-CRM",
+          "priceCents": 4200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Speckled Cream"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ceramic-bowl-set",
+          "isPrimary": true,
+          "alt": "The Stoneware Bowl Set"
+        }
+      ]
+    },
+    {
+      "handle": "rope-tug-toy",
+      "title": "Rope Tug Toy (3-Pack)",
+      "description": "The toy that survives the game it was made for. Thick, tightly-braided cotton rope in three shapes for three moods — a straight tug, a knotted ball, a ring for two dogs to argue over — and the loose fibres actually help floss teeth as they chew. Washable, and when one finally gives up there are two more in the pack. Buy one, give one to a shelter dog with nothing to play with.",
+      "status": "active",
+      "productType": "Toys",
+      "vendor": "Rally",
+      "tags": ["toy", "rope", "tug", "dog", "multipack", "giveback"],
+      "categoryHandles": ["toys"],
+      "collectionHandles": ["toys", "giveback"],
+      "seoTitle": "Rope Tug Toy 3-Pack — braided cotton dog rope toys",
+      "seoDescription": "A three-pack of tough braided cotton rope tug toys that help floss teeth as dogs chew.",
+      "variants": [
+        {
+          "sku": "RLY-TOY-ROP",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "rope-tug-toy",
+          "isPrimary": true,
+          "alt": "The Rope Tug Toy 3-Pack"
+        }
+      ]
+    },
+    {
+      "handle": "catnip-kicker-toy",
+      "title": "Catnip Kicker Toy (2-Pack)",
+      "description": "The one cat toy that actually gets used. A long, huggable kicker a cat can wrap all four legs around and bunny-kick to their heart’s content, stuffed with potent, single-origin catnip that keeps its kick. Tough double-stitched seams for the serious wrestlers, and two in every pack because one always ends up under the sofa. One bought means one given to a shelter cat who needs the enrichment most.",
+      "status": "active",
+      "productType": "Toys",
+      "vendor": "Rally",
+      "tags": ["toy", "cat", "catnip", "kicker", "multipack", "giveback"],
+      "categoryHandles": ["toys"],
+      "collectionHandles": ["new-arrivals", "toys"],
+      "seoTitle": "Catnip Kicker Toy 2-Pack — cat kicker toys with catnip",
+      "seoDescription": "A two-pack of double-stitched catnip kicker toys built for serious bunny-kicking cats.",
+      "variants": [
+        {
+          "sku": "RLY-TOY-KIK",
+          "priceCents": 1600,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "catnip-kicker-toy",
+          "isPrimary": true,
+          "alt": "The Catnip Kicker Toy 2-Pack"
+        }
+      ]
+    },
+    {
+      "handle": "grain-free-training-treats",
+      "title": "Grain-Free Training Treats",
+      "description": "The treats you can hand out all session without a second thought. Small, soft, low-calorie morsels a dog will work hard for, made from a short list of real ingredients — a named meat first, no grain, no fillers you cannot pronounce. Sized for fast, repeatable rewards so a training session stays a training session. Every bag bought feeds a shelter animal too.",
+      "status": "active",
+      "productType": "Treats",
+      "vendor": "Rally",
+      "tags": ["treats", "training", "grain-free", "dog", "giveback"],
+      "categoryHandles": ["treats"],
+      "collectionHandles": ["new-arrivals", "giveback"],
+      "seoTitle": "Grain-Free Training Treats — soft low-calorie dog treats",
+      "seoDescription": "Small, soft, grain-free training treats made from a short real-ingredient list, meat first.",
+      "options": [
+        {
+          "name": "Flavour",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Chicken"
+            },
+            {
+              "value": "Salmon"
+            },
+            {
+              "value": "Beef"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "RLY-TRT-TRN-CHK",
+          "priceCents": 1400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Chicken"
+          }
+        },
+        {
+          "sku": "RLY-TRT-TRN-SAL",
+          "priceCents": 1400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Salmon"
+          }
+        },
+        {
+          "sku": "RLY-TRT-TRN-BEF",
+          "priceCents": 1400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Flavour": "Beef"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "grain-free-training-treats",
+          "isPrimary": true,
+          "alt": "The Grain-Free Training Treats"
+        }
+      ]
+    },
+    {
+      "handle": "peanut-butter-biscuit-bites",
+      "title": "Peanut Butter Biscuit Bites",
+      "description": "A proper baked biscuit for the big moments — coming when called, sitting for a stranger, surviving a bath. Oven-baked in small batches with real peanut butter and pumpkin, no xylitol, no mystery. Crunchy enough to be a treat a dog takes seriously, and honestly good enough that you will want to know what is in them (it is on the bag). One bag bought, one given to a rescue.",
+      "status": "active",
+      "productType": "Treats",
+      "vendor": "Rally",
+      "tags": ["treats", "biscuit", "baked", "dog", "giveback"],
+      "categoryHandles": ["treats"],
+      "collectionHandles": ["giveback"],
+      "seoTitle": "Peanut Butter Biscuit Bites — baked peanut butter dog biscuits",
+      "seoDescription": "Small-batch oven-baked peanut butter and pumpkin dog biscuits, no xylitol, no fillers.",
+      "variants": [
+        {
+          "sku": "RLY-TRT-BIS",
+          "priceCents": 1200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "peanut-butter-biscuit-bites",
+          "isPrimary": true,
+          "alt": "The Peanut Butter Biscuit Bites"
+        }
+      ]
+    }
+  ]
+}

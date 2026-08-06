@@ -1,0 +1,525 @@
+{
+  "categories": [
+    {
+      "handle": "seating",
+      "name": "Seating",
+      "description": "Chairs, stools and benches.",
+      "featured": true
+    },
+    {
+      "handle": "lighting",
+      "name": "Lighting",
+      "description": "Lamps and pendants.",
+      "featured": true
+    },
+    {
+      "handle": "tabletop",
+      "name": "Tabletop",
+      "description": "Ceramic, stoneware and brass for the table.",
+      "featured": true
+    },
+    {
+      "handle": "textiles",
+      "name": "Textiles",
+      "description": "Throws and cushions in wool and mohair.",
+      "featured": true
+    },
+    {
+      "handle": "objects",
+      "name": "Objects",
+      "description": "The small things a room is made of.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New Arrivals",
+      "description": "The latest pieces from the workshop.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "oak-lounge-chair",
+        "travertine-side-table",
+        "linen-floor-lamp",
+        "stoneware-vase-set",
+        "mohair-cushion"
+      ]
+    },
+    {
+      "handle": "seating",
+      "name": "Seating",
+      "description": "Chairs and stools built to last a generation.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["oak-lounge-chair", "walnut-turned-stool"]
+    },
+    {
+      "handle": "lighting",
+      "name": "Lighting",
+      "description": "Warm, quiet light in linen and paper.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["linen-floor-lamp", "paper-shade-pendant"]
+    },
+    {
+      "handle": "tabletop",
+      "name": "Tabletop",
+      "description": "Hand-made objects a table earns over years.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "ceramic-carafe",
+        "stoneware-vase-set",
+        "cork-serving-tray",
+        "brass-candleholder"
+      ]
+    },
+    {
+      "handle": "textiles",
+      "name": "Textiles",
+      "description": "Wool and mohair for the sofa and the bed.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["wool-throw", "mohair-cushion", "leather-magazine-sling"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "oak-lounge-chair",
+      "title": "Nord Oak Lounge Chair",
+      "description": "A low lounge chair on a solid white-oak frame, hand-shaped and oiled, with a slung seat you sink into and a back angled for an evening rather than a meeting. Made to be re-upholstered, never replaced.",
+      "status": "active",
+      "productType": "Seating",
+      "vendor": "Atelier Nord",
+      "tags": ["oak", "lounge", "seating", "handmade"],
+      "categoryHandles": ["seating"],
+      "collectionHandles": ["new-arrivals", "seating"],
+      "seoTitle": "Nord Oak Lounge Chair — solid white-oak lounge chair",
+      "seoDescription": "A hand-shaped solid white-oak lounge chair with a slung, re-upholsterable seat.",
+      "options": [
+        {
+          "name": "Upholstery",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Natural linen"
+            },
+            {
+              "value": "Charcoal wool"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "ATN-CHAIR-LIN",
+          "priceCents": 129000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Upholstery": "Natural linen"
+          }
+        },
+        {
+          "sku": "ATN-CHAIR-WOL",
+          "priceCents": 139000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Upholstery": "Charcoal wool"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "oak-lounge-chair",
+          "isPrimary": true,
+          "alt": "The Nord Oak Lounge Chair"
+        }
+      ]
+    },
+    {
+      "handle": "walnut-turned-stool",
+      "title": "Walnut Turned Stool",
+      "description": "A little stool turned from a single billet of walnut — a seat, a side table, a step to the top shelf. Finished with hard wax oil that you can refresh with a cloth in five minutes.",
+      "status": "active",
+      "productType": "Seating",
+      "vendor": "Atelier Nord",
+      "tags": ["walnut", "stool", "seating", "handmade"],
+      "categoryHandles": ["seating"],
+      "collectionHandles": ["seating"],
+      "seoTitle": "Walnut Turned Stool — solid walnut stool",
+      "seoDescription": "A stool turned from a single billet of solid walnut, finished in hard wax oil.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Natural"
+            },
+            {
+              "value": "Smoked"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "ATN-STOOL-NAT",
+          "priceCents": 34000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Natural"
+          }
+        },
+        {
+          "sku": "ATN-STOOL-SMK",
+          "priceCents": 36000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Smoked"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "walnut-stool",
+          "isPrimary": true,
+          "alt": "The Walnut Turned Stool"
+        }
+      ]
+    },
+    {
+      "handle": "travertine-side-table",
+      "title": "Travertine Side Table",
+      "description": "A round side table cut from a single piece of unfilled travertine, its top honed smooth and its edges left soft. Heavy, cool to the touch, and completely at home beside the lounge chair.",
+      "status": "active",
+      "productType": "Tables",
+      "vendor": "Atelier Nord",
+      "tags": ["travertine", "stone", "table", "objects"],
+      "categoryHandles": ["objects"],
+      "collectionHandles": ["new-arrivals"],
+      "seoTitle": "Travertine Side Table — solid stone side table",
+      "seoDescription": "A round side table cut from a single piece of unfilled honed travertine.",
+      "variants": [
+        {
+          "sku": "ATN-SIDETABLE",
+          "priceCents": 68000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "travertine-side-table",
+          "isPrimary": true,
+          "alt": "The Travertine Side Table"
+        }
+      ]
+    },
+    {
+      "handle": "linen-floor-lamp",
+      "title": "Linen-Shade Floor Lamp",
+      "description": "A slim brass stem carrying a hand-sewn linen drum that throws a warm, even light. Dimmable in the base, weighted so it stays put, and tall enough to read beneath from a low chair.",
+      "status": "active",
+      "productType": "Lighting",
+      "vendor": "Atelier Nord",
+      "tags": ["linen", "lighting", "floor-lamp", "brass"],
+      "categoryHandles": ["lighting"],
+      "collectionHandles": ["new-arrivals", "lighting"],
+      "seoTitle": "Linen-Shade Floor Lamp — dimmable brass floor lamp",
+      "seoDescription": "A slim brass floor lamp with a hand-sewn linen drum shade, dimmable at the base.",
+      "variants": [
+        {
+          "sku": "ATN-FLOORLAMP",
+          "priceCents": 42000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "linen-floor-lamp",
+          "isPrimary": true,
+          "alt": "The Linen-Shade Floor Lamp"
+        }
+      ]
+    },
+    {
+      "handle": "paper-shade-pendant",
+      "title": "Paper-Shade Pendant",
+      "description": "A folded paper pendant that glows like a lantern and packs flat when you move. Comes with three metres of braided cord and a ceiling cup in the same brass as the lamp.",
+      "status": "active",
+      "productType": "Lighting",
+      "vendor": "Atelier Nord",
+      "tags": ["paper", "lighting", "pendant"],
+      "categoryHandles": ["lighting"],
+      "collectionHandles": ["lighting"],
+      "seoTitle": "Paper-Shade Pendant — folded paper pendant light",
+      "seoDescription": "A folded paper pendant lamp with braided cord and a brass ceiling cup.",
+      "variants": [
+        {
+          "sku": "ATN-PENDANT",
+          "priceCents": 28000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "paper-pendant",
+          "isPrimary": true,
+          "alt": "The Paper-Shade Pendant"
+        }
+      ]
+    },
+    {
+      "handle": "ceramic-carafe",
+      "title": "Hand-Thrown Ceramic Carafe",
+      "description": "A one-litre carafe thrown on the wheel and glazed in a soft matte white that breaks to clay at the rim. Balanced to pour without a drip, and happy on the table or beside the bed.",
+      "status": "active",
+      "productType": "Tabletop",
+      "vendor": "Atelier Nord",
+      "tags": ["ceramic", "carafe", "tabletop", "handmade"],
+      "categoryHandles": ["tabletop"],
+      "collectionHandles": ["tabletop"],
+      "seoTitle": "Hand-Thrown Ceramic Carafe — one-litre matte carafe",
+      "seoDescription": "A one-litre hand-thrown ceramic carafe in a soft matte white glaze.",
+      "variants": [
+        {
+          "sku": "ATN-CARAFE",
+          "priceCents": 7800,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ceramic-carafe",
+          "isPrimary": true,
+          "alt": "The Hand-Thrown Ceramic Carafe"
+        }
+      ]
+    },
+    {
+      "handle": "stoneware-vase-set",
+      "title": "Stoneware Vase Set",
+      "description": "A pair of stoneware vases — one tall and narrow, one low and wide — glazed in a speckled oatmeal that suits a single stem or a whole armful. Sold together, made to sit apart.",
+      "status": "active",
+      "productType": "Tabletop",
+      "vendor": "Atelier Nord",
+      "tags": ["stoneware", "vase", "tabletop", "set"],
+      "categoryHandles": ["tabletop"],
+      "collectionHandles": ["new-arrivals", "tabletop"],
+      "seoTitle": "Stoneware Vase Set — pair of speckled stoneware vases",
+      "seoDescription": "A pair of speckled-oatmeal stoneware vases, one tall and one low.",
+      "variants": [
+        {
+          "sku": "ATN-VASESET",
+          "priceCents": 14500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "stoneware-vase-set",
+          "isPrimary": true,
+          "alt": "The Stoneware Vase Set"
+        }
+      ]
+    },
+    {
+      "handle": "wool-throw",
+      "title": "Lambswool Throw",
+      "description": "A generously sized throw woven from British lambswool with a soft brushed face and a fringed edge. Warm without weight, and the kind of thing that ends up on whoever gets to the sofa first.",
+      "status": "active",
+      "productType": "Textiles",
+      "vendor": "Atelier Nord",
+      "tags": ["wool", "throw", "textiles"],
+      "categoryHandles": ["textiles"],
+      "collectionHandles": ["textiles"],
+      "seoTitle": "Lambswool Throw — brushed British lambswool throw",
+      "seoDescription": "A generously sized brushed British-lambswool throw with a fringed edge.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Oat"
+            },
+            {
+              "value": "Slate"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "ATN-THROW-OAT",
+          "priceCents": 19000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Oat"
+          }
+        },
+        {
+          "sku": "ATN-THROW-SLT",
+          "priceCents": 19000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Slate"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "wool-throw",
+          "isPrimary": true,
+          "alt": "The Lambswool Throw"
+        }
+      ]
+    },
+    {
+      "handle": "mohair-cushion",
+      "title": "Mohair Cushion",
+      "description": "A deep, plush mohair cushion with a feather-down pad and a hidden zip, backed in brushed cotton. One on a bench reads as a decision; three reads as a room.",
+      "status": "active",
+      "productType": "Textiles",
+      "vendor": "Atelier Nord",
+      "tags": ["mohair", "cushion", "textiles"],
+      "categoryHandles": ["textiles"],
+      "collectionHandles": ["new-arrivals", "textiles"],
+      "seoTitle": "Mohair Cushion — plush mohair cushion with down pad",
+      "seoDescription": "A deep plush mohair cushion with a feather-down pad and a hidden zip.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Rust"
+            },
+            {
+              "value": "Sand"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "ATN-CUSHION-RST",
+          "priceCents": 11000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Rust"
+          }
+        },
+        {
+          "sku": "ATN-CUSHION-SND",
+          "priceCents": 11000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Sand"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "mohair-cushion",
+          "isPrimary": true,
+          "alt": "The Mohair Cushion"
+        }
+      ]
+    },
+    {
+      "handle": "leather-magazine-sling",
+      "title": "Leather Magazine Sling",
+      "description": "A saddle-leather sling that hangs a stack of magazines off the arm of a chair instead of the floor. Vegetable-tanned, riveted by hand, and made to darken with use.",
+      "status": "active",
+      "productType": "Objects",
+      "vendor": "Atelier Nord",
+      "tags": ["leather", "storage", "objects"],
+      "categoryHandles": ["objects"],
+      "collectionHandles": [],
+      "seoTitle": "Leather Magazine Sling — saddle-leather magazine holder",
+      "seoDescription": "A hand-riveted vegetable-tanned saddle-leather magazine sling.",
+      "variants": [
+        {
+          "sku": "ATN-SLING",
+          "priceCents": 24000,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "leather-magazine-sling",
+          "isPrimary": true,
+          "alt": "The Leather Magazine Sling"
+        }
+      ]
+    },
+    {
+      "handle": "cork-serving-tray",
+      "title": "Cork Serving Tray",
+      "description": "A light, warm serving tray pressed from a single slab of cork with a solid oak lip. Quiet to set down, kind to glasses, and it floats if you ever drop it in the sink.",
+      "status": "active",
+      "productType": "Tabletop",
+      "vendor": "Atelier Nord",
+      "tags": ["cork", "tray", "tabletop"],
+      "categoryHandles": ["tabletop"],
+      "collectionHandles": ["tabletop"],
+      "seoTitle": "Cork Serving Tray — cork tray with oak lip",
+      "seoDescription": "A light cork serving tray pressed from a single slab with a solid oak lip.",
+      "variants": [
+        {
+          "sku": "ATN-TRAY",
+          "priceCents": 6500,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cork-tray",
+          "isPrimary": true,
+          "alt": "The Cork Serving Tray"
+        }
+      ]
+    },
+    {
+      "handle": "brass-candleholder",
+      "title": "Brass Candleholder",
+      "description": "A turned solid-brass candleholder with a weighted base and a wide drip dish, sized for a standard dinner candle. Left unlacquered, so it takes on a patina that a polish brings straight back.",
+      "status": "active",
+      "productType": "Objects",
+      "vendor": "Atelier Nord",
+      "tags": ["brass", "candle", "objects"],
+      "categoryHandles": ["objects"],
+      "collectionHandles": ["tabletop"],
+      "seoTitle": "Brass Candleholder — turned solid-brass candleholder",
+      "seoDescription": "A turned solid-brass candleholder with a weighted base and wide drip dish.",
+      "variants": [
+        {
+          "sku": "ATN-CANDLE",
+          "priceCents": 8900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "brass-candleholder",
+          "isPrimary": true,
+          "alt": "The Brass Candleholder"
+        }
+      ]
+    }
+  ]
+}

@@ -1997,10 +1997,27 @@ export async function installSite(
 ): Promise<{ pageIds: string[] }> {
   const pages = input.pages.map((p) => ({ ...p, id: defaultMakeId() }));
 
+  // A COLLECTION TEMPLATE'S ADDRESS IS DERIVED FROM ITS recordType, not defaulted to `/`.
+  //
+  // A bundle authors a record template (`kind:'collection'`, `recordType:'commerce.product'`)
+  // with NO slug: the manifest's `PageSlug` forbids the `:` in `/products/:handle`, so the
+  // address can only be stated by the recordType. The READ path already derives it (see
+  // `toSilicaSite` above), but `sync` on the WRITE path takes the slug verbatim — so a
+  // slugless record page reached `sync` as `''`, normalized to `null`, and collided with Home
+  // (also `null`) on `(tenant_id, property_id, slug)`. That is a unique-constraint 500 partway
+  // through the pages write, which is exactly why a blueprint carrying a bespoke PDP installed
+  // `theme` + `assets` and then died with `pages: []`. Deriving the address here — the same
+  // `recordAddressFor` the read path and the record-page ensure use — gives the product page
+  // `/products/:handle` before `sync` ever sees it, so it lands at its own address.
+  const slugForPage = (p: (typeof pages)[number]): string =>
+    p.kind === 'collection' && p.recordType
+      ? (recordAddressFor(p.recordType)?.slug ?? p.slug)
+      : p.slug;
+
   await sync(
     ctx,
     {
-      pages: pages.map((p) => ({ id: p.id, name: p.name, slug: p.slug, root: p.root })),
+      pages: pages.map((p) => ({ id: p.id, name: p.name, slug: slugForPage(p), root: p.root })),
       ...(input.frame ? { frame: input.frame } : {}),
       ...(input.theme ? { theme: input.theme } : {}),
       ...(input.symbols ? { symbols: input.symbols } : {}),
@@ -2037,6 +2054,62 @@ export async function installSite(
   });
 
   return { pageIds: pages.map((p) => p.id) };
+}
+
+/**
+ * Add ONE page to the property's silica site, leaving every existing page untouched —
+ * the blueprint UPDATE seam for a page a later version introduced (docs/55: a design
+ * that adds a page in a new version should DELIVER it on update, not only on a fresh
+ * install).
+ *
+ * There is no lower-level "add a silica page" primitive: pages become silica rows only
+ * through `sync` (whole-site) or the editor's own add flow. So this loads the current
+ * site, APPENDS the new page, and re-`sync`s the full set. `sync` reconciles by page id
+ * (it no longer drops a page just for being absent — see `removePage`), so every existing
+ * page is matched by its id and left exactly as it was; only the new id is created. The
+ * record-address slug is derived here for a collection template, identical to `installSite`
+ * — a slugless product page would otherwise land at `''`/`null` and collide with Home.
+ */
+export async function addPage(ctx: PropertyContext, page: InstallPageInput): Promise<string> {
+  const current = (await load(ctx)) ?? emptySite();
+  const id = defaultMakeId();
+  const slug =
+    page.kind === 'collection' && page.recordType
+      ? (recordAddressFor(page.recordType)?.slug ?? page.slug)
+      : page.slug;
+
+  await sync(
+    ctx,
+    { ...current, pages: [...current.pages, { id, name: page.name, slug, root: page.root }] },
+    { allowReplace: true }
+  );
+
+  // The per-page domain columns `sync` does not model, applied exactly as `installSite`
+  // does — so a collection template added by an update binds to its recordType and wins
+  // as the default for it.
+  await withTenant(ctx, async (tx) => {
+    await tx.builderPage.update({
+      where: { id },
+      data: {
+        ...(page.kind ? { kind: page.kind } : {}),
+        recordType: page.recordType ?? null,
+        ...(page.seoTitle !== undefined ? { seoTitle: page.seoTitle } : {}),
+        ...(page.seoDescription !== undefined ? { seoDescription: page.seoDescription } : {}),
+        ...(page.canonical !== undefined ? { canonical: page.canonical } : {}),
+        ...(page.ogImage !== undefined ? { ogImage: page.ogImage } : {}),
+        ...(page.noindex !== undefined ? { noindex: page.noindex } : {}),
+      },
+    });
+    if (page.kind === 'collection' && page.isDefault && page.recordType) {
+      await tx.builderPage.updateMany({
+        where: { propertyId: ctx.propertyId, recordType: page.recordType, id: { not: id } },
+        data: { isDefault: false },
+      });
+      await tx.builderPage.update({ where: { id }, data: { isDefault: true } });
+    }
+  });
+
+  return id;
 }
 
 /** The property's PUBLISHED site — pages + frame + theme + symbols, in one read

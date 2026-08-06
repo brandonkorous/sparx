@@ -29,6 +29,7 @@ import type { CatalogGroup } from '../types';
 import * as compare from './compare';
 import * as content from './content';
 import * as convert from './convert';
+import * as feature from './feature';
 import * as gallery from './gallery';
 import * as layout from './layout';
 import * as offer from './offer';
@@ -179,6 +180,33 @@ export const SECTION_CATALOG: CatalogGroup[] = [
         icon: 'article',
         hint: 'Three jobs: what each involved and how it turned out. A portfolio page on its own.',
         make: gallery.caseStudies,
+      },
+    ],
+  },
+  {
+    key: 'sparx_feature',
+    label: 'Big pictures',
+    items: [
+      {
+        key: 'hero_overlay',
+        label: 'Opening over a full picture',
+        icon: 'image',
+        hint: 'A photograph filling the width, with your headline and two buttons sitting on top of it — the boldest way to open a page.',
+        make: feature.heroOverlay,
+      },
+      {
+        key: 'feature_overlay',
+        label: 'Big picture with a point on it',
+        icon: 'image',
+        hint: 'A full-width photograph part way down a page, carrying one thing worth saying and a link to read more.',
+        make: feature.featureOverlay,
+      },
+      {
+        key: 'lookbook_tiles',
+        label: 'Picture tiles',
+        icon: 'gallery',
+        hint: 'Two big picture tiles side by side, each with its own title and a link — the "shop the look" grid a lookbook is built from.',
+        make: feature.lookbookTiles,
       },
     ],
   },

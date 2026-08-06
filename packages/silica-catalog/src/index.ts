@@ -22,6 +22,7 @@ export * from './upgrade-frame';
 export * from './upgrade-page';
 export * from './catalog';
 export * from './themes';
+export * from './template-themes';
 export * from './content-ink';
 export * from './resolve-sparx-theme';
 export * from './custom-colors';

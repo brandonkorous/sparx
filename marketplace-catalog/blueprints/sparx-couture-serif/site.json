@@ -1,0 +1,2628 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-4 px-6 py-5",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden flex-1 items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "87d6ba0c-fbf0-435b-a18a-7acff48623e3",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "bfea7e8c-d34c-47ce-86c2-f8f251f0eed6",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "8168997e-9c47-4ec0-8a8d-117b18e284bd",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "6a312241-d2e1-4fce-92fc-0743ba70114f",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "flex flex-1 items-center justify-end gap-4",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "nav",
+                      "class": "hidden items-center gap-6 @md:flex",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/about"
+                          },
+                          "children": ["About"],
+                          "slot": {
+                            "name": "link3",
+                            "type": "link",
+                            "label": "Docs"
+                          },
+                          "id": "6424d715-cc8d-47d0-b610-63e1985e5d1d",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "a",
+                          "class": "text-sm font-medium text-base-content hover:text-primary",
+                          "attrs": {
+                            "href": "/contact"
+                          },
+                          "children": ["Contact"],
+                          "slot": {
+                            "name": "link4",
+                            "type": "link",
+                            "label": "Company"
+                          },
+                          "id": "15c6e2d5-f9f9-4641-8772-15068d815c94",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "0389291a-7462-4cad-9b38-f4d9f3b75635",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "67200476-0ce8-4420-99e6-0e2f90a93565",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "30eaa25f-d611-48d4-b3b2-ada5ffa7e52d",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "8319b530-aac3-4ad4-9a58-77d7a5c5d8c9",
+                      "ord": "a2"
+                    }
+                  ],
+                  "id": "e83861f1-4f75-4c5e-9ec1-5b4e4cd43c1b",
+                  "ord": "a2"
+                }
+              ],
+              "id": "fd18aeae-05e8-4219-b465-8b0894952353",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "b783df23-2a4b-4f82-a0d3-650d1c9145e1",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "81ee3d33-b093-446b-93fa-d0bbb7ee3b4e",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "9ccd5106-3908-407a-9dba-20d6bbb45512",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "afec628a-9b5d-4623-9aa2-3f46a170d999",
+                  "ord": "a3"
+                }
+              ],
+              "part": "panel",
+              "id": "7a3e8c49-4dab-4ddb-875f-14475d44165d",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "17c3a896-9507-47a1-925a-d56fb5175a18",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "d84225fc-653b-455d-9e94-5a73ca6e7ad5",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "385afc27-3275-4dd4-b503-ef0ee4dccc9c",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "7c2ca1d8-4933-45a9-9fea-6f1d3d37a358",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "b668dd5b-aa3b-4246-bc19-ea85b837727f",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "3c6811c7-6646-4324-abbe-ff90c973b9ba",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "5d7c94a0-36ed-408c-b8c9-5baef5ad01ad",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "1d26cc01-ac87-4bba-8d55-fb86e145cf97",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "63c16ff5-2564-4822-961c-ef730cd3f3b6",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "c2ed51ef-478d-409e-a697-bb4d14767367",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "71f9a2b8-09b5-4c2b-bc3f-12de72bc76a9",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "eeaf6daa-d369-4823-956f-f218777d3bbf",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "b53687cc-0dee-4dca-80be-71588d4a1d9f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "fd32591b-6527-4bdb-9262-ebe990eb2832",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "66e5dc8d-1544-41dd-9f06-6dd22ce49eec",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3122434e-ab04-4df0-b2cb-a59014da3d43",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "4b6ce551-9a86-431e-81f9-46de6b17c77f",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "f7d4abef-cf95-460a-ae1b-41f4b12cddec",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "f183608e-56a8-46c0-a567-717c45e43fb6",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "ccd1ed28-7fd0-443c-b5e8-ca3fbc5ab4bf",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "4791c532-03d4-4e71-b8bc-0672447f7464",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "3a18e4cd-ef83-4db9-b739-b7da2ff59b37",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "3777384a-8897-4c97-91a0-10e94810b063",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "54e506f3-db44-41e5-96bf-fb411e63935e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "b26b25d4-8fb8-4403-b542-ad5ccb74ae03",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "cd4aa9ca-1d69-4fa6-aad7-f7bb89a8bddd",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "5bc8f59a-89a7-4cfe-bcd4-5671d258640f",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "909eb0ea-4413-4abf-8029-cf789e33f9e9",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "32bac03c-0732-4d41-83d3-fc2f6c2335be",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "6002d75d-2046-4587-9b74-adcb3844d006",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "fea44d59-28a7-4469-b5a6-1113047ac9ad",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "be53b581-7a4d-406b-a386-3699ef898e83",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "e0afe374-c15d-4777-9bd5-be62f0972630",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "23c7234b-b8b5-4a83-85be-5eab0a600013",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "af0ba6aa-71cb-4ccf-937f-70c4cddac871",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "7f67e446-74d2-4f38-8613-3c1a3e0aac2e",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "c71486a3-f7a8-4fef-abd5-57058aee41f1",
+                  "ord": "a1"
+                }
+              ],
+              "id": "a9df43e4-ae56-4438-9707-80f0780193ac",
+              "ord": "a0"
+            }
+          ],
+          "id": "c5f24fe2-0fbf-4afe-9e76-374e7a87d4af",
+          "ord": "a2"
+        }
+      ],
+      "id": "f3abb3a2-d349-4f09-a93b-8eaf9d869a9c"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Vérane — fine jewellery & fragrance",
+      "seoDescription": "Vérane is a fine jewellery and fragrance maison — pieces cut and composed in small numbers, made to be worn every day and kept for a lifetime.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "12ad08f7-08b1-488b-8003-4796caf0c51f",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "component",
+                "component": "Video",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "props": {
+                  "src": "/video/tpl-couture-serif.mp4",
+                  "poster": "https://images.unsplash.com/photo-1536924430914-91f9e2041b83?w=1400&q=80",
+                  "autoplay": true,
+                  "muted": true,
+                  "loop": true,
+                  "playsinline": true,
+                  "preload": "metadata",
+                  "aria-label": "A black-and-white campaign portrait"
+                },
+                "id": "339810b8-526c-4676-a742-88c57afef9f6",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-24 @3xl:py-32",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col items-center gap-5 bg-base-100 px-10 py-12 text-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-medium leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Cut and composed in small numbers"],
+                        "id": "abe53b2a-9232-4f8f-b483-ad3b10340069",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Fine jewellery and fragrance from the Vérane atelier — made a few pieces at a time, to be kept for a lifetime."
+                        ],
+                        "id": "69e634fa-43dd-4073-bf84-c250f615d28f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-medium text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": ["Discover the collection"],
+                        "id": "37d2bde9-3c65-4935-9845-bd3eae489759",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "697d8a41-3192-457d-8c88-48f36f74c8a2",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "8598f791-695c-4520-b627-897bd01121e7",
+                "ord": "a1"
+              }
+            ],
+            "id": "9df01ff7-ffd2-41f6-8d71-2729422a1fdf",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-center text-3xl font-medium text-base-content @3xl:text-4xl",
+                    "children": ["Three houses under one name"],
+                    "id": "73aa80cf-57a1-4d71-946e-e7e0f3d1217d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @2xl:grid-cols-2 @4xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "relative @container block overflow-hidden bg-base-200",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1623321673989-830eff0fd59f?w=1400&q=80",
+                              "alt": "A high-jewellery necklace worn against skin",
+                              "loading": "lazy"
+                            },
+                            "id": "24e2769b-c964-439b-acc7-45de312113ec",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "relative flex min-h-96 flex-col items-center justify-end p-6",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col items-center gap-3 bg-base-100 px-8 py-6 text-center",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-medium text-base-content",
+                                    "children": ["High Jewellery"],
+                                    "id": "abf1c501-4b28-4805-9e15-4cd9d82e7496",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base text-base-content underline underline-offset-4",
+                                    "children": ["Explore"],
+                                    "id": "5359ef0f-67a8-494c-9728-f0fca0e4927e",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "07be08f9-a461-4995-8682-186cc548a196",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "9bb05b84-9d8c-40d8-b1b9-dee0f95f52ec",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a5d119e8-ce81-412e-bc28-d5d4249108b4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "relative @container block overflow-hidden bg-base-200",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1614606140245-2c33ece9e2cf?w=1400&q=80",
+                              "alt": "A fine gold ring worn on a hand",
+                              "loading": "lazy"
+                            },
+                            "id": "a18d3b4d-779a-4712-a464-f05cc910d6d1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "relative flex min-h-96 flex-col items-center justify-end p-6",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col items-center gap-3 bg-base-100 px-8 py-6 text-center",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-medium text-base-content",
+                                    "children": ["Everyday Fine"],
+                                    "id": "0cc0a499-5af8-4c4a-bcec-6719039ccf2f",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base text-base-content underline underline-offset-4",
+                                    "children": ["Explore"],
+                                    "id": "f63c54a2-27f4-4bda-ab9e-fc98109ad395",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "df6d4050-f6e3-4c31-958e-03d3418220d3",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "9d01a93b-8706-4052-b3b4-a7ae4d7aeed0",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "5ed6d9f9-f6dd-44b8-bed5-4d46e0ba5cad",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "relative @container block overflow-hidden bg-base-200",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1582211594533-268f4f1edcb9?w=1400&q=80",
+                              "alt": "A fragrance bottle in soft light",
+                              "loading": "lazy"
+                            },
+                            "id": "daf87c6b-483c-41b6-9628-fa2f130da3c9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "relative flex min-h-96 flex-col items-center justify-end p-6",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "div",
+                                "class": "flex flex-col items-center gap-3 bg-base-100 px-8 py-6 text-center",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "h3",
+                                    "class": "text-2xl font-medium text-base-content",
+                                    "children": ["Fragrance"],
+                                    "id": "ddde3c60-36d6-413c-912b-3ce6faae4662",
+                                    "ord": "a0"
+                                  },
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "class": "text-base text-base-content underline underline-offset-4",
+                                    "children": ["Explore"],
+                                    "id": "d9f7ab9f-fb9f-4f63-a31d-65644869f178",
+                                    "ord": "a1"
+                                  }
+                                ],
+                                "id": "cbc28775-ea16-46af-8625-1eb327719666",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "e0b04236-75a8-40cb-8e14-a9805cab3bc4",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "1b343265-74da-4a61-89e7-173a102f0576",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "232347cd-52b3-4635-8cc6-e26c5d812a2d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "24c8bd85-b9c2-4807-83f2-b134afc7c9c2",
+                "ord": "a0"
+              }
+            ],
+            "id": "8ca4b518-5d2e-4857-a5bd-cec068cad1c7",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["New this season"],
+                    "id": "90e7cb01-73fd-4483-a464-59ea47eabe56",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "c0ade0f8-80a9-49b3-9633-a80adb633715",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "1ed4a855-c503-4921-9633-8842c86030b2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "35003c9a-bc44-40cd-bed5-15796a84dee9",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "66af6893-95e0-466d-9377-82169ac029b9",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "6d131dcd-27dd-4585-9272-8344d6f687af",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "108c01d7-ac4b-4b62-bf5e-782552a40280",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "d8ec6147-c91c-4b74-89ce-905fe7f85e17",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "3f635065-4b01-45b8-9b2f-620687cbfe45",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "ea52e86d-ac15-483f-bd15-b84b2fa969e6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d394da3b-723e-45d7-8ade-80fdab50e88f",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "2faaf85c-35b0-4e38-826a-f5ace0dd2c3a",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "6fe8cec8-ebef-491b-9f0b-e5dae41f314c",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "7c41788c-69e2-40ea-885e-30931ced32b7",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1613915617430-8ab0fd7c6baf?w=1400&q=80",
+                  "alt": "A hand at work in the atelier",
+                  "loading": "lazy"
+                },
+                "id": "55997a50-b122-497d-bef0-47d2bdf175e7",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex w-full max-w-6xl flex-col items-center justify-center gap-6 px-6 py-20 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col items-center gap-4 bg-base-100 px-10 py-12 text-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-medium leading-tight text-base-content @3xl:text-4xl",
+                        "children": ["Why we make so few"],
+                        "id": "26a20f7f-aadb-4c99-8bf9-150e32670ce9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every Vérane piece is cut, set and finished by hand in numbered runs. Small numbers are not a scarcity trick — they are what it takes to answer for every stone, every setting and every drop of scent that leaves the atelier."
+                        ],
+                        "id": "ede0d9f9-28ff-4e82-859b-b2bf85175c01",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "text-base font-medium text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/about"
+                        },
+                        "children": ["Read our story"],
+                        "id": "14d36e68-d3af-4c97-a8ab-ccf7a1c78797",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "07ce65c9-33fa-4561-a3bf-420f9b3e4bfd",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "e8ded4a0-28ae-422e-bb44-e1126a7b5d81",
+                "ord": "a1"
+              }
+            ],
+            "id": "9771e35c-1b1a-4ee0-b8bc-18097309c495",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["The fragrance library"],
+                    "id": "c2dd9303-37e0-4130-a724-b9f78be7ace3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "7ef73618-514b-4063-a1f1-d6c47c7e7bf0",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "f846d5ce-98b8-40d0-a676-4a293939d84e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "14d4afaa-acc6-4988-b4e9-2a4417b381e0",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "b896b6c5-64ba-4cc0-90f8-7ba9f36ad9bd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "c3480a89-ee9a-41e0-a6b1-f9f0c755e5dd",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "968671ce-2618-40b3-b569-9ee6213fa52a",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "3b3118ad-5663-4de0-8310-0476eeb7b8bd",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "c00bc587-ef32-4c5c-bdbc-c2fec1aa4f79",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "f6756b98-54a6-4e6d-8e09-110137cdf0e1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "446b663b-8ebf-4c77-89e4-313625a6e07b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "154d4a20-19c6-4292-8dab-88e429fb4d6f",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.fragrance"
+                },
+                "id": "71d5b6b5-359f-4d06-a8d3-9536d369ae59",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "00fb46e1-7b49-4e71-a78d-2e92969b09b1",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-center text-3xl font-medium italic text-base-content @3xl:text-4xl",
+                    "children": ["Inside the maison"],
+                    "id": "97b37ca9-9be7-4bc5-9e72-1aefc3e93d70",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @2xl:grid-cols-2 @4xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-4 bg-base-100",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1762537132897-f6b577190e80?w=1400&q=80",
+                              "alt": "Loose stones under a jeweller’s light",
+                              "loading": "lazy"
+                            },
+                            "id": "3aad362b-2cef-47a9-a5cb-50ee244820a4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-medium italic text-base-content",
+                                "children": ["Choosing the stones"],
+                                "id": "2728a845-9a45-4ebd-b601-960e9c7c4a0d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-base-content underline underline-offset-4",
+                                "children": ["Discover"],
+                                "id": "a6fb7a70-a173-4967-9fe5-54bb277b57ab",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c202a389-630e-4a9d-964f-43b028a55a08",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "65e44894-c038-42dc-a652-e0e48cab631c",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-4 bg-base-100",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1615634260167-c8cdede054de?w=1400&q=80",
+                              "alt": "The making of a fragrance",
+                              "loading": "lazy"
+                            },
+                            "id": "be05b043-6a55-407f-9891-26f2cdb89583",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-medium italic text-base-content",
+                                "children": ["The making of Nº3"],
+                                "id": "e97acdb5-8b66-40ba-8d80-3c9c7abd0601",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-base-content underline underline-offset-4",
+                                "children": ["Discover"],
+                                "id": "39078892-64ff-430d-8bda-7f58927f204e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "7794de15-dff8-4771-86e5-9d30f0991e1a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "37b6463a-9438-4907-b2d6-9a9939e0299e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-4 bg-base-100",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1529408570047-e4414fb17e95?w=1400&q=80",
+                              "alt": "A portrait from the house’s campaign",
+                              "loading": "lazy"
+                            },
+                            "id": "ad6e7275-f1aa-49d5-8dc9-289b8015d4e5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-medium italic text-base-content",
+                                "children": ["As composed by the founder"],
+                                "id": "4218ba5d-a0ef-4033-94ea-6d31838f2d46",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-base-content underline underline-offset-4",
+                                "children": ["Discover"],
+                                "id": "d810161b-639a-4a46-a126-ee5b85ed0755",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "6d6f5e4b-7e74-42a3-903d-f698c5f15900",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a3c32efe-12fc-41e5-a73a-a59fa95dd985",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "cf62e30f-be81-410d-8ae5-0b9c35e7bb4c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex justify-center",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "btn btn-primary btn-lg",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": ["Read the Vérane Journal"],
+                        "id": "62842bac-7296-4652-aed5-0a26135f8a2e",
+                        "ord": "a0"
+                      }
+                    ],
+                    "id": "ef401dbd-4258-4856-8d48-5d497686c7f3",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7869afd7-c772-42d3-9239-dedea61bd88a",
+                "ord": "a0"
+              }
+            ],
+            "id": "19b775f7-f423-4078-9dee-9de5d13d9517",
+            "ord": "a5"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Vérane",
+      "seoDescription": "Browse everything Vérane makes, with prices and options at a glance. Fine jewellery & fragrance.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "952036d6-c956-4160-9ded-ea4da2379d5e",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-medium italic leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The full collection"],
+                    "id": "a108099d-68d8-4974-8991-2c95030f025b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything Vérane currently makes — fine jewellery in gold, platinum and hand-selected stones, and the four house eaux de parfum. Cut and composed in small numbers, and made to be kept."
+                    ],
+                    "id": "a7444b7a-614d-40f9-b605-bdd91fb1d8c4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "84ff5b30-9676-474a-ac3b-eb52bed59cce",
+                "ord": "a0"
+              }
+            ],
+            "id": "87d3f0e7-7447-437f-b839-da98d15c16c5",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "cb416ca5-81be-4da3-bb2e-021ece25667c",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Vérane",
+      "seoDescription": "Explore the collections at Vérane, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f8e794e7-d3de-4885-80c6-520c5c6db4e9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-medium leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The collections"],
+                    "id": "10eab7c5-7b3f-4ca2-9ad7-0ae4e0abd247",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "The house in three registers — the numbered high jewellery we make a few of a year, the fine gold and silver made for every day, and the four house eaux de parfum. Begin wherever you are dressing."
+                    ],
+                    "id": "e9b43b06-0451-47d6-8453-3baad7d7804a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e1d93de1-cb6e-4e0e-a346-d8789c2db977",
+                "ord": "a0"
+              }
+            ],
+            "id": "19879652-42a9-47ad-8ed2-aa714777434f",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "9e1de4ea-3ee9-4e4e-b55e-72ddacb27958",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Vérane",
+      "seoDescription": "Review what is in your cart and check out securely at Vérane.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "2ce8abed-18a8-409f-a8a2-bd8bf8273215",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-medium leading-tight tracking-tight text-base-content @3xl:text-5xl",
+                    "children": ["Your cart"],
+                    "id": "234c2697-fbdf-4a1a-8778-ac9e8adb07b3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every piece is packed in the house box and fully insured in transit, with complimentary shipping worldwide. You have thirty days to return anything unworn for a full refund; fragrance can be returned only while sealed, and engraved or bespoke commissions are made to your mark and final. Take your time deciding."
+                    ],
+                    "id": "01cdcd2d-8197-4a60-9ef2-c202f0caea26",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "df0e8cc8-687d-49be-b16b-33314b91fa4d",
+                "ord": "a0"
+              }
+            ],
+            "id": "1593c902-5cd7-49ab-8bd8-adab60b4108f",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "ad925150-1076-4ea4-b818-d301a9ff8023",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Vérane",
+      "seoDescription": "Search Vérane for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "0ede2685-4954-4a80-8a0d-44e9fa13d465",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-medium leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search the maison"],
+                    "id": "e8ad499d-0670-47b3-8d8d-4b9054cc8ee2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for a particular piece — a stone, a metal, a scent you were once given? Search the whole collection and the Journal below."
+                    ],
+                    "id": "36b28f4d-085b-4423-a660-c851512ce135",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6aa64087-a859-46b2-84f7-532e0c8bd207",
+                "ord": "a0"
+              }
+            ],
+            "id": "2862f8a8-ecb9-4168-a6be-9678572b990a",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "a2901ed3-0394-47be-a900-5d91a2340922",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Vérane",
+      "seoDescription": "Stories, guides and notes from Vérane.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "1c5c4f81-dc1d-449d-bf71-af1140e4208d",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col items-center gap-5 text-center",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-medium leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Vérane Journal"],
+                    "id": "cfb10a34-75de-4f30-a009-a17110e1d5cf",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the atelier — where the stones are cut, how a fragrance is composed, and the plain idea behind the whole house: buy less, choose better, keep it for a lifetime."
+                    ],
+                    "id": "6ef31978-9b8a-4452-a81f-d08da8d226ea",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7041fc48-c310-4d3e-a8b4-f2ac30c833f8",
+                "ord": "a0"
+              }
+            ],
+            "id": "4e0c7d8b-e73c-4b35-8377-6be7fbe3b3e1",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "59ded551-5247-42b5-8875-987a5136e401",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "6916d227-f8a9-43b8-b43b-c5fb836f5824",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "5ca3afb5-8b03-49bd-ac19-0145181e9232",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "eb5eae71-e7e7-4bff-8d7c-adbd6c82c77c",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "097ffc60-79a0-45ed-be25-41de9a9ec1be",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "89e91b87-3e30-4726-9fbe-507b68022e24",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "b0b21fee-db32-4477-a3dc-b927a2dcccb7",
+                "ord": "a0"
+              }
+            ],
+            "id": "a7f3a83d-e41a-4af5-a8e8-319c4fe804f7",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Vérane — the maison",
+      "seoDescription": "The maison behind Vérane — how each piece of jewellery and every fragrance is made in small numbers, by the hands that designed it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "b84bf56a-9853-41d7-bdc9-51dc9db54e28",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-medium tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["About Vérane"],
+                    "id": "ac4dadcb-b52d-437f-91e5-7f6f72614ed9",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Vérane is a small maison of fine jewellery and fragrance. We work in gold, platinum and hand-selected stones, and in scent composed a few litres at a time — and we make in numbered runs, in our own atelier, by the people whose hands are on the work."
+                    ],
+                    "id": "198aa542-eb28-4f23-a4da-0d011bb6ed81",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Nothing here is bought in and re-badged. We can tell you where every stone came from, who set it, and how to keep a piece bright for a lifetime. That is the whole idea: cut and composed in small numbers, made to be kept."
+                    ],
+                    "id": "46afe78d-c94c-4bb6-b622-d896308b0a1b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "3bde91b6-de25-4dc3-89cf-38a5464626a0",
+                "ord": "a0"
+              }
+            ],
+            "id": "8db04f77-a2ed-4b1a-806d-c7f34a425004",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Vérane",
+      "seoDescription": "Get in touch with Vérane — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "61c7b24c-0772-4bd9-b37d-c1b7a157c4f9",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-medium tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Visit the atelier"],
+                    "id": "efe23aa1-9120-4509-9ffe-0f971553a637",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Our atelier and salon are open by appointment. Tell us what you are looking for — a single piece, a bespoke commission, or a fragrance to be layered to your own — and we will find a time."
+                    ],
+                    "id": "15ba73ea-5b8f-421c-a70b-f720b91f328a",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:atelier@verane.example"
+                    },
+                    "children": ["Email the atelier"],
+                    "id": "a932c4f6-173a-4357-9809-4f4d592b8939",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ee0ee781-51c5-4b65-bf3d-fb18e3e508f5",
+                "ord": "a0"
+              }
+            ],
+            "id": "f1b5fae1-40a4-46e5-b110-a7d3aa3464f3",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Vérane",
+      "seoDescription": "Product details at Vérane — fine jewellery & fragrance, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full border border-base-300 bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "20008b46-8f1e-4283-9652-c5584b898ecf",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-xs font-medium uppercase tracking-widest text-base-content",
+                            "children": ["Vérane — the maison"],
+                            "id": "c5e9134d-274b-4ce1-b751-8d21dcf7431a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-medium leading-tight tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "4f773817-11ab-440f-97a4-a8210823c835",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-medium text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "ae2d5449-b7d5-4e22-9c5a-50b027a1bda5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-base-content line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "64b65738-e328-4a6b-81d7-1bb9b7b4ac4c",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "7e49f022-4f57-4b3d-888b-3650f518f60a",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "8f8f5656-3775-4e60-8891-e3b0b4e69451",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "760e3113-f137-4ec9-aeb3-bfe570376aa3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "4fc2ffb5-ac8e-4e0f-9f72-cff6664cfd61",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "a5918051-d1df-4ba3-81d4-18052c3463a3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "dd26b2e9-ea5f-4792-8a22-78bc4c3e0917",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "f0585b9d-266d-4bbb-902f-19cb7932418d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "91c48264-c662-4b38-8154-2d1a3c3a5e76",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "8b19e368-7398-48a3-be5e-fbba1a36da13",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "5822f0e1-caa1-4ca2-b1cd-a58421f2b565",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex flex-col gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-xs font-medium uppercase tracking-widest text-base-content",
+                                "children": ["Made in the atelier"],
+                                "id": "a5d58879-0840-41ad-9925-f55f27664559",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Cut, set and finished by hand in numbered runs, in our own atelier. Nothing here is bought in and re-badged — we can tell you where every stone was cut, who set it, and the run it belongs to. Each piece leaves numbered, with a note of its principal stone."
+                                ],
+                                "id": "135c9732-2a51-47bd-b481-0a7977cd040d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "03c29405-92d3-45b0-9e87-9e4a1bfdfda4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-xs font-medium uppercase tracking-widest text-base-content",
+                                "children": ["Materials & care"],
+                                "id": "a0cf7fbd-f141-444f-b2d1-6d8d9e5d7b06",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Worked in solid 18k gold, platinum, sterling silver and hand-matched stones — or, for the eaux, composed in small litres from natural materials. Gold takes a scratch and polishes back; silver softens into a patina; a fragrance is best kept from heat and light. Every order ships with a care card, and the atelier will re-polish or re-string a piece for its lifetime."
+                                ],
+                                "id": "10bd3319-d435-49fd-9c81-6a2466395b4c",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5c862eb7-eded-4bb0-976f-467fd2ea263a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-3 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-xs font-medium uppercase tracking-widest text-base-content",
+                                "children": ["Delivery & returns"],
+                                "id": "d914a9aa-7c62-43fb-af00-3129b04f3565",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Dispatched within two to three working days, packed in the house box and fully insured in transit, with complimentary shipping worldwide. Thirty days to return anything unworn for a full refund; engraved and bespoke commissions are made to your mark and final. Fragrance is returnable only sealed."
+                                ],
+                                "id": "c7fbc6b0-970d-4fe7-9cdb-d166450dedce",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "98234570-0a72-4552-9f24-83445cfc32b7",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "7cb6f3c9-006b-4298-bb12-e8887860a473",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "035c79b2-6a1b-425c-8572-06e57d68cf4f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "1e279332-3745-4ba9-9a7e-90ce286abacb",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "e7537408-6efe-409f-940f-6219e14e0bf9",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["To be worn together"],
+                    "id": "3d0a5476-e593-4672-b59c-990b9b43ad79",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "9059d2da-962d-48e3-9077-a0d2975c8932",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "a22ac22c-e722-46b4-bb02-0ce793ddd116",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "def5ae5e-1499-4202-ba10-b454022f72dc",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "3d235e1e-19e5-43f9-bb61-72308886e5eb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "0fb28330-f9ff-42c7-80db-15f0c2c36e0d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e6efca75-7396-42e0-a8c6-a85a12269d36",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "dde25c9b-86d2-4d6b-9ba6-8d4022e6f6bf",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "8876241a-8aff-42d3-947d-5db600dcfaa5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "315f6e78-8b88-403c-bf2b-d4e0e75d1020",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "e13f07c4-dedd-4d54-b2c7-92403045064d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "27a505cf-728b-406f-9ccd-0ada6caaaa4d",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "664517a5-980f-4484-b1d1-39295b6a8d87",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "20b72ded-544f-466c-85ae-aefb6e54ebfe",
+            "ord": "a1"
+          }
+        ],
+        "id": "0f7e62a8-a302-4fe8-81bb-f9833d65f017"
+      }
+    }
+  ],
+  "theme": {
+    "name": "maison",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(99% 0.001 90)",
+      "--color-base-200": "oklch(95% 0.002 85)",
+      "--color-base-300": "oklch(91% 0.004 85)",
+      "--color-base-content": "oklch(0% 0 0)",
+      "--color-primary": "oklch(8% 0 0)",
+      "--color-secondary": "oklch(40% 0.004 270)",
+      "--color-accent": "oklch(48% 0.008 85)",
+      "--color-neutral": "oklch(10% 0 0)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0rem",
+      "--radius-field": "0rem",
+      "--radius-box": "0rem",
+      "--depth": "0",
+      "--font-sans": "\"Libre Baskerville\", serif",
+      "--color-primary-content": "oklch(98% 0 0)",
+      "--color-secondary-content": "oklch(98% 0.004 270)",
+      "--color-accent-content": "oklch(98% 0.008 85)",
+      "--color-neutral-content": "oklch(98% 0 0)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(48% 0.008 85)",
+      "--color-highlight-content": "oklch(98% 0.008 85)",
+      "--color-border": "oklch(91% 0.004 85)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Libre Baskerville\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(12% 0 0)",
+      "--color-base-200": "oklch(9% 0 0)",
+      "--color-base-300": "oklch(6% 0 0)",
+      "--color-base-content": "oklch(97% 0.001 90)",
+      "--color-primary": "oklch(96% 0.001 90)",
+      "--color-secondary": "oklch(66% 0.004 270)",
+      "--color-accent": "oklch(60% 0.008 85)",
+      "--color-neutral": "oklch(26% 0 0)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.001 90)",
+      "--color-secondary-content": "oklch(15% 0.004 270)",
+      "--color-accent-content": "oklch(15% 0.008 85)",
+      "--color-neutral-content": "oklch(98% 0 0)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(60% 0.008 85)",
+      "--color-highlight-content": "oklch(15% 0.008 85)",
+      "--color-border": "oklch(6% 0 0)"
+    }
+  }
+}

@@ -55,6 +55,9 @@ postal-*.png
 marketplace-catalog/_src/
 marketplace-catalog/_assets/
 apps/dashboard/_marketplace-assets.mjs
+# Template preview HTML + full-site screenshots — the visual-review artifacts a generator
+# writes (writeTemplatePreview) and screenshot-template.mjs shoots. Regenerated on demand.
+marketplace-catalog/_gen/.preview/
 
 # Local media storage (LocalStorage MEDIA_LOCAL_DIR — generated, never committed)
 **/.media-tmp/

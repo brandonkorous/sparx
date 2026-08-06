@@ -1,0 +1,233 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "the-case-for-solid-oak",
+    "status": "published",
+    "body": {
+      "title": "The case for solid oak",
+      "excerpt": "Why we build in solid timber when a veneer would cost a third as much — and how a chair earns its price back over thirty years.",
+      "featuredImage": {
+        "$asset": "post-oak"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A veneered panel and a solid board can look identical on the showroom floor. The difference shows up in year ten, when a knock that would have polished out of solid oak has instead chipped through a half-millimetre of face and exposed the chipboard underneath."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "You are buying decades, not a season"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Solid timber can be sanded back, re-oiled, and repaired more or less forever. We size our joints so a chair can be taken apart and re-glued rather than thrown away, and we keep the same oak in stock for years so a replacement part matches the original."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "It moves, and that is fine"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Wood breathes with the seasons — it always has. We build to allow for it rather than fight it, which is why our tops are not glued rigidly across their width. A hairline gap in February that closes again in July is the material doing exactly what it should."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of this is nostalgia. It is the cheapest way we know to own something good: buy once, keep it working, and hand it on."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "living-with-travertine",
+    "status": "published",
+    "body": {
+      "title": "Living with travertine",
+      "excerpt": "Stone is not as precious as it looks. A short, practical guide to using a travertine table every day without worrying about it.",
+      "featuredImage": {
+        "$asset": "post-materials"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Travertine arrives with a reputation for being fussy, and it is mostly undeserved. It is a stone that has spent thousands of years being rained on; a glass of wine is not going to end it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Seal it once, then relax"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "An unfilled travertine top wants a penetrating sealer when it is new and again every year or two. That is the whole maintenance routine. Sealed, it shrugs off water rings and the occasional spill; you wipe it and move on."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The marks are the point"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Stone records the life of a room. A faint ring from a warm cup, a soft edge where hands have rested — these are not damage, they are the reason to own the real thing instead of a printed laminate that looks the same on day one and tired on day one thousand."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Use it. Set your coffee down on it. It has survived worse than you."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "a-room-in-three-objects",
+    "status": "published",
+    "body": {
+      "title": "A room in three objects",
+      "excerpt": "You do not furnish a room all at once. A study of one corner, built from a chair, a lamp and a stone table — and why that is enough.",
+      "featuredImage": {
+        "$asset": "post-room"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The best rooms we visit were never designed in one go. They were assembled, slowly, around a few things worth keeping — and everything else earned its place by being genuinely needed."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with where you sit"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A single good chair fixes a corner in place. Put a lamp beside it for the evenings and a small hard surface within arm’s reach for a cup and a book, and you have made somewhere to be — which is more than most fully furnished rooms manage."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Leave room to grow"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A corner that is finished is a corner that is closed. Three considered objects with space around them invite the next thing when it comes; a wall of furniture bought in a weekend never does."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Buy less, choose better, and let the room fill itself over years. That is not a compromise — it is the plan."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

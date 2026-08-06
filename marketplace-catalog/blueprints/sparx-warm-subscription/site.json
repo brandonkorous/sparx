@@ -1,0 +1,3485 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "09eebba3-5db8-4343-83ca-dd1913163955",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "958c618d-e0a2-4872-a4a6-6c4d4dd5da76",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "04e4f4fb-4ca3-4641-b88b-f90792753f2c",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "853ad4f3-4df7-449b-a65b-8ea1fefe0eba",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "a0f0210e-949e-484c-b712-97f7bd85e926",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "25081a4e-b5b8-4f18-99b0-4c00c2287f4b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "09adbe6b-76db-4215-bd9e-7969c6ed50c2",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "d5ad8086-0ed7-4adb-8926-4b8d1d396424",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "8c72d33c-ff51-41cd-858a-237cdef973e1",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "4dfae7e2-b3d5-461a-9ea1-15ead4c8be7b",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "94bb4763-a0c9-45d8-ba2a-f8e5e4605605",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "e62429e9-0a3d-428e-b8ed-3031e340ca27",
+                  "ord": "a2"
+                }
+              ],
+              "id": "a8ec4c3a-4f8c-4138-8330-2338e56e3ee4",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "ac5c15a4-0a68-49c3-9656-c57fc25856d8",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "889c10db-c3ff-4495-8288-5314c0177128",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "1ca6f067-2e72-4466-aa18-551e064e3a9a",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "cae0624f-4de6-4861-abf9-21297d253922",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "e657625f-2859-4447-b521-4404d31f6fb4",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "515c251f-a45d-4be7-9580-dba07ee8d091",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "8125c806-58dc-4dad-8d86-ce5b1182b41f",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "fa9feb74-f169-4d51-be31-312fe0e8f90c",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "eb93f148-82aa-4946-b53e-74c856cd110c",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "3ec8bca3-8273-4b0f-8792-74083124f123",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "399b5481-afb3-47a8-b530-fa77f34676bb",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "a685d113-ca0c-4d28-ae49-2ae2ce65351f",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "29eb844a-bf11-4e06-8f6f-e03e78bb9510",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "acd49a9b-d9e0-438a-85cf-95cb5f1d23e2",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "2e91c9e1-b685-4e43-a4c6-83df013ce0bf",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "0964a647-4f0b-45b7-a014-585707ef037b",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "ea43efbd-8294-4e77-95b6-bd9aa7a4ed82",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "5c68bd46-17e3-4ea0-a41c-e8b5055c1b65",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "7d43be56-83d4-4789-8eb0-ec0e619be10d",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "f41c741c-4690-4a18-8cbc-516ad46e4ac7",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "64979d7a-7e1b-4587-96d8-0bd00f7c1d1f",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "b5970b92-2efb-4f8a-8305-05b6b9b6b2ee",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "3cb999ae-cb26-4761-b789-3f880615e94e",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "7fdb9f1e-af40-4611-b980-0a15b9adca18",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "cbe1d131-21dd-4bca-b08f-118b24f90f9b",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "cd6255a4-7d7e-467e-8987-1bda236a2c6e",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "4660c849-baad-4baa-909d-f0c0c136258f",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "efeebabb-c478-41e4-bfa5-c94e68a1dfc7",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "471bd93f-fb5b-4f69-bd55-cca7ceda64fe",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "bdea12f9-ba2b-402e-81ac-01732442f4b2",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "747a3624-d7fc-4865-a2e8-995720b3125c",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "399d56bb-0c86-45a6-be30-98159b3685cd",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "e659b044-af15-438b-a1d9-29b3f16ad8bf",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "0434e9de-3fc9-48cc-b703-f242ed502bbf",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "e6c26897-73ae-4491-97a9-5baf7dff6c65",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "5e35d074-a7fe-48a2-91c1-7d92fd458b34",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "f5723d74-bee3-4633-8772-603d2052fc47",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "fb8ae7c3-af88-4829-b00e-7ee09f47f82c",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "8a14f341-a665-459b-a5c4-0e741fe44ddf",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "70ceec6f-520c-474c-a164-6043654eb4e7",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "c5e31fdb-6108-4d79-988c-0b756f3d7fcf",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "67d5bfc4-7112-4799-bafb-1f8df31d091c",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "dba07686-7bcc-4a6e-b1c4-6122050aea1c",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "9a3e717b-65a4-4b36-a9c1-1b040759974d",
+                  "ord": "a1"
+                }
+              ],
+              "id": "a68e9837-4978-471e-8609-3c06c9b0ed5d",
+              "ord": "a0"
+            }
+          ],
+          "id": "46026921-cba2-48cb-828c-6e548e618c17",
+          "ord": "a2"
+        }
+      ],
+      "id": "8abd32fc-409d-49d1-8d4f-b80fe94722be"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Latitude Coffee Club — single-origin coffee, roasted to order",
+      "seoDescription": "Latitude Coffee Club sends a fresh single-origin harvest to your door each month, roasted to order, with the story of the farm that grew it.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "292e6a20-4942-450d-af09-669410b0c0f1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=1400&q=80",
+                  "alt": "Freshly roasted coffee and a warm cup on a table",
+                  "loading": "lazy"
+                },
+                "id": "8a67b90a-1f33-4c83-9a9c-1d4375b9fbdb",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["A new coffee-growing origin at your door each month"],
+                        "id": "ab93cc72-d9db-42fa-b8cc-54cabc51f3d7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Latitude Coffee Club is a subscription for people who want their coffee to taste of somewhere. Every month we send a fresh single-origin harvest, roasted to order, with the story of the farm that grew it."
+                        ],
+                        "id": "2a20cc4f-aecb-4dca-afde-1e8704c4cf8a",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/products/the-origin-club"
+                            },
+                            "children": ["Join the club"],
+                            "id": "e0687d4b-06dc-4739-9fff-5eddb5df5c34",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-neutral btn-outline btn-lg",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["Read the Journal"],
+                            "id": "17188d4b-0187-42f4-8da2-4eca891c7de7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a5c4a24d-b074-4d59-a991-7be352a85ccc",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "2aff596b-43f8-482a-82ed-c07c2171068b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "547cd7a2-16ef-4a5f-9b51-762a77642c00",
+                "ord": "a1"
+              }
+            ],
+            "id": "64006a5c-15fc-421c-a43f-cedb4a67731f",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["This month at Latitude"],
+                    "id": "1bb863df-5a95-4ce5-84f4-f0349bb96c5e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "42421c68-5429-4f74-9f93-3d9c7b95b1a6",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "4b738657-e50e-48f7-b5bd-079ad8f8c6bc",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "b6fb875b-2af2-43e0-bbdd-248922acc2a9",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "f6e565f1-a7a8-4506-b278-153bbef60197",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2dcd313e-f7fe-40bd-8cbe-6d0a0699f43c",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a28554d7-a55f-4755-bea4-1c7fbc8083bd",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "5fe16f86-5081-419f-a9e1-9798885b6226",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "8a80af1d-3b92-4632-b837-e134f4a72f00",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "a538629d-8d7c-4470-a970-6e48141789b3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "7355ecf5-38d3-4498-97ec-4eac284c6a78",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "84632fed-7f2a-45b5-badb-411d4727bb7e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "04a0ba2b-e594-4ec3-bff0-519aa7ac0d2b",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "ababf4fb-43a2-4a82-a8ba-68c971b0d1ad",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
+                        "children": ["How the club works"],
+                        "id": "c4706cad-acf4-4211-a1e5-206a9f1f9084",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "From your first order to a fresh bag at your door, the whole club is three simple steps — and you can pause or cancel any time."
+                        ],
+                        "id": "834b8285-284a-4a05-b171-297d53394c12",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "94dc0b82-8822-458d-95b6-2a55d5071821",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @2xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=1400&q=80",
+                              "alt": "Choosing a grind and a plan",
+                              "loading": "lazy"
+                            },
+                            "id": "47cdadbe-8bf2-4d41-9ccf-d626f9550db1",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Tell us how you brew"],
+                            "id": "3f7b68a1-acf7-4257-96df-c76c4621b6a1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "Pick your grind — whole bean, filter, espresso or Aeropress — and how long you would like to ride along. That is the whole set-up."
+                            ],
+                            "id": "fc250d04-806a-43fb-8c95-c06b81851096",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "976af3e9-28d7-4bdb-a95b-5d8eb19d9bab",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1498804103079-a6351b050096?w=1400&q=80",
+                              "alt": "Coffee roasting to order at the roastery",
+                              "loading": "lazy"
+                            },
+                            "id": "aea210c5-2c72-4104-9c5b-2f68f02c1ffa",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["We roast to order"],
+                            "id": "0703a45e-e2bf-4166-8e69-dbe86aa7b414",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "The week your box ships, we roast that month’s origin fresh in small batches. Nothing sits on a warehouse shelf waiting for you."
+                            ],
+                            "id": "1f6c2da8-7ca9-415c-a7f2-b6719358a60c",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4477b0d3-449f-4e88-aa16-62c382525a0b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1444418776041-9c7e33cc5a9c?w=1400&q=80",
+                              "alt": "A fresh box of coffee arriving at the door",
+                              "loading": "lazy"
+                            },
+                            "id": "8cbfce73-f514-4823-9a55-8bd9146bc992",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["It arrives, still fresh"],
+                            "id": "38df0ebb-2305-4644-b198-45a677859b6d",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": [
+                              "A new single-origin harvest lands at your door each month, with a card telling you who grew it, where, and how this year tasted."
+                            ],
+                            "id": "9e9c3004-663b-4572-902b-da92ee236fe0",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "2a976eb1-8657-49b9-ba5e-0d5f5a0f6681",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "eb6029c5-e395-4a55-8c7f-54693351ad5a",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "4890ff22-c2a9-4e8a-b540-c606c60ff7b7",
+                "ord": "a0"
+              }
+            ],
+            "id": "ca2a7b6e-a38d-4c22-9008-5a21ed2f5e32",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1521302080334-4bebac2763a6?w=1400&q=80",
+                  "alt": "Green coffee at a farm on the bean belt",
+                  "loading": "lazy"
+                },
+                "id": "42f4fe04-2961-443e-a0f3-9a2e7e5fef57",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-16 @3xl:px-10 @3xl:py-24",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold leading-tight text-base-content @3xl:text-4xl",
+                        "children": ["Every bag has a farmer’s name on it"],
+                        "id": "fdaf98cb-51b3-4ede-a907-f04c00aa6f77",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We buy whole harvests direct from growers along the bean belt — Ethiopia, Colombia, Kenya — and pay above the fair-trade floor for the pick of the crop. When you know who grew it and how, the coffee simply tastes better."
+                        ],
+                        "id": "01d8e148-bccd-43e5-814f-b7900f0e6bcb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "font-semibold text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": ["Read the origin stories"],
+                        "id": "7699fb9f-4eb5-4c83-9eee-a5860da80237",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "5a01bde3-2e4e-407b-8e30-0728421a418a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "76bf92d7-40f2-4af7-ba9b-ee8d75611f48",
+                "ord": "a1"
+              }
+            ],
+            "id": "97fbc100-1736-43db-8f9d-2a5f57ab31bf",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Single origins"],
+                    "id": "868d7617-a54d-4958-b238-2a6e9c5202fb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "dbb6fd29-cea1-4f96-b9d2-b2195193a7a1",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "af426b33-5646-4fe0-9669-c445840fdcae",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "20c6522b-5f18-477a-8d21-be87c5d3bddf",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "757c2e27-4b9a-4594-9355-90e00c42b179",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a7374696-f7da-4153-83ae-92edd035dfb4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e14bf44d-9779-46aa-bcac-21c423125f0c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "03acd2ce-4281-46ea-b3e8-b29f388bf4b9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "18f16976-1dc0-4938-abe7-1f1a89119a2a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "5a333cd9-2c4e-4949-9d97-82fb4c09a839",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "490d71f2-1a05-4210-9623-47a6f7a2d821",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "8043d763-6df5-4a36-b8a9-21970317a48e",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.single-origins"
+                },
+                "id": "2d1dd9fd-2a02-4084-98f5-c56813137f14",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "d7c51b8a-8f68-4187-b904-0f7b585bd41d",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
+                        "children": ["Choose your cadence"],
+                        "id": "9dfe197d-e28a-495c-a648-91c7d2881746",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "Every plan sends a new single-origin harvest, roasted to order and shipped free. The longer you stay, the more you save — and you are never locked in."
+                        ],
+                        "id": "4923c397-8695-466d-8ddd-94d9db646c81",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b97d0807-d2b9-4256-bb96-d99b9ec40be5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @2xl:grid-cols-2 @4xl:grid-cols-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 rounded-box bg-primary p-6 text-primary-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-center justify-between gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-primary-content",
+                                "children": ["12 months"],
+                                "id": "0e05e07c-e062-44ba-bc7c-8e2df9093f47",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "badge badge-neutral",
+                                "children": ["Best value"],
+                                "id": "5cf4a5f0-ed4b-423e-947c-a0a9050d0470",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "27c3d7f1-b59b-42fb-aff4-a4d787ad8186",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold text-primary-content",
+                                "children": ["$15.99"],
+                                "id": "96fa1dbe-3f2f-4127-b38f-7ba46d443743",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-primary-content",
+                                "children": ["/ month"],
+                                "id": "3d43f0d2-9db9-4707-b4c5-80d3524b6da3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e8acfd8c-427c-4af1-b591-dccf24a1e8e1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-primary-content",
+                            "children": ["Billed once, then a box every month for a year."],
+                            "id": "af20edcd-a655-4a93-8230-f5f40cd26037",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-primary-content",
+                            "children": ["Save $72 and get a free enamel mug."],
+                            "id": "1e381ef8-001c-4138-9c2c-21b43a716a8d",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-neutral btn-lg",
+                            "attrs": {
+                              "href": "/products/the-origin-club"
+                            },
+                            "children": ["Start the club"],
+                            "id": "1ae78105-f9ce-4176-b393-48e64aff5599",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "7c23f087-f580-4b18-93fa-bb205d27dad6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-center justify-between gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["6 months"],
+                                "id": "62c1e8f9-2c62-4579-9d9d-f990c37bd285",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "badge badge-accent",
+                                "children": ["Popular"],
+                                "id": "e4e4c28e-0b66-419a-9058-0888ea5bffdf",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ce1d652b-4f74-41c4-9e72-15b86069a6f5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold text-base-content",
+                                "children": ["$17.99"],
+                                "id": "140113e4-8797-45d8-8925-2ddf8f673048",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-base-content",
+                                "children": ["/ month"],
+                                "id": "448fa10b-e1f5-42e1-9d38-8b19bd78680f",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c37e43d4-417f-42e0-85fc-e9c9aa20e3d3",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Billed every six months, a box every month."],
+                            "id": "287dd2de-27bf-4292-9d28-a03f72394366",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Save $24 over paying monthly."],
+                            "id": "978553f0-5b17-4215-b124-a4f0baa9ef8c",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/products/the-origin-club"
+                            },
+                            "children": ["Start the club"],
+                            "id": "cc2d35a2-6019-42dd-988c-8316694e995a",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "5e050759-aa6d-48bb-9145-2816a7afb2e9",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-center justify-between gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["3 months"],
+                                "id": "36922969-9639-405d-ba6d-cd3f08dd442b",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "0b3a3dcf-00c5-424a-bbaf-deb8b3a875ab",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold text-base-content",
+                                "children": ["$19.99"],
+                                "id": "408a9c5b-36ca-4e95-a9ab-2b2c9ec9e3bf",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-base-content",
+                                "children": ["/ month"],
+                                "id": "a832af14-d75e-43a3-bb4b-e5c88c445c7b",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "f24c2a02-1e62-4d91-83f9-9133e3c592cd",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Billed every three months, a box every month."],
+                            "id": "54b268d7-8184-4bc4-b15e-8ebd85e6dc2d",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["Save $6 over paying monthly."],
+                            "id": "6ad90c66-78a0-453c-b8ca-1b82b5bbabbc",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/products/the-origin-club"
+                            },
+                            "children": ["Start the club"],
+                            "id": "15103e91-1df4-4507-b3cc-bcb82327ead8",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "feeaddb7-4337-4fd2-a46b-9cf2e2b38bcb",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-center justify-between gap-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h3",
+                                "class": "text-xl font-semibold text-base-content",
+                                "children": ["1 month"],
+                                "id": "65c82c8d-d72b-4d7b-bb66-09fedd056778",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "0f385f99-72ea-4c9b-a6dd-456b82994664",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-1",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-3xl font-bold text-base-content",
+                                "children": ["$21.99"],
+                                "id": "1596f09a-4be8-4f42-8bfc-7784ee6092bd",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base text-base-content",
+                                "children": ["/ month"],
+                                "id": "587d7811-5c4f-488b-aac5-85411e7f0344",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9cd1985f-9019-4803-9359-30d8426d89a8",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["Billed monthly. Pause or cancel any time."],
+                            "id": "496a9be6-4048-4cdd-8f20-d1b948f02f22",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-base-content",
+                            "children": ["No commitment — try a single origin first."],
+                            "id": "1ffa08cb-537c-41b1-8bf5-6e098a263105",
+                            "ord": "a3"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/products/the-origin-club"
+                            },
+                            "children": ["Start the club"],
+                            "id": "c1808c23-ff68-4bb8-a3bf-851a4fb0291b",
+                            "ord": "a4"
+                          }
+                        ],
+                        "id": "63d52cf9-c50b-468b-ae55-39c08093b498",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "2f6fc79e-ccd5-47b1-bbcb-42f8c0286651",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3701e6f1-4a56-4cdb-8bb7-b69efd1a3024",
+                "ord": "a0"
+              }
+            ],
+            "id": "a4b4bf14-cf77-4db9-a6ab-a22e8bfe0810",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=1400&q=80",
+                  "alt": "A pour-over brewing on a warm kitchen counter",
+                  "loading": "lazy"
+                },
+                "id": "4bee936a-52bb-45f8-9e9e-507ad2db9b5d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-16 @3xl:px-10 @3xl:py-24",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold leading-tight text-base-content @3xl:text-4xl",
+                        "children": ["Brew it like we do at the roastery"],
+                        "id": "ad649c1f-ae68-400c-9fe1-b2f6ebca696e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Great beans are only half the cup. A ceramic dripper, the right grind and a slow, patient pour turn a good bag into the best coffee you will make all week — and every box tells you exactly how."
+                        ],
+                        "id": "936e42f3-2ae6-49e3-936e-831cbdf19a52",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "font-semibold text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": ["Shop brew gear"],
+                        "id": "c70b4515-4379-442f-a70f-984592a82dc3",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "52d824e2-135b-4a6a-a042-b7c46e36b762",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "23ef1d29-9b9c-40fb-b0d7-0e3bff5ac27c",
+                "ord": "a1"
+              }
+            ],
+            "id": "b64110b0-cf91-44af-9bdf-d57d0acd355f",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Brew gear"],
+                    "id": "e58ea48a-51cb-4e02-b324-ee246a8de8a4",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "8cba0da7-c3cf-4d9b-9bad-bc68153eadbf",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "a9591872-24fe-44da-b160-18a7ca8973c3",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "1312c14f-dca4-4dac-be70-c92382f3d804",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "bba15a15-b75e-4d0f-b5a6-261d4ac8ef8e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f1c83958-2eed-40bd-8941-925cf619163f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2a7ef5e6-11dc-4c7c-8e9a-7aa9a76406d2",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "0d2d33fa-9182-45b7-a755-3df0afe2091f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "da7d2dc8-d628-442a-8bb3-5a1e0894f212",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "7161b164-7a52-474c-9c6e-573778f3877a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "750c987b-9795-49f2-95bc-8ccc78069d53",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "94d7ee26-90f4-44a1-b87d-65c937df2b03",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.gear"
+                },
+                "id": "af0e379e-37ab-44fb-876b-9d637eec176f",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "2394d163-80bc-49a1-94f2-f0cf36801d78",
+            "ord": "a7"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
+                        "children": ["What arrives each month"],
+                        "id": "3c268b76-75a5-4b40-84c6-8ef0d90ecce2",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "Every box is the same promise: fresh coffee, a real story, and everything you need to brew it well at home."
+                        ],
+                        "id": "a597013e-b959-49ac-ba61-ed09a442a4e4",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "33ddeab3-1540-4d11-96d0-95e96a260cae",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @2xl:grid-cols-2 @4xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Two fresh single-origin bags"],
+                            "id": "aa8824b5-640c-4287-9f75-f38b8543bad6",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": [
+                              "A new coffee-growing origin each month, roasted the week it ships and never before."
+                            ],
+                            "id": "e40af1ec-5b52-4dcc-98d0-5934c669c06f",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "34caa043-f39a-4aea-a9b6-cd7dd67a5909",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["A grower’s story card"],
+                            "id": "25bc885e-76b6-4b14-81b1-7e02155ea8d4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": [
+                              "Who grew it, the farm and region it came from, and how this year’s harvest actually tasted."
+                            ],
+                            "id": "c2bc8a8e-bf94-429c-82ad-2011dbff61f7",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "df01810a-d012-4eea-92ae-4e9ff84172c4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Brewing notes for every origin"],
+                            "id": "114e6073-74f1-4f81-981a-8a096a58910f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": [
+                              "The grind, the ratio and the timing we would start with, so your very first cup is a good one."
+                            ],
+                            "id": "17aae6c5-b285-4a7d-90b5-1d0b43da1949",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b2159607-233b-420a-83e3-50fea784d994",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Your grind, dialled in"],
+                            "id": "579ab5a9-3853-4bda-b6d9-7c6fd8b4aafd",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": [
+                              "Whole bean, filter, espresso or Aeropress — ground to order the day it leaves the roastery."
+                            ],
+                            "id": "e2e36667-3fde-4b96-8779-3ff308ea429a",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "af3b3d94-c8ec-447e-83b8-e7fb2b900b20",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Roasted, then shipped in 48 hours"],
+                            "id": "f39ff041-b1d2-49f4-890e-a5c97a639827",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": [
+                              "Straight from our roaster to your door while the coffee is still at its brightest."
+                            ],
+                            "id": "4994b58c-754e-404e-ac1d-41b9eed5f7a1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9ad0045e-99fe-4e19-a922-5255aebcda84",
+                        "ord": "a4"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Free shipping, always"],
+                            "id": "3a640d2f-a3a3-49ce-ab80-416fd20f123a",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": [
+                              "Every box, every month, with no order threshold to clear and no surprise at checkout."
+                            ],
+                            "id": "e3efcfce-4f80-4b38-9b0d-e0813f8212fe",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "9da07570-891a-48da-9324-095ede6d42bd",
+                        "ord": "a5"
+                      }
+                    ],
+                    "id": "0e4c711c-e31b-43d3-b3e5-51d2ad106213",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "45990160-3768-47f4-a583-4b85fb299467",
+                "ord": "a0"
+              }
+            ],
+            "id": "a8bdc35f-24ed-4956-b958-08191114ce79",
+            "ord": "a8"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
+                        "children": ["From the roastery"],
+                        "id": "edd6163d-0832-42fc-9842-468ec929a5f6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "A few frames from the small roastery where every month’s coffee is roasted, cupped and bagged by hand."
+                        ],
+                        "id": "ea46f233-feb7-472d-9a97-ee7dd0516d87",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "a3960e2a-1e9e-4591-a784-fb25f3fcaa5e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex snap-x gap-6 overflow-x-auto pb-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "figure",
+                        "class": "flex w-72 shrink-0 snap-start flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1507133750040-4a8f57021571?w=1400&q=80",
+                              "alt": "A roaster working the drum at the roastery",
+                              "loading": "lazy"
+                            },
+                            "id": "1992ac14-b403-45bc-bbce-ea83ea6d06bb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "figcaption",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["On the roaster"],
+                            "id": "72b7b193-8740-4e83-b496-2a6fc27a8f31",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c239894c-9220-4216-a6de-49b833981b55",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "figure",
+                        "class": "flex w-72 shrink-0 snap-start flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1503481766315-7a586b20f66d?w=1400&q=80",
+                              "alt": "Cupping the new lots on the bench",
+                              "loading": "lazy"
+                            },
+                            "id": "aa3f7158-e198-48f4-a7ca-f0328c3f91e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "figcaption",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["Cupping the new lots"],
+                            "id": "1b8d91aa-f826-4abd-9d7f-51220ba10c57",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "84136714-1f1b-454e-8f0d-9b0cdbc93729",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "figure",
+                        "class": "flex w-72 shrink-0 snap-start flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1459755486867-b55449bb39ff?w=1400&q=80",
+                              "alt": "Fresh coffee bagged and ready to ship",
+                              "loading": "lazy"
+                            },
+                            "id": "5dba3f2a-fbc5-4596-8c89-89beffd0e728",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "figcaption",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["Bagged fresh"],
+                            "id": "9f0902a3-fba1-44d3-84c1-e16d85d48cd8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "332ce722-2b90-4a37-9a1c-f476dd2e28a2",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "c775e1ea-f522-436a-8a8e-c1a038c8b787",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "50e4ff12-0dfe-4445-9a1d-d1c1f73a5908",
+                "ord": "a0"
+              }
+            ],
+            "id": "58e31b2f-074e-495f-81bf-34928fb8eeff",
+            "ord": "a9"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Latitude Coffee Club",
+      "seoDescription": "Browse everything Latitude Coffee Club makes, with prices and options at a glance. Coffee subscription & roastery.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "09ff03bf-20f1-47e0-a4ac-7206219b6c04",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The whole coffee shelf"],
+                    "id": "8e1fca82-a985-4a7b-a9e6-fd05aee56b2c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Every coffee Latitude currently roasts — this month’s single origins, the everyday blends, decaf, brew gear and gifts — filtered and sorted however you like. Roasted to order, shipped free, never older than it should be."
+                    ],
+                    "id": "43493d34-3bfe-4054-9aba-06f02da78ec1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "51054579-d5ef-4a5a-adfd-6a7fc9e3e3cb",
+                "ord": "a0"
+              }
+            ],
+            "id": "a2d7f54a-064f-4d42-a7bf-9858a3ea1561",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "50fd277b-1118-4b68-9c61-a7ae5166eda6",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Latitude Coffee Club",
+      "seoDescription": "Explore the collections at Latitude Coffee Club, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "326ea4f0-b814-4012-9f06-f412a487fdae",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Coffee, grouped the way you drink it"],
+                    "id": "b2ba1234-36b0-49fa-8d43-1cc43e84a574",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "This month’s single origins, the everyday blends, decaf, the brew gear that finishes the cup and gifts to pass it on — gathered into shelves so you can start wherever your morning does."
+                    ],
+                    "id": "965025ab-641a-483e-b32a-f810ad656b90",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "5e6c4571-a48f-46dc-ab5c-7f08574f3ad4",
+                "ord": "a0"
+              }
+            ],
+            "id": "7c028b3c-d9fe-427b-b7d9-003bf8cbb32a",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "2f418ed8-96f9-4cb4-af11-79b66b8adde7",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Latitude Coffee Club",
+      "seoDescription": "Review what is in your cart and check out securely at Latitude Coffee Club.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "bcff9653-6ee6-4c57-b699-1f211098ecd5",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-5xl",
+                    "children": ["Your cart"],
+                    "id": "7224b390-2de1-49c8-9bb4-455ff93100ed",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Nothing here is roasted until you order it — every bag is roasted to order and shipped free within 48 hours, no threshold to clear. Choose a club plan and it simply renews each month at the price you picked; pause or cancel any time, no questions."
+                    ],
+                    "id": "26af2ed5-92fc-49bb-a1f1-73d09bd397fb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "448f9d63-96b6-4435-bd83-708052ecf35f",
+                "ord": "a0"
+              }
+            ],
+            "id": "f0a9a6f4-8795-4700-bdc1-91603ec17ee1",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "c12c9aa2-18de-467c-bbaa-6c7d2827edb9",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Latitude Coffee Club",
+      "seoDescription": "Search Latitude Coffee Club for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "7c95f3b9-e421-44c6-95e3-e6fedbea8ac4",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Find your coffee"],
+                    "id": "64325781-6bfc-44b5-bdd9-70ec366c91cc",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "After a particular origin, a roast level, or a piece of gear you saw in a box? Search the whole shelf and the Journal below — by country, by tasting note, by name."
+                    ],
+                    "id": "3179b78f-3269-4790-b4b3-8caedb7729f9",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "9d1ccaf5-0172-4bba-a670-8c84057dbaad",
+                "ord": "a0"
+              }
+            ],
+            "id": "eee79814-bf8e-4ede-9d39-807bb8009a91",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "f1842a6a-ed0b-43fa-b581-f9169f2bdc00",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Latitude Coffee Club",
+      "seoDescription": "Stories, guides and notes from Latitude Coffee Club.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "726d93bc-4649-46c0-8045-bf95013463ae",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Latitude Journal"],
+                    "id": "45591c50-f63e-436e-a1f1-a3efa38bcde3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Origin stories from the bean belt and notes from the roastery — who grew this month’s coffee, how we roast it, and the small things that turn a good bag into the best cup you make all week."
+                    ],
+                    "id": "e59810c9-8bb3-4321-a3da-dff3fc801590",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b7e8c9b9-fb29-4f3d-91dd-149ebd5e1f69",
+                "ord": "a0"
+              }
+            ],
+            "id": "cc342e63-f666-42df-9e69-202e57ff254e",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "f59ec79b-a0e9-4c77-9388-25f49d429650",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "64ccf14d-6c5d-4917-8434-686483175fad",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "ffcdd81e-3721-4f33-9efe-631f5557c567",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "568c1e07-5d38-44ac-bd99-046fd30bb5a3",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "0e38e6d5-80a1-4b50-ba96-1fb150c117e8",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "f7895b71-0eb4-4e0f-a088-38454c655f35",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "eaf876a8-12bb-4ea8-bc3e-98af41caf1c6",
+                "ord": "a0"
+              }
+            ],
+            "id": "de720cb7-6763-4873-bda4-c124a073728e",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Latitude Coffee Club",
+      "seoDescription": "How Latitude Coffee Club sources single-origin coffee, roasts to order, and puts a farmer’s name on every bag.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "e61201d5-f208-45d9-9925-6927134f319b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["About Latitude Coffee Club"],
+                    "id": "553cb973-d76d-424b-90bf-51f0781d9688",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Latitude Coffee Club started with a simple frustration: most coffee at home tastes of nowhere. It is roasted months ago, blended to hide where it came from, and it lands on your shelf a stranger. We wanted the opposite — coffee you could taste a place in, and know the people behind."
+                    ],
+                    "id": "987de6e6-c1a8-4010-9607-486b1f5d3f0c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "So every month we follow the harvest around the bean belt and buy a single origin at its peak, direct from the growers. We roast it to order in small batches at our own roastery, grind it the way you brew, and ship it within two days — with a card that tells you whose farm it came from and how this year’s crop turned out."
+                    ],
+                    "id": "679180b7-f36e-462b-a83b-4a61f6319c66",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "That is the whole club. No lock-in, no filler, no coffee older than it should be — just a new origin at your door each month, and the story that makes it taste like more than a cup."
+                    ],
+                    "id": "0f29db24-5bce-49b0-829d-ce72fdc21389",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "c1d5129e-43a0-458c-bd44-e2919cc32b44",
+                "ord": "a0"
+              }
+            ],
+            "id": "5c31b3fd-967b-40a9-a7e2-e3d8293cc1b9",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Latitude Coffee Club",
+      "seoDescription": "Get in touch with Latitude Coffee Club — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "a5dce200-f54f-4153-8952-69b01a937fac",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Talk to the roastery"],
+                    "id": "946c054e-be17-44ca-83e9-fc4c95d9642b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A question about a plan, a grind, or which origin to start with? A real person on the team reads every message and answers straight — usually the same day, always over a fresh cup."
+                    ],
+                    "id": "a68fa850-e3c4-447f-9004-1475849784f4",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@latitudecoffee.example"
+                    },
+                    "children": ["Email the roastery"],
+                    "id": "ae68e44c-adf6-4f6e-b9a9-b046d4f64240",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "229f0ab4-c9ba-41f6-a5d0-14367513fd9a",
+                "ord": "a0"
+              }
+            ],
+            "id": "e5fee0e5-6219-4970-8a51-5f480b67a182",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Latitude Coffee Club",
+      "seoDescription": "Product details at Latitude Coffee Club — coffee subscription & roastery, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "f3e16874-63db-482a-a22b-6c5151dfec5e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-widest text-base-content",
+                            "children": ["Latitude Coffee Club"],
+                            "id": "c018a694-f82b-4417-85d1-fbd569b58bf4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "68b6de9e-6dd5-472b-899d-ec375d291034",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "4d64dec3-e46e-48be-bfcf-18580ff09df8",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-base-content line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "e3f5bc32-ebb8-4604-a5da-a2900138d2b0",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "00a21059-d3b5-43cb-964f-0944a8621db5",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1510733a-a39b-4b7b-9cdb-fcbcf8c7eb51",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "4983248a-e652-4329-bb8a-c5a0afa2a9da",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "abb5d5ee-8844-4040-a72f-c97fa42586d4",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "rounded-box bg-primary p-4 text-primary-content",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base font-medium text-primary-content",
+                            "children": [
+                              "Roasted to order, ground the way you brew, and shipped free — every bag and every plan."
+                            ],
+                            "id": "f89a8457-0ee2-4359-8eb1-2b2968e1fcfe",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "f01e9bfa-a061-41b1-a9b0-fc74e14c4960",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "b9c7677e-aeb3-483e-b404-2ce4c574b9a9",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "095a5322-33a5-49cb-950a-8bca13f017a5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "53696256-7baa-48e6-aecb-58ba039012d3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "99e3dd1d-e830-4e4b-8e50-6e7c75fc0a2a",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "e4d59ba4-a73e-49ad-9272-3cf8c0a44d3b",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "b47598a9-ab75-4790-a0be-448adbc29125",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex flex-col gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["Origin & roast"],
+                                "id": "ab0e2780-3640-4284-8c6d-bf68ed985507",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "We follow the harvest around the bean belt and buy a single origin at its peak, direct from the growers. Every bag is roasted to order in small batches at our own roastery the week it ships — so what lands on your shelf is days old, not a season old, and still at the brightest point of its life."
+                                ],
+                                "id": "3bee8c0b-e296-4a62-a3fd-804951345348",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "51f0de84-f5b0-4ee2-960d-465e93325c0d",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["Tasting notes"],
+                                "id": "4717465f-ce09-4096-9535-b1e9e8bdc60a",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Each coffee arrives with a card telling you who grew it, the farm and region it came from, and exactly how this year’s harvest tasted — plus the grind, ratio and timing we would start with, so your very first cup is a good one."
+                                ],
+                                "id": "bc5e5d0e-aa11-40e4-8629-78b54c3c5b12",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e7f8aa9b-2652-462e-a576-a404fcd91098",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["How the club works"],
+                                "id": "339c3c60-6cc7-46a0-9fb3-643e6835bf6d",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Prefer this on repeat? The Origin Club sends a fresh single-origin harvest to your door each month, ground the way you brew. Choose a 1, 3, 6 or 12-month plan — the longer you stay the more you save, and the year-long plan arrives with a free enamel mug. Pause or cancel any time, no questions."
+                                ],
+                                "id": "aa6030a0-de91-4472-ad62-83c61f3970f3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "712a0f3c-b14c-4078-9912-a8b38caaea9f",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["Shipping & freshness"],
+                                "id": "2b9d9d0a-0fcd-49c8-8388-1beb45f39eb1",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Roasted late and shipped fast — dispatched free within 48 hours of roasting, tracked to your door. Something not right? Tell us within thirty days and we will put it straight; coffee is meant to be enjoyed, not worried over."
+                                ],
+                                "id": "b20ef0eb-fb43-4eba-b1dc-a03ec23087dc",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "c05168d5-e44d-4898-906b-4ea4b9d2f9c8",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "a4f7ba01-7ca6-4759-bc82-1dcfb8dc3147",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "f7d29def-f509-40e1-a770-0ac442ff5cb1",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "2afcdcf0-aded-4042-a64c-37931752535a",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "7a3b00ac-43af-44c0-85ed-22065de9c992",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["More from this month"],
+                    "id": "737bea87-57f3-4ae0-a072-e95afd986836",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "3db5d25c-b65e-4a6e-9c96-b56878586089",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "1d486d2f-7b15-4288-8659-70970b3fca4d",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "20a90a8e-1d63-4c33-ad38-9690e3f368f3",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "f65baff0-9e24-4f1c-be90-197ae07dcaa7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "2d012e4c-ab68-4610-8a2b-326d69e1ddb2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "77428f7a-9375-4621-a615-aea06635ec03",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "193edc92-f6dc-4ace-a0e6-7652ec8ec26e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "2d17a69f-edfd-4bac-a8a4-bf8cbcbd2bbb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "fc559ae0-d575-461a-a3a6-24c9b28eca23",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "583cc48d-e97f-446c-8647-3f970d43b4d7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "fe02a641-449b-46da-bbf1-a7fd05c88d08",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "4a9513e9-43b0-47a4-bdb0-dadd45045c89",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "7ee6771e-a53c-405a-95f5-a65218713d21",
+            "ord": "a1"
+          }
+        ],
+        "id": "b9fbc636-5b3b-43de-805d-5c2df10c2e37"
+      }
+    }
+  ],
+  "theme": {
+    "name": "roastery",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(92% 0.035 80)",
+      "--color-base-200": "oklch(89% 0.04 78)",
+      "--color-base-300": "oklch(84% 0.05 75)",
+      "--color-base-content": "oklch(25% 0.03 45)",
+      "--color-primary": "oklch(50% 0.16 38)",
+      "--color-secondary": "oklch(40% 0.04 145)",
+      "--color-accent": "oklch(70% 0.12 55)",
+      "--color-neutral": "oklch(28% 0.03 45)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(50% 0.2 14)",
+      "--radius-selector": "2rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "0.875rem",
+      "--depth": "1",
+      "--font-sans": "\"Karla\", sans-serif",
+      "--font-head": "\"Cormorant Garamond\", serif",
+      "--color-primary-content": "oklch(98% 0.01 38)",
+      "--color-secondary-content": "oklch(98% 0.01 145)",
+      "--color-accent-content": "oklch(15% 0.02 55)",
+      "--color-neutral-content": "oklch(98% 0.01 45)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 14)",
+      "--color-danger": "oklch(50% 0.2 14)",
+      "--color-danger-content": "oklch(98% 0.01 14)",
+      "--color-highlight": "oklch(70% 0.12 55)",
+      "--color-highlight-content": "oklch(15% 0.02 55)",
+      "--color-border": "oklch(84% 0.05 75)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Cormorant Garamond\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(19% 0.02 45)",
+      "--color-base-200": "oklch(16% 0.02 45)",
+      "--color-base-300": "oklch(13% 0.02 45)",
+      "--color-base-content": "oklch(93% 0.02 80)",
+      "--color-primary": "oklch(72% 0.14 40)",
+      "--color-secondary": "oklch(74% 0.07 145)",
+      "--color-accent": "oklch(80% 0.11 55)",
+      "--color-neutral": "oklch(34% 0.03 45)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.18 14)",
+      "--color-primary-content": "oklch(15% 0.02 40)",
+      "--color-secondary-content": "oklch(15% 0.02 145)",
+      "--color-accent-content": "oklch(15% 0.02 55)",
+      "--color-neutral-content": "oklch(98% 0.01 45)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 14)",
+      "--color-danger": "oklch(70% 0.18 14)",
+      "--color-danger-content": "oklch(15% 0.02 14)",
+      "--color-highlight": "oklch(80% 0.11 55)",
+      "--color-highlight-content": "oklch(15% 0.02 55)",
+      "--color-border": "oklch(13% 0.02 45)"
+    }
+  }
+}

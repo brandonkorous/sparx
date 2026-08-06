@@ -1,0 +1,233 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-actually-build-endurance",
+    "status": "published",
+    "body": {
+      "title": "How to actually build endurance",
+      "excerpt": "There is no shortcut to a big day in the saddle, but there is a method. What actually moves the needle when you want to ride longer than you can now.",
+      "featuredImage": {
+        "$asset": "post-training"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Endurance is not a talent you either have or you do not. It is a base you build, one unglamorous ride at a time — and the riders who go furthest are almost never the ones training hardest. They are the ones training most consistently."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Most of your riding should feel easy"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The single biggest mistake is riding every ride at the same medium-hard pace — too easy to be a real workout, too hard to actually recover. Slow most of your rides right down until you can hold a conversation, and save the genuinely hard efforts for one or two days a week. It feels wrong. It works."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Add distance slowly, then hold it"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Stretch your longest ride of the week by no more than ten to fifteen percent at a time, then sit at that distance for a couple of weeks before you reach again. The body adapts to a load it sees repeatedly, not to a single heroic effort that leaves you wrecked for a week."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Do that patiently through a winter and the century that feels impossible in March is a good day out by June. No shortcut, just the long way — which, on a bike, is the only way there is."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "dressing-for-the-cold-and-wet",
+    "status": "published",
+    "body": {
+      "title": "Dressing for the cold and wet",
+      "excerpt": "Winter riding is a layering problem, not a toughness problem. Get the system right and the months everyone else sits out become the best riding of the year.",
+      "featuredImage": {
+        "$asset": "post-kit"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Nobody quits winter riding because they are not hard enough. They quit because they were cold and wet and miserable, and they were cold and wet and miserable because they dressed wrong. Layering is a skill, and it is a learnable one."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Dress for the middle of the ride"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "If you are warm in the car park, you are overdressed. You will warm up within ten minutes and then spend the rest of the ride sweating into your layers, which is how you end up cold on the descents. Dress so the first ten minutes feel slightly too cold, and let the effort do the rest."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Three layers, each doing one job"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A base layer to move sweat off your skin, a thermal jersey to hold your warmth, and a windproof or waterproof shell to keep the weather out. Each layer has one job; add and shed them as the ride and the weather change, starting with the gilet that lives in your pocket for exactly this."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Get the system dialled and the cold stops being the reason you did not ride. It becomes the reason the road was empty and yours."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "notes-from-a-dawn-century",
+    "status": "published",
+    "body": {
+      "title": "Notes from a dawn century",
+      "excerpt": "A hundred miles that started in the dark. Why the hardest rides to leave for are so often the ones you remember longest.",
+      "featuredImage": {
+        "$asset": "post-ride"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The alarm goes at four and everything in you argues against it. The bed is warm, the road is cold, and the century you planned last week is a much better idea in the abstract than it is at four in the morning. You go anyway. You always half-regret it, and you never regret it once you are rolling."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The first hour is a tax"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The first hour of a big ride is always the worst — cold hands, stiff legs, a body asking what exactly it did to deserve this. Pay it. Ride steady, eat before you are hungry, drink before you are thirsty, and let the sun come up. Somewhere in the second hour the ride quietly hands you the day."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The middle is the reward"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is a stretch of every long ride, usually far from anywhere, where it all comes good — the legs are open, the road is empty, and the noise in your head finally goes quiet. That is the bit you came for. That is the bit that gets you out of bed the next time the alarm goes at four."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "You will not remember the ride you skipped. You will remember this one for years."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

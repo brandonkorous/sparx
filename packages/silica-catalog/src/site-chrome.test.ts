@@ -418,3 +418,61 @@ describe('siteNavbar — behaviors the hand-rolled fork did not have', () => {
     }
   });
 });
+
+// ─── The optional CTA (showCta) ─────────────────────────────────────────────
+//
+// The bar's call to action is opt-OUT, not opt-in: it stays for every existing site (and
+// every test above, which pass no flag), and only an editorial header that leads with the
+// wordmark alone turns it off. Pruning it must leave a clean bar — no dead `#`, no lost
+// brand — on the desktop row AND the phone panel, on every variant.
+
+describe('siteNavbar — the optional CTA', () => {
+  it('keeps the CTA by default (opt-out, so existing sites are unchanged)', () => {
+    expect(
+      findNode(siteNavbar(), (n) => typeof n.class === 'string' && n.class.includes('btn-primary'))
+    ).not.toBeNull();
+  });
+
+  it('prunes the CTA on every variant when showCta is false — cleanly', () => {
+    for (const variant of Object.keys(NAVBAR_VARIANTS) as NavbarVariant[]) {
+      const nav = siteNavbar({ navbar: variant, showCta: false, commerceEnabled: true });
+      // `btn-primary` uniquely marks the CTA (the toggle + menu are `btn-ghost`), so its
+      // absence is the pruning — on both the desktop bar and the phone panel.
+      expect(
+        findNode(nav, (n) => typeof n.class === 'string' && n.class.includes('btn-primary')),
+        `${variant} kept the CTA`
+      ).toBeNull();
+      // Dropping the slot must not strand a dead `#` or cost the live cores.
+      expect(hrefsIn(nav), `${variant} leaked a # after pruning the CTA`).not.toContain('#');
+      expect(findHost(nav, HOST_KEYS.siteBrand), `${variant} lost the brand host`).not.toBeNull();
+      expect(
+        findHost(nav, HOST_KEYS.siteThemeToggle),
+        `${variant} lost the theme-toggle host`
+      ).not.toBeNull();
+    }
+  });
+});
+
+// ─── The newsletter footer variant ──────────────────────────────────────────
+//
+// A key swap into silica's `footer_newsletter` — the editorial "join our list" footer —
+// must fill through the SAME by-name machinery the columns footer uses: the live bound
+// copyright, no leaked demo brand, no dead `#`, and the Explore column grown to fit.
+
+describe('siteFooter — the newsletter variant', () => {
+  const footer = () =>
+    siteFooter({ footer: 'newsletter', commerceEnabled: true, cmsEnabled: true });
+
+  it('binds the live site name in the copyright and leaks no placeholder', () => {
+    expect(JSON.stringify(footer())).toContain('site.identity.name');
+    const leaks = textsIn(footer()).filter((t) => /silicaui/i.test(t));
+    expect(leaks, `newsletter footer leaks: ${leaks.join(' | ')}`).toEqual([]);
+  });
+
+  it('publishes no dead `#` links and grows the Explore column to fit', () => {
+    expect(hrefs(footer())).not.toContain('#');
+    for (const href of ['/shop', '/blog', '/about', '/contact', '/search']) {
+      expect(hrefs(footer()), `newsletter footer dropped ${href}`).toContain(href);
+    }
+  });
+});

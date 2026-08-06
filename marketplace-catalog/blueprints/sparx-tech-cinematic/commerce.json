@@ -1,0 +1,595 @@
+{
+  "categories": [
+    {
+      "handle": "headphones",
+      "name": "Headphones",
+      "description": "Over-ear headphones, wired and wireless.",
+      "featured": true
+    },
+    {
+      "handle": "earbuds",
+      "name": "Earbuds",
+      "description": "True-wireless earbuds.",
+      "featured": true
+    },
+    {
+      "handle": "speakers",
+      "name": "Speakers",
+      "description": "Bookshelf, portable and home-cinema speakers.",
+      "featured": true
+    },
+    {
+      "handle": "amps-dacs",
+      "name": "Amps & DACs",
+      "description": "The small boxes that drive your headphones properly.",
+      "featured": false
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "Cables, stands, cases and the parts that keep gear going.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "new-arrivals",
+      "name": "New Arrivals",
+      "description": "The latest from the workshop.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "aphelion-one",
+        "aphelion-one-wireless",
+        "aphelion-buds-pro",
+        "aphelion-monolith",
+        "aphelion-pulse"
+      ]
+    },
+    {
+      "handle": "headphones",
+      "name": "Headphones",
+      "description": "Reference over-ear headphones, wired and wireless.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["aphelion-one", "aphelion-one-wireless"]
+    },
+    {
+      "handle": "earbuds",
+      "name": "Earbuds",
+      "description": "The reference signature, in your pocket.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["aphelion-buds-pro", "aphelion-buds-air"]
+    },
+    {
+      "handle": "speakers",
+      "name": "Speakers",
+      "description": "Reference sound for the shelf, the beach and the screen.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["aphelion-monolith", "aphelion-field", "aphelion-ridgeline"]
+    },
+    {
+      "handle": "accessories",
+      "name": "Accessories",
+      "description": "Cables, stands, cases and replaceable parts.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["aphelion-cable", "aphelion-stand", "aphelion-case", "aphelion-pads"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "aphelion-one",
+      "title": "Aphelion One",
+      "description": "Our flagship open-back over-ear headphones, built around a hand-matched planar-magnetic driver. Open-back means the sound breathes rather than pressing on your ears — a wide, natural stage that puts each instrument in its own place. Machined aluminium, real leather, and a cable and earpads you can replace instead of a headphone you have to.",
+      "status": "active",
+      "productType": "Headphones",
+      "vendor": "Aphelion",
+      "tags": ["headphones", "over-ear", "open-back", "planar", "reference"],
+      "categoryHandles": ["headphones"],
+      "collectionHandles": ["new-arrivals", "headphones"],
+      "seoTitle": "Aphelion One — open-back planar-magnetic headphones",
+      "seoDescription": "Flagship open-back over-ear headphones with a hand-matched planar-magnetic driver and replaceable parts.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Onyx"
+            },
+            {
+              "value": "Titanium"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "APH-ONE-ONX",
+          "priceCents": 69900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Onyx"
+          }
+        },
+        {
+          "sku": "APH-ONE-TTN",
+          "priceCents": 72900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Titanium"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-one",
+          "isPrimary": true,
+          "alt": "The Aphelion One headphones"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-one-wireless",
+      "title": "Aphelion One Wireless",
+      "description": "The One tuning, now wireless, with adaptive noise cancelling that reads the room and answers it without the pressure that tires your ears on a long flight. Thirty-eight hours between charges, a ten-minute top-up for a full day, and the cable in the box for when you want to listen wired.",
+      "status": "active",
+      "productType": "Headphones",
+      "vendor": "Aphelion",
+      "tags": ["headphones", "over-ear", "wireless", "anc"],
+      "categoryHandles": ["headphones"],
+      "collectionHandles": ["headphones"],
+      "seoTitle": "Aphelion One Wireless — adaptive-ANC over-ear headphones",
+      "seoDescription": "Wireless over-ear headphones with adaptive noise cancelling, 38-hour battery, and the reference One tuning.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Onyx"
+            },
+            {
+              "value": "Graphite"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "APH-ONEW-ONX",
+          "priceCents": 44900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Onyx"
+          }
+        },
+        {
+          "sku": "APH-ONEW-GRP",
+          "priceCents": 44900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Graphite"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-one-wireless",
+          "isPrimary": true,
+          "alt": "The Aphelion One Wireless headphones"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-buds-pro",
+      "title": "Aphelion Buds Pro",
+      "description": "True-wireless earbuds that carry the reference tuning in a shell the size of a thumbnail. High-resolution wireless (LDAC) sends more of the recording across than most earbuds bother to, and the cancelling is deep enough to make a train carriage disappear. A snug, sealed fit in four sizes, so the bass is there because it fits, not because it was cranked.",
+      "status": "active",
+      "productType": "Earbuds",
+      "vendor": "Aphelion",
+      "tags": ["earbuds", "true-wireless", "anc", "ldac"],
+      "categoryHandles": ["earbuds"],
+      "collectionHandles": ["new-arrivals", "earbuds"],
+      "seoTitle": "Aphelion Buds Pro — ANC true-wireless earbuds with LDAC",
+      "seoDescription": "True-wireless earbuds with high-resolution LDAC, deep active noise cancelling, and a sealed four-size fit.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Onyx"
+            },
+            {
+              "value": "Titanium"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "APH-BPRO-ONX",
+          "priceCents": 27900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Onyx"
+          }
+        },
+        {
+          "sku": "APH-BPRO-TTN",
+          "priceCents": 27900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Titanium"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-buds-pro",
+          "isPrimary": true,
+          "alt": "The Aphelion Buds Pro earbuds"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-buds-air",
+      "title": "Aphelion Buds Air",
+      "description": "The everyday earbud — the Aphelion signature, the long battery and the easy pairing, without the active cancelling. A light, comfortable fit for a run or a call, with clear voice pickup so the person on the other end hears you, not the wind.",
+      "status": "active",
+      "productType": "Earbuds",
+      "vendor": "Aphelion",
+      "tags": ["earbuds", "true-wireless", "everyday"],
+      "categoryHandles": ["earbuds"],
+      "collectionHandles": ["earbuds"],
+      "seoTitle": "Aphelion Buds Air — everyday true-wireless earbuds",
+      "seoDescription": "Light, comfortable true-wireless earbuds with the Aphelion signature, long battery, and clear call pickup.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Onyx"
+            },
+            {
+              "value": "Graphite"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "APH-BAIR-ONX",
+          "priceCents": 14900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Onyx"
+          }
+        },
+        {
+          "sku": "APH-BAIR-GRP",
+          "priceCents": 14900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Graphite"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-buds-air",
+          "isPrimary": true,
+          "alt": "The Aphelion Buds Air earbuds"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-monolith",
+      "title": "Aphelion Monolith",
+      "description": "A reference active bookshelf speaker, sold as a matched pair. The amplifier lives inside, tuned to the exact driver it drives, so you plug in a source and you are done — no separate box, no guesswork, no mismatch. Measured to the millimetre and voiced by ear, a pair on a shelf throws a stage you can point to with your eyes shut.",
+      "status": "active",
+      "productType": "Speakers",
+      "vendor": "Aphelion",
+      "tags": ["speakers", "bookshelf", "active", "reference", "pair"],
+      "categoryHandles": ["speakers"],
+      "collectionHandles": ["new-arrivals", "speakers"],
+      "seoTitle": "Aphelion Monolith — reference active bookshelf speakers (pair)",
+      "seoDescription": "A matched pair of reference active bookshelf speakers with the amplifier built in and tuned to the driver.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Onyx"
+            },
+            {
+              "value": "Walnut"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "APH-MONO-ONX",
+          "priceCents": 129900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Onyx"
+          }
+        },
+        {
+          "sku": "APH-MONO-WLN",
+          "priceCents": 139900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Walnut"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-monolith",
+          "isPrimary": true,
+          "alt": "The Aphelion Monolith speakers"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-field",
+      "title": "Aphelion Field",
+      "description": "A portable speaker that does not apologise for its size. Sealed against dust and water to IP67 — it survives a beach, a shower and a spilled drink — with a battery that runs a whole afternoon and a tuning that stays honest instead of turning everything into thud. Pairs two together for real stereo.",
+      "status": "active",
+      "productType": "Speakers",
+      "vendor": "Aphelion",
+      "tags": ["speakers", "portable", "bluetooth", "ip67"],
+      "categoryHandles": ["speakers"],
+      "collectionHandles": ["speakers"],
+      "seoTitle": "Aphelion Field — IP67 portable Bluetooth speaker",
+      "seoDescription": "A rugged IP67 portable Bluetooth speaker with an all-afternoon battery and an honest, un-boomy tuning.",
+      "options": [
+        {
+          "name": "Finish",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Onyx"
+            },
+            {
+              "value": "Sand"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "APH-FIELD-ONX",
+          "priceCents": 19900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Onyx"
+          }
+        },
+        {
+          "sku": "APH-FIELD-SND",
+          "priceCents": 19900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Finish": "Sand"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-field",
+          "isPrimary": true,
+          "alt": "The Aphelion Field portable speaker"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-pulse",
+      "title": "Aphelion Pulse",
+      "description": "A pocket-sized USB-C headphone amplifier and DAC — the small box that makes a laptop or a phone drive a real pair of headphones properly. It gives demanding open-backs the power they need to open up, and cleans up the thin, quiet output most devices ship with. One cable in, your headphones out, and everything gets louder, clearer and more alive.",
+      "status": "active",
+      "productType": "Amps & DACs",
+      "vendor": "Aphelion",
+      "tags": ["dac", "amplifier", "usb-c", "portable"],
+      "categoryHandles": ["amps-dacs"],
+      "collectionHandles": ["new-arrivals"],
+      "seoTitle": "Aphelion Pulse — portable USB-C DAC and headphone amplifier",
+      "seoDescription": "A pocket USB-C DAC and headphone amplifier that drives demanding headphones from a laptop or phone.",
+      "variants": [
+        {
+          "sku": "APH-PULSE",
+          "priceCents": 22900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-pulse",
+          "isPrimary": true,
+          "alt": "The Aphelion Pulse DAC and amplifier"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-ridgeline",
+      "title": "Aphelion Ridgeline",
+      "description": "A slim soundbar that treats a film the way we treat a record — dialogue you never have to rewind, and an effects track with real weight, from one bar under the screen. No rack of boxes, no calibration ritual: it measures your room on setup and tunes itself to it.",
+      "status": "active",
+      "productType": "Speakers",
+      "vendor": "Aphelion",
+      "tags": ["speakers", "soundbar", "home-cinema"],
+      "categoryHandles": ["speakers"],
+      "collectionHandles": ["speakers"],
+      "seoTitle": "Aphelion Ridgeline — self-calibrating soundbar",
+      "seoDescription": "A slim soundbar with clear dialogue and real weight that measures your room and tunes itself to it.",
+      "variants": [
+        {
+          "sku": "APH-RIDGE",
+          "priceCents": 59900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-ridgeline",
+          "isPrimary": true,
+          "alt": "The Aphelion Ridgeline soundbar"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-cable",
+      "title": "Aphelion Balanced Cable",
+      "description": "A braided replacement cable for the One and One Wireless, in a balanced connection that keeps the left and right channels fully apart for a cleaner, blacker background. Oxygen-free copper, a machined connector, and a length you choose — so a worn cable is a small part, never a reason to retire the headphones.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Aphelion",
+      "tags": ["accessories", "cable", "balanced"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["accessories"],
+      "seoTitle": "Aphelion Balanced Cable — braided replacement headphone cable",
+      "seoDescription": "A braided balanced replacement cable in oxygen-free copper for the Aphelion One headphones.",
+      "options": [
+        {
+          "name": "Length",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "1.5 m"
+            },
+            {
+              "value": "3 m"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "APH-CBL-15",
+          "priceCents": 4900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Length": "1.5 m"
+          }
+        },
+        {
+          "sku": "APH-CBL-30",
+          "priceCents": 5900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Length": "3 m"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-cable",
+          "isPrimary": true,
+          "alt": "The Aphelion Balanced Cable"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-stand",
+      "title": "Aphelion Stand",
+      "description": "A machined aluminium stand that gives your headphones a home on the desk instead of a hook or a heap. A wide, weighted base so it never tips, a soft yoke so the headband keeps its shape, and a cable channel so the wire is not draped across your keyboard.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Aphelion",
+      "tags": ["accessories", "stand", "desk"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["accessories"],
+      "seoTitle": "Aphelion Stand — machined aluminium headphone stand",
+      "seoDescription": "A weighted machined-aluminium headphone stand with a soft yoke and a cable channel.",
+      "variants": [
+        {
+          "sku": "APH-STAND",
+          "priceCents": 7900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-stand",
+          "isPrimary": true,
+          "alt": "The Aphelion Stand"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-case",
+      "title": "Aphelion Travel Case",
+      "description": "A hard case that lets you throw the Buds Pro or the Pulse in a bag without a second thought. A crush-proof shell, a moulded tray that holds each piece and its tips in place, and a zip that has been pulled fifty thousand times in testing without giving up.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Aphelion",
+      "tags": ["accessories", "case", "travel"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["accessories"],
+      "seoTitle": "Aphelion Travel Case — hard case for earbuds and the Pulse",
+      "seoDescription": "A crush-proof hard travel case with a moulded tray for the Aphelion Buds Pro and Pulse.",
+      "variants": [
+        {
+          "sku": "APH-CASE",
+          "priceCents": 6900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-case",
+          "isPrimary": true,
+          "alt": "The Aphelion Travel Case"
+        }
+      ]
+    },
+    {
+      "handle": "aphelion-pads",
+      "title": "Aphelion Earpads",
+      "description": "Replacement earpads for the One and One Wireless, in the same protein leather and memory foam we fit at the factory. Pads are the one part that wears, and swapping them brings back the seal, the comfort and the bass a tired pair loses — a five-minute job, no tools, in a couple of years when you need it.",
+      "status": "active",
+      "productType": "Accessories",
+      "vendor": "Aphelion",
+      "tags": ["accessories", "earpads", "replacement"],
+      "categoryHandles": ["accessories"],
+      "collectionHandles": ["accessories"],
+      "seoTitle": "Aphelion Earpads — replacement earpads for the One",
+      "seoDescription": "Factory-grade replacement earpads in protein leather and memory foam for the Aphelion One.",
+      "variants": [
+        {
+          "sku": "APH-PADS",
+          "priceCents": 3900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "aphelion-pads",
+          "isPrimary": true,
+          "alt": "The Aphelion Earpads"
+        }
+      ]
+    }
+  ]
+}

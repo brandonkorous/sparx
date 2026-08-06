@@ -1,0 +1,233 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "inside-the-planar-driver",
+    "status": "published",
+    "body": {
+      "title": "Inside the One: how a planar driver moves air",
+      "excerpt": "Most headphones push air with a cone. The One uses a flat sheet — and the difference is why it sounds the way it does.",
+      "featuredImage": {
+        "$asset": "post-planar"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Open almost any headphone and you find a small paper or plastic cone, driven from a single point at its centre by a coil of wire. It works, and it is cheap, but a cone pushed from the middle flexes at its edges — and that flexing is distortion you can hear as a faint ring or a smear on fast, complex music."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "A whole surface, moving at once"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A planar-magnetic driver does it differently. Instead of a cone, it uses a thin, flat film with a circuit printed across its entire face, suspended between two arrays of magnets. The whole sheet moves together, evenly, from edge to edge. There is nothing to flex, so a struck cymbal or a plucked string starts and stops cleanly, exactly when the recording says it should."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Why it needs a little more push"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The trade is that a planar film is harder to drive than a cone — which is why the One opens up so much more from a proper amplifier than from a phone, and why we make the Pulse. Give it the power it wants and the stage widens, the bass firms up, and the quiet details step forward out of the black."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of this is exotic for its own sake. It is the most honest way we know to turn an electrical signal back into the air pressure that was in the room when the recording was made."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-we-measure-noise-cancelling",
+    "status": "published",
+    "body": {
+      "title": "How we measure noise cancelling (and why the number lies)",
+      "excerpt": "A bigger cancelling figure is not always the quieter one. What the decibel number does and does not tell you, in plain terms.",
+      "featuredImage": {
+        "$asset": "post-anc"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every pair of cancelling headphones quotes a decibel figure, and shoppers are told bigger is better. It is not that simple. That single number is measured at one pitch, in a lab, and it says nothing about the pitches it does not cover or the side effects of reaching for a record-breaking figure."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Noise is not one sound"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The drone of a plane is low and steady, and cancelling handles it well. A crying child, a closing door, a colleague two desks away — these are higher and sudden, and no cancelling touches them much. A pair that crushes the low drone while ignoring everything else can measure beautifully and still leave you reaching for the volume."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The cost of chasing the number"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Push cancelling hard and it introduces its own pressure — that faint, ears-blocked feeling that turns a long flight into a headache. We tune for the point where the world drops away but your ears stay relaxed, then we publish the figure that point produces, not the biggest one we could force."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So read the number, but trust your ears. The right question is never \"how many decibels\" — it is \"can I wear this for six hours and forget I have it on.\""
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "reference-or-fun-tuning-the-monolith",
+    "status": "published",
+    "body": {
+      "title": "Reference or fun? Tuning the Monolith",
+      "excerpt": "The oldest argument in audio is whether a speaker should be honest or exciting. Here is where we landed, and why.",
+      "featuredImage": {
+        "$asset": "post-monolith"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There are two schools. One says a speaker should be a flat, honest window — it plays exactly what was recorded and adds nothing. The other says a little extra bass and a little extra sparkle make music more fun, and fun is the point. Both are right, which is precisely the problem."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Honest, with the lights on"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We voice the Monolith flat, because a coloured speaker flatters some records and wrecks others — and once the colour is baked in you cannot take it back out. Flat means a well-made recording sounds thrilling and a badly-made one sounds honest about it, which is the speaker telling you the truth rather than a lie you happen to like."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Where the room comes in"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Flat at the speaker is not flat at your chair — walls, glass and furniture bend the sound on its way to you. That is why the Monolith measures its own placement and corrects for the room, and why the excitement, when you want it, belongs on a tone control you can turn back, not in a driver you cannot."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Reference or fun is a false choice. Build it honest, hand the shaping to the listener, and you get both — on the nights you want each one."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

@@ -1,0 +1,254 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "the-farmers-behind-this-months-origins",
+    "status": "published",
+    "body": {
+      "title": "The farmers behind this month’s origins",
+      "excerpt": "A coffee is a place and the people who grow it. Meet the growers whose harvests are in this month’s boxes — and why buying direct changes what ends up in your cup.",
+      "featuredImage": {
+        "$asset": "post-farmers"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Every bag we send has a name on it that is not ours. A washed Ethiopian from a smallholder co-op in Guji. A Huila lot from a family farm that has grown coffee on the same slope for three generations. When we say single origin, we mean it down to the farm — because the farm is where the flavour actually comes from."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "We buy the harvest, not the leftovers"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Most coffee is bought as a commodity, graded and blended until the origin disappears. We do it the slow way instead: we follow the harvest, taste the new lots, and buy the pick of the crop direct from the growers — paying above the fair-trade floor for the coffee we actually want. That premium is not charity. It is what a genuinely good harvest costs, and it is why ours tastes the way it does."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Knowing who grew it changes the cup"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It sounds sentimental until you taste it side by side. Coffee bought well, from people who are paid to care about the pick and the process, is simply cleaner, sweeter and more alive in the cup than coffee bought cheap. The story on the card in your box is not marketing — it is the reason the coffee is good."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So this month, before you grind, read the card. Then taste it knowing whose year of work is in the cup. It will not be the same coffee."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "how-to-brew-a-better-cup-at-home",
+    "status": "published",
+    "body": {
+      "title": "How to brew a better cup at home",
+      "excerpt": "Great beans are only half of it. The four small changes that will do more for your morning coffee than any new machine — and none of them cost much.",
+      "featuredImage": {
+        "$asset": "post-brewing"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "People spend a fortune on machines and then wonder why the café down the road is still better. The truth is that the biggest gains at home are almost free — they are about freshness, grind and a little patience, not equipment. Get these four things right and a good bag becomes a great cup."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Grind fresh, right before you brew"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Coffee goes stale fast once it is ground — the surface area that makes it taste of anything is also what lets it fade. Grinding the moment before you brew is the single biggest upgrade you can make, which is why every box is ground to order and why a hand grinder is the piece of gear we push hardest."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Weigh it, and use more than you think"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A kitchen scale takes the guesswork out. Start at sixty grams of coffee per litre of water — roughly one heaped tablespoon per mug — and adjust from there. Most weak coffee at home is simply under-dosed; a little more coffee fixes more cups than any other single change."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Pour slow, and let it bloom"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Wet the grounds with a little water first and wait thirty seconds — that is the bloom, and it lets the coffee degas so the rest of the pour extracts evenly. Then pour slow and steady in circles. Rushing the pour is how you get a thin, sour cup from perfectly good beans."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "None of this is fussy once it is habit. Two minutes, a scale and a slow hand, and the coffee you make at home stops being a compromise."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "what-roasting-to-order-actually-means",
+    "status": "published",
+    "body": {
+      "title": "What roasting to order actually means",
+      "excerpt": "Freshness is the one thing you cannot buy back. Why we roast the week your box ships, and how to tell whether the coffee on your shelf is past its best.",
+      "featuredImage": {
+        "$asset": "post-roasting"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "There is a date on a bag of coffee that matters far more than the one most people look for, and it is the roast date. Coffee is at its best in the weeks just after it is roasted, not the months. Roasting to order simply means we do not roast until we know your box is going out — so what lands on your shelf is days old, not a season old."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Coffee has a peak, and it is short"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "For the first day or two after roasting, coffee is actually degassing and tastes a little wild. Then it settles into a window — roughly two to six weeks — where it is at its sweetest and most complex. After that it slowly flattens: still drinkable, but the brightness and the aromatics fade. Supermarket coffee is often well past that window before it is even bought."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "How to tell if yours is fresh"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Fresh coffee blooms. Pour a little hot water on the grounds and watch: if it swells and foams, it is releasing gas and it is fresh; if it just sits there flat, it is old. Once you have seen a lively bloom, you will never quite trust a stale bag again."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "That window is the whole reason the club works the way it does. We roast small, roast late, and ship fast — so the best weeks of a coffee’s life are spent in your kitchen, not a warehouse."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

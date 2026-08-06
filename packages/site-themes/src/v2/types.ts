@@ -63,8 +63,18 @@ export interface SharedTokensV2 {
   borderWidth: string; // site-wide line weight
   // Rhythm (brand-owned)
   spaceBase: string; // the rhythm unit; --st-space-* scale derives from it
-  sizeField: string; // control height for inputs/buttons
-  sizeSelector: string; // control height for pills/toggles
+  // The two DENSITY LEVERS, surfaced in the builder as "Field base size" and
+  // "Selector base size". Each is a BASE UNIT silica multiplies by the size class —
+  // NOT a control height. An `md` field is `--size-field × 10`, an `md` checkbox is
+  // `--size-selector × 6`, so `0.25rem` gives a 40px input and a 24px checkbox.
+  //
+  // They said "control height" here until 2026-08-04, and a preset was authored to
+  // match: `sizeField: '2.875rem'` — a 46px input height, which silica then multiplied
+  // by ten. Every button on that site rendered 348×368 with the label lost in the
+  // middle. If you are putting a length in here, it belongs in the fractions of a rem,
+  // not the whole ones.
+  sizeField: string; // density unit for inputs/buttons/selects
+  sizeSelector: string; // density unit for badges/checkboxes/radios/switches/toggles
   // Effect (brand-owned)
   depth: number; // shadow-intensity multiplier (0 flat → 1 default → >1 lifted)
   // Layout (presentation-owned default; overridable via presentation overlay)

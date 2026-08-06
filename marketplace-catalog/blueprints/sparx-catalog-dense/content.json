@@ -1,0 +1,233 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "the-golden-hour-edit",
+    "status": "published",
+    "body": {
+      "title": "The Golden Hour Edit",
+      "excerpt": "Warm tones, cutouts and satin — the going-out shapes built for the last good light of the day.",
+      "featuredImage": {
+        "$asset": "post-golden-hour"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Golden hour is the twenty minutes the whole night gets planned around. The light does half the work; the outfit only has to not fight it. That means warm tones over cool ones, a little skin on purpose, and a fabric that catches the light instead of flattening it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Start with the satin"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The Coastline Satin Maxi is the anchor — it pours, it slits, and it photographs like money. If a floor-length feels like too much for the plan, the Halston Cutout Mini does the same warm-toned job with more leg and less commitment."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "One cutout, not five"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A single sharp cutout reads as intentional; a dress that is more hole than fabric reads as a dare. Let one detail do the talking — the waist, the shoulder, the back — and keep the rest clean."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Finish with the shield sunglasses until the sun is actually down, then push them up into your hair and let the night start."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "vacation-mode-resort-looks",
+    "status": "published",
+    "body": {
+      "title": "Vacation Mode: 12 Resort Looks",
+      "excerpt": "Twelve looks that pack flat, mix hard, and photograph everywhere — built around two swimsuits and a bag.",
+      "featuredImage": {
+        "$asset": "post-vacation"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A good vacation capsule is a small number of pieces that make a large number of outfits. The trick is not packing more — it is packing things that talk to each other, so a swimsuit becomes a bodysuit and a skirt becomes an evening."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Two swimsuits, worn twelve ways"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The Ring-Detail String Bikini and the One-Shoulder One-Piece are the whole foundation. The one-piece doubles as a top under the faux-leather mini for dinner; the bikini lives under a cami and the wide-leg jean for the market run."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Pack flat, arrive sharp"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Everything here rolls into a carry-on and shakes out crease-free — the satin maxi included. Add the quilted shoulder bag for the plane and the beach both, and leave the hard cases at home."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Twelve looks, one small bag. The only thing you should overpack is sunscreen."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "denim-reset-wide-leg",
+    "status": "published",
+    "body": {
+      "title": "Denim Reset — Styling Wide-Leg",
+      "excerpt": "The wide-leg jean is the new blank canvas. Five ways to wear it, from the coffee run to the night out.",
+      "featuredImage": {
+        "$asset": "post-denim"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The skinny era is over and nobody is mourning it. The high-rise wide-leg is the jean everything gets built around now — it lengthens the leg, forgives the lunch, and reads dressed-up or thrown-on depending entirely on what you put with it."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Day: keep it easy"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The wide-leg jean, the rib-knit cami, and a jacket over the shoulders. Flat shoes, big sunglasses, done. This is the version you can get dressed for in ninety seconds and still feel put-together in."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Night: raise the top half"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Swap the cami for the corset bustier and add a heel. The volume down low balances the structure up top, and the whole thing tips from errand to evening without changing the jean."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "One pair, five outfits, zero fuss. That is the reset — buy the good jean, then let it do the heavy lifting for a year."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]

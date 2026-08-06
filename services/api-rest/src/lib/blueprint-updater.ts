@@ -126,6 +126,11 @@ interface KindHandler {
   /** Optional custom merge (tree kinds node-merge their `tree` field). Defaults to
    *  the generic field merge. */
   merge?(base: Json | undefined, current: Json, incoming: Json, resolve: Resolver): MergeResult;
+  /** Create an artifact the new version ADDED that this install does not yet have
+   *  (docs/55: a design that introduces a page in a later version should deliver it on
+   *  update). Returns the created row id, or null if creation is not supported for the
+   *  kind. Only ever called on APPLY (never preview). */
+  create?(env: Env, artifact: ResolvedArtifact): Promise<string | null>;
 }
 
 type Resolver = (path: string) => ConflictSide;
@@ -419,6 +424,31 @@ const pageHandler: KindHandler = {
       await siteService.setPageRoot(env.propCtx, artifact.refId, merged.tree as SilicaNode);
     }
   },
+  async create(env, artifact) {
+    // A page the new version added — a bespoke product template a later version
+    // introduced, most often. `siteService.addPage` appends it non-destructively and
+    // derives the record address for a collection template (`/products/:handle`), so it
+    // never collides with Home at the root. A collection template becomes the default for
+    // its recordType — the manifest ships record templates as the default, and the resolved
+    // content drops `isDefault`, so `kind==='collection'` stands in for it.
+    const c = artifact.content;
+    const kind = typeof c.kind === 'string' ? c.kind : 'singleton';
+    const recordType = typeof c.recordType === 'string' ? c.recordType : null;
+    if (!c.tree) return null;
+    return siteService.addPage(env.propCtx, {
+      name: typeof c.name === 'string' ? c.name : 'Page',
+      slug: typeof c.slug === 'string' ? c.slug : '',
+      root: c.tree as SilicaNode,
+      kind,
+      recordType,
+      isDefault: kind === 'collection',
+      seoTitle: typeof c.seoTitle === 'string' ? c.seoTitle : null,
+      seoDescription: typeof c.seoDescription === 'string' ? c.seoDescription : null,
+      canonical: typeof c.canonical === 'string' ? c.canonical : null,
+      ogImage: typeof c.ogImage === 'string' ? c.ogImage : null,
+      noindex: typeof c.noindex === 'boolean' ? c.noindex : false,
+    });
+  },
 };
 
 const emailHandler: KindHandler = {
@@ -686,6 +716,11 @@ interface Processed {
   diffs: ArtifactDiff[];
   pending: { handler: KindHandler; artifact: ResolvedArtifact; merged: Json }[];
   incomingHandled: ResolvedArtifact[];
+  /** Artifacts the new version added that this install lacked, now created (apply only).
+   *  Each carries the fresh row id in `refId` so the caller can extend the install's
+   *  id-map — without which uninstall would orphan them and a later update would re-create
+   *  them. */
+  created: ResolvedArtifact[];
 }
 
 async function processUpdate(
@@ -702,6 +737,7 @@ async function processUpdate(
   const diffs: ArtifactDiff[] = [];
   const pending: Processed['pending'] = [];
   const incomingHandled: ResolvedArtifact[] = [];
+  const created: ResolvedArtifact[] = [];
   const seen = new Set<string>();
 
   for (const handler of HANDLERS) {
@@ -722,12 +758,25 @@ async function processUpdate(
         continue;
       }
       if (!base) {
-        // New upstream artifact. Creation is handled per-kind in later slices; for
-        // the always-present theme/brand this never fires. Surface it regardless.
+        // New upstream artifact — one this version added that the install never had.
+        // On APPLY, create it through the handler (a page most often) and track it so the
+        // baseline + id-map advance; on PREVIEW (`!env.write`), or for a kind with no
+        // `create`, just surface it. The always-present theme/brand never reach here.
+        let newRefId: string | null = null;
+        if (env.write && handler.create) {
+          // Best-effort: a create that throws leaves the artifact reported-but-unmade
+          // rather than failing the whole update (mirrors the merged-write loop).
+          newRefId = await handler.create(env, a).catch(() => null);
+          if (newRefId) {
+            const resolved: ResolvedArtifact = { ...a, refId: newRefId };
+            incomingHandled.push(resolved);
+            created.push(resolved);
+          }
+        }
         diffs.push({
           kind: a.kind,
           naturalKey: a.naturalKey,
-          refId: null,
+          refId: newRefId,
           status: 'new',
           changes: [],
         });
@@ -780,7 +829,7 @@ async function processUpdate(
     });
   }
 
-  return { diffs, pending, incomingHandled };
+  return { diffs, pending, incomingHandled, created };
 }
 
 function summarize(diffs: ArtifactDiff[]): UpdatePlan['summary'] {
@@ -849,7 +898,7 @@ export async function applyUpdate(
   takeTheirs: string[]
 ): Promise<ApplyResult> {
   const env = await buildEnv(uctx, true);
-  const { diffs, pending, incomingHandled } = await processUpdate(
+  const { diffs, pending, incomingHandled, created } = await processUpdate(
     env,
     install,
     incoming,
@@ -869,10 +918,46 @@ export async function applyUpdate(
     }
   }
 
-  // Re-publish a LIVE install so the merged theme reaches the storefront (brand is
-  // read live and needs no publish). A draft install stays draft for the tenant to
-  // publish on their own schedule (docs/55 §6).
+  // Extend the install's id-map with anything the update CREATED, so uninstall tears it
+  // down and a later update finds it by refId instead of re-creating it. Pages are the
+  // only creatable kind today; the entry shape matches what the installer records (slug
+  // taken from the content verbatim — null for a record template — so its natural key is
+  // identical to a fresh install's).
+  if (created.length > 0) {
+    const result = (install.result ?? {}) as InstallResult;
+    result.pages = result.pages ?? [];
+    for (const c of created) {
+      if (c.kind !== 'page' || !c.refId) continue;
+      const content = c.content;
+      result.pages.push({
+        name: typeof content.name === 'string' ? content.name : 'Page',
+        id: c.refId,
+        recordType: typeof content.recordType === 'string' ? content.recordType : null,
+        slug: typeof content.slug === 'string' ? content.slug : null,
+      });
+      applied += 1;
+    }
+    await withTenant(env.ctx, (tx) =>
+      tx.tenantBlueprintInstall.update({
+        where: { id: install.id },
+        data: { result: result as unknown as Prisma.InputJsonValue },
+      })
+    );
+  }
+
+  // Re-publish a LIVE install so the update reaches the storefront (brand is read live
+  // and needs no publish). A draft install stays draft for the tenant to publish on their
+  // own schedule (docs/55 §6). BOTH publishes are needed and they cover different columns:
+  // `siteService.publish` copies the silica page drafts (the merged edits AND any page this
+  // update CREATED) into the published columns the storefront serves — `publishNow` only
+  // snapshots the sitebuilder config/theme, so a page change would otherwise never go live.
+  // This is exactly the pair `goLiveInstall` runs.
   if (install.status === 'live' && applied > 0) {
+    await siteService
+      .publish(env.propCtx)
+      .catch((err) =>
+        uctx.logger.warn({ err, installId: install.id }, 'update page publish failed')
+      );
     await publishService
       .publishNow(env.propCtx, { note: `Blueprint update ${incoming.version} (${install.id})` })
       .catch((err) => uctx.logger.warn({ err, installId: install.id }, 'update republish failed'));

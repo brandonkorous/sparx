@@ -1,0 +1,858 @@
+{
+  "categories": [
+    {
+      "handle": "single-origins",
+      "name": "Single Origins",
+      "description": "One farm, one harvest, one month.",
+      "featured": true
+    },
+    {
+      "handle": "blends",
+      "name": "Blends",
+      "description": "House, espresso and cold brew, built to be reliable.",
+      "featured": true
+    },
+    {
+      "handle": "decaf",
+      "name": "Decaf",
+      "description": "All the ritual, none of the buzz.",
+      "featured": false
+    },
+    {
+      "handle": "gear",
+      "name": "Brew Gear",
+      "description": "The drippers, filters and grinders that finish the cup.",
+      "featured": true
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "Gift sets for the coffee people in your life.",
+      "featured": false
+    }
+  ],
+  "collections": [
+    {
+      "handle": "this-months-origins",
+      "name": "This Month at Latitude",
+      "description": "The club, this month’s origins, and the ways to give them.",
+      "type": "manual",
+      "featured": true,
+      "productHandles": [
+        "the-origin-club",
+        "ethiopia-guji",
+        "kenya-nyeri",
+        "colombia-huila",
+        "house-blend",
+        "the-origin-gift-set"
+      ]
+    },
+    {
+      "handle": "single-origins",
+      "name": "Single Origins",
+      "description": "A new coffee-growing origin, roasted the week it ships.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["ethiopia-guji", "colombia-huila", "kenya-nyeri"]
+    },
+    {
+      "handle": "blends",
+      "name": "Blends",
+      "description": "The everyday bags built to be reliable.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["house-blend", "midnight-espresso", "cold-brew-blend"]
+    },
+    {
+      "handle": "gear",
+      "name": "Brew Gear",
+      "description": "Everything you need to brew the club at home.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": [
+        "ceramic-pour-over-dripper",
+        "pour-over-filters",
+        "enamel-mug",
+        "hand-grinder"
+      ]
+    },
+    {
+      "handle": "gifts",
+      "name": "Gifts",
+      "description": "The club and its coffee, wrapped to give.",
+      "type": "manual",
+      "featured": false,
+      "productHandles": ["the-origin-gift-set", "the-origin-club"]
+    }
+  ],
+  "products": [
+    {
+      "handle": "ethiopia-guji",
+      "title": "Ethiopia Guji",
+      "description": "A washed lot from the Guji highlands that drinks like a glass of stone fruit — peach and bergamot up front, a jasmine lift, and a clean, tea-like finish. Grown at altitude by smallholders and roasted light to keep every bit of that brightness. The origin we hand people who think they do not like coffee.",
+      "status": "active",
+      "productType": "Single-Origin Coffee",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["single-origin", "ethiopia", "light-roast", "washed"],
+      "categoryHandles": ["single-origins"],
+      "collectionHandles": ["this-months-origins", "single-origins"],
+      "seoTitle": "Ethiopia Guji — washed light-roast single-origin coffee",
+      "seoDescription": "A bright, floral washed Ethiopian single origin with peach, bergamot and jasmine notes.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            },
+            {
+              "value": "Aeropress"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-ETH-GUJI-WB",
+          "priceCents": 2200,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "LCC-ETH-GUJI-FIL",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "LCC-ETH-GUJI-ESP",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "LCC-ETH-GUJI-AER",
+          "priceCents": 2200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Aeropress"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "ethiopia-guji",
+          "isPrimary": true,
+          "alt": "The Ethiopia Guji single origin"
+        }
+      ]
+    },
+    {
+      "handle": "colombia-huila",
+      "title": "Colombia Huila",
+      "description": "The crowd-pleaser of the shelf. A washed Huila lot roasted to a warm medium — red apple and caramel, a round milk-chocolate body, and just enough acidity to keep it lively. Forgiving to brew, lovely with or without milk, and the bag most club members reorder first.",
+      "status": "active",
+      "productType": "Single-Origin Coffee",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["single-origin", "colombia", "medium-roast", "washed"],
+      "categoryHandles": ["single-origins"],
+      "collectionHandles": ["this-months-origins", "single-origins"],
+      "seoTitle": "Colombia Huila — washed medium-roast single-origin coffee",
+      "seoDescription": "A balanced washed Colombian single origin with red apple, caramel and milk-chocolate notes.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            },
+            {
+              "value": "Aeropress"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-COL-HUILA-WB",
+          "priceCents": 2100,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "LCC-COL-HUILA-FIL",
+          "priceCents": 2100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "LCC-COL-HUILA-ESP",
+          "priceCents": 2100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "LCC-COL-HUILA-AER",
+          "priceCents": 2100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Aeropress"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "colombia-huila",
+          "isPrimary": true,
+          "alt": "The Colombia Huila single origin"
+        }
+      ]
+    },
+    {
+      "handle": "kenya-nyeri",
+      "title": "Kenya Nyeri",
+      "description": "For the drinker who wants their coffee to talk back. A washed Nyeri lot with a blackcurrant snap, a bright grapefruit acidity and a syrupy, brown-sugar body underneath. Bold, structured and unmistakably Kenyan — best as a pour-over where all that fruit has room to open up.",
+      "status": "active",
+      "productType": "Single-Origin Coffee",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["single-origin", "kenya", "light-roast", "washed"],
+      "categoryHandles": ["single-origins"],
+      "collectionHandles": ["this-months-origins", "single-origins"],
+      "seoTitle": "Kenya Nyeri — washed light-roast single-origin coffee",
+      "seoDescription": "A bright, structured washed Kenyan single origin with blackcurrant and grapefruit notes.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            },
+            {
+              "value": "Aeropress"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-KEN-NYERI-WB",
+          "priceCents": 2400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "LCC-KEN-NYERI-FIL",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "LCC-KEN-NYERI-ESP",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "LCC-KEN-NYERI-AER",
+          "priceCents": 2400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Aeropress"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "kenya-nyeri",
+          "isPrimary": true,
+          "alt": "The Kenya Nyeri single origin"
+        }
+      ]
+    },
+    {
+      "handle": "house-blend",
+      "title": "Latitude House Blend",
+      "description": "The everyday bag we could not not make. A medium roast built from a rotating base of Latin American and East African lots — chocolate, toasted almond and a gentle citrus lift — tuned to be the coffee you can make half-asleep and still get right. Great in a filter, a cafetière or a milky flat white.",
+      "status": "active",
+      "productType": "Coffee Blend",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["blend", "medium-roast", "everyday", "filter"],
+      "categoryHandles": ["blends"],
+      "collectionHandles": ["this-months-origins", "blends"],
+      "seoTitle": "Latitude House Blend — everyday medium-roast coffee blend",
+      "seoDescription": "A dependable medium-roast house blend with chocolate, toasted almond and a citrus lift.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            },
+            {
+              "value": "Aeropress"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-HOUSE-WB",
+          "priceCents": 1900,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "LCC-HOUSE-FIL",
+          "priceCents": 1900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "LCC-HOUSE-ESP",
+          "priceCents": 1900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "LCC-HOUSE-AER",
+          "priceCents": 1900,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Aeropress"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "house-blend",
+          "isPrimary": true,
+          "alt": "The Latitude House Blend"
+        }
+      ]
+    },
+    {
+      "handle": "midnight-espresso",
+      "title": "Midnight Espresso Blend",
+      "description": "Our espresso, built for the machine and the moka pot. A darker roast with a heavy, syrupy body — dark chocolate, dried fig and a molasses sweetness that stands right up to milk without turning bitter. Pulls a thick, forgiving shot, and makes the kind of flat white that ruins you for the café down the road.",
+      "status": "active",
+      "productType": "Coffee Blend",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["blend", "dark-roast", "espresso"],
+      "categoryHandles": ["blends"],
+      "collectionHandles": ["blends"],
+      "seoTitle": "Midnight Espresso Blend — dark-roast espresso coffee",
+      "seoDescription": "A dark, syrupy espresso blend with dark chocolate, dried fig and molasses notes.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            },
+            {
+              "value": "Aeropress"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-ESP-MID-WB",
+          "priceCents": 2000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "LCC-ESP-MID-FIL",
+          "priceCents": 2000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "LCC-ESP-MID-ESP",
+          "priceCents": 2000,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "LCC-ESP-MID-AER",
+          "priceCents": 2000,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Aeropress"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "espresso-blend",
+          "isPrimary": true,
+          "alt": "The Midnight Espresso Blend"
+        }
+      ]
+    },
+    {
+      "handle": "brazil-decaf",
+      "title": "Brazil Cerrado Decaf",
+      "description": "The decaf that earns its place in the club. A natural Cerrado lot, sugar-cane decaffeinated so nothing chemical touches the bean, roasted medium for a soft, nutty cup — hazelnut, milk chocolate and a hint of brown sugar. All the ritual and none of the buzz, for the afternoon and the evening cup.",
+      "status": "active",
+      "productType": "Decaf Coffee",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["decaf", "brazil", "medium-roast", "natural"],
+      "categoryHandles": ["decaf"],
+      "collectionHandles": [],
+      "seoTitle": "Brazil Cerrado Decaf — sugar-cane decaffeinated coffee",
+      "seoDescription": "A soft, nutty sugar-cane-decaffeinated Brazilian coffee with hazelnut and chocolate notes.",
+      "options": [
+        {
+          "name": "Grind",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "Whole bean"
+            },
+            {
+              "value": "Filter"
+            },
+            {
+              "value": "Espresso"
+            },
+            {
+              "value": "Aeropress"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-DEC-BRZ-WB",
+          "priceCents": 2100,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Whole bean"
+          }
+        },
+        {
+          "sku": "LCC-DEC-BRZ-FIL",
+          "priceCents": 2100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Filter"
+          }
+        },
+        {
+          "sku": "LCC-DEC-BRZ-ESP",
+          "priceCents": 2100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Espresso"
+          }
+        },
+        {
+          "sku": "LCC-DEC-BRZ-AER",
+          "priceCents": 2100,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Grind": "Aeropress"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "decaf-brazil",
+          "isPrimary": true,
+          "alt": "The Brazil Cerrado Decaf"
+        }
+      ]
+    },
+    {
+      "handle": "cold-brew-blend",
+      "title": "Cold Brew Blend",
+      "description": "Coarse-ground and built for the fridge. A blend roasted a touch darker and ground for a long, slow steep — twelve hours in cold water and you have a smooth, low-acid concentrate that tastes of cocoa and dried cherry. Comes in steep bags you drop straight into a jug. Summer in a glass, over ice, all week.",
+      "status": "active",
+      "productType": "Coffee Blend",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["blend", "cold-brew", "coarse"],
+      "categoryHandles": ["blends"],
+      "collectionHandles": ["blends"],
+      "seoTitle": "Cold Brew Blend — coarse-ground cold brew coffee",
+      "seoDescription": "A smooth, low-acid cold brew blend in steep bags, with cocoa and dried-cherry notes.",
+      "options": [
+        {
+          "name": "Pack",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "4 steep bags"
+            },
+            {
+              "value": "8 steep bags"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-COLD-4",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pack": "4 steep bags"
+          }
+        },
+        {
+          "sku": "LCC-COLD-8",
+          "priceCents": 3200,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Pack": "8 steep bags"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "cold-brew",
+          "isPrimary": true,
+          "alt": "The Cold Brew Blend"
+        }
+      ]
+    },
+    {
+      "handle": "ceramic-pour-over-dripper",
+      "title": "Ceramic Pour-Over Dripper",
+      "description": "The one piece of gear that changes everything. A hand-glazed ceramic dripper with a single large hole and a tall rib pattern, so water flows evenly and you control the pour. Holds its heat, sits over any mug, and turns a good bag into a great cup. Comes with a starter pack of filters.",
+      "status": "active",
+      "productType": "Brew Gear",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["gear", "pour-over", "ceramic", "brewing"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["gear"],
+      "seoTitle": "Ceramic Pour-Over Dripper — hand-glazed coffee dripper",
+      "seoDescription": "A hand-glazed ceramic pour-over dripper with a tall rib pattern, for an even, controlled brew.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Cream"
+            },
+            {
+              "value": "Terracotta"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-DRIP-CRM",
+          "priceCents": 3400,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Cream"
+          }
+        },
+        {
+          "sku": "LCC-DRIP-TER",
+          "priceCents": 3400,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Terracotta"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "pour-over-dripper",
+          "isPrimary": true,
+          "alt": "The Ceramic Pour-Over Dripper"
+        }
+      ]
+    },
+    {
+      "handle": "pour-over-filters",
+      "title": "Pour-Over Filters",
+      "description": "The unsung hero of a good cup. A box of one hundred oxygen-bleached paper filters, cut to fit our dripper and thin enough to let the coffee’s clarity through without any papery taste. Rinse one before you brew and it disappears entirely, leaving nothing but a clean, bright cup.",
+      "status": "active",
+      "productType": "Brew Gear",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["gear", "filters", "brewing"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["gear"],
+      "seoTitle": "Pour-Over Filters — 100 paper coffee filters",
+      "seoDescription": "A box of 100 oxygen-bleached paper pour-over filters, cut to fit the Latitude dripper.",
+      "variants": [
+        {
+          "sku": "LCC-FILT-100",
+          "priceCents": 900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "pour-over-filters",
+          "isPrimary": true,
+          "alt": "A box of Pour-Over Filters"
+        }
+      ]
+    },
+    {
+      "handle": "enamel-mug",
+      "title": "Latitude Enamel Mug",
+      "description": "The mug that comes free with the year-long plan, and that you will reach for every morning anyway. A proper enamel camp mug — chip-resistant, keeps its heat, and just as happy on the kitchen table as halfway up a hill. Holds a generous twelve ounces, which is exactly one good pour-over.",
+      "status": "active",
+      "productType": "Brew Gear",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["gear", "mug", "enamel"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["gear"],
+      "seoTitle": "Latitude Enamel Mug — 12oz enamel coffee mug",
+      "seoDescription": "A chip-resistant 12oz enamel coffee mug that keeps its heat, at home or on the trail.",
+      "options": [
+        {
+          "name": "Colour",
+          "displayType": "swatch",
+          "values": [
+            {
+              "value": "Cream"
+            },
+            {
+              "value": "Terracotta"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-MUG-CRM",
+          "priceCents": 1800,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Cream"
+          }
+        },
+        {
+          "sku": "LCC-MUG-TER",
+          "priceCents": 1800,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Colour": "Terracotta"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "enamel-mug",
+          "isPrimary": true,
+          "alt": "The Latitude Enamel Mug"
+        }
+      ]
+    },
+    {
+      "handle": "hand-grinder",
+      "title": "Hand Coffee Grinder",
+      "description": "Grinding fresh is the single biggest upgrade you can make to your coffee, and this is the tool for it. A compact hand grinder with conical steel burrs and a stepped dial that goes from espresso-fine to cold-brew-coarse. Quiet, consistent, and small enough to pack — so a great cup travels with you.",
+      "status": "active",
+      "productType": "Brew Gear",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["gear", "grinder", "burr", "brewing"],
+      "categoryHandles": ["gear"],
+      "collectionHandles": ["gear"],
+      "seoTitle": "Hand Coffee Grinder — conical burr hand grinder",
+      "seoDescription": "A compact conical-steel-burr hand coffee grinder, adjustable from espresso-fine to coarse.",
+      "variants": [
+        {
+          "sku": "LCC-GRIND-01",
+          "priceCents": 5900,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "hand-grinder",
+          "isPrimary": true,
+          "alt": "The Hand Coffee Grinder"
+        }
+      ]
+    },
+    {
+      "handle": "the-origin-gift-set",
+      "title": "The Origin Gift Set",
+      "description": "The whole club, wrapped, in a single box — for the person who deserves a good coffee morning. Three of the month’s single origins, a ceramic dripper, a starter pack of filters and an enamel mug, packed in a reusable tin with a hand-written brew guide. The gift that turns someone into a proper coffee drinker.",
+      "status": "active",
+      "productType": "Gift Set",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["gift", "set", "starter"],
+      "categoryHandles": ["gifts"],
+      "collectionHandles": ["this-months-origins", "gifts"],
+      "seoTitle": "The Origin Gift Set — coffee and brew-gear gift box",
+      "seoDescription": "A gift box of three single origins, a ceramic dripper, filters and an enamel mug in a reusable tin.",
+      "variants": [
+        {
+          "sku": "LCC-GIFT-SET",
+          "priceCents": 7200,
+          "isDefault": true,
+          "inventoryPolicy": "continue"
+        }
+      ],
+      "images": [
+        {
+          "assetId": "gift-set",
+          "isPrimary": true,
+          "alt": "The Origin Gift Set"
+        }
+      ]
+    },
+    {
+      "handle": "the-origin-club",
+      "title": "The Origin Club",
+      "description": "The subscription at the heart of Latitude. A new single-origin harvest at your door each month — roasted to order, ground the way you brew, and shipped free with the story of the farm that grew it. Pick a plan below: the longer you stay, the more you save, and the year-long plan arrives with a free enamel mug. Pause or cancel any time, no questions.",
+      "status": "active",
+      "productType": "Subscription",
+      "vendor": "Latitude Coffee Club",
+      "tags": ["subscription", "coffee-club", "single-origin"],
+      "categoryHandles": [],
+      "collectionHandles": ["this-months-origins", "gifts"],
+      "seoTitle": "The Origin Club — monthly single-origin coffee subscription",
+      "seoDescription": "A monthly single-origin coffee subscription, roasted to order and shipped free. Pause or cancel any time.",
+      "options": [
+        {
+          "name": "Plan",
+          "displayType": "dropdown",
+          "values": [
+            {
+              "value": "12 months"
+            },
+            {
+              "value": "6 months"
+            },
+            {
+              "value": "3 months"
+            },
+            {
+              "value": "1 month"
+            }
+          ]
+        }
+      ],
+      "variants": [
+        {
+          "sku": "LCC-CLUB-12",
+          "priceCents": 1599,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "12 months"
+          }
+        },
+        {
+          "sku": "LCC-CLUB-06",
+          "priceCents": 1799,
+          "isDefault": true,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "6 months"
+          }
+        },
+        {
+          "sku": "LCC-CLUB-03",
+          "priceCents": 1999,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "3 months"
+          }
+        },
+        {
+          "sku": "LCC-CLUB-01",
+          "priceCents": 2199,
+          "inventoryPolicy": "continue",
+          "optionValues": {
+            "Plan": "1 month"
+          }
+        }
+      ],
+      "images": [
+        {
+          "assetId": "the-origin-club",
+          "isPrimary": true,
+          "alt": "The Origin Club subscription"
+        }
+      ]
+    }
+  ]
+}

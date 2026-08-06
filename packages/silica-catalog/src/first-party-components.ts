@@ -51,6 +51,7 @@ export const GROUP_FACET: Record<string, string> = {
   commerce: 'Products',
   sparx_layout: 'Page structure',
   sparx_gallery: 'Pictures',
+  sparx_feature: 'Big pictures',
   sparx_compare: 'Comparison',
   sparx_process: 'How it works',
   sparx_people: 'People & proof',

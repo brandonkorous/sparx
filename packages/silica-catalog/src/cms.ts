@@ -216,6 +216,27 @@ function postCard(): Node {
  *  Exists because the post template's "See all posts" pointed at a page no tenant had
  *  — the detail page shipped without its index, so every post's primary way out was a
  *  dead link. */
+/** The post-grid SECTION of the blog index — the `cms.blog_post` repeat, on its own so a
+ *  bespoke journal (a template's own editorial masthead) can sit above the SAME correct,
+ *  linkable grid rather than re-authoring the repeat (and drifting from the card that knows
+ *  how to link a post). Two columns, not three — see `blogIndexPage`. */
+export function blogPostGrid(): Node {
+  return el('section', 'w-full @container bg-base-100', {
+    children: [
+      el('div', 'mx-auto w-full max-w-5xl px-6 py-16', {
+        children: [
+          repeat(
+            el('div', 'grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2', {
+              children: [postCard()],
+            }),
+            'cms.blog_post'
+          ),
+        ],
+      }),
+    ],
+  });
+}
+
 export function blogIndexPage(): Node {
   return el('div', 'flex flex-col', {
     children: [
@@ -233,20 +254,7 @@ export function blogIndexPage(): Node {
           }),
         ],
       }),
-      el('section', 'w-full @container bg-base-100', {
-        children: [
-          el('div', 'mx-auto w-full max-w-5xl px-6 py-16', {
-            children: [
-              repeat(
-                el('div', 'grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2', {
-                  children: [postCard()],
-                }),
-                'cms.blog_post'
-              ),
-            ],
-          }),
-        ],
-      }),
+      blogPostGrid(),
     ],
   });
 }

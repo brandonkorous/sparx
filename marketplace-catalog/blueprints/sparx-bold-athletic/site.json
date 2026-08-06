@@ -1,0 +1,3040 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "cfebf264-9e71-44b0-a3a1-045bf5464062",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "16ef7ce1-5e81-40e2-a132-be26c512753b",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "c6b785b0-d3d0-4def-941d-82617ac75a17",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "3ef1756d-1797-4a7e-bd71-586206eb7dd4",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "d08aa736-23e0-4d21-a9f1-7e481ca832c1",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "b377eff1-a7c9-4046-a58b-b797f1eb16a7",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "406ccc63-521b-480f-8fb7-043dc2be0484",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "2fe68837-a153-41b9-89e2-357e5d7d6ca5",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "65931b95-7f4a-4992-ad70-f305c2ca7732",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "17d14b95-065a-42bb-a16f-452189d4b9e1",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "d62a0150-a0ba-4f79-baff-3dbd3fcf145b",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "f81c08c7-c46c-45f4-99e4-e8bc46f524c0",
+                  "ord": "a2"
+                }
+              ],
+              "id": "412ee7bf-da5d-4516-94a0-c36a0cb35706",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "71e26036-890a-4475-ba1c-e7a7c4e6d031",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "4fce52bd-9c38-4801-abe0-d541a40142bd",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "1009d63c-d615-4341-bee7-35cbf9a7227a",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "1013b7f6-1598-47ce-8ecf-6ba8f41afa07",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "049c780d-db74-4652-a904-06b16a398c44",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "86812a38-bfb9-426a-9f07-c854773ddf55",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "654763ab-89fe-4051-9d41-ed5d031d4a2a",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "d59c9062-9367-4fbd-b684-7f461394e10d",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "a91b7876-0208-408c-8192-82387ae27037",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-100 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @md:grid-cols-2 @3xl:grid-cols-5",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4 @3xl:col-span-2",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "231fca23-d5f3-4af1-bd15-d9cdf8fa35a2",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-xs text-sm text-base-content",
+                          "children": ["Everything you publish and sell, in one place."],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "6c0b65e7-9794-4a07-ba57-22c07e56b669",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "mt-2 flex items-center gap-5",
+                          "children": [],
+                          "id": "b3ff31d6-4db6-43e9-ae60-81e24aa5e4e0",
+                          "ord": "a2"
+                        }
+                      ],
+                      "id": "2e7872f9-d22f-43b4-95e2-2338e81ca298",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Explore"],
+                          "slot": {
+                            "name": "col1",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "f16c6ba7-ed95-4918-85b2-56e1c60d2724",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/shop"
+                                  },
+                                  "children": ["Shop"],
+                                  "slot": {
+                                    "name": "link1",
+                                    "type": "link",
+                                    "label": "Features"
+                                  },
+                                  "id": "31caee3a-664b-4b00-b714-a9e8ddd8ad62",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "cf0d5f72-f1d6-4241-aaa8-ba5ccc4f582c",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/journal"
+                                  },
+                                  "children": ["Journal"],
+                                  "slot": {
+                                    "name": "link2",
+                                    "type": "link",
+                                    "label": "Pricing"
+                                  },
+                                  "id": "bc52dd87-a384-4aa6-bddc-7ab31440dd89",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "fd6c7006-edcd-496e-bf67-ebbcd39e12de",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/about"
+                                  },
+                                  "children": ["About"],
+                                  "slot": {
+                                    "name": "link3",
+                                    "type": "link",
+                                    "label": "Integrations"
+                                  },
+                                  "id": "98e24c46-9d91-444f-8207-4d10ea7e9eb5",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d3d967d9-b858-48e1-b3c3-a0ae3201d50b",
+                              "ord": "a2"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/contact"
+                                  },
+                                  "children": ["Contact"],
+                                  "slot": {
+                                    "name": "link4",
+                                    "type": "link",
+                                    "label": "Changelog"
+                                  },
+                                  "id": "0d0e52e5-fe37-4bf2-9834-c08e64c8a5a9",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "91b492e4-fb3c-4287-98d1-9a30bc4b4d57",
+                              "ord": "a3"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/search"
+                                  },
+                                  "children": ["Search"],
+                                  "id": "ffd56d9f-9bda-476e-bcc8-5c3f3f406665",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "fca8196f-c5bd-4339-8cbb-b811e4a44d60",
+                              "ord": "a4"
+                            }
+                          ],
+                          "id": "d74b0d80-1ee6-4d46-bb1b-0a273bd81566",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "b435ee75-6ee9-4618-b925-62c01a0c6aca",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm font-semibold text-base-content",
+                          "children": ["Account"],
+                          "slot": {
+                            "name": "col2",
+                            "type": "text",
+                            "label": "Column title"
+                          },
+                          "attrs": {
+                            "href": "/account"
+                          },
+                          "id": "6e8b7c8a-d922-40cd-8498-8532095b446b",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account"
+                                  },
+                                  "children": ["Sign in"],
+                                  "slot": {
+                                    "name": "link5",
+                                    "type": "link",
+                                    "label": "About"
+                                  },
+                                  "id": "a5fb0cf8-bc1e-426a-8699-f12abbda2204",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d91c672d-c41c-4c85-83e4-384ff07997d3",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/account/orders"
+                                  },
+                                  "children": ["Orders"],
+                                  "slot": {
+                                    "name": "link6",
+                                    "type": "link",
+                                    "label": "Careers"
+                                  },
+                                  "id": "8af76d89-718e-4075-a269-ea1a8353898a",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "4b53970f-810e-41b9-b437-a3cfd978f50d",
+                              "ord": "a1"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "a",
+                                  "class": "text-sm text-base-content hover:text-primary",
+                                  "attrs": {
+                                    "href": "/cart"
+                                  },
+                                  "children": ["Cart"],
+                                  "slot": {
+                                    "name": "link7",
+                                    "type": "link",
+                                    "label": "Blog"
+                                  },
+                                  "id": "dbd43de0-aedf-4ff4-8d55-aeffab78273b",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "d982ae38-a60d-40dc-8b54-8b9ffb4b287b",
+                              "ord": "a2"
+                            }
+                          ],
+                          "id": "72b7a330-90b4-436f-a6dc-8a7aa3e76dd4",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "7573f9ba-0ee7-45fe-babd-c0b657b230de",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-3",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "ul",
+                          "class": "flex flex-col gap-2",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "li",
+                              "children": [
+                                {
+                                  "kind": "host",
+                                  "component": "site.legal-links",
+                                  "class": "flex flex-col gap-3",
+                                  "props": {
+                                    "heading": "Legal"
+                                  },
+                                  "id": "cb5f22a9-63b4-40de-ae9a-ed34f0446055",
+                                  "ord": "a0"
+                                }
+                              ],
+                              "id": "ed4da578-24d5-47a0-9598-e194ce94b0f4",
+                              "ord": "a0"
+                            }
+                          ],
+                          "id": "1a9f57d0-6c91-4f5b-a6c0-e19a3c629845",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "8c9b7754-c9bf-428b-9492-77b764e64b90",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "5dba4368-5f9a-4b86-82d8-56327b11032c",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "6c6f993d-2a17-4bb4-b2ed-3f6ec68bb1ad",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "ec991958-52f1-45b0-8860-8d1d3faf6749",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex flex-wrap items-center gap-x-6 gap-y-2",
+                      "children": [],
+                      "id": "31dba9c3-7da1-4bbb-92f5-4fde6dcddb69",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "73ba8dc6-9b95-489c-b21e-44289c4344fc",
+                  "ord": "a1"
+                }
+              ],
+              "id": "e26c8d3a-72a1-442f-bcb3-a2012757494e",
+              "ord": "a0"
+            }
+          ],
+          "id": "b9f5233d-20cb-4049-8fd6-85e650d823c5",
+          "ord": "a2"
+        }
+      ],
+      "id": "943388e8-cfb6-4d26-8079-778ba30604e0"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Threshold — endurance cycling kit for the long road",
+      "seoDescription": "Threshold makes endurance cycling kit — bibs, jerseys and shells tested over real distance, in real weather, and built to hold up ride after ride.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "83962882-da9c-4a8d-844b-ec89e01fbc53",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "component",
+                "component": "Video",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "props": {
+                  "src": "/video/tpl-bold-athletic.mp4",
+                  "poster": "https://images.unsplash.com/photo-1695238070098-83d6775247a7?w=1400&q=80",
+                  "autoplay": true,
+                  "muted": true,
+                  "loop": true,
+                  "playsinline": true,
+                  "preload": "metadata",
+                  "aria-label": "A rider on an empty mountain road at first light"
+                },
+                "id": "c5341c80-0568-46a1-8769-a0f14adeed12",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["Kit built for the long road"],
+                        "id": "9a6754f9-8f57-4e34-adf5-14dc5a159db1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Threshold makes endurance cycling kit for the riders who are still out when everyone else has turned for home — bibs, jerseys and shells tested over real distance, in real weather, and made to hold up ride after ride."
+                        ],
+                        "id": "481a50ef-61af-461a-91b4-c1909bfb58cb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-accent btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop the new season"],
+                            "id": "e7bda37c-3e8a-464a-9097-e01b4d2d3156",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-neutral btn-outline btn-lg",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["Read the Journal"],
+                            "id": "2dcb395e-9b0e-45c5-a1d6-2a47163a1eda",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "63b4425a-1e9c-4075-bd7f-c5626c544d56",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "94ad2112-8168-465f-9c56-ecda85279a5b",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "5ea42efc-df79-41d8-8ce0-9a17bba3b824",
+                "ord": "a1"
+              }
+            ],
+            "id": "7446046d-371f-4a04-b3a5-9392009faa7c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["New this season"],
+                    "id": "1e5e66f0-ca48-48d3-964f-629fbcf706a2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "9859ea4c-0c81-4be2-a730-1cd8d126be2e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "fb2fed56-f0b8-4404-a8c9-1a275f162876",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "4153d758-ddb3-4538-bad5-385ce4b9d673",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "1bb77850-76f5-405b-b9a0-1716dabeaadd",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "42f62609-eeb7-4586-af12-fd4ff5d17930",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "432a0a2a-9c10-4384-9aee-0741bb2fd3a1",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "3c2f0299-9fb4-4a6d-899d-b96cabd7b675",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "f254c378-971e-470a-a854-070978ef60e3",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "e4904515-37d0-41fc-98e2-2cbe61f82c3c",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6cd1ab03-13db-452c-84e4-63c2a4d22590",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "ea9923f8-8a60-48d3-970f-694d56f71b27",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "2cc600c7-0001-49ea-9369-03d1744a1475",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "21aedbce-73bf-4eb0-8be9-01c553c5931a",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1528629297340-d1d466945dc5?w=1400&q=80",
+                  "alt": "A close crop of a rider seated in the drops",
+                  "loading": "lazy"
+                },
+                "id": "4aa7ded9-2c12-4e2f-988d-6056fa0ad0be",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-16 @3xl:px-10 @3xl:py-24",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["It starts with the bib"],
+                        "id": "c8f2eed1-3e01-40e2-8850-b12addc87b58",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A century is decided from the waist down. Our bibs run a seamless multi-panel chamois and a bracing straps-and-mesh upper, so hour six feels like hour one — the single piece of kit worth getting right first."
+                        ],
+                        "id": "094e84b8-c914-4348-a191-753418651396",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "font-semibold text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": ["Shop bib shorts"],
+                        "id": "a36dfbfc-b904-4624-8a2f-355644b78a2e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "635c9d66-c7ee-4456-be4e-af2904b23bb4",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "c7fb166b-3e81-488e-8659-c80c8708e458",
+                "ord": "a1"
+              }
+            ],
+            "id": "f9af2ca1-bcd8-4f3a-8edf-bc4c01773ff0",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Bib shorts"],
+                    "id": "51950994-ab6c-49d9-b0ef-23d7c93e331e",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "873d2b17-685d-4d7c-b7b3-3aee0db970d4",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "5ac42f1a-9980-4909-98b5-5fb2e95e250b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "a8078b1f-f1c6-4470-bd12-fe3303f6f4b6",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "dd66801d-c462-48b2-a96f-872c3b20f8c8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "195fce38-9a4c-4c01-a141-b3b96fefa60b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "a28342b6-0a3b-4ee1-a82b-0bb85f58c10d",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "1d4c32cd-46ee-4fb7-ad60-721b300a3f61",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "61605a37-e3b4-4d3b-9358-bfaddc204586",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "fd1bf85c-4acb-4ca0-ba76-41c30f0990b5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "67d94ffa-a65b-43f6-9d4a-a7c58c719f74",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "34690749-0ff8-40d1-b587-5347913d326d",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.bib-shorts"
+                },
+                "id": "6941174c-f395-4a9b-8bf2-ea0e56413786",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "a1712db5-8523-48f2-902e-0196585b52d7",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
+                        "children": ["Shop by discipline"],
+                        "id": "b3adb6b7-2505-4dca-a5a5-536a99de24a4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "Whatever the ride asks of you — a long climb, a fast bunch, a cold dawn — start with the kit built for it."
+                        ],
+                        "id": "39088339-4ab0-467d-9441-22b6989eb8b8",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e4854aaa-70dc-4953-b778-0e1f75b3838b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-6 @2xl:grid-cols-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group relative flex aspect-square flex-col overflow-hidden rounded-box",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1541625602330-2277a4c46182?w=1400&q=80",
+                              "alt": "A rider climbing on the road in bib shorts",
+                              "loading": "lazy"
+                            },
+                            "id": "e956bfbe-2687-4581-8ec9-cdcf6712c309",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "relative mt-auto w-full bg-primary px-4 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold uppercase tracking-tight text-primary-content",
+                                "children": ["Bib shorts"],
+                                "id": "9dbf5149-b748-460a-b5d0-dbb4537851c5",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "1c7c65b1-59cd-4d57-bdd4-6d0d8e91baf3",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ef38ea12-0743-47e2-b158-67772467caae",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group relative flex aspect-square flex-col overflow-hidden rounded-box",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1517649763962-0c623066013b?w=1400&q=80",
+                              "alt": "A cyclist on a mountain pass in a lightweight jersey",
+                              "loading": "lazy"
+                            },
+                            "id": "188925dd-e8da-49bd-bea1-fd3942329dbb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "relative mt-auto w-full bg-primary px-4 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold uppercase tracking-tight text-primary-content",
+                                "children": ["Jerseys"],
+                                "id": "e1770ca1-70b4-4b48-af82-d8c4bbdaa03b",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "6515f225-7a3b-45f1-835a-44c6f011c1be",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ad4e17a9-443e-4df7-86e2-a5eb24701a3c",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group relative flex aspect-square flex-col overflow-hidden rounded-box",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1605235185711-bf04486a4720?w=1400&q=80",
+                              "alt": "A rider layered up against the cold",
+                              "loading": "lazy"
+                            },
+                            "id": "9a49a0f5-11ad-4eec-b59b-905bf691f41f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "relative mt-auto w-full bg-primary px-4 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold uppercase tracking-tight text-primary-content",
+                                "children": ["Base layers"],
+                                "id": "5fefc4ec-85b3-4225-a9e6-44de0bfbe4b5",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "49273744-5af5-489f-af9d-41af80be8d45",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "3d005fdf-9c14-4367-9138-c36bfa6c0fcf",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group relative flex aspect-square flex-col overflow-hidden rounded-box",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "absolute inset-0 h-full w-full object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1601625193660-86f2807b024b?w=1400&q=80",
+                              "alt": "A cyclist riding through cold, grey weather",
+                              "loading": "lazy"
+                            },
+                            "id": "77841d8d-9728-4f1b-93ce-4bbfc9cae780",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "relative mt-auto w-full bg-primary px-4 py-3",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg font-bold uppercase tracking-tight text-primary-content",
+                                "children": ["Cold weather"],
+                                "id": "efc8d7a8-8a94-4fe4-a99a-8fd9f3d6ca88",
+                                "ord": "a0"
+                              }
+                            ],
+                            "id": "b79662a0-7edf-40c9-8450-a61ab59f84f5",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d5dddc2a-c2b1-41c5-9435-f45454e219f6",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "49317a08-5971-4395-9f3f-e57a7a891add",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "18eb8702-5879-433f-b9e6-f256772e9617",
+                "ord": "a0"
+              }
+            ],
+            "id": "84d31327-8a69-406d-a8e2-ce6175b0d54c",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1601625193660-86f2807b024b?w=1400&q=80",
+                  "alt": "A cyclist riding through cold, grey weather",
+                  "loading": "lazy"
+                },
+                "id": "13c9dca9-d090-44b6-abea-43e18c0287b3",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-16 @3xl:px-10 @3xl:py-24",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-4xl",
+                        "children": ["When the weather turns"],
+                        "id": "b17ea4b1-2396-4e88-9c9c-f23ae1d5b4ad",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "The season does not stop because it got cold and wet. Thermal jerseys, a packable wind gilet and a proper storm shell — the layers that keep you riding through the months most riders sit out."
+                        ],
+                        "id": "2b30abc6-84ee-405d-94b5-9899ab430d9f",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "font-semibold text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": ["Shop cold weather"],
+                        "id": "e5cb9130-bc34-49f8-a522-e599688aec7f",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "6df31a19-4fd3-4b48-b3c8-5199b344a598",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "3cd138b3-e5e6-4425-9bd5-a22f2e23859c",
+                "ord": "a1"
+              }
+            ],
+            "id": "aba27bd3-2153-403d-a2fd-785a9af407aa",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["Cold weather"],
+                    "id": "25b9d54f-3ef5-41ee-946f-1b0db1759fd1",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "70df729b-179a-48ea-a852-88b208427f8d",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "865409f8-35bb-446e-ad04-6207d7f6e338",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "af141b60-acfd-4fe7-a13c-ecbf5bef85b2",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "41d1aa8f-18ec-492d-ac7d-d704fb783e50",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "9ab85c86-2318-490f-b1ec-346148e8c061",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "b9e64d4f-e69e-4e20-94aa-54eed398971c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "2c5b1940-2186-4b19-9f3d-ebc0af0bd8c1",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "d087661b-9bb8-44b8-9d71-70206a23fc30",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "5172d0af-4890-4064-a4d9-083775cff30d",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "78a37e4e-13ff-44b9-8bad-a2d5e0b4bb10",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "fd9168ab-a165-4d3d-b98e-34a0d4d1e6dc",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.cold-weather"
+                },
+                "id": "52ba3dad-157d-4091-84ff-961591f4f5f5",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "8019b06a-c48e-47c3-9e63-92f6dd8aff03",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
+                        "children": ["From the road"],
+                        "id": "020e11e0-36ae-4102-8167-758f5b320ce9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "Kit gets tested where it gets ridden. A few frames from the rides that shaped this season."
+                        ],
+                        "id": "3af51176-234c-400e-a85b-c98324ba8e62",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "597bfa79-b7ea-443b-ac0b-05cce20eff21",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex snap-x gap-6 overflow-x-auto pb-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "figure",
+                        "class": "flex w-72 shrink-0 snap-start flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1534146789009-76ed5060ec70?w=1400&q=80",
+                              "alt": "A group ride strung out along the road",
+                              "loading": "lazy"
+                            },
+                            "id": "1ea6a5a6-353d-47f4-9d63-b01200942a11",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "figcaption",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["The Saturday bunch"],
+                            "id": "3136011a-4252-4030-8c01-02bc714a4bb6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "154c4ce9-9b9f-4470-b570-d57104f54cd6",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "figure",
+                        "class": "flex w-72 shrink-0 snap-start flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?w=1400&q=80",
+                              "alt": "A rider on gravel at the edge of the light",
+                              "loading": "lazy"
+                            },
+                            "id": "aa764258-834e-4af7-bc1d-4fee3967a7ed",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "figcaption",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["Off the tarmac"],
+                            "id": "5d755769-a7d1-4295-ad4f-93ab27e4b368",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "6339f5e0-72de-4286-a124-c3417c6a78fc",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "figure",
+                        "class": "flex w-72 shrink-0 snap-start flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1572717051745-383d107c2a16?w=1400&q=80",
+                              "alt": "A cyclist cresting a climb",
+                              "loading": "lazy"
+                            },
+                            "id": "f1334ea7-f289-42f5-af96-f3cb7a69e119",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "figcaption",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["Over the top"],
+                            "id": "4f4014ec-723f-412b-9933-ad32e2efd375",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "d43318fc-3591-476c-8909-4952463e6469",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "figure",
+                        "class": "flex w-72 shrink-0 snap-start flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1600403477955-2b8c2cfab221?w=1400&q=80",
+                              "alt": "A long descent opening out below",
+                              "loading": "lazy"
+                            },
+                            "id": "6bf288ce-4f1b-468b-9f04-c0c3f655a814",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "figcaption",
+                            "class": "text-base font-semibold text-base-content",
+                            "children": ["The long way down"],
+                            "id": "f41836de-42c4-45b7-99c9-fe05149f29dc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "c8de522a-893d-48d0-8673-518d1754675d",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "300ac494-a537-4c62-a06a-fc9753cc18a7",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3bc4a54e-81c2-453c-924a-a3e1ecd1ab31",
+                "ord": "a0"
+              }
+            ],
+            "id": "b78aa634-32af-4893-819b-4bb47b74fa62",
+            "ord": "a7"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "mx-auto flex w-full max-w-xl flex-col gap-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content",
+                        "children": ["One email a month"],
+                        "id": "69fb5a25-3fbe-46c3-95f5-7c0881ec5f45",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-base text-base-content",
+                        "children": [
+                          "What we made, what we learned, and anything we got wrong. Unsubscribe in one click."
+                        ],
+                        "id": "f0c2dfc4-de7c-4861-a43a-2160d1893fcb",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "flex flex-col gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex flex-col gap-2",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-base font-medium text-base-content",
+                                "children": ["Email address"],
+                                "id": "1027983f-c462-459f-8424-a79665d25167",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input input-bordered w-full",
+                                "attrs": {
+                                  "type": "email",
+                                  "name": "email",
+                                  "placeholder": "",
+                                  "required": true
+                                },
+                                "id": "011e1b60-8d50-4282-af53-f53fcea9f48e",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "5ef52ff3-1bdc-475e-863a-1645e3066a7e",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "button",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "type": "submit"
+                            },
+                            "children": ["Sign me up"],
+                            "id": "6c073797-d148-4b4d-9080-15c19c518ecd",
+                            "ord": "a1"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "submit"
+                        },
+                        "id": "e6679a3e-9223-40f5-9c26-7975b6f89511",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-sm text-base-content",
+                        "children": [
+                          "We never pass your address to anyone, and we do not email more than monthly."
+                        ],
+                        "id": "b50302fe-a712-4435-93f2-6d2528ac4140",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "7d613a64-4498-4a7e-bac7-db0abf72f92e",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "d7a18e82-efe4-4dcf-8dec-8c0c5e4d515a",
+                "ord": "a0"
+              }
+            ],
+            "id": "7dfa7b71-c3df-4625-8bdb-eb10ebe0ab34",
+            "ord": "a8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Threshold",
+      "seoDescription": "Browse everything Threshold makes, with prices and options at a glance. Endurance cycling apparel.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "42b17464-6e7e-4c7a-806f-134bfeb9f8bf",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-neutral @container px-6 pt-16 pb-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
+                    "children": ["Shop the range"],
+                    "id": "355408c7-9987-4fb7-b283-1b9b817b4555",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
+                    "children": [
+                      "Every piece Threshold makes — bibs, jerseys, base layers, shells and the small kit that finishes the ride — filtered and sorted however you like. All of it tested over real distance, in real weather, and built to hold up ride after ride."
+                    ],
+                    "id": "b083b74a-6ace-4cb3-9222-6ce9b442d82e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6f56bd11-f8e9-4274-a1b9-edf6299ec03a",
+                "ord": "a0"
+              }
+            ],
+            "id": "29287f5f-ee6d-43de-852a-878cb2462db4",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "469cabd9-6b84-4004-8802-0fa74c9abe92",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Threshold",
+      "seoDescription": "Explore the collections at Threshold, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "42e6faad-77a8-46ac-a11b-67302555ffcd",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-neutral @container px-6 pt-16 pb-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
+                    "children": ["Kit by discipline"],
+                    "id": "550db25e-d9be-4301-9756-c8e5611d4b58",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
+                    "children": [
+                      "Bibs, jerseys, base layers, cold-weather kit and the small stuff that finishes the ride — grouped by the job it does, so you can kit up for the ride in front of you and not the one in the catalogue."
+                    ],
+                    "id": "0b011283-df95-4a5a-b566-a426a1558eb6",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "aa25778f-a55f-4379-8d90-322b75872d47",
+                "ord": "a0"
+              }
+            ],
+            "id": "316d5936-9177-4501-9a89-8f9b5a3a1aa4",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "84247dfa-6edc-4b41-92d9-8c2a401e886c",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Threshold",
+      "seoDescription": "Review what is in your cart and check out securely at Threshold.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f5e432be-57e6-47ea-ac85-437c376120f0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-neutral @container px-6 pt-16 pb-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
+                    "children": ["Your cart"],
+                    "id": "45c58f86-992d-4a05-b191-2dea522fd1df",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
+                    "children": [
+                      "Free tracked shipping on orders over $75, dispatched within one business day. Thirty days to return anything unworn, with tags, for a full refund — and if a seam or a fabric ever fails in normal riding, we replace it. Kit that does not hold up does not get to wear our name."
+                    ],
+                    "id": "8f991909-6397-4ae1-9cec-e36c47e89c0b",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8769a8f7-d810-4ea2-86d5-6eb48bcbdad3",
+                "ord": "a0"
+              }
+            ],
+            "id": "b783d81f-09ed-483e-9cbf-d00ac22317f9",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "d31ac138-cad2-46dd-96db-f62583cd79ba",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Threshold",
+      "seoDescription": "Search Threshold for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "5f4b95a3-395e-49e8-8a2e-d7f2f19be4de",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-neutral @container px-6 pt-16 pb-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
+                    "children": ["Find your kit"],
+                    "id": "e1d1f589-ce99-4868-837e-9e26084783d5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
+                    "children": [
+                      "Chasing something specific — a size, a fabric, the gilet that lives in your jersey pocket? Search the whole range and the Journal below and get straight to it."
+                    ],
+                    "id": "35debecf-b4bb-4a8a-b5b2-33427c6e1bf2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "aea05f6e-10f7-4f82-a158-ee02d2ae069c",
+                "ord": "a0"
+              }
+            ],
+            "id": "4b550d52-1d95-4b3c-a140-ae1b1a7ae9c1",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "d319bd22-8bbc-4006-ab58-0c676e2c6f4a",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Threshold",
+      "seoDescription": "Stories, guides and notes from Threshold.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "54c56d27-bd2d-44b9-aa19-6d515e694c76",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-neutral @container px-6 pt-16 pb-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold uppercase leading-none tracking-tight text-neutral-content @3xl:text-6xl",
+                    "children": ["The Threshold Journal"],
+                    "id": "f9a96546-f79c-4192-8e89-b6dd428b397a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-neutral-content",
+                    "children": [
+                      "Training that actually moves the needle, kit that earns its place in the bag, and notes from the long rides that shape every season — written by riders, for riders."
+                    ],
+                    "id": "9a640c55-e1dd-4ae0-95b8-375a06ca397e",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "25f9d4a2-7db9-41cf-9271-56b48d16ff49",
+                "ord": "a0"
+              }
+            ],
+            "id": "1ded02cd-85f7-492f-8325-a93331c3dcc6",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "4b5e31d1-0ab6-459c-85a6-6bfef59a15cb",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "fa4224b8-3b9c-40e3-b6a9-b11a7d5dfbaf",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "8abffa64-c176-4b7e-b384-fe807fedbc2b",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "dad00244-2556-4518-a619-db73fbe30798",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "e00d707a-8920-4971-8805-8e6a0467d8d7",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "e4578d65-a28d-48fe-aec8-63b6b260ae93",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "7d712c39-d807-4daf-8be0-fbb49995c88c",
+                "ord": "a0"
+              }
+            ],
+            "id": "ec578ca2-7269-4064-93ff-6f2ef58229ec",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Threshold",
+      "seoDescription": "The riders behind Threshold, and why we build endurance kit tested on the long road rather than the showroom floor.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "bef16c4f-06ca-4a59-9eb8-a6d65cfd0bba",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold uppercase tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["About Threshold"],
+                    "id": "06f079f6-afaf-4f2a-9412-0d07dd9008d0",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Threshold started with a simple complaint: too much cycling kit is designed for the photo and not the ride. It looks fast in the shop and falls apart at the point where a ride actually gets hard — the seam that chafes at hour four, the shell that wets out in the first real downpour, the chamois that gives up before you do."
+                    ],
+                    "id": "474b8b54-2892-41a7-b5f4-a59c8fd9592c",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "So we build the other way round. Every piece is ridden long and hard before it ships — over passes, through winters, deep into the kind of distance where cheap kit shows its true colours. If it does not hold up out there, it does not get made. That is the whole standard, and it is not negotiable."
+                    ],
+                    "id": "643a8d23-8160-48c3-9dfe-b7861caf143a",
+                    "ord": "a2"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "We are a small team of riders making kit for other riders. No sponsored pros, no seasonal churn for its own sake — just gear built to earn its place in your kit bag and stay there for years."
+                    ],
+                    "id": "deeb518b-dd4a-4146-8c4c-4c19158cc40b",
+                    "ord": "a3"
+                  }
+                ],
+                "id": "a0f45fbd-1f9d-4e58-9ec5-79d4fd54bd6e",
+                "ord": "a0"
+              }
+            ],
+            "id": "d0cdce1d-f2da-40ca-8d5d-342e329188cd",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Threshold",
+      "seoDescription": "Get in touch with Threshold — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "58b0b0ff-67dd-4570-b2f7-7b84e1f8445b",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-bold uppercase tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Talk to us"],
+                    "id": "a0ceaa07-e32d-496e-9c9e-1b56f0cb54d5",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Sizing question, a fault, or you just want to know how a piece holds up over a long winter? A real rider on the team reads every message and answers straight — no script, no runaround."
+                    ],
+                    "id": "efecde5f-7fa5-4722-b0b4-6c816fa0a278",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@threshold.example"
+                    },
+                    "children": ["Email the team"],
+                    "id": "ba929115-f1d3-4b30-9243-3177d586d51d",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "ed260233-4499-466c-b723-5dc4d5143326",
+                "ord": "a0"
+              }
+            ],
+            "id": "5714c03e-8284-4676-8938-129626a07c75",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Threshold",
+      "seoDescription": "Product details at Threshold — endurance cycling apparel, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "431ddc24-ba7f-46fd-a44e-a438d264a75b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-bold uppercase tracking-widest text-base-content",
+                            "children": ["Threshold — race-tested kit"],
+                            "id": "02b448d2-7613-47a0-b63b-0f099a845f2c",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-bold uppercase leading-none tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "18ca80e8-5a4f-4a9d-bf18-eda11830014e",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-bold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "3a9fbc88-dcd2-4595-beb3-cdedb0c64946",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-base-content line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "bb339f11-16be-4f21-90db-5cb9af5fe5e0",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "0c089d5e-75c7-44c9-aaff-8d2caa0f2740",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2ce975c8-714e-4026-9f14-547500925e2a",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "0d67f890-bf59-4ff3-92dd-405b3d6c1583",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "23da5b41-5bc3-4b9a-8282-3a11131713de",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "445ee2d1-67cb-4e70-b59e-ce9e38c9ae22",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "fcb21708-167a-4d9b-8a5e-2946fa70100f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "e1504161-786d-4e9c-b5e1-129c48ff1ed6",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "2852e525-42cc-47e9-a475-f64deb6aa869",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "0911f09b-6f40-479f-af30-ee63ac8ebadd",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "fbabd2d0-39db-4e88-8c5c-bae28c55b2c9",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex flex-col gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-bold uppercase tracking-widest text-base-content",
+                                "children": ["Performance & fit"],
+                                "id": "aa29a711-936e-430e-a30a-823ceee4038f",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Cut for time in the saddle, not time in the mirror. The fit sits flat in the riding position — long in the back, short at the front — and moves with you out of the saddle without a single seam catching. Race and endurance fits are called out on each piece; if you ride between sizes, size down for race, up for all-day comfort."
+                                ],
+                                "id": "9a34fa97-2991-4afe-a9b3-4f63d26dfa9d",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "ac521125-d077-469c-a011-6db3709da6c8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-bold uppercase tracking-widest text-base-content",
+                                "children": ["Fabric & construction"],
+                                "id": "d12769a4-aa3f-4bfc-9090-eca635714ea5",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Built from Italian-milled performance fabric chosen for one job and ridden until it proved it — compressive where it needs to support, open-knit where it needs to breathe. Bonded hems, laser-cut leg grippers and reinforced stress points mean nothing bags, rolls or lets go on the ride that counts."
+                                ],
+                                "id": "2d3f203c-de0e-4eba-92e4-f1ae2427ec66",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e20d7efb-69f4-49a2-ae92-b44e0b2fea39",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-bold uppercase tracking-widest text-base-content",
+                                "children": ["Care"],
+                                "id": "a52c5500-ccd1-41cf-b242-a37f609a3437",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Machine wash cold on a gentle cycle, inside out, with like colours, then hang to dry. Skip the fabric softener — it clogs the wicking that keeps you dry — and skip the tumble dryer, which is what kills a chamois before its time. Looked after, this kit rides hard for years."
+                                ],
+                                "id": "58f701b0-c0b7-462f-8aa1-cdeabc93c914",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e84601a6-f4a7-4b1a-a6ab-0794f17a99a1",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-bold uppercase tracking-widest text-base-content",
+                                "children": ["Shipping & returns"],
+                                "id": "f4df40e3-47ff-4e4a-8c94-b559a8eb3b9e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Free tracked shipping on orders over $75, dispatched within one business day. Thirty days to return anything unworn, with tags, for a full refund — and if a seam or a fabric ever fails in normal riding, we replace it. Kit that does not hold up does not get to wear our name."
+                                ],
+                                "id": "d8e6f7e6-3de8-4f7b-a987-cc048a57adc7",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "1e84af85-fc80-4902-aca1-e6ddda7c35fe",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "6fbc8385-1e2c-4b03-b7b2-6c26a0c36bf7",
+                        "ord": "a3"
+                      }
+                    ],
+                    "id": "6ef20218-9970-4da2-985a-bc833af46e74",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "34d2cf4a-2220-48aa-824b-8f135e5635d3",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "3cd4e2d4-c2ac-461c-b63a-bb4bd670c745",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["You might like too"],
+                    "id": "fac3e10d-7912-4f6d-8ea3-f8ffe5e4fd2c",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "009ab357-a94e-4b34-9b8d-75592d5c5d33",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "189f9731-59d4-4e3d-8e3b-9d77e5db73ee",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "eafbc6c3-4459-4ce2-8ba8-877231f524ae",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "6b0684b3-d46d-4467-9841-f40de90d075e",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b85441f9-bd50-4784-9cd1-1e1b9e20b2c2",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "6ddb31fa-6891-4962-9f7d-e4919a2f3c25",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "416efb79-c965-4ab1-83b8-9e2ff0ef5e65",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "1a245f07-d07d-48b3-bee2-0d53c7a18f31",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "1217c94b-7c57-427f-9b0a-b946d4db9df6",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b22c1db6-c73b-4323-94ca-8dc42f73edcf",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "c4c1be23-afb0-47f8-af5c-d8b5024e99e1",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "c9534ba4-5e47-4c91-8f63-14e6252f6e6a",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "3cd193d3-5ba0-409b-a2d5-eb1b98fe81c9",
+            "ord": "a1"
+          }
+        ],
+        "id": "07c926bf-0b38-4376-a6ba-8cea0d4bbaea"
+      }
+    }
+  ],
+  "theme": {
+    "name": "velodrome",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(99% 0.002 85)",
+      "--color-base-200": "oklch(95% 0.006 90)",
+      "--color-base-300": "oklch(91% 0.006 90)",
+      "--color-base-content": "oklch(16% 0.004 270)",
+      "--color-primary": "oklch(18% 0.006 270)",
+      "--color-secondary": "oklch(42% 0.01 270)",
+      "--color-accent": "oklch(91% 0.19 122)",
+      "--color-neutral": "oklch(22% 0.006 270)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "0.125rem",
+      "--radius-field": "0.125rem",
+      "--radius-box": "0.25rem",
+      "--depth": "0",
+      "--font-sans": "\"Inter\", sans-serif",
+      "--font-head": "\"Oswald\", sans-serif",
+      "--color-primary-content": "oklch(98% 0.006 270)",
+      "--color-secondary-content": "oklch(98% 0.01 270)",
+      "--color-accent-content": "oklch(15% 0.02 122)",
+      "--color-neutral-content": "oklch(98% 0.006 270)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(91% 0.19 122)",
+      "--color-highlight-content": "oklch(15% 0.02 122)",
+      "--color-border": "oklch(91% 0.006 90)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Oswald\", sans-serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(15% 0.004 270)",
+      "--color-base-200": "oklch(12% 0.004 270)",
+      "--color-base-300": "oklch(9% 0.004 270)",
+      "--color-base-content": "oklch(95% 0.004 90)",
+      "--color-primary": "oklch(96% 0.004 90)",
+      "--color-secondary": "oklch(72% 0.01 270)",
+      "--color-accent": "oklch(92% 0.19 122)",
+      "--color-neutral": "oklch(30% 0.006 270)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.004 90)",
+      "--color-secondary-content": "oklch(15% 0.01 270)",
+      "--color-accent-content": "oklch(15% 0.02 122)",
+      "--color-neutral-content": "oklch(98% 0.006 270)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(92% 0.19 122)",
+      "--color-highlight-content": "oklch(15% 0.02 122)",
+      "--color-border": "oklch(9% 0.004 270)"
+    }
+  }
+}

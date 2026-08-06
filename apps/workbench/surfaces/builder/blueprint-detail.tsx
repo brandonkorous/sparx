@@ -35,7 +35,7 @@ import {
   Text,
   useToast,
 } from '@wizeworks/silicaui-react';
-import { LayoutTemplate, Rocket, Trash2 } from 'lucide-react';
+import { ArrowUpCircle, LayoutTemplate, Rocket, Trash2 } from 'lucide-react';
 import { useConfirm } from '../../lib/confirm';
 import { useActiveSiteId, useModuleStates } from '../../lib/api/shell-data';
 import { useSites } from '../sites/data';
@@ -55,6 +55,8 @@ import {
   useGoLiveInstall,
   useInstallBlueprint,
   useUninstallInstall,
+  useUpdateInstall,
+  useUpdatePlan,
   type Blueprint,
   type BlueprintInstall,
 } from './blueprints-data';
@@ -148,6 +150,7 @@ function BlueprintBody({
   const install = useInstallBlueprint(blueprint.key);
   const goLive = useGoLiveInstall();
   const uninstall = useUninstallInstall();
+  const update = useUpdateInstall();
 
   // Default the target to the site being worked in — nearly always the one meant
   // — but keep it a visible, changeable choice, because adding a whole design to
@@ -175,6 +178,19 @@ function BlueprintBody({
   );
   const state = current ? installState(current.status) : null;
 
+  // An update is available when the chosen site's install trails the catalog version
+  // and is in a state that can take one (a draft or a live install — not one that is
+  // mid-install or stopped, which resolve their own way first). The catalog version is
+  // `blueprint.version`; the install's is `current.blueprint_version`.
+  const updateAvailable =
+    !!current &&
+    (current.status === 'installed' || current.status === 'live') &&
+    current.blueprint_version !== blueprint.version;
+  // Preview the merge only when one is actually available, so an up-to-date install
+  // never fetches a plan. The summary drives the confirm so the operator sees what will
+  // change before committing.
+  const { data: plan } = useUpdatePlan(current?.id ?? '', updateAvailable);
+
   const lines = contentsLines(blueprint.contents);
   // `contents` is free-form JSON on the wire, so read the theme name defensively
   // — a non-string would render as `[object Object]` or crash React.
@@ -189,7 +205,7 @@ function BlueprintBody({
   }, [modules]);
   const offModules = blueprint.requiredModules.filter((slug) => moduleEnabled.get(slug) === false);
 
-  const busy = install.isPending || goLive.isPending || uninstall.isPending;
+  const busy = install.isPending || goLive.isPending || uninstall.isPending || update.isPending;
 
   const onInstall = async () => {
     if (targetSite === '') return;
@@ -248,6 +264,50 @@ function BlueprintBody({
     });
   };
 
+  const onUpdate = async () => {
+    if (!current) return;
+    // What's changing, in plain words — new things the design added, clean updates, and
+    // anything you've edited that will keep your version. Falls back to a generic line
+    // while the plan is still loading.
+    const s = plan?.summary;
+    const bits: string[] = [];
+    if (s) {
+      if (s.new > 0) bits.push(`${String(s.new)} new ${s.new === 1 ? 'addition' : 'additions'}`);
+      if (s.updated > 0) bits.push(`${String(s.updated)} update${s.updated === 1 ? '' : 's'}`);
+      if (s.conflicts > 0) bits.push(`${String(s.conflicts)} you've edited (your version is kept)`);
+    }
+    const changeLine = bits.length > 0 ? ` This brings in ${bits.join(', ')}.` : '';
+    const ok = await confirm({
+      title: `Update “${blueprint.name}” on ${targetName}?`,
+      description: `This updates the design from version ${current.blueprint_version} to ${blueprint.version} on ${targetName}.${changeLine} Anything you have changed yourself is kept — the update never overwrites your edits.`,
+      confirmLabel: 'Update it',
+      cancelLabel: 'Cancel',
+      color: 'module',
+    });
+    if (!ok) return;
+    update.mutate(current.id, {
+      onSuccess: (result) => {
+        void refetchInstalls();
+        toast.add({
+          title: `${blueprint.name} updated to version ${blueprint.version} on ${targetName}`,
+          description:
+            current.status === 'live'
+              ? 'The changes are live. Anything you had edited was kept.'
+              : 'The changes are in as drafts. Review and publish when you are ready.',
+          type: 'success',
+        });
+        void result;
+      },
+      onError: (error) => {
+        toast.add({
+          title: 'Could not update this design',
+          description: blueprintErrorMessage(error, 'Nothing was changed.'),
+          type: 'error',
+        });
+      },
+    });
+  };
+
   const onRemove = async () => {
     if (!current) return;
     const ok = await confirm({
@@ -283,6 +343,11 @@ function BlueprintBody({
         ) : (
           <Text className="text-sm">Preview</Text>
         )}
+        {updateAvailable ? (
+          <Badge color="module" variant="soft" size="sm">
+            Update available
+          </Badge>
+        ) : null}
         <RefreshButton
           className="ml-auto"
           isFetching={isFetching || installsFetching}
@@ -344,6 +409,37 @@ function BlueprintBody({
                       : ''}
                 </AlertDescription>
               </AlertContent>
+            </Alert>
+          ) : null}
+
+          {/* A newer version of this design is in the catalog. Surfaced as its own
+              prompt (not folded into the status line) because it is an ACTION the
+              operator can take, distinct from what the install currently is. */}
+          {updateAvailable && current ? (
+            <Alert color="module" variant="soft">
+              <AlertContent>
+                <AlertTitle>Update available</AlertTitle>
+                <AlertDescription>
+                  {targetName} has version {current.blueprint_version} of this design; version{' '}
+                  {blueprint.version} is now available.
+                  {plan?.summary && plan.summary.new > 0
+                    ? ` It adds ${String(plan.summary.new)} new ${plan.summary.new === 1 ? 'thing' : 'things'} (like new pages).`
+                    : ''}{' '}
+                  Updating keeps everything you have edited yourself.
+                </AlertDescription>
+              </AlertContent>
+              <Button
+                size="sm"
+                color="module"
+                loading={update.isPending}
+                disabled={busy && !update.isPending}
+                onClick={() => {
+                  void onUpdate();
+                }}
+              >
+                <ArrowUpCircle className="size-4" aria-hidden />
+                Update to {blueprint.version}
+              </Button>
             </Alert>
           ) : null}
 

@@ -7,6 +7,39 @@ their `_gen/` generators. The full **authoring reference** is
 the **working rules + footguns** that aren't obvious from a single file. See root
 [CLAUDE.md](../CLAUDE.md) for cross-cutting rules.
 
+## Reference site-templates: the harness + the standard build/preview/screenshot loop
+
+The reference-driven **full-site** templates (`docs/templates/*` → `gen-template-<slug>.ts`) are
+NOT authored one node at a time. Each generator is JUST a `TemplateSiteSpec` on the shared harness
+in [`_gen/template-sites/`](_gen/template-sites/): `harness.ts` composes the distinct silica site
+(a 9-page site — Home, Shop, Collections, Cart, Search, Journal, About, Contact, Product) and emits
+the bundle; `pdp.ts` is the bespoke product-detail kit; `behaviors.ts` the interactive-section
+helpers; `preview.ts` the visual-review renderer. A spec declares the bespoke parts —
+`home`/`pdp`/`shop`/`collections`/`cart`/`search`/`journal`/`about`/`contact` — and the harness
+supplies the frame, the pinned functional cores, SEO and theme. **Add a new one by copying an
+existing `gen-template-<slug>.ts`, not by hand-building pages.** This scales to 100+ templates
+because the only per-template code is the spec.
+
+**The three-oracle build loop — identical for template #1 and #100:**
+
+1. **Generate + validate + preview** — one command per template:
+   `pnpm --filter @sparx/api-rest exec tsx "$PWD/marketplace-catalog/_gen/gen-template-<slug>.ts"`
+   It emits the bundle, prints `safeParseBlueprint → VALID` (oracle 1+2), and writes the full-site
+   review HTML to the STANDARD dir **`marketplace-catalog/_gen/.preview/preview-<slug>.html`**
+   (gitignored) — every page stacked under sticky labels, in the bundle's real theme, with bound
+   content resolved from the spec's own sample records. Do NOT pass a scratch path; the default is
+   the standard dir. (Regen all: loop the ten slugs.)
+2. **Screenshot for visual review** — `node marketplace-catalog/_gen/screenshot-template.mjs <slug>…`
+   (or `all`). Full-page PNG per template → `.preview/site-<slug>.png`. Playwright + `file://` (no
+   dev server, no DB, no install) so it never touches a running stack; the shared functional cores
+   (faceted grid/cart/search) render as a labeled placeholder because they are server-computed live.
+3. **Grade every bundle** — `pnpm --filter @sparx/site-lint exec vitest run src/blueprint-sweep.test.ts`
+   walks every shipped bundle's every page (SEO, contrast, headings, links, `class-no-css`).
+
+**Named utilities ONLY in authored trees** — an arbitrary value (`aspect-[4/5]`) or off-step
+(`gap-7`/`gap-1.5`) compiles while `@source`-scanned but emits NOTHING once stamped into a tenant's
+stored tree; the sweep flags it `class-no-css`. Use `aspect-square`/`aspect-video`, `gap-4/6/8`.
+
 ## Source of truth is the generator, not the emitted bundle
 
 `_gen/<name>/` (a module folder, one concern per file) is hand-authored and EMITS

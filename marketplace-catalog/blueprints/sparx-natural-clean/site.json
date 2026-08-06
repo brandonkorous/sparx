@@ -1,0 +1,3107 @@
+{
+  "frame": {
+    "root": {
+      "kind": "element",
+      "tag": "div",
+      "class": "flex min-h-screen flex-col bg-base-100",
+      "children": [
+        {
+          "kind": "element",
+          "tag": "header",
+          "class": "@container bg-base-100 border-b border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto flex w-full max-w-6xl items-center gap-8 px-6 py-4",
+              "children": [
+                {
+                  "kind": "host",
+                  "component": "site.brand",
+                  "class": "wordmark inline-flex items-center gap-2",
+                  "props": {
+                    "show": "both"
+                  },
+                  "id": "cfd6def2-40b5-43a8-944d-452b4ade4ff5",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "nav",
+                  "class": "hidden items-center gap-6 @md:flex",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/shop"
+                      },
+                      "children": ["Shop"],
+                      "slot": {
+                        "name": "link1",
+                        "type": "link",
+                        "label": "Product"
+                      },
+                      "id": "b1db4c84-1c8c-4db9-8c96-184885803ae2",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/journal"
+                      },
+                      "children": ["Journal"],
+                      "slot": {
+                        "name": "link2",
+                        "type": "link",
+                        "label": "Pricing"
+                      },
+                      "id": "1a66aa69-fc09-4955-9f2b-5e09be2a88d1",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/about"
+                      },
+                      "children": ["About"],
+                      "slot": {
+                        "name": "link3",
+                        "type": "link",
+                        "label": "Docs"
+                      },
+                      "id": "66f74c3d-5cf6-4adf-bc21-0deb7c532980",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "text-sm font-medium text-base-content hover:text-primary",
+                      "attrs": {
+                        "href": "/contact"
+                      },
+                      "children": ["Contact"],
+                      "slot": {
+                        "name": "link4",
+                        "type": "link",
+                        "label": "Company"
+                      },
+                      "id": "6b41bd96-4150-47f6-a4db-955f8e6a4738",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "c56cce08-5588-42a9-90a7-a9131914d1b0",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "ml-auto flex items-center gap-3",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "a",
+                      "class": "hidden text-sm font-medium text-base-content hover:text-primary @sm:inline",
+                      "attrs": {
+                        "href": "/account/login"
+                      },
+                      "children": ["Sign in"],
+                      "slot": {
+                        "name": "secondary",
+                        "type": "link",
+                        "label": "Secondary link"
+                      },
+                      "id": "8c4d8736-acfb-4a3b-91be-8266177ea2eb",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "host",
+                      "component": "site.theme-toggle",
+                      "class": "inline-flex items-center",
+                      "id": "b39bf4f4-127c-4f63-9a81-cf62ed053e39",
+                      "ord": "a1"
+                    },
+                    {
+                      "kind": "component",
+                      "component": "Button",
+                      "class": "btn btn-primary btn-sm hidden @md:inline-block",
+                      "props": {
+                        "label": "Get in touch",
+                        "href": "/contact"
+                      },
+                      "slot": {
+                        "name": "cta",
+                        "type": "link",
+                        "label": "Primary action"
+                      },
+                      "id": "41f99765-87a6-4108-84f3-99c832898a0c",
+                      "ord": "a2"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "button",
+                      "class": "btn btn-ghost btn-square btn-sm @md:hidden",
+                      "attrs": {
+                        "type": "button",
+                        "aria-label": "Toggle navigation menu"
+                      },
+                      "children": [
+                        {
+                          "kind": "component",
+                          "component": "Icon",
+                          "props": {
+                            "name": "menu"
+                          },
+                          "id": "3e3da896-b60c-4ec5-ad40-97e20bcbeb8a",
+                          "ord": "a0"
+                        }
+                      ],
+                      "part": "trigger",
+                      "id": "4b39379f-79bb-4738-9de0-6fc3d6e97a73",
+                      "ord": "a3"
+                    }
+                  ],
+                  "id": "3e20f293-ec40-40e6-856c-bb03ede70a78",
+                  "ord": "a2"
+                }
+              ],
+              "id": "367a8bdb-ce00-42e3-9b6d-63d5bef5bd9a",
+              "ord": "a0"
+            },
+            {
+              "kind": "element",
+              "tag": "nav",
+              "class": "flex flex-col gap-1 border-t border-base-200 px-6 py-3 @md:hidden",
+              "attrs": {
+                "hidden": true
+              },
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/shop"
+                  },
+                  "children": ["Shop"],
+                  "slot": {
+                    "name": "link1",
+                    "type": "link",
+                    "label": "Product"
+                  },
+                  "id": "27d7a394-429d-4b00-a702-7c058328c250",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/journal"
+                  },
+                  "children": ["Journal"],
+                  "slot": {
+                    "name": "link2",
+                    "type": "link",
+                    "label": "Pricing"
+                  },
+                  "id": "995f3267-c8fc-4bd0-adc0-4a081412b81b",
+                  "ord": "a1"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/about"
+                  },
+                  "children": ["About"],
+                  "slot": {
+                    "name": "link3",
+                    "type": "link",
+                    "label": "Docs"
+                  },
+                  "id": "6e72befe-3802-407f-b793-d124b185752e",
+                  "ord": "a2"
+                },
+                {
+                  "kind": "element",
+                  "tag": "a",
+                  "class": "block rounded-btn px-3 py-2 text-sm font-medium text-base-content hover:bg-base-200",
+                  "attrs": {
+                    "href": "/contact"
+                  },
+                  "children": ["Contact"],
+                  "slot": {
+                    "name": "link4",
+                    "type": "link",
+                    "label": "Company"
+                  },
+                  "id": "9ab4efb1-1061-49b7-9e22-fd7fdbed093c",
+                  "ord": "a3"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-ghost btn-sm mt-2 w-full",
+                  "props": {
+                    "label": "Sign in",
+                    "href": "/account/login"
+                  },
+                  "slot": {
+                    "name": "secondary",
+                    "type": "link",
+                    "label": "Secondary link"
+                  },
+                  "id": "728482bf-754c-4397-b87e-27e8e9af25d7",
+                  "ord": "a4"
+                },
+                {
+                  "kind": "component",
+                  "component": "Button",
+                  "class": "btn btn-primary btn-sm mt-1 w-full",
+                  "props": {
+                    "label": "Get in touch",
+                    "href": "/contact"
+                  },
+                  "slot": {
+                    "name": "cta",
+                    "type": "link",
+                    "label": "Primary action"
+                  },
+                  "id": "fde2e242-c4cb-44f6-a5e7-7602d974d42b",
+                  "ord": "a5"
+                }
+              ],
+              "part": "panel",
+              "id": "d97cc591-f482-4909-9889-71661cc53818",
+              "ord": "a1"
+            }
+          ],
+          "behavior": {
+            "type": "disclosure"
+          },
+          "id": "470a9517-70c8-411b-abeb-f99e6264ad7e",
+          "ord": "a0"
+        },
+        {
+          "kind": "element",
+          "tag": "main",
+          "class": "flex-1 @container",
+          "attrs": {
+            "id": "st-main",
+            "tabindex": -1
+          },
+          "children": [
+            {
+              "kind": "outlet"
+            }
+          ],
+          "id": "45658e15-2169-481e-b75d-2a2dea148c95",
+          "ord": "a1"
+        },
+        {
+          "kind": "element",
+          "tag": "footer",
+          "class": "@container bg-base-200 border-t border-base-200",
+          "children": [
+            {
+              "kind": "element",
+              "tag": "div",
+              "class": "mx-auto w-full max-w-6xl px-6 py-14",
+              "children": [
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "grid grid-cols-1 gap-10 @3xl:grid-cols-2",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "flex flex-col gap-4",
+                      "children": [
+                        {
+                          "kind": "host",
+                          "component": "site.brand",
+                          "class": "wordmark inline-flex items-center gap-2",
+                          "props": {
+                            "show": "both"
+                          },
+                          "id": "d388442c-096d-4dc4-83b2-8fb8967299c1",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "max-w-sm text-sm text-base-content",
+                          "children": [
+                            "Join the list — new work, journal notes, and studio news, about once a month."
+                          ],
+                          "slot": {
+                            "name": "blurb",
+                            "type": "text",
+                            "label": "Blurb"
+                          },
+                          "attrs": {
+                            "href": "/"
+                          },
+                          "id": "e2791227-6e19-4510-a33b-23969223a916",
+                          "ord": "a1"
+                        },
+                        {
+                          "kind": "component",
+                          "component": "Form",
+                          "class": "flex w-full max-w-md flex-col gap-3 @sm:flex-row",
+                          "props": {
+                            "action": "subscribe"
+                          },
+                          "children": [
+                            {
+                              "kind": "component",
+                              "component": "Input",
+                              "class": "input flex-1",
+                              "props": {
+                                "type": "email",
+                                "name": "email",
+                                "placeholder": "you@example.com",
+                                "required": true
+                              },
+                              "id": "9780164f-114a-4dd1-a608-a8600a48f6ef",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "component",
+                              "component": "Button",
+                              "class": "btn btn-primary",
+                              "props": {
+                                "label": "Subscribe",
+                                "type": "submit"
+                              },
+                              "slot": {
+                                "name": "cta",
+                                "type": "text",
+                                "label": "Button label"
+                              },
+                              "id": "05c011f6-eb49-48b4-93b1-d471d92e9943",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "b5569780-3827-4bcc-a294-fd147f004606",
+                          "ord": "a2"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "p",
+                          "class": "text-sm text-base-content",
+                          "children": ["No spam, and an unsubscribe link in every issue."],
+                          "slot": {
+                            "name": "note",
+                            "type": "text",
+                            "label": "Reassurance line"
+                          },
+                          "id": "c411a28e-ebf9-4b89-b419-af8fc641d0df",
+                          "ord": "a3"
+                        }
+                      ],
+                      "id": "8a53c2c3-0974-491a-8ddb-9858c42dc79d",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "div",
+                      "class": "grid grid-cols-1 gap-8 @sm:grid-cols-2",
+                      "children": [
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Explore"],
+                              "slot": {
+                                "name": "col1",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/"
+                              },
+                              "id": "df159a39-471c-4a68-bb73-9eda733a8e81",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/shop"
+                                      },
+                                      "children": ["Shop"],
+                                      "slot": {
+                                        "name": "link1",
+                                        "type": "link",
+                                        "label": "Features"
+                                      },
+                                      "id": "a7698d34-85a1-401a-b995-ba18f503d7bb",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "6cb51ec0-431e-47ef-b2b6-4c7593a29154",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/journal"
+                                      },
+                                      "children": ["Journal"],
+                                      "slot": {
+                                        "name": "link2",
+                                        "type": "link",
+                                        "label": "Pricing"
+                                      },
+                                      "id": "2b284098-9bd2-4b29-bfc6-a3b568fb2e80",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "5465ebd5-a669-433c-94e7-7a63d3449fe1",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/about"
+                                      },
+                                      "children": ["About"],
+                                      "slot": {
+                                        "name": "link3",
+                                        "type": "link",
+                                        "label": "Changelog"
+                                      },
+                                      "id": "494eb9a3-e9ed-489d-8a57-7e74eb729c37",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "329ec597-78ca-473e-b959-9162f254e927",
+                                  "ord": "a2"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/contact"
+                                      },
+                                      "children": ["Contact"],
+                                      "slot": {
+                                        "name": "link4",
+                                        "type": "link",
+                                        "label": "Roadmap"
+                                      },
+                                      "id": "41ab7148-b09f-4b93-9a51-08a3a647b735",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "970bd1c4-40b6-405a-863e-edaf32316d57",
+                                  "ord": "a3"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/search"
+                                      },
+                                      "children": ["Search"],
+                                      "id": "ebebe918-332f-4040-aa6a-6c91579c1693",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "7cb0f1ad-ce6b-463c-835e-166cdbf47df6",
+                                  "ord": "a4"
+                                }
+                              ],
+                              "id": "0d40189e-74bd-415f-854e-5ffc6c0ee9a3",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "b7a84b18-2be1-459f-917f-9bf3a5d9805a",
+                          "ord": "a0"
+                        },
+                        {
+                          "kind": "element",
+                          "tag": "div",
+                          "class": "flex flex-col gap-3",
+                          "children": [
+                            {
+                              "kind": "element",
+                              "tag": "p",
+                              "class": "text-sm font-semibold text-base-content",
+                              "children": ["Account"],
+                              "slot": {
+                                "name": "col2",
+                                "type": "text",
+                                "label": "Column title"
+                              },
+                              "attrs": {
+                                "href": "/account"
+                              },
+                              "id": "69f29ac0-0be8-459c-8c04-86347dd1dc93",
+                              "ord": "a0"
+                            },
+                            {
+                              "kind": "element",
+                              "tag": "ul",
+                              "class": "flex flex-col gap-2",
+                              "children": [
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account"
+                                      },
+                                      "children": ["Sign in"],
+                                      "slot": {
+                                        "name": "link5",
+                                        "type": "link",
+                                        "label": "About"
+                                      },
+                                      "id": "9542e4ba-8bbc-4af0-9a4d-f09515941f86",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "e8033504-f927-40b0-8900-79c3a91932c7",
+                                  "ord": "a0"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/account/orders"
+                                      },
+                                      "children": ["Orders"],
+                                      "slot": {
+                                        "name": "link6",
+                                        "type": "link",
+                                        "label": "Careers"
+                                      },
+                                      "id": "4679a289-b8b1-4a8b-84c1-257b8b9af5be",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "aa25c0de-1602-417d-bd66-8808df3f1459",
+                                  "ord": "a1"
+                                },
+                                {
+                                  "kind": "element",
+                                  "tag": "li",
+                                  "children": [
+                                    {
+                                      "kind": "element",
+                                      "tag": "a",
+                                      "class": "text-sm text-base-content hover:text-primary",
+                                      "attrs": {
+                                        "href": "/cart"
+                                      },
+                                      "children": ["Cart"],
+                                      "slot": {
+                                        "name": "link7",
+                                        "type": "link",
+                                        "label": "Press"
+                                      },
+                                      "id": "9ef4ec69-65aa-4058-94ef-372370492a10",
+                                      "ord": "a0"
+                                    }
+                                  ],
+                                  "id": "0b7f09d0-b11c-49b0-b67b-5c0c04d4967e",
+                                  "ord": "a2"
+                                }
+                              ],
+                              "id": "e980ae8b-907e-483f-8dac-d3209b4eb6b3",
+                              "ord": "a1"
+                            }
+                          ],
+                          "id": "976c33b1-e8cc-41ef-8900-551ffaedae06",
+                          "ord": "a1"
+                        }
+                      ],
+                      "id": "563ee267-9d6d-489f-a510-b82e210e2069",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "81486a8a-6b03-4282-adee-2503e1730fb0",
+                  "ord": "a0"
+                },
+                {
+                  "kind": "element",
+                  "tag": "div",
+                  "class": "mt-12 flex flex-col gap-4 border-t border-base-200 pt-6 @2xl:flex-row @2xl:items-center @2xl:justify-between",
+                  "children": [
+                    {
+                      "kind": "element",
+                      "tag": "p",
+                      "class": "text-sm text-base-content",
+                      "children": [
+                        "© ",
+                        {
+                          "kind": "element",
+                          "tag": "span",
+                          "class": "font-medium",
+                          "children": ["Your site"],
+                          "data": {
+                            "kind": "value",
+                            "ref": "site.identity.name"
+                          },
+                          "id": "186a31cb-5295-4fb4-88c0-eda9964fd9c5",
+                          "ord": "a0"
+                        }
+                      ],
+                      "id": "3fa0552d-34ce-4f91-9567-150b3a6849c6",
+                      "ord": "a0"
+                    },
+                    {
+                      "kind": "element",
+                      "tag": "ul",
+                      "class": "flex items-center gap-5",
+                      "children": [],
+                      "id": "212a04e9-2a07-4534-8206-7cc784e4c99e",
+                      "ord": "a1"
+                    }
+                  ],
+                  "id": "1083ec81-8f8b-4089-8394-4224b7d0da9d",
+                  "ord": "a1"
+                }
+              ],
+              "id": "1e943066-71c2-454e-b629-49204f0b05e1",
+              "ord": "a0"
+            }
+          ],
+          "id": "b6a44cad-038d-4447-8c47-13a28c40a484",
+          "ord": "a2"
+        }
+      ],
+      "id": "c35794a3-1469-4a2c-b6c9-41f3ff67bd0d"
+    }
+  },
+  "pages": [
+    {
+      "name": "Home",
+      "kind": "singleton",
+      "seoTitle": "Fernwood Goods — everyday housewares, honestly made",
+      "seoDescription": "Fernwood Goods makes everyday housewares in cotton, linen, wood and glass — useful, unfussy things made from what the earth gives back and built to be kept.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "5fc4f0f5-91c1-45dd-9e99-da160a11788a",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1617228069096-4638a7ffc906?w=1400&q=80",
+                  "alt": "A calm, naturally lit kitchen in wood and stone",
+                  "loading": "lazy"
+                },
+                "id": "15ed4946-8063-4b10-a9a9-75ec098c3015",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex min-h-96 w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-20 @3xl:px-10 @3xl:py-28",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-5 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["A home made from honest things"],
+                        "id": "2871e63e-1a49-4115-ad0e-007b466b0a1b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Everyday housewares in cotton, linen, wood and glass — the useful, unfussy things a kitchen and a home actually run on, made from what the earth gives back and built to be kept."
+                        ],
+                        "id": "e0ad05ca-d422-4cbf-a496-128a4f8825bf",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-wrap items-center gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-primary btn-lg",
+                            "attrs": {
+                              "href": "/shop"
+                            },
+                            "children": ["Shop everything"],
+                            "id": "6e4930e4-cfb4-46ef-92e4-97f8ed240b3f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "a",
+                            "class": "btn btn-neutral btn-outline btn-lg",
+                            "attrs": {
+                              "href": "/journal"
+                            },
+                            "children": ["Read the journal"],
+                            "id": "1e6f3a01-2fe0-4dd3-8dee-1b48f80eeeba",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "b3c54be5-060f-4267-b60e-53d09dd58c3e",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "662c7a19-7abd-4b10-956f-8f096911003a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "808d878a-c9cd-400b-9778-d55b1206e3ff",
+                "ord": "a1"
+              }
+            ],
+            "id": "40af49ef-5092-4d02-afe0-f3ee992fb70c",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
+                        "children": ["Room by room"],
+                        "id": "edcbb656-f1f1-44a8-aef1-17e99286a3f8",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "Five small collections for the parts of a home that get used every day."
+                        ],
+                        "id": "3141aa3c-3808-4218-bd98-62a04ce39200",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "4f004a88-0581-46ba-8e59-7baaad4fe548",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-2 gap-4 @2xl:grid-cols-3 @3xl:grid-cols-5",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex aspect-square flex-col justify-end rounded-box p-6 bg-secondary text-secondary-content",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-xl font-semibold",
+                            "children": ["Kitchen"],
+                            "id": "557e8520-6400-417f-876c-c62a6701e679",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "fbcf03f5-4059-49cf-84e9-ce86a6fa75c4",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex aspect-square flex-col justify-end rounded-box p-6 bg-accent text-accent-content",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-xl font-semibold",
+                            "children": ["Cleaning"],
+                            "id": "04755ce9-1efd-4002-9dd8-60f6ae714201",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "2b860682-b7e2-4cc5-8e43-49a011599c33",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex aspect-square flex-col justify-end rounded-box p-6 bg-neutral text-neutral-content",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-xl font-semibold",
+                            "children": ["Storage"],
+                            "id": "42439e1a-cf97-4ec3-b8e2-1c3a1a39779b",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "308bd610-edde-4530-9003-f81ccf07b16b",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex aspect-square flex-col justify-end rounded-box p-6 bg-base-300 text-base-content",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-xl font-semibold",
+                            "children": ["Tableware"],
+                            "id": "b4fec4ca-4f7f-4f6a-9be7-533228594126",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "fa4ab99b-a4d4-46d4-8065-992fb8f48c0c",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex aspect-square flex-col justify-end rounded-box p-6 bg-primary text-primary-content",
+                        "attrs": {
+                          "href": "/shop"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-xl font-semibold",
+                            "children": ["Bath & textiles"],
+                            "id": "53acc9bb-5640-49d7-9a8a-791c80b8cf65",
+                            "ord": "a0"
+                          }
+                        ],
+                        "id": "e3bb59f9-8a99-4491-9032-ca43e2aa5287",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "960416a2-95e4-4971-8445-d0ac47341ae0",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "102d1ca4-abc0-4922-8fad-c4578733967b",
+                "ord": "a0"
+              }
+            ],
+            "id": "6e2d22c9-bf6f-4275-a191-bbc2515a6b3e",
+            "ord": "a1"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["What people buy again"],
+                    "id": "7a395ed9-5dc4-4cc2-bc63-502ee6431312",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "14c69219-326f-4ec2-8cdb-6b60fda89b6c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "a36fdcc2-c9f0-45d3-9dfb-24545b2eb37e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "0dafd9cd-fd43-4f08-96eb-5f41794cf4e5",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "49140f62-cd19-4d6f-a413-906c75c1170c",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "b1aeb231-14ba-4470-b932-8efec643d08d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "edcaa0e9-cfbb-4cc4-ac60-da0eb6dd66e0",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "7379a247-9134-4aad-934e-21f07308c4c9",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "2ce65da1-0f81-42bb-b83a-8d99b6588721",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "6a3b3af3-0a18-4000-b5a4-51ef5738ffbc",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "de3dc7db-c737-4dce-8df6-8bd3d01effda",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "a0c2864d-f1f1-425f-961e-72ca307031d4",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.featured"
+                },
+                "id": "fa368459-6876-45b6-a95d-ef0183d92299",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "acb7ae50-f43a-4665-b17b-ef137e82cd49",
+            "ord": "a2"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1528458909336-e7a0adfed0a5?w=1400&q=80",
+                  "alt": "A close-up of woven natural fibre",
+                  "loading": "lazy"
+                },
+                "id": "32d3a43b-7a28-4954-a890-10d197b35999",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-16 @3xl:px-10 @3xl:py-24",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold leading-tight text-base-content @3xl:text-4xl",
+                        "children": ["Made from what grows back"],
+                        "id": "b51b1c4d-1cab-4deb-b6ad-840b793b6f4f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Nothing here starts life in an oil well. Organic cotton, fast-growing bamboo, beeswax, seagrass and sand-into-glass — materials a field or a forest makes more of every year, chosen because they do the job and leave less behind."
+                        ],
+                        "id": "26d3ee03-89ca-434c-bab7-0d9b1601bb63",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "font-semibold text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": ["How we choose materials"],
+                        "id": "1215fa69-702d-4748-b96e-1cb634628e45",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "0e75c15e-1d04-406a-94db-669f589b6591",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "11934de0-7ec9-4b6d-910f-b9910de365d9",
+                "ord": "a1"
+              }
+            ],
+            "id": "46b83ecd-c6fc-4224-a70e-ba9bd7b437de",
+            "ord": "a3"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["For the kitchen"],
+                    "id": "fe66734c-33db-460e-aed8-ec82e70e7aaa",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "44bbcba4-336c-4c87-977b-2fc994881592",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "6fda2684-e1fa-4e69-b1db-a681bf128580",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "f638292a-d095-4927-bd1b-99471c9cb5ba",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "d7785f6f-1c36-4686-a6d4-9d90590beb4a",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "6e7ffd2b-26ee-4842-a7ca-8bb7081ee719",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "7869b567-35fe-4de2-9130-540e3161812c",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "0791f4df-087d-4c71-b34d-7ef4dfcd5a0e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "2955aeed-2d68-44c5-a787-bb592223cf30",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "8dba8d62-dd0a-4fee-a75a-fb753101cdf9",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "2e26f6b6-83c8-43d7-bd47-90e49d18213b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "97d82d40-ffe2-4580-8e66-f3aa35b6841c",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.kitchen"
+                },
+                "id": "9ca87fd7-c3cb-471f-ada4-ef9cea36d7ac",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "488b75af-cbc2-4f2b-aea2-314ff80281af",
+            "ord": "a4"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1666934209606-a955a12edd63?w=1400&q=80",
+                  "alt": "Neatly folded natural textiles",
+                  "loading": "lazy"
+                },
+                "id": "ebbe27b7-7427-4bd8-a84c-afa46773b821",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-16 @3xl:px-10 @3xl:py-24",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold leading-tight text-base-content @3xl:text-4xl",
+                        "children": ["Made to be kept, not replaced"],
+                        "id": "4109586f-495d-4deb-bb29-f6c4831cd71a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "A dish towel that lasts ten years is cheaper and greener than ten that last one. We build for a long life and tell you plainly how to keep each thing going — wash it, oil it, refill it, and pass it on."
+                        ],
+                        "id": "d0173572-73d2-4446-be07-c23286b5c9e0",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "font-semibold text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": ["Caring for your things"],
+                        "id": "187b90ea-5d56-45f6-8f4a-9f4f2191e111",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "4ba99434-5db3-43a6-a981-fd752a6e759a",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "4da61a3a-99f0-48b4-8b13-55385fc787f6",
+                "ord": "a1"
+              }
+            ],
+            "id": "40d96cd0-3365-4971-80e6-078223bf154b",
+            "ord": "a5"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["For clearing up"],
+                    "id": "12306c34-ace3-40db-9f6a-03f3e263ae8b",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "492ae256-f24d-4f28-b28f-d72dd2ffda3e",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "30deebf0-9c53-4e1f-b8d3-7e07feef2e1b",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "1759888c-7459-4b11-ab37-eb93214f8612",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "b7ebc9dd-007b-4ac0-a06a-bc8612d0907b",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "d24f6b42-ebd3-43c2-8d4f-3b6085cfa4cf",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "052730f8-632f-43d9-b73f-a3ad88bb3021",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "ecb19755-a14c-4f24-b466-787389b20e92",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "3a35dc25-f436-4d85-8679-7d2087709ec0",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "dc174d0a-46b6-4e66-b172-f276de841403",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "973c866b-d03a-413c-82c5-f0b2f4ef3fff",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "589a1372-b908-4326-8d40-85c638ed4a9f",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.category.cleaning"
+                },
+                "id": "d7878460-892e-4ad2-bb77-abf6f9be9880",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "b284a64e-01a5-406b-ad10-04a562914a76",
+            "ord": "a6"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
+                        "children": ["Plainly put"],
+                        "id": "54b29681-f97f-47f4-b642-c27c0f6a142f",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "No mystery materials, no throwaway design, and nothing you cannot refill, compost or hand down."
+                        ],
+                        "id": "fd92f37a-1ef0-4625-83cf-33bddaa0f156",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "31232267-1173-41ac-95ef-39e21b3760cb",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @2xl:grid-cols-2 @4xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["From the earth"],
+                            "id": "8307e730-7f26-46e5-ba2d-d0d168ef8dfe",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": [
+                              "Cotton, linen, wood, glass, beeswax and stone — grown or dug, not drilled. Every material a thing is made from is on the label."
+                            ],
+                            "id": "7aa591ca-c20d-4b14-9c62-cdb4ba9b50fa",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "8fde80c8-0d44-4177-a6e3-f4ddd3e0ea42",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Made to last"],
+                            "id": "ea8766da-2017-4131-a4e0-761f28243761",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": [
+                              "These are things you buy once. Keep them well and most will outlive the shelf you bought them for — which is the cheapest, greenest thing they can do."
+                            ],
+                            "id": "dd7c439d-b41f-45c8-b09f-7d931878eaca",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "74d98685-cdc2-40dc-b1bd-acc13895fd5e",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 p-6",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "text-xl font-semibold text-base-content",
+                            "children": ["Kind at the end"],
+                            "id": "be3ab8ec-a891-4b3d-ac96-3414127dcee2",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base text-base-content",
+                            "children": [
+                              "When something finally wears out it composts, recycles or refills. Nothing here is designed to spend a century in the ground."
+                            ],
+                            "id": "b93b33b0-5e8a-41c8-b701-94fae493f2d8",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "bbcbf5b6-3a5c-45f2-a0af-968f38ef1a68",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "b21d051e-32a5-4962-921c-0e3c2d096ec4",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "69169409-922e-4ffa-aec9-f97139735215",
+                "ord": "a0"
+              }
+            ],
+            "id": "e9e4f132-3fef-4a9b-aed0-f98c9d7143e0",
+            "ord": "a7"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1611255550543-b5ecb01dfddc?w=1400&q=80",
+                  "alt": "Fresh green leaves against soft light",
+                  "loading": "lazy"
+                },
+                "id": "d619d32a-e285-49f9-a3e6-2c196c382558",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-6 px-6 py-16 @3xl:px-10 @3xl:py-24",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold leading-tight text-base-content @3xl:text-4xl",
+                        "children": ["A gentler way to make things"],
+                        "id": "9338c7ef-735b-48f7-a31a-cfb66df969ca",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "We measure what we make — the water, the carbon, the waste — and publish it, warts and all. A small shop, honest numbers, and a plan to do a little better every year."
+                        ],
+                        "id": "a6dd9865-e509-4f51-8be7-3266286fce8b",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "font-semibold text-base-content underline underline-offset-4",
+                        "attrs": {
+                          "href": "/journal"
+                        },
+                        "children": ["Read our first report"],
+                        "id": "deb61c4f-e92c-485f-8de0-79640f2c5cce",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "93010514-c074-438e-b4e8-ce8d6eb4d716",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "dc81064e-410b-46e0-aeaf-0e96a7f7ca4c",
+                "ord": "a1"
+              }
+            ],
+            "id": "701528be-f233-46bc-8116-d5fb3d58ad63",
+            "ord": "a8"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-10",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h2",
+                        "class": "text-3xl font-semibold text-base-content @3xl:text-4xl",
+                        "children": ["From the journal"],
+                        "id": "60cefea6-af6f-43a0-81a1-20d848c9f1d7",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "max-w-2xl text-lg text-base-content",
+                        "children": [
+                          "What we make things from, how to keep them, and how we are doing on the planet — written plainly."
+                        ],
+                        "id": "6336a001-298c-44aa-b85f-2d5a5f78b67d",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "f6c02a65-e12d-4c0b-af49-9f4364ec09b6",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 gap-6 @2xl:grid-cols-2 @4xl:grid-cols-3",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 overflow-hidden hover:border-primary",
+                        "attrs": {
+                          "href": "/journal/how-we-choose-materials"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1615799998603-7c6270a45196?w=1400&q=80",
+                              "alt": "A close-up of natural linen weave",
+                              "loading": "lazy"
+                            },
+                            "id": "45ad8ae3-15c4-49ed-94e7-6f7fa0cee3f4",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "px-5 pb-5 text-xl font-semibold text-base-content",
+                            "children": ["How we choose our materials"],
+                            "id": "3291b670-d5b3-43bf-9fde-80702253ca93",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "ec983517-e601-4c12-a239-d48fcea6b6f5",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 overflow-hidden hover:border-primary",
+                        "attrs": {
+                          "href": "/journal/the-life-of-a-beeswax-wrap"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1556037843-347ddff9f4b0?w=1400&q=80",
+                              "alt": "A beeswax wrap over a bowl",
+                              "loading": "lazy"
+                            },
+                            "id": "f5d04a99-2bd0-4171-a9a6-60b95f1af5a5",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "px-5 pb-5 text-xl font-semibold text-base-content",
+                            "children": ["The life of a beeswax wrap"],
+                            "id": "cc271e7a-a4f1-47a4-bd12-1af78151b8af",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a84dcd23-355a-4c27-bddc-622763c9881d",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "flex flex-col gap-3 rounded-box border border-base-300 bg-base-100 overflow-hidden hover:border-primary",
+                        "attrs": {
+                          "href": "/journal/our-first-carbon-report"
+                        },
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "img",
+                            "class": "aspect-video w-full bg-base-200 object-cover",
+                            "attrs": {
+                              "src": "https://images.unsplash.com/photo-1533038590840-1cde6e668a91?w=1400&q=80",
+                              "alt": "Green eucalyptus leaves in soft light",
+                              "loading": "lazy"
+                            },
+                            "id": "9c4863a0-9d91-4d8c-8b3e-20dc9f6e8230",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "px-5 pb-5 text-xl font-semibold text-base-content",
+                            "children": ["Our first carbon report"],
+                            "id": "613d5c67-cb96-4c74-ad59-8cf9fb1e0499",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "a39a577a-83b1-428c-8ed6-ef61f1b5aa1b",
+                        "ord": "a2"
+                      }
+                    ],
+                    "id": "8310cf35-5159-4a77-9bf7-973a2531626f",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "ea2831dc-5427-4671-9c60-b8dbaa8f5458",
+                "ord": "a0"
+              }
+            ],
+            "id": "ea33e166-9cd6-4707-bad0-024530b3904a",
+            "ord": "a9"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Shop",
+      "kind": "singleton",
+      "slug": "shop",
+      "seoTitle": "Shop — Fernwood Goods",
+      "seoDescription": "Browse everything Fernwood Goods makes, with prices and options at a glance. Eco everyday housewares.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "3ffa8d7b-2734-4c02-9b36-2300ce2e6bee",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "relative @container overflow-hidden bg-base-200",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "img",
+                "class": "absolute inset-0 h-full w-full object-cover",
+                "attrs": {
+                  "src": "https://images.unsplash.com/photo-1528458909336-e7a0adfed0a5?w=1400&q=80",
+                  "alt": "A close-up of woven natural fibre",
+                  "loading": "lazy"
+                },
+                "id": "b284c0f8-67bc-4c3f-981f-ce95b76d6b62",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "relative mx-auto flex w-full max-w-6xl flex-col items-start justify-end gap-4 px-6 py-16 @3xl:px-10 @3xl:py-24",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex max-w-xl flex-col gap-4 rounded-box bg-base-100 p-8 @3xl:p-10",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "h1",
+                        "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                        "children": ["The whole shop"],
+                        "id": "97c9a2a0-ae8a-4b97-829d-0286f74dc41e",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "p",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": [
+                          "Every everyday thing Fernwood Goods makes — for the kitchen, the clean-up, the cupboard and the bath — filtered and sorted however you like. Honest materials, made to be kept."
+                        ],
+                        "id": "fb28a227-d431-436a-b5eb-18f2534d0fd7",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "e98e859e-0b13-46f0-9d7d-df5f2ef3719d",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "dca01e22-aba6-410f-a785-6398bf8182e1",
+                "ord": "a1"
+              }
+            ],
+            "id": "c1bfd417-c3a4-4719-a98a-1ce9a5d4e008",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.plp",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "449095c2-f6c9-41e6-a30a-f1a15fa8e12c",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Collections",
+      "kind": "singleton",
+      "slug": "collections",
+      "seoTitle": "Collections — Fernwood Goods",
+      "seoDescription": "Explore the collections at Fernwood Goods, grouped to help you find what you are after.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "f8e2bf7f-ca0a-461e-b08b-c80d66789eb1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The collections"],
+                    "id": "622ddbf3-6494-4163-91b3-8d3fabc3b3a2",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Small groups of everyday things gathered the way a home actually uses them — the kitchen, the clean-up, the cupboard, the table and the bath. Start where you are replacing plastic, and work outward from there."
+                    ],
+                    "id": "58181d3e-2289-410c-8b1c-0cbfab4095df",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "3d37f23e-ab77-49bf-98a9-f7aafcf005a8",
+                "ord": "a0"
+              }
+            ],
+            "id": "3583b5b8-e107-4775-9bdc-fb5e816d982e",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.collections",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "c0c5c8ff-033d-4414-a5a9-0a00c4c75ae2",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Cart",
+      "kind": "singleton",
+      "slug": "cart",
+      "seoTitle": "Your cart — Fernwood Goods",
+      "seoDescription": "Review what is in your cart and check out securely at Fernwood Goods.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "36f977b2-19d1-4804-8e93-eea51d61a8a1",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-5xl",
+                    "children": ["Your cart"],
+                    "id": "66cb150c-a65d-4b27-99b8-1f269b74bf6d",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Everything ships in plastic-free packaging on carbon-neutral delivery, and you have thirty days to return anything unused for a full refund. Take your time deciding — these are things to keep."
+                    ],
+                    "id": "bc693611-19fb-4aa9-89a7-183c1ed930cb",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "e75f3a0d-5e01-44ed-92e2-914ebb1d75b7",
+                "ord": "a0"
+              }
+            ],
+            "id": "2af721f9-2139-4850-9e77-7f100e75eb19",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.cart",
+            "class": "mx-auto w-full max-w-4xl px-6 py-10",
+            "locked": "host",
+            "id": "a98beb8c-a959-41f7-a8be-4e0d9973822d",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Search",
+      "kind": "singleton",
+      "slug": "search",
+      "seoTitle": "Search — Fernwood Goods",
+      "seoDescription": "Search Fernwood Goods for a product, a collection or a page.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "44c1247d-9746-4e00-a12b-2816a2f428ae",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 pt-16 pb-6",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-6xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["Search the shop"],
+                    "id": "54046d39-e8e2-423c-a1c9-0f88a9f65728",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Looking for something in particular — a material, a room, or a plastic thing you want to swap out? Search the whole shop and the journal below by name, by material or by what it is for."
+                    ],
+                    "id": "fdc216db-940e-4a39-acf0-22138ad5a208",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "75ea593b-29f5-4680-bc0c-5229f48b7b30",
+                "ord": "a0"
+              }
+            ],
+            "id": "fb3d382e-25f7-48eb-98c6-0bffa9de90e5",
+            "ord": "a0"
+          },
+          {
+            "kind": "host",
+            "component": "commerce.search",
+            "class": "mx-auto w-full max-w-6xl px-6 py-6",
+            "locked": "host",
+            "id": "1faba05d-abbc-4056-b56e-8275631ee245",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Journal",
+      "kind": "singleton",
+      "slug": "journal",
+      "seoTitle": "Journal — Fernwood Goods",
+      "seoDescription": "Stories, guides and notes from Fernwood Goods.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "5db86af6-3a44-4306-afa0-8d35b4ef3ee3",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-200 @container px-6 py-16 @3xl:py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-5xl flex-col gap-4",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-6xl",
+                    "children": ["The Fernwood journal"],
+                    "id": "a1c916b0-8fcd-407c-971d-8ea1a3a7ae43",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "max-w-2xl text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Notes from the shop, written plainly — what we make things from, how to keep them going for years, and how we are doing on the planet, warts and all."
+                    ],
+                    "id": "4a80f7c5-2fd2-4abc-81c8-d07aa3f371bc",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "f9f4eae3-dd72-4267-b3ed-912a851d4cb0",
+                "ord": "a0"
+              }
+            ],
+            "id": "d1e475b8-3e05-478f-85ef-f144af7b83bb",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "w-full @container bg-base-100",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto w-full max-w-5xl px-6 py-16",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "grid grid-cols-1 items-stretch gap-6 @5xl:grid-cols-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "a",
+                        "class": "group flex h-full flex-col gap-4 rounded-box border border-base-300 bg-base-100 p-6 transition hover:border-primary hover:shadow-lg",
+                        "attrs": {
+                          "href": "/blog"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Image",
+                            "class": "aspect-video w-full rounded-box object-cover",
+                            "props": {
+                              "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                              "alt": ""
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "featuredImage"
+                            },
+                            "id": "c88aaa6a-55f8-416a-bf90-298061418dec",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "span",
+                            "class": "text-sm font-semibold text-base-content",
+                            "children": ["Published date"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "date"
+                            },
+                            "id": "5ceee25f-cafd-4cc2-b401-90e14d513cbc",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h2",
+                            "class": "text-xl font-bold leading-snug tracking-tight text-base-content",
+                            "children": ["Post title"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "0ae9c9d9-5804-4108-bf0e-1fd5eb6c6016",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-base leading-relaxed text-base-content",
+                            "children": ["The short summary of this post, written in the CMS."],
+                            "data": {
+                              "kind": "value",
+                              "ref": "excerpt"
+                            },
+                            "id": "94e30e77-edbc-49f6-b27b-52d8c19c9936",
+                            "ord": "a3"
+                          }
+                        ],
+                        "data": {
+                          "kind": "value",
+                          "ref": "url",
+                          "attr": "href"
+                        },
+                        "id": "344c99a0-d19d-4c47-ad40-16495c03cdc9",
+                        "ord": "a0"
+                      }
+                    ],
+                    "data": {
+                      "kind": "collection",
+                      "ref": "cms.blog_post"
+                    },
+                    "id": "023599e4-7506-4ee2-98fd-ca5c3cac0495",
+                    "ord": "a0"
+                  }
+                ],
+                "id": "36f26c41-2060-4d99-9453-4d0b306d3857",
+                "ord": "a0"
+              }
+            ],
+            "id": "dd84e569-15ee-41fd-b325-dc77a3fa5559",
+            "ord": "a1"
+          }
+        ]
+      }
+    },
+    {
+      "name": "About",
+      "kind": "singleton",
+      "slug": "about",
+      "seoTitle": "About Fernwood Goods",
+      "seoDescription": "The materials, makers and thinking behind Fernwood Goods — a simpler, better-made everyday, built to last and gentle at the end.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "82a77f0d-de82-4ce0-b171-458e6acb16e0",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-3xl flex-col gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["About Fernwood Goods"],
+                    "id": "0c9b44d8-00eb-4f41-892b-eb0b96b246d3",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "Fernwood Goods is a small shop of everyday housewares — the towels, jars, brushes, baskets and bowls a home runs on — made from materials the earth makes more of. We started it because the ordinary things in most kitchens are quietly made of plastic and built to be thrown away, and we thought the useful stuff could be honest stuff instead."
+                    ],
+                    "id": "720cead5-4581-4fbd-875c-ed0039ea4956",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "So every item here earns its place twice: it has to work as well as the thing it replaces, and it has to be made from something you can name — cotton, linen, wood, glass, beeswax, stone. We tell you what each thing is made of, where it came from, and how to keep it going for years. That is the whole idea: everyday things, honestly made."
+                    ],
+                    "id": "b2fc54f7-90e8-4967-8e63-aea1668ee0fd",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "f6323649-f121-4995-bcd3-93f053b5da58",
+                "ord": "a0"
+              }
+            ],
+            "id": "b0d127ca-fee4-4bb6-afd7-c6b1436c37cc",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Contact",
+      "kind": "singleton",
+      "slug": "contact",
+      "seoTitle": "Contact — Fernwood Goods",
+      "seoDescription": "Get in touch with Fernwood Goods — questions, orders and anything else you need.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "label": "Page",
+        "id": "42fabb81-4b71-4077-8d04-de70f690c29c",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-20 text-center",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto flex w-full max-w-xl flex-col items-center gap-5",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h1",
+                    "class": "text-4xl font-semibold tracking-tight text-base-content @2xl:text-5xl",
+                    "children": ["Say hello"],
+                    "id": "7ed52e95-4a2f-48ed-9853-0ea832f8c36a",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "p",
+                    "class": "text-lg leading-relaxed text-base-content",
+                    "children": [
+                      "A real person reads every message and replies, usually the same day. Ask us what something is made of, how to care for it, or what to buy for a home that is trying to use less plastic — we are happy to help."
+                    ],
+                    "id": "1ccb83c0-09f5-4744-8bc2-e271008d8439",
+                    "ord": "a1"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "btn btn-primary btn-lg",
+                    "attrs": {
+                      "href": "mailto:hello@fernwoodgoods.example"
+                    },
+                    "children": ["Email the shop"],
+                    "id": "2edfedb2-fadf-4225-b924-811e8e10d81b",
+                    "ord": "a2"
+                  }
+                ],
+                "id": "7ee9f656-e55d-48b8-9ed3-5d1dc657d3dc",
+                "ord": "a0"
+              }
+            ],
+            "id": "ef8b8a63-5100-48ef-8942-3ebecbe253fc",
+            "ord": "a0"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Product",
+      "kind": "collection",
+      "recordType": "commerce.product",
+      "isDefault": true,
+      "seoTitle": "Product — Fernwood Goods",
+      "seoDescription": "Product details at Fernwood Goods — eco everyday housewares, with options and pricing.",
+      "root": {
+        "kind": "element",
+        "tag": "div",
+        "class": "flex flex-col",
+        "children": [
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12 @3xl:py-16",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mx-auto grid w-full max-w-6xl gap-10 @3xl:grid-cols-2 @3xl:gap-16",
+                "children": [
+                  {
+                    "kind": "component",
+                    "component": "Image",
+                    "class": "aspect-square w-full rounded-box border border-base-300 bg-base-200 object-cover",
+                    "props": {
+                      "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                      "alt": "Product image"
+                    },
+                    "data": {
+                      "kind": "value",
+                      "ref": "image"
+                    },
+                    "id": "8edefb25-fcfb-4bf9-87d7-ce1278983554",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex flex-col gap-6 @3xl:py-4",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-sm font-medium uppercase tracking-widest text-base-content",
+                            "children": ["Fernwood Goods"],
+                            "id": "1c0897d7-4d55-4bd7-9ae8-f1f0383cd9f8",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "h1",
+                            "class": "text-4xl font-semibold leading-tight tracking-tight text-base-content @3xl:text-5xl",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "f2191225-912d-4ef5-ae49-7d50d65bb0bb",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex items-baseline gap-4",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-2xl font-semibold text-base-content",
+                                "children": ["$0.00"],
+                                "data": {
+                                  "kind": "value",
+                                  "ref": "price"
+                                },
+                                "id": "d27b76b1-6805-44c8-9026-7cd65e62ff4b",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "text-lg text-base-content line-through",
+                                "children": [
+                                  {
+                                    "kind": "element",
+                                    "tag": "span",
+                                    "children": [""],
+                                    "data": {
+                                      "kind": "value",
+                                      "ref": "compareAtPrice"
+                                    },
+                                    "id": "aecefb18-f059-488e-ba64-9e9c85e925f9",
+                                    "ord": "a0"
+                                  }
+                                ],
+                                "data": {
+                                  "kind": "visible",
+                                  "ref": "compareAtPrice"
+                                },
+                                "id": "2b6899b0-0191-4eca-914b-f65680e86c04",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "e95806ed-fc94-4606-adb6-6bf35ef1f043",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "a55f63f6-a560-4f31-9038-66c8d7d7f774",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "ul",
+                        "class": "flex flex-wrap gap-2",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "rounded-full bg-base-200 px-3 py-1 text-sm font-medium text-base-content",
+                            "children": ["From the earth"],
+                            "id": "f7c3e51f-6edb-4cc7-b162-e6250f2ef34f",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "rounded-full bg-base-200 px-3 py-1 text-sm font-medium text-base-content",
+                            "children": ["Plastic-free"],
+                            "id": "525ca167-e25e-46e7-8f71-a1a2f98877e1",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "li",
+                            "class": "rounded-full bg-base-200 px-3 py-1 text-sm font-medium text-base-content",
+                            "children": ["Made to be kept"],
+                            "id": "92237424-a5d1-4501-b407-1ef590e1da98",
+                            "ord": "a2"
+                          }
+                        ],
+                        "id": "fad4b587-dfef-4d7c-badf-c9aa98513734",
+                        "ord": "a1"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "text-lg leading-relaxed text-base-content",
+                        "children": ["Product description."],
+                        "data": {
+                          "kind": "value",
+                          "ref": "description"
+                        },
+                        "id": "b57fcd81-33a6-41e4-9598-73a91d15deb2",
+                        "ord": "a2"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "form",
+                        "class": "mt-2 flex flex-col gap-3",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "input",
+                            "attrs": {
+                              "type": "hidden",
+                              "name": "variantId"
+                            },
+                            "data": {
+                              "kind": "value",
+                              "ref": "variantId"
+                            },
+                            "id": "15e00acd-ec3a-4d05-a5e1-cb4711c83442",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "label",
+                            "class": "flex items-center gap-3 text-base text-base-content",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "span",
+                                "class": "font-medium",
+                                "children": ["Quantity"],
+                                "id": "86e72dd7-51ad-4c9d-b066-ca6d17f30a02",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "input",
+                                "class": "input w-24",
+                                "attrs": {
+                                  "type": "number",
+                                  "name": "quantity",
+                                  "value": "1",
+                                  "min": "1",
+                                  "step": "1"
+                                },
+                                "id": "51a6ad8d-dc83-459d-b2d6-2609a683ad11",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9d4752be-f8d7-4119-8238-29b4311f873c",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "component",
+                            "component": "Button",
+                            "class": "btn btn-primary btn-lg",
+                            "props": {
+                              "type": "submit"
+                            },
+                            "children": ["Add to cart"],
+                            "id": "6fcae895-c858-476a-a7ee-c3f1697fcb6d",
+                            "ord": "a2"
+                          }
+                        ],
+                        "behavior": {
+                          "type": "form"
+                        },
+                        "data": {
+                          "kind": "action",
+                          "ref": "add-to-cart"
+                        },
+                        "id": "f03f2a2f-5b70-46fd-8b48-9d22d5b9be0b",
+                        "ord": "a3"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "mt-2 flex flex-col gap-5",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["The materials"],
+                                "id": "c0c22c34-75a0-4110-a6b6-e0e80150a61e",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Made from things the earth makes more of — organic cotton, flax linen, bamboo, seagrass, beeswax, recycled glass or stoneware clay, depending on the piece. Every material is named on the product, and if the honest answer to “what is it made of?” is a chemical nobody can pronounce, it does not go in the shop."
+                                ],
+                                "id": "0e74c652-d038-413a-a78c-4221e84dd197",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "93c95034-5201-4336-a0a4-4cafa32c7230",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["How it is made"],
+                                "id": "0b877220-f04b-4628-b87f-4418584af262",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Made in small runs by makers we know, and held to the same two tests as everything here: it has to work at least as well as the plastic thing it replaces, and it has to be made from something you can name. Plenty of samples never make it past the sink — the ones that do earn their place twice."
+                                ],
+                                "id": "42400d63-f966-454c-9b1e-d8b3fca81c48",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "4e35346e-2659-40ca-aff4-7aa654420557",
+                            "ord": "a1"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["Caring for it"],
+                                "id": "a7b24a0a-3c33-4910-ac9d-474dc0ff3188",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Built to be kept, not replaced, and easy to keep going — wash it, oil it, or refill it, and it will outlast the shelf you bought it for. Each order ships with a short, plain-language care note, and we stock the refills and spares so a tired thing comes back to life instead of the bin."
+                                ],
+                                "id": "7aa0a67d-c3fe-4068-a798-473d47ebf4f3",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "32811433-f5ab-4e02-a3e7-929de9820d7d",
+                            "ord": "a2"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "div",
+                            "class": "flex flex-col gap-2 border-t border-base-300 pt-5",
+                            "children": [
+                              {
+                                "kind": "element",
+                                "tag": "h2",
+                                "class": "text-sm font-semibold uppercase tracking-widest text-base-content",
+                                "children": ["Footprint & returns"],
+                                "id": "ab2f59c2-9d37-4b99-94e4-ef1fa6ad6bd3",
+                                "ord": "a0"
+                              },
+                              {
+                                "kind": "element",
+                                "tag": "p",
+                                "class": "text-base leading-relaxed text-base-content",
+                                "children": [
+                                  "Sent in plastic-free packaging and, at the very end of a long life, made to compost, recycle or refill rather than sit a century in the ground. Free returns within thirty days on anything unused — these are things to live with, not to worry over."
+                                ],
+                                "id": "f1d5396e-788e-4978-93fb-8d18e7a6db61",
+                                "ord": "a1"
+                              }
+                            ],
+                            "id": "9da3883a-970f-433d-8fe2-b9f57881ba2b",
+                            "ord": "a3"
+                          }
+                        ],
+                        "id": "eb2cce2b-69a2-489a-9414-d40a679763d3",
+                        "ord": "a4"
+                      }
+                    ],
+                    "id": "ad585577-cf97-4b0e-86bc-1fa4d8563d3d",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "00fddefb-5265-4ddb-ae6b-b6c0baf0ac66",
+                "ord": "a0"
+              }
+            ],
+            "data": {
+              "kind": "collection",
+              "ref": "product"
+            },
+            "id": "5f34161e-34d8-4a2f-96e0-b08c918486aa",
+            "ord": "a0"
+          },
+          {
+            "kind": "element",
+            "tag": "section",
+            "class": "bg-base-100 @container px-6 py-12",
+            "children": [
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "mb-8 flex items-center justify-between gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "h2",
+                    "class": "text-2xl font-semibold text-base-content",
+                    "children": ["You may also like"],
+                    "id": "750d0a68-b04d-43dd-9ce8-03f08ebad7ca",
+                    "ord": "a0"
+                  },
+                  {
+                    "kind": "element",
+                    "tag": "div",
+                    "class": "flex gap-2",
+                    "children": [
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Previous products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-left"
+                            },
+                            "id": "03a7e4a0-0431-4a1a-8809-8aaa463e0814",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "prev",
+                        "id": "a01c0427-f8cb-447f-bd8a-22b26c8e1c8a",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "button",
+                        "class": "btn btn-circle btn-sm btn-neutral btn-outline",
+                        "attrs": {
+                          "type": "button",
+                          "aria-label": "Next products"
+                        },
+                        "children": [
+                          {
+                            "kind": "component",
+                            "component": "Icon",
+                            "class": "size-4",
+                            "props": {
+                              "name": "arrow-right"
+                            },
+                            "id": "79bcc08f-e2a4-4238-83ba-723fabddba1c",
+                            "ord": "a0"
+                          }
+                        ],
+                        "part": "next",
+                        "id": "441af323-45cd-48fc-a3f8-4f9532d7adeb",
+                        "ord": "a1"
+                      }
+                    ],
+                    "id": "899d3191-ae77-4bbd-91d1-cc52aa54fd69",
+                    "ord": "a1"
+                  }
+                ],
+                "id": "8cdec2d4-8e46-4b58-bfb7-38ce92456f4f",
+                "ord": "a0"
+              },
+              {
+                "kind": "element",
+                "tag": "div",
+                "class": "carousel gap-6",
+                "children": [
+                  {
+                    "kind": "element",
+                    "tag": "a",
+                    "class": "card bg-base-100 border border-base-300 rounded-box overflow-hidden block hover:border-primary carousel-item basis-full @2xl:basis-1/3 @4xl:basis-1/4",
+                    "children": [
+                      {
+                        "kind": "component",
+                        "component": "Image",
+                        "class": "aspect-square w-full object-cover",
+                        "props": {
+                          "src": "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><rect width='400' height='400' fill='%23e5e7eb'/><circle cx='150' cy='150' r='36' fill='%23cbd5e1'/><path d='M70 300l86-104 62 74 58-70 74 100z' fill='%23cbd5e1'/></svg>",
+                          "alt": "Product image"
+                        },
+                        "data": {
+                          "kind": "value",
+                          "ref": "image"
+                        },
+                        "id": "58c408a6-3589-4be6-85d5-fee7dccce901",
+                        "ord": "a0"
+                      },
+                      {
+                        "kind": "element",
+                        "tag": "div",
+                        "class": "flex flex-col gap-2 p-4",
+                        "children": [
+                          {
+                            "kind": "element",
+                            "tag": "h3",
+                            "class": "font-semibold text-base-content",
+                            "children": ["Product name"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "title"
+                            },
+                            "id": "f7397647-b84a-4253-8497-f9e181717a10",
+                            "ord": "a0"
+                          },
+                          {
+                            "kind": "element",
+                            "tag": "p",
+                            "class": "text-lg font-bold text-base-content",
+                            "children": ["$0.00"],
+                            "data": {
+                              "kind": "value",
+                              "ref": "price"
+                            },
+                            "id": "09b7e86f-1459-4460-8b19-c702342ccaf1",
+                            "ord": "a1"
+                          }
+                        ],
+                        "id": "169a4034-861f-4f17-b831-8cb7fe5b1ee0",
+                        "ord": "a1"
+                      }
+                    ],
+                    "data": {
+                      "kind": "value",
+                      "ref": "url",
+                      "attr": "href"
+                    },
+                    "part": "slide",
+                    "id": "aa433935-3d64-499f-b57a-9f23a16b1257",
+                    "ord": "a0"
+                  }
+                ],
+                "part": "track",
+                "data": {
+                  "kind": "collection",
+                  "ref": "commerce.related"
+                },
+                "id": "de824738-8d02-4b9d-8798-bd777b2f7260",
+                "ord": "a1"
+              }
+            ],
+            "behavior": {
+              "type": "carousel"
+            },
+            "id": "7e19512b-5c78-4bc0-a4b2-e27e05cd4f9c",
+            "ord": "a1"
+          }
+        ],
+        "id": "d6ffc158-4917-4535-8e62-34dbaa9c19aa"
+      }
+    }
+  ],
+  "theme": {
+    "name": "sage-oat",
+    "mode": "light",
+    "tokens": {
+      "--color-base-100": "oklch(97% 0.01 85)",
+      "--color-base-200": "oklch(94% 0.014 85)",
+      "--color-base-300": "oklch(89% 0.02 82)",
+      "--color-base-content": "oklch(20% 0.02 110)",
+      "--color-primary": "oklch(24% 0.008 110)",
+      "--color-secondary": "oklch(45% 0.05 122)",
+      "--color-accent": "oklch(74% 0.04 130)",
+      "--color-neutral": "oklch(26% 0.012 100)",
+      "--color-info": "oklch(52% 0.13 232)",
+      "--color-success": "oklch(48% 0.13 150)",
+      "--color-warning": "oklch(76% 0.14 80)",
+      "--color-error": "oklch(52% 0.19 25)",
+      "--radius-selector": "1rem",
+      "--radius-field": "0.5rem",
+      "--radius-box": "0.75rem",
+      "--depth": "1",
+      "--font-sans": "\"Work Sans\", sans-serif",
+      "--font-head": "\"Spectral\", serif",
+      "--color-primary-content": "oklch(98% 0.008 110)",
+      "--color-secondary-content": "oklch(98% 0.01 122)",
+      "--color-accent-content": "oklch(15% 0.02 130)",
+      "--color-neutral-content": "oklch(98% 0.01 100)",
+      "--color-info-content": "oklch(98% 0.01 232)",
+      "--color-success-content": "oklch(98% 0.01 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(98% 0.01 25)",
+      "--color-danger": "oklch(52% 0.19 25)",
+      "--color-danger-content": "oklch(98% 0.01 25)",
+      "--color-highlight": "oklch(74% 0.04 130)",
+      "--color-highlight-content": "oklch(15% 0.02 130)",
+      "--color-border": "oklch(89% 0.02 82)",
+      "--border": "1px",
+      "--container-max": "72rem",
+      "--font-heading": "\"Spectral\", serif"
+    },
+    "dark": {
+      "--color-base-100": "oklch(17% 0.012 110)",
+      "--color-base-200": "oklch(14% 0.012 110)",
+      "--color-base-300": "oklch(11% 0.012 110)",
+      "--color-base-content": "oklch(93% 0.012 85)",
+      "--color-primary": "oklch(94% 0.012 85)",
+      "--color-secondary": "oklch(76% 0.06 122)",
+      "--color-accent": "oklch(84% 0.04 130)",
+      "--color-neutral": "oklch(32% 0.012 100)",
+      "--color-info": "oklch(76% 0.11 232)",
+      "--color-success": "oklch(76% 0.13 150)",
+      "--color-warning": "oklch(84% 0.13 80)",
+      "--color-error": "oklch(70% 0.17 25)",
+      "--color-primary-content": "oklch(15% 0.012 85)",
+      "--color-secondary-content": "oklch(15% 0.02 122)",
+      "--color-accent-content": "oklch(15% 0.02 130)",
+      "--color-neutral-content": "oklch(98% 0.01 100)",
+      "--color-info-content": "oklch(15% 0.02 232)",
+      "--color-success-content": "oklch(15% 0.02 150)",
+      "--color-warning-content": "oklch(15% 0.02 80)",
+      "--color-error-content": "oklch(15% 0.02 25)",
+      "--color-danger": "oklch(70% 0.17 25)",
+      "--color-danger-content": "oklch(15% 0.02 25)",
+      "--color-highlight": "oklch(84% 0.04 130)",
+      "--color-highlight-content": "oklch(15% 0.02 130)",
+      "--color-border": "oklch(11% 0.012 110)"
+    }
+  }
+}

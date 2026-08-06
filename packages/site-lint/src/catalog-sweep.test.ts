@@ -24,10 +24,18 @@
 
 import { describe, expect, it } from 'vitest';
 import type { Node as SilicaNode, Theme } from '@wizeworks/silicaui-html';
-import { SPARX_CATALOG, SPARX_THEMES } from '@sparx/silica-catalog';
+import { SPARX_CATALOG, SPARX_THEMES, TEMPLATE_THEMES } from '@sparx/silica-catalog';
 
 import { lintSite } from './lint';
 import type { LintablePage, SiteLintReport } from './types';
+
+// Every theme a stamped section can end up living under: the general trade shelf a
+// business picks from (`SPARX_THEMES`) AND the ten bespoke looks the reference-driven
+// templates ship with (`TEMPLATE_THEMES`). The overlay sections in particular are
+// authored FOR the templates, so a contrast pair that is fine on the shelves and breaks
+// under `roastery`'s terracotta or `flux`'s dark page would ship the exact bug this
+// sweep exists to catch. One list, swept identically.
+const ALL_THEMES: Theme[] = [...SPARX_THEMES, ...TEMPLATE_THEMES];
 
 /** Every palette item in the platform library, flattened once. */
 const ITEMS = SPARX_CATALOG.flatMap((group) =>
@@ -65,13 +73,15 @@ describe('the platform section library, against every real theme', () => {
     // handful, every assertion below would pass by vacuity.
     expect(ITEMS.length).toBeGreaterThan(40);
     expect(SPARX_THEMES.length).toBeGreaterThanOrEqual(20);
+    expect(TEMPLATE_THEMES.length).toBeGreaterThanOrEqual(10);
   });
 
   it('every section is legible on every shipped theme', () => {
     // The claim this file was written for. One assertion, every theme × every section,
-    // through the same contrast rule a tenant's Check panel runs.
+    // through the same contrast rule a tenant's Check panel runs — across BOTH the trade
+    // shelves and the ten bespoke template looks.
     const broken: string[] = [];
-    for (const theme of SPARX_THEMES) {
+    for (const theme of ALL_THEMES) {
       const report = sweep(theme);
       const contrast = report.findings.filter(
         (f) => f.rule.startsWith('contrast') && f.severity !== 'suggestion'
@@ -98,7 +108,7 @@ describe('the platform section library, against every real theme', () => {
     //
     // So this is the check working, not the library failing, and the next test pins that
     // it fires for precisely the sections that are waiting on a picture.
-    for (const theme of SPARX_THEMES) {
+    for (const theme of ALL_THEMES) {
       const errors = of(sweep(theme), 'error').filter((f) => !f.includes('image-no-source'));
       expect(errors, theme.name ?? 'theme').toEqual([]);
     }
@@ -143,9 +153,9 @@ describe('the platform section library, against every real theme', () => {
         .map((f) => `${f.location.ownerName}:${f.rule}`)
         .sort();
 
-    const first = SPARX_THEMES[0]!;
+    const first = ALL_THEMES[0]!;
     const baseline = structural(first);
-    for (const theme of SPARX_THEMES.slice(1)) {
+    for (const theme of ALL_THEMES.slice(1)) {
       expect(structural(theme), theme.name ?? 'theme').toEqual(baseline);
     }
   });

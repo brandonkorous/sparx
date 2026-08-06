@@ -1,0 +1,233 @@
+[
+  {
+    "typeKey": "blog_post",
+    "slug": "how-your-order-feeds-a-shelter",
+    "status": "published",
+    "body": {
+      "title": "How your order actually feeds a shelter",
+      "excerpt": "Buy one, give one is easy to say on a banner. Here is what really happens between your checkout and a shelter dog getting a bed.",
+      "featuredImage": {
+        "$asset": "post-shelter"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When you buy something from Rally, a second, identical item is set aside that same day. Not a donation to a fund, not a percentage of profit that gets calculated at the end of the quarter — the actual product, matched one for one, ready to go where it is needed."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "The match leaves with the delivery"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We batch the given half by region and send it out on the same freight runs that restock the shops and shelters near you. A bed you buy in March is a bed a shelter dog is sleeping on by April — the giveback moves at the speed of the business, not on a once-a-year cheque presentation."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Shelters tell us what they need"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We do not guess. Our partner shelters and rescues send us their actual shortlists — more medium beds this month, always more blankets, kitten toys before the spring litters arrive — and we match the giving to the need instead of dumping whatever we have spare. It is less tidy for us and far more useful for them."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "So the next time you order a collar for your own dog, know that the story does not end at your door. It ends at a kennel a few counties over, where a dog waiting to be adopted just got a collar of their own."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "choosing-the-right-bed-size",
+    "status": "published",
+    "body": {
+      "title": "Choosing the right bed size for your dog",
+      "excerpt": "A bed that is too small gets ignored and a bed that is too big never feels safe. A quick, honest guide to getting it right the first time.",
+      "featuredImage": {
+        "$asset": "post-bed-size"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The single most common reason a dog snubs a perfectly good bed is that it does not fit the way they actually sleep — and dogs are surprisingly particular about it. A minute of watching your dog nap tells you almost everything you need to know before you buy."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Measure the sleep, not just the dog"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Watch how your dog settles. A curler — nose to tail in a tight spiral — wants a round donut bed with high sides to lean into. A sprawler who flops out flat needs a rectangular mat with room to stretch a leg off every edge. Measure them nose to tail-base while they lie in their favourite position, then add about a foot for a bed that fits the shape they make, not the dog standing up."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "When in doubt, size up"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "A bed a size too big is a minor waste of floor space. A bed a size too small is a bed your dog quietly decides is not for them, and no amount of coaxing changes their mind. If your dog is between sizes, or still a growing puppy, take the larger one — they will grow into it and settle into it either way."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Get the fit right and a bed stops being decor you tripped over and becomes the place your dog chooses to spend half their life. That is the whole point of buying a good one."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  {
+    "typeKey": "blog_post",
+    "slug": "meet-the-shelters-we-support",
+    "status": "published",
+    "body": {
+      "title": "Meet the shelters we support",
+      "excerpt": "The giveback only works because of the people on the other end of it. A look at the partners who turn your orders into warm beds and full bowls.",
+      "featuredImage": {
+        "$asset": "post-partners"
+      },
+      "body": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "It is easy to talk about \"shelters\" as one big abstract cause. In reality the giveback lands with a specific, hard-working handful of them — small municipal pounds, breed-specific rescues, a foster network run out of somebody’s spare room — and every one of them is why the promise is more than a slogan."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "We choose partners who need the help, not the ones who look good"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "The shelters we work with are rarely the ones with the slick websites and the big donor lists. They are the underfunded county facilities and the volunteer rescues doing enormous work on almost nothing. That is deliberate: a donated bed matters far more in a kennel that could not otherwise afford one."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Every partner is a real, named place"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "We publish who they are and, roughly, what has gone to each — so many beds, so many bags of food, so many toys — because a giveback you cannot audit is just marketing. Our partners hold us to the promise, and we would rather you could too."
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "When you shop, you are not giving to Rally. You are giving through us, to them. They do the hard part; your order just makes it possible."
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+]
