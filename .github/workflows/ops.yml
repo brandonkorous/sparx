@@ -56,6 +56,13 @@ on:
           # DESTRUCTIVE. Deletes every page on a site that is still entirely on the
           # legacy sparx-builder tier and re-seeds it onto silica. Dry-runs by default.
           - retire-legacy-site-tier
+          # Repairs theme presets that stored a CONTROL HEIGHT in `sizeField` /
+          # `sizeSelector`, which silica multiplies by the size class (an `md` field is
+          # `--size-field × 10`). A preset authored `2.875rem` — read as a 46px input
+          # height — rendered 348×368 buttons. Rewrites the preset to the unit that
+          # yields the intended height and re-derives the compiled snapshot. Touches
+          # themes only, never pages. Dry-runs by default.
+          - repair-theme-units
           # Copies the media PVC into Azure Blob storage. Read-only on the disk;
           # writes to Blob. Dry-runs by default. Safe to re-run — it skips blobs
           # that already exist.
@@ -75,6 +82,15 @@ on:
         required: false
         default: false
         type: boolean
+      tenant:
+        # Lets an irreversible task be run ONE tenant at a time instead of all-or-nothing.
+        # `retire-legacy-site-tier` deletes authored pages with no way back, and prod's
+        # legacy set mixes e2e fixtures with real tenants — without this the only options
+        # were "every one of them" or "none". Honoured by retire-legacy-site-tier and
+        # repair-theme-units; ignored by tasks that have no such filter.
+        description: 'Limit to one tenant slug (blank = all tenants)'
+        required: false
+        type: string
       confirm:
         description: 'For a purge: type the task name exactly to confirm'
         required: false
@@ -201,6 +217,8 @@ jobs:
           TAG='${{ inputs.image_sha }}'
           [ -n "$TAG" ] || TAG='latest'
           REPO='ghcr.io/${{ github.repository }}'
+          # Assigned unconditionally so `set -u` can't trip on a blank input.
+          TENANT='${{ inputs.tenant }}'
 
           case "$TASK" in
             platform-crm-backfill)
@@ -217,12 +235,24 @@ jobs:
             retire-legacy-site-tier)
               image="$REPO/api-rest:$TAG"
               # WORKDIR is /app/services/api-rest. Unticked it reports the sites and
-              # pages it WOULD delete and writes nothing.
-              if [ '${{ inputs.apply }}' = 'true' ]; then
-                command='["node","--import","tsx","src/scripts/retire-legacy-site-tier.ts","--apply"]'
-              else
-                command='["node","--import","tsx","src/scripts/retire-legacy-site-tier.ts"]'
-              fi
+              # pages it WOULD delete and writes nothing. Built up arg-by-arg rather
+              # than as two fixed strings, so `tenant` composes with `apply` instead of
+              # needing a branch per combination.
+              args='"node","--import","tsx","src/scripts/retire-legacy-site-tier.ts"'
+              if [ '${{ inputs.apply }}' = 'true' ]; then args="$args,\"--apply\""; fi
+              if [ -n "$TENANT" ]; then args="$args,\"--tenant=$TENANT\""; fi
+              command="[$args]"
+              ;;
+            repair-theme-units)
+              image="$REPO/api-rest:$TAG"
+              # Same script as retire-legacy-site-tier, different mode — the two share
+              # the theme derivation, so splitting them into two files would have meant
+              # two copies of it. Unticked it prints each preset it would rewrite, with
+              # the before/after value, and writes nothing.
+              args='"node","--import","tsx","src/scripts/retire-legacy-site-tier.ts","--repair-theme-units"'
+              if [ '${{ inputs.apply }}' = 'true' ]; then args="$args,\"--apply\""; fi
+              if [ -n "$TENANT" ]; then args="$args,\"--tenant=$TENANT\""; fi
+              command="[$args]"
               ;;
             migrate-media-to-blob)
               image="$REPO/api-rest:$TAG"
