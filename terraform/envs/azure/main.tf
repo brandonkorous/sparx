@@ -422,10 +422,16 @@ resource "azurerm_storage_account" "media" {
     # PUT (400 InvalidHeaderValue without it), which makes it non-safelisted and
     # therefore part of the preflight.
     cors_rule {
-      allowed_origins    = var.media_upload_origins
-      allowed_methods    = ["PUT", "OPTIONS"]
-      allowed_headers    = ["content-type", "x-ms-blob-type"]
-      exposed_headers    = []
+      allowed_origins = var.media_upload_origins
+      allowed_methods = ["PUT", "OPTIONS"]
+      allowed_headers = ["content-type", "x-ms-blob-type"]
+      # The upload reads nothing off the response, so this would ideally be empty —
+      # Azure itself accepts that. The PROVIDER requires at least one entry (and
+      # `terraform validate` does not catch it; only `plan` does), so it names the one
+      # header worth having: `x-ms-request-id` is what correlates a failed upload in
+      # the browser with the request on Azure's side. `*` would satisfy the schema too
+      # and expose every response header to script for no reason.
+      exposed_headers    = ["x-ms-request-id"]
       max_age_in_seconds = 3600
     }
   }
