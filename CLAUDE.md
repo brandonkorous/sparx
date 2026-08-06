@@ -2,6 +2,28 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## RULE #0 — finish the whole surface; never explain a gap you could close
+
+**The unit of work is the entire surface, not its hardest or most interesting part.** A site is
+ALL of its pages; a module is every screen and state; a committed capability is its whole surface.
+"Done" means every part is built to production quality — not a representative slice with the rest
+left as the generic base, a stub, or a "later." Shipping the headline part and reporting done while
+the boring parts are still stock is an **unfinished** deliverable that reads as finished, which is
+worse than an obviously partial one because it hides the gap.
+
+**Before you start:** enumerate the parts (list every page/screen/state). That list is the
+definition of done. **Before you say done:** re-check the list — if any part is still stock/base/TODO,
+it is not done, so keep going.
+
+**Never substitute an explanation for the work.** If you know what needs doing and doing it is
+available, DO IT — do not narrate why it isn't done, do not ask permission for the obvious
+continuation, do not deliver a slice plus a note describing the gap. Explaining a gap costs more
+than closing it. The reliable tell that you are about to under-deliver: you're writing a paragraph
+about scope instead of building. Stop writing, start building.
+
+This rule sits above the others because monochrome-minimum output satisfies every _prohibition_ at
+once (RULE #4 makes the same point about color); completeness is the thing nothing else forces.
+
 ## RULE #1 — silicaui first, Tailwind second, everything else needs approval
 
 **Build every UI on silicaui.** Reach for a `@wizeworks/silicaui-react` component and its
