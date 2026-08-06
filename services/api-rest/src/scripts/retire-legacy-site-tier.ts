@@ -59,13 +59,16 @@
 
 import { isModuleEnabled } from '@sparx/auth';
 import { siteService, type PropertyContext } from '@sparx/builder';
-import { prisma, withTenant } from '@sparx/db';
+import { prisma, withTenant, type Prisma } from '@sparx/db';
 import { BASE_SILICA_THEME, starterSite } from '@sparx/silica-catalog';
 
 import { effectiveTheme } from '../lib/effective-theme.js';
 
 const APPLY = process.argv.includes('--apply');
 const ONLY_TENANT = process.argv.find((a) => a.startsWith('--tenant='))?.slice('--tenant='.length);
+/** Repair mode: rewrite a stored theme's `--size-field` and touch nothing else. Does
+ *  NOT re-seed anything — see `repairThemeUnits`. */
+const REPAIR_THEMES = process.argv.includes('--repair-theme-units');
 
 interface Target {
   tenantId: string;
@@ -171,7 +174,154 @@ async function retire(target: Target): Promise<void> {
   await siteService.publish(ctx);
 }
 
+/** silica's `md` multiplier for each density lever — `calc(var(--size-field) * 10)` is
+ *  an `md` input, `calc(var(--size-selector) * 6)` an `md` checkbox. These are the
+ *  numbers that convert a legacy CONTROL HEIGHT back into the UNIT it was meant to be,
+ *  so the repair reproduces the author's intent rather than guessing at it: a preset
+ *  asking for a 46px field (`2.875rem`) meant `0.2875rem`. */
+const MD_MULTIPLIER = { sizeField: 10, sizeSelector: 6 } as const;
+type Lever = keyof typeof MD_MULTIPLIER;
+
+/** A value that cannot have been meant as a density UNIT.
+ *
+ *  silica multiplies these by the size class, so a real one is a fraction of a rem
+ *  (the platform ships `0.25rem`). At or above 1rem it is a CONTROL HEIGHT, authored
+ *  back when `SharedTokensV2` described these as heights — and silica then multiplied
+ *  it by ten. Selecting on the value rather than on "sites this task touched" means a
+ *  preset that acquired a height by any route is repaired, and a legitimately dense
+ *  theme is never rewritten. */
+function heightNotUnit(raw: unknown): number | null {
+  if (typeof raw !== 'string') return null;
+  const rem = /^([\d.]+)rem$/.exec(raw.trim());
+  if (!rem) return null;
+  const n = Number(rem[1]);
+  return Number.isFinite(n) && n >= 1 ? n : null;
+}
+
+/** A height in rem → the unit that reproduces it at `md`, trimmed of float noise. */
+function toUnit(height: number, lever: Lever): string {
+  return `${Number((height / MD_MULTIPLIER[lever]).toFixed(4))}rem`;
+}
+
+/**
+ * Convert legacy CONTROL HEIGHTS back into the density UNITS silica expects.
+ *
+ * Repairs the PRESET, in `SiteConfig.draftSettings.themePreset.v2.shared` — the source
+ * the tenant compile reads. Repairing the compiled theme instead would fix a site until
+ * the next recompile put the height straight back.
+ *
+ * The stored compiled theme is corrected in the same pass, because it is a persisted
+ * snapshot: a code fix cannot reach a value that was already written, and the storefront
+ * serves the snapshot.
+ *
+ * Rewrites ONLY these two tokens. Colours, radii, fonts, depth and container width are
+ * the author's and are left exactly as stored.
+ */
+async function repairThemeUnits(): Promise<void> {
+  const tenants = await prisma.tenant.findMany({
+    select: { id: true, slug: true },
+    ...(ONLY_TENANT ? { where: { slug: ONLY_TENANT } } : {}),
+  });
+  let scanned = 0;
+  let fixed = 0;
+
+  for (const tenant of tenants) {
+    const configs = await withTenant({ tenantId: tenant.id }, (tx) =>
+      tx.siteConfig.findMany({ select: { propertyId: true, draftSettings: true } })
+    );
+
+    for (const config of configs) {
+      scanned += 1;
+      const settings = config.draftSettings as {
+        themePreset?: { v2?: { shared?: Record<string, unknown> } };
+      } | null;
+      const shared = settings?.themePreset?.v2?.shared;
+      if (!shared) continue;
+
+      const repairs: { lever: Lever; from: string; to: string }[] = [];
+      for (const lever of ['sizeField', 'sizeSelector'] as const) {
+        const height = heightNotUnit(shared[lever]);
+        if (height === null) continue;
+        repairs.push({ lever, from: String(shared[lever]), to: toUnit(height, lever) });
+      }
+      if (repairs.length === 0) continue;
+
+      fixed += 1;
+      for (const r of repairs) {
+        console.log(`  ${tenant.slug.padEnd(20)} ${r.lever.padEnd(13)} ${r.from} → ${r.to}`);
+      }
+      if (!APPLY) continue;
+
+      const nextShared = { ...shared };
+      for (const r of repairs) nextShared[r.lever] = r.to;
+      // `shared` was reached through `settings`, so both are non-null here.
+      const preset = settings.themePreset;
+      const nextSettings = {
+        ...settings,
+        themePreset: { ...preset, v2: { ...preset?.v2, shared: nextShared } },
+      };
+
+      await withTenant({ tenantId: tenant.id }, async (tx) => {
+        await tx.siteConfig.update({
+          where: { propertyId: config.propertyId },
+          // The settings blob is free-form JSON; Prisma's InputJsonValue cannot see that
+          // through the spread, so the cast states what the column already is.
+          data: { draftSettings: nextSettings as Prisma.InputJsonValue },
+        });
+
+        // The compiled snapshot, re-derived from the now-correct preset. `ignoreAuthored`
+        // because the stored theme IS the stale thing — the normal short-circuit would
+        // hand it straight back.
+        const ctx: PropertyContext = { tenantId: tenant.id, propertyId: config.propertyId };
+        const fresh = (await effectiveTheme(tx, ctx, { ignoreAuthored: true })) as {
+          tokens?: Record<string, string>;
+        } | null;
+        const site = await tx.builderSite.findUnique({
+          where: { propertyId: config.propertyId },
+          select: { silicaDraftTheme: true, silicaPublishedTheme: true },
+        });
+        if (!fresh?.tokens || !site) return;
+
+        const patch = (theme: unknown): unknown => {
+          const t = theme as { tokens?: Record<string, string> } | null;
+          if (!t?.tokens) return theme;
+          return {
+            ...t,
+            tokens: {
+              ...t.tokens,
+              '--size-field': fresh.tokens!['--size-field'] ?? t.tokens['--size-field'],
+              '--size-selector': fresh.tokens!['--size-selector'] ?? t.tokens['--size-selector'],
+            },
+          };
+        };
+        await tx.builderSite.update({
+          where: { propertyId: config.propertyId },
+          data: {
+            ...(site.silicaDraftTheme
+              ? { silicaDraftTheme: patch(site.silicaDraftTheme) as object }
+              : {}),
+            ...(site.silicaPublishedTheme
+              ? { silicaPublishedTheme: patch(site.silicaPublishedTheme) as object }
+              : {}),
+          },
+        });
+      });
+    }
+  }
+
+  console.log(
+    `\n${scanned} site configs scanned · ${fixed} carrying a control height where a density unit belongs.`
+  );
+  if (fixed > 0 && !APPLY) console.log('Re-run with --apply to write.');
+}
+
 async function main() {
+  if (REPAIR_THEMES) {
+    console.log(APPLY ? 'APPLYING theme repair.\n' : 'DRY RUN — nothing written.\n');
+    await repairThemeUnits();
+    return;
+  }
+
   const targets = await findTargets();
 
   console.log(
