@@ -220,3 +220,16 @@ variable "sparx_email_dkim_value" {
   type        = string
   default     = ""
 }
+
+variable "media_upload_origins" {
+  description = <<-EOT
+    Origins allowed to PUT directly to the media storage account via a presigned SAS
+    URL. This is the CONSOLE's origin, not the API's — api-rest signs the URL but the
+    browser sends the bytes, so the account itself has to permit the caller.
+
+    Keep this as tight as the surfaces that actually upload. Adding a host here is
+    granting it direct write access to the media account for the life of a SAS.
+  EOT
+  type        = list(string)
+  default     = ["https://app.sparx.works"]
+}

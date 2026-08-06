@@ -406,6 +406,28 @@ resource "azurerm_storage_account" "media" {
     delete_retention_policy {
       days = 7
     }
+
+    # The browser PUTs its upload straight here, so the ACCOUNT has to allow the
+    # console's origin — api-rest only signs the URL, it never sees the bytes, and
+    # nothing server-side can grant this on the browser's behalf.
+    #
+    # Its absence is why every upload failed on the Blob cutover with a preflight
+    # error and no server-side trace: the GCS buckets carried an equivalent `cors`
+    # block (terraform/modules/storage/main.tf) and it did not come across with the
+    # rest of the storage layer.
+    #
+    # PUT + OPTIONS only. Browsers never GET from this account — variants are
+    # streamed by api-rest — so read methods would widen the surface for nothing.
+    # `x-ms-blob-type` is in the header list because Azure REQUIRES it on a direct
+    # PUT (400 InvalidHeaderValue without it), which makes it non-safelisted and
+    # therefore part of the preflight.
+    cors_rule {
+      allowed_origins    = var.media_upload_origins
+      allowed_methods    = ["PUT", "OPTIONS"]
+      allowed_headers    = ["content-type", "x-ms-blob-type"]
+      exposed_headers    = []
+      max_age_in_seconds = 3600
+    }
   }
 
   tags = local.tags
