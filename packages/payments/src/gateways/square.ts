@@ -27,27 +27,58 @@ import type {
   VaultedMethod,
   WebhookEvent,
 } from '../gateway';
-import { loadCredentials, orderReference, postJson } from './adapter-util';
+import { GatewayApiError, loadCredentials, orderReference, postJson } from './adapter-util';
 
 export const SQUARE_ID = 'square';
 
+// Must be >= 2023-08-16 for `customer_details` on CreatePayment (the
+// card-on-file / MOTO flags). Lowering this silently drops the off-session
+// signal rather than erroring.
 const SQUARE_VERSION = '2024-10-17';
 
-/** Square error codes that mean the stored card is finished, not just unlucky —
- *  the same distinction Stripe's decline codes draw. Matched against the error
- *  body because the REST helper surfaces it as a message string. */
-const SQUARE_PERMANENT_CODES = [
-  'CARD_NOT_SUPPORTED',
+/** Square rejects an idempotency key over 45 characters outright. Truncating
+ *  from the FRONT keeps the most-varying end of a composite key, so two
+ *  different renewals cannot collapse onto one key and skip a charge. */
+function idempotency(key: string): string {
+  return key.length <= 45 ? key : key.slice(key.length - 45);
+}
+
+/** Square's CreateCard requires a cardholder name. Blank, absent and
+ *  all-whitespace all have to become a real value or the vault is rejected. */
+function cardholderName(name: string | undefined): string {
+  const trimmed = name?.trim();
+  return trimmed && trimmed.length > 0 ? trimmed : 'Cardholder';
+}
+
+/**
+ * Square `ErrorCode` values that mean the stored card is finished, not just
+ * unlucky — the same distinction Stripe's decline codes draw.
+ *
+ * Taken from Square's ErrorCode enum, and deliberately NARROW: every code here
+ * describes the card itself being unusable, so no amount of waiting fixes it.
+ * Everything else Square can answer with — GENERIC_DECLINE, INSUFFICIENT_FUNDS,
+ * CVV_FAILURE, CARD_DECLINED_CALL_ISSUER, TRANSACTION_LIMIT, TEMPORARY_ERROR —
+ * is an issuer having a bad day, and the ladder should retry it.
+ *
+ * The nonce codes (CARD_TOKEN_EXPIRED / CARD_TOKEN_USED) are NOT here: they
+ * describe a single-use token from the payment form, which is a vaulting-time
+ * problem, not a card-on-file one. Listing them made a shopper's card look dead
+ * for a mistake that could only happen before it was ever stored.
+ */
+const SQUARE_PERMANENT_CODES = new Set([
+  'CARD_EXPIRED',
   'INVALID_CARD',
   'INVALID_EXPIRATION',
-  'CARD_EXPIRED',
-  'CARD_TOKEN_USED',
+  'INVALID_EXPIRATION_YEAR',
+  'INVALID_EXPIRATION_DATE',
+  'PAN_FAILURE',
+  'CARD_NOT_SUPPORTED',
+  'UNSUPPORTED_CARD_BRAND',
+  // The card-on-file itself is gone at Square — disabled by the shopper, or
+  // deleted. Retrying cannot bring it back.
+  'CARD_NOT_ENABLED',
   'NOT_FOUND',
-];
-
-function isSquarePermanent(message: string): boolean {
-  return SQUARE_PERMANENT_CODES.some((code) => message.includes(code));
-}
+]);
 
 function baseUrl(env: string): string {
   return env === 'sandbox' ? 'https://connect.squareupsandbox.com' : 'https://connect.squareup.com';
@@ -206,9 +237,24 @@ export class SquareGateway implements PaymentGateway {
     }>(
       `${baseUrl(creds.environment)}/v2/cards`,
       {
-        idempotency_key: `${params.customerId}-${params.token}`.slice(0, 45),
+        // Square caps this at 45 characters and rejects anything longer. The
+        // token is what makes it unique, so it is what survives the truncation.
+        idempotency_key: idempotency(`${params.customerId}-${params.token}`),
         source_id: params.token,
-        card: { customer_id: customerRef },
+        card: {
+          customer_id: customerRef,
+          // REQUIRED by CreateCard. Square rejects the request without it, so
+          // the fallback is a real value rather than an empty string — a card
+          // saved under "Cardholder" is recoverable, a failed vault is a
+          // shopper who could not save their card at all. An all-whitespace
+          // name has to fall back too, which is why this is not `??`.
+          cardholder_name: cardholderName(params.cardholderName),
+          // Square matches this against the postal code entered in the payment
+          // form; sending a WRONG one fails the vault, so it is only sent when
+          // the caller actually knows it.
+          ...(params.postalCode ? { billing_address: { postal_code: params.postalCode } } : {}),
+          reference_id: params.customerId.slice(0, 40),
+        },
       },
       { authorization: `Bearer ${creds.secrets.access_token}`, 'square-version': SQUARE_VERSION }
     );
@@ -229,25 +275,35 @@ export class SquareGateway implements PaymentGateway {
       const res = await postJson<{ payment: { id: string; status: string } }>(
         `${baseUrl(creds.environment)}/v2/payments`,
         {
-          idempotency_key: params.idempotencyKey.slice(0, 45),
+          idempotency_key: idempotency(params.idempotencyKey),
           source_id: params.methodRef,
-          ...(params.customerRef ? { customer_id: params.customerRef } : {}),
+          // NOT optional for a card-on-file charge: Square's CreatePayment docs
+          // state customer_id is "Required if the source_id refers to a card on
+          // file created using the Cards API". Every charge from this method is
+          // exactly that.
+          customer_id: params.customerRef ?? undefined,
           amount_money: {
             amount: params.amount,
             currency: params.currency.toUpperCase(),
           },
           location_id: creds.publicMeta.location_id,
           autocomplete: true,
-          // Square's own flag for "the cardholder is not here". Same purpose as
-          // Stripe's `off_session`: it tells the issuer this is a scheduled
-          // charge against a stored mandate, not a stranger using the card.
-          customer_initiated: false,
-          reference_id: params.orderId?.slice(0, 40),
+          // Square's flag for "the cardholder is not here", and it lives on the
+          // `customer_details` OBJECT — not at the top level, where it was
+          // silently ignored and the issuer therefore saw a scheduled renewal as
+          // a stranger keying in a card number. Added to CreatePayment in
+          // Square's 2023-08-16 API release.
+          customer_details: { customer_initiated: false, seller_keyed_in: false },
+          ...(params.orderId ? { reference_id: params.orderId.slice(0, 40) } : {}),
         },
         { authorization: `Bearer ${creds.secrets.access_token}`, 'square-version': SQUARE_VERSION }
       );
 
       const status = res.payment.status;
+      // COMPLETED is the expected outcome with autocomplete: true. APPROVED is
+      // authorised-not-captured, which should not happen here — but the money IS
+      // guaranteed, so failing the renewal over it would dun a customer whose
+      // card worked.
       if (status === 'COMPLETED' || status === 'APPROVED') {
         return { status: 'succeeded', paymentRef: res.payment.id };
       }
@@ -258,15 +314,17 @@ export class SquareGateway implements PaymentGateway {
         failureReason: `Square returned ${status}.`,
       };
     } catch (err) {
-      const message = err instanceof Error ? err.message : 'square charge failed';
+      // Codes read as DATA off the error body, not matched as substrings of a
+      // formatted message — `INVALID_CARD` appearing inside an unrelated
+      // sentence used to be enough to declare a working card dead.
+      const dead = err instanceof GatewayApiError && err.hasCode(SQUARE_PERMANENT_CODES);
       return {
         status: 'failed',
         paymentRef: null,
-        failureCode: 'square_error',
-        failureReason: message,
-        // Square reports a card that can never work again as CARD_NOT_SUPPORTED
-        // / INVALID_CARD / a gone card-on-file. Anything else is worth retrying.
-        ...(isSquarePermanent(message) ? { methodDead: true } : {}),
+        failureCode:
+          err instanceof GatewayApiError ? (err.codes[0] ?? 'square_error') : 'square_error',
+        failureReason: err instanceof Error ? err.message : 'square charge failed',
+        ...(dead ? { methodDead: true } : {}),
       };
     }
   }

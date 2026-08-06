@@ -149,12 +149,22 @@ export async function completeSetup(
     })
   );
 
+  // Square's CreateCard REJECTS a vault with no `cardholder_name`, so the name
+  // is resolved here rather than left to the adapter — a gateway adapter has no
+  // access to the customer record. The postal code goes with it when the
+  // customer has a default billing address: Square matches it against what was
+  // typed into the payment form, and a WRONG one fails the vault, so it is only
+  // sent when it is genuinely known.
+  const billing = await resolveBillingIdentity(ctx, input.customerId);
+
   const vaulted = await paymentService.completeVault({
     tenantId: ctx.tenantId,
     customerId: input.customerId,
     ...(input.setupRef ? { setupRef: input.setupRef } : {}),
     ...(input.token ? { token: input.token } : {}),
     ...(existingRef?.customerRef ? { customerRef: existingRef.customerRef } : {}),
+    ...(billing.cardholderName ? { cardholderName: billing.cardholderName } : {}),
+    ...(billing.postalCode ? { postalCode: billing.postalCode } : {}),
   });
   // The shopper opened the card form and never finished. Not an error — there is
   // simply nothing to save.
@@ -276,7 +286,67 @@ export async function markUsed(ctx: ServiceContext, id: string): Promise<void> {
   );
 }
 
+/**
+ * Record the stored-credential chain a charge established.
+ *
+ * The card networks require a merchant-initiated charge to quote the
+ * transaction that created the mandate, and Authorize.net makes the merchant
+ * carry it (Stripe and PayPal track it internally). The first successful charge
+ * against a newly vaulted card returns a networkTransId; every renewal after
+ * that sends it back.
+ *
+ * Written once and never overwritten — the chain is anchored to the ESTABLISHING
+ * transaction, so replacing it with the most recent charge's id would break the
+ * very link the networks are checking.
+ */
+export async function recordCredentialChain(
+  ctx: ServiceContext,
+  id: string,
+  chain: { networkTransId: string; originalAuthAmount: number }
+): Promise<void> {
+  await withTenant(ctx, (tx) =>
+    tx.customerPaymentMethod.updateMany({
+      where: { id, networkTransId: null },
+      data: {
+        networkTransId: chain.networkTransId,
+        originalAuthAmount: chain.originalAuthAmount,
+      },
+    })
+  );
+}
+
 // ─── helpers ─────────────────────────────────────────────────────────
+
+/** The cardholder name + billing postal code to send with a vault, resolved
+ *  from the customer record. Both are optional everywhere except Square, whose
+ *  CreateCard requires a name. */
+async function resolveBillingIdentity(
+  ctx: ServiceContext,
+  customerId: string
+): Promise<{ cardholderName: string | null; postalCode: string | null }> {
+  return withTenant(ctx, async (tx) => {
+    const customer = await tx.customer.findFirst({
+      where: { id: customerId },
+      select: { firstName: true, lastName: true, email: true },
+    });
+    if (!customer) return { cardholderName: null, postalCode: null };
+
+    const name = [customer.firstName, customer.lastName].filter(Boolean).join(' ').trim();
+    const address = await tx.customerAddress.findFirst({
+      where: { customerId, type: { in: ['billing', 'both'] } },
+      orderBy: [{ isDefault: 'desc' }, { createdAt: 'desc' }],
+      select: { postalCode: true },
+    });
+
+    return {
+      // Falling back to the email's local part beats sending nothing: a card
+      // saved under a slightly odd name is recoverable, a rejected vault is a
+      // shopper who could not save their card at all.
+      cardholderName: name || (customer.email?.split('@')[0] ?? null),
+      postalCode: address?.postalCode ?? null,
+    };
+  });
+}
 
 async function requireMethod(tx: TxClient, id: string): Promise<CustomerPaymentMethod> {
   const row = await tx.customerPaymentMethod.findFirst({ where: { id } });

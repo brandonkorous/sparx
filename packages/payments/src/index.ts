@@ -110,6 +110,7 @@ export { parseWebhookSecrets, constructEventWithAnySecret } from './webhook-secr
 
 import { SquareGateway } from './gateways/square';
 import { AuthorizeNetGateway } from './gateways/authorize-net';
+import { PayPalGateway } from './gateways/paypal';
 import { FirstPayGateway } from './gateways/first-pay';
 import { CustomRedirectGateway } from './gateways/custom-redirect';
 import { registerBuiltInGateways } from './registry';
@@ -125,6 +126,7 @@ export function registerSparxGateways(): void {
     new StripeDirectGateway(),
     new SquareGateway(),
     new AuthorizeNetGateway(),
+    new PayPalGateway(),
     new FirstPayGateway(),
     new CustomRedirectGateway(),
   ];

@@ -83,10 +83,10 @@ export interface GatewayDescriptor {
 }
 
 /** A full-service card gateway: everything, including a vault it can charge
- *  off-session. Shared by the two Stripe-backed gateways and by the two
- *  hosted-redirect gateways whose own card-on-file vaults cover the same
- *  ground (Square Cards, Authorize.net CIM) — the checkout STYLE differs, the
- *  server-side capabilities do not. */
+ *  off-session. Shared by every gateway whose adapter implements the vault
+ *  against the vendor's published contract — the two Stripe-backed ones, Square
+ *  (Cards API), Authorize.net (CIM) and PayPal (Payment Method Tokens v3). The
+ *  checkout STYLE differs; the server-side capabilities do not. */
 const CARD_CAPS: GatewayCapabilities = {
   refunds: true,
   capture: true,
@@ -225,13 +225,15 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
       {
         // Needed only to SAVE a card for repeat orders (docs/142): Accept.js runs
         // in the shopper's browser and exchanges the card for a one-time token,
-        // so the card itself never reaches sparx. Optional — one-off checkout
-        // works without it; subscriptions on this gateway fall back to invoicing.
+        // so the card itself never reaches sparx. Still captured while
+        // `storedMethods` is false — the credential is what the sandbox exercise
+        // needs, and a merchant who has already pasted it does not have to come
+        // back when the capability turns on.
         key: 'public_client_key',
         label: 'Public Client Key',
         secret: false,
         optional: true,
-        help: 'Authorize.net → Account → Settings → Manage Public Client Key. Only needed to let customers save a card for repeat orders.',
+        help: 'Authorize.net → Account → Settings → Manage Public Client Key. Only needed for saved cards, which are not switched on for Authorize.net yet.',
       },
     ],
     environments: true,
@@ -333,19 +335,14 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
     id: 'paypal',
     name: 'PayPal',
     blurb:
-      'Let customers pay with their PayPal balance, Venmo, or Pay Later. No sparx fee — you pay PayPal’s rates directly.',
-    availability: 'coming_soon',
+      'Let customers pay with their PayPal balance, Venmo, or Pay Later. Customers can save their PayPal account for repeat orders. No sparx fee — you pay PayPal’s rates directly.',
     onboarding: 'api_keys',
     checkout: 'redirect',
-    // PayPal vaults (Billing Agreements), but the adapter is unwritten — this
-    // tracks the ADAPTER, not the vendor. Flips with the rest of it.
-    capabilities: {
-      refunds: true,
-      capture: true,
-      paymentLinks: true,
-      webhooks: true,
-      storedMethods: false,
-    },
+    // PayPal's vault is the Payment Method Tokens v3 API — the shopper approves
+    // ONCE and the merchant charges the saved PayPal account thereafter. It
+    // saves an ACCOUNT rather than a card, so a saved method here has no brand
+    // or last-4; everything else about it behaves like a card on file.
+    capabilities: CARD_CAPS,
     credentialFields: [
       {
         key: 'client_id',
@@ -359,6 +356,13 @@ export const GATEWAY_CATALOG: readonly GatewayDescriptor[] = [
         label: 'Client secret',
         secret: true,
         help: 'Alongside the Client ID on the same PayPal app.',
+      },
+      {
+        key: 'webhook_secret',
+        label: 'Webhook secret',
+        secret: true,
+        optional: true,
+        help: 'Shared secret sparx verifies inbound PayPal webhooks against. Optional but recommended.',
       },
     ],
     environments: true,

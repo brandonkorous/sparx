@@ -11,6 +11,59 @@ export interface GatewayHttpError {
   body: string;
 }
 
+/**
+ * A non-2xx from a vendor, with its error codes already pulled out.
+ *
+ * The decline codes are the whole point. Whether a failed renewal retries for a
+ * fortnight or immediately asks the customer for a new card is decided by the
+ * vendor's code — and reading it out of a formatted message with
+ * `message.includes('INVALID_CARD')` matches the substring anywhere, including
+ * inside an unrelated human-readable sentence. This carries the codes as data.
+ */
+export class GatewayApiError extends Error {
+  readonly status: number;
+  readonly body: string;
+  /** Vendor error codes, upper-cased. Square nests them under `errors[].code`;
+   *  most others use a top-level `code`. Empty when the body is not JSON. */
+  readonly codes: string[];
+
+  constructor(status: number, body: string) {
+    super(`gateway HTTP ${String(status)}: ${body}`);
+    this.name = 'GatewayApiError';
+    this.status = status;
+    this.body = body;
+    this.codes = extractErrorCodes(body);
+  }
+
+  /** True when the vendor reported any of these codes. */
+  hasCode(codes: Iterable<string>): boolean {
+    const wanted = new Set([...codes].map((c) => c.toUpperCase()));
+    return this.codes.some((c) => wanted.has(c));
+  }
+}
+
+/** Pull vendor error codes out of a JSON error body. Square answers
+ *  `{ errors: [{ category, code, detail }] }`; PayPal answers
+ *  `{ name, details: [{ issue }] }`. Anything unparseable yields none, which
+ *  makes the failure retryable — the safe default for a card that might be fine. */
+function extractErrorCodes(body: string): string[] {
+  try {
+    const parsed = JSON.parse(body) as {
+      errors?: { code?: string }[];
+      details?: { issue?: string }[];
+      name?: string;
+    };
+    const codes = [
+      ...(parsed.errors ?? []).map((e) => e.code),
+      ...(parsed.details ?? []).map((d) => d.issue),
+      parsed.name,
+    ];
+    return codes.filter((c): c is string => typeof c === 'string').map((c) => c.toUpperCase());
+  } catch {
+    return [];
+  }
+}
+
 /** The merchant's credentials for a gateway, or a surfaced "not connected" error. */
 export async function loadCredentials(
   tenantId: string,
@@ -40,23 +93,57 @@ export function orderReference(params: CreatePaymentIntentParams): string {
   return (params.orderId ?? params.invoiceId ?? params.bookingId ?? 'sparx').slice(0, 40);
 }
 
-/** POST JSON and parse the JSON response, throwing a structured error on non-2xx. */
+/** POST JSON and parse the JSON response, throwing a `GatewayApiError` on non-2xx. */
 export async function postJson<T>(
   url: string,
   body: unknown,
   headers: Record<string, string> = {}
 ): Promise<T> {
+  return requestJson<T>('POST', url, body, headers);
+}
+
+/** Same, for the verbs a vault needs (`GET` a token back, `DELETE` one). */
+export async function requestJson<T>(
+  method: string,
+  url: string,
+  body: unknown,
+  headers: Record<string, string> = {}
+): Promise<T> {
   const res = await fetch(url, {
-    method: 'POST',
+    method,
     headers: { 'content-type': 'application/json', accept: 'application/json', ...headers },
-    body: JSON.stringify(body),
+    ...(body === undefined ? {} : { body: JSON.stringify(body) }),
   });
   const text = await res.text();
   if (!res.ok) {
-    const err: GatewayHttpError = { status: res.status, body: text.slice(0, 500) };
-    throw new Error(`gateway HTTP ${err.status}: ${err.body}`);
+    // 500 chars is enough to carry the codes and keep a vendor's stack trace out
+    // of our logs.
+    throw new GatewayApiError(res.status, text.slice(0, 500));
   }
+  // A 204 (PayPal's DELETE) has no body to parse.
+  if (!text.trim()) return undefined as T;
   // Authorize.net returns JSON with a BOM prefix; strip any leading non-`{` bytes.
   const start = text.indexOf('{');
   return JSON.parse(start > 0 ? text.slice(start) : text) as T;
+}
+
+/** POST form-encoded — PayPal's OAuth token endpoint is the only caller, and it
+ *  is `application/x-www-form-urlencoded` by spec, not JSON. */
+export async function postForm<T>(
+  url: string,
+  form: Record<string, string>,
+  headers: Record<string, string> = {}
+): Promise<T> {
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/x-www-form-urlencoded',
+      accept: 'application/json',
+      ...headers,
+    },
+    body: new URLSearchParams(form).toString(),
+  });
+  const text = await res.text();
+  if (!res.ok) throw new GatewayApiError(res.status, text.slice(0, 500));
+  return JSON.parse(text) as T;
 }

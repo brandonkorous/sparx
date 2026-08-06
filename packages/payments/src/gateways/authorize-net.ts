@@ -30,20 +30,37 @@ import { loadCredentials, orderReference, postJson } from './adapter-util';
 
 export const AUTHORIZE_NET_ID = 'authorize_net';
 
-/** Authorize.net response codes that mean the stored card will never work
- *  again, so the dunning ladder should stop rather than spend its remaining
- *  attempts proving it. */
+/**
+ * Authorize.net response reason codes that mean this card will never work
+ * again, so the dunning ladder should stop and ask for a new one rather than
+ * spend four attempts and four decline fees proving it.
+ *
+ * Three codes were removed from this list after checking them against
+ * Authorize.net's published reason codes, because each one was costing a
+ * customer a working card:
+ *   11 — DUPLICATE TRANSACTION. Not a card problem at all; it usually means our
+ *        own idempotency did its job. Marking the card dead here revoked a
+ *        perfectly good card because a charge was submitted twice.
+ *   45 — AVS/CVV filter decline. A merchant FILTER setting, and documented as a
+ *        temporary decline.
+ *   54 — "referenced transaction does not meet criteria for refund". A refund
+ *        code. It cannot occur on a charge, and says nothing about the card.
+ */
 const ANET_PERMANENT_ERROR_CODES = new Set([
-  '6', // invalid card number
+  '4', // pick up card — lost or stolen
+  '6', // invalid credit card number
   '7', // invalid expiration date
-  '8', // card has expired
-  '11', // duplicate transaction
-  '37', // card number invalid
-  '45', // card code / AVS mismatch, permanently blocked
-  '54', // referenced transaction does not meet refund criteria
-  '315', // invalid card number
+  '8', // the credit card has expired
+  '37', // the credit card number is invalid
+  '315', // invalid credit card number
   '316', // invalid expiration date
-  '317', // card has expired
+  '317', // the credit card has expired
+  // 17 / 28 are "the merchant does not accept this card type". Retrying is
+  // futile, but a DIFFERENT card would work — which is precisely what
+  // `methodDead` asks the customer for, so they belong here even though the
+  // fault is the merchant's configuration rather than the card's.
+  '17',
+  '28',
 ]);
 
 /** Accept.js hands the browser a `{ dataDescriptor, dataValue }` pair; the
@@ -316,11 +333,42 @@ export class AuthorizeNetGateway implements PaymentGateway {
         };
       }
 
+      // ── The stored-credential chain (Authorize.net "Card-On-File") ────────
+      //
+      // A merchant-initiated charge has to say which transaction ESTABLISHED
+      // the stored credential, and the networks enforce it: originalNetworkTransId
+      // is required outright for Discover / Diners / JCB / China UnionPay, for
+      // Visa on every recurring MIT, and in the EEA for Mastercard. Without it
+      // the issuer sees an unmandated charge on a card nobody is holding, which
+      // is a soft decline.
+      //
+      // So the FIRST charge against a newly vaulted card declares itself as the
+      // establishing transaction and returns a networkTransId; every later
+      // charge quotes it back. Two shapes, one decision:
+      const firstCharge = params.isFirstCharge === true || !params.networkTransId;
+      const processingOptions = firstCharge
+        ? { isFirstRecurringPayment: true }
+        : { isSubsequentAuth: true };
+      // `reason` is deliberately ABSENT. Its allowed values are resubmission /
+      // reauthorization / delayedcharge / noshow — none of which is a scheduled
+      // subscription renewal, and Authorize.net's card-on-file guidance says
+      // recurring and unscheduled payments do not specify one. It previously
+      // said `resubmission`, which claims this is a retry of a declined charge.
+      const subsequentAuthInformation = firstCharge
+        ? undefined
+        : {
+            originalNetworkTransId: params.networkTransId,
+            ...(params.originalAuthAmount !== undefined
+              ? { originalAuthAmount: dollars(params.originalAuthAmount) }
+              : {}),
+          };
+
       const res = await postJson<
         AnetMessages & {
           transactionResponse?: {
             responseCode?: string;
             transId?: string;
+            networkTransId?: string;
             errors?: { errorCode: string; errorText: string }[];
           };
         }
@@ -335,22 +383,33 @@ export class AuthorizeNetGateway implements PaymentGateway {
               customerProfileId: params.customerRef,
               paymentProfile: { paymentProfileId: params.methodRef },
             },
-            order: { invoiceNumber: (params.orderId ?? '').slice(0, 20) },
-            // Tells the issuer this is a scheduled charge against a stored
-            // mandate rather than a stranger with the card number — the same
-            // signal as Stripe's `off_session`, and what keeps decline rates
-            // where they should be.
-            processingOptions: { isSubsequentAuth: true },
-            subsequentAuthInformation: { reason: 'resubmission', originalNetworkTransId: '' },
+            ...(params.orderId ? { order: { invoiceNumber: params.orderId.slice(0, 20) } } : {}),
+            processingOptions,
+            ...(subsequentAuthInformation ? { subsequentAuthInformation } : {}),
+            // Marks the charge as recurring billing, which is a separate signal
+            // from the COF flags above and is what Authorize.net's own guidance
+            // pairs with isSubsequentAuth for a subscription.
+            transactionSettings: {
+              setting: [{ settingName: 'recurringBilling', settingValue: 'true' }],
+            },
           },
         },
       });
 
       const tx = res.transactionResponse;
-      // responseCode 1 = approved, 4 = held for review (money is captured
-      // pending the merchant's own fraud check — a success from our side).
+      // responseCode 1 = approved, 2 = declined, 3 = error, 4 = held for review
+      // (the money IS captured pending the merchant's own fraud check, so it is
+      // a success from our side — treating it as a decline would dun a customer
+      // who has paid).
       if (tx?.responseCode === '1' || tx?.responseCode === '4') {
-        return { status: 'succeeded', paymentRef: tx.transId ?? null };
+        return {
+          status: 'succeeded',
+          paymentRef: tx.transId ?? null,
+          // Persisted by the caller and quoted back on the next renewal. Only
+          // the establishing charge produces one worth keeping, but returning it
+          // every time is harmless and self-healing if a row lost it.
+          ...(tx.networkTransId ? { networkTransId: tx.networkTransId } : {}),
+        };
       }
 
       const error = tx?.errors?.[0];

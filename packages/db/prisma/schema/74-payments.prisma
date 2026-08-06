@@ -136,6 +136,20 @@ model CustomerPaymentMethod {
   expMonth Int?    @map("exp_month")
   expYear  Int?    @map("exp_year")
 
+  /// The card networks' stored-credential chain. A merchant-initiated charge
+  /// must reference the transaction that ESTABLISHED the mandate:
+  /// `originalNetworkTransId` is required outright for Discover / Diners / JCB /
+  /// China UnionPay, for Visa on every recurring MIT, and in the EEA for
+  /// Mastercard. Omitting it is a soft decline on a card that is perfectly good.
+  ///
+  /// Stripe and PayPal track the chain internally and never read these.
+  /// Authorize.net makes the merchant carry it, so the first charge against a
+  /// newly vaulted card declares itself the establishing transaction, returns a
+  /// networkTransId, and every renewal after that quotes it back.
+  networkTransId     String? @map("network_trans_id") @db.VarChar(64)
+  /// Amount (cents) authorised by that establishing transaction.
+  originalAuthAmount Int?    @map("original_auth_amount")
+
   isDefault  Boolean   @default(false) @map("is_default")
   status     String    @default("active") @db.VarChar(20)
   /// ^ active | expired | revoked. `revoked` is set when the gateway tells us

@@ -8,12 +8,12 @@
 // Publishable key comes from NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY.
 
 import { Elements, PaymentElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { loadStripe, type Stripe } from '@stripe/stripe-js';
 import { useEffect, useMemo, useState } from 'react';
 
 import { Alert, Button, Input, NativeSelect } from '@wizeworks/silicaui-react';
 
 import { formatMoney } from '@/lib/format';
+import { getStripe, PLATFORM_PUBLISHABLE_KEY } from '@/lib/stripe-loader';
 import {
   completeCheckout,
   submitPayment,
@@ -27,25 +27,6 @@ const NET_TERMS_OPTIONS = [
   { value: 'net60', label: 'Net 60' },
   { value: 'net90', label: 'Net 90' },
 ] as const;
-
-// sparx's own publishable key, inlined at BUILD time (see apps/site/Dockerfile).
-// Correct for sparx Pay, whose intents are destination charges on sparx's platform
-// account. A `stripe_direct` tenant's intent lives on the merchant's account and
-// comes back with its own `publishableKey`, which wins below.
-const PLATFORM_PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY ?? '';
-
-// Memoize the Stripe.js loader per key (loadStripe should run once per account) —
-// keyed, not a single slot, so two tenants on different Stripe accounts in the same
-// browser session don't hand each other's Elements the wrong publishable key.
-const stripePromises = new Map<string, Promise<Stripe | null>>();
-function getStripe(publishableKey: string): Promise<Stripe | null> {
-  let promise = stripePromises.get(publishableKey);
-  if (!promise) {
-    promise = loadStripe(publishableKey);
-    stripePromises.set(publishableKey, promise);
-  }
-  return promise;
-}
 
 export interface PaymentStepProps {
   tenantSlug: string;
@@ -75,7 +56,7 @@ export function PaymentStep(props: PaymentStepProps) {
     return (
       <div className="flex max-w-[560px] flex-col gap-4">
         <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        <div className="flex flex-col gap-3">
           <Button type="button" color="primary" size="lg" onClick={() => setMethod('card')}>
             Pay by card
           </Button>
@@ -153,11 +134,11 @@ function AccountPaymentStep({ session, onBack, onPaid, tenantSlug }: PaymentStep
         </NativeSelect>
       </label>
       {error ? <Alert color="danger">{error}</Alert> : null}
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
+      <div className="flex gap-3">
         <Button type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
           ← Back
         </Button>
-        <Button type="submit" color="primary" size="lg" style={{ flex: 1 }} disabled={busy}>
+        <Button type="submit" color="primary" size="lg" className="flex-1" disabled={busy}>
           {busy
             ? 'Placing order…'
             : `Place order — ${formatMoney(session.totals.totalCents, session.currency)}`}
@@ -209,7 +190,7 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
     return (
       <div className="flex max-w-[560px] flex-col gap-4">
         <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
-        <div className="skeleton" style={{ height: 180 }} />
+        <div className="skeleton h-[180px]" />
       </div>
     );
   }
@@ -232,7 +213,7 @@ function CardPaymentStep({ tenantSlug, session, createIntent, onBack, onPaid }: 
     return (
       <div className="flex max-w-[560px] flex-col gap-4">
         <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
-        <div className="skeleton" style={{ height: 180 }} />
+        <div className="skeleton h-[180px]" />
       </div>
     );
   }
@@ -294,7 +275,7 @@ function RedirectPay({
       <Alert color="info">
         You’ll finish paying securely on your payment provider’s page, then return here.
       </Alert>
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
+      <div className="flex gap-3">
         <Button type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
           ← Back
         </Button>
@@ -302,7 +283,7 @@ function RedirectPay({
           type="button"
           color="primary"
           size="lg"
-          style={{ flex: 1 }}
+          className="flex-1"
           onClick={go}
           disabled={busy}
         >
@@ -368,7 +349,7 @@ function PaymentInner({
       <h2 className="text-base-content text-3xl font-semibold tracking-tight">Payment</h2>
       <PaymentElement options={{ layout: 'tabs' }} />
       {error ? <Alert color="danger">{error}</Alert> : null}
-      <div style={{ display: 'flex', gap: '0.75rem' }}>
+      <div className="flex gap-3">
         <Button type="button" color="neutral" variant="ghost" onClick={onBack} disabled={busy}>
           ← Back
         </Button>
@@ -376,7 +357,7 @@ function PaymentInner({
           type="submit"
           color="primary"
           size="lg"
-          style={{ flex: 1 }}
+          className="flex-1"
           disabled={!stripe || busy}
         >
           {busy ? 'Processing…' : `Pay ${formatMoney(session.totals.totalCents, session.currency)}`}

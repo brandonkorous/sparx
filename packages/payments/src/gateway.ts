@@ -215,10 +215,19 @@ export interface CompleteVaultParams {
   customerId: string;
   /** Stripe: the SetupIntent id returned by `createSetupSession`. */
   setupRef?: string;
-  /** Square / Authorize.net: the single-use card token from the browser SDK. */
+  /** Square / Authorize.net / PayPal: the single-use token from the browser SDK
+   *  or the approved setup token from a hosted vault redirect. */
   token?: string;
   /** The gateway-side customer to attach to, when one is already known. */
   customerRef?: string;
+  /** The name on the card. REQUIRED by Square's CreateCard — a vault call
+   *  without it is rejected outright — and useful billing metadata elsewhere.
+   *  Resolved from the sparx customer by the caller, since a gateway adapter has
+   *  no access to the customer record. */
+  cardholderName?: string;
+  /** Billing postal code, when known. Square matches it against the one entered
+   *  in the payment form; a mismatch fails the vault. */
+  postalCode?: string;
 }
 
 export interface ChargeStoredMethodParams {
@@ -237,6 +246,25 @@ export interface ChargeStoredMethodParams {
   /** Where to send the shopper if the issuer demands authentication. */
   returnUrl?: string;
   metadata?: Record<string, string>;
+
+  // ── Stored-credential framework (card networks, not one vendor) ───────────
+  //
+  // Visa/Mastercard/Discover require a merchant-initiated charge to reference
+  // the transaction that ESTABLISHED the stored credential. Stripe and PayPal
+  // track that chain themselves; Authorize.net makes the merchant carry it, and
+  // omitting it is what turns a routine renewal into a soft decline. So it
+  // lives on the params, and the adapters that need it read it.
+
+  /** The network transaction id from the charge that established this stored
+   *  credential. Absent on the FIRST charge against a newly vaulted method —
+   *  which is exactly what `isFirstCharge` below means. */
+  networkTransId?: string;
+  /** The amount (cents) authorised by that establishing transaction. */
+  originalAuthAmount?: number;
+  /** True when nothing has been charged against this method yet, so this call
+   *  IS the establishing transaction. Adapters flag it differently (Authorize.net
+   *  `isFirstRecurringPayment`, PayPal `usage: FIRST`). */
+  isFirstCharge?: boolean;
 }
 
 export interface StoredChargeResult {
@@ -261,6 +289,11 @@ export interface StoredChargeResult {
    *  fees and three more emails, so this skips the ladder and asks for a new
    *  card instead. */
   methodDead?: boolean;
+  /** The network transaction id this charge produced. Returned ONLY by gateways
+   *  that make the merchant carry the stored-credential chain (Authorize.net);
+   *  the caller persists it on the payment method and passes it back on the next
+   *  charge. See `ChargeStoredMethodParams.networkTransId`. */
+  networkTransId?: string;
 }
 
 export interface PaymentGateway {

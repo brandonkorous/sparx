@@ -12,11 +12,11 @@
 // `beginCardSetup` returns what that form needs; what comes back here is a
 // reference, not a card number.
 
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useCustomer } from '@/components/customer-provider';
 import {
-  beginCardSetup,
   getMySubscriptions,
   getSavedCards,
   removeSavedCard,
@@ -43,6 +43,7 @@ function money(cents: number, currency: string): string {
 
 export default function PaymentMethodsPage() {
   const { tenantSlug } = useCustomer();
+  const router = useRouter();
   const [cards, setCards] = useState<SavedCard[] | null>(null);
   const [canSave, setCanSave] = useState(true);
   const [subscriptions, setSubscriptions] = useState<MySubscription[]>([]);
@@ -67,27 +68,13 @@ export default function PaymentMethodsPage() {
 
   useEffect(load, [load]);
 
-  async function addCard() {
+  function addCard() {
+    // The card form lives at /checkout/save-card — it mounts the same card
+    // element checkout does, against a setup session it opens itself. This page
+    // used to open that session and hand the client secret over in the query
+    // string; it no longer knows anything about gateways.
     setBusy(true);
-    setError(null);
-    try {
-      const session = await beginCardSetup(tenantSlug, window.location.href);
-      // A processor that collects the card on its own page (Square,
-      // Authorize.net, some hosted flows) sends the customer there and back.
-      if (session.redirectUrl) {
-        window.location.href = session.redirectUrl;
-        return;
-      }
-      // Inline processors need their card element mounted, which is checkout's
-      // job — adding a card mid-account is routed through the same flow rather
-      // than building a second card form that would drift from it.
-      window.location.href = `/checkout/save-card?setup=${encodeURIComponent(session.setupRef)}${
-        session.clientSecret ? `&secret=${encodeURIComponent(session.clientSecret)}` : ''
-      }`;
-    } catch {
-      setError('Could not start adding a card. Please try again.');
-      setBusy(false);
-    }
+    router.push(`/checkout/save-card?return=${encodeURIComponent('/account/payment-methods')}`);
   }
 
   async function remove(card: SavedCard) {
@@ -208,7 +195,7 @@ export default function PaymentMethodsPage() {
 
       {canSave ? (
         <div>
-          <Button color="primary" loading={busy} onClick={() => void addCard()}>
+          <Button color="primary" loading={busy} onClick={addCard}>
             Add a card
           </Button>
         </div>

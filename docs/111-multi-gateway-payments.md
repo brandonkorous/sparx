@@ -1,8 +1,8 @@
 # sparx Platform — Multi-Gateway Payments (bring-your-own + custom)
 
-**Version:** 1.0
+**Version:** 1.2
 **Author:** Brandon Korous
-**Last Updated:** 2026-06-27
+**Last Updated:** 2026-08-05
 
 > Extends [94-ADR-payment-gateway.md](94-ADR-payment-gateway.md). 94 defined the vendor-agnostic
 > `PaymentGateway` abstraction, the registry, `PaymentService`, the credential seam, and the first two
@@ -141,6 +141,59 @@ Authorize.net sandbox, 1stPay test center): connect → hosted-pay → webhook �
 code ships first (deploy-early); lighting up a specific vendor is a per-vendor go-live, not a blocker for
 the framework. `CHANNELS_TOKEN_KEY` (already provisioned for channels/market) is the envelope key — no new
 secret to mint for the credential box.
+
+### 4.1 The vault strand (added 2026-08-04, revised 2026-08-05 — docs/142)
+
+Recurring billing added a second thing to exercise: **charging a card the shopper is not present for.**
+It is a separate checklist because it fails in ways the checkout strand cannot — a hosted-pay run proves
+nothing about whether a stored card can be charged six weeks later.
+
+> **Revised 2026-08-05.** Square and Authorize.net briefly declared `storedMethods: false` on the
+> grounds that no sandbox account existed here to exercise them. That was the wrong call, and
+> inconsistent: the Stripe vault was never held to it either. These APIs are thoroughly documented,
+> and reading the documentation is how the rest of this platform was built. Doing that properly found
+> **four real defects** that no amount of "waiting for a sandbox" would have surfaced, because the
+> code had never been checked against the contract at all:
+>
+> | Defect                                                                                                           | Consequence                                                                                                           |
+> | ---------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
+> | Square `CreateCard` sent no `cardholder_name` (a REQUIRED field)                                                 | Every Square vault would have been rejected outright                                                                  |
+> | Square `customer_initiated` sent at the top level instead of inside `customer_details`                           | Silently ignored — the issuer saw each scheduled renewal as a stranger keying in a card number                        |
+> | Authorize.net sent `subsequentAuthInformation.reason: 'resubmission'` with an **empty** `originalNetworkTransId` | Claimed each renewal was a retry of a decline, and broke the stored-credential chain the networks check               |
+> | Authorize.net response code **11** (duplicate transaction) was on the permanently-dead list                      | Revoked a working card whenever a charge was submitted twice — usually when our own idempotency had just done its job |
+>
+> All four are fixed, all four are pinned by tests, and every vault-capable gateway now declares
+> `storedMethods: true`. **PayPal was also built** (Payment Method Tokens v3 + merchant-initiated
+> Orders v2) rather than left `coming_soon`.
+
+The checklist below is what a sandbox still adds: proof the vendor ACCEPTS what we send. Run it per
+gateway before a tenant on that gateway sells a subscription.
+
+1. **Vault a card.** Mount the vendor's browser SDK (Square Web Payments with `application_id` +
+   `location_id`; Authorize.net Accept.js with `api_login_id` + `public_client_key`), take the one-time
+   token it returns, and POST it to `/v1/public/commerce/account/payment-methods/complete`. Confirm a
+   `commerce_customer_payment_methods` row lands with a real brand/last4/expiry.
+2. **Charge it off-session.** Run `runSubscriptionTick` against a subscription due now. Confirm the
+   renewal order is paid, `payment_intents` carries the charge, and `order.paid` published.
+3. **Confirm the off-session FLAG reached the issuer.** Square `customer_initiated: false`,
+   Authorize.net `processingOptions.isSubsequentAuth`. This is the field that keeps merchant-initiated
+   decline rates sane; the wire test proves sparx SENDS it, only the sandbox proves the vendor took it.
+4. **Fail it deliberately.** Use the vendor's expired-card / declined test card and confirm the failure
+   maps to the right side of `methodDead` — a permanent decline must skip the dunning ladder, a
+   transient one must not.
+5. **Delete the card at the vendor**, then charge again. Confirm sparx reports the method dead rather
+   than retrying it for a fortnight.
+6. For Authorize.net specifically, confirm the **chain**: the first charge must return a
+   `networkTransId`, it must land in `commerce_customer_payment_methods.network_trans_id`, and the
+   SECOND charge must quote it back as `originalNetworkTransId`. This is the part a single test charge
+   cannot show — it only appears on the second renewal.
+
+**1stPayGateway is the one genuine unknown.** It advertises a vault ("secure digital vault", tokenized
+card-on-file, recurring billing), but its REST endpoint reference sits behind the merchant support
+portal and is not publicly readable — so unlike Square, Authorize.net and PayPal there is no published
+contract to build against. It stays `storedMethods: false` for that reason and no other: not a judgement
+about the vendor, just an absence of documentation. Obtain portal access, then it is an adapter like any
+other.
 
 ---
 
