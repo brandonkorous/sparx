@@ -47,6 +47,28 @@ export function toMetricRow(metrics: SocialPostMetrics): {
   };
 }
 
+/**
+ * Which live destination should stand in for one whose row is gone?
+ *
+ * Reconnecting an account mints a NEW target row with a new id, so a post published
+ * before the reconnect points at an id that no longer resolves. The post's `externalId`
+ * is the platform's own post id and stays valid — all that is missing is a token for the
+ * account that owns it.
+ *
+ * Name first, because that is the account's identity and `targetName` is captured onto
+ * the post target at publish time for exactly this reason. Sole-account second, where
+ * there is no ambiguity to get wrong. Otherwise NOTHING: attributing one Page's numbers
+ * to another Page is worse than a gap, because a gap is visibly a gap.
+ *
+ * Pure, so the choice is unit-tested without a database — same reason `toMetricRow` is.
+ */
+export function pickReconnectedTarget<T extends { name: string }>(
+  live: readonly T[],
+  targetName: string
+): T | null {
+  return live.find((c) => c.name === targetName) ?? (live.length === 1 ? (live[0] ?? null) : null);
+}
+
 export async function collectPostMetrics(
   tenantId: string,
   postId: string,
@@ -79,21 +101,64 @@ export async function collectPostMetrics(
     const platform = t.platform as SocialPlatform;
     const adapter = getSocialAdapter(platform);
     if (!adapter?.getMetrics || !t.externalId) {
-      // Platform can't report metrics yet — nothing to do for this target.
+      // Says WHICH of the two it was: "this platform cannot report numbers" is a
+      // permanent property of the adapter, while a missing externalId means the publish
+      // never recorded the platform's post id and this destination can never be read
+      // back. They want opposite responses, so they must not look alike in the log.
+      logger.info(
+        { postId, targetId: t.id, platform: t.platform },
+        !adapter?.getMetrics
+          ? 'metrics skipped: this platform has no metrics support yet'
+          : 'metrics skipped: destination has no external post id recorded'
+      );
       skipped += 1;
       continue;
     }
 
     // socialTargetId is FK-less (history survives disconnect) → explicit lookup.
-    const target = await withTenant({ tenantId }, (tx) =>
+    //
+    // RECONNECTING AN ACCOUNT MINTS A NEW TARGET ROW WITH A NEW ID, so this lookup
+    // misses for every post published before the reconnect — and reconnecting is
+    // routine, not exceptional: re-authorizing after a token expiry, switching Pages,
+    // or fixing a scope all do it. The id being FK-less is what lets the post's history
+    // survive; it is not a promise that the id still resolves.
+    //
+    // Left as an id-only lookup it read as "nothing to collect" and skipped in silence,
+    // which is how a tenant's numbers stop moving with nothing broken and nothing
+    // logged. Measured on this database: 19 published destinations, 5 still resolving.
+    //
+    // So fall back to the live destination that IS the same account. The post's
+    // `externalId` is the platform's own post id and stays valid across a reconnect —
+    // all that is missing is a token for the account that owns it, which any current
+    // target on the same platform + name carries. Name is what `targetName` is FOR: it
+    // is captured on the post target at publish time precisely because the target row
+    // may not outlive the post.
+    let target = await withTenant({ tenantId }, (tx) =>
       tx.socialTarget.findFirst({
         where: { id: t.socialTargetId },
         include: { connection: { select: CONNECTION_SELECT } },
       })
     );
+    let viaReconnect = false;
     if (!target) {
-      skipped += 1;
-      continue;
+      const live = await withTenant({ tenantId }, (tx) =>
+        tx.socialTarget.findMany({
+          where: { platform: t.platform },
+          include: { connection: { select: CONNECTION_SELECT } },
+        })
+      );
+      target = pickReconnectedTarget(live, t.targetName);
+      viaReconnect = target !== null;
+      if (!target) {
+        logger.info(
+          { postId, targetId: t.id, platform: t.platform, targetName: t.targetName },
+          live.length === 0
+            ? 'metrics skipped: no connected account for this platform — reconnect it to resume numbers'
+            : 'metrics skipped: original destination is gone and more than one account matches by name'
+        );
+        skipped += 1;
+        continue;
+      }
     }
 
     let auth;
@@ -105,6 +170,13 @@ export async function collectPostMetrics(
       continue;
     }
     if (!auth) {
+      // The grant is gone or unreadable (revoked, expired past refresh, or a token this
+      // SOCIAL_TOKEN_KEY can no longer decrypt). Reconnecting is the only fix, so say so
+      // — silence here reads exactly like "this post has no numbers".
+      logger.info(
+        { postId, targetId: t.id, platform: t.platform, targetName: t.targetName },
+        'metrics skipped: account needs reconnecting — no usable access token'
+      );
       skipped += 1;
       continue;
     }
@@ -114,6 +186,12 @@ export async function collectPostMetrics(
       name: target.name,
       params: paramsFromTargetMeta(target.metadata),
     };
+    if (viaReconnect) {
+      logger.info(
+        { postId, targetId: t.id, platform: t.platform, targetName: t.targetName },
+        'metrics: original destination gone; reading through the reconnected account'
+      );
+    }
 
     try {
       const metrics = await adapter.getMetrics(auth, ref, t.externalId);

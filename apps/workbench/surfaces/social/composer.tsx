@@ -728,12 +728,8 @@ function PostMetricsSection({
             'Could not load these numbers. Try Refresh in a moment.'
           )}
         </Text>
-      ) : !hasAny ? (
-        <Text className="text-sm">
-          {collecting
-            ? 'Checking with your accounts — this takes a few seconds.'
-            : 'No numbers yet. Accounts report back on their own schedule, usually within a few hours of a post going out, and sparx keeps re-checking on its own. Refresh numbers asks now.'}
-        </Text>
+      ) : targets.length === 0 ? (
+        <Text className="text-sm">This post has no destinations.</Text>
       ) : (
         <div className="flex flex-col gap-2">
           {targets.map((target) => {
@@ -782,6 +778,21 @@ function PostMetricsSection({
               </div>
             );
           })}
+          {/* The destinations render whether or not anything has come back yet — every
+              account is listed, with a dash where a number is missing. This used to
+              collapse the whole grid to a single "no numbers yet" sentence the moment no
+              destination had a snapshot, which is the state a post is in for its first
+              hour and the state it stays in permanently whenever collection is failing.
+              Hiding the accounts hid the failure with them: there was nothing on screen
+              to be suspicious about, so metrics stopping looked identical to metrics
+              being new. A dash is a reading; an absent row is not. */}
+          {!hasAny ? (
+            <Text className="text-sm">
+              {collecting
+                ? 'Checking with your accounts — this takes a few seconds.'
+                : 'Nothing reported back yet. Accounts answer on their own schedule, usually within a few hours of a post going out, and sparx keeps re-checking. Refresh numbers asks now.'}
+            </Text>
+          ) : null}
           {missingScope ? (
             <Text className="text-sm">
               Reach and views need extra permissions from the platform.
