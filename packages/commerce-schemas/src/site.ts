@@ -8,6 +8,7 @@ import { z } from 'zod';
 import { Uuid } from '@sparx/crm-schemas';
 
 import { Channel, Currency } from './common';
+import { DunningPolicy } from './subscriptions';
 
 export const UpdateCommerceSiteSettingsInput = z.object({
   defaultCurrency: Currency,
@@ -26,6 +27,16 @@ export const UpdateCommerceSiteSettingsInput = z.object({
   showStockBelow: z.number().int().nonnegative().default(10),
   hidePricesWhenSignedOut: z.boolean().default(false),
   requireAuthForCheckout: z.boolean().default(false),
+  // What happens when a repeat order's card is declined (docs/142 §4.1). The
+  // tenant-wide default; a single subscription can override it.
+  //
+  // OPTIONAL, unlike its neighbours, and deliberately so: this patch replaces
+  // the whole settings object, and callers that predate the field (the MCP
+  // `update_commerce_site_settings` tool, any script) do not send it. Defaulted
+  // rather than optional, every one of them would silently reset a tenant's
+  // dunning policy to the schema defaults as a side effect of changing the
+  // currency. The service writes it only when it is present.
+  defaultDunningPolicy: DunningPolicy.optional(),
 });
 export type UpdateCommerceSiteSettingsInput = z.infer<typeof UpdateCommerceSiteSettingsInput>;
 

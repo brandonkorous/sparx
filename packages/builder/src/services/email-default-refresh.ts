@@ -19,6 +19,11 @@
 // fingerprint to that key's set here (never remove one) so every historical pristine
 // version stays recognised. Regenerate with the same id-stripped canonical sha256 the
 // `canon`/`bodyFingerprint` below compute.
+//
+// A BRAND-NEW template gets an explicit EMPTY set. It has only ever had one body, so
+// there is nothing to roll forward from — and its current fingerprint must NOT go in,
+// or the refresh would treat an already-current row as stale and rewrite it on every
+// pass. Empty is a decision; missing is an oversight, and the test tells them apart.
 
 import { createHash } from 'node:crypto';
 import type { SilicaEmailDocument } from '@sparx/builder-schemas';
@@ -198,6 +203,20 @@ export const PRIOR_DEFAULT_BODY_FINGERPRINTS: Record<string, ReadonlySet<string>
     '215265b902cace174300b7d3b585c14b2eefde9056ed40f114fd87a9e4be2476',
     'f476ab97f48041ac8b64592b87f9849190951997e641d9f3c041a3e193156833',
   ]),
+
+  // ── Shipped new; no prior design yet (docs/142) ────────────────────────────
+  // An EXPLICIT empty set, not an omission. These two templates have only ever
+  // had one body — the current one — so there is nothing to roll a pristine row
+  // forward FROM. The set cannot contain the current fingerprint either: that
+  // would make the refresh recognise an already-current row as stale and
+  // "re-design" it on every pass, forever.
+  //
+  // Listing them empty rather than leaving them out is what keeps the checklist
+  // honest — absent means someone forgot, empty means someone decided. Both keys
+  // get their first entry the day either body is redesigned, following the
+  // add-the-OUTGOING-body rule above.
+  'subscription-authentication-required': new Set(),
+  'subscription-invoice': new Set(),
 };
 
 /** Is this stored body still an untouched prior shipped default for `key`? A null

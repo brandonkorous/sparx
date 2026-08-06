@@ -33,17 +33,25 @@ import { useDirtySource } from '../../lib/workbench/dirty';
 import type { SurfaceContext } from '../../lib/surfaces/registry';
 import {
   CURRENCY_OPTIONS,
+  describeDunningPolicy,
+  FINAL_OUTCOME_OPTIONS,
   LOCALE_OPTIONS,
+  matchRetryPreset,
+  RETRY_PRESETS,
   settingsErrorMessage,
   useCommerceSettings,
   useUpdateCommerceSettings,
   type CommerceSettings,
+  type DunningPolicy,
 } from './commerce-settings-data';
 
 const COLUMN = 'mx-auto flex w-full max-w-3xl flex-col gap-4';
 
 const ABANDON_MIN = 15;
 const ABANDON_MAX = 60 * 24 * 30;
+
+const ATTEMPTS_MIN = 1;
+const ATTEMPTS_MAX = 10;
 
 interface Draft {
   defaultCurrency: string;
@@ -52,6 +60,7 @@ interface Draft {
   showStockBelow: number;
   hidePricesWhenSignedOut: boolean;
   requireAuthForCheckout: boolean;
+  dunning: DunningPolicy;
 }
 
 function toDraft(settings: CommerceSettings): Draft {
@@ -62,7 +71,14 @@ function toDraft(settings: CommerceSettings): Draft {
     showStockBelow: settings.showStockBelow,
     hidePricesWhenSignedOut: settings.hidePricesWhenSignedOut,
     requireAuthForCheckout: settings.requireAuthForCheckout,
+    dunning: settings.defaultDunningPolicy,
   };
+}
+
+/** Compared as JSON because the policy is a nested object with an array in it —
+ *  a field-by-field diff here would be four more lines to forget to update. */
+function samePolicy(a: DunningPolicy, b: DunningPolicy): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
 }
 
 export function CommerceSettingsSurface({ ctx }: { ctx: SurfaceContext }) {
@@ -137,7 +153,8 @@ function SettingsForm({ settings }: { settings: CommerceSettings }) {
     draft.cartAbandonmentMinutes !== saved.cartAbandonmentMinutes ||
     draft.showStockBelow !== saved.showStockBelow ||
     draft.hidePricesWhenSignedOut !== saved.hidePricesWhenSignedOut ||
-    draft.requireAuthForCheckout !== saved.requireAuthForCheckout;
+    draft.requireAuthForCheckout !== saved.requireAuthForCheckout ||
+    !samePolicy(draft.dunning, saved.dunning);
 
   useDirtySource(dirty, 'Your selling settings have unsaved changes. Close anyway?');
 
@@ -159,6 +176,10 @@ function SettingsForm({ settings }: { settings: CommerceSettings }) {
         showStockBelow: Math.max(0, draft.showStockBelow),
         hidePricesWhenSignedOut: draft.hidePricesWhenSignedOut,
         requireAuthForCheckout: draft.requireAuthForCheckout,
+        defaultDunningPolicy: {
+          ...draft.dunning,
+          maxAttempts: Math.min(ATTEMPTS_MAX, Math.max(ATTEMPTS_MIN, draft.dunning.maxAttempts)),
+        },
       },
       {
         onSuccess: () => {
@@ -341,8 +362,189 @@ function SettingsForm({ settings }: { settings: CommerceSettings }) {
               </FieldDescription>
             </Field>
           </FormSection>
+
+          <FailedPaymentsSection
+            policy={draft.dunning}
+            onChange={(next) => {
+              set('dunning', next);
+            }}
+          />
         </div>
       </div>
     </div>
+  );
+}
+
+/**
+ * What happens when a repeat order's card is declined (docs/142 §4.1).
+ *
+ * This is the only screen in the app where a shop owner decides how to treat a
+ * customer whose card stopped working, and the wrong answer is expensive in both
+ * directions: give up too fast and a paying customer is gone over an expired
+ * card; retry too long and you buy decline fees and irritation. So the controls
+ * are followed by the policy written out as a sentence — a schedule expressed as
+ * four separate inputs is not something anyone can read back.
+ *
+ * The retry schedule is stored as an array of hours because that is what the
+ * billing engine indexes. It is EDITED as a named choice, because "24, 72, 168,
+ * 336" is not a decision anybody makes.
+ */
+function FailedPaymentsSection({
+  policy,
+  onChange,
+}: {
+  policy: DunningPolicy;
+  onChange: (next: DunningPolicy) => void;
+}) {
+  const preset = matchRetryPreset(policy.retryDelaysHours);
+  const presetItems = Object.fromEntries(RETRY_PRESETS.map((p) => [p.value, p.label]));
+  // A schedule set through the API that matches no preset is shown as its own
+  // option rather than snapped to the nearest one — it was chosen deliberately,
+  // and silently rewriting it on the next save would be the same class of bug as
+  // a patch schema fabricating defaults.
+  const items =
+    preset === 'custom'
+      ? { custom: 'Custom schedule (set through the API)', ...presetItems }
+      : presetItems;
+
+  return (
+    <FormSection
+      title="When a repeat payment fails"
+      description="Cards expire and get replaced — this is what happens when one stops working. It applies to every repeat order in your business, on all of your sites."
+    >
+      <Field>
+        <FieldLabel>How many times to try the card</FieldLabel>
+        <FieldControl
+          render={
+            <NumberField
+              label="Number of attempts"
+              className="max-w-[10rem]"
+              min={ATTEMPTS_MIN}
+              max={ATTEMPTS_MAX}
+              value={policy.maxAttempts}
+              onValueChange={(next) => {
+                onChange({
+                  ...policy,
+                  maxAttempts:
+                    typeof next === 'number' && !Number.isNaN(next) ? next : ATTEMPTS_MIN,
+                });
+              }}
+            />
+          }
+        />
+        <FieldDescription>
+          Including the first one. Most declines are temporary, so trying again usually works.
+        </FieldDescription>
+      </Field>
+
+      <Field>
+        <FieldLabel>How long to wait between tries</FieldLabel>
+        <FieldControl
+          render={
+            <div className="max-w-sm">
+              <Select
+                color="module"
+                aria-label="How long to wait between tries"
+                value={preset}
+                items={items}
+                onValueChange={(next) => {
+                  const chosen = RETRY_PRESETS.find((p) => p.value === next);
+                  if (!chosen) return;
+                  onChange({ ...policy, retryDelaysHours: chosen.hours });
+                }}
+              />
+            </div>
+          }
+        />
+        <FieldDescription>
+          Spacing the tries out gives the customer time to notice and fix their card.
+        </FieldDescription>
+      </Field>
+
+      <Field>
+        <FieldLabel>When all the tries are used up</FieldLabel>
+        <FieldControl
+          render={
+            <div className="max-w-sm">
+              <Select
+                color="module"
+                aria-label="When all the tries are used up"
+                value={policy.finalOutcome}
+                items={Object.fromEntries(FINAL_OUTCOME_OPTIONS.map((o) => [o.value, o.label]))}
+                onValueChange={(next) => {
+                  onChange({
+                    ...policy,
+                    finalOutcome: String(next) as DunningPolicy['finalOutcome'],
+                  });
+                }}
+              />
+            </div>
+          }
+        />
+        <FieldDescription>
+          Pausing is the usual choice — the order picks straight back up when the customer saves a
+          new card.
+        </FieldDescription>
+      </Field>
+
+      {policy.finalOutcome === 'cancel' ? (
+        // The one genuinely irreversible option on this screen. A paused order
+        // resumes itself; a cancelled one has to be sold again.
+        <Alert color="warning" variant="soft">
+          <AlertContent>
+            <AlertTitle>Cancelling ends the customer relationship</AlertTitle>
+            <AlertDescription>
+              A cancelled repeat order can&rsquo;t be restarted by the customer — they have to place
+              a new one, and most won&rsquo;t. An expired card is usually worth pausing over, not
+              cancelling.
+            </AlertDescription>
+          </AlertContent>
+        </Alert>
+      ) : null}
+
+      <Field>
+        <FieldLabel>Email the customer the first time a payment fails</FieldLabel>
+        <FieldControl
+          render={
+            <Switch
+              color="module"
+              checked={policy.notifyCustomerOnFirstFailure}
+              onCheckedChange={(next: boolean) => {
+                onChange({ ...policy, notifyCustomerOnFirstFailure: next });
+              }}
+            />
+          }
+        />
+        <FieldDescription>
+          Only the first failure is emailed — the tries in between are silent, so nobody gets four
+          emails about one card.
+        </FieldDescription>
+      </Field>
+
+      <Field>
+        <FieldLabel>Email the customer when the tries run out</FieldLabel>
+        <FieldControl
+          render={
+            <Switch
+              color="module"
+              checked={policy.notifyCustomerOnFinalFailure}
+              onCheckedChange={(next: boolean) => {
+                onChange({ ...policy, notifyCustomerOnFinalFailure: next });
+              }}
+            />
+          }
+        />
+        <FieldDescription>
+          Turning this off means the customer is never told their repeat order stopped.
+        </FieldDescription>
+      </Field>
+
+      <Alert color="info" variant="soft">
+        <AlertContent>
+          <AlertTitle>What this means in practice</AlertTitle>
+          <AlertDescription>{describeDunningPolicy(policy)}</AlertDescription>
+        </AlertContent>
+      </Alert>
+    </FormSection>
   );
 }

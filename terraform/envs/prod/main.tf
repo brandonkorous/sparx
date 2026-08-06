@@ -391,6 +391,14 @@ module "pubsub" {
     "subscription.resumed"        = []
     "subscription.cancelled"      = []
     "subscription.payment_failed" = []
+    # The two collection outcomes that are NOT failures (docs/142 §8, §5.3): a
+    # renewal billed by invoice rather than charged, and one where the issuer
+    # wants the cardholder to authenticate. Each dispatches its own tenant-authored
+    # email via a system automation, so a missing topic here means the customer is
+    # never told — silently, because publishes to an unprovisioned topic do not
+    # raise.
+    "subscription.authentication_required" = []
+    "subscription.invoiced"                = []
 
     # B2B — quotes, approval workflow, AR, account standing
     "b2b.quote.submitted"        = []

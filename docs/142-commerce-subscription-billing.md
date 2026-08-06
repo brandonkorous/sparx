@@ -1,8 +1,19 @@
 # sparx Platform — Commerce Subscription Billing (recurring charges for a tenant's customers)
 
-**Version:** 1.1
+**Version:** 1.3
 **Author:** Brandon Korous
-**Last Updated:** 2026-08-04
+**Last Updated:** 2026-08-05
+
+> **v1.3 — the vaults are built, not deferred.** v1.2 closed §12.4 by declaring Square and
+> Authorize.net `storedMethods: false` because no sandbox existed to prove them. That was the wrong
+> call: these vendors publish complete API references, and checking the adapters against them found
+> **four real defects** (docs/111 §4.1) that a sandbox wait would never have surfaced. All three
+> bring-your-own vaults now claim the capability, **PayPal is built** rather than `coming_soon`, and
+> the card networks' stored-credential chain has a home in the schema (§4.2).
+
+> **v1.2 — the §12 follow-ups are closed.** The dunning-policy editor, the `/checkout/save-card`
+> route, and the Square/Authorize.net vault decision all landed; §12 records what was done and, in
+> two of the three cases, why the answer differs from what that section originally proposed.
 
 > **Built 2026-08-04.** All six slices in §10 are implemented. Three things in v1.0 turned out to be
 > wrong once the code was written, and are corrected below rather than left to mislead:
@@ -242,6 +253,35 @@ export const DunningPolicy = z.object({
 });
 ```
 
+### 4.2 The stored-credential chain
+
+A merchant-initiated charge must reference the transaction that **established** the mandate. The
+networks enforce it: `originalNetworkTransId` is required outright for Discover, Diners Club, JCB and
+China UnionPay, for Visa on every recurring MIT, and inside the EEA for Mastercard. Without it the
+issuer sees a routine renewal as an unmandated charge on a card nobody is holding, and soft-declines a
+card that is perfectly good.
+
+Stripe and PayPal keep that chain internally. **Authorize.net makes the merchant carry it**, which is
+why `commerce_customer_payment_methods` gained two columns (migration
+`20270205000000_stored_credential_chain`):
+
+```prisma
+networkTransId     String? @map("network_trans_id") @db.VarChar(64)
+originalAuthAmount Int?    @map("original_auth_amount")
+```
+
+The mechanic is self-healing and needs no backfill:
+
+- A method with **no** chain yet ⇒ this charge IS the establishing one. Authorize.net gets
+  `processingOptions: { isFirstRecurringPayment: true }` and no `subsequentAuthInformation`; PayPal gets
+  `usage: 'FIRST'`.
+- The response carries a `networkTransId`, which `recordCredentialChain` writes **once** — never
+  overwritten, because the link the networks check is to the establishing transaction, not the most
+  recent one.
+- Every later renewal sends `isSubsequentAuth` plus that id and the original amount.
+
+Every card vaulted before this existed simply has a null chain, so its next renewal establishes one.
+
 Resolution order is subscription override → tenant default → schema defaults, in
 `subscriptionBilling.resolveDunningPolicy`. A malformed blob on one subscription degrades to the
 defaults rather than throwing — one bad JSON value must not be able to stop every renewal in a tenant.
@@ -251,6 +291,29 @@ paused subscription resumes the moment the customer updates their card; a cancel
 re-sold. Cancelling a paying customer because their card expired is a self-inflicted churn wound, so
 it is opt-in. Only the first and final failures email the customer, so a bank having a bad week does
 not produce four identical messages.
+
+**Where the tenant default lives, and why it is not per-site.** The column sits on
+`commerce_site_settings`, which is one row per (tenant, property) — but a `Subscription` has no
+`property_id`, so "the tenant default" cannot be resolved per site. It is read from, and written to,
+the **primary** site's row (`commerceSiteService.readTenantDunningPolicy`, called by both the settings
+editor and `resolveDunningPolicy`). This was an unordered `findFirst` when first written: on a tenant
+with more than one site it returned whichever row Postgres felt like, so a policy set in the UI
+applied or did not depending on the query plan. One function now, so the reader and the writer cannot
+name different rows.
+
+**The editor** is a section of Commerce → Selling settings ("When a repeat payment fails"), not a
+separate panel — it is the same row and the same PATCH, and a second writer of one whole-object patch
+is how fields get clobbered. The retry schedule is stored as an array of hours because that is what
+the engine indexes, and edited as a **named schedule** because `[24, 72, 168, 336]` is not a decision
+a shop owner makes. A schedule set through the API that matches no preset is shown as "Custom" and
+left alone. The section ends with the policy written out as a sentence
+(`describeDunningPolicy`) — four controls do not read back as a policy.
+
+`defaultDunningPolicy` is **optional** on `UpdateCommerceSiteSettingsInput`, unlike every other field
+on that whole-replace patch. Defaulted instead, every caller that predates it (the MCP
+`update_commerce_site_settings` tool, any script) would silently reset a tenant's policy as a side
+effect of changing the currency. `packages/commerce-schemas/src/site.test.ts` pins that — the generic
+`patch-semantics.test.ts` guard cannot, because this schema is on its exemption list.
 
 ---
 
@@ -276,10 +339,10 @@ Per-gateway, with §2 D8's order in mind:
 | --------------- | --------------- | ------------------------------------------------------ |
 | `sparx_pay`     | `true`          | Stripe Connect — SetupIntent on the connected account  |
 | `stripe_direct` | `true`          | Stripe — SetupIntent on the tenant's own account       |
-| `square`        | `true`          | Square Cards API — slice 5                             |
-| `authorize_net` | `true`          | Authorize.net CIM — slice 5                            |
-| `first_pay`     | `false`         | Vault support unconfirmed; invoice mode until verified |
-| `paypal`        | `false`         | Adapter unwritten (`coming_soon` today)                |
+| `square`        | `true`          | Square Cards API + `customer_details` on CreatePayment |
+| `authorize_net` | `true`          | Authorize.net CIM + Card-On-File (§5.4)                |
+| `paypal`        | `true`          | Payment Method Tokens v3 + merchant-initiated Orders   |
+| `first_pay`     | `false`         | REST endpoint docs are portal-only — docs/111 §4.1     |
 | `custom`        | `false`         | Generic hosted redirect — no vault seam                |
 | `manual`        | `false`         | No processor at all                                    |
 
@@ -461,7 +524,9 @@ Each slice is independently shippable and leaves the platform working.
 4. **The tick and the charge.** The internal route, the CronJob, the charge inside `processOccurrence`,
    the dunning ladder, invoice mode. **This is the slice where subscriptions start collecting money** —
    card for Stripe-family tenants, invoice for everyone else.
-5. **Square + Authorize.net.** `storedMethods: true` for the two remaining vault-capable gateways.
+5. **Square + Authorize.net.** The adapters, then `storedMethods: true` for the two remaining
+   vault-capable gateways. **The adapters shipped; the flag did not** — it cannot be earned from this
+   environment, only from a sandbox run (docs/111 §4.1). See §12.4.
 6. **Customer-facing.** Checkout vaulting, account card management, the three email templates, the
    workbench additions.
 
@@ -483,29 +548,50 @@ Each slice is independently shippable and leaves the platform working.
 
 ## 12. Open questions
 
-1. **A UI for the tenant dunning policy.** Answered halfway: the column
-   (`commerce_site_settings.default_dunning_policy`) and the schema both already existed and are now
-   read, so a tenant's policy is honoured the moment a value lands there. What does not exist is a
-   screen to set it — today it would take an API call. Worth a small Finance → Payments panel, but it
-   is not blocking: the defaults are deliberate and safe.
-2. **1stPayGateway vault.** Listed `false` because their card-on-file support is unverified, not because
-   it is known absent. Worth confirming against their API docs before slice 5 — if it exists, it is a
-   cheap addition.
+Items 1, 4 and 5 were closed on 2026-08-04 and are kept here with what was actually done, because in
+two of the three cases the answer was not the one this section proposed.
+
+1. ~~**A UI for the tenant dunning policy.**~~ **Done** — a "When a repeat payment fails" section on
+   Commerce → Selling settings, not the Finance → Payments panel this originally suggested. Same row,
+   same PATCH, so a second whole-object writer never exists. Building it surfaced a real bug: the
+   tenant default was read with an unordered `findFirst`, which on a multi-site tenant returns an
+   arbitrary row. Reader and writer now share one function. See §4.1.
+
+2. **1stPayGateway vault. Still open, and now for a precise reason.** 1stPay advertises a vault —
+   "secure digital vault", tokenized card-on-file, recurring billing — but its REST endpoint reference
+   is behind the merchant support portal and is not publicly readable. Unlike Square, Authorize.net and
+   PayPal there is no published contract to build against, so `storedMethods` stays `false`: an
+   absence of documentation, not a judgement about the vendor. Get portal access and it is an adapter
+   like any other.
+
 3. **Trial handling.** Resolved by construction: `findDueOccurrences` already selects `trialing` rows,
    and `processOccurrence` already flips status to `active` on the first renewal. A trial's first
    charge therefore runs down the ordinary path. Still worth exercising against a real trial
    subscription before the first tenant sells one.
 
-4. **Square and Authorize.net vaulting is UNEXERCISED.** Both adapters are written against the
-   documented Cards API / CIM shapes and both typecheck, but neither has been run against a sandbox —
-   the credentials do not exist in this environment. They are `storedMethods: true` in the catalog,
-   which means a Square tenant's subscriptions will attempt a card charge rather than falling back to
-   invoicing. **Run the sandbox exercise in docs/111 §4 before a tenant on either gateway sells a
-   subscription**, or flip those two to `false` until it is done — invoice mode is a working fallback,
-   a broken vault is not.
+4. ~~**Square and Authorize.net vaulting is UNEXERCISED.**~~ **Both are `storedMethods: true`, and so
+   is PayPal.** This item was first closed by switching the capability OFF, on the grounds that no
+   sandbox account existed to prove the adapters worked. That was wrong twice over: the Stripe vault
+   was never held to the same bar, and these vendors publish complete API references — reading them is
+   how the rest of this platform was built.
 
-5. **The inline "add a card" route.** The storefront account page routes inline gateways to
-   `/checkout/save-card?setup=…`, deliberately reusing checkout's card element rather than building a
-   second one that would drift from it. That route does not exist yet — redirect-style gateways work
-   today, Stripe-family card-adding from the account page needs it. Adding a card _at checkout_ is
-   unaffected.
+   Doing that properly (2026-08-05) found **four defects a sandbox wait would never have surfaced**,
+   because the code had never been compared to the contract: a missing REQUIRED `cardholder_name` on
+   Square's CreateCard, Square's off-session flag sent at the wrong nesting level and therefore
+   ignored, an Authorize.net `reason` that mislabelled every renewal as a decline-retry alongside an
+   empty `originalNetworkTransId`, and a duplicate-transaction code that revoked working cards. The
+   full table is in docs/111 §4.1; the stored-credential chain that came out of it is §4.2 above.
+
+   `packages/payments/src/vault-wire.test.ts` pins all of it — 72 assertions traced to documented
+   requirements rather than to the implementation, and verified by mutation (reverting the Square
+   nesting bug fails the test that names it). **A sandbox run is still worth doing** for what only it
+   can prove — that the vendor accepts what we send — and the checklist is docs/111 §4.1.
+
+5. ~~**The inline "add a card" route.**~~ **Built** — `apps/site/app/checkout/save-card/`. It does not
+   take the `?setup=…&secret=…` handoff this item described: that would have put a client secret in
+   the browser's history and left two files knowing how to branch inline-vs-hosted. The page opens its
+   own setup session instead, and the account page's "Add a card" is now a plain navigation that knows
+   nothing about gateways. It handles the 3-D Secure return leg (Stripe appends `setup_intent` +
+   `redirect_status` and the page finishes the save), and checkout's Stripe.js loader moved to
+   `apps/site/lib/stripe-loader.ts` so both card surfaces share one cache rather than loading Stripe
+   twice per session.

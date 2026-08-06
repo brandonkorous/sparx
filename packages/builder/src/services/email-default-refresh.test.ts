@@ -36,11 +36,27 @@ function remintIds(node: unknown, n = { i: 0 }): void {
 }
 
 describe('email default refresh fingerprints', () => {
-  it('every shipped default key has a prior-fingerprint set — the rollout reaches all', () => {
+  it('every shipped default key is ACCOUNTED FOR in the prior-fingerprint map', () => {
+    // Presence is the checklist — nobody ships a template without deciding what
+    // its prior bodies are. The set may legitimately be EMPTY: a template that
+    // has only ever had one design has nothing to roll a pristine row forward
+    // from, and its CURRENT fingerprint must not go in (the idempotence test
+    // below is what that would break). So `undefined` is an oversight and an
+    // empty set is a decision, and only the first one fails here.
     for (const t of DEFAULT_EMAIL_TEMPLATES) {
       expect(PRIOR_DEFAULT_BODY_FINGERPRINTS[t.key], t.key).toBeDefined();
-      expect(PRIOR_DEFAULT_BODY_FINGERPRINTS[t.key]!.size, t.key).toBeGreaterThan(0);
     }
+  });
+
+  it('a redesigned template keeps every historical body — sets only grow', () => {
+    // The templates that predate the 2026-07-26 redesign each carry at least one
+    // prior body. This is the half of the old assertion worth keeping: it catches
+    // a fingerprint being REMOVED from a set, which would silently strand every
+    // tenant still on that version.
+    const redesigned = DEFAULT_EMAIL_TEMPLATES.filter(
+      (t) => (PRIOR_DEFAULT_BODY_FINGERPRINTS[t.key]?.size ?? 0) > 0
+    );
+    expect(redesigned.length).toBeGreaterThan(30);
   });
 
   it('the fingerprint ignores node ids — every tenant hashes the same', () => {

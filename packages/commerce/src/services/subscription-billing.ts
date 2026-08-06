@@ -19,6 +19,7 @@ import type { Order, Prisma, Subscription } from '@sparx/db';
 
 import type { ServiceContext } from '../errors';
 import { publishCommerceEvent } from '../events';
+import * as commerceSiteService from './site-commerce-service';
 import * as paymentMethodService from './payment-method-service';
 import * as subscriptionService from './subscription-service';
 
@@ -58,10 +59,14 @@ export async function resolveDunningPolicy(
   if (sub.dunningPolicy && Object.keys(sub.dunningPolicy).length > 0) {
     return parseDunningPolicy(sub.dunningPolicy);
   }
-  const settings = await withTenant(ctx, (tx) =>
-    tx.commerceSiteSettings.findFirst({ select: { defaultDunningPolicy: true } })
+  // Deliberately the PRIMARY site's row, via the same function the settings
+  // editor writes through. It used to be an unordered `findFirst`, which on a
+  // tenant with more than one site returned an arbitrary row — so a policy set
+  // in the UI would apply or not depending on which site Postgres handed back.
+  const stored = await withTenant(ctx, (tx) =>
+    commerceSiteService.readTenantDunningPolicy(tx, ctx.tenantId)
   );
-  return parseDunningPolicy(settings?.defaultDunningPolicy);
+  return parseDunningPolicy(stored);
 }
 
 /* ── Results ──────────────────────────────────────────────────────────────── */
@@ -187,6 +192,18 @@ async function collectForOrder(
       // HTTP call, different across real retry attempts.
       idempotencyKey: `sub_${subscriptionId}_${order.id}_${String(attemptNumber)}`,
       metadata: { commerceSubscriptionId: subscriptionId },
+      // The stored-credential chain (docs/142 §5.4). A merchant-initiated
+      // charge has to name the transaction that established the mandate, or the
+      // issuer treats a routine renewal as an unmandated charge and soft-declines
+      // it. A method with no chain yet IS the establishing charge — which is
+      // also, conveniently, exactly the state every card vaulted before this
+      // existed is in, so the next renewal repairs it.
+      ...(method.networkTransId
+        ? { networkTransId: method.networkTransId }
+        : { isFirstCharge: true }),
+      ...(method.originalAuthAmount !== null
+        ? { originalAuthAmount: method.originalAuthAmount }
+        : {}),
     });
   } catch (err) {
     // The tenant's gateway cannot vault (they switched processors after this
@@ -202,6 +219,15 @@ async function collectForOrder(
   if (result.status === 'succeeded') {
     await markOrderSettled(ctx, order, amountCents, result.paymentRef ?? 'stored_method');
     await paymentMethodService.markUsed(ctx, method.id);
+    // Anchor the chain the first time a charge establishes one. `record` is a
+    // no-op once set — the networks check the link back to the ESTABLISHING
+    // transaction, so overwriting it with the latest charge would break it.
+    if (result.networkTransId) {
+      await paymentMethodService.recordCredentialChain(ctx, method.id, {
+        networkTransId: result.networkTransId,
+        originalAuthAmount: amountCents,
+      });
+    }
     await subscriptionService.recordDunningAttempt(ctx, {
       subscriptionId,
       paymentRef: result.paymentRef ?? '',

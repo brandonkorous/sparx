@@ -11,6 +11,7 @@
 // property_id is app-tier scoping within the tenant.
 
 import {
+  DunningPolicy,
   UpdateCommerceSiteSettingsInput,
   UpdateCommerceSiteThemeInput,
 } from '@sparx/commerce-schemas';
@@ -28,6 +29,10 @@ export interface CommerceSiteSettings {
   showStockBelow: number;
   hidePricesWhenSignedOut: boolean;
   requireAuthForCheckout: boolean;
+  /** What happens when a repeat order's card is declined (docs/142 §4.1).
+   *  Always resolved — a row storing `{}` reads back as the schema defaults, so
+   *  the editor never has to render an empty policy. */
+  defaultDunningPolicy: DunningPolicy;
 }
 
 const DEFAULTS: CommerceSiteSettings = {
@@ -39,6 +44,7 @@ const DEFAULTS: CommerceSiteSettings = {
   showStockBelow: 10,
   hidePricesWhenSignedOut: false,
   requireAuthForCheckout: false,
+  defaultDunningPolicy: DunningPolicy.parse({}),
 };
 
 // The raw settings row returned by Prisma (the subset every reader needs).
@@ -77,7 +83,11 @@ export async function getSettings(
 ): Promise<CommerceSiteSettings> {
   return withTenant(ctx, async (tx) => {
     const row = await resolveSettingsRow(tx, ctx.tenantId, propertyId);
-    if (!row) return DEFAULTS;
+    // Read from the same place the write lands (see updateSettings): the
+    // tenant's ONE dunning policy, on the primary site's row. Every other field
+    // here is genuinely per-site and comes from `row`.
+    const dunning = parseDunningPolicy(await readTenantDunningPolicy(tx, ctx.tenantId));
+    if (!row) return { ...DEFAULTS, defaultDunningPolicy: dunning };
     return {
       defaultCurrency: row.defaultCurrency,
       defaultLocale: row.defaultLocale,
@@ -89,8 +99,41 @@ export async function getSettings(
       showStockBelow: row.showStockBelow,
       hidePricesWhenSignedOut: row.hidePricesWhenSignedOut,
       requireAuthForCheckout: row.requireAuthForCheckout,
+      defaultDunningPolicy: dunning,
     };
   });
+}
+
+/**
+ * The tenant's single dunning policy, from the PRIMARY site's settings row.
+ *
+ * Exported because `subscription-billing.resolveDunningPolicy` needs the exact
+ * same row: a policy that the editor writes and the collector never finds is
+ * the failure mode this whole document exists to correct (docs/142 §0). One
+ * function, so the two cannot drift.
+ *
+ * Returns whatever is stored — parsing is the caller's, since both callers
+ * already own a `parseDunningPolicy`.
+ */
+export async function readTenantDunningPolicy(tx: TxClient, tenantId: string): Promise<unknown> {
+  const primary = await tx.property.findFirst({
+    where: { tenantId, isPrimary: true },
+    select: { id: true },
+  });
+  if (!primary) return null;
+  const row = await tx.commerceSiteSettings.findUnique({
+    where: { tenantId_propertyId: { tenantId, propertyId: primary.id } },
+    select: { defaultDunningPolicy: true },
+  });
+  return row?.defaultDunningPolicy ?? null;
+}
+
+/** A stored policy, degrading to the schema defaults rather than throwing. A
+ *  stored `{}` (the column default) and a malformed blob both read back as the
+ *  defaults — this is a display path and must not throw on one bad row. */
+function parseDunningPolicy(raw: unknown): DunningPolicy {
+  const parsed = DunningPolicy.safeParse(raw ?? {});
+  return parsed.success ? parsed.data : DunningPolicy.parse({});
 }
 
 export async function updateSettings(
@@ -130,6 +173,34 @@ export async function updateSettings(
         requireAuthForCheckout: input.requireAuthForCheckout,
       },
     });
+
+    // The dunning policy is TENANT-wide, not per-site, so it is written to the
+    // primary site's row regardless of which site is being edited — that is the
+    // row `resolveDunningPolicy` reads, because a Subscription has no
+    // property_id to scope it by. Storing it alongside the per-site settings is
+    // an accident of which table had a JSON column free; letting it be written
+    // per-site would mean a tenant setting a policy on their second site and
+    // watching it never apply.
+    //
+    // Absent means the caller does not know about dunning (the MCP tool, an
+    // older script) — leave whatever is there rather than resetting it.
+    if (input.defaultDunningPolicy) {
+      const primary = await tx.property.findFirst({
+        where: { tenantId: ctx.tenantId, isPrimary: true },
+        select: { id: true },
+      });
+      if (primary) {
+        await tx.commerceSiteSettings.upsert({
+          where: { tenantId_propertyId: { tenantId: ctx.tenantId, propertyId: primary.id } },
+          create: {
+            tenantId: ctx.tenantId,
+            propertyId: primary.id,
+            defaultDunningPolicy: input.defaultDunningPolicy,
+          },
+          update: { defaultDunningPolicy: input.defaultDunningPolicy },
+        });
+      }
+    }
 
     await writeAuditLog({
       tx,
