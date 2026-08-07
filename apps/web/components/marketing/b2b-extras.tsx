@@ -78,7 +78,7 @@ interface EngineCol {
 export function B2bSameEngine() {
   const cols: EngineCol[] = [
     {
-      title: 'Your storefront',
+      title: 'Your site',
       body: 'List price, public catalog, card and wallet checkout — the orders you take from anyone who lands on the site.',
       points: [
         'List pricing, open catalog, guest checkout.',

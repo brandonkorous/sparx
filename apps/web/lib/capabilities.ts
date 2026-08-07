@@ -493,7 +493,7 @@ export const CAPABILITY_AREAS: CapabilityArea[] = [
       live('Per-site brand override'),
       live('Per-site orders & memberships'),
       planned('Per-site module scope'),
-      planned('Per-site storefront settings'),
+      planned('Per-site commerce settings'),
     ],
   },
   {

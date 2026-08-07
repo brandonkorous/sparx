@@ -102,7 +102,7 @@ export const TOOLS: ToolMeta[] = [
     icon: QrCode,
     ladder: {
       headline: 'Codes that go somewhere worth selling.',
-      body: 'Print a QR on a shelf tag, a menu, or a flyer and point it at a real storefront. sparx Commerce puts products, cart, checkout, and live inventory behind every scan — D2C or B2B, on one bill.',
+      body: 'Print a QR on a shelf tag, a menu, or a flyer and point it at a real site. sparx Commerce puts products, cart, checkout, and live inventory behind every scan — D2C or B2B, on one bill.',
       cta: 'Explore Commerce',
     },
   },
@@ -381,7 +381,7 @@ export const TOOLS: ToolMeta[] = [
     icon: Barcode,
     ladder: {
       headline: 'A barcode is only useful if something tracks it.',
-      body: 'Printing a label is the easy part. sparx Commerce tracks the inventory behind it — variants, bundles, reservations, and low-stock alerts, real-time across storefront, manual orders, and your AI.',
+      body: 'Printing a label is the easy part. sparx Commerce tracks the inventory behind it — variants, bundles, reservations, and low-stock alerts, real-time across your site, manual orders, and your AI.',
       cta: 'Explore Commerce',
     },
   },

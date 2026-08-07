@@ -157,7 +157,7 @@ export function CommerceCheckout() {
       <div data-theme="dark" className="bg-base-100 mt-13 rounded-3xl p-6 sm:p-10">
         <div className="mkt-frame-grid">
           {/* Back to LIGHT for the frame itself. A checkout mockup has to look
-              like a real storefront, and inside the dark scope `bg-base-100`
+              like a real site, and inside the dark scope `bg-base-100`
               resolves to near-black. The radius is on the themed div because a
               `data-theme` scope PAINTS its own base surface — left square it
               wraps the frame's own corners in a hard-edged white rectangle. */}

@@ -41,7 +41,7 @@ export const PREVIEW_THEME_GROUPS: PreviewThemeGroup[] = [
 
 /** Every (key, light tokens, dark color-delta) the CSS emits — Ember base + the presets.
  *  `resolveSparxTheme` gives the flat ship-ready tokens (light) + the dark color delta,
- *  exactly what the storefront adopts. */
+ *  exactly what the live site adopts. */
 function themeBags(): {
   key: string;
   light: Record<string, string>;

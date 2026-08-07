@@ -1,9 +1,9 @@
 // Platform (marketing-site) cookie-consent contract.
 //
-// The storefront has its own tenant-scoped consent system (apps/site/lib/consent.ts
+// The site has its own tenant-scoped consent system (apps/site/lib/consent.ts
 // + a ConsentRecord table FK'd to a tenant). The marketing site has no tenant, so
 // this is a deliberately lighter, CLIENT-ONLY variant: the `sparx_consent_state`
-// cookie IS the record. It shares the storefront's cookie name + JSON shape so the
+// cookie IS the record. It shares the site's cookie name + JSON shape so the
 // value is consistent across sparx-owned properties, and the cookie is scoped to
 // `.sparx.works` (prod) so app.sparx.works sees the same decision the attribution
 // capture reads (docs/80 §5.5, docs/42 §4.4).

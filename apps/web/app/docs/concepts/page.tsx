@@ -103,7 +103,7 @@ export default function ConceptsPage() {
               <td>
                 <code>commerce</code>
               </td>
-              <td>Catalog, variants, cart, checkout, and the storefront.</td>
+              <td>Catalog, variants, cart, checkout, and the live site.</td>
             </tr>
             <tr>
               <td>
@@ -267,7 +267,7 @@ export default function ConceptsPage() {
               <td>
                 <code>&lt;tenant&gt;.sparx.zone</code>
               </td>
-              <td>Tenant storefronts (and custom domains).</td>
+              <td>Tenant sites (and custom domains).</td>
             </tr>
             <tr>
               <td>

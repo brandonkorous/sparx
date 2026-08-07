@@ -5,7 +5,7 @@
 //
 // HOW IT'S SCOPED. The theme's token bag is projected to a stylesheet scoped to THIS
 // preview's `.tp-<slug>` class (via @sparx/site-themes' `buildSilicaThemeCssFromTheme`,
-// the same projection the storefront uses), so many differently-themed previews sit on
+// the same projection the live site uses), so many differently-themed previews sit on
 // one page with no `:root` collision. Emitted as a `<style>` block, never an inline
 // `style` prop (subtree theming via a stylesheet is the sanctioned pattern).
 //

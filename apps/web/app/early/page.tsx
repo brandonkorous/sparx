@@ -6,7 +6,7 @@ import { EarlyAccessForm } from './early-access-form';
 export const metadata: Metadata = {
   title: 'Early access — sparx',
   description:
-    'sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B, and AI in one platform. Join the early-access list and we’ll bring you in.',
+    'sparx is the modular OS for content and commerce — sites, CRM, CMS, email, B2B, and AI in one platform. Join the early-access list and we’ll bring you in.',
   alternates: { canonical: '/early' },
   openGraph: {
     title: 'Get early access to sparx',
@@ -36,9 +36,9 @@ export default function EarlyAccessPage() {
           </Display>
 
           <p className="m-0 max-w-[560px] text-lg">
-            sparx is the modular OS for content and commerce — storefront, CRM, CMS, email, B2B, and
-            AI in one platform that builds your site and keeps it. We&rsquo;re opening it up
-            gradually. Join the list and we&rsquo;ll bring you in.
+            sparx is the modular OS for content and commerce — sites, CRM, CMS, email, B2B, and AI
+            in one platform that builds your site and keeps it. We&rsquo;re opening it up gradually.
+            Join the list and we&rsquo;ll bring you in.
           </p>
 
           <ul className="m-0 flex list-none flex-col gap-3.5 p-0">

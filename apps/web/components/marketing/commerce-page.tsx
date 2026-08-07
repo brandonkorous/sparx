@@ -101,9 +101,9 @@ const COMMERCE_FAQ: FaqItem[] = [
   },
   {
     id: 'commerce-headless',
-    question: 'Do I need a storefront, or can I run Commerce headless?',
+    question: 'Do I need a website, or can I run Commerce headless?',
     answer:
-      'Either. Run Commerce entirely through the REST API and the MCP server against your own frontend, or switch on Builder for a hosted storefront on your own domain. It is the same order data and the same checkout either way.',
+      'Either. Run Commerce entirely through the REST API and the MCP server against your own frontend, or switch on Builder for a hosted site on your own domain. It is the same order data and the same checkout either way.',
   },
   {
     id: 'commerce-payments',
@@ -133,7 +133,7 @@ function CommerceHero() {
   // to the audience the platform is actually for. Every claim below is the same
   // claim, said in words an owner would use themselves.
   const lede =
-    'Everything you need to sell: your products and what you have in stock, a checkout people actually finish, card payments through Stripe, and the day-to-day work after the order — picking, shipping, refunds. Build your own storefront on top of it, or turn on Builder and get one.';
+    'Everything you need to sell: your products and what you have in stock, a checkout people actually finish, card payments through Stripe, and the day-to-day work after the order — picking, shipping, refunds. Build your own site on top of it, or turn on Builder and get one.';
   // Four claims, four hues — each the color of the thing it names, so the row
   // reads as four different promises instead of four copies of one. They were
   // four identical lowercase mono pills each led by the same orange dot.
@@ -674,8 +674,8 @@ function HeadlessOrHosted() {
       ],
     },
     {
-      title: 'Get a hosted storefront',
-      body: 'Pair Commerce with Builder and the storefront renders for you — product pages, collections, cart, and the converting checkout — on your custom domain, SSL and CDN handled.',
+      title: 'Get a hosted site',
+      body: 'Pair Commerce with Builder and the site renders for you — product pages, collections, cart, and the converting checkout — on your custom domain, SSL and CDN handled.',
       points: [
         'Product, collection, cart, and account pages out of the box.',
         'Full-text product search with filters and sort.',
@@ -692,7 +692,7 @@ function HeadlessOrHosted() {
     <Section padding="lg">
       <SectionHeader
         headline="Headless, hosted, or both"
-        lede="Commerce is the engine, not the front end. Drive it entirely through the API and MCP, or switch on Builder and get a hosted storefront on your own domain — same data either way."
+        lede="Commerce is the engine, not the front end. Drive it entirely through the API and MCP, or switch on Builder and get a hosted site on your own domain — same data either way."
       />
       {/* A FORK, drawn as one. Two detached cards side by side is the same
           bordered-box object as every other section, and it reads as "here are

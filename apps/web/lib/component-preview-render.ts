@@ -8,7 +8,7 @@
 // keys (`title`/`price`/`image`/…). Rendered with NO host, a bound `<img>` loses its
 // `src` (the engine defers it to a resolution that never runs) and a `repeat` shows a
 // single template row — so a preview would have broken images and empty grids. This
-// host feeds the SAME shape the storefront's resolver does (`@sparx/builder-schemas`
+// host feeds the SAME shape the site's resolver does (`@sparx/builder-schemas`
 // `createSilicaResolver`), but over a fixed set of neutral SAMPLE records, so every
 // section renders populated + truthful with zero tenant data. Images resolve to a
 // neutral static placeholder tile (see SAMPLE_IMAGE — a component preview must not imply
@@ -169,7 +169,7 @@ const POSTS = [
   },
 ];
 
-/** The fixed sample data root. Mirrors the storefront resolver root (`silica-data.ts`)
+/** The fixed sample data root. Mirrors the live site resolver root (`silica-data.ts`)
  *  minus the fetches: every commerce product source is populated (so a grid/rail/
  *  carousel fills), the single `product` object scopes a buy box (collection-of-one),
  *  and `cms.blog_post` fills a journal strip. */

@@ -17,7 +17,7 @@ import { specialty } from '../directory/_components/specialties';
 /**
  * The accent is the partner's FIRST specialty's module hue, not a blanket Ember
  * — the same rule the directory cards follow, where someone who builds
- * storefronts is orange and someone who does CRM is cyan. Falls back to the
+ * sites is orange and someone who does CRM is cyan. Falls back to the
  * brand primary when the specialty has no module behind it (`migration`), or
  * when none is listed.
  */

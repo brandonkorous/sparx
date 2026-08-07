@@ -62,8 +62,8 @@ export function ToolUpsell({ tool }: { tool: ToolMeta }) {
 
         <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-4">
           <p className="text-md m-0 max-w-[560px] font-sans">
-            {shortLabel} is one module on the sparx platform — activate it alongside storefront,
-            CRM, CMS, email, and B2B on one data layer and one bill. Only pay for what you run.
+            {shortLabel} is one module on the sparx platform — activate it alongside sites, CRM,
+            CMS, email, and B2B on one data layer and one bill. Only pay for what you run.
           </p>
           <div className="flex flex-wrap gap-2.5">
             <a

@@ -75,7 +75,7 @@ const SHAPES: { module: MarketingModule; name: string; blurb: string; runs: stri
     module: 'builder',
     name: 'You run several businesses',
     blurb:
-      'More than one storefront, brand or client site, each with its own name, look, domain and content — managed from one place and billed on one invoice, without a separate account per site.',
+      'More than one site, brand or client, each with its own name, look, domain and content — managed from one place and billed on one invoice, without a separate account per site.',
     runs: ['Builder', 'CMS', 'multiple sites'],
   },
   {

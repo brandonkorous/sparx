@@ -35,7 +35,7 @@ const MANIFEST_SKELETON = `const manifest = {
   key: 'retail-store-blog',          // stable id, lowercase-with-hyphens
   version: '0.1.0',                  // semver
   name: 'Retail Store + Blog',       // shown on the card
-  summary: 'A clean DTC storefront with a small catalog and a journal…',
+  summary: 'A clean DTC site with a small catalog and a journal…',
   vertical: 'retail',                // retail | b2b | content | services
   preview: '/blueprint-previews/retail-store-blog.png',
   requiresModules: ['builder', 'commerce', 'cms', 'email'],
@@ -930,8 +930,9 @@ export default function BuildingATemplatePage() {
             guide.)
           </li>
           <li>
-            <strong>Say “Site,” not “Storefront”</strong> in any user-facing copy. (Code identifiers
-            can keep “storefront.”)
+            <strong>Say “Site,” not “Storefront”</strong> in any user-facing copy. (The one
+            exception is the sales-channel value <InlineCode>storefront</InlineCode>, which is a
+            stored enum and stays as it is.)
           </li>
           <li>
             <strong>Product options come before variants.</strong> Define the option lattice, then

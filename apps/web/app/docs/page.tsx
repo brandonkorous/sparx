@@ -63,7 +63,7 @@ export default function DocsIndexPage() {
         <p>A few platform commitments shape every page in these docs:</p>
         <ul>
           <li>
-            <strong>API-first.</strong> The dashboard, the storefront, and AI agents are all
+            <strong>API-first.</strong> The dashboard, the live site, and AI agents are all
             consumers of the same REST + GraphQL surface. Anything the UI can do, your code can do.
           </li>
           <li>

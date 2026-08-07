@@ -75,7 +75,7 @@ export function EarlyAccessForm() {
             <Textarea
               name="building"
               rows={4}
-              placeholder="A storefront, a content site, a CRM, a bit of everything…"
+              placeholder="A shop, a content site, a CRM, a bit of everything…"
               maxLength={2000}
             />
           }

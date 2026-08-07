@@ -4,7 +4,7 @@
 // module integration"). A secondary action beneath the signup CTA: it opens the
 // live-chat panel pointed at the publisher's tenant, tagging the conversation
 // `source: 'sparx_market'` so the tenant sees the lead originated in the
-// marketplace rather than on their own storefront.
+// marketplace rather than on their own site.
 //
 // The widget is mounted launcher-less and controlled — the marketing site has no
 // floating bubble; this button is the sole entry point. It mounts on render so

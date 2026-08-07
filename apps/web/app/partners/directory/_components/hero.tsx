@@ -38,7 +38,7 @@ export function DirectoryHero({
     },
     {
       v: String(specialtyCount),
-      s: 'kinds of work covered, from storefronts to migrations.',
+      s: 'kinds of work covered, from sites to migrations.',
     },
     {
       v: '$0',

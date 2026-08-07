@@ -117,7 +117,7 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
     title: 'sparx Commerce — Sell, ship, get paid.',
     description:
       'Products, inventory, a checkout that converts, Stripe payments, and order operations at real volume. The transactional core of sparx — headless or hosted.',
-    lede: 'Products and inventory, a checkout that converts, Stripe payments, tax and carrier rates wired in. D2C and B2B from the same engine. Run it headless on the API or pair it with Builder for a hosted storefront.',
+    lede: 'Products and inventory, a checkout that converts, Stripe payments, tax and carrier rates wired in. D2C and B2B from the same engine. Run it headless on the API or pair it with Builder for a hosted site.',
     features: [
       {
         number: '01',
@@ -155,7 +155,7 @@ export const MODULES: Record<ModulePageSlug, ModuleMeta> = {
       period: '/mo',
       modifier: '',
       bundleNote:
-        'A flat $49/mo with Invoicing and Inventory bundled in free. Pair it with Builder for a hosted storefront or run it headless against the API — one toggle on one bill, off the moment you stop selling. The only payment fee is 0.5% on sparx Pay; bring your own card processor and there is none.',
+        'A flat $49/mo with Invoicing and Inventory bundled in free. Pair it with Builder for a hosted site or run it headless against the API — one toggle on one bill, off the moment you stop selling. The only payment fee is 0.5% on sparx Pay; bring your own card processor and there is none.',
     },
   },
   cms: {

@@ -150,8 +150,8 @@ export default function QuickstartPage() {
 
       <DocSection id="overview" title="Overview">
         <p>
-          sparx is API-first: the dashboard, the storefront, and AI agents over MCP are all
-          consumers of the same REST and GraphQL surface. An integration touches three things — an
+          sparx is API-first: the dashboard, the live site, and AI agents over MCP are all consumers
+          of the same REST and GraphQL surface. An integration touches three things — an
           authenticated <strong>client</strong> (your API key), a <strong>resource</strong> you read
           or write, and the <strong>events</strong> sparx emits in response.
         </p>

@@ -31,7 +31,7 @@ export interface ExampleProduct {
   /** formatted USD line total, e.g. '$432.00'. */
   price: string;
   /**
-   * Product thumbnail for the storefront MOCKUPS — the `/commerce` order
+   * Product thumbnail for the live site MOCKUPS — the `/commerce` order
    * receipt and the checkout summary in the annotated checkout frame. Fills the
    * slot that used to be a grey `bg-base-300` square, which is what made those
    * frames read as wireframes rather than shops.
@@ -333,7 +333,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         { module: 'email', label: 'Opened “Spring restock” email' },
         { module: 'crm', label: 'In segment: high-value, loyal' },
         { module: 'ai', label: 'Asked the AI for a reorder quote' },
-        { module: 'builder', label: 'Logged in to the storefront' },
+        { module: 'builder', label: 'Logged in to the live site' },
       ],
     },
     email: {
@@ -566,7 +566,7 @@ export const EXAMPLE_BUSINESSES: ExampleBusiness[] = [
         { module: 'email', label: 'Opened “New collars dropped” email' },
         { module: 'crm', label: 'In segment: new, growing' },
         { module: 'ai', label: 'Asked the AI to recommend a size' },
-        { module: 'builder', label: 'Created a storefront account' },
+        { module: 'builder', label: 'Created a site account' },
       ],
     },
     email: {
