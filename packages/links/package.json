@@ -1,0 +1,31 @@
+{
+  "name": "@sparx/links",
+  "version": "0.0.0",
+  "private": true,
+  "description": "The one address table. Maps a readable path to a workbench surface and back, so emails, notifications, universal search and the address bar all agree on where a thing lives. Pure data with zero dependencies — importable from a Node service, an edge route, or the browser bundle.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./src/index.ts"
+    },
+    "./server": {
+      "types": "./src/server.ts",
+      "default": "./src/server.ts"
+    }
+  },
+  "files": [
+    "src"
+  ],
+  "scripts": {
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --passWithNoTests",
+    "clean": "rm -rf .turbo dist *.tsbuildinfo"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.7"
+  }
+}
