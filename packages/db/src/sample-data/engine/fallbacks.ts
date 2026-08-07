@@ -19,6 +19,7 @@ import type {
   SampleLot,
   SamplePersona,
   SampleProduct,
+  SampleRecordType,
   SampleScheduling,
   SampleService,
   SampleStockLevel,
@@ -193,6 +194,123 @@ export function defaultB2bPersona(): SamplePersona {
   };
 }
 
+// ── Record types ────────────────────────────────────────────────────────────
+
+/**
+ * The extra details a business tracks on its records (docs/144 §3), for a pack
+ * that authored none.
+ *
+ * Every business keeps something the software did not ask for — a nickname, a
+ * renewal month, who introduced them. The registry's whole point is that they can
+ * write it down, and a demo tenant where that section is empty teaches nobody
+ * that the section exists. So the fallback declares a small, universally-true set
+ * rather than nothing: three details on a customer, one on a company, one on a
+ * deal, all of them things a real business genuinely does keep.
+ *
+ * Deliberately SMALL. A wall of invented fields would read as clutter someone has
+ * to clean up, which is the opposite of the point.
+ */
+export function defaultRecordTypes(): SampleRecordType[] {
+  return [
+    {
+      objectKey: 'contact',
+      properties: [
+        {
+          key: 'howTheyFoundUs',
+          label: 'How they found us',
+          type: 'enum',
+          helpText: 'Worth asking once — it is the only way to know what is working.',
+          options: [
+            { value: 'word_of_mouth', label: 'Someone told them' },
+            { value: 'search', label: 'Found us searching' },
+            { value: 'social', label: 'Social media' },
+            { value: 'event', label: 'Met us at an event' },
+            { value: 'returning', label: 'They came back' },
+          ],
+        },
+        {
+          key: 'preferredName',
+          label: 'What they like to be called',
+          type: 'text',
+          helpText: 'Use this instead of their first name when it is different.',
+        },
+        {
+          key: 'lastReviewedOn',
+          label: 'Last reviewed on',
+          type: 'date',
+          helpText: 'When someone last checked in on this relationship.',
+        },
+      ],
+    },
+    {
+      objectKey: 'company',
+      properties: [
+        {
+          key: 'renewalMonth',
+          label: 'Renewal month',
+          type: 'enum',
+          helpText: 'The month their agreement comes up, so nothing lapses unnoticed.',
+          options: [
+            { value: '01', label: 'January' },
+            { value: '02', label: 'February' },
+            { value: '03', label: 'March' },
+            { value: '04', label: 'April' },
+            { value: '05', label: 'May' },
+            { value: '06', label: 'June' },
+            { value: '07', label: 'July' },
+            { value: '08', label: 'August' },
+            { value: '09', label: 'September' },
+            { value: '10', label: 'October' },
+            { value: '11', label: 'November' },
+            { value: '12', label: 'December' },
+          ],
+        },
+      ],
+    },
+    {
+      objectKey: 'deal',
+      properties: [
+        {
+          key: 'whoElseTheyAreTalkingTo',
+          label: 'Who else they are talking to',
+          type: 'text',
+          helpText: 'Who you are up against. Blank means you do not know yet.',
+        },
+      ],
+    },
+  ];
+}
+
+/** The `how they found us` options, in the order the fallback declares them —
+ *  used to give each persona a different, plausible answer. */
+const FOUND_US = ['word_of_mouth', 'search', 'social', 'event', 'returning'] as const;
+
+/**
+ * Fill in the fallback's contact properties on every persona that has none.
+ *
+ * Spread deterministically rather than randomly: the same pack always produces
+ * the same demo tenant, which is what makes a screenshot in the docs still true
+ * next month. A persona that authored its own values is left exactly as written.
+ */
+export function withDefaultPersonaProperties(
+  personas: SamplePersona[],
+  now: number
+): SamplePersona[] {
+  return personas.map((persona, index) => {
+    if (persona.properties) return persona;
+    // A spread of "last reviewed" dates across the past few months, so the
+    // column looks like a real one that people update at different times.
+    const reviewed = new Date(now - (11 + index * 23) * 86_400_000);
+    return {
+      ...persona,
+      properties: {
+        howTheyFoundUs: FOUND_US[index % FOUND_US.length],
+        lastReviewedOn: reviewed.toISOString().slice(0, 10),
+      },
+    };
+  });
+}
+
 // ── Inventory ─────────────────────────────────────────────────────────────
 
 /** A default stock location for a goods tenant that enabled inventory but authored
@@ -308,9 +426,19 @@ export function defaultLots(pack: SampleDataPack): SampleLot[] {
  */
 export function withFallbacks(
   pack: SampleDataPack,
-  isOn: (module: string) => boolean
+  isOn: (module: string) => boolean,
+  now: number = Date.now()
 ): SampleDataPack {
   let next = pack;
+
+  // Record types — the extra details this business tracks (docs/144 §3). Both
+  // halves are needed together: the schema is what the property panel renders,
+  // and the persona values are what stops every one of those fields being blank
+  // on a tenant that was just told sample data had loaded.
+  if (isOn('crm')) {
+    if (!pack.recordTypes?.length) next = { ...next, recordTypes: defaultRecordTypes() };
+    next = { ...next, personas: withDefaultPersonaProperties(next.personas, now) };
+  }
 
   // Scheduling — a universal appointment set (the common gap: only vertical packs
   // where booking is the whole business authored one).

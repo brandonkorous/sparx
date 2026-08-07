@@ -136,6 +136,15 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A everyday crewneck cut from 6.5oz combed ring-spun cotton with a clean, structured shoulder and a ribbed collar that holds its shape wash after wash. Pre-shrunk and garment-washed so the fit you buy is the fit you keep.</p><p>Mid-weight enough to wear on its own and trim enough to layer under a jacket. We cut it slightly longer in the body so it stays tucked or wears untucked without riding up.</p>',
       productType: 'T-Shirts',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          '6.5oz combed ring-spun cotton with a structured shoulder seam and a double-needle ribbed collar that holds its shape. Pre-shrunk and garment-washed, so it arrives at its final dimensions.',
+        fit: 'A classic straight cut — not slim, not oversized — with a slightly longer body so it sits clean tucked or untucked. Take your normal size; size down for a trim fit.',
+        care: 'Machine wash cold with like colors and tumble dry low. Wash inside out to keep the collar crisp; no bleach, no fabric softener.',
+        materials: [{ name: 'Combed ring-spun cotton', percent: '100%' }],
+        origin: 'Portugal',
+      },
       vendor: 'Northloom',
       tags: ['tee', 'crewneck', 'cotton', 'everyday'],
       seoTitle: 'Heritage Crewneck Tee — Combed Ring-Spun Cotton',
@@ -282,6 +291,18 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A 14oz brushed-back fleece hoodie with a dense, structured hood, a kangaroo pocket deep enough to actually use, and ribbed cuffs that stay put. The kind of weight that feels like a layer, not a t-shirt with a hood.</p><p>Pre-washed for minimal shrinkage and finished with a flat-locked seam at the shoulder so it lies clean under a jacket. Drawcord is a chunky flat lace, not the thin round string that frays.</p>',
       productType: 'Hoodies',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          '14oz brushed-back fleece with a dense, structured hood, flat-locked shoulder seams, and ribbed cuffs and hem. Pre-washed to minimize shrinkage, finished with a flat chunky drawcord.',
+        fit: 'A true-to-size regular fit with room to layer a tee underneath. The dense fleece feels close at first and relaxes a wear or two in.',
+        care: 'Machine wash cold inside out and tumble dry low. Avoid high heat so the brushed interior stays soft and the fit stays true.',
+        materials: [
+          { name: 'Cotton', percent: '80%' },
+          { name: 'Polyester', percent: '20%' },
+        ],
+        origin: 'Pakistan',
+      },
       vendor: 'Northloom',
       tags: ['hoodie', 'fleece', 'heavyweight', 'layering'],
       seoTitle: 'Heavyweight Fleece Hoodie — 14oz Brushed-Back',
@@ -411,6 +432,15 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A 13.5oz raw selvedge denim cut with a mid-rise, a clean seat, and a gentle taper from the knee down. Woven on a vintage shuttle loom, so you get the tight, self-finished edge and the slow, personal fade that only raw denim gives you.</p><p>Sold rigid and unwashed — they will mold to you over the first few weeks. Cotton button fly, copper rivets, and a leather patch that breaks in with the rest of the jean.</p>',
       productType: 'Jeans',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          '13.5oz raw selvedge denim woven on a vintage shuttle loom for a tight, self-finished edge. Sanforized to keep shrinkage minimal, with a cotton button fly, copper rivets, and a leather patch that breaks in with the jean.',
+        fit: 'A mid-rise with a clean seat and a gentle taper from the knee down — slim but still cut for boots. Take your true waist; they stretch about a half size with wear, then settle after a wash.',
+        care: 'Wear them raw as long as you can, then wash sparingly: turn inside out, wash cold and alone on a gentle cycle, and hang dry. Skip the dryer to preserve the fades.',
+        materials: [{ name: 'Cotton denim', percent: '100%' }],
+        origin: 'Japan',
+      },
       vendor: 'Forge & Field',
       tags: ['jeans', 'denim', 'selvedge', 'raw', 'tapered'],
       seoTitle: 'Tapered Selvedge Jeans — 13.5oz Raw Denim',
@@ -525,6 +555,15 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A classic trucker cut in 12oz washed denim, broken in at the factory so it is soft on day one. Pointed flap chest pockets, a tapered waist with side adjusters, and a shorter body that layers cleanly over a hoodie or a tee.</p><p>Antiqued copper hardware and chain-stitched hems give it the worn-in look without the wait. Roomy enough through the shoulders to actually move in.</p>',
       productType: 'Jackets',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          '12oz washed denim, broken in at the factory so it is soft on day one. Pointed flap chest pockets, a tapered waist with button side-adjusters, antiqued copper hardware, and chain-stitched hems.',
+        fit: 'A classic trucker cut — slightly boxy through the body with roomy shoulders, so it layers cleanly over a hoodie. Take your normal size; size up if you plan to layer heavily.',
+        care: 'Machine wash cold with like colors and hang or tumble dry low. Wash sparingly to protect the wash and the copper hardware.',
+        materials: [{ name: 'Cotton denim', percent: '100%' }],
+        origin: 'Mexico',
+      },
       vendor: 'Forge & Field',
       tags: ['jacket', 'denim', 'trucker', 'outerwear'],
       seoTitle: 'Trucker Denim Jacket — 12oz Washed Denim',
@@ -625,6 +664,15 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A breezy camp-collar shirt in 100% European-flax linen, garment-washed for a soft, lived-in hand and a gentle crinkle that never looks sloppy. An open collar, a boxy cut, and a single chest pocket make it the easiest thing to throw on when it is hot.</p><p>Linen breathes and dries fast, so it is built for travel and humidity. Wears open over a tee or buttoned on its own.</p>',
       productType: 'Shirts',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          '100% European-flax linen, garment-washed for a soft, lived-in hand and a gentle crinkle. An open camp collar, a boxy body, and a single chest pocket, finished with fine buttonholes.',
+        fit: 'A relaxed, boxy cut meant to wear open over a tee or buttoned on its own. Not a fitted shirt — take your normal size for the intended drape, or size down for a trimmer look.',
+        care: 'Machine wash cold on gentle and hang dry; press or steam if you want it crisp. The crinkle is part of the linen, and a few home washes only make it softer.',
+        materials: [{ name: 'European flax linen', percent: '100%' }],
+        origin: 'Portugal',
+      },
       vendor: 'Atlas Standard',
       tags: ['shirt', 'linen', 'camp collar', 'summer'],
       seoTitle: 'Washed Linen Camp Shirt — 100% European Flax',
@@ -736,6 +784,15 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A fine-gauge ribbed beanie knit from 100% extra-fine merino wool — warm without the itch, with a folded cuff you can wear short or slouched. Merino regulates temperature and resists odor, so it works from a frosty commute to a cool campfire.</p><p>Holds its shape without sagging and packs flat into a jacket pocket. One size, with enough stretch to fit most comfortably.</p>',
       productType: 'Hats',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          'Fine-gauge rib knit in 100% extra-fine merino wool with a folded cuff. Merino regulates temperature and resists odor, and the tight rib holds its shape without sagging.',
+        fit: 'One size with a folded cuff you can wear short or slouched. The rib stretches to fit most head sizes comfortably.',
+        care: 'Hand-wash cold or use a wool cycle, then reshape and lay flat to dry. Keep it out of the dryer so the merino holds its shape.',
+        materials: [{ name: 'Extra-fine merino wool', percent: '100%' }],
+        origin: 'Scotland',
+      },
       vendor: 'Atlas Standard',
       tags: ['beanie', 'merino', 'wool', 'winter', 'accessory'],
       seoTitle: 'Ribbed Merino Beanie — Extra-Fine Wool',
@@ -832,6 +889,19 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A clean low-top sneaker in heavyweight cotton canvas on a vulcanized rubber sole. Minimal branding, a cushioned cotton-twill lining, and a removable molded insole for all-day comfort without the chunky look.</p><p>The vulcanized construction bonds the upper to the sole for flexibility and a low, classic profile that goes with jeans, chinos, or shorts.</p>',
       productType: 'Sneakers',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          'Heavyweight cotton-canvas upper vulcanized to a natural rubber sole, with a cushioned cotton-twill lining and a removable molded insole. Minimal branding and a low, classic profile.',
+        fit: 'A true-to-size low-top with a little give in the canvas. If you are a half size, size down for a snugger fit.',
+        care: 'Spot-clean the canvas with mild soap and a soft brush, then air dry away from direct heat. Pull the insole to air out after long wear.',
+        materials: [
+          { name: 'Cotton canvas', percent: '60%' },
+          { name: 'Natural rubber', percent: '30%' },
+          { name: 'Cotton twill lining', percent: '10%' },
+        ],
+        origin: 'Vietnam',
+      },
       vendor: 'Atlas Standard',
       tags: ['sneakers', 'canvas', 'low-top', 'footwear'],
       seoTitle: 'Low-Top Canvas Sneakers — Vulcanized Sole',
@@ -939,6 +1009,19 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A three-pair set of mid-calf crew socks in a combed-cotton blend with a terry-cushioned footbed, arch support band, and a hand-linked toe seam that never rubs. The everyday workhorse that makes any shoe more comfortable.</p><p>Reinforced heel and toe for durability, a ribbed cuff that stays up, and a breathable mesh top to keep feet cool. Sold as a matched three-pack.</p>',
       productType: 'Socks',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          'A combed-cotton blend with a terry-cushioned footbed, a knit-in arch-support band, a ribbed cuff, and a hand-linked toe seam that never rubs. Reinforced heel and toe with a breathable mesh top.',
+        fit: 'Mid-calf crew length in a stretch knit that fits most (men’s 8–12). The ribbed cuff stays up without digging in.',
+        care: 'Machine wash warm and tumble dry low. The elastane keeps its stretch best without fabric softener.',
+        materials: [
+          { name: 'Combed cotton', percent: '78%' },
+          { name: 'Polyester', percent: '18%' },
+          { name: 'Elastane', percent: '4%' },
+        ],
+        origin: 'USA',
+      },
       vendor: 'Northloom',
       tags: ['socks', 'crew', 'cotton', 'accessory', '3-pack'],
       seoTitle: 'Cushioned Crew Socks 3-Pack — Combed Cotton',
@@ -1029,6 +1112,19 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A single-breasted topcoat in a midweight Italian wool-blend melton, cut just below the knee with a clean notch lapel and a half-canvas front for structure that holds without feeling stiff. The grown-up layer that finishes any outfit.</p><p>Fully lined with a center back vent for movement, interior pockets, and horn-look buttons. Tailored through the waist with enough room to layer a blazer underneath.</p>',
       productType: 'Coats',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          'A midweight Italian wool-blend melton with a half-canvas front for structure that holds without stiffness. Single-breasted with a notch lapel, a center back vent, interior pockets, and horn-look buttons; fully lined.',
+        fit: 'Tailored through the waist with enough room to layer a blazer underneath, cut just below the knee. Take your normal jacket size; size up one to layer heavily.',
+        care: 'Dry clean only. Brush after wear, hang on a broad hanger to hold the shoulder, and steam to refresh between cleans.',
+        materials: [
+          { name: 'Wool', percent: '70%' },
+          { name: 'Polyester', percent: '25%' },
+          { name: 'Cashmere', percent: '5%' },
+        ],
+        origin: 'Italy',
+      },
       vendor: 'Forge & Field',
       tags: ['overcoat', 'wool', 'topcoat', 'outerwear', 'tailored'],
       seoTitle: 'Tailored Wool Overcoat — Italian Melton',
@@ -1131,6 +1227,15 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>A breezy midi in crisp cotton poplin with a smocked back for an adjustable fit, adjustable tie straps, and a three-tiered skirt that moves. Light, structured, and easy — the throw-on-and-go dress for warm days.</p><p>Side seam pockets, a fully lined bodice, and a hidden length that hits mid-calf on most. Machine washable and built to layer with a denim jacket when it cools off.</p>',
       productType: 'Dresses',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          'Crisp cotton poplin with a smocked stretch back, adjustable tie straps, a fully lined bodice, and a three-tiered skirt with side-seam pockets. Structured enough to hold its shape and stay opaque.',
+        fit: 'An adjustable, forgiving fit through the smocked bodice with a mid-calf length on most. Runs a touch long if you are petite; the back gives across sizes.',
+        care: 'Machine wash cold on gentle and hang to dry, then steam out creases. Poplin creases when you sit — a quick steam brings it back.',
+        materials: [{ name: 'Cotton', percent: '100%' }],
+        origin: 'India',
+      },
       vendor: 'Atlas Standard',
       tags: ['dress', 'midi', 'poplin', 'summer', 'cotton'],
       seoTitle: 'Tiered Poplin Midi Dress — Cotton',
@@ -1241,6 +1346,15 @@ export const apparelPack: SampleDataPack = {
       description:
         '<p>Our most-worn pieces in one go: the Heritage Crewneck Tee, the Tapered Selvedge Jeans, and the Trucker Denim Jacket — a complete, build-anywhere outfit at a set price. Pick your sizes and colors at checkout.</p><p>Buy the set and save versus picking the pieces individually. The easiest way to start a wardrobe that just works together.</p>',
       productType: 'Sets',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          'Three staples in one set: the 6.5oz combed-cotton Heritage Crewneck Tee, the 13.5oz raw selvedge Tapered Jeans, and the 12oz washed-denim Trucker Jacket — each made and finished to the same standard, chosen to wear together.',
+        fit: 'Pick your size and color for each piece independently at checkout. The tee runs true with a longer body, the jeans mid-rise and tapered, the jacket slightly boxy for layering.',
+        care: 'Follow each garment’s own care: machine wash the tee cold, wash the jeans sparingly and hang dry, and wash the jacket cold with like colors.',
+        materials: [{ name: 'Cotton', percent: '100%' }],
+        origin: 'Portugal, Japan & Mexico',
+      },
       vendor: 'Boutique Set',
       tags: ['set', 'bundle', 'outfit', 'capsule'],
       seoTitle: 'Everyday Outfit Set — Tee, Jeans & Jacket',

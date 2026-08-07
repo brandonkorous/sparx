@@ -41,6 +41,58 @@ export const fitnessPack: SampleDataPack = {
     { key: 'new', name: 'New', handle: 'new' },
   ],
 
+  // What a studio actually keeps about a member that the software never asks for
+  // (docs/144 §3). These four are the difference between a CRM and a spreadsheet
+  // taped to the front desk.
+  recordTypes: [
+    {
+      objectKey: 'contact',
+      properties: [
+        {
+          key: 'membershipTier',
+          label: 'Membership',
+          type: 'enum',
+          helpText: 'What they pay for each month.',
+          options: [
+            { value: 'drop_in', label: 'Drop-in only' },
+            { value: 'basic', label: 'Basic — 8 classes' },
+            { value: 'unlimited', label: 'Unlimited' },
+            { value: 'founding', label: 'Founding member' },
+          ],
+        },
+        {
+          key: 'joinedOn',
+          label: 'Member since',
+          type: 'date',
+          helpText: 'Their first day. Worth knowing on an anniversary.',
+        },
+        {
+          key: 'goal',
+          label: 'What they are working towards',
+          type: 'long_text',
+          helpText: 'In their words. Coaches read this before a session.',
+        },
+        {
+          key: 'injuriesToKnowAbout',
+          label: 'Injuries to know about',
+          type: 'long_text',
+          helpText: 'Anything a coach must not program around blind.',
+        },
+      ],
+    },
+    {
+      objectKey: 'deal',
+      properties: [
+        {
+          key: 'trialClassOn',
+          label: 'Trial class booked for',
+          type: 'date',
+          helpText: 'The session that decides whether they join.',
+        },
+      ],
+    },
+  ],
+
   personas: [
     {
       key: 'alex',
@@ -51,6 +103,11 @@ export const fitnessPack: SampleDataPack = {
       city: 'Boulder',
       region: 'CO',
       postalCode: '80302',
+      properties: {
+        membershipTier: 'unlimited',
+        joinedOn: '2024-02-19',
+        goal: 'Back to a sub-20 5k after two years off. Happy to be pushed on intervals.',
+      },
     },
     {
       key: 'jordan',
@@ -61,6 +118,13 @@ export const fitnessPack: SampleDataPack = {
       city: 'Denver',
       region: 'CO',
       postalCode: '80211',
+      properties: {
+        membershipTier: 'basic',
+        joinedOn: '2025-09-08',
+        goal: 'Strength, three mornings a week, before work. Not interested in running.',
+        injuriesToKnowAbout:
+          'Left shoulder — nothing overhead above 20kg without warming up first.',
+      },
     },
     {
       key: 'maya',
@@ -71,6 +135,11 @@ export const fitnessPack: SampleDataPack = {
       city: 'Boulder',
       region: 'CO',
       postalCode: '80302',
+      properties: {
+        membershipTier: 'founding',
+        joinedOn: '2023-06-01',
+        goal: 'Keep climbing through the winter. Grip and core, mostly.',
+      },
     },
     {
       key: 'devon',
@@ -81,6 +150,11 @@ export const fitnessPack: SampleDataPack = {
       city: 'Fort Collins',
       region: 'CO',
       postalCode: '80524',
+      properties: {
+        membershipTier: 'drop_in',
+        joinedOn: '2026-04-14',
+        goal: 'Trying it out — came in with a friend and stayed.',
+      },
     },
     {
       key: 'sofia',
@@ -91,6 +165,12 @@ export const fitnessPack: SampleDataPack = {
       city: 'Denver',
       region: 'CO',
       postalCode: '80206',
+      properties: {
+        membershipTier: 'unlimited',
+        joinedOn: '2025-01-07',
+        goal: 'First half marathon in the spring. Building base mileage now.',
+        injuriesToKnowAbout: 'Right knee, old meniscus repair. Fine running, no deep box jumps.',
+      },
     },
     {
       key: 'noah',
@@ -101,6 +181,11 @@ export const fitnessPack: SampleDataPack = {
       city: 'Louisville',
       region: 'CO',
       postalCode: '80027',
+      properties: {
+        membershipTier: 'basic',
+        joinedOn: '2025-11-22',
+        goal: 'Lose the desk-job stiffness. Mobility more than anything heavy.',
+      },
     },
   ],
 
@@ -109,6 +194,18 @@ export const fitnessPack: SampleDataPack = {
       key: 'studio-tee',
       title: 'Studio Performance Tee',
       handle: 'studio-performance-tee',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          'A lightweight, sweat-wicking poly-spandex knit with flatlock seams to kill chafe, a tag-free neck, and a quick-dry finish. Screened with the studio mark at the left chest.',
+        fit: 'An athletic-but-relaxed cut — long enough to stay put through forward folds, loose enough to breathe on the bike. True to size; size up one for a looser fit.',
+        care: 'Machine wash cold and hang or tumble dry low. Skip fabric softener so the wicking finish keeps working.',
+        materials: [
+          { name: 'Polyester', percent: '88%' },
+          { name: 'Spandex', percent: '12%' },
+        ],
+        origin: 'Vietnam',
+      },
       description:
         '<p>Our house performance tee in a lightweight, sweat-wicking blend that moves with you through every flow and sprint. Cut for an athletic-but-relaxed fit — long enough to stay put through forward folds, loose enough to breathe on the bike.</p><p>Flatlock seams to kill chafe, a tag-free neck, and a quick-dry finish that comes out of the wash ready for the next class. Screened with the studio mark on the left chest.</p>',
       productType: 'Apparel',
@@ -252,6 +349,18 @@ export const fitnessPack: SampleDataPack = {
       key: 'studio-leggings',
       title: 'High-Rise Studio Leggings',
       handle: 'high-rise-studio-leggings',
+      productTypeKey: 'apparel',
+      attributes: {
+        fabric:
+          'A brushed four-way-stretch nylon-spandex knit that stays opaque through every squat and inversion, with a wide no-dig high-rise waistband and a hidden waistband pocket.',
+        fit: 'A compressive high-rise that lands above the navel and stays there — no rolling. Single ankle-length inseam on most. True to size; size up for a relaxed compression.',
+        care: 'Machine wash cold inside out and hang dry. Avoid the dryer and fabric softener to protect the stretch and the brushed hand.',
+        materials: [
+          { name: 'Nylon', percent: '75%' },
+          { name: 'Spandex', percent: '25%' },
+        ],
+        origin: 'Vietnam',
+      },
       description:
         '<p>Buttery-soft high-rise leggings with a wide, no-dig waistband that holds through every squat, lunge, and inversion. Four-way stretch and a brushed interior keep them opaque and comfortable from warm-up to cooldown.</p><p>A hidden waistband pocket fits a key or a gel, and the squat-proof knit means you can move without a second thought. Sold in a single inseam that hits at the ankle on most.</p>',
       productType: 'Apparel',
@@ -376,6 +485,15 @@ export const fitnessPack: SampleDataPack = {
       key: 'shaker-bottle',
       title: 'Insulated Shaker Bottle (24 oz)',
       handle: 'insulated-shaker-bottle-24oz',
+      // A stainless drinkware item, not a garment — typed as Home & Objects.
+      productTypeKey: 'home_goods',
+      attributes: {
+        materials:
+          'Double-wall 18/8 stainless steel with a powder-coated exterior, a leak-proof polypropylene flip lid, and a stainless agitator ball. BPA-free throughout.',
+        dimensions: '24 oz · 3.3 in diameter × 9.5 in tall',
+        care: 'Hand-wash the lid to protect the seal; the body is top-rack dishwasher safe. Air dry with the lid open to prevent odors.',
+        origin: 'China',
+      },
       description:
         '<p>A 24 oz double-wall stainless shaker that keeps water cold for hours and mixes a clump-free shake in seconds. The stainless agitator ball does the work; the leak-proof flip lid means it can ride in your bag next to your phone without a soggy surprise.</p><p>Fits a standard cup holder, the wide mouth takes ice cubes, and the powder-coated finish shrugs off gym-bag scuffs. Carries the studio mark.</p>',
       productType: 'Gear',
@@ -464,6 +582,15 @@ export const fitnessPack: SampleDataPack = {
       key: 'resistance-bands',
       title: 'Resistance Band Set (3-Pack)',
       handle: 'resistance-band-set-3pack',
+      // Latex training gear, not a garment — typed as Home & Objects.
+      productTypeKey: 'home_goods',
+      attributes: {
+        materials:
+          'Three natural-latex loop bands — light, medium, and heavy — with a fabric-free finish that grips without rolling. Includes a mesh carry pouch.',
+        dimensions: 'Flat loops, 12 in × 2 in · light / medium / heavy',
+        care: 'Wipe clean with a damp cloth and let dry fully before storing. Keep out of direct sun and away from sharp edges to protect the latex.',
+        origin: 'Malaysia',
+      },
       description:
         '<p>A three-band set — light, medium, and heavy — that covers everything from glute activation to assisted pull-ups. Made from natural latex with a fabric-free finish that grips without rolling or snapping on the skin.</p><p>Color-coded by resistance and small enough to live in your bag, these are the most-used tool in the studio for warm-ups and at-home days. Comes with a mesh carry pouch.</p>',
       productType: 'Gear',
@@ -520,6 +647,24 @@ export const fitnessPack: SampleDataPack = {
       key: 'protein-powder',
       title: 'Whey Protein Powder (2 lb)',
       handle: 'whey-protein-powder-2lb',
+      // A consumable supplement, not a garment — typed as Food & Beverage.
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          'Whey protein isolate blend, natural and artificial flavors, sunflower lecithin, sea salt, stevia leaf extract; cocoa in the chocolate and cookies & cream flavors. 24g protein per scoop, roughly 28 servings per tub.',
+        allergens: ['milk'],
+        netWeight: '2 lb (907 g)',
+        storage:
+          'Store in a cool, dry place with the lid sealed. Do not refrigerate. Use within 45 days of opening for best flavor.',
+        nutrition: [
+          { label: 'Calories', value: '120' },
+          { label: 'Protein', value: '24 g' },
+          { label: 'Total carbohydrate', value: '3 g' },
+          { label: 'Sugars', value: '2 g' },
+          { label: 'Total fat', value: '1.5 g' },
+          { label: 'Sodium', value: '110 mg' },
+        ],
+      },
       description:
         '<p>A clean 24g-per-scoop whey isolate blend that mixes smooth and actually tastes good. No artificial dyes, no gritty aftertaste — just a recovery shake you will look forward to after class.</p><p>Roughly 28 servings per tub. Mix one scoop with 8–10 oz of water or milk; pairs perfectly with the studio shaker bottle. Choose your flavor below.</p>',
       productType: 'Supplements',
@@ -635,6 +780,15 @@ export const fitnessPack: SampleDataPack = {
       key: 'foam-roller',
       title: 'High-Density Foam Roller',
       handle: 'high-density-foam-roller',
+      // Recovery gear, not a garment — typed as Home & Objects.
+      productTypeKey: 'home_goods',
+      attributes: {
+        materials:
+          'A molded high-density EVA foam core that holds its shape under bodyweight load, with raised ridges for trigger-point release.',
+        dimensions: '24 in long × 6 in diameter',
+        care: 'Wipe down with a damp cloth and mild soap after use, then air dry. Store flat, away from prolonged heat or sun.',
+        origin: 'Taiwan',
+      },
       description:
         '<p>A 24-inch high-density foam roller that holds its shape under real bodyweight pressure — no mushy collapse after a month. The molded ridges target knots and trigger points along the IT band, calves, and upper back without being punishing.</p><p>Light enough to carry to class, firm enough to make a difference. The single best tool for the recovery day you keep skipping.</p>',
       productType: 'Gear',
@@ -683,6 +837,25 @@ export const fitnessPack: SampleDataPack = {
       key: 'starter-kit',
       title: 'New Member Starter Kit',
       handle: 'new-member-starter-kit',
+      // A multi-item welcome bundle (tee + bands + bottle), not a single garment —
+      // typed as General so the PDP renders its labeled detail sections.
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'What’s inside',
+            body: 'The Studio Performance Tee, a 3-pack of resistance bands, and a 24 oz insulated shaker bottle — the essentials for your first week of classes.',
+          },
+          {
+            label: 'Sizing',
+            body: 'Choose your tee size and color at checkout. The resistance bands and shaker bottle are one-size.',
+          },
+          {
+            label: 'Why buy the kit',
+            body: 'Bundled at a saving versus buying the three pieces separately — the simplest answer to “where do I start?”',
+          },
+        ],
+      },
       description:
         '<p>Everything a new member needs to walk in ready on day one: our Studio Performance Tee, a 3-pack of resistance bands for warm-ups, and an insulated shaker bottle to keep you hydrated. Buy the kit and save versus picking the pieces individually.</p><p>A standing welcome gift at the front desk — and the easiest "where do I start?" answer we have.</p>',
       productType: 'Kits',

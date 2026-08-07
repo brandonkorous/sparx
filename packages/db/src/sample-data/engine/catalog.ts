@@ -7,6 +7,8 @@
 // In-stock + price-range read columns are written directly (no event consumer
 // runs against a seeded/loaded tenant).
 
+import type { Prisma } from '@prisma/client';
+
 import { sampleHandle, withSampleMeta } from '../markers';
 import type { SampleDataPack, SampleProduct } from '../types';
 import type { ApplyCtx, VariantMeta } from './context';
@@ -73,6 +75,11 @@ export async function applyCatalog(ctx: ApplyCtx, pack: SampleDataPack): Promise
         description: p.description,
         status: 'active',
         productType: p.productType,
+        // Typed product type + attributes (docs/143) — authored per product in the pack, so
+        // every industry demo tenant renders real detail sections on its PDP. Packs are
+        // trusted authored data (like the migration built-in seed), so no runtime validation.
+        productTypeKey: p.productTypeKey ?? null,
+        attributes: (p.attributes ?? {}) as Prisma.InputJsonObject,
         vendor: p.vendor,
         tags: p.tags ?? [],
         fulfillmentType: p.fulfillmentType ?? 'physical',

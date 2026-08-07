@@ -136,6 +136,22 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>Active noise-cancelling true-wireless earbuds with dual-driver acoustics and adaptive transparency mode. Six microphones with a wind-reduction mesh keep your voice clear on calls, and the low-latency game mode drops audio lag to 60ms so the sound matches what is on screen.</p><p>Eight hours of playback per charge and 32 total with the pocketable case, plus USB-C and Qi wireless charging. IPX5 sweat resistance and three sizes of ear tips mean they stay put through a run or a commute.</p>',
       productType: 'Earbuds',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Drivers', value: 'Dual dynamic per bud' },
+          { label: 'Noise cancelling', value: 'Active ANC + adaptive transparency' },
+          { label: 'Battery', value: '8 hr buds / 32 hr with case' },
+          { label: 'Latency', value: '60 ms low-latency game mode' },
+          { label: 'Microphones', value: '6 with wind-reduction mesh' },
+          { label: 'Water resistance', value: 'IPX5 sweat + splash' },
+        ],
+        connectivity:
+          'Bluetooth 5.3 with multipoint — pair a laptop and phone at once and audio auto-switches to whichever starts playing. Case charges over USB-C or any Qi wireless pad.',
+        inTheBox:
+          'Pulse Pro earbuds, charging case, three ear-tip sizes (S/M/L), USB-C charging cable, quick-start guide.',
+        warranty: '1-year limited warranty covering manufacturing defects.',
+      },
       vendor: 'Soundwave',
       tags: ['earbuds', 'wireless', 'noise cancelling', 'bluetooth'],
       seoTitle: 'Pulse Pro Wireless Earbuds — ANC, 32hr Battery',
@@ -257,6 +273,22 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>A hot-swappable tenkeyless mechanical keyboard with a gasket-mounted plate and sound-dampening foam, tuned for a deep, muted typing feel right out of the box. Pre-lubed linear switches and PBT double-shot keycaps mean it sounds and feels finished — no aftermarket mods required.</p><p>Connect over 2.4GHz wireless, Bluetooth for up to three devices, or USB-C wired with full N-key rollover. Per-key RGB and onboard memory let you carry your layout and lighting between machines without software.</p>',
       productType: 'Keyboard',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Layout', value: 'Tenkeyless (87-key)' },
+          { label: 'Mount', value: 'Gasket-mounted with dampening foam' },
+          { label: 'Switches', value: 'Pre-lubed linear, hot-swap 3/5-pin' },
+          { label: 'Keycaps', value: 'PBT double-shot' },
+          { label: 'Lighting', value: 'Per-key RGB' },
+          { label: 'Rollover', value: 'Full N-key (wired)' },
+        ],
+        connectivity:
+          '2.4GHz wireless, Bluetooth for up to three devices, or USB-C wired. Onboard memory carries your layout and lighting between machines with no software. Mac/Windows toggle on the back.',
+        inTheBox:
+          'Aero TKL keyboard, USB-C cable, 2.4GHz wireless dongle, keycap + switch puller, Mac keycap set, quick-start guide.',
+        warranty: '1-year limited warranty.',
+      },
       vendor: 'Keychron Forge',
       tags: ['keyboard', 'mechanical', 'hot-swap', 'tkl', 'rgb'],
       seoTitle: 'Aero TKL Hot-Swappable Mechanical Keyboard',
@@ -337,6 +369,21 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>An 8-in-1 USB-C docking hub that turns one port into a full workstation: 4K HDMI at 60Hz, gigabit Ethernet, two USB-A 3.2 ports, a USB-C data port, SD and microSD card readers, and 100W pass-through charging so your laptop keeps powering up while it is docked.</p><p>The aluminum shell doubles as a heat sink to stay cool under load, and the captive braided cable tucks away when not in use. Plug-and-play on macOS, Windows, ChromeOS, and iPad with no drivers.</p>',
       productType: 'Adapter',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Ports', value: '8-in-1' },
+          { label: 'Video', value: '4K HDMI @ 60Hz (HDMI 2.0)' },
+          { label: 'Network', value: 'Gigabit Ethernet' },
+          { label: 'USB', value: '2× USB-A 3.2 + 1× USB-C data' },
+          { label: 'Card readers', value: 'SD + microSD' },
+          { label: 'Charging', value: '100W USB-C PD pass-through' },
+        ],
+        connectivity:
+          'Single USB-C upstream to the laptop, with a captive braided cable. Driverless plug-and-play on macOS, Windows, ChromeOS, and iPad.',
+        inTheBox: 'PortHub 8-in-1 hub with attached USB-C cable, quick-start guide.',
+        warranty: '18-month limited warranty.',
+      },
       vendor: 'Anker Nexus',
       tags: ['usb-c', 'hub', 'dock', '4k hdmi', 'ethernet'],
       seoTitle: 'PortHub 8-in-1 USB-C Hub — 4K HDMI, Ethernet, 100W PD',
@@ -401,6 +448,22 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>A 4K Ultra HD webcam with a Sony sensor, autofocus, and HDR that holds your face evenly lit even with a bright window behind you. AI auto-framing keeps you centered as you move, and the dual noise-cancelling microphones cut keyboard clatter on calls.</p><p>Streams 4K at 30fps or smooth 1080p at 60fps, with a privacy shutter that physically covers the lens. The universal clip grips laptops and monitors, and a tripod thread underneath lets you mount it however you like.</p>',
       productType: 'Webcam',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Resolution', value: '4K UHD @ 30fps or 1080p @ 60fps' },
+          { label: 'Sensor', value: 'Sony CMOS' },
+          { label: 'Focus', value: 'Continuous autofocus' },
+          { label: 'HDR', value: 'Yes — backlight compensation' },
+          { label: 'Framing', value: 'AI auto-framing' },
+          { label: 'Microphones', value: 'Dual noise-cancelling' },
+        ],
+        connectivity:
+          'USB plug-and-play, UVC-compatible on Windows, macOS, and ChromeOS — no drivers. Note that Zoom caps webcam input at 1080p; full 4K shows in OBS, recorders, and Google Meet.',
+        inTheBox:
+          'ClearView 4K webcam with universal monitor/laptop clip and built-in privacy shutter, USB cable, quick-start guide. Tripod thread on the base.',
+        warranty: '2-year limited warranty.',
+      },
       vendor: 'Logitek Vision',
       tags: ['webcam', '4k', 'autofocus', 'streaming', 'work from home'],
       seoTitle: 'ClearView 4K Webcam — HDR, Autofocus, Privacy Shutter',
@@ -466,6 +529,22 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>A pocket-sized portable SSD that sustains up to 1,050 MB/s read and 1,000 MB/s write over USB 3.2 Gen 2 — fast enough to edit 4K video straight off the drive. The shock-resistant silicone bumper and IP55 dust-and-water rating let it survive a drop or a rainy commute.</p><p>Hardware AES-256 encryption keeps your files locked if it goes missing, and it ships pre-formatted to work with both Mac and Windows out of the box. Both USB-C and USB-A cables are in the box.</p>',
       productType: 'External Drive',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Read speed', value: 'Up to 1,050 MB/s' },
+          { label: 'Write speed', value: 'Up to 1,000 MB/s' },
+          { label: 'Interface', value: 'USB 3.2 Gen 2' },
+          { label: 'Durability', value: 'IP55 dust/water + shock bumper' },
+          { label: 'Encryption', value: 'AES-256 hardware' },
+          { label: 'Capacities', value: '1TB / 2TB' },
+        ],
+        connectivity:
+          'USB-C (USB 3.2 Gen 2), backward compatible with USB-A. Ships pre-formatted exFAT so it works on Mac and Windows immediately; the hardware encryption is independent of the file system.',
+        inTheBox:
+          'Vault portable SSD, USB-C to USB-C cable, USB-C to USB-A cable, quick-start guide.',
+        warranty: '5-year limited warranty.',
+      },
       vendor: 'Crucial Edge',
       tags: ['ssd', 'storage', 'portable', 'usb-c', 'encrypted'],
       seoTitle: 'Vault Portable SSD — 1,050 MB/s, IP55, Hardware Encrypted',
@@ -566,6 +645,21 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>A Wi-Fi smart LED bulb with 16 million colors and tunable white from a warm 2700K to a crisp 6500K, dimmable down to 1% for movie nights. No hub required — it connects straight to your 2.4GHz network and pairs with the major voice assistants for hands-free control.</p><p>Standard A19 shape and E26 base drop into any lamp or fixture. Schedules, scenes, and sunrise wake-up routines run on the bulb itself, so they fire even if your phone is off the network.</p>',
       productType: 'Smart Lighting',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Colors', value: '16 million RGB' },
+          { label: 'White range', value: 'Tunable 2700K–6500K' },
+          { label: 'Dimming', value: 'Down to 1%' },
+          { label: 'Shape / base', value: 'A19, E26 screw base' },
+          { label: 'Brightness', value: '800 lumens' },
+          { label: 'Hub', value: 'None required' },
+        ],
+        connectivity:
+          '2.4GHz Wi-Fi direct — no hub or bridge. Pairs with the major voice assistants for hands-free control. Schedules, scenes, and sunrise routines run on the bulb, so they fire even if your phone is off the network.',
+        inTheBox: 'Luma smart LED bulb, quick-start guide.',
+        warranty: '2-year limited warranty.',
+      },
       vendor: 'Glowtide',
       tags: ['smart home', 'led', 'bulb', 'wifi', 'color'],
       seoTitle: 'Luma Smart LED Bulb — 16M Colors, Tunable White, No Hub',
@@ -638,6 +732,22 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>A 20,000mAh power bank that pushes 65W out of its USB-C port — enough to fast-charge most laptops, not just phones. Two extra ports let you top up three devices at once, and the built-in digital display shows exactly how much charge is left so you are never guessing.</p><p>It recharges itself at 45W, going from empty to full in about an hour and a half. The grippy matte shell and rounded edges make it easy to slip in a bag, and pass-through charging means you can power a device while the bank itself is plugged in.</p>',
       productType: 'Power Bank',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Capacity', value: '20,000mAh (≈74Wh)' },
+          { label: 'Output', value: '65W USB-C PD' },
+          { label: 'Ports', value: '3 — charge three devices at once' },
+          { label: 'Recharge', value: '45W in, empty to full in ~90 min' },
+          { label: 'Display', value: 'Digital charge readout' },
+          { label: 'Pass-through', value: 'Yes' },
+        ],
+        connectivity:
+          'USB-C Power Delivery in and out, plus two additional output ports. At ~74Wh it is under the 100Wh airline limit, so it is fine in carry-on (never in checked bags).',
+        inTheBox:
+          'ChargeCore 20K power bank, USB-C to USB-C cable, travel pouch, quick-start guide.',
+        warranty: '18-month limited warranty.',
+      },
       vendor: 'Anker Nexus',
       tags: ['power bank', 'charging', 'usb-c', '65w', 'portable'],
       hazmatClass: 'class9',
@@ -702,6 +812,20 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>A folding aluminum laptop stand that lifts your screen to eye level to take the strain off your neck and shoulders. The open-back design channels airflow under the laptop so it runs cooler and quieter, and silicone pads grip both the desk and your laptop so nothing slides.</p><p>It adjusts through several height and angle stops, then folds flat to the size of a paperback for travel. Rated to hold laptops up to 17 inches and supports tablets too.</p>',
       productType: 'Stand',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Material', value: 'Anodized aluminum' },
+          { label: 'Fits', value: 'Laptops up to 17"' },
+          { label: 'Adjustment', value: 'Multiple height + angle stops' },
+          { label: 'Cooling', value: 'Open-back airflow channel' },
+          { label: 'Grip', value: 'Silicone pads top and bottom' },
+          { label: 'Portability', value: 'Folds flat to paperback size' },
+        ],
+        connectivity: 'None — a passive aluminum stand with no cables or power.',
+        inTheBox: 'RiseDesk aluminum laptop stand, travel pouch, quick-start guide.',
+        warranty: '2-year limited warranty.',
+      },
       vendor: 'ElevateGear',
       tags: ['laptop stand', 'ergonomic', 'aluminum', 'work from home'],
       seoTitle: 'RiseDesk Aluminum Laptop Stand — Folding, Adjustable',
@@ -766,6 +890,21 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>A palm-sized Bluetooth speaker that punches well above its size thanks to a passive bass radiator and an upward-firing driver. IP67 dust and waterproofing means it survives the pool, the shower, and the trail — it even floats if it goes overboard.</p><p>Twelve hours of playback per charge over Bluetooth 5.3, with a built-in mic for speakerphone calls. Pair two together for true stereo, and clip it to a bag with the included carabiner loop.</p>',
       productType: 'Speaker',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Drivers', value: 'Upward-firing + passive bass radiator' },
+          { label: 'Battery', value: '12 hr per charge' },
+          { label: 'Waterproofing', value: 'IP67 dust/water (floats)' },
+          { label: 'Bluetooth', value: '5.3' },
+          { label: 'Microphone', value: 'Built-in for speakerphone' },
+          { label: 'Stereo', value: 'True wireless pairing' },
+        ],
+        connectivity:
+          'Bluetooth 5.3 with a built-in mic for calls. Pair two identical units for a left/right true-wireless stereo pair.',
+        inTheBox: 'BoomMini speaker, USB-C charging cable, carabiner clip, quick-start guide.',
+        warranty: '1-year limited warranty.',
+      },
       vendor: 'Soundwave',
       tags: ['speaker', 'bluetooth', 'waterproof', 'portable', 'audio'],
       seoTitle: 'BoomMini Bluetooth Speaker — IP67 Waterproof, 12hr',
@@ -830,6 +969,21 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>Everything you need to turn any room into a real home office, bundled and discounted: the ClearView 4K webcam so you look sharp on every call, the Aero TKL mechanical keyboard for all-day typing comfort, and the PortHub 8-in-1 USB-C hub to wire it all into a single laptop port.</p><p>Buy the kit and save versus picking each piece on its own — one box, one click, a finished desk.</p>',
       productType: 'Kits',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Webcam', value: 'ClearView 4K, HDR + auto-framing' },
+          { label: 'Keyboard', value: 'Aero TKL mechanical, hot-swap' },
+          { label: 'Hub', value: 'PortHub 8-in-1 USB-C' },
+          { label: 'Docking', value: 'Single USB-C laptop port' },
+        ],
+        connectivity:
+          'The webcam and keyboard connect through the included USB-C hub, so the whole setup wires into one laptop port — 4K HDMI, gigabit Ethernet, USB-A/C, and pass-through charging all from that one cable.',
+        inTheBox:
+          'ClearView 4K webcam, Aero TKL mechanical keyboard, PortHub 8-in-1 USB-C hub, plus each item’s own cables, dongle, and guides.',
+        warranty:
+          'Each component carries its own manufacturer warranty (webcam 2 years, keyboard 1 year, hub 18 months).',
+      },
       vendor: 'Shop Kit',
       tags: ['kit', 'work from home', 'bundle', 'desk setup'],
       categoryKeys: ['peripherals'],
@@ -854,6 +1008,22 @@ export const electronicsPack: SampleDataPack = {
       description:
         '<p>A lightweight 58-gram wireless gaming mouse with a 26,000 DPI optical sensor and a 1,000Hz polling rate over its low-latency 2.4GHz dongle — wired-fast response with none of the cable drag. Optical switches rated for 70 million clicks remove the double-click failures that kill mechanical switches.</p><p>PTFE feet glide effortlessly, six programmable buttons map to whatever you need, and a single charge lasts up to 90 hours. Top up over USB-C or play wired while it charges.</p>',
       productType: 'Mouse',
+      productTypeKey: 'electronics',
+      attributes: {
+        specs: [
+          { label: 'Weight', value: '58 g' },
+          { label: 'Sensor', value: '26,000 DPI optical' },
+          { label: 'Polling rate', value: '1,000Hz' },
+          { label: 'Switches', value: 'Optical, rated 70M clicks' },
+          { label: 'Battery', value: 'Up to 90 hr' },
+          { label: 'Buttons', value: '6 programmable' },
+        ],
+        connectivity:
+          'Low-latency 2.4GHz wireless via the included dongle, or plug in the USB-C cable to play wired while it charges — switches modes instantly with no interruption.',
+        inTheBox:
+          'Raptor wireless mouse, 2.4GHz USB dongle, USB-C charging/data cable, quick-start guide.',
+        warranty: '2-year limited warranty.',
+      },
       vendor: 'Razer Apex',
       tags: ['mouse', 'gaming', 'wireless', 'lightweight', 'peripherals'],
       seoTitle: 'Raptor Wireless Gaming Mouse — 58g, 26K DPI, 90hr',

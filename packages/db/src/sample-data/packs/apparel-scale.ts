@@ -199,6 +199,57 @@ const SWATCH: Record<string, string> = {
 /** Apparel sizes for sized garments (tops/bottoms/outerwear). Accessories are one-size. */
 const SIZES = ['S', 'M', 'L'] as const;
 
+/** Per-fabric material composition — drives the typed `attributes.materials` repeater
+ *  so a merino piece reads 100% wool and a terry piece reads a cotton/poly blend.
+ *  Percentages sum to 100 per fabric. Keyed by `FABRICS[].name`. */
+const FABRIC_MATERIALS: Record<string, { name: string; percent: string }[]> = {
+  'Combed Cotton': [{ name: 'Combed cotton', percent: '100%' }],
+  'Brushed Terry': [
+    { name: 'Cotton', percent: '80%' },
+    { name: 'Polyester', percent: '20%' },
+  ],
+  'Waffle-Knit': [
+    { name: 'Cotton', percent: '92%' },
+    { name: 'Elastane', percent: '8%' },
+  ],
+  'Slub Jersey': [{ name: 'Slub cotton', percent: '100%' }],
+  'Pima Cotton': [{ name: 'Pima cotton', percent: '100%' }],
+  'Merino Wool': [{ name: 'Extra-fine merino wool', percent: '100%' }],
+  'Linen Blend': [
+    { name: 'Linen', percent: '55%' },
+    { name: 'Cotton', percent: '45%' },
+  ],
+  'Recycled Fleece': [{ name: 'Recycled polyester', percent: '100%' }],
+};
+
+/** Per-fabric care copy — washing changes with the fiber, so care tracks the fabric
+ *  (wool and linen get gentler handling than everyday cotton). Keyed by fabric name. */
+const FABRIC_CARE: Record<string, string> = {
+  'Merino Wool':
+    'Hand-wash cold or use a wool cycle, then reshape and lay flat to dry. Keep it out of the dryer so the merino holds its shape.',
+  'Linen Blend':
+    'Machine wash cold on gentle and hang dry; a light press keeps it crisp. The relaxed hand only softens with wear.',
+  'Recycled Fleece':
+    'Machine wash cold inside out and tumble dry low. Skip fabric softener so the brushed face stays soft.',
+};
+const DEFAULT_CARE =
+  'Machine wash cold with like colors and tumble dry low. Wash inside out to keep the color, and skip the bleach.';
+
+/** Rotating countries of origin, so the "Made in" field has real spread across the
+ *  90 products without tying to any one supplier. Picked by index. */
+const ORIGINS = ['Portugal', 'Vietnam', 'Peru', 'Turkey', 'Mexico', 'India'] as const;
+
+/** Per-category fit copy — how a piece is cut and wears. Sized garments read
+ *  true-to-size; one-size accessories say so. */
+const CATEGORY_FIT: Record<string, string> = {
+  tops: 'A regular, true-to-size cut with a touch of room to layer. Take your normal size; size down one for a trimmer fit.',
+  bottoms:
+    'A straight, mid-rise cut with a clean break and a little give through the day. True to waist — take your normal size.',
+  outerwear:
+    'Cut with room to layer a tee or knit underneath without pulling across the shoulders. Take your normal size; size up to layer heavily.',
+  accessories: 'One size, knit and cut to fit most comfortably with a little natural stretch.',
+};
+
 function slug(s: string): string {
   return s
     .toLowerCase()
@@ -277,6 +328,19 @@ export function apparelScaleProducts(): SampleProduct[] {
       }
     }
 
+    // Typed attributes (docs/143) — deterministic per product so each still reads as
+    // its own piece: fabric copy from (fabric, garment, color), materials + care from
+    // the fabric, fit from the garment's category, origin rotated by index.
+    const attributes = {
+      fabric:
+        `${fabric.name} ${garment.name.toLowerCase()} cut for everyday wear, shown in ${color.toLowerCase()}. ` +
+        `${garment.blurb} Pre-washed for a stable fit and finished to layer through the season.`,
+      fit: CATEGORY_FIT[garment.category] ?? CATEGORY_FIT.tops!,
+      care: FABRIC_CARE[fabric.name] ?? DEFAULT_CARE,
+      materials: FABRIC_MATERIALS[fabric.name] ?? [{ name: fabric.name, percent: '100%' }],
+      origin: ORIGINS[i % ORIGINS.length]!,
+    };
+
     products.push({
       key: `fl-${i + 1}`,
       title,
@@ -285,6 +349,8 @@ export function apparelScaleProducts(): SampleProduct[] {
         `<p>A ${fabric.name.toLowerCase()} ${garment.name.toLowerCase()} cut for everyday wear, shown in ${color.toLowerCase()}. ${garment.blurb}</p>` +
         `<p>Pre-washed for a stable fit and finished to layer through the season. Part of the full line — the same make and hand across every piece.</p>`,
       productType: garment.type,
+      productTypeKey: 'apparel',
+      attributes,
       vendor,
       tags: [garment.tag, slug(fabric.name), 'full-line'],
       seoTitle: `${title} — ${fabric.name}`,

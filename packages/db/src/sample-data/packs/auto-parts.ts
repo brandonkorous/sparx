@@ -108,6 +108,70 @@ export const autoPartsPack: SampleDataPack = {
     { key: 'shop-fluids', name: 'Shop Fluids & Chemicals', handle: 'shop-fluids' },
   ],
 
+  // What a parts business keeps about a buyer beyond the order history
+  // (docs/144 §3) — the things that decide whether the right part turns up.
+  recordTypes: [
+    {
+      objectKey: 'contact',
+      properties: [
+        {
+          key: 'accountKind',
+          label: 'What kind of buyer',
+          type: 'enum',
+          helpText: 'Sets the tone, the pricing conversation, and the paperwork.',
+          options: [
+            { value: 'fleet', label: 'Runs a fleet' },
+            { value: 'independent_shop', label: 'Independent shop' },
+            { value: 'dealer', label: 'Dealer' },
+            { value: 'owner_operator', label: 'Owner-operator' },
+            { value: 'diy', label: 'Doing it themselves' },
+          ],
+        },
+        {
+          key: 'preferredBrands',
+          label: 'Brands they ask for',
+          type: 'text',
+          helpText: 'What they will and will not accept a substitute for.',
+        },
+        {
+          key: 'willingToTakeReman',
+          label: 'Takes remanufactured parts',
+          type: 'boolean',
+          helpText: 'Off means quote new only — do not offer them a reman core.',
+        },
+      ],
+    },
+    {
+      objectKey: 'company',
+      properties: [
+        {
+          key: 'shopHours',
+          label: 'When their shop is open',
+          type: 'text',
+          helpText: 'When a delivery will actually be received.',
+        },
+        {
+          key: 'downtimeCostPerDay',
+          label: 'What a day off the road costs them',
+          type: 'currency',
+          currency: 'USD',
+          helpText: 'The number behind every rush-order conversation.',
+        },
+      ],
+    },
+    {
+      objectKey: 'deal',
+      properties: [
+        {
+          key: 'unitDown',
+          label: 'Which unit is down',
+          type: 'text',
+          helpText: 'The truck or machine waiting on this. Blank means nothing is stopped.',
+        },
+      ],
+    },
+  ],
+
   personas: [
     {
       key: 'marcus',
@@ -120,6 +184,15 @@ export const autoPartsPack: SampleDataPack = {
       city: 'Boise',
       region: 'ID',
       postalCode: '83702',
+      properties: {
+        accountKind: 'fleet',
+        preferredBrands: 'Bosch and Delphi for injection. Will not take aftermarket turbos.',
+        willingToTakeReman: true,
+      },
+      companyProperties: {
+        shopHours: 'Yard open 5am–7pm weekdays, 7am–noon Saturday.',
+        downtimeCostPerDay: { amount: 1450, currency: 'USD' },
+      },
     },
     {
       key: 'dana',
@@ -130,6 +203,11 @@ export const autoPartsPack: SampleDataPack = {
       city: 'Spokane',
       region: 'WA',
       postalCode: '99201',
+      properties: {
+        accountKind: 'diy',
+        preferredBrands: 'Whatever fits — asks for the cheapest that is not junk.',
+        willingToTakeReman: true,
+      },
     },
     {
       key: 'rafael',
@@ -142,6 +220,11 @@ export const autoPartsPack: SampleDataPack = {
       city: 'Albuquerque',
       region: 'NM',
       postalCode: '87102',
+      properties: {
+        accountKind: 'fleet',
+        preferredBrands: 'OEM only on anything emissions-related.',
+        willingToTakeReman: false,
+      },
     },
     {
       key: 'priya',
@@ -152,6 +235,11 @@ export const autoPartsPack: SampleDataPack = {
       city: 'Austin',
       region: 'TX',
       postalCode: '78717',
+      properties: {
+        accountKind: 'independent_shop',
+        preferredBrands: 'Stocks ACDelco. Happy with reman if the core charge is clear.',
+        willingToTakeReman: true,
+      },
     },
     {
       key: 'glen',
@@ -164,6 +252,11 @@ export const autoPartsPack: SampleDataPack = {
       city: 'Fargo',
       region: 'ND',
       postalCode: '58103',
+      properties: {
+        accountKind: 'fleet',
+        preferredBrands: 'Standardised on Fleetguard filtration across the yard.',
+        willingToTakeReman: true,
+      },
     },
     {
       key: 'tessa',
@@ -174,6 +267,11 @@ export const autoPartsPack: SampleDataPack = {
       city: 'Nashville',
       region: 'TN',
       postalCode: '37209',
+      properties: {
+        accountKind: 'owner_operator',
+        preferredBrands: 'No preference — cares about getting it tomorrow, not the badge.',
+        willingToTakeReman: true,
+      },
     },
   ],
 
@@ -185,6 +283,19 @@ export const autoPartsPack: SampleDataPack = {
       description:
         '<p>OE-spec fuel/water separator filter for the 2011–2016 6.7L Power Stroke. Captures contaminants down to 4 microns and pulls water out of the fuel before it reaches your high-pressure pump and injectors — the single cheapest insurance against a five-figure fuel-system failure.</p><p>Replace at every oil change or every 15,000 miles, whichever comes first. Fits the frame-mounted housing; the water-in-fuel sensor transfers from your old filter.</p>',
       productType: 'Filters',
+      productTypeKey: 'auto_part',
+      attributes: {
+        fitment:
+          'Fits the 2011–2016 6.7L Power Stroke diesel (Ford F-250/F-350/F-450 Super Duty). Mounts in the frame-rail fuel/water separator housing. The water-in-fuel (WIF) sensor is not included — it threads out of your old filter and into this one.',
+        specs: [
+          { label: 'Filtration', value: '4 micron absolute' },
+          { label: 'Type', value: 'Fuel / water separator' },
+          { label: 'Service interval', value: 'Every oil change or 15,000 mi' },
+          { label: 'Housing', value: 'Frame-mounted, OE-spec' },
+          { label: 'WIF sensor', value: 'Reuse existing (transfers over)' },
+        ],
+        warranty: '12-month / 12,000-mile limited warranty against manufacturing defects.',
+      },
       vendor: 'Motorcraft',
       tags: ['fuel filter', 'power stroke', '6.7L', 'maintenance'],
       seoTitle: 'Fuel Filter for 6.7L Power Stroke (2011–2016)',
@@ -286,6 +397,19 @@ export const autoPartsPack: SampleDataPack = {
       description:
         '<p>Complete 8-piece glow plug set for the 2003–2007 6.0L Power Stroke. Hard cold starts, white smoke on startup, and a rough first minute are the classic symptoms of failed glow plugs — replace them as a set so you are not back under the valve cover in a month.</p><p>Includes all eight plugs gapped to spec. We strongly recommend inspecting the glow plug harness and valve-cover gasket while you are in there.</p>',
       productType: 'Ignition',
+      productTypeKey: 'auto_part',
+      attributes: {
+        fitment:
+          'Fits the 2003–2007 6.0L Power Stroke diesel (Ford Super Duty and Excursion). Covers all eight cylinders — one complete set per engine. Gapped to specification and ready to install.',
+        specs: [
+          { label: 'Set quantity', value: '8 glow plugs' },
+          { label: 'Application', value: '6.0L Power Stroke' },
+          { label: 'Gap', value: 'Pre-set to OE spec' },
+          { label: 'Install', value: 'Mechanical swap, no programming' },
+          { label: 'Recommended', value: 'Inspect harness + valve-cover gasket' },
+        ],
+        warranty: '12-month limited warranty; dead-on-arrival plugs replaced individually.',
+      },
       vendor: 'Motorcraft',
       tags: ['glow plug', '6.0L', 'power stroke', 'cold start'],
       categoryKeys: ['ignition'],
@@ -347,6 +471,20 @@ export const autoPartsPack: SampleDataPack = {
       description:
         '<p>Direct-replacement common-rail injector for the 2007.5–2018 6.7L Cummins. Rough idle, excessive smoke, hard starts, and a knock that comes and goes are all signs of a failing injector. Each unit is flow-matched and ships with a new copper sealing washer.</p><p>Available remanufactured (dyno-tested core) or new OEM. Replace in matched sets when possible and always re-torque to spec.</p>',
       productType: 'Fuel System',
+      productTypeKey: 'auto_part',
+      attributes: {
+        fitment:
+          'Fits the 2007.5–2018 6.7L Cummins (Ram 2500/3500 Heavy Duty) common-rail fuel system. Sold individually; replace in matched sets when possible. No injector trim coding required on the 6.7 Cummins — install and go.',
+        specs: [
+          { label: 'Type', value: 'Common-rail direct injector' },
+          { label: 'Condition', value: 'Remanufactured (dyno-tested) or new OEM' },
+          { label: 'Flow-matched', value: 'Yes, tested to spec' },
+          { label: 'Included', value: 'New copper sealing washer' },
+          { label: 'ECM coding', value: 'Not required' },
+        ],
+        warranty:
+          'Remanufactured: 12-month / unlimited-mile limited warranty. New OEM: 24-month / unlimited-mile.',
+      },
       vendor: 'Bosch',
       tags: ['injector', 'cummins', '6.7L', 'common rail'],
       categoryKeys: ['fuel-system'],
@@ -432,6 +570,19 @@ export const autoPartsPack: SampleDataPack = {
       description:
         '<p>Complete drop-in variable-geometry turbocharger for the 2011–2016 6.6L Duramax LML. Sticking vanes, a P0299 underboost code, or a whistle-then-no-boost are the usual death rattles of the factory unit. This is a complete CHRA-and-housing assembly, not a rebuild kit — bolt it on and go.</p><p>Includes new mounting hardware and gaskets. We recommend a fresh oil feed line and a clean air filter at install.</p>',
       productType: 'Forced Induction',
+      productTypeKey: 'auto_part',
+      attributes: {
+        fitment:
+          'Fits the 2011–2016 6.6L Duramax LML (Chevrolet Silverado / GMC Sierra 2500HD/3500HD). Complete drop-in variable-geometry assembly — not a rebuild kit — that works on the factory calibration, so no tune is required.',
+        specs: [
+          { label: 'Type', value: 'Variable-geometry turbo (VGT)' },
+          { label: 'Assembly', value: 'Complete CHRA + housing' },
+          { label: 'Application', value: '6.6L Duramax LML' },
+          { label: 'Calibration', value: 'Runs on stock, no tune needed' },
+          { label: 'Included', value: 'Mounting hardware + gaskets' },
+        ],
+        warranty: '24-month / unlimited-mile limited warranty against defects in materials.',
+      },
       vendor: 'Garrett',
       tags: ['turbo', 'duramax', 'LML', 'VGT'],
       categoryKeys: ['forced-induction'],
@@ -484,6 +635,19 @@ export const autoPartsPack: SampleDataPack = {
       description:
         '<p>Heavy-duty 15W-40 CK-4 diesel engine oil — the workhorse weight for nearly every modern diesel pickup and medium-duty truck. Strong soot-handling and shear stability for long drain intervals and hard duty cycles.</p><p>One US gallon. A typical 6.7L oil change takes three gallons plus a filter.</p>',
       productType: 'Fluids',
+      productTypeKey: 'auto_part',
+      attributes: {
+        fitment:
+          'Suits nearly every modern diesel pickup and medium-duty truck that calls for a 15W-40 engine oil — 6.7L Power Stroke, 6.7L Cummins, 6.6L Duramax and older 7.3L applications alike. A typical 6.7L oil change takes three gallons plus a filter.',
+        specs: [
+          { label: 'Viscosity', value: '15W-40' },
+          { label: 'Specification', value: 'API CK-4 (backward compatible with CJ-4)' },
+          { label: 'Volume', value: '1 US gallon' },
+          { label: 'Soot handling', value: 'High — long drain / hard duty' },
+        ],
+        warranty:
+          'Consumable fluid — no product warranty. Meets or exceeds API CK-4 and major OEM diesel-oil approvals.',
+      },
       vendor: 'Shell Rotella',
       tags: ['oil', '15w40', 'CK-4', 'fluids'],
       hazmatClass: 'class9',
@@ -562,6 +726,20 @@ export const autoPartsPack: SampleDataPack = {
       description:
         '<p>Extended-life, nitrite-free (NOAT) heavy-duty coolant rated for 600,000 miles / six years in on-highway service. Protects against liner pitting and cavitation without supplemental coolant additives.</p><p>One US gallon, full strength — mix 50/50 with distilled water, or top off as needed.</p>',
       productType: 'Fluids',
+      productTypeKey: 'auto_part',
+      attributes: {
+        fitment:
+          'For heavy-duty diesel cooling systems that specify a nitrite-free (NOAT) extended-life coolant. Do not mix with conventional green or nitrited coolant — flush and run this straight for the full service life.',
+        specs: [
+          { label: 'Chemistry', value: 'Nitrite-free NOAT (extended-life)' },
+          { label: 'Service life', value: '600,000 mi / 6 years on-highway' },
+          { label: 'Volume', value: '1 US gallon, full strength' },
+          { label: 'Mix ratio', value: '50/50 with distilled water' },
+          { label: 'SCA testing', value: 'Not required' },
+        ],
+        warranty:
+          'Consumable fluid — no product warranty. Backed by the manufacturer service-life rating when used as directed.',
+      },
       vendor: 'Fleetguard',
       tags: ['coolant', 'NOAT', 'fluids', 'cooling'],
       hazmatClass: 'class9',
@@ -615,6 +793,18 @@ export const autoPartsPack: SampleDataPack = {
       description:
         '<p>OE-length serpentine belt for the 1994–2003 7.3L Power Stroke. EPDM construction resists cracking and glazing far longer than the original. A squeal on cold start or visible cracks between the ribs means it is past due.</p><p>Carry a spare — a broken belt strands you and kills your charging and cooling instantly.</p>',
       productType: 'Belts',
+      productTypeKey: 'auto_part',
+      attributes: {
+        fitment:
+          'Fits the 1994–2003 7.3L Power Stroke diesel (Ford Super Duty, F-Series and Excursion). OE length and rib count match the factory routing diagram exactly. Carry a spare — a broken belt strands you and kills charging and cooling instantly.',
+        specs: [
+          { label: 'Construction', value: 'EPDM (crack + glaze resistant)' },
+          { label: 'Length', value: 'OE-spec' },
+          { label: 'Ribs', value: 'Matches factory routing' },
+          { label: 'Application', value: '7.3L Power Stroke' },
+        ],
+        warranty: '24-month / 24,000-mile limited warranty against premature wear.',
+      },
       vendor: 'Gates',
       tags: ['serpentine belt', '7.3L', 'power stroke', 'belt'],
       categoryKeys: ['belts'],
@@ -659,6 +849,18 @@ export const autoPartsPack: SampleDataPack = {
       description:
         '<p>Cast-impeller water pump for the 6.6L Duramax. A weep-hole drip, a bearing whine, or coolant loss with no visible hose leak point to a tired pump. Includes a new gasket and O-rings.</p><p>Replace the thermostat and refresh the coolant while the system is open — cheap parts, one job.</p>',
       productType: 'Cooling',
+      productTypeKey: 'auto_part',
+      attributes: {
+        fitment:
+          'Fits the 6.6L Duramax (LB7 through LML, Chevrolet Silverado / GMC Sierra 2500HD/3500HD). Replace the thermostat and refresh the coolant while the system is open. Includes a new gasket and O-rings.',
+        specs: [
+          { label: 'Impeller', value: 'Cast metal (not plastic)' },
+          { label: 'Application', value: '6.6L Duramax' },
+          { label: 'Bearing', value: 'Sealed' },
+          { label: 'Included', value: 'Gasket + O-rings' },
+        ],
+        warranty: '12-month / 12,000-mile limited warranty against defects.',
+      },
       vendor: 'ACDelco',
       tags: ['water pump', 'duramax', '6.6L', 'cooling'],
       categoryKeys: ['cooling'],
@@ -703,6 +905,19 @@ export const autoPartsPack: SampleDataPack = {
       description:
         '<p>Everything you need for a full 6.7L Power Stroke service in one box: fuel filter, three gallons of 15W-40, and a gallon of heavy-duty coolant. Buy the kit and save versus picking the parts individually.</p>',
       productType: 'Kits',
+      productTypeKey: 'auto_part',
+      attributes: {
+        fitment:
+          'A complete scheduled-service kit for the 2011–2016 6.7L Power Stroke — one box covers a full oil-and-filter change plus a coolant top-off. Buy the kit and save versus picking the parts individually.',
+        specs: [
+          { label: 'Includes', value: 'Fuel filter + 3 gal 15W-40 + 1 gal coolant' },
+          { label: 'Service', value: 'Full oil + filter change' },
+          { label: 'Interval', value: 'Every 15,000 mi' },
+          { label: 'Application', value: '6.7L Power Stroke' },
+        ],
+        warranty:
+          'Each component carries its own manufacturer warranty; the fuel filter is covered 12 months / 12,000 miles.',
+      },
       vendor: 'Shop Kit',
       tags: ['kit', 'maintenance', '6.7L', 'bundle'],
       categoryKeys: ['filters'],

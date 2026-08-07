@@ -180,6 +180,22 @@ export const foodPack: SampleDataPack = {
       description:
         '<p>A bright, washed Yirgacheffe from the Gedeo zone, roasted light to keep its signature florals intact. Expect jasmine and bergamot on the nose, a clean lemon-tea acidity, and a finish that lingers like stone fruit. This is the bag we hand someone who says they "don\'t like coffee" — because they\'ve never had it taste like this.</p><p>Roasted to order in small batches and shipped within 48 hours, so the bag in your hand is days off the roaster, not weeks. Best from days 4 through 21 after the roast date stamped on the valve seal.</p>',
       productType: 'Coffee',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          '100% arabica coffee — single-origin washed Yirgacheffe from the Gedeo zone of Ethiopia. Nothing else added.',
+        allergens: [],
+        netWeight: '340 g / 12 oz',
+        storage:
+          'Keep in an airtight, opaque container at room temperature, away from heat, light, and moisture. Do not refrigerate. Best from days 4 through 21 after the roast date stamped on the valve seal.',
+        nutrition: [
+          { label: 'Serving size', value: '8 fl oz brewed' },
+          { label: 'Calories', value: '2' },
+          { label: 'Caffeine', value: '~120 mg' },
+          { label: 'Total fat', value: '0 g' },
+          { label: 'Sodium', value: '5 mg' },
+        ],
+      },
       vendor: 'Ridgeline Roasters',
       tags: ['coffee', 'single-origin', 'ethiopia', 'light-roast', 'whole-bean'],
       seoTitle: 'Ethiopia Yirgacheffe Single-Origin Coffee — Light Roast',
@@ -299,6 +315,22 @@ export const foodPack: SampleDataPack = {
       description:
         '<p>A crowd-pleasing washed Colombia from smallholder farms around Pitalito, Huila, roasted medium for balance. Caramel sweetness, a round red-apple acidity, and a cocoa finish make it the everyday bag that works in any brewer — drip, French press, or espresso.</p><p>If you keep one coffee in the house, this is it. Forgiving to brew, equally good black or with a splash of milk, and roasted in small batches so every bag ships fresh.</p>',
       productType: 'Coffee',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          '100% arabica coffee — single-origin washed Colombia from smallholder farms around Pitalito, Huila. Nothing else added.',
+        allergens: [],
+        netWeight: '340 g / 12 oz',
+        storage:
+          'Keep in an airtight, opaque container at room temperature, away from heat, light, and moisture. Do not refrigerate. Best within three to four weeks of the roast date on the valve seal.',
+        nutrition: [
+          { label: 'Serving size', value: '8 fl oz brewed' },
+          { label: 'Calories', value: '2' },
+          { label: 'Caffeine', value: '~130 mg' },
+          { label: 'Total fat', value: '0 g' },
+          { label: 'Sodium', value: '5 mg' },
+        ],
+      },
       vendor: 'Ridgeline Roasters',
       tags: ['coffee', 'single-origin', 'colombia', 'medium-roast', 'whole-bean'],
       seoTitle: 'Colombia Huila Single-Origin Coffee — Medium Roast',
@@ -402,6 +434,22 @@ export const foodPack: SampleDataPack = {
       description:
         '<p>Our signature espresso blend: a Brazil-and-Guatemala base for body and chocolate, lifted with a touch of washed Ethiopian for sparkle. Roasted medium-dark to pull thick, syrupy shots with notes of dark chocolate, toasted almond, and a brown-sugar sweetness that cuts beautifully through milk.</p><p>Built for the home espresso machine but every bit as good in a moka pot or press. Give it three to five days off the roast to degas before you pull your first shot.</p>',
       productType: 'Coffee',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          '100% arabica coffee — a blend of washed Brazil and Guatemala for body and chocolate, lifted with a touch of washed Ethiopian. Roasted medium-dark.',
+        allergens: [],
+        netWeight: '340 g / 12 oz · 907 g / 2 lb',
+        storage:
+          'Rest three to five days off the roast date to degas, then keep in an airtight, opaque container at room temperature away from heat and light. Do not refrigerate.',
+        nutrition: [
+          { label: 'Serving size', value: '1 fl oz espresso' },
+          { label: 'Calories', value: '1' },
+          { label: 'Caffeine', value: '~75 mg per shot' },
+          { label: 'Total fat', value: '0 g' },
+          { label: 'Sodium', value: '3 mg' },
+        ],
+      },
       vendor: 'Ridgeline Roasters',
       tags: ['coffee', 'espresso', 'blend', 'medium-dark', 'whole-bean'],
       seoTitle: 'House Espresso Blend "Lamplight" — Medium-Dark Roast',
@@ -508,6 +556,22 @@ export const foodPack: SampleDataPack = {
       description:
         '<p>A proper Earl Grey: a brisk Ceylon-and-Assam black tea base scented with natural bergamot oil and finished with a scatter of blue cornflower petals. Bold enough to take milk, fragrant enough to drink straight with a twist of lemon. No artificial flavoring — just real oil of bergamot.</p><p>Sold loose by weight in a resealable tin-tie pouch. One heaping teaspoon per cup, steeped 3 to 4 minutes in just-off-boil water.</p>',
       productType: 'Tea',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          'Black tea (Ceylon and Assam), natural oil of bergamot, blue cornflower petals. No artificial flavoring.',
+        allergens: [],
+        netWeight: '113 g / 4 oz',
+        storage:
+          'Keep in a sealed, opaque tin away from heat, light, moisture, and strong odors. Use within 12 to 18 months for peak aroma.',
+        nutrition: [
+          { label: 'Serving size', value: '8 fl oz brewed' },
+          { label: 'Calories', value: '0' },
+          { label: 'Caffeine', value: '~40 mg' },
+          { label: 'Total sugars', value: '0 g' },
+          { label: 'Sodium', value: '0 mg' },
+        ],
+      },
       vendor: 'Harbor & Vine Tea Co.',
       tags: ['tea', 'loose-leaf', 'earl-grey', 'black-tea', 'bergamot'],
       seoTitle: 'Loose-Leaf Earl Grey Supreme — Bergamot Black Tea',
@@ -572,6 +636,21 @@ export const foodPack: SampleDataPack = {
       description:
         "<p>A bright, fruit-forward hot sauce that leads with ripe mango and ends with a clean habanero burn. Fermented in small batches for a week before bottling, which rounds the heat and builds a tangy depth you don't get from a quick-blend sauce. Medium-hot: enough to make you notice, never enough to ruin the dish.</p><p>Spectacular on tacos, grilled chicken, eggs, and — trust us — a wedge of sharp cheddar. Five ounces in a glass bottle with a drip-control cap.</p>",
       productType: 'Condiment',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          'Ripe mango, fermented red habanero peppers, distilled white vinegar, water, carrot, onion, garlic, cane sugar, lime juice, sea salt.',
+        allergens: [],
+        netWeight: '148 ml / 5 fl oz',
+        storage:
+          'Shelf-stable unopened. Refrigerate after opening and use within six months to keep the fresh fruit flavor at its peak.',
+        nutrition: [
+          { label: 'Serving size', value: '1 tsp (5 g)' },
+          { label: 'Calories', value: '5' },
+          { label: 'Total sugars', value: '1 g' },
+          { label: 'Sodium', value: '90 mg' },
+        ],
+      },
       vendor: 'Ember Lane Provisions',
       tags: ['hot-sauce', 'habanero', 'mango', 'fermented', 'small-batch'],
       seoTitle: 'Habanero-Mango Hot Sauce — Small-Batch Fermented',
@@ -637,6 +716,22 @@ export const foodPack: SampleDataPack = {
       description:
         "<p>A clustery, grain-free granola built on almonds, pecans, coconut, and pumpkin seeds, bound with real maple syrup and a whisper of sea salt. Baked low and slow for big, crunchy clusters that hold up in milk or yogurt instead of dissolving into dust. No oats, no refined sugar, no filler.</p><p>Twelve ounces in a resealable pouch. Wonderful over Greek yogurt with fresh berries, or eaten by the handful straight from the bag (we won't tell).</p>",
       productType: 'Snack',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          'Almonds, pecans, unsweetened coconut flakes, pumpkin seeds, maple syrup, coconut oil, vanilla extract, sea salt. No oats, no refined sugar, no filler. Made in a facility that handles tree nuts.',
+        allergens: ['tree_nuts'],
+        netWeight: '340 g / 12 oz',
+        storage:
+          'Reseal the pouch or transfer to an airtight container and store at room temperature. Best within eight weeks; refrigerate to keep the clusters crunchy longer.',
+        nutrition: [
+          { label: 'Serving size', value: '1/3 cup (40 g)' },
+          { label: 'Calories', value: '210' },
+          { label: 'Total fat', value: '15 g' },
+          { label: 'Total sugars', value: '7 g' },
+          { label: 'Protein', value: '6 g' },
+        ],
+      },
       vendor: 'Wildflour Kitchen',
       tags: ['granola', 'grain-free', 'maple', 'pecan', 'breakfast', 'snack'],
       seoTitle: 'Maple-Pecan Grain-Free Granola — No Oats, No Refined Sugar',
@@ -710,6 +805,22 @@ export const foodPack: SampleDataPack = {
       description:
         '<p>A single-estate, cold-pressed extra-virgin olive oil from a family grove in Jaén, Spain, pressed within hours of harvest. Grassy and peppery with a green-almond finish and the throat-catching tickle that tells you the polyphenols are alive. Harvest date — not just a "best by" — is stamped on every tin.</p><p>500 ml in a light-blocking tin to protect it from oxidation. Finish soups, dress salads, or pour over warm bread; save the neutral oil for the frying pan.</p>',
       productType: 'Oil',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          '100% cold-pressed extra-virgin olive oil, single-estate Picual olives from a family grove in Jaén, Spain. Nothing else.',
+        allergens: [],
+        netWeight: '500 ml / 16.9 fl oz',
+        storage:
+          'Keep the tin sealed in a cool, dark cupboard away from heat and light. Use within three months of opening. Do not refrigerate.',
+        nutrition: [
+          { label: 'Serving size', value: '1 tbsp (14 g)' },
+          { label: 'Calories', value: '120' },
+          { label: 'Total fat', value: '14 g' },
+          { label: 'Saturated fat', value: '2 g' },
+          { label: 'Sodium', value: '0 mg' },
+        ],
+      },
       vendor: 'Olivar del Sol',
       tags: ['olive-oil', 'extra-virgin', 'cold-pressed', 'spain', 'pantry'],
       seoTitle: 'Cold-Pressed Extra-Virgin Olive Oil — Single-Estate Spain',
@@ -776,6 +887,22 @@ export const foodPack: SampleDataPack = {
       description:
         "<p>Unfiltered, unpasteurized wildflower honey from hives in the Willamette Valley, bottled raw to keep its pollen, enzymes, and complex floral character intact. Amber and thick with a layered sweetness that shifts with the season's blooms — clover one batch, blackberry the next. It may crystallize over time; that is the mark of real raw honey, not a flaw.</p><p>Twelve ounces in a glass jar. Stir into tea, drizzle over the granola, or spoon onto a cheese board. Not for infants under one year.</p>",
       productType: 'Sweetener',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          '100% raw, unfiltered, unpasteurized wildflower honey from hives in the Willamette Valley. Nothing added.',
+        allergens: [],
+        netWeight: '340 g / 12 oz',
+        storage:
+          'Store sealed at room temperature. Natural crystallization is a mark of real raw honey — set the jar in a bowl of warm (not hot) water to return it to liquid. Not for infants under one year.',
+        nutrition: [
+          { label: 'Serving size', value: '1 tbsp (21 g)' },
+          { label: 'Calories', value: '60' },
+          { label: 'Total carbohydrate', value: '17 g' },
+          { label: 'Total sugars', value: '17 g' },
+          { label: 'Sodium', value: '0 mg' },
+        ],
+      },
       vendor: 'Willamette Apiaries',
       tags: ['honey', 'raw', 'wildflower', 'unfiltered', 'pantry'],
       seoTitle: 'Raw Wildflower Honey — Unfiltered & Unpasteurized',
@@ -840,6 +967,22 @@ export const foodPack: SampleDataPack = {
       description:
         '<p>A bean-to-bar 72% dark chocolate made from single-origin Ecuadorian Nacional cacao, stone-ground and conched for three days for a silken snap and a clean finish. Tasting notes of dried cherry, toasted hazelnut, and a faint floral lift — only three ingredients: cacao, cane sugar, and cocoa butter.</p><p>A generous 2.5 oz bar, hand-wrapped. Let a square melt slowly on the tongue rather than chewing to catch the full arc of flavor.</p>',
       productType: 'Chocolate',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          'Cacao beans (single-origin Ecuadorian Nacional), cane sugar, cocoa butter. 72% cacao. Made in a facility that also handles milk and tree nuts.',
+        allergens: ['milk', 'tree_nuts'],
+        netWeight: '71 g / 2.5 oz',
+        storage:
+          'Store in a cool, dry place (16–18°C) away from direct sunlight and strong odors. Avoid refrigeration, which draws moisture and causes sugar bloom.',
+        nutrition: [
+          { label: 'Serving size', value: '1/2 bar (35 g)' },
+          { label: 'Calories', value: '200' },
+          { label: 'Total fat', value: '15 g' },
+          { label: 'Total sugars', value: '9 g' },
+          { label: 'Protein', value: '3 g' },
+        ],
+      },
       vendor: 'Cobblestone Chocolate Works',
       tags: ['chocolate', 'dark', 'single-origin', 'bean-to-bar', 'ecuador', 'sweets'],
       seoTitle: 'Single-Origin 72% Dark Chocolate Bar — Bean-to-Bar Ecuador',
@@ -906,6 +1049,20 @@ export const foodPack: SampleDataPack = {
       description:
         '<p>The cure for "I don\'t know what to get them." Our Morning Ritual gift box pairs a bag of fresh single-origin coffee, a pouch of clustery maple-pecan granola, and a jar of raw wildflower honey in a kraft box with a hand-tied ribbon and a card you can personalize at checkout.</p><p>It is the breakfast we\'d want delivered to our own door — and it saves versus buying the three pieces on their own. Ships in protective packaging with everything dated fresh.</p>',
       productType: 'Gift Box',
+      productTypeKey: 'food_beverage',
+      attributes: {
+        ingredients:
+          'A curated box: a bag of single-origin whole-bean coffee (100% arabica), a pouch of grain-free maple-pecan granola (almonds, pecans, coconut, pumpkin seeds, maple syrup), and a jar of raw wildflower honey. See each item for its full ingredient statement.',
+        allergens: ['tree_nuts'],
+        netWeight: '3 items — coffee, granola & honey',
+        storage:
+          'Store each item per its own label: coffee and granola sealed at cool room temperature, honey sealed at room temperature. Everything ships dated fresh.',
+        nutrition: [
+          { label: 'Coffee', value: '2 cal / 8 fl oz brewed' },
+          { label: 'Granola', value: '210 cal / 1/3 cup' },
+          { label: 'Honey', value: '60 cal / 1 tbsp' },
+        ],
+      },
       vendor: 'Ridgeline Roasters',
       tags: ['gift', 'gift-box', 'bundle', 'coffee', 'breakfast'],
       seoTitle: 'Morning Ritual Gift Box — Coffee, Granola & Honey',

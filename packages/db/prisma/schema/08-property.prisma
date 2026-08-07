@@ -260,6 +260,7 @@ model Property {
   // collections / categories this site exposes. EMPTY = the site shows ALL (the
   // default, Model A behavior).
   productLinks      ProductProperty[]
+  productTypes      ProductType[]
   contentEntryLinks ContentEntryProperty[]
   collectionLinks   CollectionProperty[]
   categoryLinks     CategoryProperty[]

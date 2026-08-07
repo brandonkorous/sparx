@@ -111,6 +111,14 @@ export const genericPack: SampleDataPack = {
       productType: 'Stationery',
       vendor: 'House Goods',
       tags: ['notebook', 'stationery', 'a5', 'everyday'],
+      productTypeKey: 'home_goods',
+      attributes: {
+        materials:
+          'Hardcover board with a lay-flat binding, filled with 120gsm paper that takes fountain pen, gel, and ballpoint without bleeding through. 192 pages, an elastic closure, a ribbon bookmark, and a back pocket for loose notes and cards.',
+        dimensions: 'A5 — 14.8 × 21 cm, 192 pages',
+        care: 'Wipe the cover with a soft, dry cloth. Keep it out of prolonged direct sun to protect the cover color, and avoid soaking the paper.',
+        origin: 'Made in Portugal',
+      },
       seoTitle: 'Classic A5 Hardcover Notebook',
       seoDescription:
         'A lay-flat A5 hardcover notebook with 120gsm paper, elastic closure, and a ribbon bookmark. Ruled or dotted.',
@@ -209,6 +217,14 @@ export const genericPack: SampleDataPack = {
       productType: 'Drinkware',
       vendor: 'House Goods',
       tags: ['mug', 'drinkware', 'ceramic', 'coffee'],
+      productTypeKey: 'home_goods',
+      attributes: {
+        materials:
+          'Glazed stoneware ceramic with a comfortable looped handle and a slightly wider base for stability on a busy desk. The durable glaze holds its color through years of dishwasher cycles.',
+        dimensions: '12 oz — Ø 8.5 × H 9.5 cm',
+        care: 'Dishwasher- and microwave-safe. Avoid thermal shock — do not move it straight from the freezer to a hot pour.',
+        origin: 'Made in Vietnam',
+      },
       seoTitle: '12oz Ceramic Stoneware Mug',
       seoDescription:
         'A 12oz stoneware mug with a comfy handle and a durable glaze. Dishwasher- and microwave-safe. White or black.',
@@ -302,6 +318,14 @@ export const genericPack: SampleDataPack = {
       productType: 'Accessories',
       vendor: 'House Goods',
       tags: ['tote', 'bag', 'canvas', 'reusable'],
+      productTypeKey: 'home_goods',
+      attributes: {
+        materials:
+          '12 oz cotton canvas with reinforced stitching at the strap joins where cheaper totes give out, plus a cotton-webbing handle. Roomy main compartment with an interior slip pocket.',
+        dimensions: '38 × 42 cm, 28" handle drop',
+        care: 'Machine wash cold and hang to dry. It comes out looking lived-in, not worn out — expect the canvas to soften a little with age.',
+        origin: 'Made in India',
+      },
       seoTitle: 'Heavy-Duty Canvas Tote Bag',
       seoDescription:
         'A 12oz cotton canvas tote with reinforced straps, a 28" drop, and an interior pocket. Built to actually carry things.',
@@ -365,6 +389,23 @@ export const genericPack: SampleDataPack = {
       productType: 'Accessories',
       vendor: 'House Goods',
       tags: ['stickers', 'vinyl', 'accessories', 'fun'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: "What's included",
+            body: 'A set of ten die-cut vinyl stickers in a matte finish — no cheap glossy glare.',
+          },
+          {
+            label: 'Durability',
+            body: 'Waterproof, UV-resistant, and dishwasher-safe, so they survive water bottles, laptops, and notebooks without fading or peeling.',
+          },
+          {
+            label: 'Sizing',
+            body: 'Mixed die-cut shapes averaging 2–3 inches on the long edge. Peels clean if you ever change your mind.',
+          },
+        ],
+      },
       seoTitle: 'Die-Cut Vinyl Sticker Pack (10)',
       seoDescription:
         'Ten waterproof, UV-resistant matte vinyl stickers. Survive bottles, laptops, and notebooks. Peel clean.',
@@ -421,6 +462,14 @@ export const genericPack: SampleDataPack = {
       productType: 'Drinkware',
       vendor: 'House Goods',
       tags: ['water bottle', 'insulated', 'drinkware', 'stainless steel'],
+      productTypeKey: 'home_goods',
+      attributes: {
+        materials:
+          'Double-wall vacuum-insulated 18/8 stainless steel with a chip-resistant powder-coat finish and a leakproof lid. Keeps drinks cold for 24 hours and hot for 12.',
+        dimensions: '20 oz — Ø 7 × H 24 cm, fits a standard cup holder',
+        care: 'Hand-wash to keep the finish its best; the lid is dishwasher-safe. Do not microwave or freeze the bottle.',
+        origin: 'Made in China',
+      },
       seoTitle: '20oz Insulated Stainless Steel Water Bottle',
       seoDescription:
         'A 20oz vacuum-insulated steel bottle — cold 24h, hot 12h — with a leakproof lid and a chip-resistant finish.',
@@ -490,6 +539,23 @@ export const genericPack: SampleDataPack = {
       productType: 'Accessories',
       vendor: 'House Goods',
       tags: ['pin', 'enamel', 'accessories', 'gift'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Construction',
+            body: 'Hard enamel with a polished metal finish and crisp, raised color fill — the keepsake kind, not the giveaway kind.',
+          },
+          {
+            label: 'Backing',
+            body: 'A rubber clutch that actually holds, so it stays put on a jacket, bag, or lanyard.',
+          },
+          {
+            label: 'Size & packaging',
+            body: 'About 1.25 inches, individually carded.',
+          },
+        ],
+      },
       seoTitle: 'Hard Enamel Pin',
       seoDescription:
         'A 1.25" hard enamel pin with polished metal, raised color fill, and a rubber clutch that holds.',
@@ -537,6 +603,23 @@ export const genericPack: SampleDataPack = {
       productType: 'Bundles',
       vendor: 'House Goods',
       tags: ['bundle', 'starter', 'gift', 'value'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: "What's included",
+            body: 'Our most popular trio in one bundle: the Classic Notebook, a Ceramic Mug, and a Canvas Tote.',
+          },
+          {
+            label: 'Value',
+            body: 'Buy them together and save versus picking each one on its own.',
+          },
+          {
+            label: 'Best for',
+            body: 'An everyday-carry set that makes a great gift or a clean welcome kit for new hires.',
+          },
+        ],
+      },
       seoTitle: 'Starter Pack — Notebook, Mug & Tote',
       seoDescription:
         'A value bundle of our Classic Notebook, Ceramic Mug, and Canvas Tote. The everyday-carry set, priced to save.',

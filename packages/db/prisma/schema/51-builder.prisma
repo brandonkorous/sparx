@@ -25,6 +25,14 @@ model BuilderPage {
   kind       String  @default("singleton") @db.VarChar(20)
   // collection only — the content type each record fills (e.g. "cms.post").
   recordType String? @map("record_type") @db.VarChar(63)
+  // collection only, and only meaningful for `recordType='commerce.product'` —
+  // the PRODUCT TYPE this page designs (docs/143 §4.4, Option B). `null` is the
+  // DEFAULT product page (renders any product with no more-specific page);
+  // `'apparel'` makes it the Apparel product page. Resolution is most-specific-
+  // wins: WHERE record_type='commerce.product' AND (record_subtype=<type> OR
+  // record_subtype IS NULL) ORDER BY (record_subtype IS NOT NULL) DESC. Nullable,
+  // backward compatible — every existing PDP is record_subtype=null.
+  recordSubtype String? @map("record_subtype") @db.VarChar(63)
   // The URL a published SINGLETON page serves at on the storefront (docs/44).
   // Null for collection templates (they render per-record) and unrouted pages.
   // Unique per tenant; Postgres treats NULLs as distinct, so many stay null.

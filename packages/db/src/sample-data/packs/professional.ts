@@ -35,6 +35,74 @@ export const professionalPack: SampleDataPack = {
     { key: 'most-requested', name: 'Most Requested', handle: 'most-requested' },
   ],
 
+  // What a practice keeps about a client that no invoice line captures
+  // (docs/144 §3) — how the work is bought, and how it is renewed.
+  recordTypes: [
+    {
+      objectKey: 'contact',
+      properties: [
+        {
+          key: 'engagementType',
+          label: 'How they buy',
+          type: 'enum',
+          helpText: 'The shape of the work, which decides how you bill it.',
+          options: [
+            { value: 'retainer', label: 'Monthly retainer' },
+            { value: 'project', label: 'Fixed-price project' },
+            { value: 'hourly', label: 'By the hour' },
+            { value: 'advisory', label: 'Advisory, as needed' },
+          ],
+        },
+        {
+          key: 'introducedBy',
+          label: 'Who introduced them',
+          type: 'text',
+          helpText: 'The person to thank. Referrals are most of this business.',
+        },
+        {
+          key: 'nextReviewOn',
+          label: 'Next review',
+          type: 'date',
+          helpText: 'The date you sit down and talk about the work, not a task.',
+        },
+      ],
+    },
+    {
+      objectKey: 'company',
+      properties: [
+        {
+          key: 'financialYearEnd',
+          label: 'Financial year end',
+          type: 'enum',
+          helpText: 'Drives every deadline you have with them.',
+          options: [
+            { value: '03', label: 'March' },
+            { value: '06', label: 'June' },
+            { value: '09', label: 'September' },
+            { value: '12', label: 'December' },
+          ],
+        },
+        {
+          key: 'headcount',
+          label: 'How many people they have',
+          type: 'number',
+          integer: true,
+        },
+      ],
+    },
+    {
+      objectKey: 'deal',
+      properties: [
+        {
+          key: 'scopeInOneLine',
+          label: 'The scope, in one line',
+          type: 'text',
+          helpText: 'What you actually agreed to do. Read this before every call.',
+        },
+      ],
+    },
+  ],
+
   personas: [
     {
       key: 'nadia',
@@ -47,6 +115,15 @@ export const professionalPack: SampleDataPack = {
       city: 'San Francisco',
       region: 'CA',
       postalCode: '94107',
+      properties: {
+        engagementType: 'retainer',
+        introducedBy: 'Priya Raman at Wellspring',
+        nextReviewOn: '2026-10-02',
+      },
+      companyProperties: {
+        financialYearEnd: '06',
+        headcount: 34,
+      },
     },
     {
       key: 'darnell',
@@ -59,6 +136,11 @@ export const professionalPack: SampleDataPack = {
       city: 'Portland',
       region: 'OR',
       postalCode: '97209',
+      properties: {
+        engagementType: 'project',
+        introducedBy: 'Inbound — found us searching',
+        nextReviewOn: '2026-09-18',
+      },
     },
     {
       key: 'imani',
@@ -71,6 +153,11 @@ export const professionalPack: SampleDataPack = {
       city: 'Chicago',
       region: 'IL',
       postalCode: '60661',
+      properties: {
+        engagementType: 'advisory',
+        introducedBy: 'Board introduction',
+        nextReviewOn: '2026-11-06',
+      },
     },
     {
       key: 'theo',
@@ -83,6 +170,11 @@ export const professionalPack: SampleDataPack = {
       city: 'Denver',
       region: 'CO',
       postalCode: '80202',
+      properties: {
+        engagementType: 'project',
+        introducedBy: 'Nadia Fereira',
+        nextReviewOn: '2026-09-30',
+      },
     },
     {
       key: 'sofia',
@@ -93,6 +185,10 @@ export const professionalPack: SampleDataPack = {
       city: 'Boston',
       region: 'MA',
       postalCode: '02108',
+      properties: {
+        engagementType: 'hourly',
+        introducedBy: 'Referred by a past client',
+      },
     },
     {
       key: 'cole',
@@ -103,6 +199,10 @@ export const professionalPack: SampleDataPack = {
       city: 'Seattle',
       region: 'WA',
       postalCode: '98101',
+      properties: {
+        engagementType: 'advisory',
+        introducedBy: 'Met at the trade association dinner',
+      },
     },
   ],
 
@@ -116,6 +216,27 @@ export const professionalPack: SampleDataPack = {
       productType: 'Strategy',
       vendor: 'Studio North',
       tags: ['brand', 'audit', 'strategy', 'positioning'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Scope',
+            body: 'A two-week diagnostic of how your brand actually shows up — messaging, visual identity, website, and core funnels — against your goals and competitive set.',
+          },
+          {
+            label: 'Deliverables',
+            body: 'A scored audit deck plus a ranked, effort-vs-impact action plan you can act on with or without us.',
+          },
+          {
+            label: 'Timeline',
+            body: 'Two weeks from kickoff to readout. Fixed scope, fixed price — no surprise change orders.',
+          },
+          {
+            label: 'Standalone',
+            body: 'Completely standalone. The fix list is yours to run in-house; there is no obligation to book a follow-on project.',
+          },
+        ],
+      },
       fulfillmentType: 'service',
       seoTitle: 'Brand Audit — a 2-week diagnostic with a prioritized fix list',
       seoDescription:
@@ -178,6 +299,27 @@ export const professionalPack: SampleDataPack = {
       productType: 'Marketing',
       vendor: 'Studio North',
       tags: ['seo', 'sprint', 'marketing', 'organic'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Scope',
+            body: 'Four focused weeks: a full technical crawl, keyword and intent mapping against your top revenue pages, and on-page optimization for up to fifteen priority URLs.',
+          },
+          {
+            label: 'Deliverables',
+            body: 'Implemented on-page fixes, an internal-linking and content-gap plan, a prioritized backlog for anything out of scope, and a baseline dashboard.',
+          },
+          {
+            label: 'Timeline',
+            body: 'Four weeks with weekly check-ins and a final scorecard showing tracked-keyword movement.',
+          },
+          {
+            label: 'What it does not cover',
+            body: 'New long-form writing lives in the Content Retainer; this sprint optimizes existing pages and maps the gaps for what comes next.',
+          },
+        ],
+      },
       fulfillmentType: 'service',
       seoTitle: 'SEO Sprint — 4 weeks of fixes shipped, not a report handed off',
       seoDescription:
@@ -232,6 +374,27 @@ export const professionalPack: SampleDataPack = {
       productType: 'Web',
       vendor: 'Studio North',
       tags: ['website', 'web design', 'build', 'launch'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Scope',
+            body: 'A complete marketing website designed and built end to end — up to eight pages, responsive and fast, on a content system your team can update without calling us.',
+          },
+          {
+            label: "What's included",
+            body: 'A discovery and sitemap workshop, custom design for every page type across two review rounds, build and integration (forms and analytics), and content migration.',
+          },
+          {
+            label: 'Launch & support',
+            body: 'Pre-launch QA, an accessibility pass, a launch-day runbook, and a thirty-day post-launch support window.',
+          },
+          {
+            label: 'Timeline',
+            body: 'Six to eight weeks depending on content readiness — we tell you up front which of the two it is.',
+          },
+        ],
+      },
       fulfillmentType: 'service',
       seoTitle: 'Website Package — a full marketing site, designed and built',
       seoDescription:
@@ -293,6 +456,27 @@ export const professionalPack: SampleDataPack = {
       productType: 'Marketing',
       vendor: 'Studio North',
       tags: ['content', 'retainer', 'marketing', 'writing'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Scope',
+            body: 'A monthly content engine: a calendar planned against your campaigns and keyword targets, then written and shipped — without the cost of an in-house team.',
+          },
+          {
+            label: 'Monthly quota',
+            body: 'Two long-form articles fully edited and SEO-optimized, four short-form pieces (social, email, or landing-page copy), and one revision round per piece.',
+          },
+          {
+            label: 'Reporting',
+            body: 'A monthly performance recap with recommendations tied to what actually moved.',
+          },
+          {
+            label: 'Terms',
+            body: 'Month-to-month after an initial three-month commitment. Unused quota does not roll over; the calendar is planned so it rarely comes up.',
+          },
+        ],
+      },
       fulfillmentType: 'service',
       seoTitle: 'Content Retainer — monthly long-form + short-form, planned and shipped',
       seoDescription:
@@ -346,6 +530,27 @@ export const professionalPack: SampleDataPack = {
       productType: 'Design',
       vendor: 'Studio North',
       tags: ['logo', 'identity', 'design', 'branding'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Scope',
+            body: 'A complete visual identity — the mark, the type system, the color palette, and the rules for using them — not just a logo file.',
+          },
+          {
+            label: "What's included",
+            body: 'A discovery workshop, three distinct logo directions narrowed to one across two refinement rounds, accessibility-checked type and color, and a full lockup set with favicon and app-icon sizes.',
+          },
+          {
+            label: 'Deliverables',
+            body: 'A brand guidelines document and a packaged asset library (SVG, PNG, and source files) you own outright — no licensing strings, ever.',
+          },
+          {
+            label: 'Timeline',
+            body: 'Three to four weeks. You own every file when we are done.',
+          },
+        ],
+      },
       fulfillmentType: 'service',
       seoTitle: 'Logo & Identity — a full visual system, not just a logo',
       seoDescription:
@@ -398,6 +603,27 @@ export const professionalPack: SampleDataPack = {
       productType: 'Strategy',
       vendor: 'Studio North',
       tags: ['conversion', 'cro', 'strategy', 'funnel'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Scope',
+            body: 'A focused one-week review of a single funnel — a landing page, a checkout, a signup flow — to find the leaks costing you conversions.',
+          },
+          {
+            label: "What's included",
+            body: 'A frame-by-frame heuristic review against conversion best practices, analytics and funnel-drop analysis where data exists, and a prioritized list of friction points with annotated screenshots.',
+          },
+          {
+            label: 'Deliverables',
+            body: 'Specific, testable recommendations across copy, layout, and trust signals, plus a thirty-minute walkthrough call.',
+          },
+          {
+            label: 'Timeline',
+            body: 'Five business days. Ideal as a standalone tune-up or a precursor to a larger engagement.',
+          },
+        ],
+      },
       fulfillmentType: 'service',
       seoTitle: 'Conversion Teardown — a 1-week funnel review with testable fixes',
       seoDescription:
@@ -452,6 +678,27 @@ export const professionalPack: SampleDataPack = {
       productType: 'Strategy',
       vendor: 'Studio North',
       tags: ['fractional', 'leadership', 'strategy', 'retainer'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Scope',
+            body: 'Senior marketing leadership part-time: a dedicated lead embeds to own strategy, set priorities, manage vendors, and keep the whole effort pointed at revenue.',
+          },
+          {
+            label: "What's included",
+            body: 'A standing weekly leadership session with async availability, quarterly strategy and a rolling 90-day roadmap, hands-on team and vendor management, and budget and channel-mix planning.',
+          },
+          {
+            label: 'Reporting',
+            body: 'A monthly metrics review tied to pipeline and revenue.',
+          },
+          {
+            label: 'Terms',
+            body: 'Month-to-month after a three-month minimum. Scales up or down; most clients graduate to a full-time hire, and we help you find them.',
+          },
+        ],
+      },
       fulfillmentType: 'service',
       seoTitle: 'Fractional Marketing Lead — senior leadership, part-time',
       seoDescription:

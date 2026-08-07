@@ -110,6 +110,94 @@ export const wholesalePack: SampleDataPack = {
     { key: 'new', name: 'New', handle: 'new' },
   ],
 
+  // What a distributor keeps about a trade account beyond terms and credit
+  // (docs/144 §3) — the operational facts that decide whether a delivery works.
+  recordTypes: [
+    {
+      objectKey: 'contact',
+      properties: [
+        {
+          key: 'buyingRole',
+          label: 'Their role in buying',
+          type: 'enum',
+          helpText: 'Who signs, who orders, who just needs telling.',
+          options: [
+            { value: 'decision_maker', label: 'Signs it off' },
+            { value: 'orderer', label: 'Places the orders' },
+            { value: 'influencer', label: 'Has a say' },
+            { value: 'ap', label: 'Accounts payable' },
+          ],
+        },
+        {
+          key: 'reorderCadence',
+          label: 'How often they reorder',
+          type: 'enum',
+          options: [
+            { value: 'weekly', label: 'Weekly' },
+            { value: 'fortnightly', label: 'Every two weeks' },
+            { value: 'monthly', label: 'Monthly' },
+            { value: 'quarterly', label: 'Quarterly' },
+            { value: 'adhoc', label: 'When they run out' },
+          ],
+        },
+      ],
+    },
+    {
+      objectKey: 'company',
+      properties: [
+        {
+          key: 'renewalMonth',
+          label: 'Contract renewal month',
+          type: 'enum',
+          helpText: 'When their pricing agreement comes up.',
+          options: [
+            { value: '01', label: 'January' },
+            { value: '02', label: 'February' },
+            { value: '03', label: 'March' },
+            { value: '04', label: 'April' },
+            { value: '05', label: 'May' },
+            { value: '06', label: 'June' },
+            { value: '07', label: 'July' },
+            { value: '08', label: 'August' },
+            { value: '09', label: 'September' },
+            { value: '10', label: 'October' },
+            { value: '11', label: 'November' },
+            { value: '12', label: 'December' },
+          ],
+        },
+        {
+          key: 'deliveryWindow',
+          label: 'When they can take a delivery',
+          type: 'text',
+          helpText: 'Loading dock hours, or the times a driver will be turned away.',
+        },
+        {
+          key: 'poRequired',
+          label: 'Needs a PO number',
+          type: 'boolean',
+          helpText: 'Turn this on and an order without one will not get paid.',
+        },
+      ],
+    },
+    {
+      objectKey: 'deal',
+      properties: [
+        {
+          key: 'whoElseTheyAreTalkingTo',
+          label: 'Who else they are quoting',
+          type: 'text',
+        },
+        {
+          key: 'annualVolumeEstimate',
+          label: 'Annual volume they hinted at',
+          type: 'currency',
+          currency: 'USD',
+          helpText: 'What the account is worth in a year if it lands.',
+        },
+      ],
+    },
+  ],
+
   personas: [
     {
       key: 'harlan',
@@ -122,6 +210,15 @@ export const wholesalePack: SampleDataPack = {
       city: 'Columbus',
       region: 'OH',
       postalCode: '43219',
+      properties: {
+        buyingRole: 'decision_maker',
+        reorderCadence: 'monthly',
+      },
+      companyProperties: {
+        renewalMonth: '03',
+        deliveryWindow: 'Deliveries 6am–10am only. The dock is shut by 11.',
+        poRequired: true,
+      },
     },
     {
       key: 'denise',
@@ -134,6 +231,10 @@ export const wholesalePack: SampleDataPack = {
       city: 'Overland Park',
       region: 'KS',
       postalCode: '66210',
+      properties: {
+        buyingRole: 'ap',
+        reorderCadence: 'quarterly',
+      },
     },
     {
       key: 'victor',
@@ -146,6 +247,10 @@ export const wholesalePack: SampleDataPack = {
       city: 'Miami',
       region: 'FL',
       postalCode: '33137',
+      properties: {
+        buyingRole: 'orderer',
+        reorderCadence: 'weekly',
+      },
     },
     {
       key: 'rhonda',
@@ -158,6 +263,10 @@ export const wholesalePack: SampleDataPack = {
       city: 'Pittsburgh',
       region: 'PA',
       postalCode: '15222',
+      properties: {
+        buyingRole: 'decision_maker',
+        reorderCadence: 'monthly',
+      },
     },
     {
       key: 'samuel',
@@ -170,6 +279,10 @@ export const wholesalePack: SampleDataPack = {
       city: 'Portland',
       region: 'OR',
       postalCode: '97239',
+      properties: {
+        buyingRole: 'influencer',
+        reorderCadence: 'fortnightly',
+      },
     },
     {
       key: 'aisha',
@@ -182,6 +295,10 @@ export const wholesalePack: SampleDataPack = {
       city: 'Phoenix',
       region: 'AZ',
       postalCode: '85016',
+      properties: {
+        buyingRole: 'orderer',
+        reorderCadence: 'adhoc',
+      },
     },
   ],
 
@@ -195,6 +312,27 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Safety',
       vendor: 'GuardTouch',
       tags: ['nitrile gloves', 'powder-free', 'ppe', 'case', 'foodservice'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Material & thickness',
+            body: 'Powder-free nitrile, 4-mil wall with textured fingertips for wet grip. Latex-free and ambidextrous, AQL 1.5, with a beaded cuff that resists roll-down through a full shift.',
+          },
+          {
+            label: 'Case pack',
+            body: '10 dispenser boxes of 100 — 1,000 gloves per case. Sold by the size; most facilities stock a 60/40 Medium-to-Large split.',
+          },
+          {
+            label: 'Sizing',
+            body: 'Available in Medium and Large. Order a single case to open an account, or move to half-pallet quantities for the bracket price.',
+          },
+          {
+            label: 'Best for',
+            body: 'Foodservice, housekeeping, custodial, and clinic crews standardizing on one disposable glove across every department.',
+          },
+        ],
+      },
       seoTitle: 'Nitrile Exam Gloves Powder-Free — Wholesale Case of 1,000',
       seoDescription:
         'Powder-free 4-mil nitrile gloves by the case. Latex-free, textured grip — bulk pricing for facilities, foodservice, and clinics.',
@@ -303,6 +441,27 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Paper & Disposables',
       vendor: 'Kimberly',
       tags: ['paper towels', 'multifold', 'restroom', 'case', 'disposables'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Sheet & fold',
+            body: '1-ply embossed multifold towel, 9.25" × 9.4" unfolded. One-at-a-time dispense cuts usage and waste versus loose stacks, and dries hands in a single pull.',
+          },
+          {
+            label: 'Case pack',
+            body: '16 packs of 250 — 4,000 towels per case.',
+          },
+          {
+            label: 'Dispenser fit',
+            body: 'Fits standard universal multifold dispensers, surface-mount or recessed. If yours takes C-fold instead, ask us to quote the right pack.',
+          },
+          {
+            label: 'Best for',
+            body: 'High-traffic restrooms in schools, gyms, and offices running dozens of dispensers around the clock.',
+          },
+        ],
+      },
       seoTitle: 'Multifold Paper Towels 1-Ply — Wholesale Case of 4,000',
       seoDescription:
         'Universal-fit multifold paper towels by the case. High-capacity, low-waste dispense for high-traffic restrooms.',
@@ -377,6 +536,23 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Can Liners',
       vendor: 'Kimberly',
       tags: ['trash liners', 'can liners', '33 gallon', 'star-seal', 'case'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Size & gauge',
+            body: '33 gal, 33" × 39", 1.5-mil low-density with a star-seal bottom that distributes weight and resists leaks — no gusseted seam to split.',
+          },
+          {
+            label: 'Case pack',
+            body: '10 coreless rolls of 25 — 250 liners per case. Black. Coreless rolls dispense clean off the cart.',
+          },
+          {
+            label: 'Best for',
+            body: 'A daily can-change cadence in offices, schools, and property common areas.',
+          },
+        ],
+      },
       seoTitle: 'Trash Can Liners 33 Gal 1.5 Mil — Wholesale Case of 250',
       seoDescription:
         'Star-seal 33-gallon low-density can liners by the case. Leak-resistant, no double-bagging — bulk facility pricing.',
@@ -440,6 +616,23 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Can Liners',
       vendor: 'Kimberly',
       tags: ['trash liners', 'can liners', '55 gallon', 'contractor', 'case'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Size & gauge',
+            body: '55 gal, 38" × 58", 2.0-mil low-density with a star-seal bottom for heavy, jagged, and wet loads that tear lighter bags.',
+          },
+          {
+            label: 'Case pack',
+            body: '4 rolls of 25 — 100 liners per case. Black. Sized to line a full 55-gallon barrel with cuff to spare.',
+          },
+          {
+            label: 'Best for',
+            body: 'Drum cans, dock waste, and event cleanup in restaurants, hospitals, and property crews.',
+          },
+        ],
+      },
       categoryKeys: ['liners'],
       collectionKeys: ['bulk-deals'],
       variants: [
@@ -488,6 +681,27 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Cleaning Chemicals',
       vendor: 'ProChem',
       tags: ['hand soap', 'foaming', 'gallon', 'refill', 'case'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Formula',
+            body: 'Concentrated foaming hand soap, mild and dye-free. Lathers fast and rinses clean for the dozens of washes a foodservice or clinic shift demands.',
+          },
+          {
+            label: 'Case pack & yield',
+            body: '4 one-gallon jugs. One gallon refills a 1,000-mL dispenser roughly four times.',
+          },
+          {
+            label: 'Dispenser compatibility',
+            body: 'Pour-and-go for any open or refillable foaming dispenser — no proprietary cartridge lock-in.',
+          },
+          {
+            label: 'Best for',
+            body: 'Restrooms and kitchens across restaurants, schools, gyms, and clinics standardizing on one soap.',
+          },
+        ],
+      },
       seoTitle: 'Foaming Hand Soap Gallon Refill — Wholesale Case of 4',
       seoDescription:
         'Bulk foaming hand soap in gallon refills, 4 per case. Dye-free, dispenser-agnostic — facility pricing.',
@@ -552,6 +766,27 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Cleaning Chemicals',
       vendor: 'ProChem',
       tags: ['disinfectant', 'concentrate', 'gallon', 'epa-registered', 'case'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Formula',
+            body: 'Hospital-grade quaternary disinfectant concentrate. An EPA-registered one-step cleaner-disinfectant for hard surfaces.',
+          },
+          {
+            label: 'Dilution & yield',
+            body: 'Dilutes roughly 1:64 — one gallon makes dozens of ready-to-use gallons at the trigger bottle. See the label for contact times.',
+          },
+          {
+            label: 'Case pack',
+            body: '4 one-gallon concentrate jugs. Ships as hazmat class 8.',
+          },
+          {
+            label: 'Compliance',
+            body: 'SDS and EPA master label download from the product page, and a compliance packet ships with every first order to a new account.',
+          },
+        ],
+      },
       hazmatClass: 'class8',
       categoryKeys: ['chemicals'],
       collectionKeys: ['best-sellers', 'new'],
@@ -614,6 +849,27 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Packaging',
       vendor: 'PackRight',
       tags: ['stretch wrap', 'pallet wrap', 'film', 'shipping', 'case'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Film spec',
+            body: '80-gauge hand stretch film, 18" × 1,500 ft per roll. High cling locks loads without tails, and the pre-stretched blend yields more wrap per pound than the spec suggests.',
+          },
+          {
+            label: 'Case pack',
+            body: '4 rolls per case. Clear, so labels and contents stay readable on the dock.',
+          },
+          {
+            label: 'Equipment',
+            body: 'Fits standard hand dispensers. Machine-grade 20" × 5,000 ft is available by quote for wrappers.',
+          },
+          {
+            label: 'Best for',
+            body: 'Palletizing and load containment in warehouses, restaurants, and property crews staging goods.',
+          },
+        ],
+      },
       categoryKeys: ['packaging'],
       collectionKeys: ['bulk-deals'],
       variants: [
@@ -666,6 +922,23 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Packaging',
       vendor: 'PackRight',
       tags: ['shipping boxes', 'corrugated', 'cardboard', '12x12x12', 'bundle'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Board & strength',
+            body: '200-lb-test, 32-ECT single-wall corrugated. Kraft brown, ships flat, and assembles into a square, stackable cube that protects edges and holds in a stack.',
+          },
+          {
+            label: 'Dimensions & pack',
+            body: '12" × 12" × 12" inside dimensions. Bundle of 25, shipped flat to save space.',
+          },
+          {
+            label: 'Best for',
+            body: 'Shipping, dry-goods storage, and unit turnovers — survives the dolly and holds under a stack.',
+          },
+        ],
+      },
       categoryKeys: ['packaging'],
       collectionKeys: ['new'],
       variants: [
@@ -714,6 +987,27 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Packaging',
       vendor: 'PackRight',
       tags: ['packing tape', 'carton tape', 'acrylic', 'shipping', 'case'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Tape spec',
+            body: '2.0-mil acrylic carton-sealing tape, 2" × 110 yd per roll. Clear and quiet off the roll.',
+          },
+          {
+            label: 'Temperature performance',
+            body: 'The acrylic adhesive holds from cold docks to hot trailers without the yellowing or release that kills cheaper hot-melt tape in storage.',
+          },
+          {
+            label: 'Case pack',
+            body: '36 rolls per case. Fits any standard 2" dispenser.',
+          },
+          {
+            label: 'Best for',
+            body: 'Daily carton sealing in warehouses, restaurants, and offices.',
+          },
+        ],
+      },
       categoryKeys: ['packaging'],
       collectionKeys: ['bulk-deals'],
       variants: [
@@ -774,6 +1068,27 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Cleaning Chemicals',
       vendor: 'ProChem',
       tags: ['floor cleaner', 'neutral', 'concentrate', 'auto-scrubber', 'case'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: 'Formula',
+            body: 'pH-neutral floor cleaner concentrate. No dulling, no film, no rinse required on most surfaces, and low-foam so it plays nice with auto-scrubbers.',
+          },
+          {
+            label: 'Surfaces',
+            body: 'Safe for finished floors, sealed concrete, tile, and LVT — one cleaner for every floor type.',
+          },
+          {
+            label: 'Dilution & pack',
+            body: 'About 2 oz per gallon of water for daily mopping; one gallon makes dozens of buckets. Case of 4 one-gallon jugs (hazmat class 8).',
+          },
+          {
+            label: 'Best for',
+            body: 'Large finished-floor areas in schools, hotels, gyms, and property portfolios.',
+          },
+        ],
+      },
       hazmatClass: 'class8',
       categoryKeys: ['chemicals'],
       collectionKeys: ['new'],
@@ -844,6 +1159,27 @@ export const wholesalePack: SampleDataPack = {
       productType: 'Bundle',
       vendor: 'House Pallet',
       tags: ['starter pallet', 'bundle', 'facility', 'opening order'],
+      productTypeKey: 'general',
+      attributes: {
+        details: [
+          {
+            label: "What's included",
+            body: 'A case each of nitrile gloves, multifold paper towels, 33-gallon can liners, and foaming hand soap — one pallet, one price.',
+          },
+          {
+            label: 'Pricing',
+            body: 'Priced below the sum of its cases. Swap the glove size at checkout.',
+          },
+          {
+            label: 'Best for',
+            body: 'Property turnovers, new-location openings, and onboarding a fresh account without building a line-by-line cart.',
+          },
+          {
+            label: 'Customization',
+            body: 'The soap line is swappable at checkout; custom standing pallets (disinfectant, floor cleaner, and more) are available by quote.',
+          },
+        ],
+      },
       categoryKeys: ['paper'],
       collectionKeys: ['best-sellers', 'bulk-deals'],
       variants: [{ sku: 'PALLET-FACILITY-START', title: null, priceCents: 17999, costCents: 9800 }],

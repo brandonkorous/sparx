@@ -95,6 +95,15 @@ export interface SampleProduct {
   /** Rich HTML — rendered verbatim on the PDP. Write real, in-depth copy. */
   description: string;
   productType: string;
+  /** The TYPED product-type key (docs/143) — a built-in type (`apparel`, `cosmetics`,
+   *  `food_beverage`, `home_goods`, `electronics`, `auto_part`, `general`). When set, the
+   *  PDP auto-renders this product's `attributes` as labeled detail sections. Distinct from
+   *  the free-text `productType` above (the merchandising label). */
+  productTypeKey?: string;
+  /** The typed attribute bag, matching the built-in type's schema — real, per-product
+   *  fabric/care/ingredients/specs/… authored data (trusted, like everything in a pack, so
+   *  the engine writes it without runtime validation). */
+  attributes?: Record<string, unknown>;
   vendor: string;
   tags?: string[];
   hazmatClass?: string;
@@ -192,6 +201,43 @@ export interface SamplePersona {
   region?: string;
   postalCode?: string;
   country?: string; // default US
+  /** Values for the extra details this pack declares on `contact` (docs/144 §3).
+   *  Keyed by field key. Trusted, like everything in a pack, so the engine writes
+   *  the bag without runtime validation — but keep it honest to the schema, or
+   *  the property panel renders a value it cannot edit. */
+  properties?: Record<string, unknown>;
+  /** Values for the extra details declared on `company`. Only read for a `b2b`
+   *  persona, which is the one that becomes a trade account row. */
+  companyProperties?: Record<string, unknown>;
+}
+
+/** An extra detail a pack declares on one of the built-in CRM records.
+ *
+ *  This is the sample-data face of the object registry (docs/144 §3): a fitness
+ *  studio tracks a membership tier on its members, a wholesaler tracks a renewal
+ *  month on its companies. Seeding them is what makes the property panel show
+ *  something real on first load instead of an empty section that has to be
+ *  imagined. Mirrors `FieldDef` in @sparx/field-schema — authored loosely here
+ *  because @sparx/db must not depend on the schema packages. */
+export interface SampleRecordProperty {
+  key: string;
+  label: string;
+  type: string;
+  helpText?: string;
+  required?: boolean;
+  options?: { value: string; label: string }[];
+  currency?: string;
+  integer?: boolean;
+  expression?: string;
+  precision?: number;
+}
+
+/** The extra details a pack declares on ONE built-in record type. Custom objects
+ *  a business invents are theirs to create; a pack only extends what ships. */
+export interface SampleRecordType {
+  /** `contact` | `company` | `deal` | `ticket`. */
+  objectKey: string;
+  properties: SampleRecordProperty[];
 }
 
 /** A long-form CMS article. `body` is a TipTap doc (use the `doc`/`p`/`h2`/… kit
@@ -313,6 +359,10 @@ export interface SampleDataPack {
   collections?: SampleCollection[];
   categories?: SampleCategory[];
   personas: SamplePersona[];
+  /** Extra details declared on the built-in CRM records (docs/144 §3). Applied
+   *  only when `crm` is on, and only ever ADDING properties — a pack never
+   *  renames a record type or removes a property the tenant added. */
+  recordTypes?: SampleRecordType[];
   articles?: SampleArticle[];
   scheduling?: SampleScheduling;
   bundles?: SampleBundle[];

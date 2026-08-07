@@ -15,6 +15,8 @@
 // buckets render. Payments back the paid/partial ones; a snapshot freezes any
 // document that lands on a snapshot-on-enter stage (the "receipt").
 
+import type { Prisma } from '@prisma/client';
+
 import { withSampleMeta } from '../markers';
 
 import type { SampleDataPack } from '../types';
@@ -305,6 +307,12 @@ async function seedB2bAr(ctx: ApplyCtx, pack: SampleDataPack, opts: B2bArOpts): 
       creditLimit: 50000,
       status: 'active',
       tags: ['sample'],
+      // The extra details this pack declares on `company` (docs/144 §3). Gated
+      // on CRM for the same reason a contact's are: with the module off there is
+      // no record type giving them meaning.
+      ...(ctx.isOn('crm') && b2bPersona?.companyProperties
+        ? { customProperties: b2bPersona.companyProperties as Prisma.InputJsonObject }
+        : {}),
     },
     select: { id: true },
   });

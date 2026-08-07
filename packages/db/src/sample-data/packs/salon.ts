@@ -39,6 +39,47 @@ export const salonPack: SampleDataPack = {
     { key: 'new', name: 'New', handle: 'new' },
   ],
 
+  // What a stylist writes on the back of a client card (docs/144 §3). This is
+  // the most literal case for the whole feature: every salon already keeps
+  // exactly these, on paper, and loses them when the stylist leaves.
+  recordTypes: [
+    {
+      objectKey: 'contact',
+      properties: [
+        {
+          key: 'formula',
+          label: 'Their formula',
+          type: 'long_text',
+          helpText: 'Colour, developer, timing. Written so a covering stylist can follow it.',
+        },
+        {
+          key: 'allergies',
+          label: 'Allergies and sensitivities',
+          type: 'long_text',
+          helpText: 'Patch-test results and anything that has reacted before.',
+        },
+        {
+          key: 'usualStylist',
+          label: 'Who they usually see',
+          type: 'text',
+        },
+        {
+          key: 'visitEvery',
+          label: 'How often they come in',
+          type: 'enum',
+          helpText: 'Drives when a rebooking reminder should go out.',
+          options: [
+            { value: '4w', label: 'Every 4 weeks' },
+            { value: '6w', label: 'Every 6 weeks' },
+            { value: '8w', label: 'Every 8 weeks' },
+            { value: '12w', label: 'Every 12 weeks' },
+            { value: 'occasional', label: 'Now and then' },
+          ],
+        },
+      ],
+    },
+  ],
+
   personas: [
     {
       key: 'amara',
@@ -49,6 +90,11 @@ export const salonPack: SampleDataPack = {
       city: 'Portland',
       region: 'OR',
       postalCode: '97211',
+      properties: {
+        formula: '7N + 8G, 20 vol, 35 min at the root. Gloss 9V for 10 at the basin.',
+        usualStylist: 'Rina',
+        visitEvery: '6w',
+      },
     },
     {
       key: 'jordan',
@@ -59,6 +105,12 @@ export const salonPack: SampleDataPack = {
       city: 'Portland',
       region: 'OR',
       postalCode: '97239',
+      properties: {
+        formula: 'Balayage, lightener to level 8, toner 9A for 8 minutes.',
+        allergies: 'Reacts to PPD — ammonia-free line only, patch tested 2026-02-11.',
+        usualStylist: 'Kai',
+        visitEvery: '12w',
+      },
     },
     {
       key: 'noor',
@@ -69,6 +121,11 @@ export const salonPack: SampleDataPack = {
       city: 'Vancouver',
       region: 'WA',
       postalCode: '98661',
+      properties: {
+        formula: '4NN full coverage, 10 vol, 30 min. Grey at the temples needs the extra time.',
+        usualStylist: 'Rina',
+        visitEvery: '4w',
+      },
     },
     {
       key: 'celia',
@@ -79,6 +136,11 @@ export const salonPack: SampleDataPack = {
       city: 'Portland',
       region: 'OR',
       postalCode: '97214',
+      properties: {
+        formula: 'Cut and blow-dry only. No colour.',
+        usualStylist: 'Marisol',
+        visitEvery: '8w',
+      },
     },
     {
       key: 'devon',
@@ -89,6 +151,11 @@ export const salonPack: SampleDataPack = {
       city: 'Portland',
       region: 'OR',
       postalCode: '97217',
+      properties: {
+        formula: 'Clipper 2 back and sides, scissor on top. Beard tidy.',
+        usualStylist: 'Kai',
+        visitEvery: '4w',
+      },
     },
     {
       key: 'priya',
@@ -99,6 +166,12 @@ export const salonPack: SampleDataPack = {
       city: 'Portland',
       region: 'OR',
       postalCode: '97217',
+      properties: {
+        formula: 'Keratin smoothing, half head. Sulphate-free aftercare only.',
+        allergies: 'Scalp is sensitive to heat — keep the dryer moving.',
+        usualStylist: 'Marisol',
+        visitEvery: 'occasional',
+      },
     },
   ],
 
@@ -110,6 +183,17 @@ export const salonPack: SampleDataPack = {
       description:
         '<p>A sulfate-free repair shampoo built for color-treated and chemically processed hair. It cleanses gently while a bond-building complex works to relink the broken disulfide bonds that leave hair brittle after lightening or heat styling. The lather is low and rinses clean — no squeaky stripped feeling, no fading your color faster than it should.</p><p>Use two to three times a week, alternating with your daily wash. Massage into wet hair, leave for sixty seconds so the actives can work, then rinse and follow with the matching conditioner.</p>',
       productType: 'Hair Care',
+      productTypeKey: 'cosmetics',
+      attributes: {
+        keyIngredients:
+          'A bond-building complex (bis-aminopropyl diglycol dimaleate) relinks the broken disulfide bonds left by lightening and heat styling. Gentle glucoside surfactants cleanse without stripping, while panthenol (pro-vitamin B5) and glycerin add slip and hydration. Sulfate- and salt-free, so it will not fade color or strip a keratin treatment.',
+        howToUse:
+          'Use two to three times a week, alternating with your daily wash. Massage into wet hair, leave for sixty seconds so the actives can work, then rinse and follow with the Bond Repair Conditioner.',
+        skinType: ['dry', 'sensitive'],
+        volume: '250 ml / 8.5 fl oz',
+        fullIngredients:
+          'Aqua/Water, Coco-Glucoside, Lauryl Glucoside, Sodium Cocoyl Isethionate, Glycerin, Bis-Aminopropyl Diglycol Dimaleate, Panthenol, Guar Hydroxypropyltrimonium Chloride, Citric Acid, Sodium Benzoate, Potassium Sorbate, Parfum/Fragrance.',
+      },
       vendor: 'Studio Label',
       tags: ['shampoo', 'sulfate-free', 'color-safe', 'bond repair'],
       seoTitle: 'Bond Repair Shampoo for Color-Treated Hair (250 ml)',
@@ -175,6 +259,17 @@ export const salonPack: SampleDataPack = {
       description:
         '<p>The companion to our Bond Repair Shampoo. A rich, slip-heavy conditioner that detangles instantly while the same bond-building complex continues the repair the shampoo starts. Light enough for fine hair, but layer it on the mid-lengths and ends if yours runs dry or coarse.</p><p>After shampooing, work through from the ears down, leave for two to three minutes, then rinse. For a deeper treatment, leave it in under a warm towel for ten minutes once a week.</p>',
       productType: 'Hair Care',
+      productTypeKey: 'cosmetics',
+      attributes: {
+        keyIngredients:
+          'The same bond-building complex (bis-aminopropyl diglycol dimaleate) continues the repair the shampoo starts. Behentrimonium methosulfate and cetyl alcohol deliver instant slip and detangling, while shea butter and argan oil soften mid-lengths and ends without weighing hair down.',
+        howToUse:
+          'After shampooing, work through from the ears down, leave for two to three minutes, then rinse. For a deeper treatment, leave it in under a warm towel for ten minutes once a week.',
+        skinType: ['dry', 'normal'],
+        volume: '250 ml / 8.5 fl oz',
+        fullIngredients:
+          'Aqua/Water, Cetearyl Alcohol, Behentrimonium Methosulfate, Butyrospermum Parkii (Shea) Butter, Argania Spinosa Kernel Oil, Bis-Aminopropyl Diglycol Dimaleate, Cetyl Alcohol, Panthenol, Glycerin, Hydrolyzed Wheat Protein, Phenoxyethanol, Ethylhexylglycerin, Citric Acid, Parfum/Fragrance.',
+      },
       vendor: 'Studio Label',
       tags: ['conditioner', 'color-safe', 'bond repair', 'detangle'],
       seoTitle: 'Bond Repair Conditioner for Color-Treated Hair (250 ml)',
@@ -238,6 +333,17 @@ export const salonPack: SampleDataPack = {
       description:
         '<p>A medium-hold, no-crunch styling cream that tames frizz and adds soft definition without the helmet feel. Heat-protectant up to 230°C, so it doubles as your blow-dry primer. Works on everything from a sleek blowout to air-dried waves.</p><p>Warm a dime-sized amount between your palms and rake through damp hair before styling. Add a touch more to dry hair to smooth flyaways and seal the look.</p>',
       productType: 'Styling',
+      productTypeKey: 'cosmetics',
+      attributes: {
+        keyIngredients:
+          'A film-forming polymer (VP/VA copolymer) gives flexible medium hold with no crunch. A heat-protectant blend of hydrolyzed wheat protein and quaternized conditioners shields hair up to 230°C, while marula oil and glycerin smooth frizz and add softness.',
+        howToUse:
+          'Warm a dime-sized amount between your palms and rake through damp hair before styling. Add a touch more to dry hair to smooth flyaways and seal the look.',
+        skinType: ['all'],
+        volume: '100 ml / 3.4 fl oz',
+        fullIngredients:
+          'Aqua/Water, Cyclopentasiloxane, VP/VA Copolymer, Cetearyl Alcohol, Glycerin, Sclerocarya Birrea Seed Oil, Behentrimonium Chloride, Hydrolyzed Wheat Protein, Panthenol, Dimethicone, Amodimethicone, Phenoxyethanol, Ethylhexylglycerin, Parfum/Fragrance.',
+      },
       vendor: 'Studio Label',
       tags: ['styling cream', 'heat protectant', 'frizz', 'blowout'],
       seoTitle: 'Smoothing Styling Cream with Heat Protection (100 ml)',
@@ -302,6 +408,17 @@ export const salonPack: SampleDataPack = {
       description:
         '<p>A weightless, fast-absorbing finishing oil — argan, marula, and squalane — that adds shine and tames split ends without leaving a greasy film. A single drop on the ends finishes a style; a few drops on damp hair protects against heat and tangles before you dry.</p><p>Start with one or two drops, warm between your palms, and smooth over the mid-lengths and ends. Add more only as needed — this concentrate goes a very long way.</p>',
       productType: 'Hair Care',
+      productTypeKey: 'cosmetics',
+      attributes: {
+        keyIngredients:
+          'A weightless blend of argan oil (fatty acids and vitamin E for shine), marula oil (fast-absorbing and antioxidant-rich), and plant-derived squalane to smooth the cuticle and tame split ends without a greasy film. No added fragrance — the faint scent is the natural oils themselves.',
+        howToUse:
+          'Start with one or two drops, warm between your palms, and smooth over the mid-lengths and ends of damp or dry hair. Add more only as needed — this concentrate goes a very long way.',
+        skinType: ['dry'],
+        volume: '50 ml / 1.7 fl oz',
+        fullIngredients:
+          'Caprylic/Capric Triglyceride, Argania Spinosa Kernel Oil, Sclerocarya Birrea Seed Oil, Squalane, Cyclopentasiloxane, Dimethicone, Simmondsia Chinensis (Jojoba) Seed Oil, Helianthus Annuus (Sunflower) Seed Oil, Tocopherol.',
+      },
       vendor: 'Studio Label',
       tags: ['hair oil', 'argan', 'shine', 'finishing'],
       seoTitle: 'Nourishing Argan & Marula Hair Oil (50 ml)',
@@ -357,6 +474,17 @@ export const salonPack: SampleDataPack = {
       description:
         '<p>A salon-grade, chip-resistant nail lacquer with a high-gloss gel-like finish — no lamp required. The 10-free formula skips the harshest ingredients and goes on smooth in two even coats. Pick your shade; each is mixed in small batches for true, saturated color.</p><p>Apply a base coat, two thin coats of color, and a top coat, letting each layer flash off for two minutes. Expect five to seven days of wear with a top coat refresh midweek.</p>',
       productType: 'Nails',
+      productTypeKey: 'cosmetics',
+      attributes: {
+        keyIngredients:
+          'A 10-free lacquer system: nitrocellulose and a bio-sourced film-former build a high-gloss, chip-resistant finish with no lamp required. Free of formaldehyde, toluene, DBP, camphor, formaldehyde resin, xylene, and other harsh ingredients. Vegan and cruelty-free.',
+        howToUse:
+          'Apply a base coat, then two thin coats of color, letting each layer flash off for two minutes. Seal with a top coat and refresh midweek for five to seven days of wear.',
+        skinType: ['all'],
+        volume: '15 ml / 0.5 fl oz',
+        fullIngredients:
+          'Butyl Acetate, Ethyl Acetate, Nitrocellulose, Acetyl Tributyl Citrate, Adipic Acid/Neopentyl Glycol/Trimellitic Anhydride Copolymer, Isopropyl Alcohol, Stearalkonium Bentonite, Silica, Citric Acid [+/- Mica, CI 77891 (Titanium Dioxide), CI 77491/CI 77492/CI 77499 (Iron Oxides)].',
+      },
       vendor: 'Studio Label',
       tags: ['nail polish', '10-free', 'long-wear', 'gel-like'],
       seoTitle: 'Long-Wear 10-Free Nail Polish (15 ml)',
@@ -470,6 +598,17 @@ export const salonPack: SampleDataPack = {
       description:
         '<p>Our two best-sellers in one set: the Bond Repair Shampoo and matching Conditioner, built to work together on color-treated and chemically processed hair. Buy them as a duo and save over picking each up on its own.</p><p>The everyday kit your stylist would send you home with after a color or lightening session — gentle cleanse, instant slip, and a bond-building complex in both bottles.</p>',
       productType: 'Hair Care',
+      productTypeKey: 'cosmetics',
+      attributes: {
+        keyIngredients:
+          'Both bottles carry the bond-building complex (bis-aminopropyl diglycol dimaleate) that relinks broken disulfide bonds. The shampoo cleanses with gentle glucoside surfactants; the conditioner softens and detangles with shea butter and argan oil. Sulfate- and salt-free, color-safe.',
+        howToUse:
+          'Wash two to three times a week with the shampoo, leaving it on for sixty seconds; follow every time with the conditioner from the ears down for two to three minutes, then rinse.',
+        skinType: ['dry', 'sensitive'],
+        volume: '2 × 250 ml / 8.5 fl oz',
+        fullIngredients:
+          'Shampoo: Aqua/Water, Coco-Glucoside, Lauryl Glucoside, Sodium Cocoyl Isethionate, Glycerin, Bis-Aminopropyl Diglycol Dimaleate, Panthenol, Guar Hydroxypropyltrimonium Chloride, Citric Acid, Sodium Benzoate, Parfum/Fragrance. Conditioner: Aqua/Water, Cetearyl Alcohol, Behentrimonium Methosulfate, Butyrospermum Parkii (Shea) Butter, Argania Spinosa Kernel Oil, Bis-Aminopropyl Diglycol Dimaleate, Panthenol, Hydrolyzed Wheat Protein, Phenoxyethanol, Ethylhexylglycerin, Parfum/Fragrance.',
+      },
       vendor: 'Studio Label',
       tags: ['duo', 'set', 'bond repair', 'color-safe'],
       seoTitle: 'Bond Repair Duo — Shampoo & Conditioner Set',

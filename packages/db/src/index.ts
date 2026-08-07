@@ -81,6 +81,25 @@ export type {
   Segment,
   SegmentMember,
   SavedView,
+  // CRM — the object registry (docs/144 §3): what a record IS for this tenant,
+  // and the rows of the record types they invented.
+  CrmObjectDef,
+  CrmRecord,
+  // CRM — the relationship graph (docs/144 §6): "these two records are related,
+  // and here is what that relationship is called".
+  CrmAssociation,
+  CrmAssociationLabel,
+  // CRM — the engagement spine (docs/144 §5): what was SAID, as opposed to what
+  // the platform did.
+  MailboxConnection,
+  EngagementThread,
+  EngagementMessage,
+  SalesTemplate,
+  SalesSnippet,
+  // CRM — calling (docs/144 §5.6): the placement and its lifecycle, plus the
+  // tenant's own phone-system credentials.
+  CallRecord,
+  VoiceConnection,
   // CRM — orders + child tables
   Order,
   OrderItem,
@@ -91,6 +110,9 @@ export type {
   OrderFulfillmentItem,
   // Commerce — catalog
   Product,
+  // Typed product attributes (docs/143) — the commerce mirror of content types.
+  ProductType,
+  ProductProperty,
   ProductTranslation,
   ProductOption,
   ProductOptionValue,

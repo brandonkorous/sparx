@@ -68,6 +68,13 @@ interface DemoProduct {
   productType: string;
   vendor: string;
   hazmatClass?: string;
+  // Typed product attributes (docs/143) — the demo parts catalog is `auto_part`, so the
+  // seed exercises the new structure end-to-end (a PDP renders real fitment/specs/warranty).
+  attributes?: {
+    fitment: string;
+    specs: { label: string; value: string }[];
+    warranty: string;
+  };
   variants: DemoVariant[];
 }
 interface DemoLot {
@@ -109,6 +116,18 @@ const DEMO_PRODUCTS: DemoProduct[] = [
     handle: 'inv-demo-fuel-filter-67',
     title: 'Fuel Filter — 6.7L Power Stroke',
     productType: 'Filters',
+    attributes: {
+      fitment:
+        'Fits 2011–2016 Ford 6.7L Power Stroke diesel. Direct OE replacement for the primary/secondary fuel-filter service kit; no adapter required.',
+      specs: [
+        { label: 'Micron rating', value: '5 micron' },
+        { label: 'Style', value: 'Spin-on cartridge' },
+        { label: 'Water separator', value: 'Yes' },
+        { label: 'Service interval', value: '15,000 mi' },
+      ],
+      warranty:
+        '12-month / 12,000-mile limited replacement warranty against defects in material and workmanship.',
+    },
     vendor: 'Motorcraft',
     variants: [
       {
@@ -158,6 +177,18 @@ const DEMO_PRODUCTS: DemoProduct[] = [
     handle: 'inv-demo-glow-plug-60',
     title: 'Glow Plug Set (8) — 6.0L Power Stroke',
     productType: 'Ignition',
+    attributes: {
+      fitment:
+        'Fits 2003–2007 Ford 6.0L Power Stroke diesel. Complete set of 8 — one per cylinder. Torque to 15 lb-ft on install.',
+      specs: [
+        { label: 'Set quantity', value: '8 plugs' },
+        { label: 'Voltage', value: '12 V' },
+        { label: 'Tip', value: 'Dual-coil, fast-start' },
+        { label: 'Thread', value: 'M8 × 1.0' },
+      ],
+      warranty:
+        '24-month / unlimited-mile limited warranty; a failed plug is replaced free within the period.',
+    },
     vendor: 'Motorcraft',
     variants: [
       {
@@ -182,6 +213,18 @@ const DEMO_PRODUCTS: DemoProduct[] = [
     handle: 'inv-demo-injector-67-cummins',
     title: 'Fuel Injector — 6.7L Cummins',
     productType: 'Fuel System',
+    attributes: {
+      fitment:
+        'Fits 2007.5–2018 Dodge/Ram 6.7L Cummins common-rail. Sold each; a full set is six. Requires injector-return and high-pressure line reseal on install.',
+      specs: [
+        { label: 'Type', value: 'Common-rail piezo' },
+        { label: 'Flow', value: 'Stock (100%)' },
+        { label: 'Max pressure', value: '26,000 psi' },
+        { label: 'Coding', value: 'Requires IQA re-flash' },
+      ],
+      warranty:
+        'Remanufactured to OE spec; 18-month / unlimited-mile warranty. Core charge refunded on return of the old unit.',
+    },
     vendor: 'Bosch',
     variants: [
       {
@@ -221,6 +264,18 @@ const DEMO_PRODUCTS: DemoProduct[] = [
     handle: 'inv-demo-turbo-lml',
     title: 'Turbocharger — Duramax LML',
     productType: 'Forced Induction',
+    attributes: {
+      fitment:
+        'Fits 2011–2016 GM 6.6L Duramax LML. Bolt-on OE replacement variable-geometry turbo; reuses the factory VGT harness and downpipe.',
+      specs: [
+        { label: 'Compressor wheel', value: '61 mm' },
+        { label: 'Turbine', value: 'Variable-geometry (VGT)' },
+        { label: 'Bearing', value: 'Journal' },
+        { label: 'Actuator', value: 'Electronic, pre-calibrated' },
+      ],
+      warranty:
+        '12-month / unlimited-mile limited warranty against defects; balanced and flow-tested before shipping.',
+    },
     vendor: 'Garrett',
     variants: [
       {
@@ -245,6 +300,18 @@ const DEMO_PRODUCTS: DemoProduct[] = [
     handle: 'inv-demo-oil-15w40',
     title: 'Diesel Engine Oil 15W-40 (1 gal)',
     productType: 'Fluids',
+    attributes: {
+      fitment:
+        'For any heavy-duty diesel calling for a 15W-40 CK-4 engine oil — on-highway trucks, fleet pickups, and equipment. One US gallon.',
+      specs: [
+        { label: 'Viscosity', value: '15W-40' },
+        { label: 'Spec', value: 'API CK-4 / CJ-4' },
+        { label: 'Base', value: 'Synthetic blend' },
+        { label: 'Volume', value: '1 US gal (3.78 L)' },
+      ],
+      warranty:
+        'Meets or exceeds OEM warranty requirements when used at the manufacturer’s specified drain interval.',
+    },
     vendor: 'Shell Rotella',
     hazmatClass: 'class9',
     variants: [
@@ -275,6 +342,18 @@ const DEMO_PRODUCTS: DemoProduct[] = [
     handle: 'inv-demo-coolant-hd',
     title: 'Heavy-Duty Coolant — Nitrite-Free (1 gal)',
     productType: 'Fluids',
+    attributes: {
+      fitment:
+        'For heavy-duty diesel cooling systems that require a nitrite-free extended-life coolant (ELC). Pre-diluted 50/50 — ready to fill. One US gallon.',
+      specs: [
+        { label: 'Type', value: 'ELC, nitrite-free (NOAT)' },
+        { label: 'Concentration', value: '50/50 pre-mix' },
+        { label: 'Service life', value: 'Up to 600,000 mi with extender' },
+        { label: 'Volume', value: '1 US gal (3.78 L)' },
+      ],
+      warranty:
+        'Backed against coolant-related cooling-system failure when maintained per the service schedule.',
+    },
     vendor: 'Fleetguard',
     hazmatClass: 'class9',
     variants: [
@@ -300,6 +379,18 @@ const DEMO_PRODUCTS: DemoProduct[] = [
     handle: 'inv-demo-serpentine-belt-73',
     title: 'Serpentine Belt — 7.3L Power Stroke',
     productType: 'Belts',
+    attributes: {
+      fitment:
+        'Fits 1994–2003 Ford 7.3L Power Stroke diesel with A/C. Routes to the factory tensioner; verify routing against the underhood diagram before install.',
+      specs: [
+        { label: 'Ribs', value: '6-rib (K6)' },
+        { label: 'Effective length', value: '2,225 mm' },
+        { label: 'Material', value: 'EPDM' },
+        { label: 'Temp range', value: '−40 to 130 °C' },
+      ],
+      warranty:
+        '36-month / 100,000-mile limited warranty against cracking, glazing, and rib separation.',
+    },
     vendor: 'Gates',
     variants: [
       {
@@ -323,6 +414,17 @@ const DEMO_PRODUCTS: DemoProduct[] = [
     handle: 'inv-demo-water-pump-66',
     title: 'Water Pump — 6.6L Duramax',
     productType: 'Cooling',
+    attributes: {
+      fitment:
+        'Fits 2001–2016 GM 6.6L Duramax diesel. Mechanical OE-replacement water pump; comes with a new gasket. Refill with nitrite-free ELC on install.',
+      specs: [
+        { label: 'Drive', value: 'Belt-driven' },
+        { label: 'Impeller', value: 'Cast iron, 8-vane' },
+        { label: 'Gasket', value: 'Included' },
+        { label: 'Bearing', value: 'Sealed, pre-lubricated' },
+      ],
+      warranty: '24-month / unlimited-mile limited warranty against leaks and bearing failure.',
+    },
     vendor: 'ACDelco',
     variants: [
       {
@@ -436,6 +538,11 @@ async function seedDemoInventory(tenantId: string): Promise<void> {
           handle: p.handle,
           status: 'active',
           productType: p.productType,
+          // The typed product-type link + validated attribute bag (docs/143). Built-in
+          // `auto_part` is seeded under the platform tenant by migration 20270206000000,
+          // so it resolves for the demo tenant via RLS.
+          productTypeKey: 'auto_part',
+          attributes: p.attributes ?? {},
           vendor: p.vendor,
           hazmatClass: p.hazmatClass ?? 'none',
           defaultWarehouseId: mainId,

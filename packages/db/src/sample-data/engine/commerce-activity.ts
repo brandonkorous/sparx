@@ -9,6 +9,8 @@
 // Denormalized customer stats are computed here because no order-event consumer
 // runs against a loaded tenant.
 
+import type { Prisma } from '@prisma/client';
+
 import { sampleEmail, SAMPLE_ORDER_PREFIX, withSampleMeta } from '../markers';
 import type { SampleDataPack, SamplePersona } from '../types';
 import { type ApplyCtx, daysAgo, round2 } from './context';
@@ -197,6 +199,12 @@ export async function applyCustomers(ctx: ApplyCtx, pack: SampleDataPack): Promi
         company: persona.company ?? null,
         phone: persona.phone ?? null,
         metadata: withSampleMeta(),
+        // The extra details this pack declares on `contact` (docs/144 §3). Only
+        // when CRM is on: with it off there is no record type to give them
+        // meaning, and the bag would be untyped junk under a typed column.
+        ...(ctx.isOn('crm') && persona.properties
+          ? { customProperties: persona.properties as Prisma.InputJsonObject }
+          : {}),
       },
       select: { id: true },
     });

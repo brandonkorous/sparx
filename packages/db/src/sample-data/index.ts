@@ -20,6 +20,7 @@ import { applyQuotes, applyDeals } from './engine/sales';
 import { applyInvoicing } from './engine/invoicing';
 import { applyBundlesAndConfigurator } from './engine/bundles';
 import { applyAi } from './engine/ai';
+import { applyRecordTypes } from './engine/record-types';
 import { hasPhysicalGoods, withFallbacks } from './engine/fallbacks';
 import { clearSampleDataOnTx } from './engine/clear';
 import { countsTotal, summarizeSampleDataOnTx } from './engine/summarize';
@@ -120,7 +121,11 @@ function buildCtx(
 async function applyPack(ctx: ApplyCtx, pack: SampleDataPack): Promise<void> {
   // Splice generic defaults into any section the vertical left blank for an enabled
   // module, so no enabled module renders empty (e.g. scheduling on an apparel pack).
-  const eff = withFallbacks(pack, ctx.isOn);
+  const eff = withFallbacks(pack, ctx.isOn, ctx.now);
+  // FIRST, before anything writes a CRM row: a customer's authored properties
+  // are only meaningful once the schema that names them exists, and the property
+  // panel reads that schema to know what to render.
+  await applyRecordTypes(ctx, eff);
   await applyCatalog(ctx, eff);
   await applyProductImages(ctx, eff);
   await applyInventory(ctx, eff);

@@ -196,6 +196,7 @@ model Tenant {
 
   // Commerce module — catalog
   products            Product[]
+  productTypes        ProductType[]
   productTranslations ProductTranslation[]
   productOptions      ProductOption[]
   productOptionValues ProductOptionValue[]
